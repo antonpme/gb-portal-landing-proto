@@ -7,7 +7,7 @@
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
     --zinc-50:  #fafafa;
@@ -21,6 +21,8 @@
     --zinc-900: #18181b;
     --blue:     #2563eb;
     --blue-hover: #1d4ed8;
+    --blue-50:  #eff6ff;
+    --blue-200: #bfdbfe;
     --radius: 5px;
   }
 
@@ -56,67 +58,161 @@
     align-items: flex-start;
   }
 
-  /* ============ SIDEBAR ============ */
+  /* ============ SIDEBAR ============
+     Provenance: Figma "Gifting Portal" (jb9S38HV3lWnfqERtrV3Y0),
+     node 3550-26803 (sidebar blocks) + node 3561-3633 (menu-item states).
+     Extracted values:
+       block:        w 320..380 (min..max; 320 used here), bg #fff,
+                     border 1px zinc-200 #e4e4e7, radius 4px, clipped
+       block-header: bg zinc-50 #fafafa, min-h 64, pad 16,
+                     title Inter 300, 20px, lh 1.7, tracking 2px, zinc-500 #71717a
+       info section: border-top 1px zinc-200, pad 16, row gap 8; row min-h 24, gap 4
+                     key   Inter 400 14 / 1.5, tracking 0.5px, zinc-500
+                     value Inter 300 14 / 1.5, tracking 0.5px, zinc-900, pad 0 8
+                     name  Inter 600 16 / 1.6, tracking 0.3px, zinc-900
+                     email check 12x12, green #22c55e (exported asset)
+       menu item:    h 46px (Figma reads 46.431 - fractional, flagged, rounded to 46),
+                     pad 8 16, gap 16, border-top 1px, icon 24x24 (stroke 0.8 zinc-500)
+                     label Inter 400 14 / 21px, tracking 0.3px, UPPERCASE, zinc-900
+                     default bg #fff + border-top zinc-200
+                     hover   bg zinc-100 #f4f4f5 + border-top zinc-300 #d4d4d8
+                     active  bg blue-50 #eff6ff + border-top blue-200 #bfdbfe
+                     disabled (defined, unused) label/icon zinc-400
+       badge (defined in Figma, unused on this page):
+                     bg zinc-200, text zinc-800 #27272a, Inter 400 12 / 1.5,
+                     tracking 0.5px, pad 3 6, radius 3
+       live-chat button (defined in Figma, unused on this page):
+                     border 1.5px blue-600 #2563eb, h 48, radius 4,
+                     Inter 500 16 / 20px, tracking 0.5px, UPPERCASE, blue-600
+     Deliberate deviations:
+       - Upload Logo control is live-only (not in Figma): ghost button, zinc-100 fill,
+         radius 6, ~31px tall, 15px upload glyph; label+icon zinc-600 #52525b instead
+         of the live site's pale gray (owner's legibility correction).
+       - blocks stack vertically with 16px gap (Figma node is a horizontal gallery row).
+       - Brand Assets has no Figma glyph; icons/brand-assets.svg is a same-language
+         approximation (stroke 0.8, #71717A).
+  ============ */
   .sidebar {
-    width: 280px;
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .snav-block {
+    background: #fff;
+    border: 1px solid var(--zinc-200);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .snav-header {
+    background: var(--zinc-50);
+    min-height: 64px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .snav-title {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.7;
+    letter-spacing: 2px;
+    color: var(--zinc-500);
+  }
+  .upload-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 31px;
+    padding: 0 10px;
+    background: var(--zinc-100);
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    color: var(--zinc-600);
+  }
+  .upload-logo:hover { background: var(--zinc-200); color: var(--zinc-900); }
+  .upload-logo img { display: block; width: 15px; height: 15px; }
+  .snav-info {
+    border-top: 1px solid var(--zinc-200);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .snav-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 24px;
+  }
+  .snav-name {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+    color: var(--zinc-900);
+  }
+  .snav-key {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    color: var(--zinc-500);
+  }
+  .snav-val {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    color: var(--zinc-900);
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  a.snav-val:hover { text-decoration: underline; }
+  .snav-check { display: block; width: 12px; height: 12px; }
+  .snav-menu { display: flex; flex-direction: column; }
+  .snav-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 46px;
+    padding: 8px 16px;
+    border-top: 1px solid var(--zinc-200);
+    background: #fff;
+  }
+  .snav-item:hover {
+    background: var(--zinc-100);
+    border-top-color: var(--zinc-300);
+  }
+  .snav-item.active {
+    background: var(--blue-50);
+    border-top-color: var(--blue-200);
+  }
+  .snav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
   }
-  .account-card {
-    background: #fff;
-    border: 1px solid var(--zinc-200);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  .account-card .acct-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+  .snav-icon img { display: block; max-width: 24px; max-height: 24px; }
+  .snav-label {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+    letter-spacing: 0.3px;
     text-transform: uppercase;
-    color: var(--zinc-500);
-    margin-bottom: 12px;
-  }
-  .account-card .acct-name {
-    font-family: 'Noto Serif', Georgia, serif;
-    font-size: 20px;
-    font-weight: 600;
     color: var(--zinc-900);
-    margin-bottom: 4px;
-  }
-  .account-card .acct-meta {
-    font-size: 13px;
-    color: var(--zinc-500);
-    line-height: 1.6;
-  }
-  .side-menu {
-    background: #fff;
-    border: 1px solid var(--zinc-200);
-    border-radius: var(--radius);
-    padding: 8px 0;
-  }
-  .side-menu .group-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--zinc-400);
-    padding: 16px 20px 8px;
-  }
-  .side-menu a {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--zinc-600);
-    padding: 10px 20px;
-  }
-  .side-menu a:hover { background: var(--zinc-50); color: var(--zinc-900); }
-  .side-menu a.active {
-    color: var(--zinc-900);
-    font-weight: 600;
-    background: var(--zinc-100);
-    border-left: 2px solid var(--zinc-900);
-    padding-left: 18px;
+    flex: 1;
+    min-width: 0;
   }
 
   /* ============ CONTENT ============ */
@@ -444,7 +540,7 @@
 
   /* Mid widths: slimmer horizontal card padding so every bullet holds one line at 19px */
   @media (max-width: 1520px) {
-    .hero-half { padding: 48px 36px; }
+    .hero-half { padding: 48px 24px; }
   }
   @media (max-width: 1320px) {
     .hero .sub { font-size: 20px; }
@@ -458,34 +554,56 @@
   <!-- ============ LAYOUT ============ -->
   <div class="layout wrapper">
 
-    <!-- Sidebar -->
+    <!-- Sidebar (Figma nodes 3550-26803 / 3561-3633; content order per live portal) -->
     <aside class="sidebar">
-      <div class="account-card">
-        <div class="acct-label">Account</div>
-        <div class="acct-name">Anton</div>
-        <div class="acct-meta">
-          Company: GB<br>
-          anton@gildedbox.com
+
+      <section class="snav-block">
+        <header class="snav-header">
+          <span class="snav-title">Account</span>
+          <button class="upload-logo" type="button"><img src="icons/upload.svg" alt="">Upload Logo</button>
+        </header>
+        <div class="snav-info">
+          <div class="snav-row"><span class="snav-name">Anton</span></div>
+          <div class="snav-row"><span class="snav-key">Company:</span><span class="snav-val">GB</span></div>
+          <div class="snav-row"><span class="snav-key">Email:</span><span class="snav-val">iam@antonp.me<img class="snav-check" src="icons/c-check.svg" alt=""></span></div>
         </div>
-      </div>
-      <nav class="side-menu">
-        <a href="#" class="active">My Gifts</a>
-        <a href="#">Gift Campaigns</a>
-        <a href="#">Gift Redeem Pages</a>
-        <a href="#">Gift Design Approvals</a>
-        <a href="#">Orders</a>
-        <a href="#">Thank You Notes</a>
-        <a href="#">Brand Assets</a>
-        <a href="#">My Teams</a>
-        <div class="group-label">Admin</div>
-        <a href="#">My Company</a>
-        <a href="#">Payments</a>
-        <a href="#">Address Book</a>
-        <a href="#">Notifications</a>
-        <a href="#">Account Information</a>
-        <a href="#">Password</a>
-        <a href="#">Log Out</a>
-      </nav>
+        <nav class="snav-menu">
+          <a class="snav-item active" href="#"><span class="snav-icon"><img src="icons/gift.svg" alt=""></span><span class="snav-label">My Gifts</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/archery-target.svg" alt=""></span><span class="snav-label">Gift Campaigns</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/gift-exchange.svg" alt=""></span><span class="snav-label">Gift Redeem Pages</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/laptop-check.svg" alt=""></span><span class="snav-label">Gift Design Approvals</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/time-machine.svg" alt=""></span><span class="snav-label">Orders</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/love-card.svg" alt=""></span><span class="snav-label">Thank You Notes</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">My Teams</span></a>
+        </nav>
+      </section>
+
+      <section class="snav-block">
+        <header class="snav-header">
+          <span class="snav-title">Admin</span>
+        </header>
+        <nav class="snav-menu">
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/office.svg" alt=""></span><span class="snav-label">My Company</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/money-13.svg" alt=""></span><span class="snav-label">Payments</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/address-book.svg" alt=""></span><span class="snav-label">Address Book</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/alarm.svg" alt=""></span><span class="snav-label">Notifications</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/cogwheel.svg" alt=""></span><span class="snav-label">Account Information</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/lock.svg" alt=""></span><span class="snav-label">Password</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/leave.svg" alt=""></span><span class="snav-label">Log out</span></a>
+        </nav>
+      </section>
+
+      <section class="snav-block">
+        <header class="snav-header">
+          <span class="snav-title">Support</span>
+        </header>
+        <div class="snav-info">
+          <div class="snav-row"><span class="snav-key">Email:</span><a class="snav-val" href="mailto:connect@gildedbox.com">connect@gildedbox.com</a></div>
+          <div class="snav-row"><span class="snav-key">Telephone:</span><a class="snav-val" href="tel:+18478010345,8118">(847) 801-0345 ext. 8118</a></div>
+        </div>
+      </section>
+
     </aside>
 
     <!-- Content -->
