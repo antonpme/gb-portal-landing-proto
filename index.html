@@ -227,7 +227,7 @@
   }
   /* Quiet eyebrow above the A list: portal sidebar-label role, centered */
   .hero .eyebrow {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -452,7 +452,8 @@
   }
   .btn-bar-ghost:hover { border-color: var(--zinc-400); }
 
-  /* State 2: fixed to viewport bottom, aligned with content column (JS sets left/width) */
+  /* Collapsed state: bar stays fixed to the viewport bottom for as long as gifts exist,
+     aligned with the content column (JS sets left/width) */
   .cta-bar.bar-sticky {
     display: flex;
     position: fixed;
@@ -465,16 +466,6 @@
   @keyframes barUp {
     from { transform: translateY(100%); }
     to   { transform: translateY(0); }
-  }
-
-  /* State 3: normal in-flow row at the very bottom of page content */
-  .cta-bar.bar-static {
-    display: flex;
-    position: static;
-    margin-top: 32px;
-    border: 1px solid var(--zinc-200);
-    border-radius: var(--radius);
-    animation: none;
   }
 
   /* Reserve room so the fixed bar never covers the last card row */
@@ -619,7 +610,7 @@
                 <button class="btn-cta btn-cta-blue">Work With an Expert</button>
               </div>
               <div class="hero-half">
-                <h2>Start on Your Own</h2>
+                <h2>Gift on Your Own</h2>
                 <ul>
                   <li>Select a gift</li>
                   <li>Design yourself or designed for you</li>
@@ -690,8 +681,6 @@
 
 <script>
 (function () {
-  var STICKY_MAX = 5; // 1..5 gifts -> sticky bar; 6+ -> static bar
-
   var hero      = document.getElementById('hero');
   var heroA     = document.getElementById('heroA');
   var heroB     = document.getElementById('heroB');
@@ -777,25 +766,20 @@
       }, 300);
     }
 
-    // --- bar ---
-    bar.classList.remove('bar-sticky', 'bar-static');
+    // --- bar: always sticky above the gifts once any exist ---
+    bar.classList.remove('bar-sticky');
     content.classList.remove('has-fixed-bar');
     bar.style.left = '';
     bar.style.width = '';
 
-    if (count >= 1 && count <= STICKY_MAX) {
+    if (count >= 1) {
       bar.classList.add('bar-sticky');
       content.classList.add('has-fixed-bar');
       positionBar();
-    } else if (count > STICKY_MAX) {
-      bar.classList.add('bar-static');
     }
 
     // --- demo label ---
-    stateEl.textContent =
-      count === 0 ? 'empty' :
-      count <= STICKY_MAX ? 'bar sticky' :
-      'bar at bottom';
+    stateEl.textContent = count === 0 ? 'empty' : 'bar sticky';
   }
 
   btnAdd.addEventListener('click', function () {
