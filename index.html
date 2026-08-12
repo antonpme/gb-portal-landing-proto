@@ -592,11 +592,6 @@
     transition: background 160ms;
   }
   .gbh-icon-button:hover { background: rgb(36 36 38 / 5%); }
-  /* Demo chrome only: the pill drops below the restored header where one
-     exists (live/russell); in ton the header is gone and it keeps the
-     original viewport anchor. */
-  body:not([data-nav="ton"]) .demo-controls { top: 112px; }
-
   /* ============ FOOTER ============
      Source: LIVE PORTAL footer, Ton's screen 2026-08-12, checked line
      by line (the earlier v1 footer was the old public site's; that
@@ -1039,52 +1034,124 @@
   /* Reserve room so the fixed bar never covers the last card row */
   .content.has-fixed-bar { padding-bottom: 104px; }
 
-  /* ============ DEMO CONTROLS ============ */
+  /* ============ DEMO CONTROLS (PROTO PANEL) ============
+     Provenance: Ton's feedback 2026-08-12: the old top-right pill lay
+     over the page metablock and blocked reading it, and Valerie
+     (frontend) took it for part of the design. Redesign: a vertical
+     dark panel fixed to the RIGHT screen edge, centered in the
+     viewport. Deliberately service-grade styling (Zinc 950 ground,
+     mono caps labels), NOT the prototype's design language, so it
+     cannot be read as design again. Same controls, same IDs, same JS
+     wiring; only the shell changed. The edge tab collapses the panel
+     to a sliver (JS class, no persistence). z-index 30 keeps it under
+     the catalog overlay (z 40), which covers it while open.
+     Zinc 950 #09090b / 800 #27272a / 700 #3f3f46 are panel-local
+     values: the page tokens stop at Zinc 900 and this service chrome
+     must not join the page palette. */
   .demo-controls {
     position: fixed;
-    right: 24px;
-    top: 24px; /* anchored to the viewport; the site header is gone */
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 30;
-    background: #fff;
-    border: 1px solid var(--zinc-400);
-    border-radius: 999px;
-    padding: 6px 8px 6px 14px;
     display: flex;
     align-items: center;
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace;
+  }
+  /* Edge tab: collapse/expand handle, survives alone when collapsed */
+  .demo-tab {
+    width: 22px;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 8px;
-    box-shadow: 0 2px 8px rgba(24, 24, 27, 0.08);
+    background: #09090b;
+    border: 1px solid #3f3f46;
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    color: #a1a1aa;
+    font-family: inherit;
   }
-  .demo-controls .demo-state {
-    font-size: 11px;
-    letter-spacing: 0.06em;
+  .demo-tab:hover { color: #fff; }
+  .demo-tab svg { display: block; width: 12px; height: 12px; }
+  /* Chevron points where the panel will go: right = hide, left = show */
+  .demo-controls.collapsed .demo-tab svg { transform: rotate(180deg); }
+  .demo-tab-text {
+    writing-mode: vertical-rl;
+    font-size: 9px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    color: var(--zinc-400);
-    margin-right: 4px;
+  }
+  .demo-panel {
+    width: 150px;
+    background: #09090b;
+    border: 1px solid #3f3f46;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .demo-controls.collapsed .demo-panel { display: none; }
+  .demo-brand {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #fafafa;
+  }
+  .demo-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .demo-group + .demo-group,
+  .demo-brand + .demo-group {
+    border-top: 1px solid #27272a;
+    padding-top: 10px;
+  }
+  .demo-group-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .demo-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #a1a1aa;
+  }
+  .demo-state {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    color: #71717a;
     white-space: nowrap;
   }
-  .demo-controls button {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--zinc-600);
-    background: var(--zinc-50);
-    border: 1px solid var(--zinc-200);
-    border-radius: 999px;
-    padding: 6px 12px;
+  .demo-panel button {
+    width: 100%;
+    padding: 7px 10px;
+    text-align: left;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1.2;
+    color: #d4d4d8;
+    background: #18181b;
+    border: 1px solid #3f3f46;
+    border-radius: 4px;
     white-space: nowrap;
+    transition: color 120ms ease, border-color 120ms ease;
   }
-  .demo-controls button:hover {
-    color: var(--zinc-900);
-    border-color: var(--zinc-400);
-  }
-  .demo-controls button.variant-active {
+  .demo-panel button:hover {
     color: #fff;
-    background: var(--zinc-900);
-    border-color: var(--zinc-900);
+    border-color: #71717a;
   }
-  .demo-controls .demo-sep {
-    width: 1px;
-    height: 20px;
-    background: var(--zinc-200);
+  /* Active state inverts to near-white: unmistakable on the dark ground */
+  .demo-panel button.variant-active {
+    color: #09090b;
+    background: #fafafa;
+    border-color: #fafafa;
   }
 
   /* Mid widths: slimmer horizontal card padding so every bullet holds one line at 19px */
@@ -1163,9 +1230,9 @@
     /* Narrower page gutters on small screens (the 48px desktop gutter
        of the wrapper formula would eat a fifth of a phone) */
     .wrapper, .footer-wrap { width: calc(100% - 32px); }
-    /* Demo chrome: the pill hugs the screen and wraps instead of bleeding off the edge */
-    .demo-controls { left: 8px; right: 8px; flex-wrap: wrap; border-radius: 16px; justify-content: center; }
-    .demo-controls > * { flex-shrink: 0; }
+    /* Demo chrome: the PROTO panel keeps its right-edge anchor on
+       phones; the edge tab folds it away when it covers content
+       (Ton's feedback 2026-08-12) */
     .gbh-bar { grid-template-columns: auto 1fr auto; gap: 16px; height: 72px; }
     .gbh-nav { display: none; }
     .gbh-brand { width: 126px; height: 42px; }
@@ -1179,6 +1246,7 @@
 <!-- wave-2026-08-12 marker: gbppl-nav-switcher-r7k4 -->
 <!-- wave-2026-08-12b marker: gbppl-nav-ton-x9m2 -->
 <!-- wave-2026-08-12c marker: gbppl-pack-fork-header-f7p3 -->
+<!-- wave-2026-08-12d marker: gbppl-proto-panel-k5w9 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -1470,21 +1538,38 @@
     </div>
   </div>
 
-  <!-- DEMO CONTROLS -->
-  <div class="demo-controls">
-    <button id="btnVarA">A &middot; Russell</button>
-    <button id="btnVarB">B &middot; Proposal</button>
-    <span class="demo-sep"></span>
-    <!-- Sidebar nav variant toggle (Russell 2026-08-12); also via ?nav=russell -->
-    <span class="demo-state">Nav:</span>
-    <button id="btnNavLive">Live</button>
-    <button id="btnNavRussell">Russell</button>
-    <!-- Visible label "Anton" per Ton 2026-08-12; internal values stay nav=ton so shared links keep working -->
-    <button id="btnNavTon">Anton</button>
-    <span class="demo-sep"></span>
-    <span class="demo-state" id="demoState">empty</span>
-    <button id="btnAdd">+ Add gift</button>
-    <button id="btnReset">Reset</button>
+  <!-- DEMO CONTROLS: PROTO panel, service chrome outside the design
+       language (Ton's feedback 2026-08-12, see CSS provenance). Same
+       control IDs as the old pill, the switching JS is untouched. -->
+  <div class="demo-controls" id="demoControls">
+    <button class="demo-tab" id="demoTab" type="button" aria-expanded="true" aria-label="Collapse prototype controls">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg>
+      <span class="demo-tab-text">Proto</span>
+    </button>
+    <div class="demo-panel">
+      <span class="demo-brand">Proto</span>
+      <div class="demo-group">
+        <span class="demo-label">Hero</span>
+        <button id="btnVarA" type="button">A &middot; Russell</button>
+        <button id="btnVarB" type="button">B &middot; Proposal</button>
+      </div>
+      <!-- Sidebar nav variant toggle (Russell 2026-08-12); also via ?nav=russell -->
+      <div class="demo-group">
+        <span class="demo-label">Nav</span>
+        <button id="btnNavLive" type="button">Live</button>
+        <button id="btnNavRussell" type="button">Russell</button>
+        <!-- Visible label "Anton" per Ton 2026-08-12; internal values stay nav=ton so shared links keep working -->
+        <button id="btnNavTon" type="button">Anton</button>
+      </div>
+      <div class="demo-group">
+        <div class="demo-group-head">
+          <span class="demo-label">Gifts</span>
+          <span class="demo-state" id="demoState">empty</span>
+        </div>
+        <button id="btnAdd" type="button">+ Add gift</button>
+        <button id="btnReset" type="button">Reset</button>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -1748,6 +1833,18 @@
   catalogBackdrop.addEventListener('click', closeCatalog);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeCatalog();
+  });
+
+  /* ---- PROTO panel collapse (Ton's feedback 2026-08-12) ----
+     Shell-only state: a class on the container, no persistence.
+     The controls inside keep their wiring untouched. */
+  var demoControls = document.getElementById('demoControls');
+  var demoTab      = document.getElementById('demoTab');
+  demoTab.addEventListener('click', function () {
+    var collapsed = demoControls.classList.toggle('collapsed');
+    demoTab.setAttribute('aria-expanded', String(!collapsed));
+    demoTab.setAttribute('aria-label',
+      collapsed ? 'Expand prototype controls' : 'Collapse prototype controls');
   });
 
   // ?v=a / ?v=b (hero) and ?nav=live / ?nav=russell / ?nav=ton (sidebar)
