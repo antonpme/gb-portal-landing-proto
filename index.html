@@ -228,34 +228,30 @@
   /* Live-only nodes leave the render in the Russell variant */
   [data-nav="russell"] .nav-live-only { display: none; }
 
-  /* Item 4 (Russell 2026-08-12): brand zone in the Account header.
-     Upload Logo box removed; a company-logo placeholder stands in its
-     place. Placeholder: neutral 32px square (16+32+16 = 64px header
-     min-height, so the header does not grow), zinc-100 fill, zinc-200
-     hairline, block radius 4px; glyph reuses icons/brand-assets.svg
-     (the existing image-frame icon), no new icon drawn. Logo is meant
-     to come from saved Brand Assets. */
-  [data-nav="russell"] .brand-logo-ph {
+  /* Item 4 (Russell 2026-08-12, Ton's clarification: third section):
+     brand zone is its OWN section at the very top of the sidebar, above
+     Account, titled with the company name, "so people see those are
+     related". Section reuses the existing block anatomy (.snav-block,
+     zinc-50 header, Inter 300 20/2px title, info section, menu item);
+     only the logo placeholder is new: neutral 48px square, zinc-100
+     fill, zinc-200 hairline, block radius 4px, glyph reuses
+     icons/brand-assets.svg (the existing image-frame icon), no new icon
+     drawn. Logo is meant to come from saved Brand Assets. Upload Logo
+     box is removed, Brand Assets leaves the main menu, and the Company
+     row leaves the Account block (it became this section's title). */
+  [data-nav="russell"] .brand-block { display: block; }
+  .brand-logo-ph {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     background: var(--zinc-100);
     border: 1px solid var(--zinc-200);
     border-radius: 4px;
     flex-shrink: 0;
   }
-  .brand-logo-ph img { display: block; width: 18px; height: 18px; }
-
-  /* Item 4 (Russell 2026-08-12): Brand Assets moves out of the menu and
-     sits next to the company name, "so people see those are related".
-     Same typographic role as the block's metadata values (.snav-val);
-     blue-600 marks it as the one actionable element in the row. */
-  [data-nav="russell"] a.snav-brand-link {
-    display: inline-flex;
-    color: var(--blue);
-  }
+  .brand-logo-ph img { display: block; width: 24px; height: 24px; }
 
   /* Long labels (items 1, 3, 6, Russell 2026-08-12): renamed items may
      exceed one line at 320px. No truncation, no font shrink: the item
@@ -619,16 +615,32 @@
     <!-- Sidebar (Figma nodes 3550-26803 / 3561-3633; content order per live portal) -->
     <aside class="sidebar">
 
+      <!-- Item 4 (Russell 2026-08-12, Ton's clarification): Russell-only top section,
+           company name as the title, logo placeholder fed by Brand Assets, and the
+           Brand Assets entry as a regular menu item with its existing icon.
+           Hidden entirely in nav=live. -->
+      <section class="snav-block brand-block nav-russell-only">
+        <header class="snav-header">
+          <span class="snav-title">GB</span>
+        </header>
+        <div class="snav-info">
+          <div class="snav-row"><span class="brand-logo-ph"><img src="icons/brand-assets.svg" alt=""></span></div>
+        </div>
+        <nav class="snav-menu">
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
+        </nav>
+      </section>
+
       <section class="snav-block">
         <header class="snav-header">
           <span class="snav-title">Account</span>
-          <!-- Item 4 (Russell 2026-08-12): live keeps Upload Logo, Russell swaps it for a logo placeholder fed by Brand Assets -->
+          <!-- Item 4 (Russell 2026-08-12, Ton's clarification): live keeps Upload Logo; the Russell variant drops it, the logo lives in the top brand section -->
           <button class="upload-logo nav-live-only" type="button"><img src="icons/upload.svg" alt="">Upload Logo</button>
-          <span class="brand-logo-ph nav-russell-only"><img src="icons/brand-assets.svg" alt=""></span>
         </header>
         <div class="snav-info">
           <div class="snav-row"><span class="snav-name">Anton</span></div>
-          <div class="snav-row"><span class="snav-key">Company:</span><span class="snav-val">GB</span><a class="snav-val snav-brand-link nav-russell-only" href="#">Brand Assets</a></div>
+          <!-- Item 4 (Russell 2026-08-12, Ton's clarification): Company row leaves the Account block in the Russell variant, it became the brand section's title -->
+          <div class="snav-row nav-live-only"><span class="snav-key">Company:</span><span class="snav-val">GB</span></div>
           <div class="snav-row"><span class="snav-key">Email:</span><span class="snav-val">iam@antonp.me<img class="snav-check" src="icons/c-check.svg" alt=""></span></div>
         </div>
         <!-- Nav variant renames (Russell 2026-08-12): data-label-russell holds the
@@ -641,7 +653,7 @@
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/laptop-check.svg" alt=""></span><span class="snav-label">Gift Design Approvals</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/time-machine.svg" alt=""></span><span class="snav-label" data-label-russell="Gift Order History">Orders</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/love-card.svg" alt=""></span><span class="snav-label">Thank You Notes</span></a>
-          <!-- Item 4 (Russell 2026-08-12): Brand Assets leaves the menu in the Russell variant, replaced by the brand zone above -->
+          <!-- Item 4 (Russell 2026-08-12, Ton's clarification): Brand Assets leaves this menu in the Russell variant, it lives in the top brand section -->
           <a class="snav-item nav-live-only" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
           <!-- Item 5 (Russell 2026-08-12): JS moves My Teams to the top of the Admin menu in the Russell variant -->
           <a class="snav-item" href="#" id="navMyTeams"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">My Teams</span></a>
