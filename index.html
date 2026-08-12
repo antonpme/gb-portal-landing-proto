@@ -78,14 +78,29 @@
   button { font-family: inherit; cursor: pointer; }
 
   /* ============ SHARED WRAPPER ============
-     Header, sidebar+content and the page chrome share one centered
-     container. Width = the live v1 content formula min(100% - 96px,
-     1920px) (Ton 2026-08-12: our 1620 read too narrow against the live
-     portal on 2K; the earlier DEVIATION is lifted). The footer keeps
-     its own narrower v1 formula, see .footer-wrap. */
-  .wrapper {
-    width: min(calc(100% - 96px), 1920px);
+     Live .container ladder (diff measure our Pages vs the live portal
+     at the same 2258 viewport, 2026-08-12; replaces the v1 min()
+     formula): base width 100% + padding 0 24px; max-width 1600 from
+     1600; max-width 1920 + padding 0 48px from 1920; padding 0 16px
+     at <=768 (SYSTEM.md site chrome wrapper cascade). Header, layout
+     AND footer ride one ladder: SYSTEM.md's footer spec records the
+     same container (px 24), the old v1 1600 cap was a transfer the
+     spec never confirmed. */
+  .wrapper,
+  .footer-wrap {
+    width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
     margin: 0 auto;
+  }
+  @media (min-width: 1600px) {
+    .wrapper, .footer-wrap { max-width: 1600px; }
+  }
+  @media (min-width: 1920px) {
+    .wrapper, .footer-wrap { max-width: 1920px; padding-left: 48px; padding-right: 48px; }
+  }
+  @media (max-width: 768px) {
+    .wrapper, .footer-wrap { padding-left: 16px; padding-right: 16px; }
   }
 
   /* ============ LAYOUT ============ */
@@ -550,8 +565,10 @@
      site chrome, live 2026-08-12), 64px between adjacent labels */
   .gbh-nav { display: flex; align-items: center; }
   /* Nav items per the portal (SYSTEM.md portal chrome, live
-     2026-08-12): Inter 500, 16px at xl+, UPPERCASE, ls 0.5px,
-     lh 150%, Zinc 900; hover = live's opacity 0.8 */
+     2026-08-12): Inter 500, UPPERCASE, ls 0.5px, lh 150%, Zinc 900;
+     hover = live's opacity 0.8. Size steps = the live Tailwind
+     cascade (diff measure 2026-08-12): 14px base (lg), 16px from
+     1280 (xl). */
   .gbh-link {
     position: relative;
     display: inline-flex;
@@ -562,12 +579,15 @@
     background: transparent;
     border: 0;
     color: var(--zinc-900);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.5px;
     line-height: 1.5;
     text-transform: uppercase;
     transition: opacity 160ms;
+  }
+  @media (min-width: 1280px) {
+    .gbh-link { font-size: 16px; }
   }
   .gbh-link:hover { opacity: 0.8; }
   /* Gold Beta chip on CUSTOMIZE: live legacy accent, measured #bea042
@@ -588,40 +608,51 @@
   }
   .gbh-actions { display: flex; align-items: center; gap: 12px; }
   /* Portal button theme (SYSTEM.md portal chrome, live 2026-08-12):
-     h 48 (2xl), pad 8px 20px, Inter 400 16px UPPERCASE ls -0.4px,
-     radius 5. NOTE: this is the PORTAL button theme, computed weight
-     400 + tracking-tight, deliberately NOT the Oro DS 600/tracking
-     scale from SYSTEM.md's button table; the live portal renders the
-     lighter theme. BOOK A MEETING fill = Zinc 800, hover Zinc 700
-     (live hover from the public header spec). */
+     Inter 400 UPPERCASE ls -0.4px, radius 5. NOTE: this is the PORTAL
+     button theme, computed weight 400 + tracking-tight, deliberately
+     NOT the Oro DS 600/tracking scale from SYSTEM.md's button table;
+     the live portal renders the lighter theme. Size steps = the live
+     Tailwind cascade (diff measure 2026-08-12): base font 14 /
+     min-h 36 / pad-x 16; from 1280 font 16 / min-h 42 / pad-x 20;
+     from 1536 min-h 48. BOOK A MEETING fill = Zinc 800, hover
+     Zinc 700 (live hover from the public header spec), NO border on
+     the filled button and NO icon: the live button is text-only
+     (158.5px wide vs our earlier 198 with the calendar glyph). */
   .gbh-cta {
-    min-height: 48px;
+    min-height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 8px 20px;
+    gap: 12px;
+    padding: 8px 16px;
     background: var(--zinc-800);
     color: var(--white);
-    border: 1px solid var(--zinc-800);
+    border: none;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
     letter-spacing: -0.4px;
     line-height: 1.1;
     text-transform: uppercase;
+    white-space: nowrap; /* live buttons never wrap */
     transition: background 160ms, border-color 160ms;
   }
-  .gbh-cta:hover { background: var(--zinc-700); border-color: var(--zinc-700); }
+  @media (min-width: 1280px) {
+    .gbh-cta { min-height: 42px; padding-left: 20px; padding-right: 20px; font-size: 16px; }
+  }
+  @media (min-width: 1536px) {
+    .gbh-cta { min-height: 48px; }
+  }
+  .gbh-cta:hover { background: var(--zinc-700); }
   /* Outlined MY PORTAL per live: transparent fill, Zinc 900 text and
-     1px border, same portal typography (SYSTEM.md, live 2026-08-12);
-     hover = felt value, live gives none */
+     1px border (spec-confirmed, stays), same portal typography
+     (SYSTEM.md, live 2026-08-12); hover = felt value, live gives none */
   .gbh-cta--outline {
     background: transparent;
     color: var(--zinc-900);
-    border-color: var(--zinc-900);
+    border: 1px solid var(--zinc-900);
   }
-  .gbh-cta--outline:hover { background: var(--zinc-100); border-color: var(--zinc-900); }
+  .gbh-cta--outline:hover { background: var(--zinc-100); }
   /* Cart count badge per live (SYSTEM.md site chrome, live
      2026-08-12): 16x16, font 10px, Blue 600 fill (their primary),
      1px white ring. DEVIATION: live anchors it at top -13px right 5px
@@ -691,14 +722,9 @@
     border-top: 1px solid var(--footer-hairline);
     border-bottom: 1px solid var(--footer-hairline);
   }
-  /* Footer inner width = v1's own footer formula min(100% - 96px,
-     1600px): at ~2000px viewports the logo stands ~200px from the
-     screen edge, matching the live screen's ~190px/2000 proportion
-     (Ton's item 9, 2026-08-12). */
-  .footer-wrap {
-    width: min(calc(100% - 96px), 1600px);
-    margin: 0 auto;
-  }
+  /* Footer inner width rides the shared live .container ladder, see
+     the SHARED WRAPPER block (diff measure 2026-08-12; the v1 1600
+     formula is lifted, the spec's footer container is px 24). */
   .footer__crumbs-inner {
     min-height: 44px;
     display: flex;
@@ -1390,9 +1416,8 @@
     }
     .or-badge::before,
     .or-badge::after { content: ""; flex: 1; height: 1px; background: var(--zinc-200); }
-    /* Narrower page gutters on small screens (the 48px desktop gutter
-       of the wrapper formula would eat a fifth of a phone) */
-    .wrapper, .footer-wrap { width: calc(100% - 32px); }
+    /* Phone gutters come from the shared ladder's <=768 step (16px);
+       the old width override is gone with the min() formula */
     /* Demo chrome: the PROTO panel keeps its right-edge anchor on
        phones; the edge tab folds it away when it covers content
        (Ton's feedback 2026-08-12) */
@@ -1411,6 +1436,7 @@
 <!-- wave-2026-08-12c marker: gbppl-pack-fork-header-f7p3 -->
 <!-- wave-2026-08-12d marker: gbppl-proto-panel-k5w9 -->
 <!-- wave-2026-08-12e marker: gbppl-portal-precision-t3h6 -->
+<!-- wave-2026-08-12f marker: gbppl-diff-fix-w8c2 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -1427,10 +1453,10 @@
         <button class="gbh-link" type="button">Explore</button>
       </nav>
       <div class="gbh-actions">
-        <a class="gbh-cta" href="#">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="1.5"/><path d="M7.5 3v5M16.5 3v5M3.5 10h17M8 14h3M8 17h6"/></svg>
-          Book a Meeting
-        </a>
+        <!-- Text-only per live: the calendar glyph is gone (diff
+             measure 2026-08-12, live renders 158.5px vs our 198 with
+             the icon) -->
+        <a class="gbh-cta" href="#">Book a Meeting</a>
         <a class="gbh-cta gbh-cta--outline" href="#">My Portal</a>
         <button class="gbh-icon-button" type="button" aria-label="Cart, 3 items">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>
