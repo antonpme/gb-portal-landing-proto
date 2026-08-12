@@ -217,16 +217,23 @@
 
   /* ============ NAV VARIANTS (data-nav on body) ============
      Switchable sidebar structure. Default (no attribute / data-nav="live")
-     renders the Figma-true sidebar above with ZERO changes: variant-only
-     nodes are display:none by default, live-only nodes are hidden only
-     when a variant attribute is set.
-     nav=russell was REDEFINED by Ton on 2026-08-12: it is now an exact
-     copy of the nav=ton structure minus the masthead block (no logo, no
-     Explore Gifts button, no catalog overlay), so the top block can be
-     compared in isolation. The literal implementation of Russell's 7
-     Slack points (own brand section on top, logo placeholder) lived in
-     commits 050a4af..7a9cb64 and is recoverable from git history.
-     Item renames are still sourced from Russell's Slack feedback,
+     renders the Figma-true sidebar with ZERO changes (the only sanctioned
+     addition to live is the restored site header above the layout, Ton
+     2026-08-12): variant-only nodes are display:none by default,
+     live-only nodes are hidden only when a variant attribute is set.
+     FORK (Ton's scope correction, 2026-08-12): "russell = ton minus the
+     masthead" held only AT the fork commit ce4b90f. Everything that came
+     after the fork belongs to nav=ton ONLY.
+     nav=russell = the fork snapshot: Account keeps the live item order
+     (with Russell's renames), Company lists Brand Assets before Company
+     Management, the user name stays Anton, no Upload Logo demo, no page
+     metablock. The literal implementation of Russell's 7 Slack points
+     (own brand section on top) lived in commits 050a4af..7a9cb64,
+     recoverable from git history.
+     nav=ton = the living branch: masthead, lifecycle item order,
+     management above assets, full user name, Upload Logo demo, page
+     metablock, catalog overlay.
+     Item renames are shared, sourced from Russell's Slack feedback,
      2026-08-12. */
 
   /* Live-only nodes leave the render in both variants */
@@ -255,13 +262,13 @@
   [data-nav="ton"] .snav-label { margin-top: 1.5px; }
 
   /* ============ NAV VARIANTS: RUSSELL / TON ============
-     Source: Ton's brainstorm, 2026-08-12 (+ same-day final layout and
-     the russell redefinition above). Shared structure for both
-     variants: Account trimmed to the person, a Company section (brand
-     + management), Admin gains My Teams and loses My Company,
-     everything not explicitly moved stays where it was. The variants
-     reuse the SAME nodes so the structures cannot drift apart; the
-     masthead is the single ton-only extra. */
+     Source: Ton's brainstorm, 2026-08-12 (+ the same-day fork, see
+     above). Structure shared by both variants AT the fork: Account
+     trimmed to the person, a Company section (brand + management),
+     Admin gains My Teams and loses My Company, everything not
+     explicitly moved stays where it was. The variants reuse the SAME
+     nodes; JS applies each variant's own item order, and post-fork
+     behavior is gated to [data-nav="ton"]. */
   .nav-ton-only { display: none; }
   /* My Company is absorbed by Company Management: its live URL is
      portal.gildedbox.com/customer/user-management, i.e. it IS the
@@ -328,24 +335,34 @@
      the same way it stands right of the user info in Account on live. */
   .company-block .snav-info .snav-row { justify-content: space-between; }
 
-  /* Demo interactive (Ton's brainstorm 2026-08-12): clicking Upload Logo
+  /* Company menu order. Fork snapshot (nav=russell): Brand Assets first,
+     as at the 2026-08-12 fork. Ton's living branch: management above
+     assets, people and teams are touched regularly while brand assets
+     are uploaded once (Ton 2026-08-12). Same nodes, flex order flip
+     (the menu is a flex column); every item carries its own border-top,
+     so the visual seams survive the reorder. */
+  [data-nav="ton"] .company-block .snav-menu .snav-item:nth-child(1) { order: 2; }
+  [data-nav="ton"] .company-block .snav-menu .snav-item:nth-child(2) { order: 1; }
+
+  /* Demo interactive, nav=ton ONLY (Ton's brainstorm 2026-08-12; the
+     fork correction removed it from russell): clicking Upload Logo
      "uploads" the company logo: the gray box swaps for the GildedBox
      mark (icons/gildedbox-logo.svg, already vendored) in the same slot.
      Scaled to the box height (31px tall, width auto per the 168x56
      viewBox, never stretched, air by being smaller than the box) so the
      row height never jumps; short fade on entry. Clicking the logo does
      NOT bring the box back (an uploaded logo behaves like one); the
-     demo pill's Reset restores the initial state. One shared JS state
-     for russell/ton (one company), no persistence. Clickability reads
-     through the existing .upload-logo Zinc hover and the global button
-     pointer cursor, no new hover styles invented. */
+     demo pill's Reset restores the initial state. JS state only, no
+     persistence; the rules are ton-scoped, so in russell the box always
+     shows. Clickability reads through the existing .upload-logo Zinc
+     hover and the global button pointer cursor. */
   .company-logo {
     display: none;
     height: 31px;
     width: auto;
   }
-  .company-block.logo-uploaded .upload-logo { display: none; }
-  .company-block.logo-uploaded .company-logo {
+  [data-nav="ton"] .company-block.logo-uploaded .upload-logo { display: none; }
+  [data-nav="ton"] .company-block.logo-uploaded .company-logo {
     display: block;
     animation: logoFadeIn 200ms ease both;
   }
@@ -400,18 +417,23 @@
   /* Close control sits at the TOP LEFT of the panel, by its front edge
      next to the dimmed backdrop (Ton's edit 2026-08-12, Tiffany
      reference); the top right stays reserved for the framed catalog's
-     own controls and drawers. Slim row: the framed app carries the
-     page title. */
+     own controls and drawers. Geometry verified against the v1 drawers
+     (Ton's feedback 2026-08-12: the cross sat too near the edge and
+     off-size): favorites/filters panel header = h 80, padding 0 32
+     (the 32px drawer gutter), hairline #dedee2, close leads on the
+     gutter; the framed app carries the page title. */
   .catalog-head {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--zinc-200);
+    height: 80px;
+    padding: 0 32px;
+    border-bottom: 1px solid #dedee2; /* v1 --color-border-default */
     background: #fff;
     flex-shrink: 0;
   }
-  /* .icon-button per SYSTEM.md: 44x44 circle, 22px glyph,
-     hover rgb(36 36 38 / 5%) */
+  /* .icon-button = v1's one icon-only control (App.tsx .icon-button,
+     mirrored in SYSTEM.md): 44x44 circle, 22px glyph stroke 1.5,
+     ink #242426, hover rgb(36 36 38 / 5%) */
   .icon-button {
     width: 44px;
     height: 44px;
@@ -422,7 +444,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: var(--zinc-900);
+    color: #242426;
   }
   .icon-button:hover { background: rgb(36 36 38 / 5%); }
   .icon-button svg { display: block; width: 22px; height: 22px; }
@@ -435,6 +457,160 @@
     display: block;
     background: var(--zinc-50);
   }
+
+  /* ============ SITE HEADER ============
+     Source: v1 ai-consierge category page header (src/App.tsx Header +
+     styles.css .site-header block), transferred pixel-per-pixel by
+     Ton's word, 2026-08-12. Values inlined from v1 tokens: ink #242426,
+     hover rgb(36 36 38 / 5%), CTA Blue 600 #2563eb hover #1d4ed8,
+     radius 5px, duration 160ms, bar h 96, brand 168x56 in a 230px grid
+     column, nav-link 18px/500/0.028em uppercase with the 1px underline
+     at bottom 27px. DEVIATIONS: (1) the bar rides the prototype's
+     shared 1620px .wrapper, logo in line with the sidebar's left edge
+     (project rule), instead of v1's min(100% - 96px, 1920px);
+     (2) v1's mega menu, account menu, signed-in dot and mobile
+     breakpoints are not carried, the header is an inert visual, with a
+     minimal small-screen fallback of our own. Shown on nav=live and
+     nav=russell; nav=ton replaces it with the sidebar masthead. This
+     addition is the ONLY sanctioned break of the nav=live pixel freeze
+     (Ton 2026-08-12); sidebar and content stay frozen. */
+  .gb-header {
+    position: relative;
+    z-index: 31;
+    background: #fff;
+    border-bottom: 1px solid transparent;
+  }
+  [data-nav="ton"] .gb-header { display: none; }
+  .gbh-bar {
+    height: 96px;
+    display: grid;
+    grid-template-columns: 230px 1fr auto;
+    align-items: center;
+    gap: 48px;
+  }
+  .gbh-brand { display: inline-flex; width: 168px; height: 56px; align-items: center; }
+  .gbh-brand img { width: 100%; height: auto; }
+  .gbh-nav { display: flex; align-items: center; gap: clamp(40px, 3vw, 72px); }
+  .gbh-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 36px 0 32px;
+    background: transparent;
+    border: 0;
+    color: #242426;
+    font-size: 1.125rem;
+    font-weight: 500;
+    letter-spacing: 0.028em;
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+  .gbh-link::after {
+    position: absolute;
+    right: 0;
+    bottom: 27px;
+    left: 0;
+    height: 1px;
+    background: #242426;
+    content: "";
+    opacity: 0;
+    transform: scaleX(0.7);
+    transition: opacity 160ms, transform 160ms;
+  }
+  .gbh-link:hover::after,
+  .gbh-link--active::after { opacity: 1; transform: scaleX(1); }
+  .gbh-actions { display: flex; align-items: center; gap: 12px; }
+  .gbh-cta {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 20px;
+    background: #2563eb;
+    color: #fff;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    transition: background 160ms;
+  }
+  .gbh-cta:hover { background: #1d4ed8; }
+  .gbh-icon-button {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    color: #242426;
+    transition: background 160ms;
+  }
+  .gbh-icon-button:hover { background: rgb(36 36 38 / 5%); }
+  /* Demo chrome only: the pill drops below the restored header where one
+     exists (live/russell); in ton the header is gone and it keeps the
+     original viewport anchor. */
+  body:not([data-nav="ton"]) .demo-controls { top: 112px; }
+
+  /* ============ FOOTER ============
+     Source: v1 ai-consierge footer (itself lifted from the live site),
+     transferred pixel-per-pixel by Ton's word, 2026-08-12. Page chrome:
+     shown in ALL three nav variants (Ton removed only the header).
+     Values inlined from v1 tokens: editorial serif Noto Serif, spaces
+     8/20/32/64px, inks #b8b8bd / #8e8e94 on #0a0a0c, hairline #2b2b2f.
+     DEVIATION: inner width rides the shared 1620px .wrapper instead of
+     v1's min(100% - 96px, 1600px). Link set carried verbatim from v1,
+     flagged in the wave report for Ton's cross-check against the
+     portal's own footer. */
+  .footer {
+    background: #0a0a0c;
+    border-top: 1px solid #2b2b2f;
+    color: #fff;
+  }
+  .footer__main {
+    display: grid;
+    grid-template-columns: 2fr repeat(5, 1fr);
+    gap: 32px;
+    padding: 64px 0;
+  }
+  .footer__main img { width: 150px; margin-bottom: 20px; filter: invert(1); }
+  .footer__main p,
+  .footer__main a {
+    display: block;
+    margin: 0 0 8px;
+    color: #b8b8bd;
+    font-size: 0.6875rem;
+  }
+  .footer__main h3 {
+    margin: 0 0 20px;
+    font-family: 'Noto Serif', Georgia, serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
+  .footer__main a:hover { color: #fff; }
+  .footer__legal {
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    border-top: 1px solid #2b2b2f;
+    color: #8e8e94;
+    font-size: 0.625rem;
+  }
+  .footer__legal a { margin-left: auto; }
+  /* On-the-spot resolution (2026-08-12, noted in the report): with gifts
+     the CTA bar rides fixed over the viewport bottom, so at full scroll
+     it would sit on the footer's legal row forever. The footer takes a
+     bar-height pad in that state: every footer line can scroll clear of
+     the bar, the bar only ever covers dark padding. */
+  body.gb-has-bar .footer { padding-bottom: 104px; }
 
   /* ============ CONTENT ============ */
   .content {
@@ -581,9 +757,9 @@
   .hero-variant[hidden] { display: none; }
 
   /* ============ PAGE META (breadcrumbs + title card) ============
-     Source: live portal, Ton's screen 2026-08-12. Page state, not
-     sidebar: shows in all three nav variants, only once gifts exist
-     (Add gift), gone on Reset. Two decks:
+     Source: live portal, Ton's screen 2026-08-12. Shows only in nav=ton
+     (fork correction 2026-08-12) and only once gifts exist (Add gift),
+     gone on Reset; the title reads My Designed Gifts there. Two decks:
      1. Breadcrumbs: small gray (13px, the brand minimum), chevron
         separators, last crumb darker. DEVIATION: the live's middle
         crumb Customer is dropped as technical noise carrying no
@@ -841,11 +1017,112 @@
     .hero .sub-list { font-size: 24px; }
     .hero-half { padding: 40px; }
   }
+
+  /* ============ EMPTY-STATE CENTERING ============
+     Ton's brainstorm 2026-08-12: the whole empty state (eyebrow, pipe
+     list, the unified two-path block) centers in the zone between the
+     site header (live/russell; ton has none, its zone is taller) and
+     the viewport bottom. Optical center: the content sits at 44% of
+     the free space, a ~6% lift from the geometric middle so it does
+     not read as sagging (optical value = Ren's call). Mechanism:
+     flex spacers with 44/56 grow and zero basis; when the content
+     outgrows the zone they collapse to nothing and the state falls
+     back to normal flow, nothing is ever cropped. Gifts state is
+     untouched: the hero node IS the empty state and hides with gifts.
+     Placed after the base .hero rules on purpose: margin-top 0 must
+     win over the base margin 44px. */
+  .hero {
+    --hero-zone: calc(100vh - 96px - 64px); /* header 96 + layout pads 32+32 */
+    min-height: var(--hero-zone);
+    display: flex;
+    flex-direction: column;
+    margin-top: 0; /* the spacers own the vertical position now */
+  }
+  [data-nav="ton"] .hero { --hero-zone: calc(100vh - 64px); }
+  .hero::before { content: ""; flex: 44 0 0; }
+  .hero::after { content: ""; flex: 56 0 0; }
+
+  /* ============ SMALL SCREENS ============
+     Ton's brainstorm 2026-08-12: the two halves stack, the vertical OR
+     hairline becomes a horizontal one with OR at its middle, CTAs are
+     already full-width, type roles scale by clamp (same roles in A and
+     B, only texts differ). Layout stacks so the content has room; the
+     transferred header and footer get a minimal fallback of our own
+     (v1's real mobile breakpoints were not carried, see header
+     provenance). */
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .layout .sidebar { order: 2; width: 100%; }
+    .layout .content { order: 1; width: 100%; }
+    .hero { --hero-zone: auto; min-height: 0; padding: 24px 0; }
+    [data-nav="ton"] .hero { --hero-zone: auto; }
+    .hero::before, .hero::after { display: none; }
+    .hero h1 { font-size: clamp(28px, 7vw, 36px); }
+    .hero .sub { font-size: clamp(17px, 4.5vw, 20px); margin-bottom: 40px; }
+    .hero .sub-list { font-size: clamp(20px, 5vw, 24px); }
+    .hero-halves { flex-direction: column; }
+    .hero-half { padding: 32px 24px; }
+    .hero-half + .hero-half { border-left: 0; }
+    .hero-half h2 { font-size: clamp(24px, 6vw, 30px); }
+    .hero-half ul li { font-size: clamp(16px, 4vw, 19px); }
+    /* OR moves into the flow between the stacked halves: a horizontal
+       hairline with the badge at its center */
+    .hero-half:first-child { order: 1; }
+    .hero-half + .hero-half { order: 3; }
+    .or-badge {
+      position: static;
+      transform: none;
+      order: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 0 24px;
+    }
+    .or-badge::before,
+    .or-badge::after { content: ""; flex: 1; height: 1px; background: var(--zinc-200); }
+    /* Demo chrome: the pill hugs the screen and wraps instead of bleeding off the edge */
+    .demo-controls { left: 8px; right: 8px; flex-wrap: wrap; border-radius: 16px; justify-content: center; }
+    .demo-controls > * { flex-shrink: 0; }
+    .gbh-bar { grid-template-columns: auto 1fr auto; gap: 16px; height: 72px; }
+    .gbh-nav { display: none; }
+    .gbh-brand { width: 126px; height: 42px; }
+    .gbh-cta { display: none; }
+    .footer__main { grid-template-columns: 1fr 1fr; padding: 40px 0; }
+    .footer__legal { flex-wrap: wrap; gap: 12px; padding: 16px 0; }
+  }
 </style>
 </head>
 <body data-nav="live">
 <!-- wave-2026-08-12 marker: gbppl-nav-switcher-r7k4 -->
 <!-- wave-2026-08-12b marker: gbppl-nav-ton-x9m2 -->
+<!-- wave-2026-08-12c marker: gbppl-pack-fork-header-f7p3 -->
+
+  <!-- ============ SITE HEADER ============
+       v1 category page header transferred by Ton's word 2026-08-12 (see CSS
+       provenance). Inert visual; hidden in nav=ton, the masthead stands in. -->
+  <header class="gb-header">
+    <div class="wrapper gbh-bar">
+      <a href="#" class="gbh-brand" aria-label="GildedBox home"><img src="icons/gildedbox-logo.svg" alt="GildedBox"></a>
+      <nav class="gbh-nav" aria-label="Primary navigation">
+        <button class="gbh-link gbh-link--active" type="button">Gifts</button>
+        <button class="gbh-link" type="button">Solutions</button>
+        <button class="gbh-link" type="button">Our Story</button>
+      </nav>
+      <div class="gbh-actions">
+        <a class="gbh-cta" href="#">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="1.5"/><path d="M7.5 3v5M16.5 3v5M3.5 10h17M8 14h3M8 17h6"/></svg>
+          Book a Meeting
+        </a>
+        <button class="gbh-icon-button" type="button" aria-label="Sign in">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>
+        </button>
+        <button class="gbh-icon-button" type="button" aria-label="Search gifts">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
 
   <!-- ============ LAYOUT ============ -->
   <div class="layout wrapper">
@@ -872,8 +1149,8 @@
           <button class="upload-logo nav-live-only" type="button"><img src="icons/upload.svg" alt="">Upload Logo</button>
         </header>
         <div class="snav-info">
-          <!-- Full user name in both variants, live keeps the short one (Ton's clarification 2026-08-12) -->
-          <div class="snav-row"><span class="snav-name" data-label-russell="Anton Parkhomenko">Anton</span></div>
+          <!-- Full user name in nav=ton only (fork correction 2026-08-12); live and russell keep the short one -->
+          <div class="snav-row"><span class="snav-name" data-label-ton="Anton Parkhomenko">Anton</span></div>
           <!-- Company row leaves the Account block in both variants, the company name lives in the Company section (Ton 2026-08-12) -->
           <div class="snav-row nav-live-only"><span class="snav-key">Company:</span><span class="snav-val">GB</span></div>
           <div class="snav-row"><span class="snav-key">Email:</span><span class="snav-val">iam@antonp.me<img class="snav-check" src="icons/c-check.svg" alt=""></span></div>
@@ -914,11 +1191,11 @@
           <!-- Demo interactive (Ton's brainstorm 2026-08-12): the box "uploads" the logo on click, Reset in the demo pill restores it -->
           <div class="snav-row"><span class="snav-name">GildedBox</span><button class="upload-logo" type="button" id="companyUploadBtn"><img src="icons/upload.svg" alt="">Upload Logo</button><img class="company-logo" src="icons/gildedbox-logo.svg" alt="GildedBox logo"></div>
         </div>
-        <!-- Order per Ton 2026-08-12: management above assets, people and teams
-             are touched regularly while brand assets are uploaded once -->
+        <!-- Markup order = fork snapshot (nav=russell): Brand Assets first.
+             nav=ton flips to management-first via CSS flex order (Ton 2026-08-12). -->
         <nav class="snav-menu">
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">Company Management</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">Company Management</span></a>
         </nav>
       </section>
 
@@ -1051,16 +1328,42 @@
     </main>
   </div>
 
-  <!-- CATALOG OVERLAY (Ton's brainstorm 2026-08-12): opened only from the
-       nav=ton masthead. Tiffany-style right flyout, inert placeholder cards. -->
+  <!-- ============ FOOTER ============
+       v1/live footer transferred by Ton's word 2026-08-12 (see CSS provenance).
+       Page chrome: all three nav variants, in flow after the content. -->
+  <footer class="footer">
+    <div class="wrapper footer__main">
+      <div>
+        <img src="icons/gildedbox-logo.svg" alt="GildedBox">
+        <p>847.801.0345</p>
+        <p>connect@gildedbox.com</p>
+        <p>1360 Abbott Ct. Buffalo Grove, IL 60089</p>
+      </div>
+      <div><h3>Gifts</h3><a href="#">Explore All Gifts</a><a href="#">Build Your Own</a></div>
+      <div><h3>Curations</h3><a href="#">Gourmet</a><a href="#">Home</a><a href="#">Office</a><a href="#">Travel</a><a href="#">Wine &amp; Spirits</a></div>
+      <div><h3>Services</h3><a href="#">Our Work</a><a href="#">Platform</a><a href="#">Design</a><a href="#">API Integrations</a></div>
+      <div><h3>Support</h3><a href="#">Contact Us</a><a href="#">Shipping Information</a><a href="#">Warranty</a></div>
+      <div><h3>Follow</h3><a href="#">GildedBox Blog</a><a href="#">Instagram</a></div>
+    </div>
+    <div class="wrapper footer__legal">
+      <span>2026 The GildedBox Company.</span>
+      <span>Privacy Policy</span>
+      <span>All rights reserved</span>
+      <a href="#">Back to Top &#8593;</a>
+    </div>
+  </footer>
+
+  <!-- CATALOG OVERLAY (Ton's requirement 2026-08-12): opened only from the
+       nav=ton masthead. Tiffany-style right flyout framing the real v1 catalog. -->
   <div class="catalog-overlay" id="catalogOverlay" aria-hidden="true">
     <div class="catalog-backdrop" id="catalogBackdrop"></div>
     <div class="catalog-panel" role="dialog" aria-modal="true" aria-label="Explore Gifts">
       <!-- Close control first, at the panel's front edge (Ton's edit 2026-08-12, Tiffany reference).
            No panel title: the framed catalog brings its own serif page title. -->
       <div class="catalog-head">
+        <!-- Glyph = v1's close icon verbatim (22px, stroke 1.5, M5 5 19 19) -->
         <button class="icon-button" id="catalogClose" type="button" aria-label="Close catalog">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5 19 19M19 5 5 19"/></svg>
         </button>
       </div>
       <!-- Real v1 AI Concierge catalog (Ton's requirement 2026-08-12), vendored build in ./catalog/,
@@ -1163,6 +1466,13 @@
     bar.style.width = rect.width + 'px';
   }
 
+  /* Page metablock (live portal, Ton's screen 2026-08-12): only in the
+     has-gifts state AND only in nav=ton (fork correction 2026-08-12). */
+  function updatePageMeta() {
+    document.getElementById('pageMeta').classList.toggle('shown',
+      count >= 1 && document.body.getAttribute('data-nav') === 'ton');
+  }
+
   function render() {
     // --- hero ---
     if (count === 0) {
@@ -1187,9 +1497,12 @@
       positionBar();
     }
 
-    // --- page meta: breadcrumbs + title card ride with the gifts
-    // (live portal, Ton's screen 2026-08-12) ---
-    document.getElementById('pageMeta').classList.toggle('shown', count >= 1);
+    // --- page meta rides with the gifts, nav=ton only (fork correction) ---
+    updatePageMeta();
+
+    // --- the footer takes a bar-height pad while the bar is fixed,
+    // so no footer line is ever covered for good ---
+    document.body.classList.toggle('gb-has-bar', count >= 1);
 
     // --- demo label ---
     stateEl.textContent = count === 0 ? 'empty' : 'bar sticky';
@@ -1210,15 +1523,18 @@
     render();
   });
 
-  /* ---- Demo logo upload (Ton's brainstorm 2026-08-12) ----
-     Shared state for nav=russell and nav=ton (same Company nodes, one
-     company). JS variable only, no persistence; Reset above restores. */
+  /* ---- Demo logo upload (Ton's brainstorm 2026-08-12; ton-only after
+     the fork correction: the CSS is ton-scoped and the click is gated,
+     russell always shows the box) ----
+     JS variable only, no persistence; Reset above restores. */
   var companyBlock = document.querySelector('.company-block');
   var companyLogoUploaded = false;
   function renderCompanyLogo() {
     companyBlock.classList.toggle('logo-uploaded', companyLogoUploaded);
   }
   document.getElementById('companyUploadBtn').addEventListener('click', function () {
+    // Demo upload is nav=ton only (fork correction 2026-08-12)
+    if (document.body.getAttribute('data-nav') !== 'ton') return;
     companyLogoUploaded = true;
     renderCompanyLogo();
   });
@@ -1238,9 +1554,10 @@
   var btnNavTon     = document.getElementById('btnNavTon');
   var accountMenu   = document.getElementById('accountMenu');
   var adminMenu     = document.getElementById('adminMenu');
-  // Any element carrying data-label-russell swaps its text in the variants:
-  // menu labels + the user name (Ton's clarification 2026-08-12)
-  var renameEls     = document.querySelectorAll('[data-label-russell]');
+  // Any element carrying a variant label swaps its text: data-label-russell
+  // serves both variants, data-label-ton overrides in nav=ton only
+  // (fork correction 2026-08-12)
+  var renameEls     = document.querySelectorAll('[data-label-russell], [data-label-ton]');
 
   /* Captured live orders (source of truth for restore):
      acc: 0 My Gifts, 1 Gift Campaigns, 2 Gift Redeem Pages,
@@ -1251,18 +1568,26 @@
   var accLive = Array.prototype.slice.call(accountMenu.children);
   var admLive = Array.prototype.slice.call(adminMenu.children);
 
-  /* Variant order (Ton's brainstorm 2026-08-12): frequency + the gift
+  /* Fork snapshot order (nav=russell, ce4b90f state): Account keeps the
+     live sequence (Brand Assets acc 6 stays as a CSS-hidden carrier);
+     Admin gains My Teams on top, My Company (adm 0) rides CSS-hidden,
+     the rest keeps the live order incl. Address Book (renamed) and
+     Account Information. */
+  var accRussell = [accLive[0], accLive[1], accLive[2], accLive[3],
+                    accLive[4], accLive[5], accLive[6]];
+  var admRussell = [accLive[7], admLive[0], admLive[1], admLive[2],
+                    admLive[3], admLive[4], admLive[5], admLive[6]];
+
+  /* Ton's living-branch order (2026-08-12): frequency + the gift
      lifecycle (design, approve, send, history), settings sink to the
      bottom. Account pulls Gift Recipients (Addresses) and Account
      Information up from Admin; unnamed items (Gift Redeem Pages, Thank
      You Notes) sit between Gift Order History and Gift Recipients.
-     Hidden carriers stay in DOM for the live restore: Brand Assets
-     (acc 6, CSS-hidden) closes Account, My Company (adm 0, CSS-hidden)
-     rides behind My Teams. Admin: My Teams first, Log out last. */
-  var accVariant = [accLive[0], accLive[3], accLive[1], accLive[4],
-                    accLive[2], accLive[5], admLive[2], admLive[4], accLive[6]];
-  var admVariant = [accLive[7], admLive[0], admLive[1], admLive[3],
-                    admLive[5], admLive[6]];
+     Hidden carriers as above. Admin: My Teams first, Log out last. */
+  var accTon = [accLive[0], accLive[3], accLive[1], accLive[4],
+                accLive[2], accLive[5], admLive[2], admLive[4], accLive[6]];
+  var admTon = [accLive[7], admLive[0], admLive[1], admLive[3],
+                admLive[5], admLive[6]];
 
   function applyOrder(menu, items) {
     for (var i = 0; i < items.length; i++) menu.appendChild(items[i]);
@@ -1270,23 +1595,30 @@
 
   function setNav(n) {
     document.body.setAttribute('data-nav', n);
-    // Renames (Russell's items 1, 2, 3, 6; both variants keep them)
+    // Renames: data-label-russell is shared by both variants (Russell's
+    // items 1, 2, 3, 6); data-label-ton overrides in nav=ton only (the
+    // full user name, fork correction 2026-08-12)
     var isVariant = (n === 'russell' || n === 'ton');
     for (var i = 0; i < renameEls.length; i++) {
       var el = renameEls[i];
       if (!el.getAttribute('data-label-live')) {
         el.setAttribute('data-label-live', el.textContent);
       }
-      el.textContent = el.getAttribute(isVariant ? 'data-label-russell' : 'data-label-live');
+      var text = null;
+      if (n === 'ton') text = el.getAttribute('data-label-ton') || el.getAttribute('data-label-russell');
+      else if (n === 'russell') text = el.getAttribute('data-label-russell');
+      el.textContent = text || el.getAttribute('data-label-live');
     }
-    // Section composition + order per Ton 2026-08-12; live restores verbatim
-    applyOrder(accountMenu, isVariant ? accVariant : accLive);
-    applyOrder(adminMenu, isVariant ? admVariant : admLive);
+    // Section composition + per-variant order (fork 2026-08-12);
+    // live restores verbatim
+    applyOrder(accountMenu, n === 'ton' ? accTon : (n === 'russell' ? accRussell : accLive));
+    applyOrder(adminMenu, n === 'ton' ? admTon : (n === 'russell' ? admRussell : admLive));
     btnNavLive.classList.toggle('variant-active', n === 'live');
     btnNavRussell.classList.toggle('variant-active', n === 'russell');
     btnNavTon.classList.toggle('variant-active', n === 'ton');
-    // The catalog overlay belongs to nav=ton only
+    // The catalog overlay and the page metablock belong to nav=ton only
     if (n !== 'ton') closeCatalog();
+    updatePageMeta();
   }
 
   btnNavLive.addEventListener('click', function () { setNav('live'); });
