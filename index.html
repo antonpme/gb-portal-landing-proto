@@ -29,7 +29,10 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
-    background: var(--zinc-50);
+    /* Page ground = Zinc 100, the live portal's reality (Ton's screen
+       2026-08-12), all three nav variants: white cards (sidebar blocks,
+       hero block, metablock, gift cards) stand on gray. Was Zinc 50. */
+    background: var(--zinc-100);
     color: var(--zinc-900);
     font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
     font-size: 16px;
@@ -39,14 +42,15 @@
   a { color: inherit; text-decoration: none; }
   button { font-family: inherit; cursor: pointer; }
 
-  /* ============ SHARED WRAPPER ============ */
-  /* Body shares one centered container, per the live portal */
+  /* ============ SHARED WRAPPER ============
+     Header, sidebar+content and the page chrome share one centered
+     container. Width = the live v1 content formula min(100% - 96px,
+     1920px) (Ton 2026-08-12: our 1620 read too narrow against the live
+     portal on 2K; the earlier DEVIATION is lifted). The footer keeps
+     its own narrower v1 formula, see .footer-wrap. */
   .wrapper {
-    width: 100%;
-    max-width: 1620px;
+    width: min(calc(100% - 96px), 1920px);
     margin: 0 auto;
-    padding-left: 32px;
-    padding-right: 32px;
   }
 
   /* ============ LAYOUT ============ */
@@ -459,26 +463,33 @@
   }
 
   /* ============ SITE HEADER ============
-     Source: v1 ai-consierge category page header (src/App.tsx Header +
-     styles.css .site-header block), transferred pixel-per-pixel by
-     Ton's word, 2026-08-12. Values inlined from v1 tokens: ink #242426,
-     hover rgb(36 36 38 / 5%), CTA Blue 600 #2563eb hover #1d4ed8,
-     radius 5px, duration 160ms, bar h 96, brand 168x56 in a 230px grid
-     column, nav-link 18px/500/0.028em uppercase with the 1px underline
-     at bottom 27px. DEVIATIONS: (1) the bar rides the prototype's
-     shared 1620px .wrapper, logo in line with the sidebar's left edge
-     (project rule), instead of v1's min(100% - 96px, 1920px);
-     (2) v1's mega menu, account menu, signed-in dot and mobile
-     breakpoints are not carried, the header is an inert visual, with a
-     minimal small-screen fallback of our own. Shown on nav=live and
+     Source: LIVE PORTAL header, Ton's screens 2026-08-12 (the earlier
+     transfer used v1's header = the old PUBLIC site's; that mistake is
+     lifted). Composition per the screens: wordmark, then GIFTS /
+     CUSTOMIZE (gold Beta chip = the live site's legacy accent, carried
+     as is, marked legacy) / PORTAL / EXPLORE, then a black filled
+     BOOK A MEETING, an outlined MY PORTAL, a cart glyph with a round
+     count badge, and search. Nav items carry NO underline: on the
+     portal the active state is not highlighted, the header here is an
+     inert visual. Bar geometry and type kept from the earlier take
+     (96px bar, 18px/500/0.028em uppercase links, 230px brand column,
+     ink #242426, hover rgb(36 36 38 / 5%), 160ms), which came from the
+     shared v1/portal frame. Rides the shared .wrapper (v1 width
+     formula). v1's menus and mobile breakpoints not carried; minimal
+     small-screen fallback of our own. Shown on nav=live and
      nav=russell; nav=ton replaces it with the sidebar masthead. This
      addition is the ONLY sanctioned break of the nav=live pixel freeze
      (Ton 2026-08-12); sidebar and content stay frozen. */
+  /* Sticky + soft elevation per the live portal (Ton's screen
+     2026-08-12): the header rides the top always, the hard bottom line
+     gives way to a short soft shadow; 0 1px 3px rgb(0 0 0 / 7%) is a
+     felt value for "slightly lifted", no exact number on the screen. */
   .gb-header {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 31;
     background: #fff;
-    border-bottom: 1px solid transparent;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
   }
   [data-nav="ton"] .gb-header { display: none; }
   .gbh-bar {
@@ -506,21 +517,24 @@
     line-height: 1.5;
     text-transform: uppercase;
   }
-  .gbh-link::after {
-    position: absolute;
-    right: 0;
-    bottom: 27px;
-    left: 0;
-    height: 1px;
-    background: #242426;
-    content: "";
-    opacity: 0;
-    transform: scaleX(0.7);
-    transition: opacity 160ms, transform 160ms;
+  /* Gold Beta chip on CUSTOMIZE: the live site's legacy accent
+     (#c2a545, v1 --color-accent), carried as is, marked LEGACY: no new
+     gold elements, this one exists on the live header (BRAND.md). Chip
+     anatomy from v1 .beta: radius 5, pad 2 6, 12px/500/0.042em. */
+  .gbh-beta {
+    border-radius: 5px;
+    padding: 2px 6px;
+    background: #c2a545;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.042em;
+    line-height: 1.5;
+    text-transform: none;
   }
-  .gbh-link:hover::after,
-  .gbh-link--active::after { opacity: 1; transform: scaleX(1); }
   .gbh-actions { display: flex; align-items: center; gap: 12px; }
+  /* Black filled Book a Meeting per the portal screens (Zinc 900,
+     hover #000, brand's secondary-CTA black); small scale 40px. */
   .gbh-cta {
     min-height: 40px;
     display: inline-flex;
@@ -528,18 +542,42 @@
     justify-content: center;
     gap: 8px;
     padding: 0 20px;
-    background: #2563eb;
+    background: var(--zinc-900);
     color: #fff;
-    border: 1px solid transparent;
+    border: 1px solid var(--zinc-900);
     border-radius: 5px;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 1px;
     line-height: 1.1;
     text-transform: uppercase;
-    transition: background 160ms;
+    transition: background 160ms, border-color 160ms;
   }
-  .gbh-cta:hover { background: #1d4ed8; }
+  .gbh-cta:hover { background: #000; border-color: #000; }
+  /* Outlined My Portal beside it, same scale */
+  .gbh-cta--outline {
+    background: #fff;
+    color: var(--zinc-900);
+  }
+  .gbh-cta--outline:hover { background: var(--zinc-100); border-color: var(--zinc-900); }
+  /* Round count badge on the cart, v1 .icon-button--count anatomy:
+     17px pill, ink fill, 2px white ring, 9px figure */
+  .gbh-count {
+    position: absolute;
+    top: 2px;
+    right: 1px;
+    min-width: 17px;
+    height: 17px;
+    display: grid;
+    place-items: center;
+    padding: 0 4px;
+    background: #242426;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 0.5625rem;
+  }
+  .gbh-icon-button { position: relative; }
   .gbh-icon-button {
     width: 44px;
     height: 44px;
@@ -560,24 +598,54 @@
   body:not([data-nav="ton"]) .demo-controls { top: 112px; }
 
   /* ============ FOOTER ============
-     Source: v1 ai-consierge footer (itself lifted from the live site),
-     transferred pixel-per-pixel by Ton's word, 2026-08-12. Page chrome:
-     shown in ALL three nav variants (Ton removed only the header).
-     Values inlined from v1 tokens: editorial serif Noto Serif, spaces
-     8/20/32/64px, inks #b8b8bd / #8e8e94 on #0a0a0c, hairline #2b2b2f.
-     DEVIATION: inner width rides the shared 1620px .wrapper instead of
-     v1's min(100% - 96px, 1600px). Link set carried verbatim from v1,
-     flagged in the wave report for Ton's cross-check against the
-     portal's own footer. */
+     Source: LIVE PORTAL footer, Ton's screen 2026-08-12, checked line
+     by line (the earlier v1 footer was the old public site's; that
+     DEVIATION is lifted). Shown in ALL three nav variants. Anatomy per
+     the screen: a slightly lighter breadcrumb strip above the dark
+     body (Home > Customer > My Gifts, centered, small white/gray with
+     chevrons; the crumb text stays "My Gifts" everywhere, the rename
+     question is deferred); brand column with the address in italics,
+     then phone, then email; five link columns; legal row with the
+     underlined Back to Top on the right. Base inks kept from the v1
+     transfer (#b8b8bd / #8e8e94 on #0a0a0c, hairline #2b2b2f, serif
+     column titles); strip bg #151518 and the wider column spread are
+     felt values from the screen, no exact numbers given. Inner width
+     rides the shared 1620px .wrapper: at 1920 the logo stands ~182px
+     from the screen edge, matching the ~190px/2000px proportion of the
+     live screen. */
   .footer {
     background: #0a0a0c;
-    border-top: 1px solid #2b2b2f;
     color: #fff;
   }
+  .footer__crumbs {
+    background: #151518;
+    border-top: 1px solid #2b2b2f;
+    border-bottom: 1px solid #2b2b2f;
+  }
+  /* Footer inner width = v1's own footer formula min(100% - 96px,
+     1600px): at ~2000px viewports the logo stands ~200px from the
+     screen edge, matching the live screen's ~190px/2000 proportion
+     (Ton's item 9, 2026-08-12). */
+  .footer-wrap {
+    width: min(calc(100% - 96px), 1600px);
+    margin: 0 auto;
+  }
+  .footer__crumbs-inner {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: #b8b8bd;
+  }
+  .footer__crumbs-inner .crumb-sep { color: #6b6b71; }
+  .footer__crumbs-inner .crumb-current { color: #fff; }
   .footer__main {
     display: grid;
-    grid-template-columns: 2fr repeat(5, 1fr);
-    gap: 32px;
+    grid-template-columns: minmax(220px, 1.6fr) repeat(5, 1fr);
+    gap: 48px;
     padding: 64px 0;
   }
   .footer__main img { width: 150px; margin-bottom: 20px; filter: invert(1); }
@@ -588,6 +656,8 @@
     color: #b8b8bd;
     font-size: 0.6875rem;
   }
+  /* Address in italics, as on the live portal */
+  .footer__address { font-style: italic; }
   .footer__main h3 {
     margin: 0 0 20px;
     font-family: 'Noto Serif', Georgia, serif;
@@ -604,7 +674,7 @@
     color: #8e8e94;
     font-size: 0.625rem;
   }
-  .footer__legal a { margin-left: auto; }
+  .footer__legal a { margin-left: auto; text-decoration: underline; }
   /* On-the-spot resolution (2026-08-12, noted in the report): with gifts
      the CTA bar rides fixed over the viewport bottom, so at full scroll
      it would sit on the footer's legal row forever. The footer takes a
@@ -618,7 +688,14 @@
     min-width: 0;
     position: relative;
   }
-  /* ============ HERO ============ */
+  /* ============ HERO ============
+     The title composition (eyebrow, occasion list, the unified two-path
+     block) does NOT stretch to the content column: it keeps its own
+     1200px max and centers in the column, clear air on both sides, so
+     it reads as a title composition rather than content in a wrapper
+     (Ton 2026-08-12; with the wide wrapper the column runs ~1470px at
+     1920 and ~1570 at 2560, leaving 130-190px of air per side, inside
+     Ton's 1150-1300 eye range). */
   .hero {
     max-width: 1200px;
     margin: 44px auto 0;
@@ -836,7 +913,9 @@
     gap: 24px;
   }
   .gift-card {
-    background: var(--zinc-50);
+    /* White card on the Zinc 100 portal ground (Ton's screen 2026-08-12);
+       was Zinc 50, which would melt into the new page background */
+    background: #fff;
     border: 1px solid var(--zinc-200);
     border-radius: var(--radius);
     overflow: hidden;
@@ -1081,6 +1160,9 @@
     }
     .or-badge::before,
     .or-badge::after { content: ""; flex: 1; height: 1px; background: var(--zinc-200); }
+    /* Narrower page gutters on small screens (the 48px desktop gutter
+       of the wrapper formula would eat a fifth of a phone) */
+    .wrapper, .footer-wrap { width: calc(100% - 32px); }
     /* Demo chrome: the pill hugs the screen and wraps instead of bleeding off the edge */
     .demo-controls { left: 8px; right: 8px; flex-wrap: wrap; border-radius: 16px; justify-content: center; }
     .demo-controls > * { flex-shrink: 0; }
@@ -1099,23 +1181,28 @@
 <!-- wave-2026-08-12c marker: gbppl-pack-fork-header-f7p3 -->
 
   <!-- ============ SITE HEADER ============
-       v1 category page header transferred by Ton's word 2026-08-12 (see CSS
-       provenance). Inert visual; hidden in nav=ton, the masthead stands in. -->
+       LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
+       the earlier v1/public composition is lifted). Inert visual; hidden in
+       nav=ton, the masthead stands in. Beta chip = legacy gold of the live
+       site, carried as is. -->
   <header class="gb-header">
     <div class="wrapper gbh-bar">
       <a href="#" class="gbh-brand" aria-label="GildedBox home"><img src="icons/gildedbox-logo.svg" alt="GildedBox"></a>
       <nav class="gbh-nav" aria-label="Primary navigation">
-        <button class="gbh-link gbh-link--active" type="button">Gifts</button>
-        <button class="gbh-link" type="button">Solutions</button>
-        <button class="gbh-link" type="button">Our Story</button>
+        <button class="gbh-link" type="button">Gifts</button>
+        <button class="gbh-link" type="button">Customize <span class="gbh-beta">Beta</span></button>
+        <button class="gbh-link" type="button">Portal</button>
+        <button class="gbh-link" type="button">Explore</button>
       </nav>
       <div class="gbh-actions">
         <a class="gbh-cta" href="#">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="1.5"/><path d="M7.5 3v5M16.5 3v5M3.5 10h17M8 14h3M8 17h6"/></svg>
           Book a Meeting
         </a>
-        <button class="gbh-icon-button" type="button" aria-label="Sign in">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>
+        <a class="gbh-cta gbh-cta--outline" href="#">My Portal</a>
+        <button class="gbh-icon-button" type="button" aria-label="Cart, 3 items">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>
+          <span class="gbh-count" aria-hidden="true">3</span>
         </button>
         <button class="gbh-icon-button" type="button" aria-label="Search gifts">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
@@ -1329,26 +1416,35 @@
   </div>
 
   <!-- ============ FOOTER ============
-       v1/live footer transferred by Ton's word 2026-08-12 (see CSS provenance).
-       Page chrome: all three nav variants, in flow after the content. -->
+       LIVE PORTAL footer, Ton's screen 2026-08-12, line-by-line (see CSS
+       provenance). Page chrome: all three nav variants, in flow after the
+       content. Crumb text stays "My Gifts" in every variant: this strip is
+       a transfer of the live reality, the rename question is deferred. -->
   <footer class="footer">
-    <div class="wrapper footer__main">
+    <div class="footer__crumbs">
+      <div class="footer-wrap footer__crumbs-inner">
+        <span>Home</span><span class="crumb-sep" aria-hidden="true">&rsaquo;</span><span>Customer</span><span class="crumb-sep" aria-hidden="true">&rsaquo;</span><span class="crumb-current">My Gifts</span>
+      </div>
+    </div>
+    <div class="footer-wrap footer__main">
       <div>
         <img src="icons/gildedbox-logo.svg" alt="GildedBox">
+        <p class="footer__address">1360 Abbott Ct. Buffalo Grove, IL 60089</p>
         <p>847.801.0345</p>
         <p>connect@gildedbox.com</p>
-        <p>1360 Abbott Ct. Buffalo Grove, IL 60089</p>
       </div>
-      <div><h3>Gifts</h3><a href="#">Explore All Gifts</a><a href="#">Build Your Own</a></div>
-      <div><h3>Curations</h3><a href="#">Gourmet</a><a href="#">Home</a><a href="#">Office</a><a href="#">Travel</a><a href="#">Wine &amp; Spirits</a></div>
-      <div><h3>Services</h3><a href="#">Our Work</a><a href="#">Platform</a><a href="#">Design</a><a href="#">API Integrations</a></div>
-      <div><h3>Support</h3><a href="#">Contact Us</a><a href="#">Shipping Information</a><a href="#">Warranty</a></div>
-      <div><h3>Follow</h3><a href="#">GildedBox Blog</a><a href="#">Instagram</a></div>
+      <div><h3>Gifts</h3><a href="#">Explore All Gifts</a></div>
+      <div><h3>Curations</h3><a href="#">Gourmet</a><a href="#">Home</a><a href="#">Office</a><a href="#">Technology</a><a href="#">Travel &amp; Leisure</a><a href="#">Wine &amp; Spirits</a></div>
+      <div><h3>Services</h3><a href="#">Our Work</a><a href="#">Platform</a><a href="#">Design</a><a href="#">Integrations</a><a href="#">Our Story</a></div>
+      <div><h3>Support</h3><a href="#">Client Advisor</a><a href="#">Client Service</a><a href="#">Shipping Information</a><a href="#">Terms and Conditions</a><a href="#">Warranty</a><a href="#">FAQ</a></div>
+      <div><h3>Follow</h3><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">Linkedin</a><a href="#">Youtube</a></div>
     </div>
-    <div class="wrapper footer__legal">
-      <span>2026 The GildedBox Company.</span>
+    <div class="footer-wrap footer__legal">
+      <span>&copy; 2026 The GildedBox Company.</span>
+      <span>IPMedia Holdings, Inc.</span>
       <span>Privacy Policy</span>
       <span>All rights reserved</span>
+      <span>Sitemap</span>
       <a href="#">Back to Top &#8593;</a>
     </div>
   </footer>

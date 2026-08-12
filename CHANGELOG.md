@@ -13,3 +13,4 @@
 2026-08-12 · the live footer lands on the landing itself (v1/live footer, pixel transfer, all three variants, in flow; bar-height pad in the gifts state so the bar never buries the legal row) · draft
 2026-08-12 · overlay polish: embed hides v1's footer and sticky Book a Meeting; close control re-cut to the v1 drawer geometry (h 80 head, 32px gutter, 44px circle, 22px glyph) · draft
 2026-08-12 · empty state centers optically between header and viewport bottom (44/56 spacers, safe fallback to flow); small screens: halves stack, OR goes horizontal, clamp type roles · draft
+2026-08-12 · live-portal reality pass: sticky elevated header with the portal composition (Gifts / Customize+Beta / Portal / Explore, black Book a Meeting, My Portal, cart with count, search), Zinc 100 page ground with white cards, portal footer line by line (crumb strip, italic address, exact columns, legal row), wrapper widened to the v1 formula, hero kept as a 1200px title composition · draft
