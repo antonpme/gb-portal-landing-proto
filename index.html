@@ -282,8 +282,13 @@
      everything not explicitly moved stays where it was. */
   .nav-ton-only { display: none; }
   [data-nav="ton"] .nav-live-only { display: none; }
-  /* My Teams is absorbed by Company Management (Ton 2026-08-12) */
-  [data-nav="ton"] #navMyTeams { display: none; }
+  /* My Company is absorbed by Company Management: its live URL is
+     portal.gildedbox.com/customer/user-management, i.e. it IS the
+     user/team management screen (Ton's final layout, 2026-08-12).
+     My Teams is NOT absorbed: it is the personal "which teams I belong
+     to" view (live URL portal.gildedbox.com/customer/teams) and moves
+     to the top of Admin by the same JS path as in nav=russell. */
+  [data-nav="ton"] #navMyCompany { display: none; }
   [data-nav="ton"] .masthead { display: block; }
   [data-nav="ton"] .company-block { display: block; }
 
@@ -822,18 +827,22 @@
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/love-card.svg" alt=""></span><span class="snav-label">Thank You Notes</span></a>
           <!-- Item 4 (Russell 2026-08-12, Ton's clarification): Brand Assets leaves this menu in the Russell variant, it lives in the top brand section -->
           <a class="snav-item nav-live-only" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
-          <!-- Item 5 (Russell 2026-08-12): JS moves My Teams to the top of the Admin menu in the Russell variant -->
+          <!-- Item 5 (Russell 2026-08-12) + Ton's final layout: JS moves My Teams to the top of the Admin menu in the Russell and Ton variants -->
           <a class="snav-item" href="#" id="navMyTeams"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">My Teams</span></a>
         </nav>
       </section>
 
-      <!-- Company section (Ton's brainstorm 2026-08-12): ton-only, between Account
-           and Admin. Account anatomy mirrored: company name in the person-name
-           role, Upload Logo moves here from the Account header keeping its live
-           styling. Brand Assets keeps its icon; Company Management is new and
-           absorbs My Teams (icon reused from My Teams, crowd-2.svg, no new icons).
-           Russell's Slack note named Members + Teams in Admin as also absorbed;
-           this prototype's Admin never had those items, so nothing leaves Admin. -->
+      <!-- Company section (Ton's brainstorm 2026-08-12, final layout per Ton's
+           clarification same day): ton-only, between Account and Admin. Account
+           anatomy mirrored: company name in the person-name role, Upload Logo
+           moves here from the Account header keeping its live styling. Brand
+           Assets keeps its icon; Company Management is new and absorbs ONLY
+           My Company (live URL portal.gildedbox.com/customer/user-management,
+           i.e. user management); team management is the Teams tab inside it.
+           My Teams stays a separate personal item at the top of Admin (live
+           URL /customer/teams). Icon reused from My Teams, crowd-2.svg,
+           no new icons. -->
+
       <section class="snav-block company-block nav-ton-only">
         <header class="snav-header">
           <span class="snav-title">Company</span>
@@ -851,9 +860,10 @@
         <header class="snav-header">
           <span class="snav-title">Admin</span>
         </header>
-        <!-- My Company and Account Information stay as-is: Russell raised a question, no decision yet (2026-08-12) -->
+        <!-- For nav=russell: My Company and Account Information stay as-is, Russell raised a question, no decision yet (2026-08-12).
+             For nav=ton: My Company is hidden here, absorbed by Company Management (Ton's final layout 2026-08-12). -->
         <nav class="snav-menu" id="adminMenu">
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/office.svg" alt=""></span><span class="snav-label">My Company</span></a>
+          <a class="snav-item" href="#" id="navMyCompany"><span class="snav-icon"><img src="icons/office.svg" alt=""></span><span class="snav-label">My Company</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/money-13.svg" alt=""></span><span class="snav-label">Payments</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/address-book.svg" alt=""></span><span class="snav-label" data-label-russell="Gift Recipients (Addresses)">Address Book</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/alarm.svg" alt=""></span><span class="snav-label">Notifications</span></a>
@@ -1133,10 +1143,11 @@
       }
       el.textContent = el.getAttribute(renamed ? 'data-label-russell' : 'data-label-live');
     }
-    // Item 5 (Russell): My Teams moves to the top of Admin; otherwise it
-    // sits in its original Account slot (nav=ton hides it there via CSS,
-    // absorbed by Company Management)
-    if (n === 'russell') {
+    // Item 5 (Russell) + Ton's final layout 2026-08-12: My Teams moves to
+    // the top of Admin in both variants (for Ton it is the personal
+    // "which teams I belong to" view, live URL /customer/teams); on live
+    // it returns to its original Account slot
+    if (n === 'russell' || n === 'ton') {
       adminMenu.insertBefore(navMyTeams, adminMenu.firstElementChild);
     } else {
       accountMenu.appendChild(navMyTeams);
