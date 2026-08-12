@@ -215,6 +215,67 @@
     min-width: 0;
   }
 
+  /* ============ NAV VARIANTS (data-nav on body) ============
+     Switchable sidebar structure. Default (no attribute / data-nav="live")
+     renders the Figma-true sidebar above with ZERO changes: russell-only
+     nodes are display:none by default, live-only nodes are hidden only
+     when data-nav="russell" is set. Extensible: a future variant adds its
+     own [data-nav="ton"] block, same mechanics.
+     Source: Slack feedback from Russell, 2026-08-12. */
+
+  /* Russell-only nodes stay out of the live render entirely */
+  .nav-russell-only { display: none; }
+  /* Live-only nodes leave the render in the Russell variant */
+  [data-nav="russell"] .nav-live-only { display: none; }
+
+  /* Item 4 (Russell 2026-08-12): brand zone in the Account header.
+     Upload Logo box removed; a company-logo placeholder stands in its
+     place. Placeholder: neutral 32px square (16+32+16 = 64px header
+     min-height, so the header does not grow), zinc-100 fill, zinc-200
+     hairline, block radius 4px; glyph reuses icons/brand-assets.svg
+     (the existing image-frame icon), no new icon drawn. Logo is meant
+     to come from saved Brand Assets. */
+  [data-nav="russell"] .brand-logo-ph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--zinc-100);
+    border: 1px solid var(--zinc-200);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .brand-logo-ph img { display: block; width: 18px; height: 18px; }
+
+  /* Item 4 (Russell 2026-08-12): Brand Assets moves out of the menu and
+     sits next to the company name, "so people see those are related".
+     Same typographic role as the block's metadata values (.snav-val);
+     blue-600 marks it as the one actionable element in the row. */
+  [data-nav="russell"] a.snav-brand-link {
+    display: inline-flex;
+    color: var(--blue);
+  }
+
+  /* Long labels (items 1, 3, 6, Russell 2026-08-12): renamed items may
+     exceed one line at 320px. No truncation, no font shrink: the item
+     grows to a second line, icon stays aligned to the FIRST text line.
+     Geometry keeps single-line items pixel-equal to live:
+       live: h 46 = 1px border + 8px pad + centered content (29px box);
+             icon top 11.5px, label top 13px.
+       here: pad 10.5px puts the 24px icon top at 1+10.5 = 11.5px;
+             label margin-top 1.5px puts its first line top at 13px and
+             centers that line on the icon (23.5px axis). Single-line
+             item total: 1+10.5+24+10.5 = 46px, unchanged. */
+  [data-nav="russell"] .snav-item {
+    height: auto;
+    min-height: 46px;
+    align-items: flex-start;
+    padding-top: 10.5px;
+    padding-bottom: 10.5px;
+  }
+  [data-nav="russell"] .snav-label { margin-top: 1.5px; }
+
   /* ============ CONTENT ============ */
   .content {
     flex: 1;
@@ -549,7 +610,8 @@
   }
 </style>
 </head>
-<body>
+<body data-nav="live">
+<!-- wave-2026-08-12 marker: gbppl-nav-switcher-r7k4 -->
 
   <!-- ============ LAYOUT ============ -->
   <div class="layout wrapper">
@@ -560,22 +622,29 @@
       <section class="snav-block">
         <header class="snav-header">
           <span class="snav-title">Account</span>
-          <button class="upload-logo" type="button"><img src="icons/upload.svg" alt="">Upload Logo</button>
+          <!-- Item 4 (Russell 2026-08-12): live keeps Upload Logo, Russell swaps it for a logo placeholder fed by Brand Assets -->
+          <button class="upload-logo nav-live-only" type="button"><img src="icons/upload.svg" alt="">Upload Logo</button>
+          <span class="brand-logo-ph nav-russell-only"><img src="icons/brand-assets.svg" alt=""></span>
         </header>
         <div class="snav-info">
           <div class="snav-row"><span class="snav-name">Anton</span></div>
-          <div class="snav-row"><span class="snav-key">Company:</span><span class="snav-val">GB</span></div>
+          <div class="snav-row"><span class="snav-key">Company:</span><span class="snav-val">GB</span><a class="snav-val snav-brand-link nav-russell-only" href="#">Brand Assets</a></div>
           <div class="snav-row"><span class="snav-key">Email:</span><span class="snav-val">iam@antonp.me<img class="snav-check" src="icons/c-check.svg" alt=""></span></div>
         </div>
-        <nav class="snav-menu">
-          <a class="snav-item active" href="#"><span class="snav-icon"><img src="icons/gift.svg" alt=""></span><span class="snav-label">My Gifts</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/archery-target.svg" alt=""></span><span class="snav-label">Gift Campaigns</span></a>
+        <!-- Nav variant renames (Russell 2026-08-12): data-label-russell holds the
+             Russell-variant text, JS swaps it in and restores the live text.
+             Items keep their existing icons. -->
+        <nav class="snav-menu" id="accountMenu">
+          <a class="snav-item active" href="#"><span class="snav-icon"><img src="icons/gift.svg" alt=""></span><span class="snav-label" data-label-russell="My Designed Gifts">My Gifts</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/archery-target.svg" alt=""></span><span class="snav-label" data-label-russell="Gifting Campaigns">Gift Campaigns</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/gift-exchange.svg" alt=""></span><span class="snav-label">Gift Redeem Pages</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/laptop-check.svg" alt=""></span><span class="snav-label">Gift Design Approvals</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/time-machine.svg" alt=""></span><span class="snav-label">Orders</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/time-machine.svg" alt=""></span><span class="snav-label" data-label-russell="Gift Order History">Orders</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/love-card.svg" alt=""></span><span class="snav-label">Thank You Notes</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">My Teams</span></a>
+          <!-- Item 4 (Russell 2026-08-12): Brand Assets leaves the menu in the Russell variant, replaced by the brand zone above -->
+          <a class="snav-item nav-live-only" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
+          <!-- Item 5 (Russell 2026-08-12): JS moves My Teams to the top of the Admin menu in the Russell variant -->
+          <a class="snav-item" href="#" id="navMyTeams"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">My Teams</span></a>
         </nav>
       </section>
 
@@ -583,10 +652,11 @@
         <header class="snav-header">
           <span class="snav-title">Admin</span>
         </header>
-        <nav class="snav-menu">
+        <!-- My Company and Account Information stay as-is: Russell raised a question, no decision yet (2026-08-12) -->
+        <nav class="snav-menu" id="adminMenu">
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/office.svg" alt=""></span><span class="snav-label">My Company</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/money-13.svg" alt=""></span><span class="snav-label">Payments</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/address-book.svg" alt=""></span><span class="snav-label">Address Book</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/address-book.svg" alt=""></span><span class="snav-label" data-label-russell="Gift Recipients (Addresses)">Address Book</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/alarm.svg" alt=""></span><span class="snav-label">Notifications</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/cogwheel.svg" alt=""></span><span class="snav-label">Account Information</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/lock.svg" alt=""></span><span class="snav-label">Password</span></a>
@@ -691,6 +761,11 @@
   <div class="demo-controls">
     <button id="btnVarA">A &middot; Russell</button>
     <button id="btnVarB">B &middot; Proposal</button>
+    <span class="demo-sep"></span>
+    <!-- Sidebar nav variant toggle (Russell 2026-08-12); also via ?nav=russell -->
+    <span class="demo-state">Nav:</span>
+    <button id="btnNavLive">Live</button>
+    <button id="btnNavRussell">Russell</button>
     <span class="demo-sep"></span>
     <span class="demo-state" id="demoState">empty</span>
     <button id="btnAdd">+ Add gift</button>
@@ -818,9 +893,45 @@
 
   window.addEventListener('resize', positionBar);
 
-  // ?v=a / ?v=b in the URL; default A
-  var param = new URLSearchParams(window.location.search).get('v');
-  setVariant(param === 'b' ? 'b' : 'a');
+  /* ---- Sidebar nav variants (Russell 2026-08-12) ----
+     One markup, switched by data-nav on <body>. "live" is the default and
+     restores the exact original DOM: texts revert from data-label-russell,
+     My Teams returns to its original slot, CSS un-hides live-only nodes.
+     Extensible: a future "ton" variant adds a branch here + its CSS block. */
+  var btnNavLive    = document.getElementById('btnNavLive');
+  var btnNavRussell = document.getElementById('btnNavRussell');
+  var accountMenu   = document.getElementById('accountMenu');
+  var adminMenu     = document.getElementById('adminMenu');
+  var navMyTeams    = document.getElementById('navMyTeams');
+  var renameEls     = document.querySelectorAll('.snav-label[data-label-russell]');
+
+  function setNav(n) {
+    document.body.setAttribute('data-nav', n);
+    // Items 1, 2, 3, 6: renames (uppercase comes from CSS text-transform)
+    for (var i = 0; i < renameEls.length; i++) {
+      var el = renameEls[i];
+      if (!el.getAttribute('data-label-live')) {
+        el.setAttribute('data-label-live', el.textContent);
+      }
+      el.textContent = el.getAttribute(n === 'russell' ? 'data-label-russell' : 'data-label-live');
+    }
+    // Item 5: My Teams moves to the top of Admin, back to the end of Account on live
+    if (n === 'russell') {
+      adminMenu.insertBefore(navMyTeams, adminMenu.firstElementChild);
+    } else {
+      accountMenu.appendChild(navMyTeams);
+    }
+    btnNavLive.classList.toggle('variant-active', n === 'live');
+    btnNavRussell.classList.toggle('variant-active', n === 'russell');
+  }
+
+  btnNavLive.addEventListener('click', function () { setNav('live'); });
+  btnNavRussell.addEventListener('click', function () { setNav('russell'); });
+
+  // ?v=a / ?v=b (hero) and ?nav=live / ?nav=russell (sidebar) combine; defaults: A + live
+  var params = new URLSearchParams(window.location.search);
+  setVariant(params.get('v') === 'b' ? 'b' : 'a');
+  setNav(params.get('nav') === 'russell' ? 'russell' : 'live');
   render();
 })();
 </script>
