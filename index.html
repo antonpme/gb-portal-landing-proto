@@ -443,19 +443,34 @@
      page title (the category hero), two titles would stack; only the
      close control row remains, decided on the spot, noted in the wave
      report. */
+  /* Overlay choreography (Ren's spec, accepted by Ton 2026-08-12;
+     reference: an expensive door with a closer, the exit faster than
+     the entry; replaces the flat 280ms fade/slide). ENTER in layers:
+     the backdrop fades up 300ms ease-out at once; the panel slides in
+     from off-screen right 500ms cubic-bezier(.22,1,.36,1), no
+     overshoot; the framed content fades and lifts 12px, 400ms
+     ease-out, 150ms after the panel starts. EXIT faster: the panel
+     accelerates away 380ms ease-in with the content riding along; the
+     backdrop relights the page 300ms with an 80ms delay, trailing the
+     door. Same timing for every close path (cross, Esc, backdrop).
+     display:none lands only after the exit finishes (JS timer), so
+     the exit actually plays. Reduced motion: fades only, no travel. */
   .catalog-overlay {
     position: fixed;
     inset: 0;
     z-index: 40;
-    pointer-events: none;
+    display: none;
   }
+  .catalog-overlay.open,
+  .catalog-overlay.closing { display: block; }
   .catalog-backdrop {
     position: absolute;
     inset: 0;
     background: rgba(24, 24, 27, 0.4);
     opacity: 0;
-    transition: opacity 280ms ease;
+    transition: opacity 300ms ease-out;
   }
+  .catalog-overlay.closing .catalog-backdrop { transition: opacity 300ms ease-out 80ms; }
   .catalog-panel {
     position: absolute;
     top: 0;
@@ -467,16 +482,24 @@
     /* Front (left) corners on the brand radius (radius audit, Ton's
        decision 2026-08-12); the right edge stays flush with the screen */
     border-radius: var(--radius) 0 0 var(--radius);
-    transform: translateX(48px);
-    opacity: 0;
-    transition: transform 280ms ease, opacity 280ms ease;
+    transform: translateX(100%);
+    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
-  .catalog-overlay.open { pointer-events: auto; }
+  .catalog-overlay.closing .catalog-panel { transition: transform 380ms ease-in; }
   .catalog-overlay.open .catalog-backdrop { opacity: 1; }
-  .catalog-overlay.open .catalog-panel { transform: translateX(0); opacity: 1; }
+  .catalog-overlay.open .catalog-panel { transform: translateX(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .catalog-panel,
+    .catalog-overlay.closing .catalog-panel {
+      transform: none;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+    .catalog-overlay.open .catalog-panel { opacity: 1; transform: none; }
+  }
   /* The overlay's top bar and its .icon-button close are GONE (Ton's
      overlay bug list 2026-08-12): the bar existed for the cross alone;
      the close control now renders inside the framed v1 catalog's own
@@ -490,6 +513,18 @@
     border: 0;
     display: block;
     background: var(--zinc-50);
+    /* Content layer of the enter choreography: fades and lifts 12px,
+       150ms after the panel starts (Ren's spec, Ton 2026-08-12) */
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 400ms ease-out 150ms, transform 400ms ease-out 150ms;
+  }
+  .catalog-overlay.open .catalog-frame { opacity: 1; transform: translateY(0); }
+  /* On exit the content rides the panel, no animation of its own */
+  .catalog-overlay.closing .catalog-frame { opacity: 1; transform: none; transition: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .catalog-frame { transform: none; transition: opacity 300ms ease; }
+    .catalog-overlay.open .catalog-frame { transform: none; }
   }
   /* Scroll lock while the overlay is open (Ton's overlay bug list
      2026-08-12: the page scrolled behind the panel and its scrollbar
@@ -806,12 +841,10 @@
     text-decoration: none;
     border-bottom: 1.3px solid var(--white);
   }
-  /* On-the-spot resolution (2026-08-12, noted in the report): with gifts
-     the CTA bar rides fixed over the viewport bottom, so at full scroll
-     it would sit on the footer's legal row forever. The footer takes a
-     bar-height pad in that state: every footer line can scroll clear of
-     the bar, the bar only ever covers dark padding. */
-  body.gb-has-bar .footer { padding-bottom: 104px; }
+  /* The old bar-height footer pad (body.gb-has-bar) is gone with the
+     bar's footer stop (Ton 2026-08-12): the bar now halts at the
+     footer's top edge in JS (see positionBar), so no footer line can
+     ever be covered and the pad had nothing left to protect. */
 
   /* ============ CONTENT ============ */
   .content {
@@ -1492,6 +1525,7 @@
 <!-- wave-2026-08-12g marker: gbppl-live-buttons-m4d7 -->
 <!-- wave-2026-08-12h marker: gbppl-band-radius-z6k3 -->
 <!-- wave-2026-08-12i marker: gbppl-overlay-clean-v5j8 -->
+<!-- wave-2026-08-12j marker: gbppl-overlay-motion-q4f7 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -1887,12 +1921,22 @@
     return card;
   }
 
+  var footerEl = document.querySelector('.footer');
   function positionBar() {
     if (!bar.classList.contains('bar-sticky')) return;
     var rect = content.getBoundingClientRect();
     bar.style.left = rect.left + 'px';
     bar.style.width = rect.width + 'px';
+    /* Footer stop (Ton 2026-08-12): the bar clings to the bottom of
+       the VISIBLE area and halts at the footer's top edge, never
+       entering the footer zone. Fixed bar + scroll threshold: the
+       cleanest fit for the existing fixed-position mechanics. Works
+       for short content too: with the footer already in view the bar
+       simply sits above it. */
+    var overlap = window.innerHeight - footerEl.getBoundingClientRect().top;
+    bar.style.bottom = overlap > 0 ? overlap + 'px' : '';
   }
+  window.addEventListener('scroll', positionBar, { passive: true });
 
   /* Page metablock (live portal, Ton's screen 2026-08-12): only in the
      has-gifts state AND only in nav=ton (fork correction 2026-08-12). */
@@ -1918,6 +1962,7 @@
     content.classList.remove('has-fixed-bar');
     bar.style.left = '';
     bar.style.width = '';
+    bar.style.bottom = '';
 
     if (count >= 1) {
       bar.classList.add('bar-sticky');
@@ -1927,10 +1972,6 @@
 
     // --- page meta rides with the gifts, nav=ton only (fork correction) ---
     updatePageMeta();
-
-    // --- the footer takes a bar-height pad while the bar is fixed,
-    // so no footer line is ever covered for good ---
-    document.body.classList.toggle('gb-has-bar', count >= 1);
 
     // --- demo label ---
     stateEl.textContent = count === 0 ? 'empty' : 'bar sticky';
@@ -2065,6 +2106,13 @@
   var btnExplore     = document.getElementById('btnExploreGifts');
   var catalogBackdrop = document.getElementById('catalogBackdrop');
 
+  /* Exit choreography total: the panel leaves in 380ms, the backdrop
+     finishes at 80+300=380ms; the timer waits a hair longer before
+     display:none so the exit always plays out (Ren's spec, Ton
+     2026-08-12) */
+  var OVERLAY_EXIT_MS = 460;
+  var overlayCloseTimer = null;
+
   function openCatalog() {
     if (!catalogFrame.getAttribute('src')) {
       catalogFrame.setAttribute('src', catalogFrame.getAttribute('data-src'));
@@ -2075,15 +2123,37 @@
     document.documentElement.style.setProperty('--scrollbar-width',
       (window.innerWidth - document.documentElement.clientWidth) + 'px');
     document.body.classList.add('catalog-locked');
+    // Two-phase enter: become displayed in the hidden pose first, then
+    // open one reflow later so the enter transition actually runs
+    clearTimeout(overlayCloseTimer);
+    overlay.classList.remove('closing');
+    overlay.style.display = 'block';
+    void overlay.offsetWidth;
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
   }
   function closeCatalog() {
+    if (!overlay.classList.contains('open')) return;
     overlay.classList.remove('open');
+    overlay.classList.add('closing');
     overlay.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('catalog-locked');
+    overlayCloseTimer = setTimeout(function () {
+      overlay.classList.remove('closing');
+      overlay.style.display = '';
+    }, OVERLAY_EXIT_MS);
   }
   btnExplore.addEventListener('click', openCatalog);
+  /* Landing EXPLORE GIFTS in the right half of the two-path block opens
+     the SAME overlay in nav=ton (Ton's addition 2026-08-12; same enter
+     choreography, it is the same openCatalog); live and russell keep
+     the inert button. */
+  var heroExplore = document.querySelectorAll('.hero-half .btn-cta-black');
+  for (var he = 0; he < heroExplore.length; he++) {
+    heroExplore[he].addEventListener('click', function () {
+      if (document.body.getAttribute('data-nav') === 'ton') openCatalog();
+    });
+  }
   catalogBackdrop.addEventListener('click', closeCatalog);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeCatalog();
