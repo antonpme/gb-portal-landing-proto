@@ -591,6 +591,79 @@
   /* Variant containers */
   .hero-variant[hidden] { display: none; }
 
+  /* ============ PAGE META (breadcrumbs + title card) ============
+     Source: live portal, Ton's screen 2026-08-12. Page state, not
+     sidebar: shows in all three nav variants, only once gifts exist
+     (Add gift), gone on Reset. Two decks:
+     1. Breadcrumbs: small gray (13px, the brand minimum), chevron
+        separators, last crumb darker. DEVIATION: the live's middle
+        crumb Customer is dropped as technical noise carrying no
+        meaning (Ren/Ton decision 2026-08-12).
+     2. Title card: full-width white card, generous vertical padding
+        (~32px), outlined gift glyph left (drawn inline in the live's
+        thin-stroke language, same path as the placeholder card glyph),
+        serif page title ~36px (page-title role, as in the catalog
+        overlay), outlined GET HELP right for live comparison, to be
+        replaced later. GET HELP values = the live outlined blue
+        button documented in the sidebar provenance block (Figma
+        live-chat button: border 1.5px Blue 600 #2563eb, h 48,
+        radius 4, Inter 500 16/20px, tracking 0.5px, uppercase).
+     Title and last crumb follow the nav variant through the shared
+     data-label-russell swap (My Gifts / My Designed Gifts). */
+  .page-meta { display: none; margin-bottom: 24px; }
+  .page-meta.shown { display: block; animation: cardIn 300ms ease both; }
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--zinc-500);
+    margin-bottom: 16px;
+  }
+  .crumbs .crumb-sep { color: var(--zinc-400); line-height: 1; }
+  .crumbs .crumb-last { color: var(--zinc-700); }
+  .title-card {
+    background: #fff;
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius);
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .title-icon { width: 40px; height: 40px; color: var(--zinc-500); flex-shrink: 0; }
+  .title-icon svg { display: block; width: 100%; height: 100%; }
+  .page-title {
+    font-family: 'Noto Serif', Georgia, serif;
+    font-size: 36px;
+    line-height: 1.15;
+    font-weight: 600;
+    color: var(--zinc-900);
+    letter-spacing: -0.01em;
+  }
+  .btn-gethelp {
+    margin-left: auto;
+    height: 48px;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    color: var(--blue);
+    border: 1.5px solid var(--blue);
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: background 150ms ease;
+  }
+  .btn-gethelp:hover { background: var(--blue-50); }
+  .btn-gethelp svg { display: block; width: 20px; height: 20px; }
+
   /* ============ GIFT GRID ============ */
   .gift-grid {
     display: grid;
@@ -954,6 +1027,24 @@
 
       </section>
 
+      <!-- PAGE META: breadcrumbs + title card, "has gifts" state only
+           (live portal, Ton's screen 2026-08-12; Customer crumb dropped, see CSS provenance) -->
+      <div class="page-meta" id="pageMeta">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <span>Home</span><span class="crumb-sep" aria-hidden="true">&rsaquo;</span><span class="crumb-last" data-label-russell="My Designed Gifts">My Gifts</span>
+        </nav>
+        <div class="title-card">
+          <span class="title-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          </span>
+          <h1 class="page-title" data-label-russell="My Designed Gifts">My Gifts</h1>
+          <button class="btn-gethelp" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><line x1="12" y1="7.5" x2="12" y2="7.51"/></svg>
+            Get Help
+          </button>
+        </div>
+      </div>
+
       <!-- GIFT GRID: States 2 & 3 -->
       <div class="gift-grid" id="giftGrid"></div>
 
@@ -1099,6 +1190,10 @@
       content.classList.add('has-fixed-bar');
       positionBar();
     }
+
+    // --- page meta: breadcrumbs + title card ride with the gifts
+    // (live portal, Ton's screen 2026-08-12) ---
+    document.getElementById('pageMeta').classList.toggle('shown', count >= 1);
 
     // --- demo label ---
     stateEl.textContent = count === 0 ? 'empty' : 'bar sticky';
