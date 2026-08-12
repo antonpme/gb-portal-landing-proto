@@ -325,6 +325,29 @@
      the same way it stands right of the user info in Account on live. */
   .company-block .snav-info .snav-row { justify-content: space-between; }
 
+  /* Demo interactive (Ton's brainstorm 2026-08-12): clicking Upload Logo
+     "uploads" the company logo: the gray box swaps for the GildedBox
+     mark (icons/gildedbox-logo.svg, already vendored) in the same slot.
+     Scaled to the box height (31px tall, width auto per the 168x56
+     viewBox, never stretched, air by being smaller than the box) so the
+     row height never jumps; short fade on entry. Clicking the logo does
+     NOT bring the box back (an uploaded logo behaves like one); the
+     demo pill's Reset restores the initial state. One shared JS state
+     for russell/ton (one company), no persistence. Clickability reads
+     through the existing .upload-logo Zinc hover and the global button
+     pointer cursor, no new hover styles invented. */
+  .company-logo {
+    display: none;
+    height: 31px;
+    width: auto;
+  }
+  .company-block.logo-uploaded .upload-logo { display: none; }
+  .company-block.logo-uploaded .company-logo {
+    display: block;
+    animation: logoFadeIn 200ms ease both;
+  }
+  @keyframes logoFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
   /* ============ CATALOG OVERLAY ============
      Source: Ton's brainstorm, 2026-08-12. Opened by the masthead's
      Explore Gifts button, so it is reachable only in nav=ton. Behavior
@@ -817,7 +840,8 @@
           <span class="snav-title">Company</span>
         </header>
         <div class="snav-info">
-          <div class="snav-row"><span class="snav-name">GildedBox</span><button class="upload-logo" type="button"><img src="icons/upload.svg" alt="">Upload Logo</button></div>
+          <!-- Demo interactive (Ton's brainstorm 2026-08-12): the box "uploads" the logo on click, Reset in the demo pill restores it -->
+          <div class="snav-row"><span class="snav-name">GildedBox</span><button class="upload-logo" type="button" id="companyUploadBtn"><img src="icons/upload.svg" alt="">Upload Logo</button><img class="company-logo" src="icons/gildedbox-logo.svg" alt="GildedBox logo"></div>
         </div>
         <nav class="snav-menu">
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
@@ -1079,7 +1103,22 @@
   btnReset.addEventListener('click', function () {
     grid.innerHTML = '';
     count = 0;
+    companyLogoUploaded = false;
+    renderCompanyLogo();
     render();
+  });
+
+  /* ---- Demo logo upload (Ton's brainstorm 2026-08-12) ----
+     Shared state for nav=russell and nav=ton (same Company nodes, one
+     company). JS variable only, no persistence; Reset above restores. */
+  var companyBlock = document.querySelector('.company-block');
+  var companyLogoUploaded = false;
+  function renderCompanyLogo() {
+    companyBlock.classList.toggle('logo-uploaded', companyLogoUploaded);
+  }
+  document.getElementById('companyUploadBtn').addEventListener('click', function () {
+    companyLogoUploaded = true;
+    renderCompanyLogo();
   });
 
   btnVarA.addEventListener('click', function () { setVariant('a'); });
