@@ -297,10 +297,13 @@
      never stretched): 168px sits with ~59px of air each side inside
      the 286px content zone of the 320px block. */
   .masthead-logo { display: block; width: 168px; height: 56px; }
-  /* Primary per Oro DS medium (Figma 87-10936 via SYSTEM.md): h 48,
-     Inter 600 14 uppercase, tracking 1.3px, lh 1.1, radius 5, Blue 600,
-     hover Blue 700, background transition 150ms, no shadow or transform
-     (canon DEVIATION: Russell cancelled button shadows). */
+  /* Black filled per Oro DS medium (Figma 87-10936 via SYSTEM.md): h 48,
+     Inter 600 14 uppercase, tracking 1.3px, lh 1.1, radius 5,
+     background transition 150ms, no shadow or transform (canon
+     DEVIATION: Russell cancelled button shadows). Color: Ton's decision
+     2026-08-12, a permanent element must not shout blue, blue is
+     reserved for contextual CTAs; values identical to the landing's
+     black EXPLORE GIFTS (.btn-cta-black): Zinc 900 #18181b, hover #000. */
   .btn-explore {
     height: 48px;
     width: 100%;
@@ -310,13 +313,13 @@
     line-height: 1.1;
     letter-spacing: 1.3px;
     text-transform: uppercase;
-    background: var(--blue);
+    background: var(--zinc-900);
     color: #fff;
     border: none;
     border-radius: var(--radius);
     transition: background 150ms ease;
   }
-  .btn-explore:hover { background: var(--blue-hover); }
+  .btn-explore:hover { background: #000; }
 
   /* Company section (Ton 2026-08-12): Account anatomy mirrored. The
      company name takes the person-name role (.snav-name); Upload Logo
@@ -385,10 +388,14 @@
   .catalog-overlay.open { pointer-events: auto; }
   .catalog-overlay.open .catalog-backdrop { opacity: 1; }
   .catalog-overlay.open .catalog-panel { transform: translateX(0); opacity: 1; }
+  /* Close control sits at the TOP LEFT of the panel, by its front edge
+     next to the dimmed backdrop (Ton's edit 2026-08-12, Tiffany
+     reference); the top right stays reserved for catalog controls and
+     drawers. Title follows the button on the same row, centered on the
+     44px control; panel padding unchanged. */
   .catalog-head {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
     gap: 24px;
     margin-bottom: 40px;
   }
@@ -819,8 +826,8 @@
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/love-card.svg" alt=""></span><span class="snav-label">Thank You Notes</span></a>
           <!-- Brand Assets leaves this menu in both variants, it lives in the Company section (Ton 2026-08-12) -->
           <a class="snav-item nav-live-only" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
-          <!-- Item 5 (Russell 2026-08-12) + Ton's final layout: JS moves My Teams to the top of the Admin menu in the Russell and Ton variants -->
-          <a class="snav-item" href="#" id="navMyTeams"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">My Teams</span></a>
+          <!-- Item 5 (Russell 2026-08-12) + Ton's order: JS moves My Teams to the top of the Admin menu in both variants -->
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/crowd-2.svg" alt=""></span><span class="snav-label">My Teams</span></a>
         </nav>
       </section>
 
@@ -853,8 +860,9 @@
         <header class="snav-header">
           <span class="snav-title">Admin</span>
         </header>
-        <!-- For nav=russell: My Company and Account Information stay as-is, Russell raised a question, no decision yet (2026-08-12).
-             For nav=ton: My Company is hidden here, absorbed by Company Management (Ton's final layout 2026-08-12). -->
+        <!-- Live keeps this list verbatim. In both variants: My Company is hidden (absorbed by Company Management,
+             Ton's final layout 2026-08-12); Gift Recipients (Addresses) and Account Information move up into Account
+             (Ton's order 2026-08-12: frequency + gift lifecycle, settings sink); My Teams arrives first, Log out stays last. -->
         <nav class="snav-menu" id="adminMenu">
           <a class="snav-item" href="#" id="navMyCompany"><span class="snav-icon"><img src="icons/office.svg" alt=""></span><span class="snav-label">My Company</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/money-13.svg" alt=""></span><span class="snav-label">Payments</span></a>
@@ -964,11 +972,12 @@
   <div class="catalog-overlay" id="catalogOverlay" aria-hidden="true">
     <div class="catalog-backdrop" id="catalogBackdrop"></div>
     <div class="catalog-panel" role="dialog" aria-modal="true" aria-label="Explore Gifts">
+      <!-- Close control first, at the panel's front edge (Ton's edit 2026-08-12, Tiffany reference) -->
       <div class="catalog-head">
-        <h1 class="catalog-title">Explore Gifts</h1>
         <button class="icon-button" id="catalogClose" type="button" aria-label="Close catalog">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
         </button>
+        <h1 class="catalog-title">Explore Gifts</h1>
       </div>
       <div class="catalog-grid" id="catalogGrid"></div>
     </div>
@@ -1126,40 +1135,58 @@
 
   window.addEventListener('resize', positionBar);
 
-  /* ---- Sidebar nav variants (Russell 2026-08-12) ----
+  /* ---- Sidebar nav variants (Russell 2026-08-12, Ton's order 2026-08-12) ----
      One markup, switched by data-nav on <body>. "live" is the default and
      restores the exact original DOM: texts revert from data-label-russell,
-     My Teams returns to its original slot, CSS un-hides live-only nodes.
-     Extensible: a future "ton" variant adds a branch here + its CSS block. */
+     both menus re-append their captured initial child order, CSS un-hides
+     live-only nodes. */
   var btnNavLive    = document.getElementById('btnNavLive');
   var btnNavRussell = document.getElementById('btnNavRussell');
   var btnNavTon     = document.getElementById('btnNavTon');
   var accountMenu   = document.getElementById('accountMenu');
   var adminMenu     = document.getElementById('adminMenu');
-  var navMyTeams    = document.getElementById('navMyTeams');
   var renameEls     = document.querySelectorAll('.snav-label[data-label-russell]');
+
+  /* Captured live orders (source of truth for restore):
+     acc: 0 My Gifts, 1 Gift Campaigns, 2 Gift Redeem Pages,
+          3 Gift Design Approvals, 4 Orders, 5 Thank You Notes,
+          6 Brand Assets, 7 My Teams
+     adm: 0 My Company, 1 Payments, 2 Address Book, 3 Notifications,
+          4 Account Information, 5 Password, 6 Log out */
+  var accLive = Array.prototype.slice.call(accountMenu.children);
+  var admLive = Array.prototype.slice.call(adminMenu.children);
+
+  /* Variant order (Ton's brainstorm 2026-08-12): frequency + the gift
+     lifecycle (design, approve, send, history), settings sink to the
+     bottom. Account pulls Gift Recipients (Addresses) and Account
+     Information up from Admin; unnamed items (Gift Redeem Pages, Thank
+     You Notes) sit between Gift Order History and Gift Recipients.
+     Hidden carriers stay in DOM for the live restore: Brand Assets
+     (acc 6, CSS-hidden) closes Account, My Company (adm 0, CSS-hidden)
+     rides behind My Teams. Admin: My Teams first, Log out last. */
+  var accVariant = [accLive[0], accLive[3], accLive[1], accLive[4],
+                    accLive[2], accLive[5], admLive[2], admLive[4], accLive[6]];
+  var admVariant = [accLive[7], admLive[0], admLive[1], admLive[3],
+                    admLive[5], admLive[6]];
+
+  function applyOrder(menu, items) {
+    for (var i = 0; i < items.length; i++) menu.appendChild(items[i]);
+  }
 
   function setNav(n) {
     document.body.setAttribute('data-nav', n);
-    // Items 1, 2, 3, 6: renames; the ton variant keeps Russell's naming
-    // (Ton's brainstorm 2026-08-12)
-    var renamed = (n === 'russell' || n === 'ton');
+    // Renames (Russell's items 1, 2, 3, 6; both variants keep them)
+    var isVariant = (n === 'russell' || n === 'ton');
     for (var i = 0; i < renameEls.length; i++) {
       var el = renameEls[i];
       if (!el.getAttribute('data-label-live')) {
         el.setAttribute('data-label-live', el.textContent);
       }
-      el.textContent = el.getAttribute(renamed ? 'data-label-russell' : 'data-label-live');
+      el.textContent = el.getAttribute(isVariant ? 'data-label-russell' : 'data-label-live');
     }
-    // Item 5 (Russell) + Ton's final layout 2026-08-12: My Teams moves to
-    // the top of Admin in both variants (for Ton it is the personal
-    // "which teams I belong to" view, live URL /customer/teams); on live
-    // it returns to its original Account slot
-    if (n === 'russell' || n === 'ton') {
-      adminMenu.insertBefore(navMyTeams, adminMenu.firstElementChild);
-    } else {
-      accountMenu.appendChild(navMyTeams);
-    }
+    // Section composition + order per Ton 2026-08-12; live restores verbatim
+    applyOrder(accountMenu, isVariant ? accVariant : accLive);
+    applyOrder(adminMenu, isVariant ? admVariant : admLive);
     btnNavLive.classList.toggle('variant-active', n === 'live');
     btnNavRussell.classList.toggle('variant-active', n === 'russell');
     btnNavTon.classList.toggle('variant-active', n === 'ton');
