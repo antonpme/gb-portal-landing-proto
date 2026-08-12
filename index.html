@@ -477,48 +477,30 @@
   .catalog-overlay.open { pointer-events: auto; }
   .catalog-overlay.open .catalog-backdrop { opacity: 1; }
   .catalog-overlay.open .catalog-panel { transform: translateX(0); opacity: 1; }
-  /* Close control sits at the TOP LEFT of the panel, by its front edge
-     next to the dimmed backdrop (Ton's edit 2026-08-12, Tiffany
-     reference); the top right stays reserved for the framed catalog's
-     own controls and drawers. Geometry verified against the v1 drawers
-     (Ton's feedback 2026-08-12: the cross sat too near the edge and
-     off-size): favorites/filters panel header = h 80, padding 0 32
-     (the 32px drawer gutter), hairline #dedee2, close leads on the
-     gutter; the framed app carries the page title. */
-  .catalog-head {
-    display: flex;
-    align-items: center;
-    height: 80px;
-    padding: 0 32px;
-    border-bottom: 1px solid var(--v1-border); /* v1 --color-border-default */
-    background: var(--white);
-    flex-shrink: 0;
-  }
-  /* .icon-button = v1's one icon-only control (App.tsx .icon-button,
-     mirrored in SYSTEM.md): 44x44 circle, 22px glyph stroke 1.5,
-     ink #242426, hover rgb(36 36 38 / 5%) */
-  .icon-button {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: var(--v1-ink);
-  }
-  .icon-button:hover { background: var(--v1-ink-hover); }
-  .icon-button svg { display: block; width: 22px; height: 22px; }
-  /* The vendored v1 catalog fills everything below the close row; it
-     scrolls itself, drawers and their dimming stay inside the frame. */
+  /* The overlay's top bar and its .icon-button close are GONE (Ton's
+     overlay bug list 2026-08-12): the bar existed for the cross alone;
+     the close control now renders inside the framed v1 catalog's own
+     nav row (v1 embed mode, drawers' 44px icon-button) and reports
+     back via postMessage {type:'gb-close-catalog'}. The vendored v1
+     catalog fills the whole panel from its very top; it scrolls
+     itself, drawers and their dimming stay inside the frame. */
   .catalog-frame {
     flex: 1;
     width: 100%;
     border: 0;
     display: block;
     background: var(--zinc-50);
+  }
+  /* Scroll lock while the overlay is open (Ton's overlay bug list
+     2026-08-12: the page scrolled behind the panel and its scrollbar
+     stood beside the overlay, a double scrollbar). v1's
+     --scrollbar-width pattern: JS measures the bar on open, the body
+     locks and compensates with padding so nothing under the backdrop
+     jumps; close restores. The panel itself is full-height, the
+     iframe brings its own inner scroll. */
+  body.catalog-locked {
+    overflow: hidden;
+    padding-right: var(--scrollbar-width, 0px);
   }
 
   /* ============ SITE HEADER ============
@@ -1509,6 +1491,7 @@
 <!-- wave-2026-08-12f marker: gbppl-diff-fix-w8c2 -->
 <!-- wave-2026-08-12g marker: gbppl-live-buttons-m4d7 -->
 <!-- wave-2026-08-12h marker: gbppl-band-radius-z6k3 -->
+<!-- wave-2026-08-12i marker: gbppl-overlay-clean-v5j8 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -1786,14 +1769,13 @@
   <div class="catalog-overlay" id="catalogOverlay" aria-hidden="true">
     <div class="catalog-backdrop" id="catalogBackdrop"></div>
     <div class="catalog-panel" role="dialog" aria-modal="true" aria-label="Explore Gifts">
-      <!-- Close control first, at the panel's front edge (Ton's edit 2026-08-12, Tiffany reference).
-           No panel title: the framed catalog brings its own serif page title. -->
-      <div class="catalog-head">
-        <!-- Glyph = v1's close icon verbatim (22px, stroke 1.5, M5 5 19 19) -->
-        <button class="icon-button" id="catalogClose" type="button" aria-label="Close catalog">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5 19 19M19 5 5 19"/></svg>
-        </button>
-      </div>
+      <!-- Top bar removed (Ton's overlay bug list 2026-08-12): it existed
+           for the close cross alone; the close now lives INSIDE the framed
+           catalog's own nav row (v1 embed mode) and reports back via
+           postMessage {type:'gb-close-catalog'}. The iframe starts at the
+           very top of the panel. The serif panel title had already gone
+           with the earlier wave; now the catalog explains itself by its
+           navigation alone. -->
       <!-- Real v1 AI Concierge catalog (Ton's requirement 2026-08-12), vendored build in ./catalog/,
            ?embed=1 = header-free mode added to v1 for this frame. src is set lazily on first open
            so the page never pays for the catalog it has not asked to see. -->
@@ -2070,31 +2052,46 @@
 
   /* ---- Catalog overlay (Ton's brainstorm 2026-08-12) ----
      Frames the real v1 catalog (./catalog/index.html?embed=1, vendored
-     build); backdrop click and Esc close. The iframe src is set lazily
-     on the first open so the landing never loads the catalog's assets
-     unasked. */
+     build); backdrop click and Esc close, plus the close control that
+     now lives inside the framed catalog's nav and reports back with
+     postMessage {type:'gb-close-catalog'} (Ton's overlay bug list
+     2026-08-12). The iframe src is set lazily on the first open so
+     the landing never loads the catalog's assets unasked. While the
+     overlay is open the page behind is scroll-locked, v1's
+     --scrollbar-width pattern: measure, lock, compensate; restore on
+     close. */
   var overlay        = document.getElementById('catalogOverlay');
   var catalogFrame   = document.getElementById('catalogFrame');
   var btnExplore     = document.getElementById('btnExploreGifts');
-  var catalogClose   = document.getElementById('catalogClose');
   var catalogBackdrop = document.getElementById('catalogBackdrop');
 
   function openCatalog() {
     if (!catalogFrame.getAttribute('src')) {
       catalogFrame.setAttribute('src', catalogFrame.getAttribute('data-src'));
     }
+    // Measure the page scrollbar BEFORE locking, then compensate
+    // (v1 main.tsx --scrollbar-width pattern; kills the double
+    // scrollbar, Ton's overlay bug list 2026-08-12)
+    document.documentElement.style.setProperty('--scrollbar-width',
+      (window.innerWidth - document.documentElement.clientWidth) + 'px');
+    document.body.classList.add('catalog-locked');
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
   }
   function closeCatalog() {
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('catalog-locked');
   }
   btnExplore.addEventListener('click', openCatalog);
-  catalogClose.addEventListener('click', closeCatalog);
   catalogBackdrop.addEventListener('click', closeCatalog);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeCatalog();
+  });
+  // The framed catalog's own close control (v1 embed mode) asks the
+  // parent page to close the overlay
+  window.addEventListener('message', function (e) {
+    if (e && e.data && e.data.type === 'gb-close-catalog') closeCatalog();
   });
 
   /* ---- PROTO panel collapse (Ton's feedback 2026-08-12) ----
