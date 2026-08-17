@@ -470,7 +470,15 @@
      the active icon darkens to near-black via filter, the active label
      drops back to 500 (no weight play, color alone marks the active
      item, zinc-950), and the active item's hover loses the radius so
-     the 2px left rule never rounds. */
+     the 2px left rule never rounds.
+     Refinement (feedback T 2026-08-18 night): the active item returns
+     to the system blue accent, blue-600. The owner's logic: blue is the
+     state accent family (active radios, switches, checkboxes, CTAs),
+     black is permanent furniture, and the active menu item is a state.
+     The 2px left rule, the active label and the active icon all take
+     var(--blue-600); weight stays 500, the no-weight-play veto holds.
+     This amends decision 4's "no blue anywhere in the skin sidebar"
+     line and the near-black active filter from the 08-17 night wave. */
 
   /* 1: de-boxing. Cards dissolve into the page ground; the sidebar's
      16px card gap becomes 24px air + hairline + 24px air. */
@@ -545,9 +553,11 @@
   }
 
   /* 2 + 4: item typography and states. White fills and border-top
-     seams dissolve; hover is a soft zinc-50 wash; the active item
-     carries a 2px zinc-900 left rule (inset shadow: no layout shift)
-     instead of the blue plaque. No blue remains in the skin sidebar. */
+     seams dissolve; hover is a soft wash; the active item carries a
+     2px left rule (inset shadow: no layout shift) instead of the blue
+     plaque. The rule was zinc-900 until feedback T 2026-08-18 night
+     returned the active state to the system blue accent: blue is the
+     state family, black is furniture, active is a state. */
   body.ren-skin .snav-item {
     background: transparent;
     border-top-color: transparent;
@@ -561,7 +571,7 @@
   body.ren-skin .snav-item.active {
     background: transparent;
     border-top-color: transparent;
-    box-shadow: inset 2px 0 0 var(--zinc-900);
+    box-shadow: inset 2px 0 0 var(--blue-600); /* was zinc-900; the active state joins the blue state-accent family (feedback T 2026-08-18 night) */
   }
   /* Hovering the active item must not bend its 2px left rule: the hover
      radius rounds the padding box and the inset shadow with it, so the
@@ -577,7 +587,7 @@
   }
   body.ren-skin .snav-item.active .snav-label {
     font-weight: 500; /* was 600; no weight play on active, the owner vetoed the heavier cut (feedback T 2026-08-17 night); color does the work */
-    color: var(--zinc-950); /* was zinc-900; active brightens by color alone, same night feedback */
+    color: var(--blue-600); /* was zinc-950; active speaks in the state blue (feedback T 2026-08-18 night) */
   }
 
   /* 5: icons step back: 18px, ~zinc-400 via opacity (img assets carry
@@ -588,9 +598,24 @@
     max-height: 18px;
     opacity: 0.65; /* was 0.45; brighter per feedback T 2026-08-17 evening, Ren skin refinement */
   }
+  /* Active icon goes blue-600 with the rule and the label (feedback T
+     2026-08-18 night). The img asset carries its own gray strokes and
+     cannot take a token color, so the active state re-renders it as a
+     CSS mask: the img hides, and the icon box paints an 18px pseudo
+     masked by the very same SVG file. --snav-icon-url is copied from
+     each img's src by the sidebar script (one pass on load). This
+     supersedes the near-black brightness(0) filter of the 08-17 night
+     wave. */
   body.ren-skin .snav-item.active .snav-icon img {
-    opacity: 1; /* was 0.9; feedback T 2026-08-17 evening */
-    filter: brightness(0) saturate(100%); /* the gray stroke reads near-black, visually zinc-900 (feedback T 2026-08-17 night) */
+    display: none;
+  }
+  body.ren-skin .snav-item.active .snav-icon::after {
+    content: "";
+    width: 18px;
+    height: 18px;
+    background-color: var(--blue-600);
+    -webkit-mask: var(--snav-icon-url) center / contain no-repeat;
+    mask: var(--snav-icon-url) center / contain no-repeat;
   }
 
   /* 5: Upload Logo: the gray ghost button becomes a quiet text link
@@ -1768,6 +1793,7 @@
 <!-- wave-2026-08-17g marker: gbppl-label-live-m2r9 -->
 <!-- wave-2026-08-17i marker: gbppl-ren-refine-m4x2 gbppl-ren-hover-z100 -->
 <!-- wave-2026-08-17j marker: gbppl-ren-axis-n7q4 -->
+<!-- wave-2026-08-18a marker: gbppl-ren-blue-k3v8 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -2302,6 +2328,16 @@
   // serves both variants, data-label-ton overrides in nav=ton only
   // (fork correction 2026-08-12)
   var renameEls     = document.querySelectorAll('[data-label-russell], [data-label-ton]');
+
+  /* Ren skin active icon (feedback T 2026-08-18 night): the blue mask
+     re-render needs each icon's file as a CSS value, so every img src
+     is copied once onto its .snav-icon box as --snav-icon-url; pure
+     data transfer, no visual effect outside body.ren-skin .active. */
+  var snavIconImgs = document.querySelectorAll('.snav-icon img');
+  for (var si = 0; si < snavIconImgs.length; si++) {
+    snavIconImgs[si].parentNode.style.setProperty(
+      '--snav-icon-url', 'url("' + snavIconImgs[si].getAttribute('src') + '")');
+  }
 
   /* Captured live orders (source of truth for restore). Index 0 is the
      ton-only Explore Gifts item (feedback R 2026-08-17), a CSS-hidden
