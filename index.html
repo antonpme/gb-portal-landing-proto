@@ -337,19 +337,33 @@
   [data-nav="russell"] #navMyCompany,
   [data-nav="ton"] #navMyCompany { display: none; }
   /* Masthead is the only ton-only block (russell = ton minus masthead,
-     Ton's redefinition 2026-08-12) */
-  [data-nav="ton"] .masthead { display: block; }
+     Ton's redefinition 2026-08-12).
+     Slimmed to the wordmark alone (feedback R 2026-08-17 "too many
+     buttons competing"; the prepared fallback of DECISIONS-BANK item
+     3.5: the masthead thins to one logo). Quiet block: the card
+     dressing left with the button, no border, no white ground, no
+     reserved slots; the catalog entry now lives as the first item of
+     the Gifting menu, see #btnExploreGifts. */
+  [data-nav="ton"] .masthead {
+    display: block;
+    background: transparent;
+    border: none;
+  }
+  /* Explore Gifts as a regular menu item, nav=ton only (feedback R
+     2026-08-17): the id outweighs .nav-ton-only's display:none. */
+  [data-nav="ton"] #btnExploreGifts { display: flex; }
   [data-nav="russell"] .company-block,
   [data-nav="ton"] .company-block { display: block; }
 
-  /* Masthead (Ton 2026-08-12): same block container as the sections,
-     no zinc-50 header, no title. Wordmark + primary catalog entry only. */
+  /* Masthead (Ton 2026-08-12): was wordmark + primary catalog entry;
+     the button is gone (feedback R 2026-08-17, fallback DECISIONS-BANK
+     item 3.5). Vertical pads tightened with it: 28/16 + 24 gap held
+     air for the logo/CTA pair, a lone quiet wordmark rides 8px pads,
+     no hole where the button stood. */
   .masthead-inner {
-    padding: 28px 16px 16px;
+    padding: 8px 16px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
+    justify-content: center;
   }
   /* Logo: canonical GildedBox brand SVG from the live portal's markup,
      handed over by Ton 2026-08-12, vendored as icons/gildedbox-logo.svg.
@@ -362,33 +376,11 @@
      never stretched): 168px sits with ~59px of air each side inside
      the 286px content zone of the 320px block. */
   .masthead-logo { display: block; width: 168px; height: 56px; }
-  /* Black filled on the LIVE portal button theme (Ton 2026-08-12: all
-     prototype buttons leave the Figma Oro scale for the live theme,
-     no new measures, numbers already in SYSTEM.md portal chrome):
-     Inter 400, UPPERCASE, ls -0.35 -> -0.4 from 1280, ladder min-h
-     36 / 42 from 1280 / 48 from 2000 with 14 -> 16px labels (shared
-     steps, see LIVE BUTTON LADDER; harvest public-home 2026-08-17),
-     radius
-     5, no shadow or transform (canon: Russell cancelled button
-     shadows). Color: Ton's decision 2026-08-12, a permanent element
-     must not shout blue; Zinc 900, hover black, as the landing's
-     black CTA. */
-  .btn-explore {
-    min-height: 36px;
-    width: 100%;
-    padding: 8px 20px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.35px;
-    text-transform: uppercase;
-    background: var(--zinc-900);
-    color: var(--white);
-    border: none;
-    border-radius: var(--radius);
-    transition: background 150ms ease;
-  }
-  .btn-explore:hover { background: var(--black); }
+  /* The masthead's black EXPLORE GIFTS button and its .btn-explore
+     rules are removed (feedback R 2026-08-17 "too many buttons
+     competing"; fallback DECISIONS-BANK item 3.5). The catalog entry
+     is the Gifting menu's first item now, id and openCatalog wiring
+     carried over unchanged. */
 
   /* Company section (Ton 2026-08-12): Account anatomy mirrored. The
      company name takes the person-name role (.snav-name); Upload Logo
@@ -405,6 +397,17 @@
      so the visual seams survive the reorder. */
   [data-nav="ton"] .company-block .snav-menu .snav-item:nth-child(1) { order: 2; }
   [data-nav="ton"] .company-block .snav-menu .snav-item:nth-child(2) { order: 1; }
+  /* Brand Assets временно выключен, фидбек T 2026-08-17: hidden in
+     nav=ton only, the node, its russell render and the order flip
+     above stay untouched for the return. */
+  [data-nav="ton"] .company-block .snav-menu .snav-item:nth-child(1) { display: none; }
+
+  /* User identity moves to the Account (ex Admin) section in nav=ton
+     (feedback R 2026-08-17): the Gifting section's info block hides,
+     the ton-only duplicate #adminUserInfo (CSS-hidden in live and
+     russell via .nav-ton-only) renders instead. */
+  [data-nav="ton"] #accountUserInfo { display: none; }
+  [data-nav="ton"] #adminUserInfo { display: flex; }
 
   /* Demo interactive, nav=ton ONLY (Ton's brainstorm 2026-08-12; the
      fork correction removed it from russell): clicking Upload Logo
@@ -431,8 +434,9 @@
   @keyframes logoFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
   /* ============ CATALOG OVERLAY ============
-     Source: Ton's brainstorm, 2026-08-12. Opened by the masthead's
-     Explore Gifts button, so it is reachable only in nav=ton. Behavior
+     Source: Ton's brainstorm, 2026-08-12. Opened by the Gifting menu's
+     Explore Gifts item (the masthead button until feedback R
+     2026-08-17), so it is reachable only in nav=ton. Behavior
      reference: Tiffany & Co flyout: panel 95% viewport width pinned
      right (Ton's edit 2026-08-12: the dimmed left gap halved from ~10%
      to ~5%, exact copy of the Tiffany inset), click on the backdrop
@@ -1297,11 +1301,13 @@
      carry their own identical steps in the header block; GET HELP
      and SEND THIS GIFT were converted in the precision wave; the
      PROTO panel is service chrome and stays out. */
+  /* .btn-explore left the ladder with the masthead button (feedback R
+     2026-08-17, fallback DECISIONS-BANK item 3.5) */
   @media (min-width: 1280px) {
-    .btn-cta, .btn-explore, .btn-bar { min-height: 42px; font-size: 16px; letter-spacing: -0.4px; }
+    .btn-cta, .btn-bar { min-height: 42px; font-size: 16px; letter-spacing: -0.4px; }
   }
   @media (min-width: 2000px) {
-    .btn-cta, .btn-explore, .btn-bar { min-height: 48px; }
+    .btn-cta, .btn-bar { min-height: 48px; }
   }
 
   /* Collapsed state: bar stays fixed to the viewport bottom for as long as gifts exist,
@@ -1544,6 +1550,7 @@
 <!-- wave-2026-08-12i marker: gbppl-overlay-clean-v5j8 -->
 <!-- wave-2026-08-12j marker: gbppl-overlay-motion-q4f7 -->
 <!-- wave-2026-08-17 marker: gbppl-ladder-2000-h6r9 -->
+<!-- wave-2026-08-17b marker: gbppl-gifting-restructure-k3v7 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -1588,24 +1595,28 @@
     <aside class="sidebar">
 
       <!-- Masthead (Ton's brainstorm 2026-08-12): ton-only, above all sections.
-           Block container without the zinc-50 header; logo = canonical brand
-           SVG from the live portal (handed over by Ton 2026-08-12), primary
-           Explore Gifts opens the catalog overlay. Hidden in nav=live and
+           Logo = canonical brand SVG from the live portal (handed over by
+           Ton 2026-08-12). The EXPLORE GIFTS button is removed (feedback R
+           2026-08-17 "too many buttons competing"; fallback DECISIONS-BANK
+           item 3.5): the masthead is the quiet wordmark alone, the catalog
+           entry lives in the Gifting menu below. Hidden in nav=live and
            nav=russell. -->
       <section class="snav-block masthead nav-ton-only">
         <div class="masthead-inner">
           <a href="#"><img class="masthead-logo" src="icons/gildedbox-logo.svg" alt="GildedBox"></a>
-          <button class="btn-explore" type="button" id="btnExploreGifts">Explore Gifts</button>
         </div>
       </section>
 
       <section class="snav-block">
         <header class="snav-header">
-          <span class="snav-title">Account</span>
+          <!-- Section title reads Gifting in nav=ton (feedback R 2026-08-17); live and russell keep Account -->
+          <span class="snav-title" data-label-ton="Gifting">Account</span>
           <!-- Live keeps Upload Logo; both variants drop it here, it lives in the Company section (Ton 2026-08-12) -->
           <button class="upload-logo nav-live-only" type="button"><img src="icons/upload.svg" alt="">Upload Logo</button>
         </header>
-        <div class="snav-info">
+        <!-- In nav=ton the identity leaves this section for Account (ex Admin), feedback R 2026-08-17:
+             this block is CSS-hidden there and #adminUserInfo stands in; live and russell render it as before. -->
+        <div class="snav-info" id="accountUserInfo">
           <!-- Full user name in nav=ton only (fork correction 2026-08-12); live and russell keep the short one -->
           <div class="snav-row"><span class="snav-name" data-label-ton="Anton Parkhomenko">Anton</span></div>
           <!-- Company row leaves the Account block in both variants, the company name lives in the Company section (Ton 2026-08-12) -->
@@ -1616,11 +1627,20 @@
              Russell-variant text, JS swaps it in and restores the live text.
              Items keep their existing icons. -->
         <nav class="snav-menu" id="accountMenu">
+          <!-- Explore Gifts as a regular menu item, first in the section, above
+               My Designed Gifts (feedback R 2026-08-17 "too many buttons
+               competing"; fallback DECISIONS-BANK item 3.5): ton-only, opens
+               the same catalog overlay the masthead button owned, same id and
+               openCatalog wiring. Icon: gift.svg reused from the existing set,
+               the catalog IS gifts, no new icons drawn. CSS-hidden carrier in
+               nav=live and nav=russell. -->
+          <a class="snav-item nav-ton-only" href="#" id="btnExploreGifts"><span class="snav-icon"><img src="icons/gift.svg" alt=""></span><span class="snav-label">Explore Gifts</span></a>
           <a class="snav-item active" href="#"><span class="snav-icon"><img src="icons/gift.svg" alt=""></span><span class="snav-label" data-label-russell="My Designed Gifts">My Gifts</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/archery-target.svg" alt=""></span><span class="snav-label" data-label-russell="Gifting Campaigns">Gift Campaigns</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/gift-exchange.svg" alt=""></span><span class="snav-label">Gift Redeem Pages</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/laptop-check.svg" alt=""></span><span class="snav-label">Gift Design Approvals</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/time-machine.svg" alt=""></span><span class="snav-label" data-label-russell="Gift Order History">Orders</span></a>
+          <!-- Gift prefix drops in nav=ton on Redeem Pages / Design Approvals / Order History (feedback R 2026-08-17); live and russell labels untouched -->
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/gift-exchange.svg" alt=""></span><span class="snav-label" data-label-ton="Redeem Pages">Gift Redeem Pages</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/laptop-check.svg" alt=""></span><span class="snav-label" data-label-ton="Design Approvals">Gift Design Approvals</span></a>
+          <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/time-machine.svg" alt=""></span><span class="snav-label" data-label-russell="Gift Order History" data-label-ton="Order History">Orders</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/love-card.svg" alt=""></span><span class="snav-label">Thank You Notes</span></a>
           <!-- Brand Assets leaves this menu in both variants, it lives in the Company section (Ton 2026-08-12) -->
           <a class="snav-item nav-live-only" href="#"><span class="snav-icon"><img src="icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
@@ -1642,7 +1662,8 @@
 
       <section class="snav-block company-block nav-ton-only">
         <header class="snav-header">
-          <span class="snav-title">Company</span>
+          <!-- Section title reads My Company in nav=ton (feedback R 2026-08-17); russell keeps Company -->
+          <span class="snav-title" data-label-ton="My Company">Company</span>
         </header>
         <div class="snav-info">
           <!-- Demo interactive (Ton's brainstorm 2026-08-12): the box "uploads" the logo on click, Reset in the demo pill restores it -->
@@ -1658,8 +1679,17 @@
 
       <section class="snav-block">
         <header class="snav-header">
-          <span class="snav-title">Admin</span>
+          <!-- Section title reads Account in nav=ton (feedback R 2026-08-17); live and russell keep Admin -->
+          <span class="snav-title" data-label-ton="Account">Admin</span>
         </header>
+        <!-- User identity in nav=ton (feedback R 2026-08-17): the person moves
+             here from the first section; ton-only duplicate, live and russell
+             keep the identity up in #accountUserInfo. Full name per the fork
+             correction 2026-08-12. -->
+        <div class="snav-info nav-ton-only" id="adminUserInfo">
+          <div class="snav-row"><span class="snav-name">Anton Parkhomenko</span></div>
+          <div class="snav-row"><span class="snav-key">Email:</span><span class="snav-val">iam@antonp.me<img class="snav-check" src="icons/c-check.svg" alt=""></span></div>
+        </div>
         <!-- Live keeps this list verbatim. In both variants: My Company is hidden (absorbed by Company Management,
              Ton's final layout 2026-08-12); Gift Recipients (Addresses) and Account Information move up into Account
              (Ton's order 2026-08-12: frequency + gift lifecycle, settings sink); My Teams arrives first, Log out stays last. -->
@@ -1821,8 +1851,9 @@
     </div>
   </footer>
 
-  <!-- CATALOG OVERLAY (Ton's requirement 2026-08-12): opened only from the
-       nav=ton masthead. Tiffany-style right flyout framing the real v1 catalog. -->
+  <!-- CATALOG OVERLAY (Ton's requirement 2026-08-12): opened only in nav=ton,
+       from the Gifting menu's Explore Gifts item (ex masthead button, feedback
+       R 2026-08-17). Tiffany-style right flyout framing the real v1 catalog. -->
   <div class="catalog-overlay" id="catalogOverlay" aria-hidden="true">
     <div class="catalog-backdrop" id="catalogBackdrop"></div>
     <div class="catalog-panel" role="dialog" aria-modal="true" aria-label="Explore Gifts">
@@ -2048,34 +2079,38 @@
   // (fork correction 2026-08-12)
   var renameEls     = document.querySelectorAll('[data-label-russell], [data-label-ton]');
 
-  /* Captured live orders (source of truth for restore):
-     acc: 0 My Gifts, 1 Gift Campaigns, 2 Gift Redeem Pages,
-          3 Gift Design Approvals, 4 Orders, 5 Thank You Notes,
-          6 Brand Assets, 7 My Teams
+  /* Captured live orders (source of truth for restore). Index 0 is the
+     ton-only Explore Gifts item (feedback R 2026-08-17), a CSS-hidden
+     carrier in live and russell, so both restore pixel-identically:
+     acc: 0 Explore Gifts (ton-only), 1 My Gifts, 2 Gift Campaigns,
+          3 Gift Redeem Pages, 4 Gift Design Approvals, 5 Orders,
+          6 Thank You Notes, 7 Brand Assets, 8 My Teams
      adm: 0 My Company, 1 Payments, 2 Address Book, 3 Notifications,
           4 Account Information, 5 Password, 6 Log out */
   var accLive = Array.prototype.slice.call(accountMenu.children);
   var admLive = Array.prototype.slice.call(adminMenu.children);
 
   /* Fork snapshot order (nav=russell, ce4b90f state): Account keeps the
-     live sequence (Brand Assets acc 6 stays as a CSS-hidden carrier);
-     Admin gains My Teams on top, My Company (adm 0) rides CSS-hidden,
-     the rest keeps the live order incl. Address Book (renamed) and
-     Account Information. */
+     live sequence (Explore Gifts acc 0 and Brand Assets acc 7 ride as
+     CSS-hidden carriers); Admin gains My Teams on top, My Company
+     (adm 0) rides CSS-hidden, the rest keeps the live order incl.
+     Address Book (renamed) and Account Information. */
   var accRussell = [accLive[0], accLive[1], accLive[2], accLive[3],
-                    accLive[4], accLive[5], accLive[6]];
-  var admRussell = [accLive[7], admLive[0], admLive[1], admLive[2],
+                    accLive[4], accLive[5], accLive[6], accLive[7]];
+  var admRussell = [accLive[8], admLive[0], admLive[1], admLive[2],
                     admLive[3], admLive[4], admLive[5], admLive[6]];
 
-  /* Ton's living-branch order (2026-08-12): frequency + the gift
-     lifecycle (design, approve, send, history), settings sink to the
-     bottom. Account pulls Gift Recipients (Addresses) and Account
-     Information up from Admin; unnamed items (Gift Redeem Pages, Thank
-     You Notes) sit between Gift Order History and Gift Recipients.
+  /* Ton's living-branch order (2026-08-12; Explore Gifts prepended per
+     feedback R 2026-08-17): the catalog entry first, then frequency +
+     the gift lifecycle (design, approve, send, history), settings sink
+     to the bottom. The section pulls Gift Recipients (Addresses) and
+     Account Information up from Admin; unnamed items (Redeem Pages,
+     Thank You Notes) sit between Order History and Gift Recipients.
      Hidden carriers as above. Admin: My Teams first, Log out last. */
-  var accTon = [accLive[0], accLive[3], accLive[1], accLive[4],
-                accLive[2], accLive[5], admLive[2], admLive[4], accLive[6]];
-  var admTon = [accLive[7], admLive[0], admLive[1], admLive[3],
+  var accTon = [accLive[0], accLive[1], accLive[4], accLive[2],
+                accLive[5], accLive[3], accLive[6], admLive[2],
+                admLive[4], accLive[7]];
+  var admTon = [accLive[8], admLive[0], admLive[1], admLive[3],
                 admLive[5], admLive[6]];
 
   function applyOrder(menu, items) {
@@ -2166,7 +2201,14 @@
       overlay.style.display = '';
     }, OVERLAY_EXIT_MS);
   }
-  btnExplore.addEventListener('click', openCatalog);
+  /* btnExploreGifts is a menu item now, not the masthead button
+     (feedback R 2026-08-17): same id, same overlay, same choreography;
+     preventDefault keeps its '#' href from scrolling the page under
+     the panel. The item renders in nav=ton only (CSS). */
+  btnExplore.addEventListener('click', function (e) {
+    e.preventDefault();
+    openCatalog();
+  });
   /* Landing EXPLORE GIFTS in the right half of the two-path block opens
      the SAME overlay in nav=ton (Ton's addition 2026-08-12; same enter
      choreography, it is the same openCatalog); live and russell keep
