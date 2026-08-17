@@ -461,7 +461,16 @@
      Refinement (feedback T 2026-08-17 evening): labels step up to
      500/600 on zinc-700, icons to 0.65/1.0, the hover wash gets the
      --radius corners, and the page ground lightens to zinc-50; the
-     decisions above read as originally accepted, these lines amend. */
+     decisions above read as originally accepted, these lines amend.
+     Refinement (feedback T 2026-08-17 night): the masthead logo leaves
+     the center for the shared 16px left axis (the same padding-left the
+     eyebrows and menu items ride), the zinc-200 hairlines between
+     sections go entirely, and sections separate by air alone at 40px;
+     the eyebrow stays the only marker of a section start. Same night:
+     the active icon darkens to near-black via filter, the active label
+     drops back to 500 (no weight play, color alone marks the active
+     item, zinc-950), and the active item's hover loses the radius so
+     the 2px left rule never rounds. */
 
   /* 1: de-boxing. Cards dissolve into the page ground; the sidebar's
      16px card gap becomes 24px air + hairline + 24px air. */
@@ -477,15 +486,25 @@
     border-radius: 0;
     overflow: visible;
   }
+  /* Hairlines out (feedback T 2026-08-17 night): sections separate by
+     air alone, 40px; the eyebrow is the only marker of a section start. */
   body.ren-skin .snav-block + .snav-block {
-    border-top: 1px solid var(--zinc-200); /* hairline between sections */
-    margin-top: 24px;
-    padding-top: 24px;
-  }
-  /* The lone wordmark needs no rule under it, air alone */
-  body.ren-skin .masthead + .snav-block {
     border-top: none;
+    margin-top: 40px;
     padding-top: 0;
+  }
+  /* The lone wordmark keeps its tighter 24px of air to the first
+     section: the 40px inter-section step is for section-to-section
+     rhythm, the masthead block's own spacing does not inflate. */
+  body.ren-skin .masthead + .snav-block {
+    margin-top: 24px;
+  }
+
+  /* Masthead logo leaves the center for the shared 16px left axis, the
+     same padding-left the eyebrows and menu items ride (feedback T
+     2026-08-17 night). Pads stay 8px 16px, no vertical growth. */
+  body.ren-skin .masthead-inner {
+    justify-content: flex-start;
   }
 
   /* 3: section titles as eyebrow caps (the landing's COMPANY GIFTING
@@ -544,6 +563,12 @@
     border-top-color: transparent;
     box-shadow: inset 2px 0 0 var(--zinc-900);
   }
+  /* Hovering the active item must not bend its 2px left rule: the hover
+     radius rounds the padding box and the inset shadow with it, so the
+     active item opts out of the radius (feedback T 2026-08-17 night). */
+  body.ren-skin .snav-item.active:hover {
+    border-radius: 0;
+  }
   body.ren-skin .snav-label {
     text-transform: none; /* markup is Title Case already, the caps were CSS */
     font-weight: 500; /* was 400; denser per feedback T 2026-08-17 evening, Ren skin refinement */
@@ -551,8 +576,8 @@
     color: var(--zinc-700); /* was zinc-600; same refinement */
   }
   body.ren-skin .snav-item.active .snav-label {
-    font-weight: 600; /* was 500; feedback T 2026-08-17 evening, Ren skin refinement */
-    color: var(--zinc-900);
+    font-weight: 500; /* was 600; no weight play on active, the owner vetoed the heavier cut (feedback T 2026-08-17 night); color does the work */
+    color: var(--zinc-950); /* was zinc-900; active brightens by color alone, same night feedback */
   }
 
   /* 5: icons step back: 18px, ~zinc-400 via opacity (img assets carry
@@ -563,7 +588,10 @@
     max-height: 18px;
     opacity: 0.65; /* was 0.45; brighter per feedback T 2026-08-17 evening, Ren skin refinement */
   }
-  body.ren-skin .snav-item.active .snav-icon img { opacity: 1; } /* was 0.9; same refinement */
+  body.ren-skin .snav-item.active .snav-icon img {
+    opacity: 1; /* was 0.9; feedback T 2026-08-17 evening */
+    filter: brightness(0) saturate(100%); /* the gray stroke reads near-black, visually zinc-900 (feedback T 2026-08-17 night) */
+  }
 
   /* 5: Upload Logo: the gray ghost button becomes a quiet text link
      (Inter 13, zinc-500, underline on hover); the glyph goes with the
@@ -1739,6 +1767,7 @@
 <!-- wave-2026-08-17f marker: gbppl-cta-l-w7g3 -->
 <!-- wave-2026-08-17g marker: gbppl-label-live-m2r9 -->
 <!-- wave-2026-08-17i marker: gbppl-ren-refine-m4x2 gbppl-ren-hover-z100 -->
+<!-- wave-2026-08-17j marker: gbppl-ren-axis-n7q4 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
