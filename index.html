@@ -433,6 +433,146 @@
   }
   @keyframes logoFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+  /* ============ REN SKIN (nav=ren, editorial) ============
+     Ren = ton structure + editorial skin, derived, not a fork snapshot.
+     setNav('ren') keeps data-nav="ton" on the body (same order arrays,
+     same labels, same masthead with the wordmark, same Explore Gifts
+     item and overlay gates), and adds the ren-skin class on top; every
+     rule of the skin lives strictly under body.ren-skin, so future
+     structural edits to ton are inherited automatically and nothing
+     leaks into nav=ton itself.
+     Ren skin, accepted by Ton 2026-08-17. DEVIATION from the portal's
+     boxed style is deliberate (a candidate for the new language).
+     Five decisions (Ton 2026-08-17):
+       1 de-boxing: sidebar sections lose the white cards and borders,
+         sit on the page ground (zinc-100 body), separated by air and
+         zinc-200 hairlines;
+       2 items in Title Case (the markup already carries Title Case,
+         only the uppercase transform goes), Inter 400/14, -0.2px,
+         zinc-600, active zinc-900/500;
+       3 section titles as 11px eyebrow caps, +1.2px, 500, zinc-400
+         (the landing's COMPANY GIFTING FOR language);
+       4 active = 2px zinc-900 left rule + zinc-900 text, hover =
+         zinc-50 fill 150ms ease; no blue anywhere in the skin sidebar;
+       5 quieter secondary: 18px icons at 0.45 opacity (0.9 active),
+         Upload Logo as a quiet text link, lighter identity rows.
+     The --radius token stays wherever a surface remains (hero block,
+     metablock, buttons); the sidebar simply has no surfaces left. */
+
+  /* 1: de-boxing. Cards dissolve into the page ground; the sidebar's
+     16px card gap becomes 24px air + hairline + 24px air. */
+  body.ren-skin .sidebar { gap: 0; }
+  body.ren-skin .snav-block {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+  body.ren-skin .snav-block + .snav-block {
+    border-top: 1px solid var(--zinc-200); /* hairline between sections */
+    margin-top: 24px;
+    padding-top: 24px;
+  }
+  /* The lone wordmark needs no rule under it, air alone */
+  body.ren-skin .masthead + .snav-block {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  /* 3: section titles as eyebrow caps (the landing's COMPANY GIFTING
+     FOR language). The zinc-50 header band goes with the box. */
+  body.ren-skin .snav-header {
+    background: transparent;
+    min-height: 0;
+    padding: 0 16px;
+    margin-bottom: 10px;
+  }
+  body.ren-skin .snav-title {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--zinc-400);
+  }
+
+  /* 5: identity rows quiet down; the info block's card seam goes */
+  body.ren-skin .snav-info {
+    border-top: none;
+    padding: 0 16px 12px;
+  }
+  body.ren-skin .snav-name {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--zinc-900);
+  }
+  body.ren-skin .snav-key,
+  body.ren-skin .snav-val {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    color: var(--zinc-500);
+    padding: 0;
+  }
+
+  /* 2 + 4: item typography and states. White fills and border-top
+     seams dissolve; hover is a soft zinc-50 wash; the active item
+     carries a 2px zinc-900 left rule (inset shadow: no layout shift)
+     instead of the blue plaque. No blue remains in the skin sidebar. */
+  body.ren-skin .snav-item {
+    background: transparent;
+    border-top-color: transparent;
+    transition: background-color 150ms ease;
+  }
+  body.ren-skin .snav-item:hover {
+    background: var(--zinc-50);
+    border-top-color: transparent;
+  }
+  body.ren-skin .snav-item.active {
+    background: transparent;
+    border-top-color: transparent;
+    box-shadow: inset 2px 0 0 var(--zinc-900);
+  }
+  body.ren-skin .snav-label {
+    text-transform: none; /* markup is Title Case already, the caps were CSS */
+    font-weight: 400;
+    letter-spacing: -0.2px;
+    color: var(--zinc-600);
+  }
+  body.ren-skin .snav-item.active .snav-label {
+    font-weight: 500;
+    color: var(--zinc-900);
+  }
+
+  /* 5: icons step back: 18px, ~zinc-400 via opacity (img assets carry
+     their own stroke color, opacity is the lever); the 24px icon box
+     stays so the label column never moves. */
+  body.ren-skin .snav-icon img {
+    max-width: 18px;
+    max-height: 18px;
+    opacity: 0.45;
+  }
+  body.ren-skin .snav-item.active .snav-icon img { opacity: 0.9; }
+
+  /* 5: Upload Logo: the gray ghost button becomes a quiet text link
+     (Inter 13, zinc-500, underline on hover); the glyph goes with the
+     button chrome. */
+  body.ren-skin .upload-logo {
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    font-size: 13px;
+    color: var(--zinc-500);
+  }
+  body.ren-skin .upload-logo:hover {
+    background: transparent;
+    color: var(--zinc-500);
+    text-decoration: underline;
+  }
+  body.ren-skin .upload-logo img { display: none; }
+
   /* ============ CATALOG OVERLAY ============
      Source: Ton's brainstorm, 2026-08-12. Opened by the Gifting menu's
      Explore Gifts item (the masthead button until feedback R
@@ -1588,6 +1728,7 @@
 <!-- wave-2026-08-17e marker: gbppl-menu-logic-j5t2 -->
 <!-- wave-2026-08-17f marker: gbppl-cta-l-w7g3 -->
 <!-- wave-2026-08-17g marker: gbppl-label-live-m2r9 -->
+<!-- wave-2026-08-17h marker: gbppl-ren-skin-e4t7 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -1934,6 +2075,8 @@
         <button id="btnNavRussell" type="button">Russell</button>
         <!-- Visible label "Anton" per Ton 2026-08-12; internal values stay nav=ton so shared links keep working -->
         <button id="btnNavTon" type="button">Anton</button>
+        <!-- Ren = ton structure + editorial skin (Ton 2026-08-17); also via ?nav=ren -->
+        <button id="btnNavRen" type="button">Ren</button>
       </div>
       <div class="demo-group">
         <div class="demo-group-head">
@@ -2113,6 +2256,7 @@
   var btnNavLive    = document.getElementById('btnNavLive');
   var btnNavRussell = document.getElementById('btnNavRussell');
   var btnNavTon     = document.getElementById('btnNavTon');
+  var btnNavRen     = document.getElementById('btnNavRen');
   var accountMenu   = document.getElementById('accountMenu');
   var adminMenu     = document.getElementById('adminMenu');
   // Any element carrying a variant label swaps its text: data-label-russell
@@ -2165,36 +2309,46 @@
   }
 
   function setNav(n) {
-    document.body.setAttribute('data-nav', n);
+    /* Ren = ton structure + editorial skin, derived, not a fork
+       snapshot (Ton 2026-08-17): nav=ren applies exactly what nav=ton
+       applies (data-nav="ton" on the body, same arrays, same labels,
+       same ton-gated behaviors), plus the ren-skin class; all visual
+       differences live in CSS under body.ren-skin. */
+    var isRen = (n === 'ren');
+    var s = isRen ? 'ton' : n; // structural variant
+    document.body.setAttribute('data-nav', s);
+    document.body.classList.toggle('ren-skin', isRen);
     // Renames: data-label-russell is shared by both variants (Russell's
     // items 1, 2, 3, 6); data-label-ton overrides in nav=ton only (the
     // full user name, fork correction 2026-08-12)
-    var isVariant = (n === 'russell' || n === 'ton');
+    var isVariant = (s === 'russell' || s === 'ton');
     for (var i = 0; i < renameEls.length; i++) {
       var el = renameEls[i];
       if (!el.getAttribute('data-label-live')) {
         el.setAttribute('data-label-live', el.textContent);
       }
       var text = null;
-      if (n === 'ton') text = el.getAttribute('data-label-ton') || el.getAttribute('data-label-russell');
-      else if (n === 'russell') text = el.getAttribute('data-label-russell');
+      if (s === 'ton') text = el.getAttribute('data-label-ton') || el.getAttribute('data-label-russell');
+      else if (s === 'russell') text = el.getAttribute('data-label-russell');
       el.textContent = text || el.getAttribute('data-label-live');
     }
     // Section composition + per-variant order (fork 2026-08-12);
     // live restores verbatim
-    applyOrder(accountMenu, n === 'ton' ? accTon : (n === 'russell' ? accRussell : accLive));
-    applyOrder(adminMenu, n === 'ton' ? admTon : (n === 'russell' ? admRussell : admLive));
+    applyOrder(accountMenu, s === 'ton' ? accTon : (s === 'russell' ? accRussell : accLive));
+    applyOrder(adminMenu, s === 'ton' ? admTon : (s === 'russell' ? admRussell : admLive));
     btnNavLive.classList.toggle('variant-active', n === 'live');
     btnNavRussell.classList.toggle('variant-active', n === 'russell');
     btnNavTon.classList.toggle('variant-active', n === 'ton');
+    btnNavRen.classList.toggle('variant-active', n === 'ren');
     // The catalog overlay and the page metablock belong to nav=ton only
-    if (n !== 'ton') closeCatalog();
+    if (s !== 'ton') closeCatalog();
     updatePageMeta();
   }
 
   btnNavLive.addEventListener('click', function () { setNav('live'); });
   btnNavRussell.addEventListener('click', function () { setNav('russell'); });
   btnNavTon.addEventListener('click', function () { setNav('ton'); });
+  btnNavRen.addEventListener('click', function () { setNav('ren'); });
 
   /* ---- Catalog overlay (Ton's brainstorm 2026-08-12) ----
      Frames the real v1 catalog (./catalog/index.html?embed=1, vendored
@@ -2288,12 +2442,12 @@
       collapsed ? 'Expand prototype controls' : 'Collapse prototype controls');
   });
 
-  // ?v=a / ?v=b (hero) and ?nav=live / ?nav=russell / ?nav=ton (sidebar)
-  // combine; defaults: A + live
+  // ?v=a / ?v=b (hero) and ?nav=live / ?nav=russell / ?nav=ton /
+  // ?nav=ren (sidebar) combine; defaults: A + live
   var params = new URLSearchParams(window.location.search);
   setVariant(params.get('v') === 'b' ? 'b' : 'a');
   var navParam = params.get('nav');
-  setNav(navParam === 'russell' || navParam === 'ton' ? navParam : 'live');
+  setNav(navParam === 'russell' || navParam === 'ton' || navParam === 'ren' ? navParam : 'live');
   render();
 })();
 </script>
