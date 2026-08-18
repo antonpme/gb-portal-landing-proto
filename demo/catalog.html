@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gifts — GildedBox Demo Live</title>
+<link rel="icon" href="data:,">
+<!-- gbppl-demo-catalog -->
+<!-- ============================================================
+     DEMO-ЛАЙВ, страница каталога (Gifts)
+     ------------------------------------------------------------
+     Пиксельная копия https://www.gildedbox.com/catalog/products:
+     hero-лента, табы категорий + чипы цены, листинг карточек
+     436/528/720, Load More. Компоненты demo\components\catalog.js
+     (+ catalog.css), числа = harvest public-catalog 2026-08-17
+     (7 ширин 360..2560), SSR-DOM снят 18.08. Сверка прибором:
+     конфиг harvest\configs\demo-catalog.json (те же селекторы,
+     что public-catalog.json), результаты в harvest\demo-catalog\.
+     Контент настоящий: 12 живых товаров, картинки локально в
+     assets\products\ (CDN лайва отдаёт 403 без Referer —
+     хотлинк ненадёжен). Сортировки, хлебных крошек и классической
+     пагинации на живом каталоге НЕТ по факту.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="components/shell.css">
+<link rel="stylesheet" href="components/header.css">
+<link rel="stylesheet" href="components/catalog.css">
+<link rel="stylesheet" href="components/footer.css">
+
+<style>
+  /* Композиция страницы, не компонент: у лайва хедер fixed поверх
+     потока (плейсхолдер h-0), hero каталога начинается с y=0 под
+     баром. Demo-хедер sticky занимает 80px потока (DEVIATION
+     компонента), страница возвращает живые ординаты, затягивая
+     main под бар; фон бара непрозрачный (lg+ white/90 + blur),
+     как на лайве. */
+  main#catalog { margin-top: calc(-1 * var(--header-h)); }
+</style>
+</head>
+<body>
+
+  <gb-site-header></gb-site-header>
+
+  <main id="catalog">
+    <gb-catalog-hero heading="Gifts" image="assets/products/hero-gifts.png"></gb-catalog-hero>
+
+    <gb-catalog-filters></gb-catalog-filters>
+
+    <!-- 12 живых товаров, контент и порядок = каталог 18.08;
+         href в "#": страниц продуктов у demo-лайва ещё нет
+         (правило футера). -->
+    <gb-catalog-grid>
+      <gb-listing-card product-id="1176" badge="3 Options"
+        title="Venchi Chocoviar Collection" price="$125 - $195"
+        alt="Venchi Chocoviar Collection (24 pieces)"
+        img="assets/products/1176-main.webp" img-hover="assets/products/1176-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1154" badge="3 Options"
+        title="Macallan Prestige Collection" price="$270 - $890"
+        img="assets/products/1154-main.webp" img-hover="assets/products/1154-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1134" badge="3 Options"
+        title="La Dolce Vita White Wine Collection" price="$140 - $225"
+        img="assets/products/1134-main.webp" img-hover="assets/products/1134-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1130" badge="3 Options"
+        title="Clearly Caymus Collection" price="$190 - $270"
+        img="assets/products/1130-main.webp" img-hover="assets/products/1130-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1127" badge="2 Options"
+        title="Silver Oak Vinyards Cabernet" price="$200 - $325"
+        img="assets/products/1127-main.png" img-hover="assets/products/1127-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1118" badge="3 Options"
+        title="Famous Caymus Dark Chocolate Collection" price="$165 - $225"
+        img="assets/products/1118-main.webp" img-hover="assets/products/1118-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1112" badge="3 Options"
+        title="Famous Caymus Collection" price="$130 - $195"
+        img="assets/products/1112-main.webp" img-hover="assets/products/1112-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1106" badge="3 Options"
+        title="Stags' Leap Wine Night and Day Collection" price="$195 - $290"
+        img="assets/products/1106-main.webp" img-hover="assets/products/1106-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1094"
+        title="Beats Solo Buds" price="$150"
+        img="assets/products/1094-main.webp" img-hover="assets/products/1094-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="1081"
+        title="Taste of Amalfi" price="$200"
+        img="assets/products/1081-main.webp" img-hover="assets/products/1081-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="925"
+        title="Power Dock Trio Wireless Charger" price="$100"
+        img="assets/products/925-main.webp" img-hover="assets/products/925-hover.webp"></gb-listing-card>
+      <gb-listing-card product-id="893"
+        title="JBL Live Sound" price="$270"
+        img="assets/products/893-main.webp" img-hover="assets/products/893-hover.webp"></gb-listing-card>
+    </gb-catalog-grid>
+  </main>
+
+  <gb-site-footer></gb-site-footer>
+
+  <script src="components/shell.js"></script>
+  <script src="components/header.js"></script>
+  <script src="components/catalog.js"></script>
+  <script src="components/footer.js"></script>
+</body>
+</html>

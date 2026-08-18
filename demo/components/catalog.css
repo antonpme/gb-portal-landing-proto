@@ -1,0 +1,740 @@
+/* ============================================================
+   DEMO COMPONENT: CATALOG ZONE (hero + filters + listing)
+   ------------------------------------------------------------
+   Пиксельная копия зоны каталога https://www.gildedbox.com/
+   catalog/products. Провенанс каждой цифры = harvest
+   public-catalog 2026-08-17 (7 ширин 360..2560) + вычитанный
+   SSR-DOM лайва 18.08. Разметку стампуют catalog.js-компоненты
+   <gb-catalog-hero> / <gb-catalog-filters> / <gb-catalog-grid> /
+   <gb-listing-card>; живые имена классов (js-heroSection,
+   catalogFilters, container, viewGrid, h-[436px], p-[32px],
+   text-second-600, border-transparent, md:container, md:hidden,
+   rounded-full, font-serif, font-light, absolute) сохранены в
+   разметке, чтобы конфиг demo-catalog.json мерил ТЕМИ ЖЕ
+   селекторами, что public-catalog.json. Правила здесь висят на
+   коротких хуках .gbcH-* / .gbcF-* / .gbcL-* / .gbcCard-*.
+
+   Брейкпоинты лайва (Tailwind-конфиг клиента, вычислено по
+   замеру 17.08): sm 640, md 768, lg 1024, xl 1280,
+   2xl = 2000 (КАСТОМНЫЙ, не 1536: card 720 и шрифты 24/20/16
+   включаются между 1920 и 2258, та же ступень 2000, что у
+   кнопочной лестницы 48 из public-home-sweep).
+
+   ВНЕсистемные живые значения (полный список в отчёте Рена
+   18.08, вход разговора «канон vs баг»):
+     - активный таб = sky-600 #0284c7 (--second-600), не наш блю;
+     - дефолтный текст каталога #191919 (--catalog-ink), вне zinc;
+     - бейдж карточки text-gray-700 = neutral-700 #404040
+       (--catalog-badge-ink), третье серое семейство;
+     - hover-бордер карточки #5E5E5E, ни на одной шкале;
+     - preflight-бордер Tailwind 0 solid #e5e5e5 (neutral-200).
+   ============================================================ */
+
+gb-catalog-hero,
+gb-catalog-filters,
+gb-catalog-grid { display: block; }
+
+/* Preflight лайва в границах зоны: каждый элемент несёт
+   border: 0 solid #e5e5e5 (neutral-200, вне шкал; ширина 0 =
+   невидимо, но компьютед-стили замера читают style и color). */
+gb-catalog-hero *, gb-catalog-hero *::before, gb-catalog-hero *::after,
+gb-catalog-filters *, gb-catalog-filters *::before, gb-catalog-filters *::after,
+gb-catalog-grid *, gb-catalog-grid *::before, gb-catalog-grid *::after {
+  border: 0 solid #e5e5e5;
+}
+
+/* Базовая типографика зоны = body лайва: Inter 16/24, цвет
+   #191919 (вне цинковой шкалы, замер constant на всех целях).
+   Трекинг 0.2px лайв вешает глобально на a / button / ul / span
+   (реконструкция: контейнеры читают normal, ссылки/кнопки/списки
+   читают 0.2px; span доказан арифметикой сверки 18.08 — лейбл
+   «Filter by Price: » шире ровно на 16 симв. x 0.2px без правила;
+   перебивается tracking-tight кнопок и tracking-[1px] лейблов). */
+gb-catalog-hero, gb-catalog-filters, gb-catalog-grid {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--catalog-ink);
+}
+:is(gb-catalog-hero, gb-catalog-filters, gb-catalog-grid) :is(a, button, ul, span) {
+  letter-spacing: 0.2px;
+}
+:is(gb-catalog-hero, gb-catalog-filters, gb-catalog-grid) img {
+  display: block;
+  max-width: 100%;
+  border-style: none; /* preflight лайва: у img стиль none, не solid */
+}
+
+/* ------------------------------------------------------------
+   HERO: чёрная лента 354 -> 680 (md), белый serif-титул слева
+   внизу, картинка справа (harvest catalog-hero + SSR 18.08).
+   ------------------------------------------------------------ */
+.gbcH-hero {
+  position: relative;
+  height: 354px;
+  background: var(--black);
+  color: var(--white);
+}
+@media (min-width: 768px) {
+  .gbcH-hero { height: 680px; }
+}
+
+/* md:container лайва: ниже md голый блок без полей; с md поля 24
+   СРАЗУ (не 16, как у .container, — замер grid-section-wrapper
+   768 = 24px); с 1920 клэмп 1920 + поля 48. Ступени 1600 у
+   md:container НЕТ (1920 читает width 1920, не 1600). */
+.gbcH-container { height: 100%; padding-top: 50px; }
+@media (min-width: 768px) {
+  .gbcH-container {
+    width: 100%;
+    margin: 0 auto;
+    padding-left: var(--container-pad);
+    padding-right: var(--container-pad);
+  }
+}
+@media (min-width: 1024px) {
+  .gbcH-container { padding-top: 0; }
+}
+@media (min-width: 1920px) {
+  .gbcH-container {
+    max-width: var(--container-max-xl);
+    padding-left: var(--container-pad-wide);
+    padding-right: var(--container-pad-wide);
+  }
+}
+
+.gbcH-inner {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  position: relative;
+}
+@media (min-width: 1024px) {
+  .gbcH-inner { flex-direction: row; }
+}
+
+/* Колонка титула: скрыта до md; прижата вниз (pb 92). */
+.gbcH-titleCol { display: none; }
+@media (min-width: 768px) {
+  .gbcH-titleCol {
+    display: flex;
+    width: 100%;
+    height: auto;
+    align-items: flex-end;
+    padding-bottom: 92px;
+    text-align: center;
+    /* text-shadow-sm лайва; прибор тень не меряет, значение felt */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  }
+}
+@media (min-width: 1024px) {
+  .gbcH-titleCol { height: 100%; width: 25%; text-align: left; }
+}
+@media (min-width: 1280px) {
+  .gbcH-titleCol { width: 40%; }
+}
+
+/* h1: Noto Serif 400, лестница 36/48/52, tracking-wide (0.025em,
+   на 48px = 1.2px по замеру), leading-normal 1.5. */
+.gbcH-title {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: 0.025em;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+@media (min-width: 1280px) {
+  .gbcH-title { font-size: 48px; }
+}
+@media (min-width: 2000px) {
+  .gbcH-title { font-size: 52px; }
+}
+
+.gbcH-media {
+  display: flex;
+  flex: 1 1 0%;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.gbcH-mediaBox { width: 100%; height: 100%; overflow: hidden; }
+.gbcH-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+@media (min-width: 1024px) {
+  .gbcH-media img { object-fit: cover; }
+}
+
+/* ------------------------------------------------------------
+   FILTERS: серая лента zinc-100. Ниже md — мобильный бар
+   (serif Gifts + кнопка Filters, h 68); с md — .container с
+   табами категорий слева и кнопкой Filters справа; под ними
+   складной пул чипов цены (max-h-0, раскрывается кнопкой).
+   Сортировки и хлебных крошек на живом каталоге НЕТ по факту.
+   ------------------------------------------------------------ */
+.gbcF-section {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: var(--zinc-100);
+  padding-top: 0;
+}
+
+/* Мобильная зона: только ниже md. */
+.gbcF-mobile { width: 100%; max-width: 100%; overflow-x: hidden; }
+@media (min-width: 768px) {
+  .gbcF-mobile { display: none; }
+}
+.gbcF-mobileBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--zinc-100);
+}
+.gbcF-mobileTitle {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Кнопка Filters (PrimeVue text-severity), обе зоны: семья
+   min-h 36/42/48 (xl 1280 / 2xl 2000), паддинги 0 8 2 8,
+   uppercase c tracking-tight; лейбл внутри — normal-case
+   13/14/16. Десктопная носит bg-zinc-100 (невидима на ленте
+   той же заливки — живой факт). */
+.gbcF-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  vertical-align: bottom;
+  min-height: var(--btn-min-h);
+  min-width: var(--btn-min-h);
+  height: auto;
+  padding: 0 8px 2px;
+  background: transparent;
+  border-color: transparent; /* border-transparent PrimeVue-кнопки */
+  border-radius: var(--radius);
+  color: var(--zinc-900);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: var(--btn-letter-spacing);
+  text-transform: uppercase;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), fill 0.2s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (min-width: 1280px) {
+  .gbcF-toggle {
+    min-height: var(--btn-min-h-xl);
+    min-width: var(--btn-min-h-xl);
+    font-size: 16px;
+    letter-spacing: var(--btn-letter-spacing-xl);
+  }
+}
+@media (min-width: 2000px) {
+  .gbcF-toggle {
+    min-height: var(--btn-min-h-2xl);
+    min-width: var(--btn-min-h-2xl);
+  }
+}
+.gbcF-toggle:hover { background: rgba(212, 212, 216, 0.2); } /* surface-300/20 */
+.gbcF-toggle--panel { background: var(--zinc-100); }
+.gbcF-toggleLabel {
+  font-weight: 400;
+  text-transform: none;
+  font-size: 13px;
+}
+@media (min-width: 1280px) {
+  .gbcF-toggleLabel { font-size: 14px; }
+}
+@media (min-width: 2000px) {
+  .gbcF-toggleLabel { font-size: 16px; }
+}
+/* Иконобокс bars-filter: у лайва глиф иконошрифта в 1em-боксе
+   (24, 28 с 2000). DEVIATION: шрифта нет, инлайн-SVG в том же
+   боксе (как стрелка Back to Top футера). space-x-6 = ml 24. */
+.gbcF-toggleIcon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 24px;
+}
+/* Ширина бокса = живой advance глифа: 1em + трекинг 0.2px
+   (сверка 18.08 сошлась до 0.003px). */
+.gbcF-toggleIcon svg { width: 24.2px; height: 24px; }
+@media (min-width: 2000px) {
+  .gbcF-toggleIcon svg { width: 28.2px; height: 28px; }
+}
+
+/* Десктопный .container: живая лестница клэмпов, скоуплена под
+   живым именем (как в footer.css), скрыт ниже md. */
+gb-catalog-filters .container {
+  display: none;
+  width: 100%;
+  margin: 0 auto;
+  padding-left: var(--container-pad-narrow);
+  padding-right: var(--container-pad-narrow);
+}
+@media (min-width: 768px) {
+  gb-catalog-filters .container { display: block; }
+}
+@media (min-width: 1280px) {
+  gb-catalog-filters .container {
+    padding-left: var(--container-pad);
+    padding-right: var(--container-pad);
+  }
+}
+@media (min-width: 1600px) {
+  gb-catalog-filters .container { max-width: var(--container-max-lg); }
+}
+@media (min-width: 1920px) {
+  gb-catalog-filters .container {
+    max-width: var(--container-max-xl);
+    padding-left: var(--container-pad-wide);
+    padding-right: var(--container-pad-wide);
+  }
+}
+
+/* Голова: pt-8, табы слева (flex-1), кнопка справа; -mx-4. */
+.gbcF-head {
+  padding-top: 32px;
+  display: flex;
+  flex-direction: column;
+  margin-left: -16px;
+  margin-right: -16px;
+}
+@media (min-width: 768px) {
+  .gbcF-head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+.gbcF-tabsCol {
+  flex: 1 1 0%;
+  padding: 0 16px;
+  margin-left: -8px;
+  margin-right: -8px;
+}
+
+/* Табы категорий: uppercase 600, лестница 13/14/16 (xl/2xl),
+   leading 250%, нижний бордер 1.5px (активный = sky-600 лайва,
+   ВНЕ нашей системы; ховер любого = surface-900). */
+.gbcF-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0 8px;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--zinc-900);
+  text-transform: uppercase;
+}
+@media (min-width: 1280px) {
+  .gbcF-tabs { font-size: 14px; }
+}
+@media (min-width: 2000px) {
+  .gbcF-tabs { font-size: 16px; }
+}
+.gbcF-tab {
+  padding: 0 8px;
+  margin: 4px 16px 4px 0;
+  /* border-transparent лайва красит ВСЕ стороны (ширина только
+     у нижней; 1.5px прибор снимает как 1px — снап Chromium). */
+  border: 0 solid transparent;
+  border-bottom-width: 1.5px;
+  line-height: 250%;
+  cursor: pointer;
+}
+@media (min-width: 1024px) {
+  .gbcF-tab { margin-top: 8px; margin-bottom: 8px; }
+}
+@media (min-width: 1280px) {
+  .gbcF-tab { padding: 0 16px; }
+}
+@media (min-width: 2000px) {
+  .gbcF-tab { padding: 0 24px; margin-right: 24px; }
+}
+.gbcF-tab:hover { border-color: var(--zinc-900); }
+.gbcF-tab.text-second-600 {
+  color: var(--second-600);
+  border-color: var(--second-600); /* border-second-600: все стороны */
+  margin-right: 32px;
+}
+@media (min-width: 2000px) {
+  .gbcF-tab.text-second-600 { margin-right: 48px; }
+}
+.gbcF-tab.text-second-600:hover { border-color: var(--zinc-900); }
+
+/* Колонка кнопки Filters: фикс-ширина 210/260 (xl). Живой класс
+   flex-0 правила не имеет (дефолт flex 0 1 auto), ширину держит
+   w-[210px]: подтверждено замером ul = 558 @768 (768 - 210). */
+.gbcF-btnCol {
+  flex: 0 1 auto;
+  width: 210px;
+  padding: 0 16px;
+  margin: 32px -8px 0;
+  display: flex;
+}
+@media (min-width: 768px) {
+  .gbcF-btnCol { margin-top: 0; justify-content: flex-end; }
+}
+@media (min-width: 1280px) {
+  .gbcF-btnCol { width: 260px; }
+}
+.gbcF-btnBox { padding: 0 8px; }
+
+/* Складной пул чипов: закрыт max-h-0/opacity-0 (замер снят в
+   закрытом состоянии), кнопка Filters раскрывает (.is-open,
+   высота открытого = felt, лайв меряет только transition .7s). */
+.gbcF-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gbcF-panel.is-open { max-height: 400px; opacity: 1; }
+.gbcF-panelRow {
+  display: flex;
+  flex-direction: column;
+  padding-top: 16px;
+}
+@media (min-width: 768px) {
+  .gbcF-panelRow { padding-top: 32px; }
+}
+@media (min-width: 1280px) {
+  .gbcF-panelRow { flex-direction: row; align-items: center; }
+}
+.gbcF-groupWrap { display: flex; align-items: center; }
+.gbcF-priceLabel {
+  display: none;
+  font-weight: 400;
+  text-transform: none;
+  font-size: 12px;
+}
+@media (min-width: 1280px) {
+  .gbcF-priceLabel { display: block; font-size: 14px; margin-right: 32px; }
+}
+@media (min-width: 2000px) {
+  .gbcF-priceLabel { font-size: 16px; margin-right: 40px; }
+}
+.gbcF-chipGroup { display: flex; align-items: center; flex-wrap: wrap; }
+
+/* Чип цены: пилюля h 32/40 (xl), бордер 1px zinc-500,
+   px 8/24, ховер = тень карточки (shadow-md лайва). */
+.gbcF-chip {
+  display: flex;
+  margin: 4px 8px 4px 0;
+  padding: 0 8px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--zinc-500);
+  /* живой rounded-full = 9999px литералом; наш --radius-pill 999
+     остаётся у своих носителей (бейдж корзины) */
+  border-radius: 9999px;
+  color: var(--catalog-ink);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (min-width: 1280px) {
+  .gbcF-chip { margin-right: 16px; padding: 0 24px; height: 40px; }
+}
+@media (min-width: 2000px) {
+  .gbcF-chip { margin-right: 24px; }
+}
+.gbcF-chip:hover { box-shadow: var(--shadow-card); }
+.gbcF-chipContent {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.gbcF-chipLabel {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: 1px;
+}
+@media (min-width: 1280px) {
+  .gbcF-chipLabel { font-size: 14px; }
+}
+
+/* ------------------------------------------------------------
+   LISTING: обёртка md:container на ленте zinc-100, грид
+   flex-wrap 1/2/3 колонки (sm/lg), ниже — Load More. Классической
+   пагинации на лайве НЕТ по факту (absence-пробник 17.08).
+   ------------------------------------------------------------ */
+/* Обёртка md:container на лайве — flex-item центрирующего
+   родителя (замер: margin 0 при x 169 на 2258, min-height
+   читается auto); хост повторяет это flex-колонкой. */
+gb-catalog-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.gbcL-wrap {
+  width: 100%;
+  background: var(--zinc-100);
+  padding-top: 0;
+}
+@media (min-width: 768px) {
+  .gbcL-wrap { padding: 32px var(--container-pad) 0; }
+}
+@media (min-width: 1920px) {
+  .gbcL-wrap {
+    max-width: var(--container-max-xl);
+    padding-left: var(--container-pad-wide);
+    padding-right: var(--container-pad-wide);
+  }
+}
+.gbcL-grid { min-height: 200px; }
+.gbcL-row { display: flex; flex-wrap: wrap; margin: 0; }
+@media (min-width: 640px) {
+  .gbcL-row { margin: 0 -8px; }
+}
+
+/* Ячейка карточки: w-full -> 1/2 (sm) -> 1/3 (lg), px 8, pb 16. */
+.gbcL-cell { width: 100%; padding: 0 0 16px; }
+@media (min-width: 640px) {
+  .gbcL-cell { width: 50%; padding: 0 8px 16px; }
+}
+@media (min-width: 1024px) {
+  .gbcL-cell { width: 33.333333%; }
+}
+.gbcCard-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Рамка фикс-высоты: 436 / 528 (md) / 720 (2xl=2000). */
+.gbcCard-frame { position: relative; width: 100%; height: 436px; }
+@media (min-width: 768px) {
+  .gbcCard-frame { height: 528px; }
+}
+@media (min-width: 2000px) {
+  .gbcCard-frame { height: 720px; }
+}
+
+/* Карточка-якорь: zinc-50, радиус 5, transition .7s; c lg ховер
+   белит фон и рисует бордер #5E5E5E (вне шкал), тень на любой
+   ширине; картинка свапается на вторую (транзишен opacity 1s —
+   так читает прибор, class лайва duration-100 ВРЁТ). */
+a.gbcCard {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: var(--zinc-50);
+  border-radius: var(--radius);
+  color: var(--catalog-ink);
+  cursor: pointer;
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (min-width: 1024px) {
+  a.gbcCard:hover { background: var(--white); }
+}
+.gbcCard-rel { position: relative; height: 100%; }
+.gbcCard-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+a.gbcCard:hover .gbcCard-box { box-shadow: var(--shadow-card); }
+@media (min-width: 1024px) {
+  a.gbcCard:hover .gbcCard-box { border-color: var(--catalog-card-hover-border); }
+}
+
+/* Внутренняя колонка: паддинг 32 на всех ширинах. */
+.gbcCard-pad {
+  width: 100%;
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+}
+
+/* Зона бейджа держит 28px и без бейджа (min-h-[28px] mb-2). */
+.gbcCard-badgeZone { position: relative; min-height: 28px; margin-bottom: 8px; }
+.gbcCard-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--zinc-100);
+  color: var(--catalog-badge-ink);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+}
+@media (min-width: 768px) {
+  .gbcCard-badge {
+    font-size: 14px;
+    line-height: 20px;
+    padding: 8px 12px;
+  }
+}
+
+/* Картинки: две picture стопкой absolute inset-0, свап по ховеру. */
+.gbcCard-media {
+  position: relative;
+  width: 100%;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+}
+.gbcCard-media picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.gbcCard-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 1s;
+}
+.gbcCard-img--hover { opacity: 0; }
+a.gbcCard:hover .gbcCard-img--main { opacity: 0; }
+a.gbcCard:hover .gbcCard-img--hover { opacity: 1; }
+
+/* Подвал карточки: serif-титул 18/20/24 (xl/2xl) 600 lh 130%,
+   строка цены pt 12/16 (2xl), Inter 300 16/18/20. */
+.gbcCard-foot {
+  width: 100%;
+  flex-shrink: 0;
+  z-index: 10;
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gbcCard-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 130%;
+  font-weight: 600;
+  text-align: center;
+}
+@media (min-width: 1280px) {
+  .gbcCard-title { font-size: 20px; }
+}
+@media (min-width: 2000px) {
+  .gbcCard-title { font-size: 24px; }
+}
+.gbcCard-priceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+}
+@media (min-width: 2000px) {
+  .gbcCard-priceRow { padding-top: 16px; }
+}
+.gbcCard-price {
+  font-size: 16px;
+  font-weight: 300;
+  text-align: center;
+  width: 100%;
+}
+@media (min-width: 1280px) {
+  .gbcCard-price { font-size: 18px; }
+}
+@media (min-width: 2000px) {
+  .gbcCard-price { font-size: 20px; }
+}
+
+/* Load More: единственная пагинация листинга (пробник классической
+   не нашёл ничего). Синяя PrimeVue-кнопка семьи 36/42/48, лейбл
+   10/11/12 (sm 640 / 2xl 2000) 600 ls 1px; текст primary-contrast
+   #fafafa = zinc-50. */
+.gbcL-moreInner { width: 100%; text-align: center; padding-top: 32px; }
+.gbcL-moreBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  vertical-align: bottom;
+  min-height: var(--btn-min-h);
+  min-width: var(--btn-min-h);
+  height: auto;
+  gap: 12px;
+  padding: 8px 16px;
+  /* значения = --blue-600 #2563eb и --zinc-50 #fafafa; живая
+     PrimeVue-тема отдаёт их в color(srgb ...), литералы держат
+     компьютед-паритет с замером */
+  background: color(srgb 0.145098 0.388235 0.921569);
+  border-radius: var(--radius);
+  color: color(srgb 0.980392 0.980392 0.980392);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: var(--btn-letter-spacing);
+  text-transform: uppercase;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), fill 0.2s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (min-width: 1280px) {
+  .gbcL-moreBtn {
+    min-height: var(--btn-min-h-xl);
+    min-width: var(--btn-min-h-xl);
+    gap: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 16px;
+    letter-spacing: var(--btn-letter-spacing-xl);
+  }
+}
+@media (min-width: 2000px) {
+  .gbcL-moreBtn {
+    min-height: var(--btn-min-h-2xl);
+    min-width: var(--btn-min-h-2xl);
+  }
+}
+.gbcL-moreBtn:hover { background: var(--blue-700); }
+.gbcL-moreLabel {
+  text-transform: uppercase;
+  letter-spacing: var(--btn-label-letter-spacing);
+  font-size: 10px;
+  font-weight: var(--btn-label-font-weight);
+}
+@media (min-width: 640px) {
+  .gbcL-moreLabel { font-size: var(--btn-label-font-size); }
+}
+@media (min-width: 2000px) {
+  .gbcL-moreLabel { font-size: var(--btn-label-font-size-2xl); }
+}
