@@ -1,34 +1,418 @@
 /* ============================================================
-   DEMO COMPONENT: FOOTER, ЗАГЛУШКА
+   DEMO COMPONENT: SITE FOOTER
    ------------------------------------------------------------
-   TODO(волна B): живой футер gildedbox.com ещё не замерен
-   конвейером на 7 ширинах; этот блок — минимальная заглушка,
-   держащая место и цветовую массу. Когда harvest волны B
-   принесёт числа (колонки, серифные титулы, легальная строка,
-   crumb-strip портала), заглушка заменяется полноценным
-   компонентом с провенансом на каждое правило.
-   Что уже известно и не выдумано: грунт чёрный (live 2026-08-12),
-   hairline #3d3d3d вне цинковой шкалы (--footer-hairline),
-   обёртка едет по той же контейнерной лестнице .gb-container.
+   Пиксельная копия живого футера gildedbox.com. Провенанс каждой
+   цифры = harvest public-footer / public-footer-sweep /
+   public-footer-sweep-accordion 2026-08-18 (7 ширин 360..2560,
+   свипы порогов 500-1280 и 641-699) + вычитанный SSR-CSS лайва.
+   Классы и вложенность = живой DOM (footer.footer > .page-footer >
+   .footer-main + .footerCopyright), чтобы конфиг demo-footer.json
+   мерил ТЕМИ ЖЕ селекторами, что public-footer.json.
+   Tailwind-классы лайва (pt-16 xl:pt-24, py-8 2xl:py-12) ВРУТ и
+   сюда не переносились: вычисленные значения другие, верим замеру.
+   Всё заскоуплено под gb-site-footer: .container/.row/.col здесь --
+   грид Materialize живого футера, ему нельзя протекать в страницу.
    ============================================================ */
 
 gb-site-footer { display: block; }
-.gb-footer-stub {
-  background: var(--black);
-  color: var(--white);
-  border-top: 1px solid var(--footer-hairline);
+
+/* Preflight лайва в границах футера: Tailwind даёт каждому
+   элементу border: 0 solid #e5e5e5 (neutral-200, вне наших шкал;
+   ширина 0 = невидимо, но компьютед-стили замера читают style и
+   color). Скоуплено, чтобы не менять UA-дефолты страницы. */
+gb-site-footer *,
+gb-site-footer *::before,
+gb-site-footer *::after {
+  border: 0 solid #e5e5e5;
 }
-.gb-footer-stub .gb-container {
-  min-height: 120px;
+
+/* Корень футера: live line-height 24px приходит с body лайва
+   (Tailwind base 1.5rem); фиксируем на корне, чтобы не зависеть
+   от body demo-страницы. */
+gb-site-footer .footer { line-height: 24px; }
+
+/* Обёртка футера: line-height 24px несёт ВЕСЬ футер (лайв
+   .page-footer{line-height:24px}; замер 18.08: 24px на 11px тексте
+   на всех уровнях). Цветовое правило лайва в этой строке битое
+   (SCSS-функция) и не переносится. */
+gb-site-footer .page-footer {
+  display: block;
+  line-height: 24px;
+  padding-top: 0;
+}
+
+/* Ссылки футера: белые, ховер rgba(255,255,255,.8) без
+   подчёркиваний и transform (снято наведением на 1536, 18.08);
+   транзишен = глобальное a-правило лайва (замер: transition
+   color/border/background/opacity/box-shadow .3s ease-in-out). */
+gb-site-footer a {
+  transition: color 0.3s ease-in-out 0s, border 0.3s ease-in-out 0s,
+    background 0.3s ease-in-out 0s, opacity 0.3s ease-in-out 0s,
+    box-shadow 0.3s ease-in-out 0s;
+}
+gb-site-footer .page-footer a { color: var(--white); }
+gb-site-footer .page-footer a:hover { color: var(--footer-link-hover); }
+
+/* ------------------------------------------------------------
+   Контейнер: та же живая лестница клэмпов, что .gb-container
+   (shell.css), продублирована под живым именем .container, чтобы
+   селекторы замера совпадали и класс не протекал наружу.
+   ------------------------------------------------------------ */
+gb-site-footer .container {
+  width: 100%;
+  margin: 0 auto;
+  padding-left: var(--container-pad-narrow);   /* 16px, base */
+  padding-right: var(--container-pad-narrow);
+}
+@media (min-width: 1280px) {
+  gb-site-footer .container {
+    padding-left: var(--container-pad);        /* 24px */
+    padding-right: var(--container-pad);
+  }
+}
+@media (min-width: 1600px) {
+  gb-site-footer .container { max-width: var(--container-max-lg); } /* 1600 */
+}
+@media (min-width: 1920px) {
+  gb-site-footer .container {
+    max-width: var(--container-max-xl);        /* 1920 */
+    padding-left: var(--container-pad-wide);   /* 48px */
+    padding-right: var(--container-pad-wide);
+  }
+}
+
+/* ------------------------------------------------------------
+   Грид Materialize живого футера (вычитан из SSR-CSS, подтверждён
+   замером): row = flex-wrap с полями -8, col = паддинг 8;
+   s-колонки везде, m-ступень с 601, l-ступень с 993.
+   ------------------------------------------------------------ */
+gb-site-footer .row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -8px;
+  margin-right: -8px;
+}
+gb-site-footer .row.items-center { align-items: center; }
+gb-site-footer .col {
+  flex: none;
+  min-height: 1px;
+  padding: 0 8px;
+}
+gb-site-footer .col.s12 { width: 100%; }
+gb-site-footer .col.s10 { width: 83.3333333333%; }
+gb-site-footer .col.s2  { width: 16.6666666667%; }
+@media (min-width: 601px) {
+  gb-site-footer .col.m9 { width: 75%; }
+  gb-site-footer .col.m3 { width: 25%; }
+}
+@media (min-width: 993px) {
+  gb-site-footer .col.l3 { width: 25%; }
+  gb-site-footer .col.l8 { width: 66.6666666667%; }
+  gb-site-footer .col.offset-l1 { margin-left: 8.3333333333%; }
+}
+
+/* ------------------------------------------------------------
+   Главный чёрный блок. Паддинги по замеру, НЕ по Tailwind-классам:
+   base 0 0 30px; <=600 pb 0; >=993 35px 0 40px
+   (свип 500-1280 18.08: ступени ровно на 601 и 993).
+   ------------------------------------------------------------ */
+gb-site-footer .footer-main {
+  background-color: var(--black);
+  color: var(--white);
+  font-size: 11px;
+  /* live: Tailwind border-[#3D3D3D] красит все четыре стороны,
+     ширину 1px получает только верх (border-t). */
+  border: 0 solid var(--footer-hairline);
+  border-top-width: 1px;
+  padding: 0 0 30px;
+}
+@media (max-width: 600px) {
+  gb-site-footer .footer-main { padding-bottom: 0; }
+}
+@media (min-width: 993px) {
+  gb-site-footer .footer-main { padding: 35px 0 40px; }
+}
+
+/* Ряд бренд-колонка + нав-зона: живой pt-4 = 16px (замер). */
+gb-site-footer .footerMain { padding-top: 16px; }
+
+/* ------------------------------------------------------------
+   Бренд-колонка: лого + communication-list. letter-spacing 0.2px
+   живёт на этом уровне (замер: col нормальный, лого и список 0.2).
+   На 601-992 блок ложится в строку лого слева / список справа
+   (замер 768: список x 519.67, высота колонки 144 = 128 + mb 16).
+   ------------------------------------------------------------ */
+gb-site-footer .footer-block { letter-spacing: 0.2px; }
+@media (min-width: 601px) and (max-width: 992px) {
+  gb-site-footer .footer-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+}
+
+/* Лого-ссылка: ширина клэмпится 160, паддинг-право 32, mb 16;
+   инлайн-SVG 168x56 переливается за клэмп, как на лайве
+   (замер: link w 160, svg w 168, оба h 56, на всех ширинах). */
+gb-site-footer .footer-logo .logo {
+  display: block;
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+  margin: 0 0 16px;
+  padding-right: 32px;
+}
+/* Знак белый: у лайва белый инлайн-SVG; наш ассет несёт
+   fill="#18181b" на корне, CSS-переопределение выигрывает у
+   презентационного атрибута. */
+gb-site-footer .footer-logo svg {
+  display: block;
+  fill: var(--white);
+}
+
+/* Адрес / телефон / почта: Inter 400 11/24, трекинг 0.2 (наследован
+   от .footer-block); маркеры-точки 3px на left -3 из живого CSS.
+   Высота списка constant 128 на всех семи ширинах (замер). */
+gb-site-footer .communication-list {
+  list-style: none;
+  font-size: 11px;
+  margin: 0 -15px;
+  padding: 16px 0;
+  overflow: hidden;
+}
+gb-site-footer .communication-list li {
+  margin-bottom: 8px;
+  padding: 0 16px;
+  position: relative;
+}
+gb-site-footer .communication-list li::after {
+  content: "";
+  display: block;
+  width: 3px;
+  height: 3px;
+  background: currentColor;
+  border-radius: var(--radius-circle);
+  position: absolute;
+  left: -3px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* Курсив адреса = UA-дефолт address, лайв его не сбрасывает
+   (замер: font-style italic); фиксируем явно. */
+gb-site-footer .communication-list address { font-style: italic; }
+
+/* ------------------------------------------------------------
+   Нав-зона: 5 ячеек. У .footerNavigation на лайве Tailwind-класс
+   border-t, но собственное правило border:0 его гасит --
+   вычисленная рамка 0 (замер 18.08, все ширины). Ячейки
+   100% -> 33% (>=640) -> 20% (>=1024), поля +-16.
+   ------------------------------------------------------------ */
+gb-site-footer .footerNavigation { border: 0; padding: 0; }
+gb-site-footer .footerNavigation__block {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -16px;
+  letter-spacing: 0.2px;
+}
+gb-site-footer .footerNavigation__block > div {
+  flex: none;
+  width: 100%;
+  padding: 0 16px;
+}
+@media (min-width: 640px) {
+  gb-site-footer .footerNavigation__block > div { width: 33%; }
+}
+@media (min-width: 1024px) {
+  gb-site-footer .footerNavigation__block > div { width: 20%; }
+}
+
+/* Заголовок колонки: Noto Serif 400, 18/26.1 (<=640) -> 22/31.9,
+   lh 1.45, паддинг 16/32/16/0 (замер, обе ступени). На <=640 это
+   кнопка аккордеона с волосяными линиями #1D1D1D. Крестик-плюс
+   лайва не переносится: его background задан битой SCSS-функцией,
+   деклара дропается браузером, бары прозрачны = невидимы. */
+gb-site-footer .subMenu__title {
+  display: block;
+  width: 100%;
+  position: relative;
+  background: transparent;
+  border: 0;
+  padding: 16px 32px 16px 0;
+  color: var(--white);
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.45;
+  /* UA-стиль кнопок сбрасывает трекинг в normal; лайв возвращает
+     его preflight-ом (letter-spacing: inherit) -- 0.2px от нава. */
+  letter-spacing: inherit;
+  text-align: inherit;
+}
+
+/* Ссылки колонок: Inter 300 14/19.88 (lh 1.42 на ul), паддинг 5/0. */
+gb-site-footer .subMenu__block ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1.42;
+}
+gb-site-footer .subMenu__block ul li a {
+  display: block;
+  font-size: 14px;
+  font-weight: 300;
+  padding: 5px 0;
+}
+
+/* Мобильный аккордеон (<=640): закрыт по умолчанию, раскрытие
+   анимацией grid-template-rows 0fr -> 1fr за 0.2s (живой приём,
+   замер 360: display grid, h 0, overflow hidden). Ровно на 640
+   живёт однопиксельное "кривое" состояние лайва: ячейки уже 33%,
+   аккордеоны ещё закрыты -- воспроизводится этими же порогами. */
+@media (max-width: 640px) {
+  gb-site-footer .footerNavigation__block .subMenu { width: 100%; }
+  gb-site-footer .subMenu__title {
+    font-size: 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--footer-hairline-mobile);
+  }
+  gb-site-footer .footerNavigation__block:first-child .subMenu__title {
+    border-top: 1px solid var(--footer-hairline-mobile);
+  }
+  gb-site-footer .subMenu__block {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.2s;
+  }
+  gb-site-footer .subMenu__block ul {
+    align-self: end;
+    min-height: 0;
+    visibility: hidden;
+    transition: visibility 0.5s;
+  }
+  gb-site-footer .subMenu.active .subMenu__block {
+    grid-template-rows: 1fr;
+    padding: 16px 0;
+  }
+  gb-site-footer .subMenu.active .subMenu__block ul { visibility: visible; }
+}
+
+/* ------------------------------------------------------------
+   Легальная полоса: py 10 constant на всех семи ширинах (замер;
+   Tailwind py-8 2xl:py-12 на лайве перекрыт собственным CSS).
+   ------------------------------------------------------------ */
+gb-site-footer .footerCopyright {
+  background-color: var(--black);
+  color: var(--white);
+  font-size: 11px;
+  overflow: hidden;
+  padding: 10px 0;
+  /* как у footer-main: цвет всем сторонам, ширина только верху */
+  border: 0 solid var(--footer-hairline);
+  border-top-width: 1px;
+}
+
+/* Левый блок: до 993 обычный поток (строки © + компания /
+   IPMedia / policyList, замер 360: 24+24+22 = 70), с 993 flex в
+   одну строку. Трекинг 0.2 несут сами дети (замер: блок normal,
+   каждый ребёнок 0.2). */
+@media (min-width: 993px) {
+  gb-site-footer .footerCopyright__block {
+    display: flex;
+    align-items: center;
+  }
+}
+gb-site-footer .footerCopyright__block > * { letter-spacing: 0.2px; }
+
+/* Правый блок: float right (Materialize .right лайва); колонка
+   s2/m3 -- flex-итем = BFC, содержит флоат, кнопка прижата к
+   правой кромке контента (замер 360: правый край 343.98 = кромка
+   ряда; 1280: 1256 = 1280 - 24). */
+gb-site-footer .footerCopyright__block.right { float: right; }
+
+/* Знак (c): 16px, line-height 0, инлайн-блок (в flex с 993
+   блокифицируется сам, как на лайве). */
+gb-site-footer .copy {
+  display: inline-block;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 0;
+  vertical-align: middle;
+}
+gb-site-footer .copyright {
+  display: inline-block;
+  margin: 0 14px 0 0;
+}
+
+/* Privacy / All rights reserved / Sitemap: flex-список, lh 16,
+   li паддинг 3/8. Базовый цвет #015287 живёт на ul (замер), но
+   виден только белым ссылкам ниже -- перекрыт .page-footer a. */
+gb-site-footer .policyList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  margin: 0 -8px;
+  padding: 0;
+  color: var(--footer-policy-ink);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+}
+gb-site-footer .policyList li { padding: 3px 8px; }
+
+/* Back to Top: underline-кнопка h 40, px 12, Inter 300 14/14,
+   нижняя рамка 1px white (вычисленное значение замера; в исходнике
+   лайва записано 1.3px, компьютед читает 1px). Лейбл скрыт до 768
+   (hidden md:block лайва), иконка 16 с ml 8 constant (правило
+   [class^=icon] лайва бьёт Tailwind ml-0). */
+gb-site-footer .backToTop {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
+  position: relative;
+  height: 40px;
+  min-width: auto;
+  padding: 0 12px;
+  background: transparent;
+  /* live .btn: border:none (стороны в currentColor), затем
+     нижняя рамка white */
+  border: none;
+  border-bottom: 1px solid var(--white);
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 14px;
+  transition: 0.25s, background-color 1s, border-color;
 }
-.gb-footer-stub__note {
-  font-size: 11px;
-  line-height: 24px;
-  letter-spacing: 0.2px;
-  color: var(--crumb-strip-ink);
+gb-site-footer .backToTop span {
+  color: var(--white);
+  transition: transform 0.5s 0.25s;
 }
-.gb-footer-stub img { width: 160px; filter: invert(1); display: block; }
+gb-site-footer .backToTop:hover span { transform: none; }
+gb-site-footer .backToTop .hidden { display: none; }
+@media (min-width: 768px) {
+  gb-site-footer .backToTop .hidden { display: block; }
+}
+/* DEVIATION: у лайва стрелка -- глиф шрифта Nucleo (16.2x16);
+   шрифта у нас нет, глиф заменён инлайн-SVG в боксе тех же
+   размеров. Пиксельная геометрия кнопки сохранена. */
+gb-site-footer .backToTop .icon-arrow-up {
+  display: block;
+  /* Advance живого глифа Nucleo = 16.203125 (замер 16.2031);
+     пишем 16.2032: LayoutUnit Chrome снапит вниз до 1/64px,
+     и ровно 16.2031 в стиле дало бы 16.1875. */
+  width: 16.2032px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+gb-site-footer .backToTop .icon-arrow-up svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
