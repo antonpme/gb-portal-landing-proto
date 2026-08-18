@@ -487,7 +487,15 @@
      Ren skin refinement). Ren only; ton/live/russell keep zinc-100. */
   body.ren-skin { background: var(--zinc-50); }
 
-  body.ren-skin .sidebar { gap: 0; }
+  /* Rail narrows 320 -> 280 in the ren skin only (feedback R
+     2026-08-18: "панель чуть уже"). Ren only: live / russell / ton
+     keep the Figma 320. The narrowing is safe for the ren label set:
+     the widest item, Gift Recipients (Addresses), measures ~183px of
+     the 208px label column that 280 leaves (280 - 16 pad - 24 icon -
+     16 gap - 16 pad), so no item breaks to a second line; the
+     two-line fallback of the [data-nav] rules stays in place anyway.
+     Undone at <=900 where the rail goes full width, see SMALL SCREENS. */
+  body.ren-skin .sidebar { gap: 0; width: 280px; }
   body.ren-skin .snav-block {
     background: transparent;
     border: none;
@@ -581,9 +589,16 @@
   }
   body.ren-skin .snav-label {
     text-transform: none; /* markup is Title Case already, the caps were CSS */
+    /* Labels step up one notch and gain contrast (feedback R
+       2026-08-18: "шрифт чуть крупнее и виднее"). 14 -> 15px and
+       zinc-700 -> zinc-800; the weight stays 500 and the active item
+       still differs by color alone (Ton's no-weight-play veto,
+       2026-08-17 night, reaffirmed by Ton-5). line-height stays the
+       inherited 21px so the 46px item geometry does not move. */
+    font-size: 15px;
     font-weight: 500; /* was 400; denser per feedback T 2026-08-17 evening, Ren skin refinement */
     letter-spacing: -0.2px;
-    color: var(--zinc-700); /* was zinc-600; same refinement */
+    color: var(--zinc-800); /* was zinc-700 (and zinc-600 before that); feedback R 2026-08-18 */
   }
   body.ren-skin .snav-item.active .snav-label {
     font-weight: 500; /* was 600; no weight play on active, the owner vetoed the heavier cut (feedback T 2026-08-17 night); color does the work */
@@ -1251,6 +1266,141 @@
   /* Variant containers */
   .hero-variant[hidden] { display: none; }
 
+  /* ============ START GIFTING BLOCK (?hero=start) ============
+     gbppl-hero-start. Feedback R 2026-08-18 (call) + T's decisions:
+     the landing leaves the "two equal doors" composition for ONE
+     route. Explore survives but submits to Start. Opt-in variant:
+     the block renders only under [data-hero="start"] on the body,
+     which also hides the two-half .hero-block; the greeting above
+     (A's eyebrow + pipe list, B's h1 + sub) is untouched, so
+     ?hero=start composes with ?v= and with every ?nav= value.
+     Nothing is set on the body without the parameter: the approved
+     default view keeps its exact DOM and CSS.
+     Composition rules taken from the call, all restrictive:
+       - blockless: no cards, no borders, no dividers, no vertical OR;
+       - the 2x2 is PURE TYPOGRAPHY: no icons ("too many icons", R),
+         no rules, no colored markers (no gold per BRAND, and blue is
+         reserved for state, Ton-5 2026-08-18);
+       - one step larger type and more air than the two-half block
+         ("cleaner, larger fonts, whitespace", R).
+     The four lines are Russell's own wording, carried verbatim. */
+  .hero-start { display: none; }
+  [data-hero="start"] .hero-block { display: none; }
+  [data-hero="start"] .hero-start { display: block; }
+
+  /* Block title = the live SECTION heading role, not a page title:
+     Noto Serif 36 / 300 / lh 1.4 / tracking normal is what the live
+     site's section h2 measures (harvest public-our-story +
+     public-platform 2026-08-17, "Our Story is Your Story", "Watch
+     How It Works"); the live page h1 is 48/400, so this sits a level
+     below by construction and the hero's own greeting stays the
+     welcome. NOTE: the page loads Noto Serif 400/500/600 only, so
+     the declared 300 resolves to 400 in the browser, exactly as the
+     existing .page-title 300 already does; the declaration keeps the
+     live provenance readable and the font link is left alone. */
+  .hs-title {
+    font-family: 'Noto Serif', Georgia, serif;
+    font-size: 32px;      /* <1280, one step under the live 36 */
+    line-height: 1.4;     /* live 50.4/36 */
+    font-weight: 300;
+    color: var(--zinc-900);
+    margin-bottom: 48px;
+  }
+
+  /* 2x2, columns of equal weight, separated by air alone. The block
+     keeps its own 960px measure inside the 1200px hero so no line
+     runs long and the composition breathes. Cells are left-aligned
+     (the four lines are of very uneven length; centered rag would
+     read as noise), the grid as a whole stays centered. */
+  .hs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 80px;
+    row-gap: 48px;
+    max-width: 960px;
+    margin: 0 auto 56px;
+    text-align: left;
+  }
+  /* Contrast inside a cell is carried by weight and size only.
+     grid=weight (default): Inter 600 title over Inter 300 line. */
+  .hs-cell-title {
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--zinc-900);
+    margin-bottom: 10px;
+  }
+  .hs-cell-line {
+    font-size: 20px;   /* one step over the two-half block's 19px */
+    line-height: 1.55;
+    font-weight: 300;
+    color: var(--zinc-600);
+  }
+  /* grid=serif: the cell title changes family instead of weight; the
+     weight is the live section-heading 300 (renders 400, see above),
+     which lands it exactly on the live footer column-title role
+     (Noto Serif 400 22, harvest public-home 2026-08-17). */
+  [data-grid="serif"] .hs-cell-title {
+    font-family: 'Noto Serif', Georgia, serif;
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: normal;
+  }
+
+  /* One primary, one subordinate. Filled Blue 600 = the system's
+     primary CTA (Ton-5: blue is the accent of action and state);
+     Explore Gifts is permanent furniture and stays black, now
+     OUTLINED so the hierarchy is unmistakable at a glance. Both are
+     built on BUTTON L of the proportion formula (tokens.css), the
+     same class the two hero CTAs wear: min-h 48 / 56 from 1280 / 64
+     from 2000, pad-y 8 constant, pad-x = 0.5H (24 / 28 / 32),
+     radius --radius, Inter 400 UPPERCASE 14 -> 16 from 1280,
+     ls -0.35 -> -0.4. DEVIATION, felt value: a min-width per step
+     (176 / 200 / 220), because the formula sizes a button from its
+     label and the label here is the single word START; without a
+     floor the primary would render narrower than its subordinate.
+     Both buttons carry a 1px border (transparent-colored on the
+     filled one) so the two are pixel-equal in every box metric. */
+  .hs-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .btn-start {
+    min-height: 48px;   /* BUTTON L base */
+    min-width: 176px;   /* felt floor, see above */
+    padding: 8px 24px;  /* pad-x = 0.5H */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.35px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    transition: background 150ms ease, border-color 150ms ease;
+  }
+  .btn-start-primary {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: var(--white);
+  }
+  .btn-start-primary:hover {
+    background: var(--blue-700);
+    border-color: var(--blue-700);
+  }
+  .btn-start-outline {
+    background: transparent;
+    border-color: var(--zinc-900);
+    color: var(--zinc-900);
+  }
+  .btn-start-outline:hover { background: var(--zinc-100); }
+
   /* ============ PAGE META (breadcrumbs + title card) ============
      Source: live portal, Ton's screen 2026-08-12. Shows only in nav=ton
      (fork correction 2026-08-12) and only once gifts exist (Add gift),
@@ -1539,10 +1689,18 @@
   @media (min-width: 1280px) {
     .btn-cta { min-height: 56px; padding-left: 28px; padding-right: 28px; font-size: 16px; letter-spacing: -0.4px; } /* L >=1280, interpolated: pad-x = 0.5H */
     .btn-bar { min-height: 42px; font-size: 16px; letter-spacing: -0.4px; }
+    /* gbppl-hero-start: the Start / Explore Gifts pair rides the same
+       BUTTON L ladder as .btn-cta; min-width is the felt floor for the
+       one-word START label, see the block's provenance */
+    .btn-start { min-height: 56px; min-width: 200px; padding-left: 28px; padding-right: 28px; font-size: 16px; letter-spacing: -0.4px; }
+    .hs-actions { gap: 24px; }
+    .hs-title { font-size: 36px; margin-bottom: 56px; } /* the live section-h2 size lands from 1280 */
+    .hs-grid { column-gap: 96px; row-gap: 56px; margin-bottom: 64px; }
   }
   @media (min-width: 2000px) {
     .btn-cta { min-height: 64px; padding-left: 32px; padding-right: 32px; } /* L >=2000, interpolated per Ren's proportion formula; threshold 2000 mirrors the live ladders */
     .btn-bar { min-height: 48px; }
+    .btn-start { min-height: 64px; min-width: 220px; padding-left: 32px; padding-right: 32px; } /* gbppl-hero-start, L >=2000 */
   }
 
   /* Collapsed state: bar stays fixed to the viewport bottom for as long as gifts exist,
@@ -1729,6 +1887,10 @@
   @media (max-width: 900px) {
     .layout { flex-direction: column; }
     .layout .sidebar { order: 2; width: 100%; }
+    /* The ren skin's narrower 280px rail is a desktop measure only; on
+       the stacked layout it goes full width like every other variant
+       (its selector outweighs the line above, so it is undone here) */
+    body.ren-skin .sidebar { width: 100%; }
     .layout .content { order: 1; width: 100%; }
     .hero { --hero-zone: auto; min-height: 0; padding: 24px 0; }
     [data-nav="ton"] .hero { --hero-zone: auto; }
@@ -1770,6 +1932,16 @@
     .gbh-cta { display: none; }
     .footer__main { grid-template-columns: 1fr 1fr; padding: 40px 0; }
     .footer__legal { flex-wrap: wrap; gap: 12px; padding: 16px 0; }
+    /* gbppl-hero-start on phones: the 2x2 folds to one column, the
+       type steps down by clamp like every other hero role, and the
+       two buttons stack full width with the primary on top. */
+    .hs-title { font-size: clamp(26px, 6.5vw, 32px); margin-bottom: 32px; }
+    .hs-grid { grid-template-columns: 1fr; column-gap: 0; row-gap: 32px; margin-bottom: 40px; }
+    .hs-cell-title { font-size: clamp(19px, 5vw, 22px); }
+    [data-grid="serif"] .hs-cell-title { font-size: clamp(19px, 5vw, 22px); }
+    .hs-cell-line { font-size: clamp(16px, 4.2vw, 20px); }
+    .hs-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+    .btn-start { width: 100%; min-width: 0; }
   }
 </style>
 </head>
@@ -1794,6 +1966,7 @@
 <!-- wave-2026-08-17i marker: gbppl-ren-refine-m4x2 gbppl-ren-hover-z100 -->
 <!-- wave-2026-08-17j marker: gbppl-ren-axis-n7q4 -->
 <!-- wave-2026-08-18a marker: gbppl-ren-blue-k3v8 -->
+<!-- wave-2026-08-18b marker: gbppl-hero-start gbppl-ren-narrow-t4s7 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -2025,6 +2198,39 @@
               </div>
               <span class="or-badge" aria-hidden="true">or</span>
             </div>
+          </div>
+        </div>
+
+        <!-- START GIFTING: the one-route center block (?hero=start),
+             gbppl-hero-start. Sits OUTSIDE the A/B variant nodes on
+             purpose: it replaces only the two-CTA zone, so it rides on
+             top of whichever greeting ?v= selects and works in every
+             ?nav= variant. Hidden unless the body carries
+             data-hero="start". Four cells, Russell's own wording from
+             the 2026-08-18 call, verbatim. -->
+        <div class="hero-start" id="heroStart">
+          <h2 class="hs-title">Start Gifting</h2>
+          <div class="hs-grid">
+            <div class="hs-cell">
+              <h3 class="hs-cell-title">Recommendations</h3>
+              <p class="hs-cell-line">Gift recommendations for your industry and recipients</p>
+            </div>
+            <div class="hs-cell">
+              <h3 class="hs-cell-title">Brand-first design</h3>
+              <p class="hs-cell-line">Professional gift designs to reflect your brand so you look your absolute best</p>
+            </div>
+            <div class="hs-cell">
+              <h3 class="hs-cell-title">Portal automation</h3>
+              <p class="hs-cell-line">Setup and integration of gifting portal to automate your gifting programs</p>
+            </div>
+            <div class="hs-cell">
+              <h3 class="hs-cell-title">No minimums</h3>
+              <p class="hs-cell-line">Send gifts as you need</p>
+            </div>
+          </div>
+          <div class="hs-actions">
+            <button class="btn-start btn-start-primary" type="button">Start</button>
+            <button class="btn-start btn-start-outline" type="button">Explore Gifts</button>
           </div>
         </div>
 
@@ -2489,8 +2695,9 @@
   /* Landing EXPLORE GIFTS in the right half of the two-path block opens
      the SAME overlay in nav=ton (Ton's addition 2026-08-12; same enter
      choreography, it is the same openCatalog); live and russell keep
-     the inert button. */
-  var heroExplore = document.querySelectorAll('.hero-half .btn-cta-black');
+     the inert button. The Start Gifting block's outlined EXPLORE GIFTS
+     (?hero=start) joins the same wiring, gbppl-hero-start. */
+  var heroExplore = document.querySelectorAll('.hero-half .btn-cta-black, .hero-start .btn-start-outline');
   for (var he = 0; he < heroExplore.length; he++) {
     heroExplore[he].addEventListener('click', function () {
       if (document.body.getAttribute('data-nav') === 'ton') openCatalog();
@@ -2524,6 +2731,15 @@
   setVariant(params.get('v') === 'b' ? 'b' : 'a');
   var navParam = params.get('nav');
   setNav(navParam === 'russell' || navParam === 'ton' || navParam === 'ren' ? navParam : 'live');
+  /* ?hero=start (gbppl-hero-start): swaps the two-CTA zone for the
+     Start Gifting block; ?grid=weight (default) | serif picks how the
+     2x2 cell titles are cut. Both attributes are set ONLY when the
+     parameter is present, so the approved default view keeps its exact
+     DOM. Composes freely with ?v= and ?nav=. */
+  if (params.get('hero') === 'start') {
+    document.body.setAttribute('data-hero', 'start');
+    document.body.setAttribute('data-grid', params.get('grid') === 'serif' ? 'serif' : 'weight');
+  }
   render();
 })();
 </script>
