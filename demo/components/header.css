@@ -1,0 +1,205 @@
+/* ============================================================
+   DEMO COMPONENT: SITE HEADER
+   ------------------------------------------------------------
+   Перенос аппрувнутого хедера прототипа (site\index.html,
+   .gb-header / .gbh-*) один в один; правила подключены к токенам
+   demo\assets\tokens.css. Провенанс каждой цифры = прототип +
+   live-замеры (SYSTEM.md 2026-08-12; harvest public-home и
+   public-home-sweep 2026-08-17):
+
+     бар            80px на ВСЕХ ширинах, мобильной ступени нет
+     фон            #fcfdfd, на lg+ white/90 + blur 6px
+     тень           константная 0 4px 8px rgba(102,102,102,.05)
+     нав-пункт      Inter 500 uppercase, ls 0.5, 14px -> 16px c 1280;
+                    с 1280 высота пункта 56 (16+16 пад + lh 24)
+     кнопки         семья шапки min-h 36 / 42 (>=1280) / 48 (>=2000);
+                    порог 2000 КАСТОМНЫЙ, не Tailwind-сетка
+                    (свип 17.08: 1999 = 42, 2000 = 48)
+     лейбл кнопки   внутренний span[data-pc-section="label"]:
+                    11px / 600 / ls 1px / lh normal, 12px c 2000
+     DEVIATION      прототип держит sticky вместо живого fixed
+                    (у лайва плейсхолдер h-0 + fixed бар); перенесено
+                    как в прототипе.
+   ============================================================ */
+
+/* Кастом-элемент несёт sticky-позицию: внутренний header.gb-header
+   остаётся измеримой копией живого бара. */
+gb-site-header {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 31;
+}
+.gb-header {
+  background: var(--live-body);
+  box-shadow: var(--shadow-header);
+}
+@media (min-width: 1024px) {
+  .gb-header {
+    background: var(--header-glass);
+    backdrop-filter: blur(6px);
+  }
+}
+
+/* Бар 80px на каждой ширине (harvest public-home 2026-08-17:
+   80 на всех тринадцати свип-ширинах, включая 360 и 768). */
+.gbh-bar {
+  height: var(--header-h);
+  display: grid;
+  grid-template-columns: 230px 1fr auto;
+  align-items: center;
+  gap: 48px;
+}
+.gbh-brand { display: inline-flex; width: 168px; height: 56px; align-items: center; }
+.gbh-brand img { width: 100%; height: auto; }
+
+/* Живой ритм нава: li margin 0 16px + link padding 16px
+   (SYSTEM.md site chrome, live 2026-08-12), 64px между лейблами. */
+.gbh-nav { display: flex; align-items: center; }
+.gbh-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px;
+  padding: 16px;
+  background: transparent;
+  border: 0;
+  color: var(--zinc-900);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  text-transform: uppercase;
+  transition: opacity 160ms;
+}
+@media (min-width: 1280px) {
+  .gbh-link { font-size: 16px; }
+}
+.gbh-link:hover { opacity: 0.8; }
+
+/* Золотой чип Beta на CUSTOMIZE: легаси-акцент лайва, #bea042
+   (SYSTEM.md site chrome, live 2026-08-12). Новых золотых
+   элементов не заводить (BRAND.md). */
+.gbh-beta {
+  border-radius: var(--radius);
+  padding: 3px 6px;
+  background: var(--gold-beta);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  text-transform: none;
+}
+.gbh-actions { display: flex; align-items: center; gap: 12px; }
+
+/* Кнопочная семья шапки, лестница M 36/42/48 (LIVE BUTTON LADDER
+   в tokens.css; harvest public-home 2026-08-17). Ступень 48
+   включается ровно с 2000px — кастомный порог вне Tailwind-сетки. */
+.gbh-cta {
+  min-height: var(--btn-min-h);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: var(--btn-pad-y) var(--btn-pad-x);
+  background: var(--zinc-800);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  letter-spacing: var(--btn-letter-spacing);
+  line-height: var(--btn-line-height);
+  text-transform: uppercase;
+  white-space: nowrap; /* живые кнопки никогда не переносятся */
+  transition: background 160ms, border-color 160ms;
+}
+@media (min-width: 1280px) {
+  .gbh-cta {
+    min-height: var(--btn-min-h-xl);
+    padding-left: var(--btn-pad-x-xl);
+    padding-right: var(--btn-pad-x-xl);
+    font-size: var(--btn-font-size-xl);
+    gap: 20px;
+    letter-spacing: var(--btn-letter-spacing-xl);
+  }
+}
+/* Ступень 48 ровно с 2000 (свип 17.08: 1999 = 42, 2000 = 48) */
+@media (min-width: 2000px) {
+  .gbh-cta { min-height: var(--btn-min-h-2xl); }
+}
+.gbh-cta:hover { background: var(--zinc-700); }
+
+/* Контурный MY PORTAL per live: прозрачный, Zinc 900 текст и
+   1px бордер; hover = felt value, лайв цифры не даёт. */
+.gbh-cta--outline {
+  background: transparent;
+  color: var(--zinc-900);
+  border: 1px solid var(--zinc-900);
+}
+.gbh-cta--outline:hover { background: var(--zinc-100); }
+
+/* Типографика лейбла = живой span[data-pc-section="label"]
+   (harvest public-home-sweep 2026-08-17): 11 / 600 / ls 1px /
+   lh normal, 12px c 2000 — тот же внесеточный порог, что и
+   ступень 48. Uppercase и цвет наследуются от кнопки. */
+.gbh-cta span[data-pc-section="label"] {
+  font-size: var(--btn-label-font-size);
+  font-weight: var(--btn-label-font-weight);
+  letter-spacing: var(--btn-label-letter-spacing);
+  line-height: var(--btn-label-line-height);
+}
+@media (min-width: 2000px) {
+  .gbh-cta span[data-pc-section="label"] { font-size: var(--btn-label-font-size-2xl); }
+}
+
+/* Бейдж корзины per live (SYSTEM.md site chrome, live 2026-08-12):
+   16x16, шрифт 10, Blue 600, белое кольцо 1px. DEVIATION: у лайва
+   якорь top -13px right 5px от 20px иконобокса; адаптировано к
+   нашей круглой 44px кнопке (как в прототипе). */
+.gbh-count {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  background: var(--blue-600);
+  border: 1px solid var(--white);
+  border-radius: var(--radius-pill);
+  color: var(--white);
+  font-size: 10px;
+}
+.gbh-icon-button {
+  position: relative;
+  width: var(--icon-button-size);
+  height: var(--icon-button-size);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-circle);
+  color: var(--zinc-900);
+  transition: background 160ms;
+}
+.gbh-icon-button:hover { background: var(--v1-ink-hover); }
+
+/* Минимальный мобильный фолбэк, перенос из прототипа один в один
+   (@media max-width 900px): меню и CTA уходят, знак ужимается до
+   126x42, сетка бара теряет фиксированную брендовую колонку.
+   Бар держит 80px и здесь: лайв читает 80 на каждой ширине
+   (harvest public-home 2026-08-17). Живая мобильная шапка (бургер,
+   144x48 знак на 360) не переносилась и в прототип: фолбэк свой,
+   felt values (провенанс прототипа). */
+@media (max-width: 900px) {
+  .gbh-bar { grid-template-columns: auto 1fr auto; gap: 16px; }
+  .gbh-nav { display: none; }
+  .gbh-brand { width: 126px; height: 42px; }
+  .gbh-cta { display: none; }
+}
