@@ -764,7 +764,8 @@
      locks and compensates with padding so nothing under the backdrop
      jumps; close restores. The panel itself is full-height, the
      iframe brings its own inner scroll. */
-  body.catalog-locked {
+  body.catalog-locked,
+  body.start-locked {   /* the Start panel locks by the same recipe, gbppl-start-panel */
     overflow: hidden;
     padding-right: var(--scrollbar-width, 0px);
   }
@@ -1531,12 +1532,15 @@
      arrangements: the text, the four glyphs and the two buttons are
      the very same nodes in every case and only CSS moves them, so a
      wording fix lands in all three at once and they can never drift.
-       &layout=grid  the approved 2x2 with the hairline cross (default,
-                     and also what renders with no parameter at all);
-       &layout=split editorial asymmetry, title column left, the four
-                     points stacked right;
        &layout=band  one horizontal ribbon of four columns, the shape
-                     the live home page already uses for its benefits.
+                     the live home page already uses for its benefits;
+                     THE DEFAULT since 2026-08-18, and what renders
+                     with no parameter at all (Russell chose it out of
+                     the three, gbppl-start-panel);
+       &layout=grid  the approved 2x2 with the hairline cross (the
+                     earlier default, still one parameter away);
+       &layout=split editorial asymmetry, title column left, the four
+                     points stacked right.
      The rhythm correction above (context line held twice as far away
      as anything inside the cluster) is written on the shared rules, so
      all three inherit it. &grid=weight|serif keeps working everywhere:
@@ -1654,6 +1658,458 @@
   [data-layout="band"] .hs-cell { padding: 0 24px; }
   [data-layout="band"] .hs-cell + .hs-cell { border-left: 1px solid var(--zinc-200); }
   [data-layout="band"] .hs-cell-line { font-size: 16px; }
+
+  /* ============ START PANEL: WHAT HAPPENS ON START ============
+     gbppl-start-panel. Russell's ask on the 2026-08-18 call: "design
+     what happens when we click Start". The answer is not a page and
+     not a form: START opens the door to a PERSON, in three channels,
+     which is what the live business actually offers.
+
+     MEASURED FROM THE LIVE SITE (headless pass 2026-08-18,
+     www.gildedbox.com/catalog/products): the live header's own START
+     GIFTING opens a RIGHT SLIDE-OVER, not a centered modal. Numbers
+     read off the live DOM: backdrop rgba(0,0,0,.6) over the whole
+     viewport, panel 600px wide and full height pinned right, header
+     band 78px on Zinc 100 carrying a centered Noto Serif 24/600 title
+     and a 42px close control with radius 5, body on Zinc 50, content
+     column 472px (= 600 - 2 x 64), underline inputs (border-bottom
+     1px Zinc 400, h 56, Inter 300 16), primary CTA filled Blue 600,
+     h 56, radius 5, Inter 600 16 uppercase ls -0.4, full column
+     width, and body overflow:hidden while it is open; Esc closes.
+     Their BOOK A MEETING is a link to /page/contact-us-219, a page of
+     the same underline fields (Email / Phone / Your Name / Company),
+     and a Pubble chat widget (370x600, radius 4) is the third
+     channel. So the three doors below are not invented: they are the
+     three ways the live site already lets you reach a human.
+
+     WHAT WE TAKE AND WHAT WE DON'T. Taken: the right slide-over at
+     600px, the header band, the underline fields, the full-width blue
+     CTA, the scroll lock, Esc. Not taken: the live's sign-in wall
+     (their START GIFTING asks for an account before it asks what you
+     need; the block above promises a route, so the panel answers with
+     the route and leaves the account for later), the centered serif
+     title in the band (our overlay language keeps the band for
+     controls and lets the content carry its own head), and the
+     42px zinc-filled close (we keep our own 44px icon-button).
+
+     FORM, in the prototype's own language: this is the catalog
+     overlay's choreography verbatim (backdrop 300ms, panel 500ms
+     cubic-bezier(.22,1,.36,1), content +12px 400ms after 150ms; exit
+     380ms ease-in with the backdrop trailing 80ms; reduced motion =
+     fades), the same front-corner radius, the same Zinc 50 ground and
+     the same --scrollbar-width lock. The cross sits in the header
+     FIELD, never on the content, as it does in the framed catalog;
+     it takes the left seat there (DECISIONS-BANK item 4, Ton
+     2026-08-12: "крестик слева, та же дроверная геометрия"), and the
+     step's Back control sits beside it in the same band, so the
+     controls are one group and the content column stays clean.
+
+     THREE DOORS as one whole form (Russell's principle: whole forms,
+     not floating tiles): a single white card with internal Zinc 200
+     hairlines, each door a full-width button. Clicking a door does
+     not navigate: the panel swaps its view in place and the band
+     grows a Back. */
+  .start-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 42;   /* over the catalog overlay's 40, under nothing else */
+    display: none;
+  }
+  .start-overlay.open,
+  .start-overlay.closing { display: block; }
+  .start-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(24, 24, 27, 0.4);   /* the catalog overlay's own dim */
+    opacity: 0;
+    transition: opacity 300ms ease-out;
+  }
+  .start-overlay.closing .start-backdrop { transition: opacity 300ms ease-out 80ms; }
+  .start-overlay.open .start-backdrop { opacity: 1; }
+  .start-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 600px;         /* the live drawer's own width, measured */
+    max-width: 100%;
+    background: var(--zinc-50);
+    border-left: 1px solid var(--zinc-200);
+    border-radius: var(--radius) 0 0 var(--radius);
+    box-shadow: -24px 0 48px rgba(24, 24, 27, 0.08);
+    transform: translateX(100%);
+    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .start-overlay.closing .start-panel { transition: transform 380ms ease-in; }
+  .start-overlay.open .start-panel { transform: translateX(0); }
+  .start-panel:focus { outline: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .start-panel,
+    .start-overlay.closing .start-panel {
+      transform: none;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+    .start-overlay.open .start-panel { opacity: 1; transform: none; }
+  }
+
+  /* Header band: 80px, one height with the framed catalog's sticky row
+     and with the live portal header; Zinc 100 like the live drawer's
+     band, closed by a hairline. Controls only, no title. */
+  .gsp-head {
+    flex-shrink: 0;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 18px;
+    background: var(--zinc-100);
+    border-bottom: 1px solid var(--zinc-200);
+  }
+  /* 44px icon-button, the v1 drawer geometry the catalog cross already
+     wears, with a 22px glyph */
+  .gsp-close {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--zinc-500);
+    transition: background 150ms ease, color 150ms ease;
+  }
+  .gsp-close:hover { background: var(--zinc-200); color: var(--zinc-900); }
+  /* Back belongs to the step, so it appears only past the doors */
+  .gsp-back {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 12px 0 6px;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--zinc-500);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background 150ms ease, color 150ms ease;
+  }
+  .gsp-back:hover { background: var(--zinc-200); color: var(--zinc-900); }
+  .start-panel:not([data-view="doors"]) .gsp-back { display: inline-flex; }
+
+  /* Content column = the live drawer's 472px inside 600 (64px sides) */
+  .gsp-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 64px 64px;
+    /* Content layer of the enter choreography, as in the catalog */
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 400ms ease-out 150ms, transform 400ms ease-out 150ms;
+  }
+  .start-overlay.open .gsp-body { opacity: 1; transform: translateY(0); }
+  .start-overlay.closing .gsp-body { opacity: 1; transform: none; transition: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .gsp-body { transform: none; transition: opacity 300ms ease; }
+    .start-overlay.open .gsp-body { transform: none; }
+  }
+  .gsp-view { display: none; }
+  .start-panel[data-view="doors"]   .gsp-view[data-view="doors"],
+  .start-panel[data-view="chat"]    .gsp-view[data-view="chat"],
+  .start-panel[data-view="meeting"] .gsp-view[data-view="meeting"],
+  .start-panel[data-view="call"]    .gsp-view[data-view="call"] { display: block; }
+
+  /* Head of every view: the serif line is the block's own voice
+     (Noto Serif 300, the live section-h2 role one step down from the
+     landing's 32/36), the Inter 300 line under it says what to do. */
+  .gsp-title {
+    font-family: 'Noto Serif', Georgia, serif;
+    font-size: 28px;
+    line-height: 1.35;
+    font-weight: 300;
+    color: var(--zinc-900);
+  }
+  .gsp-sub {
+    margin-top: 10px;
+    margin-bottom: 32px;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.55;
+    color: var(--zinc-500);
+  }
+
+  /* One whole white form, hairlines inside, no gaps between doors */
+  .gsp-doors {
+    background: var(--white);
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .gsp-door {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    width: 100%;
+    padding: 22px 20px;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    transition: background 150ms ease;
+  }
+  .gsp-door + .gsp-door { border-top: 1px solid var(--zinc-200); }
+  .gsp-door:hover { background: var(--zinc-50); }
+  /* Glyphs drawn inline in the very recipe the site/icons set was
+     exported in (Nucleo via Figma: ~22 box, stroke Zinc 500, width
+     0.8, square caps). Nothing in the set says chat, calendar or
+     handset, so these three are cut to match rather than borrowed
+     from a second family. */
+  .gsp-door-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-top: 2px;
+    display: block;
+  }
+  .gsp-door-body { flex: 1; min-width: 0; }
+  .gsp-door-label {
+    display: block;   /* the two lines are spans, so they say so */
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--zinc-900);
+  }
+  .gsp-door-line {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--zinc-500);
+  }
+  .gsp-door-go {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 6px;
+    color: var(--zinc-300);
+    transition: color 150ms ease, transform 150ms ease;
+  }
+  .gsp-door:hover .gsp-door-go { color: var(--zinc-500); transform: translateX(2px); }
+
+  /* Shared white card for the three step contents */
+  .gsp-card {
+    background: var(--white);
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius);
+  }
+
+  /* Primary action = the same Blue 600 filled control the block's
+     START wears, here full column width like the live drawer's CTA.
+     Disabled is a real state, not an opacity trick: Zinc 200 ground,
+     Zinc 400 ink. */
+  .gsp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 8px 24px;
+    background: var(--blue-600);
+    color: var(--white);
+    border: 1px solid var(--blue-600);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.35px;
+    text-transform: uppercase;
+    transition: background 150ms ease, border-color 150ms ease;
+  }
+  .gsp-btn:hover:not(:disabled) { background: var(--blue-700); border-color: var(--blue-700); }
+  .gsp-btn:disabled {
+    background: var(--zinc-200);
+    border-color: var(--zinc-200);
+    color: var(--zinc-400);
+    cursor: not-allowed;
+  }
+  /* The prototype says so out loud rather than pretending */
+  .gsp-note {
+    margin-top: 14px;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--zinc-400);
+  }
+
+  /* ---- Door 1: live chat, a stand-in window ---------------------- */
+  .gsp-chat-log { padding: 22px 20px; display: flex; gap: 12px; }
+  .gsp-chat-avatar {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--zinc-200);
+    color: var(--zinc-600);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif', Georgia, serif;
+    font-size: 13px;
+  }
+  .gsp-chat-who { display: flex; align-items: baseline; gap: 8px; }
+  .gsp-chat-name { font-size: 13px; font-weight: 500; color: var(--zinc-900); }
+  .gsp-chat-time { font-size: 12px; font-weight: 300; color: var(--zinc-400); }
+  .gsp-chat-bubble {
+    margin-top: 8px;
+    padding: 12px 14px;
+    background: var(--zinc-100);
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.55;
+    color: var(--zinc-800);
+  }
+  .gsp-chat-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--zinc-200);
+  }
+  .gsp-chat-entry .gsp-underline { flex: 1; height: 44px; }
+  .gsp-chat-entry .gsp-btn { width: auto; min-width: 104px; }
+
+  /* ---- Door 2: book a meeting, a stand-in calendar ---------------- */
+  .gsp-cal { padding: 20px; }
+  .gsp-cal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .gsp-cal-month { font-size: 15px; font-weight: 500; color: var(--zinc-900); }
+  .gsp-cal-arrows { display: flex; gap: 2px; }
+  .gsp-cal-arrow {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--zinc-300);
+    cursor: default;   /* inert in the prototype, and it shows */
+  }
+  .gsp-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .gsp-dow {
+    text-align: center;
+    padding-bottom: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--zinc-400);
+  }
+  .gsp-day {
+    height: 40px;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--zinc-800);
+    transition: background 150ms ease, color 150ms ease;
+  }
+  .gsp-day:hover:not(:disabled):not(.sel) { background: var(--zinc-100); }
+  .gsp-day:disabled { color: var(--zinc-300); cursor: default; }
+  .gsp-day.sel { background: var(--blue-600); color: var(--white); }
+  .gsp-slot-label {
+    margin: 22px 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--zinc-500);
+  }
+  .gsp-slots { display: flex; flex-wrap: wrap; gap: 8px; }
+  .gsp-slot {
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius);
+    background: var(--white);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--zinc-700);
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  .gsp-slot:hover:not(.sel) { background: var(--zinc-50); border-color: var(--zinc-300); }
+  .gsp-slot.sel {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: var(--white);
+  }
+  .gsp-confirm { margin-top: 24px; }
+
+  /* ---- Door 3: request a call, underline fields ------------------ */
+  /* Underline recipe (DECISIONS-BANK login harvest, confirmed on the
+     live contact page today): border-bottom alone, Inter 300 16,
+     labels 11 caps 600. Focus moves the rule to Blue 600, the state
+     accent, and nothing else moves. */
+  .gsp-form { padding: 22px 20px 24px; }
+  .gsp-field + .gsp-field { margin-top: 22px; }
+  .gsp-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--zinc-500);
+  }
+  .gsp-underline {
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--zinc-400);
+    border-radius: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--zinc-900);
+    transition: border-color 150ms ease;
+  }
+  .gsp-underline::placeholder { color: var(--zinc-400); }
+  .gsp-underline:focus { outline: none; border-bottom-color: var(--blue-600); }
+  .gsp-form .gsp-btn { margin-top: 28px; }
+  /* Quiet confirmation: no banner, no green, no exclamation. A blue
+     check (state accent) and one Inter 300 line. */
+  .gsp-done { display: flex; align-items: flex-start; gap: 12px; padding: 26px 20px; }
+  .gsp-done[hidden] { display: none; }   /* the class would outrank the UA rule */
+  .gsp-done svg { flex-shrink: 0; width: 20px; height: 20px; margin-top: 2px; color: var(--blue-600); }
+  .gsp-done p { font-size: 16px; font-weight: 300; line-height: 1.6; color: var(--zinc-700); }
+
+  /* Narrow screens: the drawer takes the whole width and the 64px
+     content column relaxes to the page's own 24px gutter. */
+  @media (max-width: 700px) {
+    .start-panel { width: 100%; border-radius: 0; border-left: 0; }
+    .gsp-head { padding: 0 10px; }
+    .gsp-body { padding: 28px 24px 48px; }
+    .gsp-title { font-size: 24px; }
+    .gsp-chat-entry { flex-wrap: wrap; }
+    .gsp-chat-entry .gsp-btn { width: 100%; }
+  }
 
   /* ============ PAGE META (breadcrumbs + title card) ============
      Source: live portal, Ton's screen 2026-08-12. Shows only in nav=ton
@@ -2262,6 +2718,7 @@
 <!-- wave-2026-08-18b marker: gbppl-hero-start gbppl-ren-narrow-t4s7 -->
 <!-- wave-2026-08-18c marker: gbppl-hero-start-2 -->
 <!-- wave-2026-08-18d marker: gbppl-hero-start-3 -->
+<!-- wave-2026-08-18e marker: gbppl-start-panel -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -2626,6 +3083,156 @@
            so the page never pays for the catalog it has not asked to see. -->
       <iframe class="catalog-frame" id="catalogFrame" title="GildedBox gift catalog"
               data-src="./catalog/index.html?embed=1"></iframe>
+    </div>
+  </div>
+
+  <!-- START PANEL (gbppl-start-panel): what happens when you click START
+       in the Start Gifting block. Right slide-over in the catalog
+       overlay's language, three doors to a person; see the CSS block for
+       the live measurement it is built on. Reachable from ?hero=start in
+       every layout and every nav variant. -->
+  <div class="start-overlay" id="gbStartPanel" aria-hidden="true">
+    <div class="start-backdrop" id="gbStartBackdrop"></div>
+    <div class="start-panel" id="gbStartDialog" data-view="doors" role="dialog" aria-modal="true"
+         aria-label="Talk to a gifting expert" tabindex="-1">
+      <div class="gsp-head">
+        <button class="gsp-close" id="gbStartClose" type="button" aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><path d="M2 2 20 20M20 2 2 20"/></svg>
+        </button>
+        <button class="gsp-back" id="gbStartBack" type="button">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 2.5 4 6l3.5 3.5"/></svg>
+          Back
+        </button>
+      </div>
+
+      <div class="gsp-body">
+
+        <!-- STEP 1: three doors -->
+        <div class="gsp-view" data-view="doors">
+          <h2 class="gsp-title">Talk to a gifting expert</h2>
+          <p class="gsp-sub">Every route here ends with a person. Pick the one that suits your day.</p>
+          <div class="gsp-doors">
+            <button class="gsp-door" type="button" data-door="chat">
+              <span class="gsp-door-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="square" stroke-miterlimit="10"><path d="M0.4 0.4H21.6V15.6H5.4L1.4 20.6V15.6H0.4V0.4Z"/><path d="M5.4 5.6H16.6"/><path d="M5.4 10.4H12.6"/></svg>
+              </span>
+              <span class="gsp-door-body">
+                <span class="gsp-door-label">Live chat</span>
+                <span class="gsp-door-line">Talk to us now</span>
+              </span>
+              <svg class="gsp-door-go" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>
+            </button>
+            <button class="gsp-door" type="button" data-door="meeting">
+              <span class="gsp-door-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="square" stroke-miterlimit="10"><path d="M0.4 2.4H21.6V21.6H0.4V2.4Z"/><path d="M0.4 7.4H21.6"/><path d="M5.4 0.4V4.4"/><path d="M16.6 0.4V4.4"/><path d="M5 11.9H7"/><path d="M10 11.9H12"/><path d="M15 11.9H17"/><path d="M5 16.4H7"/><path d="M10 16.4H12"/></svg>
+              </span>
+              <span class="gsp-door-body">
+                <span class="gsp-door-label">Book a meeting</span>
+                <span class="gsp-door-line">Pick a time that suits you</span>
+              </span>
+              <svg class="gsp-door-go" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>
+            </button>
+            <button class="gsp-door" type="button" data-door="call">
+              <span class="gsp-door-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="square" stroke-miterlimit="10"><path d="M2.4 0.4H7.4L9.4 5.4L6.4 7.4C7.4 11.4 10.6 14.6 14.6 15.6L16.6 12.6L21.6 14.6V19.6C21.6 20.7 20.7 21.6 19.6 21.6C9 21.6 0.4 13 0.4 2.4C0.4 1.3 1.3 0.4 2.4 0.4Z"/></svg>
+              </span>
+              <span class="gsp-door-body">
+                <span class="gsp-door-label">Request a call</span>
+                <span class="gsp-door-line">Leave your number, we call you back</span>
+              </span>
+              <svg class="gsp-door-go" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2a: live chat, a stand-in window -->
+        <div class="gsp-view" data-view="chat">
+          <h2 class="gsp-title">Live chat</h2>
+          <p class="gsp-sub">An expert is on the other side, not a bot.</p>
+          <div class="gsp-card">
+            <div class="gsp-chat-log">
+              <span class="gsp-chat-avatar" aria-hidden="true">GB</span>
+              <div>
+                <div class="gsp-chat-who">
+                  <span class="gsp-chat-name">Gifting expert</span>
+                  <span class="gsp-chat-time">now</span>
+                </div>
+                <p class="gsp-chat-bubble">Hi, you have reached a gifting expert. Tell me the occasion and roughly how many people, and I will come back with two or three directions.</p>
+              </div>
+            </div>
+            <div class="gsp-chat-entry">
+              <input class="gsp-underline" type="text" placeholder="Write a message" aria-label="Message">
+              <button class="gsp-btn" type="button" disabled>Send</button>
+            </div>
+          </div>
+          <p class="gsp-note">Prototype: the chat window is a stand-in, nothing is sent.</p>
+        </div>
+
+        <!-- STEP 2b: book a meeting, a stand-in calendar. The day cells
+             are generated in JS from one small config so the markup
+             stays readable; the slots are written out. -->
+        <div class="gsp-view" data-view="meeting">
+          <h2 class="gsp-title">Book a meeting</h2>
+          <p class="gsp-sub">Thirty minutes with an expert, at a time that suits you.</p>
+          <div class="gsp-card">
+            <div class="gsp-cal">
+              <div class="gsp-cal-head">
+                <span class="gsp-cal-month">August 2026</span>
+                <span class="gsp-cal-arrows">
+                  <button class="gsp-cal-arrow" type="button" tabindex="-1" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2.5 4 6l3.5 3.5"/></svg></button>
+                  <button class="gsp-cal-arrow" type="button" tabindex="-1" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></button>
+                </span>
+              </div>
+              <div class="gsp-cal-grid" id="gbStartCal"></div>
+              <p class="gsp-slot-label">Time, Central</p>
+              <div class="gsp-slots" id="gbStartSlots">
+                <button class="gsp-slot" type="button">9:00 AM</button>
+                <button class="gsp-slot" type="button">9:30 AM</button>
+                <button class="gsp-slot" type="button">10:00 AM</button>
+                <button class="gsp-slot" type="button">11:00 AM</button>
+                <button class="gsp-slot" type="button">1:00 PM</button>
+                <button class="gsp-slot" type="button">2:00 PM</button>
+                <button class="gsp-slot" type="button">3:30 PM</button>
+                <button class="gsp-slot" type="button">4:00 PM</button>
+              </div>
+              <button class="gsp-btn gsp-confirm" id="gbStartConfirm" type="button" disabled>Confirm meeting</button>
+            </div>
+            <div class="gsp-done" id="gbStartBooked" hidden>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 19a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="m6 10 2.8 2.8L14.4 7.2"/></svg>
+              <p id="gbStartBookedText">You are booked. We will send the invitation by email.</p>
+            </div>
+          </div>
+          <p class="gsp-note">Prototype: the month is fixed and nothing is scheduled.</p>
+        </div>
+
+        <!-- STEP 2c: request a call, underline fields -->
+        <div class="gsp-view" data-view="call">
+          <h2 class="gsp-title">Request a call</h2>
+          <p class="gsp-sub">Leave your number and an expert calls you back.</p>
+          <div class="gsp-card">
+            <form class="gsp-form" id="gbStartCallForm">
+              <div class="gsp-field">
+                <label class="gsp-label" for="gspName">Name</label>
+                <input class="gsp-underline" id="gspName" type="text" placeholder="Your name">
+              </div>
+              <div class="gsp-field">
+                <label class="gsp-label" for="gspPhone">Phone</label>
+                <input class="gsp-underline" id="gspPhone" type="tel" placeholder="+1 (___) ___-____">
+              </div>
+              <div class="gsp-field">
+                <label class="gsp-label" for="gspWhen">Best time to call</label>
+                <input class="gsp-underline" id="gspWhen" type="text" placeholder="Weekday mornings, Central">
+              </div>
+              <button class="gsp-btn" type="submit">Request a call</button>
+            </form>
+            <div class="gsp-done" id="gbStartCalled" hidden>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 19a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="m6 10 2.8 2.8L14.4 7.2"/></svg>
+              <p>We got you. Expect a call within one business day.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -3046,13 +3653,157 @@
     });
   }
   catalogBackdrop.addEventListener('click', closeCatalog);
+  /* One Escape handler for both layers: the Start panel sits on top, so
+     it answers first and the catalog stays where it is (gbppl-start-panel) */
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeCatalog();
+    if (e.key !== 'Escape') return;
+    if (closeStartPanel()) return;
+    closeCatalog();
   });
   // The framed catalog's own close control (v1 embed mode) asks the
   // parent page to close the overlay
   window.addEventListener('message', function (e) {
     if (e && e.data && e.data.type === 'gb-close-catalog') closeCatalog();
+  });
+
+  /* ---- Start panel (gbppl-start-panel, Russell 2026-08-18:
+     "design what happens when we click Start") ----
+     START in the Start Gifting block opens a right slide-over with
+     three doors to a person. Same choreography, same dim, same
+     scroll-lock recipe as the catalog overlay (its own class so the
+     two layers never uncover each other), Esc and backdrop close, the
+     dialog takes focus on open and hands it back to the button that
+     opened it. Every door swaps the view INSIDE the panel; Back
+     returns to the doors and resets nothing the guest typed. */
+  var startOverlay  = document.getElementById('gbStartPanel');
+  var startDialog   = document.getElementById('gbStartDialog');
+  var startBackdrop = document.getElementById('gbStartBackdrop');
+  var startClose    = document.getElementById('gbStartClose');
+  var startBack     = document.getElementById('gbStartBack');
+  var startOpener   = null;
+  var startCloseTimer = null;
+
+  function setStartView(view) {
+    startDialog.setAttribute('data-view', view);
+    startDialog.querySelector('.gsp-body').scrollTop = 0;
+  }
+
+  function openStartPanel(opener) {
+    startOpener = opener || null;
+    setStartView('doors');
+    document.documentElement.style.setProperty('--scrollbar-width',
+      (window.innerWidth - document.documentElement.clientWidth) + 'px');
+    document.body.classList.add('start-locked');
+    clearTimeout(startCloseTimer);
+    startOverlay.classList.remove('closing');
+    startOverlay.style.display = 'block';
+    void startOverlay.offsetWidth;   // one reflow so the enter actually plays
+    startOverlay.classList.add('open');
+    startOverlay.setAttribute('aria-hidden', 'false');
+    startDialog.focus();
+  }
+  /* Returns true when it actually had something to close, so the shared
+     Escape handler knows whether to pass the key down to the catalog */
+  function closeStartPanel() {
+    if (!startOverlay.classList.contains('open')) return false;
+    startOverlay.classList.remove('open');
+    startOverlay.classList.add('closing');
+    startOverlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('start-locked');
+    startCloseTimer = setTimeout(function () {
+      startOverlay.classList.remove('closing');
+      startOverlay.style.display = '';
+    }, OVERLAY_EXIT_MS);
+    if (startOpener) { startOpener.focus(); startOpener = null; }
+    return true;
+  }
+
+  /* The blue START of the Start Gifting block, in every layout: the
+     block has one DOM, so one listener serves grid, split and band. */
+  var startCta = document.querySelector('.hero-start .btn-start-primary');
+  if (startCta) {
+    startCta.addEventListener('click', function () { openStartPanel(startCta); });
+  }
+  startClose.addEventListener('click', function () { closeStartPanel(); });
+  startBackdrop.addEventListener('click', function () { closeStartPanel(); });
+  startBack.addEventListener('click', function () { setStartView('doors'); });
+  var startDoors = startDialog.querySelectorAll('.gsp-door');
+  for (var sd = 0; sd < startDoors.length; sd++) {
+    startDoors[sd].addEventListener('click', function () {
+      setStartView(this.getAttribute('data-door'));
+    });
+  }
+
+  /* Calendar stand-in: August 2026 laid out Sunday first (the 1st falls
+     on a Saturday), everything before today and every weekend inert,
+     so the guest can only pick a day a human would actually offer.
+     Built here rather than in markup: 42 cells of hand-written HTML
+     would bury the panel's structure. */
+  var CAL_MONTH   = 'August 2026';
+  var CAL_LEAD    = 6;    // blanks before the 1st
+  var CAL_DAYS    = 31;
+  var CAL_OPEN    = [19, 20, 21, 24, 25, 26, 27, 28, 31];
+  var calGrid     = document.getElementById('gbStartCal');
+  var slotsWrap   = document.getElementById('gbStartSlots');
+  var confirmBtn  = document.getElementById('gbStartConfirm');
+  var bookedBox   = document.getElementById('gbStartBooked');
+  var bookedText  = document.getElementById('gbStartBookedText');
+  var calBox      = calGrid.parentNode;
+  var pickedDay   = null;
+  var pickedSlot  = null;
+
+  (function buildCalendar() {
+    var dows = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    var html = '';
+    for (var d = 0; d < 7; d++) html += '<span class="gsp-dow">' + dows[d] + '</span>';
+    for (var b = 0; b < CAL_LEAD; b++) html += '<span></span>';
+    for (var n = 1; n <= CAL_DAYS; n++) {
+      var open = CAL_OPEN.indexOf(n) !== -1;
+      html += '<button class="gsp-day" type="button" data-day="' + n + '"' +
+              (open ? '' : ' disabled') + '>' + n + '</button>';
+    }
+    calGrid.innerHTML = html;
+  })();
+
+  function syncConfirm() {
+    confirmBtn.disabled = !(pickedDay && pickedSlot);
+  }
+  calGrid.addEventListener('click', function (e) {
+    var day = e.target.closest ? e.target.closest('.gsp-day') : null;
+    if (!day || day.disabled) return;
+    var all = calGrid.querySelectorAll('.gsp-day');
+    for (var i = 0; i < all.length; i++) all[i].classList.remove('sel');
+    day.classList.add('sel');
+    pickedDay = day.getAttribute('data-day');
+    syncConfirm();
+  });
+  slotsWrap.addEventListener('click', function (e) {
+    var slot = e.target.closest ? e.target.closest('.gsp-slot') : null;
+    if (!slot) return;
+    var all = slotsWrap.querySelectorAll('.gsp-slot');
+    for (var i = 0; i < all.length; i++) all[i].classList.remove('sel');
+    slot.classList.add('sel');
+    pickedSlot = slot.textContent.trim();
+    syncConfirm();
+  });
+  /* Confirm answers in the same quiet voice as the call form: the
+     calendar goes, one line stays, no banner and no green. */
+  confirmBtn.addEventListener('click', function () {
+    if (confirmBtn.disabled) return;
+    bookedText.textContent = 'You are booked for ' + CAL_MONTH.split(' ')[0] + ' ' +
+      pickedDay + ' at ' + pickedSlot + '. The invitation is on its way by email.';
+    calBox.hidden = true;
+    bookedBox.hidden = false;
+  });
+
+  /* Request a call: the form gives way to the confirmation inside the
+     same white card, nothing navigates. */
+  var callForm  = document.getElementById('gbStartCallForm');
+  var calledBox = document.getElementById('gbStartCalled');
+  callForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    callForm.hidden = true;
+    calledBox.hidden = false;
   });
 
   /* ---- PROTO panel collapse (Ton's feedback 2026-08-12) ----
@@ -3080,14 +3831,16 @@
      DOM. Composes freely with ?v= and ?nav=. */
   if (params.get('hero') === 'start') {
     document.body.setAttribute('data-grid', params.get('grid') === 'serif' ? 'serif' : 'weight');
-    /* &layout=grid (default) | split | band, gbppl-hero-start-3: three
+    /* &layout=band (default) | grid | split, gbppl-hero-start-3: three
        arrangements of the SAME four cells and two buttons, chosen by
-       CSS alone. Unknown or absent values fall back to grid, the
-       approved 2x2, so every link already sent out keeps its picture.
-       setBlock (panel toggle) applies the attributes and lights the
-       matching panel button, gbppl-hero-start-panel. */
+       CSS alone. BAND IS THE DEFAULT since 2026-08-18 (Russell picked
+       the ribbon of the three he was shown, gbppl-start-panel); grid
+       (the earlier default 2x2 with the hairline cross) and split stay
+       one parameter away and keep their own links working. Unknown or
+       absent values now fall back to band. setBlock (panel toggle)
+       applies the attributes and lights the matching panel button. */
     var layoutParam = params.get('layout');
-    setBlock(layoutParam === 'split' || layoutParam === 'band' ? layoutParam : 'grid');
+    setBlock(layoutParam === 'split' || layoutParam === 'grid' ? layoutParam : 'band');
   } else {
     setBlock('classic');
   }
