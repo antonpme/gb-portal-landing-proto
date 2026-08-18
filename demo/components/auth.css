@@ -1,0 +1,689 @@
+/* ============================================================
+   DEMO COMPONENT: GUEST AUTH ZONE            gbppl-demo-auth
+   ------------------------------------------------------------
+   Пиксельная копия https://portal.gildedbox.com/guest/auth
+   (harvest public-login 2026-08-17, 7 ширин 360..2560; DOM и
+   интерактивные состояния сняты Playwright 2026-08-18).
+   Разметку дают шаблоны auth.js: <gb-guest-header>, <gb-field>,
+   <gb-auth-flow>. Живые имена классов сохранены в разметке как
+   данные для замера; стилевые правила висят на хуках .gbg-* / .gba-*.
+
+   Лестницы (пороги xl = 1280, 2xl = 2000 — КАСТОМНЫЙ порог
+   клиента, подтверждён на login: все 2xl-классы включаются между
+   1920 и 2258, как на каталоге):
+
+     семья форм-контролов  min-h 48 / 56 / 64 (инпут, сабмит,
+                           Google-обёртка, OTP-ячейка — в ногу;
+                           = интерполированная семья BUTTON L,
+                           теперь ЖИВАЯ с public-login)
+     инпут                 underline: только border-bottom 1px
+                           zinc-400, Inter 300 14/16/18 (lh = fs),
+                           pad-x 12/12/16, ls 0.2, текст zinc-800;
+                           hover бордер blue-600; focus БЕЗ рамки
+                           (outline none, гаснет только placeholder)
+     ошибка                бордер red-500, сообщение red-600 11px
+                           справа (появляется только по сабмиту,
+                           live 18.08: пустой и невалидный сабмит)
+     лейбл                 11/12 caps 600, ls 0.5, zinc-500, lh 1.5;
+                           золотая звёздочка required #bd9f58
+     сабмит                bg blue-600, radius 5, py 8, px 24/32,
+                           uppercase 600, fs 14/16, ls -.35/-.4;
+                           лейбл-span 14/15(640)/16(2000), ls 1px;
+                           стрелка absolute right 24/32, 16/20/24
+     карточка              max-w 600, mx auto, min-h calc(100vh-80),
+                           py 0/96/128, вертикаль по центру;
+                           стек 32/48/64, внутренний 24/32
+     хедер гостя           header h-80 (плейсхолдер) + div.fixed:
+                           #fcfdfd, c lg (1024) white/90 + blur 6px,
+                           тень константная — как www-шапка, но
+                           живой anatomy header > div.fixed
+   ============================================================ */
+
+/* ---------------- БАЗА ЗОНЫ ---------------- */
+
+/* Живой грунт маршрута: дефолтный текст #191919 (--catalog-ink,
+   вне цинка) и base line-height 24px наследуются всеми обёртками;
+   preflight лайва держит на КАЖДОМ элементе border 0 solid #e5e5e5
+   — воспроизводим в скоупе зоны, чтобы компьютед-сверка с
+   public-login сходилась и по невидимым бордерам. Правила
+   элементов (0-1-0) перекрывают базу (0-0-2) как на лайве. */
+gb-guest-header, gb-auth-flow {
+  color: var(--catalog-ink);
+  line-height: 1.5;
+}
+gb-guest-header *, gb-guest-header *::before, gb-guest-header *::after,
+gb-auth-flow *, gb-auth-flow *::before, gb-auth-flow *::after {
+  border-width: 0;
+  border-style: solid;
+  border-color: var(--preflight-border);
+}
+
+/* ---------------- GUEST HEADER ---------------- */
+
+/* Живая анатомия: header-плейсхолдер 80px в потоке + фиксированный
+   бар (у www-шапки demo принят sticky; здесь fixed, чтобы селектор
+   header > div.fixed конфига public-login совпадал один в один). */
+gb-guest-header { display: block; }
+.gbg-header { height: var(--header-h); }
+.gbg-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  background: var(--live-body);
+  /* Тройная форма тени = живой tailwind-каскад ring-переменных:
+     два нулевых слоя + константная тень хедера. */
+  box-shadow: 0 0 #0000, 0 0 #0000, var(--shadow-header);
+}
+@media (min-width: 1024px) {
+  .gbg-bar {
+    background: var(--header-glass);
+    backdrop-filter: blur(6px);
+  }
+}
+
+/* Контейнер бара: живой .container портала = лестница www
+   (16 / 24 с 1280 / клэмп 1920 + 48); имя класса container
+   сохранено в разметке для селектора конфига, правила скоуплены. */
+gb-guest-header .container {
+  width: 100%;
+  height: var(--header-h);
+  min-height: 0;
+  margin: 0 auto;
+  padding-left: var(--container-pad-narrow);
+  padding-right: var(--container-pad-narrow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+@media (min-width: 1280px) {
+  gb-guest-header .container {
+    padding-left: var(--container-pad);
+    padding-right: var(--container-pad);
+  }
+}
+@media (min-width: 1920px) {
+  gb-guest-header .container {
+    max-width: var(--container-max-xl);
+    padding-left: var(--container-pad-wide);
+    padding-right: var(--container-pad-wide);
+  }
+}
+
+/* Знак: линк высотой бара, py 8 / 11 c lg (live guest header:
+   py-2 lg:py-[11px]), картинка 168 в него вписана. Мобильный
+   размер live не замерялся: фолбэк 144 = www-мобильный знак
+   (felt, как в header.css). */
+.gbg-brand { display: inline-flex; align-items: center; height: var(--header-h); padding: 8px 0; }
+.gbg-brand img { width: 144px; height: auto; }
+@media (min-width: 1024px) {
+  .gbg-brand { padding: 11px 0; }
+  .gbg-brand img { width: 168px; }
+}
+
+/* Скоуп-фикс: body.gb-demo a { color: inherit } (shell.css,
+   0-1-1) перебивает цвет .gbh-cta (0-1-0) — тот же баг живёт и
+   на www-хедере index.html (лейбл Book a Meeting тёмный на
+   тёмной кнопке; зафиксирован в HARVEST-QUEUE 18.08, чинить в
+   header.css владельцу компонента). Здесь возвращаем живые
+   цвета селектором большей силы (0-1-2). */
+gb-guest-header a.gbh-cta { color: var(--white); }
+gb-guest-header a.gbh-cta--outline { color: var(--zinc-900); }
+
+/* Нав и CTA живут только с lg (1024, живой порог бургера
+   lg:hidden); ниже — бургер + знак + поиск, как на живом 360. */
+.gbg-nav { display: none; }
+.gbg-actions { display: flex; align-items: center; gap: 12px; }
+.gbg-actions .gbh-cta { display: none; }
+@media (min-width: 1024px) {
+  .gbg-nav { display: flex; align-items: center; }
+  .gbg-actions .gbh-cta { display: inline-flex; }
+}
+
+/* Бургер: живой бокс 30x40 mr-16, три линии; глиф felt (иконошрифт
+   лайва не переносится, правило футера/каталога). Меню не открывает:
+   гостевые страницы demo-лайва живут без дровера. */
+.gbg-burger {
+  width: 30px;
+  height: 40px;
+  margin-right: 16px;
+  padding: 0;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  background: transparent;
+  color: var(--zinc-900);
+}
+.gbg-burger span { display: block; width: 30px; height: 1.5px; background: currentColor; }
+@media (min-width: 1024px) {
+  .gbg-burger { display: none; }
+}
+.gbg-lead { display: flex; align-items: center; min-width: 0; }
+
+/* ---------------- AUTH CARD / SECTION ---------------- */
+
+/* Колонка формы: max-w 600 по центру, вертикальное центрирование
+   в calc(100vh - 80px), py 0 / 96 (xl) / 128 (2xl). На 360 колонка
+   лежит от края до края БЕЗ боковых полей — как на живом (x = 0). */
+.gba-section {
+  min-height: calc(100vh - var(--header-h));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+@media (min-width: 1280px) {
+  .gba-section { padding-top: 96px; padding-bottom: 96px; }
+}
+@media (min-width: 2000px) {
+  .gba-section { padding-top: 128px; padding-bottom: 128px; }
+}
+
+/* Внешний стек (space-y-8 xl:12 2xl:16): 32 / 48 / 64. */
+.gba-stack { display: flex; flex-direction: column; }
+.gba-stack > * + * { margin-top: 32px; }
+@media (min-width: 1280px) { .gba-stack > * + * { margin-top: 48px; } }
+@media (min-width: 2000px) { .gba-stack > * + * { margin-top: 64px; } }
+
+/* Внутренний стек (space-y-6 xl:space-y-8): 24 / 32. */
+.gba-group > * + * { margin-top: 24px; }
+@media (min-width: 1280px) { .gba-group > * + * { margin-top: 32px; } }
+
+/* Заголовок: sans 18/20/22, leading-tight, tracking-tight
+   (-0.45 / -0.5 / -0.55), zinc-900; сабтайтл 13/16/16
+   leading-relaxed zinc-500, ls 0.2, отступ 12 (space-y-3). */
+.gba-header { margin: 0; }
+.gba-h1 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+.gba-sub {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+@media (min-width: 1280px) {
+  .gba-h1 { font-size: 20px; }
+  .gba-sub { font-size: 16px; }
+}
+@media (min-width: 2000px) {
+  .gba-h1 { font-size: 22px; }
+}
+
+/* ---------------- GOOGLE-КНОПКА ---------------- */
+
+/* Живой виджет GSI пересобран статикой: обёртка div.block.w-full
+   лайва задаёт семью 48/56/64, рамку surface-900 и radius 5 поверх
+   iframe-кнопки; здесь то же одним элементом. Лейбл 14/16/16
+   semibold ls 0.3 lh 110%; глиф G 20/28/32 с mr 12/16; пустой
+   ::after того же размера уравновешивает центровку (как у лайва). */
+.gba-google {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 24px;
+  background: var(--white);
+  border: 1px solid var(--zinc-900);
+  border-radius: var(--radius);
+  transition: background 160ms;
+}
+.gba-google:hover { background: var(--zinc-50); }
+.gba-google svg { width: 20px; height: 20px; flex: 0 0 auto; margin-right: 12px; }
+.gba-google::after { content: ''; width: 20px; height: 20px; flex-shrink: 0; margin-left: 12px; pointer-events: none; }
+.gba-google-label {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 110%;
+  letter-spacing: 0.3px;
+  text-align: center;
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) {
+  .gba-google { min-height: 56px; padding-left: 32px; padding-right: 32px; }
+  .gba-google svg, .gba-google::after { width: 28px; height: 28px; }
+  .gba-google svg { margin-right: 16px; }
+  .gba-google::after { margin-left: 16px; }
+  .gba-google-label { font-size: 16px; }
+}
+@media (min-width: 2000px) {
+  .gba-google { min-height: 64px; }
+  .gba-google svg, .gba-google::after { width: 32px; height: 32px; }
+}
+
+/* Разделитель or: волосяные линии псевдоэлементами, zinc-200;
+   текст 18/20, zinc-900, gap 12. */
+.gba-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--zinc-900);
+}
+.gba-divider::before, .gba-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--zinc-200);
+}
+@media (min-width: 1280px) {
+  .gba-divider { font-size: 20px; }
+}
+
+/* ---------------- ФОРМА / <gb-field> ---------------- */
+
+/* gb-field — flex-item живого form.row: без явной ширины ужмётся
+   в shrink-to-fit (замер 18.08: 205 вместо 360). */
+gb-field { display: block; width: 100%; }
+
+/* Живая сетка Materialize: form.row с mx -8, ячейка .input-field
+   с px 8 — форма на 16 шире колонки (замер: 616 при колонке 600). */
+.gba-form { display: flex; flex-wrap: wrap; margin: 0 -8px; }
+.gba-form .hidden { display: none; }
+
+.gba-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 1px;
+  padding: 0 8px;
+  margin-bottom: 16px;             /* !mb-4, e-mail поле */
+}
+/* Поля verify-шага: mb 24/32/40 (mb-6 md:mb-8 xl:mb-10). */
+.gba-field--flow { margin-bottom: 24px; }
+@media (min-width: 768px)  { .gba-field--flow { margin-bottom: 32px; } }
+@media (min-width: 1280px) { .gba-field--flow { margin-bottom: 40px; } }
+/* Последнее поле (confirm): mt 16, mb 0. */
+.gba-field--last { margin-top: 16px; margin-bottom: 0; }
+
+.gba-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+@media (min-width: 1280px) {
+  .gba-label { font-size: 12px; }
+}
+/* Золотая звёздочка required: живое #bd9f58 (после лейбла,
+   pl 5) — на обоих шагах, live 18.08. */
+.gba-field.required .gba-label::after {
+  content: '*';
+  padding-left: 5px;
+  color: var(--auth-required-gold);
+}
+
+.gba-inputwrap { position: relative; }
+
+/* Underline-инпут: только border-bottom 1px zinc-400, фон
+   прозрачный, Inter 300 14/16/18 (lh = fs, leading-none), текст
+   zinc-800, ls 0.2, pad-x 12/12/16, семья 48/56/64. Focus живой
+   даёт ТОЛЬКО гашение плейсхолдера (outline none, бордер тот же);
+   hover ведёт бордер в blue-600. */
+.gba-input {
+  width: 100%;
+  min-height: var(--form-ctl-h);
+  height: auto;
+  margin: 0;
+  padding: 0 12px;
+  display: inline-block;
+  background: transparent;
+  /* Живой инпут красит border-color на ВСЕХ сторонах (zinc-400),
+     ширину даёт только низу. */
+  border-color: var(--zinc-400);
+  border-bottom-width: 1px;
+  border-radius: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.2px;
+  color: var(--zinc-800);
+  appearance: none;
+  outline: none;
+  overflow: clip;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gba-input::placeholder {
+  color: var(--zinc-400);
+  opacity: 1;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gba-input:hover { border-color: var(--blue-600); }
+.gba-input:focus::placeholder { opacity: 0; }
+@media (min-width: 1280px) {
+  .gba-input { min-height: var(--form-ctl-h-xl); font-size: 16px; }
+}
+@media (min-width: 2000px) {
+  .gba-input { min-height: var(--form-ctl-h-2xl); font-size: 18px; padding: 0 16px; }
+}
+
+/* Ошибка (по сабмиту, live 18.08: пустой и невалидный e-mail дают
+   одно состояние): бордер red-500 (перекрывает hover), сообщение
+   red-600 11px справа. Классов helper-text/errorMessage у лайва
+   НЕТ — сообщение живёт в span[role=alert].text-red-600. */
+.gba-input.invalid { border-color: var(--red-500); }
+.gba-input.invalid:hover { border-color: var(--red-500); }
+.gba-error {
+  display: block;
+  position: relative;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+  text-align: right;
+  color: var(--red-600);
+}
+
+/* Глазок пароля: живой i.icon-eye absolute right 16, bottom 16
+   (20 с xl); глиф заменён инлайн-SVG (правило иконошрифта). */
+.gba-eye {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--zinc-500);
+}
+@media (min-width: 1280px) { .gba-eye { bottom: 20px; } }
+.gba-eye svg { width: 18px; height: 18px; }
+
+/* ---------------- КНОПКА ФОРМЫ ---------------- */
+
+/* Сабмит-семья 48/56/64: bg blue-600, radius 5, py 8 px 24/32,
+   uppercase 600, fs 14/16, ls -0.35/-0.4, текст zinc-50 (#fafafa,
+   живой primary-contrast). Лейбл-span: 14/15(640)/16(2000), ls 1px,
+   собственные px 24/32 — стрелка стоит absolute right 24/32,
+   1em-бокс 16/20/24. Hover blue-700; disabled opacity .6. */
+.gba-btn {
+  position: relative;
+  width: 100%;
+  min-height: var(--form-ctl-h);
+  margin-top: 16px;
+  padding: 8px 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: var(--blue-600);
+  border-radius: var(--radius);
+  color: var(--zinc-50);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.35px;
+  text-transform: uppercase;
+  overflow: hidden;
+  user-select: none;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gba-btn:hover { background: var(--blue-700); }
+.gba-btn:disabled { opacity: 0.6; pointer-events: none; cursor: default; }
+.gba-btn-label {
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: normal;
+  text-transform: uppercase;
+}
+.gba-btn-icon {
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gba-btn-icon svg { width: 16px; height: 16px; }
+@media (min-width: 640px) {
+  .gba-btn-label { font-size: 15px; }
+}
+@media (min-width: 1280px) {
+  .gba-btn {
+    min-height: var(--form-ctl-h-xl);
+    padding-left: 32px;
+    padding-right: 32px;
+    gap: 24px;
+    font-size: 16px;
+    letter-spacing: -0.4px;
+  }
+  .gba-btn-label { padding: 0 32px; }
+  .gba-btn-icon { right: 32px; }
+  .gba-btn-icon svg { width: 20px; height: 20px; }
+}
+@media (min-width: 2000px) {
+  .gba-btn { min-height: var(--form-ctl-h-2xl); }
+  .gba-btn-label { font-size: 16px; }
+  .gba-btn-icon svg { width: 24px; height: 24px; }
+}
+
+/* ---------------- ШАГ ВЕРИФИКАЦИИ ----------------
+   Состояние за сабмитом e-mail (live 18.08, снято на 1280; лестницы
+   остальных ширин — из живых классов, в замерах public-login их
+   нет: state за интеракцией). */
+
+.gba-vheader { text-align: center; }
+
+/* Конверт в кольце: w 58/64/72, h 52/64/72, бордер preflight
+   #e5e5e5 (живое умолчание border, вне цинка — факт каталога),
+   глиф 32/36/48, mt 8. */
+.gba-vicon-row { display: flex; align-items: center; justify-content: center; }
+.gba-vicon {
+  margin-top: 8px;
+  width: 58px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--preflight-border);
+  border-radius: var(--radius-pill);
+  color: var(--zinc-900);
+}
+.gba-vicon svg { width: 32px; height: 32px; }
+@media (min-width: 1280px) {
+  .gba-vicon { width: 64px; height: 64px; }
+  .gba-vicon svg { width: 36px; height: 36px; }
+}
+@media (min-width: 2000px) {
+  .gba-vicon { width: 72px; height: 72px; }
+  .gba-vicon svg { width: 48px; height: 48px; }
+}
+
+/* Serif-титул шага: Noto Serif 500, 22/28/32, tight, tracking-tight
+   (единственный serif на маршруте авторизации; замер 1280:
+   28 / lh 35 / ls -0.7). */
+.gba-vh1 {
+  margin: 12px 0 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+.gba-vsub {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+.gba-vsub p { margin: 0; }
+.gba-vsub p + p { margin-top: 12px; }
+.gba-vsub strong { font-weight: 600; color: var(--zinc-900); }
+@media (min-width: 1280px) {
+  .gba-vh1 { font-size: 28px; }
+  .gba-vsub { font-size: 14px; }
+}
+@media (min-width: 2000px) {
+  .gba-vh1 { font-size: 32px; }
+  .gba-vsub { font-size: 16px; }
+}
+
+/* Radio-карточки метода: grid 2 колонки gap 12 (живой mb-5
+   ИНЕРТЕН, замер 18.08: mb 0, интервалы держит space-y); карточка
+   p 12 gap 10, бордер 1.5, radius 5, белая; актив = бордер zinc-900
+   + тень живой карточки варианта продукта 0 0 6px 3px rgba(0,0,0,.15);
+   идл = zinc-300, hover zinc-500. Радио 16 c точкой 8. Текстовый
+   столбец несёт ls 1.5px (живой tracking-[1.5px]). */
+.gba-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.gba-method {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  text-align: left;
+  background: var(--white);
+  border: 1.5px solid var(--zinc-300);
+  border-radius: var(--radius);
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gba-method:hover { border-color: var(--zinc-500); }
+.gba-method[aria-pressed="true"] {
+  border-color: var(--zinc-900);
+  box-shadow: 0 0 6px 3px rgba(0, 0, 0, 0.15);
+}
+.gba-method-radio {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--zinc-300);
+  border-radius: var(--radius-pill);
+  transition: border-color 0.2s;
+}
+.gba-method[aria-pressed="true"] .gba-method-radio { border-color: var(--zinc-900); }
+.gba-method-radio span {
+  display: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--zinc-900);
+}
+.gba-method[aria-pressed="true"] .gba-method-radio span { display: block; }
+.gba-method-copy { display: flex; flex-direction: column; letter-spacing: 1.5px; }
+.gba-method-title { font-size: 16px; font-weight: 600; line-height: 1.25; color: var(--zinc-900); }
+.gba-method-sub { margin-top: 8px; font-size: 14px; color: var(--zinc-500); }
+
+/* Стек шага (space-y-8): 32 между зоной, Continue и ссылками —
+   живые mt-4 кнопки и ссылок ПЕРЕКРЫТЫ space-y (замер 18.08:
+   hint→Continue 32, Continue→links 32). Живой min-h-[140/160]
+   зоны на поток не влияет (контент группы выше порога) — demo
+   его не носит, чтобы не раздувать зону при коротком контенте. */
+.gba-vstack > * + * { margin-top: 32px; }
+
+/* Лейбл OTP: 12 constant, caps 600, ls .06em, zinc-500; та же
+   золотая звёздочка. */
+.gba-vlabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.gba-vlabel::after { content: '*'; padding-left: 5px; color: var(--auth-required-gold); }
+
+/* OTP: 6 ячеек grid gap 10; ячейка = underline-семья 48/56/64 по
+   центру, Inter 500 14/16/18, фокус ведёт бордер в blue-600. */
+.gba-otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; }
+.gba-otp input {
+  width: 100%;
+  min-height: var(--form-ctl-h);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  background: transparent;
+  border-color: var(--zinc-400);
+  border-bottom-width: 1px;
+  border-radius: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--zinc-900);
+  outline: none;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gba-otp input:focus { border-bottom-color: var(--blue-600); }
+@media (min-width: 1280px) {
+  .gba-otp input { min-height: var(--form-ctl-h-xl); font-size: 16px; }
+}
+@media (min-width: 2000px) {
+  .gba-otp input { min-height: var(--form-ctl-h-2xl); font-size: 18px; }
+}
+
+/* Подсказки: центр, zinc-400; OTP 12/14(lg)/16(xl), пароль
+   12/14(xl)/16(2xl); mt 8. */
+.gba-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.375;
+  letter-spacing: 0.2px;
+  text-align: center;
+  color: var(--zinc-400);
+}
+@media (min-width: 1024px) { .gba-hint--otp { font-size: 14px; } }
+@media (min-width: 1280px) { .gba-hint--otp { font-size: 16px; } .gba-hint--pass { font-size: 14px; } }
+@media (min-width: 2000px) { .gba-hint--pass { font-size: 16px; } }
+
+/* Ссылки под Continue: центр, 14; линки blue-600 px 8 py 4,
+   hover подчёркивание; заблокированный Resend = zinc-400; точка-
+   разделитель zinc-400. */
+.gba-vlinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+/* Селектор (0,1,2): body.gb-demo a из shell.css той же силы,
+   auth.css позже в каскаде — синий побеждает. */
+gb-auth-flow .gba-vlinks a {
+  padding: 4px 8px;
+  color: var(--blue-600);
+  letter-spacing: 0.2px;
+}
+.gba-vlinks a:hover { text-decoration: underline; }
+gb-auth-flow .gba-vlinks a[aria-disabled="true"] {
+  color: var(--zinc-400);
+  pointer-events: none;
+  text-decoration: none;
+}
+.gba-vlinks .gba-vdot { color: var(--zinc-400); font-size: 14px; }
