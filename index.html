@@ -2653,6 +2653,15 @@
         <!-- Ren = ton structure + editorial skin (Ton 2026-08-17); also via ?nav=ren -->
         <button id="btnNavRen" type="button">Ren</button>
       </div>
+      <!-- Center block variants (Russell call 2026-08-18, gbppl-hero-start-panel);
+           also via ?hero=start&layout=grid|split|band. Classic = approved two-CTA zone. -->
+      <div class="demo-group">
+        <span class="demo-label">Block</span>
+        <button id="btnBlockClassic" type="button">Classic</button>
+        <button id="btnBlockGrid" type="button">Grid</button>
+        <button id="btnBlockSplit" type="button">Split</button>
+        <button id="btnBlockBand" type="button">Band</button>
+      </div>
       <div class="demo-group">
         <div class="demo-group-head">
           <span class="demo-label">Gifts</span>
@@ -2935,6 +2944,36 @@
   btnNavTon.addEventListener('click', function () { setNav('ton'); });
   btnNavRen.addEventListener('click', function () { setNav('ren'); });
 
+  /* ---- Center block toggle (PROTO panel, Ton 2026-08-18,
+     gbppl-hero-start-panel) ----
+     The panel drives the same data-hero/data-layout attributes the URL
+     params set, so buttons and shared links are two doors to one
+     switch. Classic strips the attributes entirely: the approved
+     two-CTA zone returns with its exact DOM. */
+  var btnBlockClassic = document.getElementById('btnBlockClassic');
+  var btnBlockGrid    = document.getElementById('btnBlockGrid');
+  var btnBlockSplit   = document.getElementById('btnBlockSplit');
+  var btnBlockBand    = document.getElementById('btnBlockBand');
+  function setBlock(mode) {
+    if (mode === 'classic') {
+      document.body.removeAttribute('data-hero');
+      document.body.removeAttribute('data-layout');
+      document.body.removeAttribute('data-grid');
+    } else {
+      document.body.setAttribute('data-hero', 'start');
+      if (!document.body.getAttribute('data-grid')) document.body.setAttribute('data-grid', 'weight');
+      document.body.setAttribute('data-layout', mode);
+    }
+    btnBlockClassic.classList.toggle('variant-active', mode === 'classic');
+    btnBlockGrid.classList.toggle('variant-active', mode === 'grid');
+    btnBlockSplit.classList.toggle('variant-active', mode === 'split');
+    btnBlockBand.classList.toggle('variant-active', mode === 'band');
+  }
+  btnBlockClassic.addEventListener('click', function () { setBlock('classic'); });
+  btnBlockGrid.addEventListener('click', function () { setBlock('grid'); });
+  btnBlockSplit.addEventListener('click', function () { setBlock('split'); });
+  btnBlockBand.addEventListener('click', function () { setBlock('band'); });
+
   /* ---- Catalog overlay (Ton's brainstorm 2026-08-12) ----
      Frames the real v1 catalog (./catalog/index.html?embed=1, vendored
      build); backdrop click and Esc close, plus the close control that
@@ -3040,15 +3079,17 @@
      parameter is present, so the approved default view keeps its exact
      DOM. Composes freely with ?v= and ?nav=. */
   if (params.get('hero') === 'start') {
-    document.body.setAttribute('data-hero', 'start');
     document.body.setAttribute('data-grid', params.get('grid') === 'serif' ? 'serif' : 'weight');
     /* &layout=grid (default) | split | band, gbppl-hero-start-3: three
        arrangements of the SAME four cells and two buttons, chosen by
        CSS alone. Unknown or absent values fall back to grid, the
-       approved 2x2, so every link already sent out keeps its picture. */
+       approved 2x2, so every link already sent out keeps its picture.
+       setBlock (panel toggle) applies the attributes and lights the
+       matching panel button, gbppl-hero-start-panel. */
     var layoutParam = params.get('layout');
-    document.body.setAttribute('data-layout',
-      layoutParam === 'split' || layoutParam === 'band' ? layoutParam : 'grid');
+    setBlock(layoutParam === 'split' || layoutParam === 'band' ? layoutParam : 'grid');
+  } else {
+    setBlock('classic');
   }
   render();
 })();
