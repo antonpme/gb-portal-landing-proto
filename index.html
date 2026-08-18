@@ -1310,30 +1310,44 @@
      zinc-900 and met a 36px serif title one screen-inch below, so the
      page read as two heads arguing. Under ?hero=start the greeting
      demotes itself to CONTEXT and hands the page to Start Gifting:
-       - the eyebrow keeps its role but takes the quiet 11px caps cut
-         (the ren section-label size) so it labels the context line
+       - the eyebrow keeps its role but takes a quiet caps cut (the
+         ren section-label size) so it labels the context line
          instead of announcing a deck;
-       - the pipe list drops 28 -> 22, 500 -> 400, zinc-900 ->
+       - the pipe list drops 28 -> 24, 500 -> 400, zinc-900 ->
          zinc-700, and its separators thin to zinc-200: still the
-         first thing read, no longer a title;
-       - the air below it closes from 80 to 48 so the context line and
-         the block below read as one object, not two decks.
+         first thing read, no longer a title.
+     HALF A STEP BACK UP (feedback T 2026-08-18, gbppl-hero-start-3):
+     at 11/22 the context line had gone from quiet to inaudible. The
+     eyebrow returns to 12 and the pipe list to 24 (which is the
+     default hero's own .sub size, a role we already own), so the line
+     is present again without contesting anything. The ladder still
+     descends cleanly: serif 36 title, 24 context, 20 cell titles, 18
+     cell lines, and Start Gifting keeps the room by family, size and
+     colour all three.
      All of it is gated on the attribute; the default view keeps its
      28/500 hero exactly as approved. */
   [data-hero="start"] .hero .eyebrow {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.12em;
     color: var(--zinc-500);
     margin-bottom: 12px;
   }
   [data-hero="start"] .hero .sub-list {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 400;
     line-height: 1.4;
     color: var(--zinc-700);
   }
-  [data-hero="start"] .hero .sub { margin-bottom: 40px; }
+  /* VERTICAL RHYTHM, gbppl-hero-start-3. The block used to leave the
+     same air above Start Gifting as inside it (40 up against 56 down),
+     so the eye grouped the context line WITH the title and left the
+     grid and the buttons standing as two further decks. Reversed: the
+     gap down from the context line is now twice the gap inside the
+     block (64 over 32 below 1280, 72 over 36 from it), which makes
+     title + grid + buttons read as one cluster with the audience line
+     held apart above it. All three layouts inherit these numbers. */
+  [data-hero="start"] .hero .sub { margin-bottom: 64px; }
   [data-hero="start"] .hero .sub .sub-sep { background: var(--zinc-200); margin: 0 14px; }
   /* Variant B says the same thing with an h1 + sentence; it demotes by
      the same rule so ?v=b composes with ?hero=start without growing a
@@ -1364,8 +1378,13 @@
     line-height: 1.4;     /* live 50.4/36 */
     font-weight: 300;
     color: var(--zinc-900);
-    margin-bottom: 48px;
+    margin-bottom: 32px;   /* cluster-tight, see the rhythm note above */
   }
+  /* Supporting line, rendered by layout=split only (the centred grid
+     and band layouts say the same thing with the four cells and do not
+     need a lede). Kept in the shared DOM so the wording lives in one
+     place. */
+  .hs-lede { display: none; }
 
   /* 2x2, columns of equal weight, separated by air alone. The block
      keeps its own 960px measure inside the 1200px hero so no line
@@ -1379,7 +1398,7 @@
     column-gap: 80px;
     row-gap: 48px;
     max-width: 960px;
-    margin: 0 auto 56px;
+    margin: 0 auto 40px;   /* cluster-tight, see the rhythm note above */
     text-align: left;
     position: relative;
   }
@@ -1505,6 +1524,136 @@
     color: var(--zinc-900);
   }
   .btn-start-outline:hover { background: var(--zinc-100); }
+
+  /* ============ START GIFTING: THREE ARRANGEMENTS (&layout=) ============
+     gbppl-hero-start-3. The client asked to see the block in two or
+     three shapes, so the same block learns three. ONE DOM, three
+     arrangements: the text, the four glyphs and the two buttons are
+     the very same nodes in every case and only CSS moves them, so a
+     wording fix lands in all three at once and they can never drift.
+       &layout=grid  the approved 2x2 with the hairline cross (default,
+                     and also what renders with no parameter at all);
+       &layout=split editorial asymmetry, title column left, the four
+                     points stacked right;
+       &layout=band  one horizontal ribbon of four columns, the shape
+                     the live home page already uses for its benefits.
+     The rhythm correction above (context line held twice as far away
+     as anything inside the cluster) is written on the shared rules, so
+     all three inherit it. &grid=weight|serif keeps working everywhere:
+     it cuts .hs-cell-title, which no layout redefines. */
+
+  /* ---- layout=split ----------------------------------------------
+     The whole block becomes a two-column grid and the three head
+     elements are placed into the left track by hand, so the DOM order
+     (title, lede, grid, buttons) is left untouched. 5/7 of 1120 with
+     an 80px gutter = 433 left / 607 right: the right column had to be
+     the wide one or the four lines would set two words to the line,
+     and 433 is still comfortable for a 44px serif title.
+     The buttons stack VERTICALLY here, decided by the measure rather
+     than by taste: side by side the pair needs 2x248 + 24 = 520px and
+     the left track is 433, so a row would wrap into a ragged stack
+     anyway. Stacked they keep the min-width ladder, so they stay
+     pixel-equal to each other, and the filled/outlined contrast does
+     all the hierarchy work. */
+  [data-hero="start"][data-layout="split"] .hero-start {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    /* Three content rows and a fourth that eats the slack: without it
+       the tall right-hand column (which spans the lot) would push its
+       surplus height into the three left rows and blow the head apart
+       into three floating pieces. */
+    grid-template-rows: auto auto auto 1fr;
+    column-gap: 80px;
+    align-items: start;
+    max-width: 1120px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  [data-layout="split"] .hs-title {
+    grid-column: 1; grid-row: 1;
+    font-size: 36px;      /* one step over the centred layouts: it owns a column now */
+    /* 1.4 is the section-heading leading and it is too loose at display
+       size; 1.15 (the page h1's own leading) also lands the title's cap
+       line on the cap line of the first point across the gutter, which
+       is the alignment that makes the two columns read as one spread. */
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+  [data-layout="split"] .hs-lede {
+    display: block;
+    grid-column: 1; grid-row: 2;
+    font-size: 18px;      /* the cell-line role, so the head speaks in the block's own voice */
+    line-height: 1.55;
+    font-weight: 300;
+    color: var(--zinc-600);
+    margin-bottom: 36px;
+    max-width: 30em;
+  }
+  [data-layout="split"] .hs-actions {
+    grid-column: 1; grid-row: 3;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  /* The four points become one column of rows divided by hairlines.
+     Same rule as the cross: dividers BETWEEN, never around, so the
+     stack reads as a list and not as a card. The cross pseudo-elements
+     have nothing to divide here and are dismissed. */
+  [data-layout="split"] .hs-grid {
+    grid-column: 2; grid-row: 1 / -1;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    column-gap: 0;
+    row-gap: 0;
+    max-width: none;
+    margin: 0;
+  }
+  [data-layout="split"] .hs-grid::before,
+  [data-layout="split"] .hs-grid::after { display: none; }
+  [data-layout="split"] .hs-cell {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    column-gap: 16px;
+  }
+  [data-layout="split"] .hs-cell + .hs-cell {
+    border-top: 1px solid var(--zinc-200);
+    margin-top: 24px;
+    padding-top: 24px;
+  }
+  /* The glyph moves from above the title to beside it, spanning both
+     rows of the cell so it optically anchors the whole point. */
+  [data-layout="split"] .hs-cell-icon {
+    grid-row: 1 / span 2;
+    margin-top: 3px;      /* optical: the 24px box hangs on the cap line of the 20px title */
+    margin-bottom: 0;
+  }
+
+  /* ---- layout=band -----------------------------------------------
+     Four columns in one ribbon, glyph over title, vertical hairlines
+     between and none at the ends: the same figure the live home page
+     draws under its benefits strip, which is why this one will feel
+     familiar to Russell. The measure is the tight part, so the band
+     is allowed wider than the 960 the 2x2 keeps (1120, still inside
+     the 1200 hero) and the cell line drops 18 -> 16, the one size
+     concession the layout asks for. Gaps are zero and the air is
+     padding instead, so the hairline sits at the true middle between
+     two columns rather than at the edge of one. */
+  [data-layout="band"] .hs-grid {
+    /* minmax(0, 1fr), not 1fr: with the bare fr the longest word in a
+       cell sets a min-content floor and the four columns come out
+       unequal, which puts the hairlines off the beat. */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    column-gap: 0;
+    row-gap: 0;
+    max-width: 1120px;
+  }
+  [data-layout="band"] .hs-grid::before,
+  [data-layout="band"] .hs-grid::after { display: none; }
+  [data-layout="band"] .hs-cell { padding: 0 24px; }
+  [data-layout="band"] .hs-cell + .hs-cell { border-left: 1px solid var(--zinc-200); }
+  [data-layout="band"] .hs-cell-line { font-size: 16px; }
 
   /* ============ PAGE META (breadcrumbs + title card) ============
      Source: live portal, Ton's screen 2026-08-12. Shows only in nav=ton
@@ -1799,8 +1948,16 @@
        one-word START label, see the block's provenance */
     .btn-start { min-height: 56px; min-width: 248px; padding-left: 28px; padding-right: 28px; font-size: 16px; letter-spacing: -0.4px; }
     .hs-actions { gap: 24px; }
-    .hs-title { font-size: 36px; margin-bottom: 56px; } /* the live section-h2 size lands from 1280 */
-    .hs-grid { column-gap: 96px; row-gap: 56px; margin-bottom: 64px; }
+    .hs-title { font-size: 36px; margin-bottom: 36px; } /* the live section-h2 size lands from 1280; 36 down against 72 up, gbppl-hero-start-3 */
+    .hs-grid { column-gap: 96px; row-gap: 56px; margin-bottom: 44px; }
+    [data-hero="start"] .hero .sub { margin-bottom: 72px; }
+    /* split: the title takes the step the column affords it (36 -> 44,
+       still under the live page h1 of 48) and the rows breathe */
+    [data-layout="split"] .hs-title { font-size: 44px; margin-bottom: 20px; }
+    [data-layout="split"] .hs-actions { gap: 16px; }
+    [data-layout="split"] .hs-cell + .hs-cell { margin-top: 28px; padding-top: 28px; }
+    /* band: the 2x2's wider gutters would only starve the columns */
+    [data-layout="band"] .hs-grid { column-gap: 0; row-gap: 0; }
   }
   @media (min-width: 2000px) {
     .btn-cta { min-height: 64px; padding-left: 32px; padding-right: 32px; } /* L >=2000, interpolated per Ren's proportion formula; threshold 2000 mirrors the live ladders */
@@ -2040,11 +2197,12 @@
     /* gbppl-hero-start on phones: the 2x2 folds to one column, the
        type steps down by clamp like every other hero role, and the
        two buttons stack full width with the primary on top. */
-    .hs-title { font-size: clamp(26px, 6.5vw, 32px); margin-bottom: 32px; }
+    .hs-title { font-size: clamp(26px, 6.5vw, 32px); margin-bottom: 28px; }
+    [data-hero="start"] .hero .sub { margin-bottom: 48px; } /* the 2:1 rhythm holds on phones too, gbppl-hero-start-3 */
     /* One column on phones: the cross has nothing to divide, so both
        hairlines are dismissed and the rows stop being equalized
        (gbppl-hero-start-2). */
-    .hs-grid { grid-template-columns: 1fr; grid-auto-rows: auto; column-gap: 0; row-gap: 32px; margin-bottom: 40px; }
+    .hs-grid { grid-template-columns: 1fr; grid-auto-rows: auto; column-gap: 0; row-gap: 32px; margin-bottom: 32px; }
     .hs-grid::before, .hs-grid::after { display: none; }
     .hs-cell-icon { margin-bottom: 10px; }
     .hs-cell-title { font-size: clamp(18px, 5vw, 20px); }
@@ -2052,6 +2210,31 @@
     .hs-cell-line { font-size: clamp(16px, 4.2vw, 18px); }
     .hs-actions { flex-direction: column; align-items: stretch; gap: 12px; }
     .btn-start { width: 100%; min-width: 0; }
+    /* Both alternative arrangements fold back into the one column the
+       2x2 already folds into (gbppl-hero-start-3). These rules only
+       exist because the layout selectors outweigh the phone rules
+       above; the result they restore IS the phone rule above.
+       split reorders on the way down, head then buttons then points,
+       so the reader reaches the call to action before the detail. */
+    [data-hero="start"][data-layout="split"] .hero-start {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;   /* undo the desktop `start`, or every child shrink-wraps */
+      max-width: none;
+      margin: 0;              /* an auto cross-axis margin would cancel the stretch and shrink the block */
+      text-align: center;
+    }
+    [data-layout="split"] .hs-title { order: 1; font-size: clamp(26px, 6.5vw, 32px); margin-bottom: 12px; }
+    [data-layout="split"] .hs-lede  { order: 2; font-size: clamp(16px, 4.2vw, 18px); margin: 0 auto 28px; }
+    [data-layout="split"] .hs-actions { order: 3; align-items: stretch; gap: 12px; margin-bottom: 40px; }
+    [data-layout="split"] .hs-grid  { order: 4; margin: 0; }
+    [data-layout="split"] .hs-cell  { display: block; }
+    [data-layout="split"] .hs-cell + .hs-cell { border-top: 0; margin-top: 32px; padding-top: 0; }
+    [data-layout="split"] .hs-cell-icon { margin-top: 0; margin-bottom: 10px; }
+    [data-layout="band"] .hs-grid { grid-template-columns: 1fr; row-gap: 32px; max-width: none; }
+    [data-layout="band"] .hs-cell { padding: 0; }
+    [data-layout="band"] .hs-cell + .hs-cell { border-left: 0; }
+    [data-layout="band"] .hs-cell-line { font-size: clamp(16px, 4.2vw, 18px); }
   }
 </style>
 </head>
@@ -2078,6 +2261,7 @@
 <!-- wave-2026-08-18a marker: gbppl-ren-blue-k3v8 -->
 <!-- wave-2026-08-18b marker: gbppl-hero-start gbppl-ren-narrow-t4s7 -->
 <!-- wave-2026-08-18c marker: gbppl-hero-start-2 -->
+<!-- wave-2026-08-18d marker: gbppl-hero-start-3 -->
 
   <!-- ============ SITE HEADER ============
        LIVE PORTAL header per Ton's screens 2026-08-12 (see CSS provenance;
@@ -2321,6 +2505,10 @@
              the 2026-08-18 call, verbatim. -->
         <div class="hero-start" id="heroStart">
           <h2 class="hs-title">Start Gifting</h2>
+          <!-- The lede belongs to layout=split alone (CSS hides it in
+               the other two), but it lives here in the shared DOM so
+               there is one copy of every word in this block. -->
+          <p class="hs-lede">One route in, from the first recommendation to the last delivery.</p>
           <div class="hs-grid">
             <div class="hs-cell">
               <span class="hs-cell-icon" aria-hidden="true"><img src="icons/archery-target.svg" alt=""></span>
@@ -2854,6 +3042,13 @@
   if (params.get('hero') === 'start') {
     document.body.setAttribute('data-hero', 'start');
     document.body.setAttribute('data-grid', params.get('grid') === 'serif' ? 'serif' : 'weight');
+    /* &layout=grid (default) | split | band, gbppl-hero-start-3: three
+       arrangements of the SAME four cells and two buttons, chosen by
+       CSS alone. Unknown or absent values fall back to grid, the
+       approved 2x2, so every link already sent out keeps its picture. */
+    var layoutParam = params.get('layout');
+    document.body.setAttribute('data-layout',
+      layoutParam === 'split' || layoutParam === 'band' ? layoutParam : 'grid');
   }
   render();
 })();
