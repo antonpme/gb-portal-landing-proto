@@ -2494,6 +2494,35 @@
      single frame. Downward it happened to work, which is exactly how a
      bug like this survives a look. */
   .start-panel.gsp-measuring { transition: none; }
+  /* ---- gbppl-popup-gutter (Ton, 2026-08-19) -------------------------
+     "START, the doors, Book a Meeting: a scrollbar turns up for the
+     length of the transition and then goes away again, and the calendar
+     dances left and right." It does, and the FLIP above is why: for
+     280ms the shell is at a height it has not reached yet while the step
+     inside is already the tall one, so the body overflows, `auto` grows
+     a bar, the bar eats 15px of the content box, and the calendar slides
+     half a step left and back. Measured headed at 1280x900 (headless
+     cannot see it -- its scrollbars are overlays and cost no width):
+     content 526 -> 511 at t=98, back to 526 at t=352. Book a Meeting is
+     just the loudest case; Back out of Call us does the same, and any
+     step that outgrows its shell for a moment would.
+
+     THE FIX IS TO FORBID THE BAR, NOT TO RESERVE ROOM FOR IT.
+     scrollbar-gutter: stable was the other candidate and it is the wrong
+     one here: it holds 15px open at ALL times, which turns the body's
+     even 28px gutter into 28 left and 43 right on every step, including
+     the three that never scroll. That is a permanent change to approved
+     geometry to pay for a 280ms problem. Hidden while travelling costs
+     nothing at rest and nothing visible in motion -- there is no reading
+     a panel mid-flight anyway, and the shell is on its way to a height
+     where the content fits.
+     What is left is honest: on a viewport too short for the calendar the
+     bar appears ONCE, at the end, when the shell has stopped -- a settle
+     instead of a flinch. The measured heights are unaffected: `to` is
+     read before this class goes on, with the height cleared and no bar
+     in the way, so it is the true natural height either way. */
+  .start-panel.gsp-resizing .gsp-body,
+  .start-panel.gsp-resizing .concierge-panel__body { overflow-y: hidden; }
 
   /* The content comes up inside the card rather than with it: the card
      is a card first, a menu a breath later. On the way out it holds
