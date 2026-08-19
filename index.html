@@ -53,6 +53,53 @@
     --crumb-strip-ink: #b8b8bd;
     --crumb-strip-sep: #6b6b71;
     --radius: 5px;
+
+    /* ---- gbppl-motion-pass: ONE FAMILY OF RAILS ---------------------
+       Every overlay, popup and micro-state on this page moved by its own
+       hand-picked number until now: 150ms ease here, 160ms there, three
+       curves that were nearly the same curve. Ton's brief, 2026-08-19:
+       the popup has to open "as if straight out of the button", faster
+       than the side panel but less jerky -- "proper smooth rails". A rail
+       is only a rail if everything rides it, so the whole page's motion
+       is spelled out here and nowhere else, and the sizes are named by
+       the JOURNEY, not by the component:
+
+         large   the catalog door crossing 1216px  (--tf-travel's twin)
+         medium  a popup growing out of its button, corner to centre
+         small   a step changing inside a window that stays put
+         micro   a hover, a chip, a disc taking a wash
+
+       THE CURVES. Four, and each has one job:
+         --mo-enter   the long journey. Holds the MIDDLE of the path (28%
+                      of the way at a quarter of the time, 65% at 40%,
+                      measured) so travel reads as travel, and still lands
+                      soft. This is the catalog door's own curve, promoted
+                      from --tf-curve, where it was chosen the hard way
+                      (see gbppl-tiffany-overlay-2 for what it replaced).
+         --mo-arrive  short arrivals. A pure decelerate: the thing is
+                      already moving when you first see it. The Chat with
+                      us source's own panel curve, kept literal.
+         --mo-exit    anything leaving. Accelerates away, never lands.
+         --mo-move    in-place travel -- a sideways step, a chevron, a
+                      shell finding a new height. Symmetric, unhurried.
+
+       The catalog overlay's --tf-* stay written out in full where they
+       are: that choreography is approved and frozen to the frame, and a
+       variable it does not own must never be able to move it. They are
+       the same three values as --mo-enter / --mo-exit / --mo-large, and
+       the block down there says so. Everything ELSE on the page reads
+       from here, including the Start popup's transferred --gh-* aliases,
+       which are re-pointed at these rather than restated. */
+    --mo-enter:  cubic-bezier(0.37, 0, 0.18, 1);
+    --mo-arrive: cubic-bezier(0, 0, 0.2, 1);
+    --mo-exit:   cubic-bezier(0.4, 0, 1, 1);
+    --mo-move:   cubic-bezier(0.4, 0, 0.2, 1);
+    --mo-large:      1200ms;  /* the catalog door's journey */
+    --mo-medium:      500ms;  /* the popup out of its button */
+    --mo-medium-out:  350ms;  /* ...and back into it, always quicker */
+    --mo-small:       280ms;  /* a step arriving inside the popup */
+    --mo-small-out:    90ms;  /* the step it replaces, letting go first */
+    --mo-micro:       160ms;  /* hover, focus, a chip, a selected day */
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -524,7 +571,20 @@
   }
 
   /* 3: section titles as eyebrow caps (the landing's COMPANY GIFTING
-     FOR language). The zinc-50 header band goes with the box. */
+     FOR language). The zinc-50 header band goes with the box.
+     gbppl-eyebrow-one (Ton, 2026-08-19): they were named after the
+     landing's eyebrow but never made to BE it -- 11/500/1.2px/zinc-400
+     against the eyebrow's 12/500/0.12em/zinc-500, close enough to look
+     like a mistake and far enough to read smaller. Ton, verbatim: "one
+     size... bring them all to the size of Company Gifting for, a touch
+     bolder, and line them up on size and colour, one font with one
+     colour." So there is now ONE eyebrow role in the file and both
+     places spend it: 12px, 600 (the half step up he asked for, taken on
+     both sides so they stay level), 0.12em, uppercase, Zinc 500.
+     Zinc 500 on the sidebar's Zinc 50 ground measures 4.63:1, over the
+     4.5 floor for text this size, and it is a full step darker than the
+     Zinc 400 these titles wore. Gated to the ren skin and to
+     ?hero=start; live and russell keep what was approved. */
   body.ren-skin .snav-header {
     background: transparent;
     min-height: 0;
@@ -532,12 +592,12 @@
     margin-bottom: 10px;
   }
   body.ren-skin .snav-title {
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
     line-height: 1.6;
-    letter-spacing: 1.2px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--zinc-400);
+    color: var(--zinc-500);
   }
 
   /* 5: identity rows quiet down; the info block's card seam goes */
@@ -727,7 +787,15 @@
        for short travel, and over 1216px it reads as an arrival, not a
        journey. This one holds the middle of the path (see the measured
        shares above) and still lands soft. The exit keeps its
-       accelerating counterpart, which was never the problem. */
+       accelerating counterpart, which was never the problem.
+       PROVENANCE, gbppl-motion-pass (2026-08-19): these three numbers are
+       the head of the page's motion family -- --tf-curve IS --mo-enter,
+       --tf-exit-curve IS --mo-exit, --tf-travel IS --mo-large, and the
+       :root block that names them says where they came from. They are
+       left written out here on purpose: this door is approved and its
+       frames were sampled one by one to get it, so it must not be
+       movable from a variable it does not own. If the family is ever
+       retuned, retune it there and decide about the door separately. */
     --tf-curve: cubic-bezier(0.37, 0, 0.18, 1);
     --tf-exit-curve: cubic-bezier(0.4, 0, 1, 1);
     --tf-dim: 320ms;           /* backdrop up, and later down */
@@ -1424,9 +1492,14 @@
      colour all three.
      All of it is gated on the attribute; the default view keeps its
      28/500 hero exactly as approved. */
+  /* 500 -> 600 (gbppl-eyebrow-one, Ton 2026-08-19): the eyebrow and the
+     ren sidebar's section titles are one role and now one style, and the
+     half step of weight is taken on both sides at once so neither ends
+     up the louder of the pair. Size, tracking and colour were already
+     this line's; see the ren block for the whole argument. */
   [data-hero="start"] .hero .eyebrow {
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.12em;
     color: var(--zinc-500);
     margin-bottom: 12px;
@@ -1605,7 +1678,12 @@
     text-transform: uppercase;
     border: 1px solid transparent;
     border-radius: var(--radius);
-    transition: background 150ms ease, border-color 150ms ease;
+    /* Named properties only, and on the family's own micro rail
+       (gbppl-motion-pass): this button is the one the popup is born out
+       of, so its hover must not be able to twitch anything it is about
+       to hand a rect to. */
+    transition: background-color var(--mo-micro) var(--mo-move),
+                border-color var(--mo-micro) var(--mo-move);
   }
   .btn-start-primary {
     background: var(--blue-600);
@@ -1836,7 +1914,34 @@
          because the source has the same move natively;
      (2) the steps stop jumping: chat asked for 600 while the calendar
          stood at 696, so both now take --gsp-step-h = 696, the
-         calendar's own natural height. */
+         calendar's own natural height.
+
+     FOURTH PASS, gbppl-start-roomier (Ton, 2026-08-19, riding the motion
+     wave): "the popup with three options feels too small -- make it all
+     a little bigger". It is not a drawer any more and it is the only
+     thing on the screen when it is open, so it may breathe. ONE ratio
+     does the whole thing, 1.15, applied to the shell and to the air, and
+     HALF that to the type -- text that grows as fast as its container
+     stops being a hierarchy and becomes a zoom:
+       shell        460 -> 528      (= 24 x 22, so the 24 gutter still
+                                     divides it; source proportions kept)
+       body gutter   24 -> 28       air around the card of options
+       header band   64 -> 72,      its inset 24 -> 28
+       a door row    76 -> 90,      its disc 40 -> 46, its gap 12 -> 14
+       doors ceiling 560 -> 640
+       the rem root  13 -> 14 at a compact desktop, 16 -> 17 at 2K:
+                     half a step, so the door title moves 13 -> 14 and
+                     its line 11.4 -> 12.25, and the chat two clicks
+                     inside moves with them -- it is the same organism,
+                     just roomier, not a second one
+       calendar day  40 -> 44 circles, which the wider card now affords
+       --gsp-step-h  696 -> 748, re-measured off the calendar at the new
+                     width exactly as the third pass measured it at 460;
+                     chat and the confirmation follow it as before
+     Nothing changes shape: every ratio the transferred organism was
+     built on (76/40 disc, 64 band over 24 gutter, 460/24) survives the
+     multiplication. The popup's birth out of the button is untouched --
+     it just has a bigger final pose to grow into (gbppl-motion-pass). */
   .start-overlay {
     position: fixed;
     inset: 0;
@@ -1867,8 +1972,9 @@
        holds and it is built of fixed pixels, so it measures 696 at every
        width; that number becomes the shared ceiling and the chat rises
        to meet it. The window now keeps its size across Back and forward
-       between the two steps instead of jumping. */
-    --gsp-step-h: 696px;
+       between the two steps instead of jumping. Re-measured at the wider
+       shell in gbppl-start-roomier: 748. */
+    --gsp-step-h: 748px;
 
     /* The source's whole rem hierarchy rides one fluid root -- 13px on a
        compact desktop, easing up to 16 at its 2K reference and down again
@@ -1878,28 +1984,43 @@
        would print a fifth larger here than it does two clicks away inside
        the framed catalog -- which IS that build, so the two would be
        caught side by side. The header title, the step's line and the
-       serif intro are px clamps in the source and stay as they are. */
-    --gh-root: clamp(13px, 0.625vw, 16px);
+       serif intro are px clamps in the source and follow the same half
+       step by hand (gbppl-start-roomier). */
+    --gh-root: clamp(14px, 0.675vw, 17px);
     --gh-xs: calc(0.75 * var(--gh-root));    /* --text-xs   */
     --gh-sm: calc(0.875 * var(--gh-root));   /* --text-sm   */
     --gh-base: var(--gh-root);               /* --text-base */
 
-    --gh-fast: 160ms;
-    --gh-panel: 360ms;
-    --gh-enter: cubic-bezier(0, 0, 0.2, 1);
-    --gh-exit: cubic-bezier(0.4, 0, 1, 1);
-    --gh-move: cubic-bezier(0.4, 0, 0.2, 1);
+    /* The transferred organism's four motion names, re-pointed at the
+       page's family (gbppl-motion-pass). Same four values the transfer
+       carried -- --gh-fast IS 160ms, --gh-exit and --gh-move ARE the
+       family's exit and in-place curves, and the source's decelerate is
+       what the family calls --mo-arrive -- so nothing computes
+       differently; they simply stop being a second set of numbers. */
+    --gh-fast:  var(--mo-micro);
+    --gh-enter: var(--mo-arrive);
+    --gh-exit:  var(--mo-exit);
+    --gh-move:  var(--mo-move);
   }
   /* Centring container: the popup is a flex item, the backdrop stays a
      positioned sheet under it. JS writes display:flex on open, so the two
-     agree about the box. */
-  .start-overlay.open,
-  .start-overlay.closing {
-    display: flex;
+     agree about the box.
+     THE CENTRING LIVES ON THE BASE, not on .open (gbppl-motion-pass).
+     It used to ride with the open state, which was invisible until the
+     birth choreography needed to MEASURE the card one frame before
+     opening: with only display:flex written inline and .open not yet
+     added, the card was laid out at the top-left corner of the overlay
+     and the seed was computed towards a landing box some 360px from the
+     one it would actually land in. Alignment and padding cost nothing
+     while display is none, so they belong here, and the open state is
+     left with the one thing it genuinely changes. */
+  .start-overlay {
     align-items: center;
     justify-content: center;
     padding: 32px 16px;
   }
+  .start-overlay.open,
+  .start-overlay.closing { display: flex; }
   .start-backdrop {
     position: absolute;
     inset: 0;
@@ -1917,8 +2038,8 @@
   .start-panel {
     position: relative;
     z-index: 1;
-    width: min(460px, 100%);
-    max-height: min(560px, 100%);
+    width: min(528px, 100%);
+    max-height: min(640px, 100%);
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     overflow: hidden;
@@ -1944,62 +2065,199 @@
   .start-panel[data-view="meeting"] { height: min(var(--gsp-step-h), 100%); }
   .start-panel:focus { outline: none; }
 
-  /* Enter and exit are the source's own hub keyframes, re-anchored to the
-     centre of the screen instead of a bottom-right corner. */
-  @keyframes gsp-pop-expand {
-    from { opacity: 0; transform: translateY(24px) scale(0.88); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes gsp-pop-collapse {
-    from { opacity: 1; transform: translateY(0) scale(1); }
-    to   { opacity: 0; transform: translateY(32px) scale(0.9); }
-  }
-  .start-overlay.open .start-panel { animation: gsp-pop-expand var(--gh-panel) var(--gh-enter); }
-  .start-overlay.closing .start-panel { animation: gsp-pop-collapse 260ms var(--gh-exit) forwards; }
+  /* ---- THE POPUP IS BORN OUT OF THE BUTTON (gbppl-motion-pass) ------
+     Ton, 2026-08-19: "the popup should look as though it opens straight
+     out of the button -- faster than the side panel, but less jerky.
+     Proper smooth rails."
 
-  /* Levels slide sideways by 12px, the source's own step change; the body
-     trails the header by 35ms exactly as it does there. */
+     What was here: the source hub's own keyframes, re-anchored to the
+     middle of the screen -- 24px up and 0.88 -> 1 in 360ms. It is a fine
+     pop and it says nothing about where the popup came from. A guest who
+     clicks START and gets a card in the middle of the screen has to work
+     out, every time, that the card is the button's answer. Grown out of
+     the button itself, there is nothing to work out.
+
+     So the pose the card rests in is not written in the CSS: it is
+     written by the click. JS measures the button that was actually
+     pressed (there may be several START buttons across the layouts and
+     variants, and it is the pressed one that matters, on the way IN and
+     on the way BACK), measures the card's final box, and hands three
+     numbers down as custom properties. Then the whole thing is one
+     transition, which is why it is a transition and not an animation:
+     an animation would have to be told the pose twice, a transition
+     only needs to be interrupted to reverse.
+
+     THE ARITHMETIC, since it is not obvious. transform-origin goes to
+     the button's centre expressed in the card's own coordinates
+     (--gsp-ox/oy, which are freely allowed to fall outside the card).
+     Scaling about that point already shrinks the card TOWARDS the
+     button, but not ONTO it -- the card's centre lands at
+     B + s(C - B), short of the button by s(C - B). So the seed also
+     carries a translate of exactly s(B - C), which cancels it. The two
+     together put the seed card centred on the button at a fifth of its
+     size, and -- worth the algebra -- make the card's centre travel a
+     straight line from the button to the middle of the screen as the
+     transition interpolates, instead of the curve the scale alone
+     would sweep.
+
+     Timings, from the family:
+       0      the backdrop dims,           --mo-small  --mo-arrive
+       0      the card grows out of the button, --mo-medium --mo-enter
+              (500ms: less than half the catalog door's 1200, which is
+              right -- this journey is a few hundred pixels, not 1216)
+       0-180  the card firms up, linear. Solid well before it lands, the
+              lesson gbppl-tiffany-overlay-3 paid for on the door: a
+              translucent thing in motion reads as a ghost, a solid one
+              reads as travel
+       150    the content inside comes up, --mo-small, so the card is
+              unmistakably a card before it is a menu
+       500    landed
+     And back, quicker, into the same button:
+       0      the content stays put -- the card's own fade carries it,
+              and two fades stacked go dark far too fast
+       0      the card collapses into the button, --mo-medium-out
+              --mo-exit: accelerating, never landing, so it reads as
+              being taken back rather than dropped
+       90-350 it fades as it goes
+       0-280  the backdrop gives the page back
+     A guest with no pointer -- keyboard, the PROTO panel, a synthetic
+     click -- still gets a pose: the JS falls back to the old centre pop
+     (0.88 and 24px down), written into the same three properties. */
+  .start-panel {
+    /* The rest pose IS the seed pose. JS overwrites these three per
+       click; the defaults are the source hub's own centre pop, which is
+       what an opener-less open gets. */
+    --gsp-dx: 0px;
+    --gsp-dy: 24px;
+    --gsp-seed: 0.88;
+    --gsp-ox: 50%;
+    --gsp-oy: 50%;
+    transform-origin: var(--gsp-ox) var(--gsp-oy);
+    opacity: 0;
+    transform: translate(var(--gsp-dx), var(--gsp-dy)) scale(var(--gsp-seed));
+    /* height rides here too: the shell travels between step heights on
+       an explicit pixel value the JS measures (see resizeStartPanel).
+       Harmless at every other moment -- height is CSS-driven then, and
+       transitions do not run to or from auto. */
+    transition: transform var(--mo-medium) var(--mo-enter),
+                opacity 180ms linear,
+                height var(--mo-small) var(--mo-move);
+    /* Free at rest: the overlay is display:none until it is wanted. */
+    will-change: transform, opacity;
+  }
+  .start-overlay.open .start-panel {
+    opacity: 1;
+    transform: translate(0px, 0px) scale(1);
+  }
+  .start-overlay.closing .start-panel {
+    opacity: 0;
+    transform: translate(var(--gsp-dx), var(--gsp-dy)) scale(var(--gsp-seed));
+    transition: transform var(--mo-medium-out) var(--mo-exit),
+                opacity 260ms ease-in 90ms,
+                height var(--mo-small) var(--mo-move);
+  }
+  /* While the shell is travelling between two step heights the doors'
+     560-and-now-640 ceiling has to stand aside, or a journey DOWN from
+     the calendar would be clamped to it in its first frame and the
+     travel would be a jump after all. The height it travels to was
+     measured with every ceiling in force, so nothing escapes. */
+  .start-panel.gsp-resizing { max-height: none; }
+  /* And while the JS is taking those measurements the rails come off
+     entirely: reading a height means letting the browser resolve style,
+     and every such read is a style change the transition would answer.
+     The one that bit: measuring the destination left the card already
+     travelling towards the height it had just come FROM, so the real
+     move -- 452 to 748 on the way into the calendar -- found a
+     transition running to the same value, cancelled it, and landed in a
+     single frame. Downward it happened to work, which is exactly how a
+     bug like this survives a look. */
+  .start-panel.gsp-measuring { transition: none; }
+
+  /* The content comes up inside the card rather than with it: the card
+     is a card first, a menu a breath later. On the way out it holds
+     still and lets the card's own fade take it. */
+  .gsp-head,
+  .gsp-body { opacity: 0; }
+  .start-overlay.open .gsp-head,
+  .start-overlay.open .gsp-body {
+    opacity: 1;
+    transition: opacity var(--mo-small) var(--mo-arrive) 150ms;
+  }
+  .start-overlay.closing .gsp-head,
+  .start-overlay.closing .gsp-body { opacity: 1; }
+
+  /* ---- Steps inside the window (gbppl-motion-pass) ------------------
+     What was here: the source's 12px sideways slide at 260ms, with fill
+     `both`, and nothing at all for the step being replaced. Fill `both`
+     means the incoming content is at opacity 0 from the instant the
+     attribute lands -- so the outgoing step did not leave, it was cut,
+     and the cut is what read as hard. Ton: "make it a calm crossfade".
+     Now there are two halves and the second is the one you watch:
+       0-90    the outgoing step lets go. Opacity only, no movement --
+               a thing that leaves sideways AND a thing that arrives
+               sideways is two journeys for one step
+       90      the swap, and the shell sets off for its new height
+               (--mo-small on --mo-move, the in-place curve)
+       90-370  the new step arrives, 18px from the side it came from --
+               forward from the right, Back from the left -- on
+               --mo-arrive, already moving when you first see it. The
+               body trails the header by 40ms, the source's own stagger
+               rounded to the new duration.
+     The attribute is taken off again when the arrival is over, so a
+     filled `both` can never hold the body's opacity against the close. */
   @keyframes gsp-level-forward {
-    from { opacity: 0; transform: translateX(12px); }
+    from { opacity: 0; transform: translateX(18px); }
     to   { opacity: 1; transform: translateX(0); }
   }
   @keyframes gsp-level-back {
-    from { opacity: 0; transform: translateX(-12px); }
+    from { opacity: 0; transform: translateX(-18px); }
     to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes gsp-level-leave {
+    from { opacity: 1; }
+    to   { opacity: 0; }
   }
   .start-panel[data-motion="forward"] .gsp-heading,
   .start-panel[data-motion="forward"] .gsp-body {
-    animation: gsp-level-forward 260ms var(--gh-enter) both;
+    animation: gsp-level-forward var(--mo-small) var(--mo-arrive) both;
   }
   .start-panel[data-motion="back"] .gsp-heading,
   .start-panel[data-motion="back"] .gsp-body {
-    animation: gsp-level-back 260ms var(--gh-enter) both;
+    animation: gsp-level-back var(--mo-small) var(--mo-arrive) both;
   }
-  .start-panel[data-motion="forward"] .gsp-body { animation-delay: 35ms; }
-
-  @keyframes gsp-fade-in  { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes gsp-fade-out { from { opacity: 1; } to { opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) {
-    .start-overlay.open .start-panel { animation: gsp-fade-in 300ms ease; }
-    .start-overlay.closing .start-panel { animation: gsp-fade-out 260ms ease forwards; }
-    .start-panel[data-motion] .gsp-heading,
-    .start-panel[data-motion] .gsp-body { animation: none; }
+  .start-panel[data-motion="leave"] .gsp-heading,
+  .start-panel[data-motion="leave"] .gsp-body {
+    animation: gsp-level-leave var(--mo-small-out) var(--mo-exit) both;
   }
+  .start-panel[data-motion="forward"] .gsp-body,
+  .start-panel[data-motion="back"] .gsp-body { animation-delay: 40ms; }
 
-  /* ---- Header band: 64 on white, title left, dismiss right ---------
+  /* gbppl-motion-pass: the reduced-motion branch that stood here is
+     GONE, for the reason gbppl-tiffany-overlay-5 removed the catalog
+     door's -- Тон-7, PRINCIPLES.md: the signature choreography does not
+     defer to a system setting. Windows' "animation effects" toggle makes
+     a browser report reduce, and on such a machine the popup used to
+     just appear while Tiffany and the live site kept moving. Being born
+     out of its button is this popup's signature and it plays everywhere,
+     guaranteed. The polite branches that remain in this file are for
+     service micro-animations only -- the chat's typing dots, the
+     confirmation's drawn check -- which the same principle allows. */
+
+  /* ---- Header band: 72 on white, title left, dismiss right ---------
      The source gives the hub a 24px left inset and pulls it back to 12
-     once a Back arrow claims the seat. */
+     once a Back arrow claims the seat; both step up with the shell
+     (gbppl-start-roomier, 64 -> 72, 24 -> 28, 12 -> 14). */
   .gsp-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    height: 64px;
-    padding: 0 12px;
+    height: 72px;
+    padding: 0 14px;
     background: var(--gh-white);
     border-bottom: 1px solid var(--gh-line);
   }
-  .start-panel[data-view="doors"] .gsp-head { padding-left: 24px; }
+  .start-panel[data-view="doors"] .gsp-head { padding-left: 28px; }
   .gsp-heading {
     min-width: 0;
     display: flex;
@@ -2020,7 +2278,7 @@
     border-radius: 50%;
     color: var(--gh-ink);
     cursor: pointer;
-    transition: background var(--gh-fast);
+    transition: background-color var(--mo-micro) var(--mo-move);
   }
   .gsp-icon-btn:hover,
   .gsp-icon-btn:focus-visible { background: var(--gh-hover); }
@@ -2037,7 +2295,7 @@
   }
   .gsp-head-title {
     font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
-    font-size: clamp(15px, 0.625vw, 16px);
+    font-size: clamp(16px, 0.675vw, 17px);   /* half a step, gbppl-start-roomier */
     font-weight: 600;
     line-height: 1.2;
     color: var(--gh-ink);
@@ -2047,7 +2305,7 @@
   }
   .gsp-meta {
     color: var(--gh-ink-soft);
-    font-size: clamp(12px, 0.55vw, 13px);
+    font-size: clamp(13px, 0.6vw, 14px);   /* half a step, gbppl-start-roomier */
     line-height: 1.35;
     white-space: nowrap;
     overflow: hidden;
@@ -2057,7 +2315,7 @@
 
   /* ---- Body -------------------------------------------------------- */
   .gsp-body {
-    padding: 24px;
+    padding: 28px;   /* 24 -> 28, air around the card, gbppl-start-roomier */
     background: var(--gh-paper);
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -2094,11 +2352,11 @@
     min-height: 0;
   }
 
-  .gsp-intro { margin-bottom: 20px; }
+  .gsp-intro { margin-bottom: 24px; }   /* 20 -> 24, gbppl-start-roomier */
   .gsp-intro h2 {
     margin: 0;
     font-family: 'Noto Serif', Georgia, serif;
-    font-size: clamp(20px, 0.859375vw, 22px);
+    font-size: clamp(22px, 0.94vw, 24px);   /* half a step, gbppl-start-roomier */
     font-weight: 400;
     line-height: 1.2;
     color: var(--gh-ink);
@@ -2116,21 +2374,24 @@
     border: 1px solid var(--gh-line);
     border-radius: var(--radius);
   }
+  /* 76/40/12/16 -> 90/46/14/18, gbppl-start-roomier: the row, its disc,
+     its gap and its inset all take the shell's 1.15, so the door keeps
+     the source's proportion of glyph to copy to air. */
   .gsp-door {
     width: 100%;
-    min-height: 76px;
+    min-height: 90px;
     display: grid;
-    grid-template-columns: 40px minmax(0, 1fr) 20px;
+    grid-template-columns: 46px minmax(0, 1fr) 20px;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
+    gap: 14px;
+    padding: 14px 18px;
     background: transparent;
     border: 0;
     color: var(--gh-ink);
     cursor: pointer;
     text-align: left;
     text-decoration: none;
-    transition: background-color var(--gh-fast) var(--gh-move);
+    transition: background-color var(--mo-micro) var(--mo-move);
   }
   .gsp-door:not(:last-child) { border-bottom: 1px solid var(--gh-line); }
   .gsp-door:hover,
@@ -2138,14 +2399,14 @@
   .gsp-door:focus-visible { box-shadow: inset 0 0 0 2px var(--gh-ink); }
   .gsp-door > svg {
     justify-self: end;
-    transition: transform var(--gh-fast) var(--gh-move);
+    transition: transform var(--mo-micro) var(--mo-move);
   }
   .gsp-door:hover > svg,
   .gsp-door:focus-visible > svg { transform: translateX(3px); }
   /* The disc, and the two tints the source actually colours */
   .gsp-door-icon {
-    width: 40px;
-    height: 40px;
+    width: 46px;    /* 40 -> 46, gbppl-start-roomier */
+    height: 46px;
     display: grid;
     place-items: center;
     background: var(--gh-paper);
@@ -2240,7 +2501,9 @@
     text-transform: uppercase;
     text-decoration: none;   /* Call now wears the button as an <a> */
     cursor: pointer;
-    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+    transition: background-color var(--mo-micro) var(--mo-move),
+                border-color var(--mo-micro) var(--mo-move),
+                color var(--mo-micro) var(--mo-move);
   }
   .gsp-btn:hover:not(:disabled) { background: var(--blue-700); border-color: var(--blue-700); }
   .gsp-btn:disabled {
@@ -2291,7 +2554,7 @@
     align-items: center;
     gap: 6px;
     color: var(--gh-ink-soft);
-    font-size: clamp(12px, 0.55vw, 13px);
+    font-size: clamp(13px, 0.6vw, 14px);
     line-height: 1.35;
   }
   .availability-dot {
@@ -2373,7 +2636,7 @@
   .concierge-chat-message__bubble p {
     margin: 0;
     font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
-    font-size: clamp(14px, 0.625vw, 15px);   /* --concierge-chat-copy */
+    font-size: clamp(15px, 0.675vw, 16px);   /* --concierge-chat-copy */
     font-weight: 400;
     line-height: 1.5;
   }
@@ -2433,10 +2696,10 @@
     line-height: 1.25;
     cursor: pointer;
     transition:
-      transform var(--gh-fast) var(--gh-move),
-      background var(--gh-fast),
-      box-shadow var(--gh-fast),
-      color var(--gh-fast);
+      transform var(--mo-micro) var(--mo-move),
+      background-color var(--mo-micro) var(--mo-move),
+      box-shadow var(--mo-micro) var(--mo-move),
+      color var(--mo-micro) var(--mo-move);
   }
   .concierge-composer__suggestions button:hover,
   .concierge-composer__suggestions button:focus-visible {
@@ -2464,8 +2727,8 @@
     outline: 0;
     color: var(--gh-ink);
     font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
-    font-size: clamp(14px, 0.625vw, 15px);
-    transition: border-color var(--gh-fast) var(--gh-move);
+    font-size: clamp(15px, 0.675vw, 16px);
+    transition: border-color var(--mo-micro) var(--mo-move);
   }
   .concierge-composer__field input::placeholder { color: var(--gh-muted); }
   .concierge-composer__field input:focus { border-bottom-color: var(--gh-ink); }
@@ -2481,7 +2744,7 @@
     border-radius: var(--radius);
     color: var(--gh-white);
     cursor: pointer;
-    transition: background-color var(--gh-fast) var(--gh-move), transform var(--gh-fast) var(--gh-move);
+    transition: background-color var(--mo-micro) var(--mo-move), transform var(--mo-micro) var(--mo-move);
   }
   .concierge-composer__field > button:not(:disabled):hover { background: var(--gh-ink-hover); }
   .concierge-composer__field > button:not(:disabled):active { transform: scale(0.97); }
@@ -2489,7 +2752,7 @@
   .concierge-composer__hint {
     margin: 0;
     color: var(--gh-muted);
-    font-size: clamp(12px, 0.55vw, 13px);
+    font-size: clamp(13px, 0.6vw, 14px);
     line-height: 1.4;
   }
   .concierge-composer button:focus-visible {
@@ -2503,7 +2766,7 @@
   }
 
   /* ---- Door 2: book a meeting, a stand-in calendar ---------------- */
-  .gsp-cal { padding: 20px; }
+  .gsp-cal { padding: 22px; }   /* 20 -> 22, gbppl-start-roomier */
   .gsp-cal-head {
     display: flex;
     align-items: center;
@@ -2535,20 +2798,24 @@
     color: var(--gh-muted);
   }
   .gsp-day {
-    height: 40px;
+    height: 44px;
     /* gbppl-cal-circle: a picked day is a circle, the calendar convention
        everywhere, regardless of the button radius token (T 2026-08-19:
-       the stretched pill read as a wrong rectangle). Fixed 40x40 centered
-       in the 1fr track keeps hover and selection the same round shape. */
-    width: 40px;
+       the stretched pill read as a wrong rectangle). A fixed square
+       centered in the 1fr track keeps hover and selection the same round
+       shape. 40 -> 44 in gbppl-start-roomier: the wider card gives each
+       of the seven tracks about 62px, so the circle can take the step
+       with the rest of the popup and still sit in air. */
+    width: 44px;
     justify-self: center;
     border: 0;
     border-radius: 999px;
     background: transparent;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
     color: var(--gh-ink);
-    transition: background 150ms ease, color 150ms ease;
+    transition: background-color var(--mo-micro) var(--mo-move),
+                color var(--mo-micro) var(--mo-move);
   }
   .gsp-day:hover:not(:disabled):not(.sel) { background: var(--gh-canvas); }
   .gsp-day:disabled { color: var(--zinc-300); cursor: default; }
@@ -2563,15 +2830,17 @@
   }
   .gsp-slots { display: flex; flex-wrap: wrap; gap: 8px; }
   .gsp-slot {
-    height: 32px;
-    padding: 0 12px;
+    height: 36px;    /* 32 -> 36, gbppl-start-roomier */
+    padding: 0 14px;
     border: 1px solid var(--gh-line);
     border-radius: var(--radius);
     background: var(--gh-white);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 400;
     color: var(--gh-ink-soft);
-    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+    transition: background-color var(--mo-micro) var(--mo-move),
+                border-color var(--mo-micro) var(--mo-move),
+                color var(--mo-micro) var(--mo-move);
   }
   .gsp-slot:hover:not(.sel) { background: var(--gh-paper); border-color: var(--zinc-300); }
   .gsp-slot.sel {
@@ -2630,7 +2899,7 @@
     line-height: 1.5;
     color: var(--gh-muted);
     opacity: 0;
-    transition: opacity 150ms ease;
+    transition: opacity var(--mo-micro) var(--mo-arrive);
   }
   .gsp-call-copied.shown { opacity: 1; }
   /* ---- Door 2, answered: You are booked (gbppl-start-booked) -------
@@ -2708,7 +2977,8 @@
      11.5px at 390 -- 88.5% of desktop, so a title that fits a monitor
      never renders bigger on a phone. Same line, same numbers. */
   @media (max-width: 900px) {
-    .start-overlay { --gh-root: clamp(11.5px, calc(10.35px + 0.295vw), 13px); }
+    /* The same half step the desktop root took, gbppl-start-roomier */
+    .start-overlay { --gh-root: clamp(12.5px, calc(11.2px + 0.32vw), 14px); }
   }
 
   /* Narrow screens: the source's own hub breakpoint (640) and its own
@@ -2729,7 +2999,7 @@
     .start-panel[data-view="doors"] .gsp-head { padding-left: 16px; }
     .gsp-heading { gap: 4px; }
     .gsp-body { padding: 20px 16px max(20px, env(safe-area-inset-bottom)); }
-    .gsp-door { min-height: 72px; padding-inline: 12px; }
+    .gsp-door { min-height: 84px; padding-inline: 12px; }   /* 72 -> 84, gbppl-start-roomier */
     /* Fullscreen already gives every step all the height there is, so
        the shared 696 ceiling steps aside (gbppl-start-popup-3). */
     .start-panel[data-view="chat"],
@@ -4468,12 +4738,87 @@
   var startMeta     = document.getElementById('gbStartMeta');
   var startOpener   = null;
   var startCloseTimer = null;
-  /* The popup collapses in 260ms; the timer waits a hair longer before
-     display:none so the exit always plays out. It used to borrow the
-     catalog's constant; the catalog now computes its own exit from the
-     --tf-* choreography (gbppl-tiffany-overlay), so the popup keeps the
-     number it actually needs. */
-  var START_EXIT_MS = 460;
+  var startStepTimer  = null;
+  var startMotionTimer = null;
+  var startResizeTimer = null;
+
+  /* gbppl-motion-pass, the JS half. Like the catalog door's clock, this
+     one does not keep a second copy of the numbers: it READS the --mo-*
+     family off the root, so retuning a rail in the CSS retunes the
+     timers with it and the two halves can never drift apart. */
+  var moRoot = document.documentElement;
+  function mo(name) {
+    return parseFloat(getComputedStyle(moRoot).getPropertyValue(name)) || 0;
+  }
+  /* The collapse is over when its last layer is -- the card's own fade,
+     which starts 90ms in. A hair of slack, then display:none. */
+  function startExitMs() { return Math.max(mo('--mo-medium-out'), 90 + 260) + 60; }
+
+  /* How small the seed is. A fifth: at 528 that is a 106px card, near
+     enough the button's own size to read as the button and far enough
+     from it to still be a card. Below about 0.15 it stops being a shape
+     and becomes a dot; above 0.25 there is no journey left to watch. */
+  var GSP_SEED = 0.2;
+
+  /* Measure the button that was actually pressed, measure where the card
+     will land, and write the seed pose the CSS grows out of. See the
+     .start-panel block for the arithmetic and why the translate is
+     needed on top of the origin. Called with the overlay already
+     display:flex and one frame before .open, so the card is laid out at
+     its final size but has not started travelling. */
+  /* The three numbers, given the button and the card's own landing box.
+     Kept apart from the measuring because the way OUT needs them worked
+     out again: the seed is anchored to the card's top-left corner, and
+     by the time the guest closes, the card may be 748 tall instead of
+     452, which moves that corner 148px up the screen. Aimed once only, a
+     Done from the confirmation collapses to a point 118px ABOVE the
+     button it came out of -- measured, and just wrong enough to see. */
+  function writeSeed(s, opener, p) {
+    var b = opener.getBoundingClientRect();
+    var bx = b.left + b.width / 2;
+    var by = b.top + b.height / 2;
+    var cx = p.left + p.width / 2;
+    var cy = p.top + p.height / 2;
+    s.setProperty('--gsp-ox', (bx - p.left) + 'px');
+    s.setProperty('--gsp-oy', (by - p.top) + 'px');
+    s.setProperty('--gsp-dx', (GSP_SEED * (bx - cx)) + 'px');
+    s.setProperty('--gsp-dy', (GSP_SEED * (by - cy)) + 'px');
+    s.setProperty('--gsp-seed', String(GSP_SEED));
+  }
+
+  function seedStartPanel(opener) {
+    var s = startDialog.style;
+    /* THE RAILS COME OFF FIRST, and this is not a precaution -- it is the
+       bug this function was written around twice. Everything below writes
+       to the very properties the transition watches: lifting the seed
+       transform to measure the landing box is itself a style change, so
+       putting it back sends the card travelling towards the seed BEFORE
+       anyone asked it to open. Then .open arrives, finds a transform
+       already interpolating through identity, sees no difference between
+       before and after, cancels the running transition and starts none --
+       and the popup appears at full size with only its opacity moving.
+       Sampled frame by frame, that is exactly what happened. So: rails
+       off, measure, seed, reflow, rails back on, and only then .open. */
+    s.transition = 'none';
+    if (!opener || !opener.getBoundingClientRect) {
+      // No button to be born from: the source hub's centre pop, as before
+      s.setProperty('--gsp-dx', '0px');
+      s.setProperty('--gsp-dy', '24px');
+      s.setProperty('--gsp-seed', '0.88');
+      s.setProperty('--gsp-ox', '50%');
+      s.setProperty('--gsp-oy', '50%');
+    } else {
+      /* The rest pose IS a transform, so getBoundingClientRect would
+         report the seed, not the landing. Lift it for the measurement and
+         put it straight back. */
+      s.transform = 'none';
+      var p = startDialog.getBoundingClientRect();
+      s.transform = '';
+      writeSeed(s, opener, p);
+    }
+    void startDialog.offsetWidth;   // the seed becomes the resting truth
+    s.transition = '';              // ...and now it can be travelled from
+  }
 
   /* The chat step's header is the source's own (App.tsx 3487-3498):
      "Chat with our team" over the availability status, dot and all --
@@ -4496,20 +4841,90 @@
     call:    { title: 'Call us',        meta: 'Weekdays, 9 to 5 Central.' }
   };
 
-  function setStartView(view, motion) {
+  /* The swap itself, with no opinion about motion. */
+  function applyStartView(view) {
     var head = START_VIEWS[view] || START_VIEWS.doors;
     startDialog.setAttribute('data-view', view);
     startTitle.textContent = head.title;
     startMeta.innerHTML = head.meta;
     startMeta.hidden = !head.meta;
-    /* Restart the level animation: the attribute has to leave and come
-       back with a reflow between, or the same value never replays. */
+    startDialog.querySelector('.gsp-body').scrollTop = 0;
+  }
+
+  /* The shell travels between step heights instead of jumping
+     (gbppl-motion-pass). The doors stand at their content's height, the
+     three tall steps at --gsp-step-h; the difference is some 300px and
+     it used to land in a single frame. A FLIP, and the cheap kind: read
+     the height we are at, do the swap with the CSS free to decide, read
+     the height we are going to, then put the first one back on as an
+     inline pixel value and hand the second one to the transition on
+     .start-panel. offsetHeight, not a rect: the card may still be under
+     a scale when this runs, and layout is what we want, not optics. */
+  function resizeStartPanel(swap) {
+    var el = startDialog;
+    clearTimeout(startResizeTimer);
+    /* Rails off for the whole measurement, same discipline as the seed:
+       every offsetHeight below resolves style, and a transition that can
+       see those reads will start travelling to the wrong number and
+       cancel the real move when it arrives. */
+    el.classList.add('gsp-measuring');
+    var from = el.offsetHeight;          // where the shell stands now
+    el.style.height = '';
+    el.classList.remove('gsp-resizing');
+    swap();
+    var to = el.offsetHeight;            // where the new step wants to be
+    if (Math.abs(to - from) < 1) {       // Call us and the doors, say
+      el.classList.remove('gsp-measuring');
+      return;
+    }
+    el.classList.add('gsp-resizing');
+    el.style.height = from + 'px';
+    void el.offsetHeight;                // ...and that is the resting truth
+    el.classList.remove('gsp-measuring');
+    void el.offsetHeight;                // rails back on, still at `from`
+    el.style.height = to + 'px';         // now it travels
+    startResizeTimer = setTimeout(function () {
+      el.style.height = '';
+      el.classList.remove('gsp-resizing');
+    }, mo('--mo-small') + 80);
+  }
+
+  /* A step change in two halves: the one leaving lets go, then the one
+     arriving comes in from its side while the shell finds its height.
+     `after` runs at the swap, not at the click -- Back, the composer and
+     Done are all inside markup that does not exist yet when the guest
+     lets go of the mouse, and focus() on a display:none control is a
+     silent no-op. */
+  function setStartView(view, motion, after) {
+    clearTimeout(startStepTimer);
+    clearTimeout(startMotionTimer);
     startDialog.removeAttribute('data-motion');
-    if (motion) {
+    if (!motion) {
+      clearTimeout(startResizeTimer);
+      startDialog.style.height = '';
+      startDialog.classList.remove('gsp-resizing');
+      applyStartView(view);
+      if (after) after();
+      return;
+    }
+    void startDialog.offsetWidth;
+    startDialog.setAttribute('data-motion', 'leave');
+    startStepTimer = setTimeout(function () {
+      resizeStartPanel(function () { applyStartView(view); });
+      /* The attribute has to leave and come back with a reflow between,
+         or the same value never replays. */
+      startDialog.removeAttribute('data-motion');
       void startDialog.offsetWidth;
       startDialog.setAttribute('data-motion', motion);
-    }
-    startDialog.querySelector('.gsp-body').scrollTop = 0;
+      /* ...and it has to come off again once the arrival is done: the
+         animation fills `both`, and a filled opacity:1 would hold the
+         body visible against the card's fade if the guest closed from
+         a step. */
+      startMotionTimer = setTimeout(function () {
+        startDialog.removeAttribute('data-motion');
+      }, mo('--mo-small') + 80);
+      if (after) after();
+    }, mo('--mo-small-out'));
   }
 
   function openStartPanel(opener) {
@@ -4521,15 +4936,40 @@
     clearTimeout(startCloseTimer);
     startOverlay.classList.remove('closing');
     startOverlay.style.display = 'flex';   // the centring box the open state uses
+    /* Now the card is laid out where it will land, so the button it was
+       clicked on can be turned into the pose it grows from. */
+    seedStartPanel(startOpener);
     void startOverlay.offsetWidth;   // one reflow so the enter actually plays
     startOverlay.classList.add('open');
     startOverlay.setAttribute('aria-hidden', 'false');
     startDialog.focus();
   }
   /* Returns true when it actually had something to close, so the shared
-     Escape handler knows whether to pass the key down to the catalog */
+     Escape handler knows whether to pass the key down to the catalog.
+     The seed properties are left exactly as the open wrote them, which
+     is the whole trick of the way back: Esc, the backdrop, Done and the
+     cross all collapse the card into the button it came out of, however
+     many steps deep the guest went. */
   function closeStartPanel() {
     if (!startOverlay.classList.contains('open')) return false;
+    clearTimeout(startStepTimer);
+    clearTimeout(startMotionTimer);
+    clearTimeout(startResizeTimer);
+    startDialog.removeAttribute('data-motion');
+    /* A collapse has to be one shape shrinking, so the shell stops
+       travelling and keeps whatever height it has reached. */
+    startDialog.classList.remove('gsp-resizing');
+    startDialog.classList.remove('gsp-measuring');
+    /* Take aim again at whatever the card has become. No guard needed
+       and none wanted: while .open is on, the transform in force is
+       translate(0,0) scale(1) and does not mention these properties, so
+       rewriting them moves nothing -- they only come true one line
+       below, when .closing asks for them. The card is at identity here,
+       so its rect IS its layout box; nothing has to be lifted. */
+    if (startOpener) {
+      writeSeed(startDialog.style, startOpener,
+                startDialog.getBoundingClientRect());
+    }
     startOverlay.classList.remove('open');
     startOverlay.classList.add('closing');
     startOverlay.setAttribute('aria-hidden', 'true');
@@ -4537,22 +4977,27 @@
     startCloseTimer = setTimeout(function () {
       startOverlay.classList.remove('closing');
       startOverlay.style.display = '';
-    }, START_EXIT_MS);
+      startDialog.style.height = '';
+    }, startExitMs());
     if (startOpener) { startOpener.focus(); startOpener = null; }
     return true;
   }
 
-  /* The blue START of the Start Gifting block, in every layout: the
-     block has one DOM, so one listener serves grid, split and band. */
-  var startCta = document.querySelector('.hero-start .btn-start-primary');
-  if (startCta) {
-    startCta.addEventListener('click', function () { openStartPanel(startCta); });
+  /* The blue START of the Start Gifting block. The block has one DOM, so
+     grid, split and band are the same node -- but the popup is now born
+     out of the button that was PRESSED (gbppl-motion-pass), so the
+     listener binds over a list and hands its own element down rather
+     than a captured one. The day a variant grows a second START, the
+     choreography already knows which one to grow out of and which one to
+     collapse back into. */
+  var startCtas = document.querySelectorAll('.hero-start .btn-start-primary');
+  for (var sc = 0; sc < startCtas.length; sc++) {
+    startCtas[sc].addEventListener('click', function () { openStartPanel(this); });
   }
   startClose.addEventListener('click', function () { closeStartPanel(); });
   startBackdrop.addEventListener('click', function () { closeStartPanel(); });
   startBack.addEventListener('click', function () {
-    setStartView('doors', 'back');
-    startDialog.focus();
+    setStartView('doors', 'back', function () { startDialog.focus(); });
   });
   /* The formfactor split for Call us (gbppl-start-popup-2) rides the
      SAME 640 the fullscreen breakpoint uses, so "phone" means one thing
@@ -4568,9 +5013,10 @@
       var door = this.getAttribute('data-door');
       if (door === 'call' && startPhoneMQ.matches) return;   // let tel: dial
       if (this.tagName === 'A') e.preventDefault();
-      setStartView(door, 'forward');
-      startBack.focus();
-      if (door === 'chat') focusChat();
+      setStartView(door, 'forward', function () {
+        startBack.focus();
+        if (door === 'chat') focusChat();
+      });
     });
   }
 
@@ -4643,13 +5089,11 @@
     bookedWhen.textContent = CAL_MONTH.split(' ')[0] + ' ' + pickedDay +
       ' · ' + pickedSlot;
     resetBooking();
-    setStartView('booked', 'forward');
-    bookedDone.focus();
+    setStartView('booked', 'forward', function () { bookedDone.focus(); });
   });
   bookedDone.addEventListener('click', function () { closeStartPanel(); });
   bookedAgain.addEventListener('click', function () {
-    setStartView('meeting', 'back');
-    startBack.focus();
+    setStartView('meeting', 'back', function () { startBack.focus(); });
   });
 
   /* ---- Live chat: LiveSpecialistPanel's behaviour, transferred ----
