@@ -397,8 +397,29 @@
     border: none;
   }
   /* Explore Gifts as a regular menu item, nav=ton only (feedback R
-     2026-08-17): the id outweighs .nav-ton-only's display:none. */
-  [data-nav="ton"] #btnExploreGifts { display: flex; }
+     2026-08-17): the id outweighs .nav-ton-only's display:none.
+     gbppl-mark-triple: 10px of air below it, so the door stands apart at
+     the head of the section instead of being the first of eight places.
+     The gap is margin, not padding: the item keeps its 46px and the seam
+     hairlines above each row keep their live geometry -- what changes is
+     that the seam under the door now has air on one side of it.
+
+     And the standing fill: the row wears its OWN hover as its resting
+     state, and hover then goes one step deeper (Zinc 100 -> Zinc 200 here,
+     the same pair in the ren skin below). That is the whole trick Ton
+     asked for -- a menu item mixed with a button through the ground alone,
+     no border, no shadow, nothing blue, no chrome the other rows do not
+     have. It is safe precisely because this row has no active state and
+     never will: clicking it opens the catalog OVER the page, the highlight
+     stays on whatever page you are actually on. So the standing fill can
+     never be mistaken for the blue active plaque of a sibling. */
+  [data-nav="ton"] #btnExploreGifts {
+    display: flex;
+    margin-bottom: 10px;
+    background: var(--zinc-100);
+    border-top-color: var(--zinc-300);
+  }
+  [data-nav="ton"] #btnExploreGifts:hover { background: var(--zinc-200); }
   [data-nav="russell"] .company-block,
   [data-nav="ton"] .company-block { display: block; }
 
@@ -636,6 +657,18 @@
     border-top-color: transparent;
     border-radius: var(--radius); /* soft corners on the hover wash (feedback T 2026-08-17 evening, Ren skin refinement) */
   }
+  /* gbppl-mark-triple: the door's standing fill in the ren skin. Exactly
+     the skin's own hover -- zinc-100 wash, --radius corners -- worn all the
+     time, and the hover deepens one step to zinc-200. The seam stays
+     transparent as every ren row's does, so the shape is the soft chip and
+     nothing else. Placed before the .active rules on purpose: the door has
+     no active state to lose. */
+  body.ren-skin #btnExploreGifts {
+    background: var(--zinc-100);
+    border-top-color: transparent;
+    border-radius: var(--radius);
+  }
+  body.ren-skin #btnExploreGifts:hover { background: var(--zinc-200); }
   body.ren-skin .snav-item.active {
     background: transparent;
     border-top-color: transparent;
@@ -4007,10 +4040,18 @@
                My Designed Gifts (feedback R 2026-08-17 "too many buttons
                competing"; fallback DECISIONS-BANK item 3.5): ton-only, opens
                the same catalog overlay the masthead button owned, same id and
-               openCatalog wiring. Icon: gift.svg reused from the existing set,
-               the catalog IS gifts, no new icons drawn. CSS-hidden carrier in
-               nav=live and nav=russell. -->
-          <a class="snav-item nav-ton-only" href="#" id="btnExploreGifts"><span class="snav-icon"><img src="icons/gift.svg" alt=""></span><span class="snav-label">Explore Gifts</span></a>
+               openCatalog wiring. CSS-hidden carrier in nav=live and
+               nav=russell.
+               gbppl-mark-triple (feedback M via T 2026-08-19): this item is a
+               DOOR, not a place, and it said neither. It wore gift.svg, the
+               very same file as My Designed Gifts right under it -- two
+               identical glyphs, one meaning each. Now it carries its own
+               compass, icons/explore.svg, for the going-out-to-look.
+               No tail arrow: an arrow-up-right promises another page, and
+               this door opens an overlay over the one you are on (T's
+               correction, same evening). What says door is the standing
+               fill, see the CSS. The markup stays a plain menu row. -->
+          <a class="snav-item nav-ton-only" href="#" id="btnExploreGifts"><span class="snav-icon"><img src="icons/explore.svg" alt=""></span><span class="snav-label">Explore Gifts</span></a>
           <a class="snav-item active" href="#"><span class="snav-icon"><img src="icons/gift.svg" alt=""></span><span class="snav-label" data-label-russell="My Designed Gifts">My Gifts</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="icons/archery-target.svg" alt=""></span><span class="snav-label" data-label-russell="Gifting Campaigns">Gift Campaigns</span></a>
           <!-- gbppl-russell-degift: the Gift prefix drops on Redeem Pages / Design Approvals / Order History
@@ -4515,8 +4556,14 @@
   <!-- DEMO CONTROLS: PROTO panel, service chrome outside the design
        language (Ton's feedback 2026-08-12, see CSS provenance). Same
        control IDs as the old pill, the switching JS is untouched. -->
-  <div class="demo-controls" id="demoControls">
-    <button class="demo-tab" id="demoTab" type="button" aria-expanded="true" aria-label="Collapse prototype controls">
+  <!-- gbppl-mark-triple (feedback M via T 2026-08-19): the panel STARTS
+       collapsed. These links go to people who did not ask for a control
+       room, and a black service panel over the design is the first thing
+       they were reading. The tab stays where it was; one click and the
+       panel is back, exactly as before. This is the only deliberate change
+       to the default view. -->
+  <div class="demo-controls collapsed" id="demoControls">
+    <button class="demo-tab" id="demoTab" type="button" aria-expanded="false" aria-label="Expand prototype controls">
       <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg>
       <span class="demo-tab-text">Proto</span>
     </button>
@@ -4544,6 +4591,15 @@
         <button id="btnBlockGrid" type="button">Grid</button>
         <button id="btnBlockSplit" type="button">Split</button>
         <button id="btnBlockBand" type="button">Band</button>
+      </div>
+      <!-- Portal header (gbppl-mark-triple, feedback M via T 2026-08-19);
+           the same two attributes ?pth=1&lock=divider|stack set. Off strips
+           both, which is the approved default view with the site header up. -->
+      <div class="demo-group">
+        <span class="demo-label">Header</span>
+        <button id="btnPthOff" type="button">Off</button>
+        <button id="btnPthDivider" type="button">Divider</button>
+        <button id="btnPthStack" type="button">Stack</button>
       </div>
       <div class="demo-group">
         <div class="demo-group-head">
@@ -4856,6 +4912,32 @@
   btnBlockGrid.addEventListener('click', function () { setBlock('grid'); });
   btnBlockSplit.addEventListener('click', function () { setBlock('split'); });
   btnBlockBand.addEventListener('click', function () { setBlock('band'); });
+
+  /* ---- Portal header toggle (PROTO panel, gbppl-mark-triple,
+     feedback M via T 2026-08-19) ----
+     Built the way setBlock is: one function owns the attributes, the URL
+     initialiser calls it too, so the panel button and the shared link are
+     two doors to one switch. Off REMOVES both attributes rather than
+     writing a falsy value, so the approved default view keeps its exact
+     DOM -- the same contract ?pth= has honoured since it was added. */
+  var btnPthOff     = document.getElementById('btnPthOff');
+  var btnPthDivider = document.getElementById('btnPthDivider');
+  var btnPthStack   = document.getElementById('btnPthStack');
+  function setPth(lock) {
+    if (lock === 'divider' || lock === 'stack') {
+      document.body.setAttribute('data-pth', '1');
+      document.body.setAttribute('data-pth-lock', lock);
+    } else {
+      document.body.removeAttribute('data-pth');
+      document.body.removeAttribute('data-pth-lock');
+    }
+    btnPthOff.classList.toggle('variant-active', lock !== 'divider' && lock !== 'stack');
+    btnPthDivider.classList.toggle('variant-active', lock === 'divider');
+    btnPthStack.classList.toggle('variant-active', lock === 'stack');
+  }
+  btnPthOff.addEventListener('click', function () { setPth('off'); });
+  btnPthDivider.addEventListener('click', function () { setPth('divider'); });
+  btnPthStack.addEventListener('click', function () { setPth('stack'); });
 
   /* ---- Catalog overlay (Ton's brainstorm 2026-08-12) ----
      Frames the real v1 catalog (./catalog/index.html?embed=1, vendored
@@ -5596,12 +5678,12 @@
      &lock=divider (default) | stack picks which identity lock Ton is
      looking at. Both attributes are set ONLY when ?pth=1 is present,
      so every existing view keeps its exact DOM and its exact pixels.
-     Composes with ?v=, ?nav=, ?hero= and ?layout= by construction. */
-  if (params.get('pth') === '1') {
-    document.body.setAttribute('data-pth', '1');
-    document.body.setAttribute('data-pth-lock',
-      params.get('lock') === 'stack' ? 'stack' : 'divider');
-  }
+     Composes with ?v=, ?nav=, ?hero= and ?layout= by construction.
+     setPth (panel toggle) applies the attributes and lights the matching
+     panel button; Off is what "no ?pth=" has always meant. */
+  setPth(params.get('pth') === '1'
+    ? (params.get('lock') === 'stack' ? 'stack' : 'divider')
+    : 'off');
   render();
 })();
 </script>
