@@ -366,6 +366,45 @@
   [data-nav="russell"] .snav-label,
   [data-nav="ton"] .snav-label { margin-top: 1.5px; }
 
+  /* ---- gbppl-icon-ink: the icon answers the pointer (feedback T
+     2026-08-19, on the Explore screenshot but stated as a rule for every
+     menu item) ----
+     Until now hover moved the ground and left the glyph exactly as pale as
+     it was. On Explore, which carries a standing fill, there was nothing
+     left for hover to say at all. So the icon now darkens to the ink of
+     its own label.
+     The mechanic is the one the ren skin already owns for its active item:
+     the img assets carry their own #71717A strokes and cannot take a token
+     color, so a pseudo-element masked by the very same SVG paints the
+     glyph in a real token. --snav-icon-url is copied onto each .snav-icon
+     from its img's src by the sidebar script, one pass on load; all 18
+     boxes in this file carry an img, so the var is never missing.
+     What is new here is that the mask layer is PERMANENT and crossfades on
+     opacity instead of being switched in by display, which buys the
+     150ms the rest of the row already moves in.
+     mask-size: auto = the SVG's intrinsic size, which is exactly what the
+     img renders at in this variant (every icon in icons/ is <= 24px in
+     both dimensions, so the box's max-width never bites). The ren skin
+     caps the img at 18 and re-states the box below; both stay pixel-locked
+     to their img by construction.
+     Scoped to [data-nav="ton"] (ren rides it too): nav=live is the live
+     portal's own reference and does not move. */
+  [data-nav="ton"] .snav-icon { position: relative; }
+  [data-nav="ton"] .snav-icon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--zinc-900); /* the ton label's own ink */
+    -webkit-mask: var(--snav-icon-url) center / auto no-repeat;
+    mask: var(--snav-icon-url) center / auto no-repeat;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    pointer-events: none;
+  }
+  [data-nav="ton"] .snav-icon img { transition: opacity 150ms ease; }
+  [data-nav="ton"] .snav-item:hover .snav-icon img { opacity: 0; }
+  [data-nav="ton"] .snav-item:hover .snav-icon::after { opacity: 1; }
+
   /* ============ NAV VARIANTS: RUSSELL / TON ============
      Source: Ton's brainstorm, 2026-08-12 (+ the same-day fork, see
      above). Structure shared by both variants AT the fork: Account
@@ -711,26 +750,42 @@
   body.ren-skin .snav-icon img {
     max-width: 18px;
     max-height: 18px;
-    opacity: 0.65; /* was 0.45; brighter per feedback T 2026-08-17 evening, Ren skin refinement */
+    /* 0.45 -> 0.65 (feedback T 2026-08-17 evening) -> 0.80 (gbppl-icon-ink,
+       feedback T 2026-08-19: "чуть темнее, но не спорить с текстом"). Over
+       the zinc-50 ground 0.65 landed the #71717A strokes at about Zinc 400
+       and they read as washed out; 0.80 puts them just under Zinc 500, a
+       clear two steps quieter than the zinc-800 label they sit beside. */
+    opacity: 0.8;
+  }
+  /* gbppl-icon-ink, the ren half: the ink is the label's zinc-800, and the
+     mask box is re-cut to the 18px the img is capped at -- inset 3px inside
+     the 24px box is exactly 18x18, and `contain` inside a square box is the
+     same fit as max-width/max-height, so every icon lands on its own img to
+     the pixel whatever its aspect (laptop-check is 21.8x17.8, love-card
+     22.8x21.9; they all agree). */
+  body.ren-skin .snav-icon::after {
+    inset: 3px;
+    background-color: var(--zinc-800);
+    -webkit-mask-size: contain;
+    mask-size: contain;
   }
   /* Active icon goes blue-600 with the rule and the label (feedback T
-     2026-08-18 night). The img asset carries its own gray strokes and
-     cannot take a token color, so the active state re-renders it as a
-     CSS mask: the img hides, and the icon box paints an 18px pseudo
-     masked by the very same SVG file. --snav-icon-url is copied from
-     each img's src by the sidebar script (one pass on load). This
+     2026-08-18 night). Same masked pseudo, now just a third color on the
+     one ink layer declared above (gbppl-icon-ink): the layer used to be
+     switched in by display for the active item alone, it is permanent
+     now and the active item simply holds it at full and paints it blue.
+     Specificity puts this above the hover ink (5 class-level terms
+     against 4), so hovering the current page keeps its blue and never
+     flickers to the hover gray -- and the img is hidden by opacity, not
+     display, so the crossfade has something to fade. This whole approach
      supersedes the near-black brightness(0) filter of the 08-17 night
      wave. */
   body.ren-skin .snav-item.active .snav-icon img {
-    display: none;
+    opacity: 0;
   }
   body.ren-skin .snav-item.active .snav-icon::after {
-    content: "";
-    width: 18px;
-    height: 18px;
     background-color: var(--blue-600);
-    -webkit-mask: var(--snav-icon-url) center / contain no-repeat;
-    mask: var(--snav-icon-url) center / contain no-repeat;
+    opacity: 1;
   }
 
   /* 5: Upload Logo: the gray ghost button becomes a quiet text link
