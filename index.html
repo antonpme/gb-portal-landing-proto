@@ -682,20 +682,39 @@
      dragged across the screen. So the panel crosses as a VEIL -- part
      transparent, empty of content -- becomes an object only once it has
      landed, and lets the catalog appear inside it afterwards, in place.
-     Four phases on the way in, t from the click:
+     SECOND PASS, gbppl-tiffany-overlay-2 (Ton, 2026-08-19: "the panel
+     does not slide in, it just appears -- and the content should come
+     up DURING the journey, not after it"). Both halves of that are one
+     fault, and it was never the plumbing: the transition fires, sampled
+     frame by frame, in Chromium and in WebKit alike. It was the CURVE.
+     cubic-bezier(.22,1,.36,1) spends 76% of a 1216px journey inside its
+     first 135ms and the remaining 400ms crawling the last hundred
+     pixels -- the panel was home before the eye found it, and what it
+     did afterwards was too small to read as travel. Add a 0.44 veil and
+     no content and the honest description is Ton's: it appears. So the
+     curve now keeps a real middle (28% of the way at a quarter of the
+     time, 65% at 40%, measured), the journey is 600ms, and the catalog
+     comes up INSIDE the panel while it is still moving -- a sheet
+     carrying a page is unmistakably in motion in a way an empty
+     translucent one never was.
+     Phases on the way in, t from the click:
        0     the backdrop dims,                    --tf-dim   ease-out
        0     the panel travels in from the right,  --tf-travel --tf-curve,
              its density rising --tf-veil -> --tf-veil-arrive (linear)
-             the whole way, its content still invisible
-       540   the veil becomes an object, -> 1,     --tf-settle ease-out
-       810   the catalog dissolves up in place,    --tf-reveal ease-out
-             (opacity and a 0.994 scale), after --tf-hold of stillness;
-             the dissolve also waits on the iframe's own load event, so
-             a frame that has not arrived never flashes white
-     Mirrored on the way out, the room emptying from the inside:
+       240   the catalog dissolves up inside the MOVING panel, cued at
+             --tf-reveal-at (40% of the way), --tf-reveal ease-out,
+             opacity and a 0.994 scale; being a child of the veil it
+             firms up as the panel does. The cue also waits on the
+             iframe's own load, so a frame that has not arrived never
+             flashes white -- and the src is now fetched on intent
+             (hover or focus), so the click is not the loading click
+       600   the panel lands, the catalog finishing 80ms behind it,
+             and the veil becomes an object, -> 1, --tf-settle ease-out
+     On the way out the same overlap, reversed:
        0     the catalog fades,                    --tf-out    ease-in
-       200   the panel leaves right AND fades with it, --tf-exit
-       380   the backdrop gives the page back,     --tf-dim, last of all
+       100   the panel leaves right AND fades with it while the content
+             is still going, at --tf-exit-lag,     --tf-exit
+       300   the backdrop gives the page back,     --tf-dim, last of all
      Reduced motion: the variables below collapse in the media query --
      travel becomes a plain fade, nothing moves -- and the JS clock reads
      these same variables, so both halves shorten together.
@@ -703,20 +722,25 @@
      become the language of every overlay we own, and a language has to
      be nameable before it can be shared. */
   .catalog-overlay {
-    /* Curves: the entry keeps the house cubic-bezier the panel has had
-       since 2026-08-12; the exit keeps its accelerating counterpart. */
-    --tf-curve: cubic-bezier(0.22, 1, 0.36, 1);
+    /* Curves. The entry curve is the one thing gbppl-tiffany-overlay-2
+       had to take away from the 2026-08-12 house set: that one is built
+       for short travel, and over 1216px it reads as an arrival, not a
+       journey. This one holds the middle of the path (see the measured
+       shares above) and still lands soft. The exit keeps its
+       accelerating counterpart, which was never the problem. */
+    --tf-curve: cubic-bezier(0.37, 0, 0.18, 1);
     --tf-exit-curve: cubic-bezier(0.4, 0, 1, 1);
     --tf-dim: 320ms;           /* backdrop up, and later down */
-    --tf-travel: 540ms;        /* the panel's journey */
+    --tf-travel: 600ms;        /* the panel's journey */
     --tf-veil: 0.4;            /* its density when it sets off */
-    --tf-veil-arrive: 0.6;     /* ...and when it lands */
-    --tf-settle: 180ms;        /* veil -> object */
-    --tf-hold: 90ms;           /* the breath before the content speaks */
-    --tf-reveal: 360ms;        /* the content's dissolve */
-    --tf-out: 200ms;           /* the content's fade on the way out */
-    --tf-exit: 400ms;          /* the panel's retreat */
-    --tf-dim-out-delay: 380ms; /* the lights come up after the door shuts */
+    --tf-veil-arrive: 0.7;     /* ...and when it lands */
+    --tf-settle: 140ms;        /* veil -> object */
+    --tf-reveal-at: 240ms;     /* the content's cue: 40% of the way in */
+    --tf-reveal: 440ms;        /* the content's dissolve */
+    --tf-out: 220ms;           /* the content's fade on the way out */
+    --tf-exit-lag: 100ms;      /* the panel lets the content start going */
+    --tf-exit: 420ms;          /* the panel's retreat */
+    --tf-dim-out-delay: 300ms; /* the lights come up after the door shuts */
 
     position: fixed;
     inset: 0;
@@ -754,6 +778,10 @@
     opacity: var(--tf-veil);
     transition: transform var(--tf-travel) var(--tf-curve),
                 opacity var(--tf-travel) linear;
+    /* The panel now carries a loading iframe across the screen, so it
+       asks for its own layer up front rather than during the journey.
+       Free at rest: the overlay is display:none until it is wanted. */
+    will-change: transform, opacity;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -770,13 +798,14 @@
     transition: transform var(--tf-travel) var(--tf-curve),
                 opacity var(--tf-settle) ease-out;
   }
-  /* Exit: the panel holds still while the content goes, then leaves
-     fading -- the reverse of its arrival, at the exit's own pace */
+  /* Exit: the panel gives the content a head start of --tf-exit-lag and
+     then leaves fading while it is still going -- the entry's overlap
+     played backwards (gbppl-tiffany-overlay-2) */
   .catalog-overlay.closing .catalog-panel {
     transform: translateX(100%);
     opacity: var(--tf-veil);
-    transition: transform var(--tf-exit) var(--tf-exit-curve) var(--tf-out),
-                opacity var(--tf-exit) ease-in var(--tf-out);
+    transition: transform var(--tf-exit) var(--tf-exit-curve) var(--tf-exit-lag),
+                opacity var(--tf-exit) ease-in var(--tf-exit-lag);
   }
   /* The overlay's top bar and its .icon-button close are GONE (Ton's
      overlay bug list 2026-08-12): the bar existed for the cross alone;
@@ -791,19 +820,22 @@
     border: 0;
     display: block;
     background: var(--zinc-50);
-    /* Content layer of gbppl-tiffany-overlay: it does not ride in with
-       the panel any more, it appears inside the landed one. The 12px
-       lift of the old spec is gone -- a page that slides up reads as a
-       second arrival; what is left is a dissolve with the faintest
-       swell, and the .revealed class only lands once the iframe has
-       actually loaded (JS). */
+    /* Content layer. It does not ride in finished the way the 2026-08-12
+       spec had it, and it no longer waits for the panel to stop either
+       (gbppl-tiffany-overlay-2, Ton): it comes up two fifths of the way
+       through the journey, inside the still-moving veil, and finishes
+       just after the panel lands. The 12px lift is gone -- a page that
+       slides up inside a sliding panel is two arrivals -- so what is
+       left is a dissolve with the faintest swell. .revealed lands on
+       the JS cue, and never before the iframe has loaded. */
     opacity: 0;
     transform: scale(0.994);
     transition: opacity var(--tf-reveal) ease-out,
                 transform var(--tf-reveal) ease-out;
   }
   .catalog-overlay.revealed .catalog-frame { opacity: 1; transform: none; }
-  /* On exit the content goes FIRST and alone; the panel waits it out */
+  /* On exit the content goes first; the panel follows --tf-exit-lag
+     later, while this is still fading */
   .catalog-overlay.closing .catalog-frame {
     opacity: 0;
     transform: none;
@@ -818,8 +850,9 @@
       --tf-veil: 0;
       --tf-veil-arrive: 1;
       --tf-settle: 0ms;
-      --tf-hold: 60ms;
+      --tf-reveal-at: 120ms;
       --tf-exit: 240ms;
+      --tf-exit-lag: 80ms;
       --tf-dim-out-delay: 200ms;
     }
     .catalog-panel,
@@ -4291,13 +4324,27 @@
   function tf(name) {
     return parseFloat(getComputedStyle(overlay).getPropertyValue(name)) || 0;
   }
+  /* The content's cue: two fifths of the way in, the panel still moving
+     (gbppl-tiffany-overlay-2) */
   function catalogRevealDue() {
-    return tf('--tf-travel') + tf('--tf-settle') + tf('--tf-hold');
+    return tf('--tf-reveal-at');
   }
   /* The exit is over when its LAST layer is: the backdrop, normally */
   function catalogExitMs() {
-    return Math.max(tf('--tf-out') + tf('--tf-exit'),
+    return Math.max(tf('--tf-exit-lag') + tf('--tf-exit'),
                     tf('--tf-dim-out-delay') + tf('--tf-dim')) + 60;
+  }
+  /* The catalog is a whole vendored app; if its fetch, parse and first
+     layout land in the same breath as the click, the panel's opening
+     frames are the ones that pay for it. So the src goes in on INTENT --
+     the pointer arriving over any control that opens the overlay, or
+     that control taking focus -- and the click, by then, only has to
+     move a panel. The page still never loads the catalog unasked:
+     reaching for the door is the asking (gbppl-tiffany-overlay-2). */
+  function primeCatalog() {
+    if (!catalogFrame.getAttribute('src')) {
+      catalogFrame.setAttribute('src', catalogFrame.getAttribute('data-src'));
+    }
   }
   function scheduleCatalogReveal() {
     clearTimeout(overlayRevealTimer);
@@ -4313,9 +4360,7 @@
   });
 
   function openCatalog() {
-    if (!catalogFrame.getAttribute('src')) {
-      catalogFrame.setAttribute('src', catalogFrame.getAttribute('data-src'));
-    }
+    var cold = !catalogFrame.getAttribute('src');
     // Measure the page scrollbar BEFORE locking, then compensate
     // (v1 main.tsx --scrollbar-width pattern; kills the double
     // scrollbar, Ton's overlay bug list 2026-08-12)
@@ -4338,6 +4383,11 @@
     overlaySettleTimer = setTimeout(function () {
       overlay.classList.add('settled');
     }, tf('--tf-travel'));
+    /* A guest who reached the button without a pointer (keyboard, touch,
+       the PROTO panel) can still arrive cold. Then the fetch waits for
+       the next frame, so it lands after the browser has painted the
+       panel's first step and the journey never pays for the app. */
+    if (cold) requestAnimationFrame(primeCatalog);
     if (catalogLoaded) scheduleCatalogReveal();
   }
   function closeCatalog() {
@@ -4373,6 +4423,20 @@
     heroExplore[he].addEventListener('click', function () {
       if (document.body.getAttribute('data-nav') === 'ton') openCatalog();
     });
+  }
+  /* Every door to the catalog primes it on approach (see primeCatalog):
+     the menu item, the two-path EXPLORE GIFTS, the Start block's
+     outlined one. Hover or focus is enough, and once is enough. The
+     variant gate is the click's own: in live and russell those buttons
+     open nothing, so they must not fetch anything either. */
+  function primeCatalogOnIntent() {
+    if (document.body.getAttribute('data-nav') === 'ton') primeCatalog();
+  }
+  var catalogDoors = [btnExplore];
+  for (var cd = 0; cd < heroExplore.length; cd++) catalogDoors.push(heroExplore[cd]);
+  for (var cp = 0; cp < catalogDoors.length; cp++) {
+    catalogDoors[cp].addEventListener('pointerenter', primeCatalogOnIntent);
+    catalogDoors[cp].addEventListener('focus', primeCatalogOnIntent);
   }
   catalogBackdrop.addEventListener('click', closeCatalog);
   /* One Escape handler for both layers: the Start panel sits on top, so
