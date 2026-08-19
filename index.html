@@ -1241,14 +1241,21 @@
     text-decoration: none;
   }
   .pth-mark { display: block; width: 168px; height: 56px; }
-  /* The hairline stands under the mark, not across the bar: 40 of the
-     mark's 56px box, so it reads as a caption rule and not a column
-     divider. Zinc 300 rather than 200 -- on solid white the 200 step
-     nearly vanishes and the lock falls apart into two loose objects
-     (felt value; 200 is the alternative if Ton wants it quieter). */
+  /* The hairline stands under the mark, not across the bar, so it
+     reads as a caption rule and not a column divider. Zinc 300 rather
+     than 200 -- on solid white the 200 step nearly vanishes and the
+     lock falls apart into two loose objects (felt value; 200 is the
+     alternative if Ton wants it quieter).
+     gbppl-portal-header-2 (Ton 2026-08-19, second pass, "волосок ниже"):
+     the first pass took 40 of the mark's 56 box and the rule stood up
+     as a column divider BETWEEN two objects instead of binding them.
+     It drops to 30 -- measured off the word it separates rather than
+     off the mark, roughly twice PORTAL's own 14px cap -- and the lock
+     closes into one thing. Falls to 24 in the compact bar, the same
+     proportion against the smaller mark. */
   .pth-rule {
     width: 1px;
-    height: 40px;
+    height: 30px;
     background: var(--zinc-300);
     flex: 0 0 auto;
   }
@@ -1269,17 +1276,39 @@
      uses on small screens (Ton-6, no new size invented) so mark + word
      still breathe inside 80px: 42 + 2 + 12 = 56, 12px of air each
      side. The word drops to the eyebrow's own 12px, and the hairline
-     has nothing left to divide. */
+     has nothing left to divide.
+     gbppl-portal-header-2 (Ton 2026-08-19, second pass): the word
+     hangs off the RIGHT edge of the mark, not the left. The
+     handwritten mark rises from a thin ascender on the left and ends
+     in the heavy tail of "box" on the right, so a word set flush left
+     lines up against nothing while flush right lands under a real
+     edge -- and PORTAL then reads as the mark's signature line rather
+     than a second column starting over. */
   body[data-pth-lock="stack"] .pth-lock {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-end;
     gap: 2px;
   }
   body[data-pth-lock="stack"] .pth-mark { width: 126px; height: 42px; }
   body[data-pth-lock="stack"] .pth-rule { display: none; }
   body[data-pth-lock="stack"] .pth-word { font-size: 12px; }
 
-  /* ---- The right cluster ---- */
+  /* ---- The right cluster ----
+     ORDER, gbppl-portal-header-2 (Ton 2026-08-19, second pass):
+       cart -> search -> help -> BOOK A MEETING -> Go to website
+     The glyphs come first as one quiet trio, the blue button next, and
+     the door out of the building LAST, hard against the edge -- an
+     exit belongs at the wall, not in the middle of the room, and past
+     the CTA it can no longer be mistaken for one of the portal's own
+     controls.
+     The CART leads the trio rather than closing it. Three reasons:
+     the transferred site header already orders its own actions
+     cart-then-search, so nothing new is invented (Ton-6); the badge is
+     the only Blue 600 in the trio and, placed last, it would sit
+     shoulder to shoulder with the Blue 600 button, where two blues at
+     two sizes read as an accident instead of a system; and leading the
+     trio puts the one stateful glyph where the eye enters the cluster,
+     which is what a count is for. */
   .pth-actions {
     display: flex;
     align-items: center;
@@ -1289,12 +1318,13 @@
      door out of the application, so it must be findable and must never
      compete with the meeting. Sentence case, not the shouty uppercase
      of the buttons -- it is a sentence, and the case difference is
-     what tells a link from a control here. */
+     what tells a link from a control here. Sits last since the second
+     pass, so its breathing room moves to the left side. */
   .pth-away {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-right: 4px;
+    margin-left: 4px;
     padding: 8px 4px;
     font-size: 14px;
     font-weight: 400;
@@ -1315,6 +1345,13 @@
                 color var(--mo-micro) var(--mo-move);
   }
   .pth-icon:hover { color: var(--zinc-700); }
+  /* The cart's count badge is the transferred header's own .gbh-count,
+     worn unmodified (gbppl-portal-header-2): 16x16 minimum, Blue 600
+     fill, 1px white ring, 10px white numeral, anchored top 2 / right 2
+     of the 44px circle. Blue because a count is a STATE (Ton-5), and
+     the same Blue 600 the meeting button wears -- one accent family,
+     two ranks of loudness. No rule of its own is needed here; this
+     comment records that the reuse is deliberate. */
   /* The one repaint of the borrowed .gbh-cta: Blue 600 fill, Blue 700
      hover (the live CTA hover pair). Everything else -- heights,
      paddings, tracking, the label span -- is the .gbh-cta ladder. */
@@ -1333,7 +1370,7 @@
     .pth-icon { display: none; }
     .pth-burger { display: grid; }
     .pth-mark { width: 126px; height: 42px; }
-    .pth-rule { height: 30px; }
+    .pth-rule { height: 24px; }
     .pth-word { font-size: 12px; }
     body[data-pth-lock="stack"] .pth-mark { width: 108px; height: 36px; }
     body[data-pth-lock="stack"] .pth-word { font-size: 11px; }
@@ -3825,15 +3862,18 @@
 <!-- wave-2026-08-18d marker: gbppl-hero-start-3 -->
 <!-- wave-2026-08-18e marker: gbppl-start-panel -->
 <!-- wave-2026-08-19a marker: gbppl-portal-header -->
+<!-- wave-2026-08-19b marker: gbppl-portal-header-2 -->
 
   <!-- ============ PORTAL HEADER (?pth=1) ============
        gbppl-portal-header. The portal's own bar, off unless ?pth=1
        (see the PORTAL HEADER CSS block for the whole rationale and the
        provenance of every number). Left: the identity lock, in two
-       subvariants behind &lock=divider (default) | stack. Right: the
-       door back to the website, search, help, and the meeting -- the
-       only loud thing in the bar, and blue because in the portal the
-       meeting is the state of the moment. -->
+       subvariants behind &lock=divider (default) | stack. Right, in
+       the order of the second pass (gbppl-portal-header-2): the quiet
+       glyph trio cart / search / help, then BOOK A MEETING -- the only
+       loud thing in the bar, and blue because in the portal the
+       meeting is the state of the moment -- and last, hard against the
+       edge, the door back to the website. -->
   <header class="pth">
     <div class="wrapper pth-bar">
       <!-- Inert like every link in this prototype; the real target of
@@ -3844,15 +3884,22 @@
         <span class="pth-word">Portal</span>
       </a>
       <div class="pth-actions">
-        <!-- A door into another building, not a logout: the logout
-             keeps its place at the foot of the sidebar. Glyph =
-             nucleo 48-arrow-up-right, family geometry at 13px so it
-             sits on the text, currentColor so it dims and darkens
-             with the sentence it belongs to. -->
-        <a class="pth-away" href="#">
-          Go to website
-          <svg width="13" height="13" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M7.00002 41L41 7L40.801 7.19902" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M25 7H41V23" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
-        </a>
+        <!-- Cart, gbppl-portal-header-2. The way out to checkout, and
+             the only glyph here that carries state, so it leads the
+             trio (the reasoning is in the CSS cluster comment).
+             Placeholder: no drawer opens in this wave, but the count
+             is non-zero so the badge can be judged. Glyph = nucleo
+             48-cart: basket, handle and both wheels carried verbatim,
+             the three 3-unit content ticks inside the basket dropped
+             -- at the 22.8 box they measure 1.4px and land as lint,
+             not as goods (the same judgement the calendar's day dots
+             got in gbppl-nucleo-glyphs, decided the other way because
+             a dot can be re-stroked and a tick this short cannot).
+             Badge = the transferred header's own .gbh-count. -->
+        <button class="gbh-icon-button pth-icon" type="button" aria-label="Cart, 3 items" title="Your cart">
+          <svg width="22.8" height="22.8" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M8.49994 10H41L37.569 21.4367C36.9345 23.5517 34.9879 25 32.7798 25H10.4999" stroke="currentColor" stroke-width="1.684" fill="none" stroke-linecap="butt"></path><path d="M11 45C13.2091 45 15 43.2091 15 41C15 38.7909 13.2091 37 11 37C8.79086 37 7 38.7909 7 41C7 43.2091 8.79086 45 11 45Z" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M37 45C39.2091 45 41 43.2091 41 41C41 38.7909 39.2091 37 37 37C34.7909 37 33 38.7909 33 41C33 43.2091 34.7909 45 37 45Z" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M41 32H9.46174C7.17727 32 6.08953 29.1885 7.77914 27.651L10.6923 25L7.81067 5.14103C7.63231 3.91188 6.57863 3.00005 5.33661 3.00003L3 3" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
+          <span class="gbh-count" aria-hidden="true">3</span>
+        </button>
         <!-- Placeholder: no overlay is built in this wave. The title
              carries both the scope (your portal, not the catalog) and
              the shortcut we intend to honour. Glyph = nucleo
@@ -3868,6 +3915,18 @@
         <!-- Wears .gbh-cta for the whole live M ladder and the live
              label span; .pth-cta repaints it blue and nothing else. -->
         <a class="gbh-cta pth-cta" href="#"><span data-pc-section="label">Book a Meeting</span></a>
+        <!-- A door into another building, not a logout: the logout
+             keeps its place at the foot of the sidebar. Last in the
+             cluster since the second pass (gbppl-portal-header-2), at
+             the very edge of the bar, where an exit belongs and where
+             it cannot be misread as one of the portal's own controls.
+             Glyph = nucleo 48-arrow-up-right, family geometry at 13px
+             so it sits on the text, currentColor so it dims and
+             darkens with the sentence it belongs to. -->
+        <a class="pth-away" href="#">
+          Go to website
+          <svg width="13" height="13" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M7.00002 41L41 7L40.801 7.19902" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M25 7H41V23" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
+        </a>
         <!-- View only: the compact bar shows a burger, no menu opens.
              Glyph = nucleo 48-menu, transplanted whole. -->
         <button class="gbh-icon-button pth-burger" type="button" aria-label="Menu">
