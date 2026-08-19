@@ -674,19 +674,50 @@
      page title (the category hero), two titles would stack; only the
      close control row remains, decided on the spot, noted in the wave
      report. */
-  /* Overlay choreography (Ren's spec, accepted by Ton 2026-08-12;
-     reference: an expensive door with a closer, the exit faster than
-     the entry; replaces the flat 280ms fade/slide). ENTER in layers:
-     the backdrop fades up 300ms ease-out at once; the panel slides in
-     from off-screen right 500ms cubic-bezier(.22,1,.36,1), no
-     overshoot; the framed content fades and lifts 12px, 400ms
-     ease-out, 150ms after the panel starts. EXIT faster: the panel
-     accelerates away 380ms ease-in with the content riding along; the
-     backdrop relights the page 300ms with an 80ms delay, trailing the
-     door. Same timing for every close path (cross, Esc, backdrop).
-     display:none lands only after the exit finishes (JS timer), so
-     the exit actually plays. Reduced motion: fades only, no travel. */
+  /* ---- gbppl-tiffany-overlay -----------------------------------------
+     The choreography of the door (Russell via Ton, 2026-08-19: "make it
+     open like Tiffany"; supersedes Ren's 2026-08-12 spec, which slid a
+     finished rectangle in). The idea it replaces the old one with: a
+     panel that arrives already full of catalog reads as a page being
+     dragged across the screen. So the panel crosses as a VEIL -- part
+     transparent, empty of content -- becomes an object only once it has
+     landed, and lets the catalog appear inside it afterwards, in place.
+     Four phases on the way in, t from the click:
+       0     the backdrop dims,                    --tf-dim   ease-out
+       0     the panel travels in from the right,  --tf-travel --tf-curve,
+             its density rising --tf-veil -> --tf-veil-arrive (linear)
+             the whole way, its content still invisible
+       540   the veil becomes an object, -> 1,     --tf-settle ease-out
+       810   the catalog dissolves up in place,    --tf-reveal ease-out
+             (opacity and a 0.994 scale), after --tf-hold of stillness;
+             the dissolve also waits on the iframe's own load event, so
+             a frame that has not arrived never flashes white
+     Mirrored on the way out, the room emptying from the inside:
+       0     the catalog fades,                    --tf-out    ease-in
+       200   the panel leaves right AND fades with it, --tf-exit
+       380   the backdrop gives the page back,     --tf-dim, last of all
+     Reduced motion: the variables below collapse in the media query --
+     travel becomes a plain fade, nothing moves -- and the JS clock reads
+     these same variables, so both halves shorten together.
+     The numbers live as --tf-* on purpose: Ton wants this sequence to
+     become the language of every overlay we own, and a language has to
+     be nameable before it can be shared. */
   .catalog-overlay {
+    /* Curves: the entry keeps the house cubic-bezier the panel has had
+       since 2026-08-12; the exit keeps its accelerating counterpart. */
+    --tf-curve: cubic-bezier(0.22, 1, 0.36, 1);
+    --tf-exit-curve: cubic-bezier(0.4, 0, 1, 1);
+    --tf-dim: 320ms;           /* backdrop up, and later down */
+    --tf-travel: 540ms;        /* the panel's journey */
+    --tf-veil: 0.4;            /* its density when it sets off */
+    --tf-veil-arrive: 0.6;     /* ...and when it lands */
+    --tf-settle: 180ms;        /* veil -> object */
+    --tf-hold: 90ms;           /* the breath before the content speaks */
+    --tf-reveal: 360ms;        /* the content's dissolve */
+    --tf-out: 200ms;           /* the content's fade on the way out */
+    --tf-exit: 400ms;          /* the panel's retreat */
+    --tf-dim-out-delay: 380ms; /* the lights come up after the door shuts */
+
     position: fixed;
     inset: 0;
     z-index: 40;
@@ -694,14 +725,20 @@
   }
   .catalog-overlay.open,
   .catalog-overlay.closing { display: block; }
+  /* Once the exit begins the page underneath is the guest's again: a
+     leaving overlay must not keep eating clicks for its last 700ms. */
+  .catalog-overlay.closing { pointer-events: none; }
   .catalog-backdrop {
     position: absolute;
     inset: 0;
     background: rgba(24, 24, 27, 0.4);
     opacity: 0;
-    transition: opacity 300ms ease-out;
+    transition: opacity var(--tf-dim) ease-out;
   }
-  .catalog-overlay.closing .catalog-backdrop { transition: opacity 300ms ease-out 80ms; }
+  .catalog-overlay.open .catalog-backdrop { opacity: 1; }
+  .catalog-overlay.closing .catalog-backdrop {
+    transition: opacity var(--tf-dim) ease-out var(--tf-dim-out-delay);
+  }
   .catalog-panel {
     position: absolute;
     top: 0;
@@ -714,22 +751,32 @@
        decision 2026-08-12); the right edge stays flush with the screen */
     border-radius: var(--radius) 0 0 var(--radius);
     transform: translateX(100%);
-    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: var(--tf-veil);
+    transition: transform var(--tf-travel) var(--tf-curve),
+                opacity var(--tf-travel) linear;
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
-  .catalog-overlay.closing .catalog-panel { transition: transform 380ms ease-in; }
-  .catalog-overlay.open .catalog-backdrop { opacity: 1; }
-  .catalog-overlay.open .catalog-panel { transform: translateX(0); }
-  @media (prefers-reduced-motion: reduce) {
-    .catalog-panel,
-    .catalog-overlay.closing .catalog-panel {
-      transform: none;
-      opacity: 0;
-      transition: opacity 300ms ease;
-    }
-    .catalog-overlay.open .catalog-panel { opacity: 1; transform: none; }
+  /* Phase 2: travelling, and still only a veil */
+  .catalog-overlay.open .catalog-panel {
+    transform: translateX(0);
+    opacity: var(--tf-veil-arrive);
+  }
+  /* Phase 3: landed (the JS adds .settled on the travel's own clock),
+     the veil gathers into an object */
+  .catalog-overlay.open.settled .catalog-panel {
+    opacity: 1;
+    transition: transform var(--tf-travel) var(--tf-curve),
+                opacity var(--tf-settle) ease-out;
+  }
+  /* Exit: the panel holds still while the content goes, then leaves
+     fading -- the reverse of its arrival, at the exit's own pace */
+  .catalog-overlay.closing .catalog-panel {
+    transform: translateX(100%);
+    opacity: var(--tf-veil);
+    transition: transform var(--tf-exit) var(--tf-exit-curve) var(--tf-out),
+                opacity var(--tf-exit) ease-in var(--tf-out);
   }
   /* The overlay's top bar and its .icon-button close are GONE (Ton's
      overlay bug list 2026-08-12): the bar existed for the cross alone;
@@ -744,18 +791,42 @@
     border: 0;
     display: block;
     background: var(--zinc-50);
-    /* Content layer of the enter choreography: fades and lifts 12px,
-       150ms after the panel starts (Ren's spec, Ton 2026-08-12) */
+    /* Content layer of gbppl-tiffany-overlay: it does not ride in with
+       the panel any more, it appears inside the landed one. The 12px
+       lift of the old spec is gone -- a page that slides up reads as a
+       second arrival; what is left is a dissolve with the faintest
+       swell, and the .revealed class only lands once the iframe has
+       actually loaded (JS). */
     opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 400ms ease-out 150ms, transform 400ms ease-out 150ms;
+    transform: scale(0.994);
+    transition: opacity var(--tf-reveal) ease-out,
+                transform var(--tf-reveal) ease-out;
   }
-  .catalog-overlay.open .catalog-frame { opacity: 1; transform: translateY(0); }
-  /* On exit the content rides the panel, no animation of its own */
-  .catalog-overlay.closing .catalog-frame { opacity: 1; transform: none; transition: none; }
+  .catalog-overlay.revealed .catalog-frame { opacity: 1; transform: none; }
+  /* On exit the content goes FIRST and alone; the panel waits it out */
+  .catalog-overlay.closing .catalog-frame {
+    opacity: 0;
+    transform: none;
+    transition: opacity var(--tf-out) ease-in;
+  }
   @media (prefers-reduced-motion: reduce) {
-    .catalog-frame { transform: none; transition: opacity 300ms ease; }
-    .catalog-overlay.open .catalog-frame { transform: none; }
+    /* The phases collapse into fades: travel becomes the fade's own
+       duration, the veil becomes plain transparency, nothing moves.
+       The JS reads these values too, so its clock shortens with them. */
+    .catalog-overlay {
+      --tf-travel: 280ms;
+      --tf-veil: 0;
+      --tf-veil-arrive: 1;
+      --tf-settle: 0ms;
+      --tf-hold: 60ms;
+      --tf-exit: 240ms;
+      --tf-dim-out-delay: 200ms;
+    }
+    .catalog-panel,
+    .catalog-overlay.open .catalog-panel,
+    .catalog-overlay.closing .catalog-panel { transform: none; }
+    .catalog-frame,
+    .catalog-overlay.revealed .catalog-frame { transform: none; }
   }
   /* Scroll lock while the overlay is open (Ton's overlay bug list
      2026-08-12: the page scrolled behind the panel and its scrollbar
@@ -1838,8 +1909,12 @@
      off the calendar, and the shell holds still while the guest moves
      between steps. The width never changes: the popup is one object
      across its levels, and a shell that narrowed mid-flight would read
-     as a second window. */
+     as a second window.
+     The confirmation joins them (gbppl-start-booked): it answers the
+     calendar, and a window that shrank the moment the meeting was made
+     would take the ceremony back. */
   .start-panel[data-view="chat"],
+  .start-panel[data-view="booked"],
   .start-panel[data-view="meeting"] { height: min(var(--gsp-step-h), 100%); }
   .start-panel:focus { outline: none; }
 
@@ -1965,7 +2040,17 @@
   .start-panel[data-view="doors"]   .gsp-view[data-view="doors"],
   .start-panel[data-view="chat"]    .gsp-view[data-view="chat"],
   .start-panel[data-view="meeting"] .gsp-view[data-view="meeting"],
+  .start-panel[data-view="booked"]  .gsp-view[data-view="booked"],
   .start-panel[data-view="call"]    .gsp-view[data-view="call"] { display: block; }
+  /* The confirmation is a two-row step: the card takes all the height
+     the step has, the prototype note sits under it (gbppl-start-booked).
+     Same shape the chat step uses, one row shorter. */
+  .start-panel[data-view="booked"] .gsp-body { display: grid; }
+  .start-panel[data-view="booked"] .gsp-view[data-view="booked"] {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+  }
   /* On the chat step the body stops being the scroller and becomes a
      frame, so the transferred organism can keep its own two rows: the
      scrolling thread and the composer pinned under it, exactly as the
@@ -2522,12 +2607,76 @@
     transition: opacity 150ms ease;
   }
   .gsp-call-copied.shown { opacity: 1; }
-  /* Quiet confirmation: no banner, no green, no exclamation. A blue
-     check (state accent) and one line. */
-  .gsp-done { display: flex; align-items: flex-start; gap: 12px; padding: 24px 20px; }
-  .gsp-done[hidden] { display: none; }   /* the class would outrank the UA rule */
-  .gsp-done svg { flex-shrink: 0; width: 20px; height: 20px; margin-top: 2px; color: var(--blue-600); }
-  .gsp-done p { font-size: 15px; font-weight: 400; line-height: 1.55; color: var(--gh-ink-soft); }
+  /* ---- Door 2, answered: You are booked (gbppl-start-booked) -------
+     Ton 2026-08-19: the confirmation was one grey line under a vanished
+     calendar; it should be a state of its own and it should celebrate
+     with typography. So it does, and with nothing else: no banner, no
+     green, no confetti, no border art. A drawn blue check, a serif
+     title, the fact itself set large right under it, one quiet line of
+     what happens next, and two calm ways out at the foot of the card.
+     Reused whole: .gsp-card, .gsp-btn and its --quiet sibling, the
+     source's Noto Serif, the popup's own step machinery. */
+  .gsp-bookedcard {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 24px 24px;
+    text-align: center;
+  }
+  /* The good news floats in the middle of whatever the exits leave */
+  .gsp-booked-hero { margin: auto 0; }
+  .gsp-booked-check { width: 56px; height: 56px; color: var(--blue-600); }
+  /* The check draws itself: the ring unwinds from twelve o'clock, the
+     tick follows it in. Both are stroked paths, so the drawing is only
+     their own dash coming undone -- nothing is added to the DOM and
+     nothing jumps. 560ms end to end, on the source's own --gh-move, the
+     curve its panels already travel by; the sharper entry curve drew
+     seven eighths of the ring in the first fifth of the time, which is
+     a flourish, not a hand. */
+  .gsp-booked-ring {
+    stroke-dasharray: 164;      /* 2*pi*26, the circumference */
+    stroke-dashoffset: 164;
+    animation: gsp-draw 520ms var(--gh-move) forwards;
+  }
+  .gsp-booked-tick {
+    stroke-dasharray: 32;       /* the two legs, measured */
+    stroke-dashoffset: 32;
+    animation: gsp-draw 300ms var(--gh-move) 260ms forwards;
+  }
+  @keyframes gsp-draw { to { stroke-dashoffset: 0; } }
+  .gsp-booked-title {
+    margin: 20px 0 0;
+    font-family: 'Noto Serif', Georgia, serif;
+    font-size: clamp(26px, 2.2vw, 30px);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.4px;
+    color: var(--gh-ink);
+  }
+  /* The fact the guest came for, second only to the title and touching
+     it, so the two read as one sentence */
+  .gsp-booked-when {
+    margin: 10px 0 0;
+    font-size: clamp(18px, 1.55vw, 20px);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.2px;
+    color: var(--gh-ink);
+  }
+  .gsp-booked-line {
+    max-width: 44ch;
+    text-wrap: balance;   /* two sentences, two even lines */
+    margin: 14px auto 0;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.55;
+    color: var(--gh-muted);
+  }
+  .gsp-booked-actions { display: flex; flex-direction: column; gap: 10px; }
+  @media (prefers-reduced-motion: reduce) {
+    /* The check is simply there */
+    .gsp-booked-ring,
+    .gsp-booked-tick { animation: none; stroke-dashoffset: 0; }
+  }
 
   /* Below the source's 900 layout switch its root eases on down to
      11.5px at 390 -- 88.5% of desktop, so a title that fits a monitor
@@ -2558,6 +2707,7 @@
     /* Fullscreen already gives every step all the height there is, so
        the shared 696 ceiling steps aside (gbppl-start-popup-3). */
     .start-panel[data-view="chat"],
+    .start-panel[data-view="booked"],
     .start-panel[data-view="meeting"] { height: 100dvh; }
     .start-panel[data-view="chat"] .gsp-body { padding: 0; }
     /* The source's own <=640 chat overrides, styles.css 6191-6220 */
@@ -3706,12 +3856,35 @@
               </div>
               <button class="gsp-btn gsp-confirm" id="gbStartConfirm" type="button" disabled>Confirm meeting</button>
             </div>
-            <div class="gsp-done" id="gbStartBooked" hidden>
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 19a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="m6 10 2.8 2.8L14.4 7.2"/></svg>
-              <p id="gbStartBookedText">You are booked. We will send the invitation by email.</p>
-            </div>
           </div>
           <p class="gsp-note">Prototype: the month is fixed and nothing is scheduled.</p>
+        </div>
+
+        <!-- STEP 2b answered: the booking confirmed (gbppl-start-booked,
+             Ton 2026-08-19). A step of its own rather than a swap inside
+             the calendar card, so it takes the same 696 the two tall
+             steps already share and the window holds still under the
+             good news. Everything here is the popup's own language: the
+             card, the serif of its titles, the two button roles. The one
+             new mark is the blue check -- state colour, Ton-5 -- and it
+             draws itself rather than landing. -->
+        <div class="gsp-view" data-view="booked">
+          <div class="gsp-card gsp-bookedcard">
+            <div class="gsp-booked-hero">
+              <svg class="gsp-booked-check" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle class="gsp-booked-ring" cx="28" cy="28" r="26" stroke-width="1.25" transform="rotate(-90 28 28)"/>
+                <path class="gsp-booked-tick" d="M17.5 28.5 24.5 35.5 38.5 20.5" stroke-width="1.75"/>
+              </svg>
+              <h2 class="gsp-booked-title">You are booked</h2>
+              <p class="gsp-booked-when" id="gbStartBookedWhen">August 20 &middot; 10:00 AM</p>
+              <p class="gsp-booked-line">The invitation is on its way to your inbox. Thirty minutes, Central time.</p>
+            </div>
+            <div class="gsp-booked-actions">
+              <button class="gsp-btn" id="gbStartDone" type="button">Done</button>
+              <button class="gsp-btn gsp-btn--quiet" id="gbStartRebook" type="button">Book another time</button>
+            </div>
+          </div>
+          <p class="gsp-note">Prototype: nothing is actually scheduled.</p>
         </div>
 
         <!-- STEP 2c: call us (gbppl-start-popup-2). The "leave your number
@@ -4097,12 +4270,47 @@
   var btnExplore     = document.getElementById('btnExploreGifts');
   var catalogBackdrop = document.getElementById('catalogBackdrop');
 
-  /* Exit choreography total: the panel leaves in 380ms, the backdrop
-     finishes at 80+300=380ms; the timer waits a hair longer before
-     display:none so the exit always plays out (Ren's spec, Ton
-     2026-08-12) */
-  var OVERLAY_EXIT_MS = 460;
-  var overlayCloseTimer = null;
+  /* gbppl-tiffany-overlay, the JS half: the phase clock. Not a second
+     copy of the numbers -- it READS the --tf-* variables the CSS
+     animates with, so the two never drift and prefers-reduced-motion,
+     which rewrites them in its media query, shortens the sequence here
+     for free. Two beats need a timer because CSS cannot express them:
+     the moment the panel lands and stops being a veil (.settled), and
+     the moment the catalog is allowed to appear (.revealed), which is
+     the later of the choreography's own cue and the iframe's load. */
+  var overlaySettleTimer = null;
+  var overlayRevealTimer = null;
+  var overlayCloseTimer  = null;
+  var catalogOpenedAt    = 0;
+  var catalogLoaded      = false;
+  /* A frame that finishes loading long after the panel landed still gets
+     this much stillness first, so the dissolve reads as a dissolve and
+     not as a page popping into an empty room. */
+  var CATALOG_GRACE_MS = 120;
+
+  function tf(name) {
+    return parseFloat(getComputedStyle(overlay).getPropertyValue(name)) || 0;
+  }
+  function catalogRevealDue() {
+    return tf('--tf-travel') + tf('--tf-settle') + tf('--tf-hold');
+  }
+  /* The exit is over when its LAST layer is: the backdrop, normally */
+  function catalogExitMs() {
+    return Math.max(tf('--tf-out') + tf('--tf-exit'),
+                    tf('--tf-dim-out-delay') + tf('--tf-dim')) + 60;
+  }
+  function scheduleCatalogReveal() {
+    clearTimeout(overlayRevealTimer);
+    var left = catalogRevealDue() - (Date.now() - catalogOpenedAt);
+    overlayRevealTimer = setTimeout(function () {
+      overlay.classList.add('revealed');
+    }, Math.max(left, CATALOG_GRACE_MS));
+  }
+  // First open pays for the load; every open after it is already ready
+  catalogFrame.addEventListener('load', function () {
+    catalogLoaded = true;
+    if (overlay.classList.contains('open')) scheduleCatalogReveal();
+  });
 
   function openCatalog() {
     if (!catalogFrame.getAttribute('src')) {
@@ -4117,22 +4325,35 @@
     // Two-phase enter: become displayed in the hidden pose first, then
     // open one reflow later so the enter transition actually runs
     clearTimeout(overlayCloseTimer);
+    clearTimeout(overlaySettleTimer);
+    clearTimeout(overlayRevealTimer);
     overlay.classList.remove('closing');
+    overlay.classList.remove('settled');
+    overlay.classList.remove('revealed');
     overlay.style.display = 'block';
     void overlay.offsetWidth;
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
+    catalogOpenedAt = Date.now();
+    overlaySettleTimer = setTimeout(function () {
+      overlay.classList.add('settled');
+    }, tf('--tf-travel'));
+    if (catalogLoaded) scheduleCatalogReveal();
   }
   function closeCatalog() {
     if (!overlay.classList.contains('open')) return;
+    clearTimeout(overlaySettleTimer);
+    clearTimeout(overlayRevealTimer);
     overlay.classList.remove('open');
+    overlay.classList.remove('settled');
+    overlay.classList.remove('revealed');
     overlay.classList.add('closing');
     overlay.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('catalog-locked');
     overlayCloseTimer = setTimeout(function () {
       overlay.classList.remove('closing');
       overlay.style.display = '';
-    }, OVERLAY_EXIT_MS);
+    }, catalogExitMs());
   }
   /* btnExploreGifts is a menu item now, not the masthead button
      (feedback R 2026-08-17): same id, same overlay, same choreography;
@@ -4190,6 +4411,12 @@
   var startMeta     = document.getElementById('gbStartMeta');
   var startOpener   = null;
   var startCloseTimer = null;
+  /* The popup collapses in 260ms; the timer waits a hair longer before
+     display:none so the exit always plays out. It used to borrow the
+     catalog's constant; the catalog now computes its own exit from the
+     --tf-* choreography (gbppl-tiffany-overlay), so the popup keeps the
+     number it actually needs. */
+  var START_EXIT_MS = 460;
 
   /* The chat step's header is the source's own (App.tsx 3487-3498):
      "Chat with our team" over the availability status, dot and all --
@@ -4204,6 +4431,11 @@
                      '<i class="availability-dot" aria-hidden="true"></i>' +
                      'Online now · A real person</span>' },
     meeting: { title: 'Book a meeting', meta: 'Thirty minutes, at a time that suits you.' },
+    /* The confirmation keeps the calendar's own name in the band -- the
+       band says which step you are on, the step says what happened -- and
+       drops the invitation line, which the card now answers in full
+       (gbppl-start-booked). */
+    booked:  { title: 'Book a meeting', meta: '' },
     call:    { title: 'Call us',        meta: 'Weekdays, 9 to 5 Central.' }
   };
 
@@ -4248,7 +4480,7 @@
     startCloseTimer = setTimeout(function () {
       startOverlay.classList.remove('closing');
       startOverlay.style.display = '';
-    }, OVERLAY_EXIT_MS);
+    }, START_EXIT_MS);
     if (startOpener) { startOpener.focus(); startOpener = null; }
     return true;
   }
@@ -4297,9 +4529,9 @@
   var calGrid     = document.getElementById('gbStartCal');
   var slotsWrap   = document.getElementById('gbStartSlots');
   var confirmBtn  = document.getElementById('gbStartConfirm');
-  var bookedBox   = document.getElementById('gbStartBooked');
-  var bookedText  = document.getElementById('gbStartBookedText');
-  var calBox      = calGrid.parentNode;
+  var bookedWhen  = document.getElementById('gbStartBookedWhen');
+  var bookedDone  = document.getElementById('gbStartDone');
+  var bookedAgain = document.getElementById('gbStartRebook');
   var pickedDay   = null;
   var pickedSlot  = null;
 
@@ -4337,14 +4569,30 @@
     pickedSlot = slot.textContent.trim();
     syncConfirm();
   });
-  /* Confirm answers in the same quiet voice as the call form: the
-     calendar goes, one line stays, no banner and no green. */
+  /* Confirm turns the page rather than editing it (gbppl-start-booked):
+     the calendar hands over to a step of its own, which carries the fact
+     it just made. The picks are cleared on the way out, so the calendar
+     the guest can come back to -- by Book another time, by Back, or by
+     the Book a Meeting door a week from now -- is always a clean one. */
+  function resetBooking() {
+    var picked = startDialog.querySelectorAll('.gsp-day.sel, .gsp-slot.sel');
+    for (var p = 0; p < picked.length; p++) picked[p].classList.remove('sel');
+    pickedDay = null;
+    pickedSlot = null;
+    syncConfirm();
+  }
   confirmBtn.addEventListener('click', function () {
     if (confirmBtn.disabled) return;
-    bookedText.textContent = 'You are booked for ' + CAL_MONTH.split(' ')[0] + ' ' +
-      pickedDay + ' at ' + pickedSlot + '. The invitation is on its way by email.';
-    calBox.hidden = true;
-    bookedBox.hidden = false;
+    bookedWhen.textContent = CAL_MONTH.split(' ')[0] + ' ' + pickedDay +
+      ' · ' + pickedSlot;
+    resetBooking();
+    setStartView('booked', 'forward');
+    bookedDone.focus();
+  });
+  bookedDone.addEventListener('click', function () { closeStartPanel(); });
+  bookedAgain.addEventListener('click', function () {
+    setStartView('meeting', 'back');
+    startBack.focus();
   });
 
   /* ---- Live chat: LiveSpecialistPanel's behaviour, transferred ----
