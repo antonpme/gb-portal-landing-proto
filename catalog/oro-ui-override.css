@@ -1,0 +1,83 @@
+/*
+ * oro-ui-override.css — the embedded catalog's count badges, brought onto the
+ * prototype's one badge.
+ * ---------------------------------------------------------------------------
+ * gbppl-badge-one
+ *
+ * Why this file exists at all. site/catalog/ is a VENDORED build of v1
+ * (ai-consierge, approved reference, separate deploy): its js and css are
+ * minified build output and nobody edits them by hand. So corrections ride on
+ * top, as a stylesheet loaded after index-DiH5G4Dz.css. This is the second
+ * such overlay; oro-motion-override.css next door does the same job for the
+ * drawers' tempo, and the two are kept apart on purpose — one is motion, this
+ * one is ui.
+ *
+ * Why literal numbers. Our tokens live on the prototype's :root, one document
+ * up. Nothing crosses an iframe boundary, so every value below is written out
+ * with the token it is a copy of named beside it. When studio/system/tokens.css
+ * moves, this file has to be moved by hand.
+ *
+ * Ton's note (2026-08-19): "то, что сейчас на корзине — идеальный бейдж;
+ * чёрное плохо видно, цифры маленькие."
+ *
+ * THE ONE BADGE. Defined as an atom in studio/system/tokens.css under COUNT
+ * BADGE, provenance gbppl-portal-header-2, and worn in the prototype by
+ * .gbh-count on the cart of both headers:
+ *
+ *   16x16 minimum, pill, 0 4px padding, grid-centred
+ *   fill    Blue 600 #2563eb   — a count is a STATE, and state is blue (Ton-5)
+ *   ring    1px White          — lifts the pill off whatever glyph is under it
+ *   digit   White, Inter 10/400
+ *   anchor  top 2, right 2 of the 44px icon button
+ *
+ * WHAT V1 HAD, and why each number moves:
+ *
+ *   .icon-button--count > span      was                    now
+ *   fill      var(--color-text-primary)  #242426        ->  Blue 600
+ *   ring      2px                                       ->  1px
+ *   box       17x17                                     ->  16x16
+ *   digit     .5625rem                   = 7.31px       ->  10px
+ *   right     1px                                       ->  2px
+ *
+ * Black reads as furniture and sinks into the stroke glyph it stands on.
+ * And the digit was not 9px: .5625rem against v1's 13px root computes to
+ * 7.31px, measured — which is exactly "цифры маленькие". Inside a 17px
+ * border-box, 2px of ring each side and 4px of padding each side leave 5px
+ * of clear width; the canon's 1px ring leaves 6px and spends it on a digit
+ * a third larger, in a box one pixel SMALLER than v1's.
+ *
+ * font-weight is stated even though .gbh-count does not state it: the canon
+ * inherits 400 from the portal's button, and v1's own inheritance here is not
+ * ours to rely on. 400 is the measured canon value, not a new decision.
+ *
+ * Scope. Everything below is behind html.is-embed, the class v1 sets from
+ * ?embed=1. Opened straight at /catalog/ this vendored copy still shows the
+ * black 17px badge of the approved reference deploy it was copied from.
+ *
+ * In today's guest embed two of these are reachable, both in the category
+ * nav's action cluster: the filters trigger and the favorites trigger. The
+ * header's .account-control__dot — a 7px near-black presence dot with the same
+ * 2px ring — is the same family and is NOT touched here, because the embed
+ * does not render the header at all and the rule would be dead css. Flagged
+ * for Ton instead.
+ */
+
+html.is-embed .icon-button--count > span {
+  /* 2px -> 2px, 1px -> 2px: the pill sits on the same corner as the canon's */
+  top: 2px;
+  right: 2px;
+  /* 17 -> 16, and the ring comes out of the box, not off the digit */
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  /* #2563eb = --blue-600; was var(--color-text-primary), near-black */
+  background: #2563eb;
+  /* 1px, #ffffff = --white; was 2px of --color-bg-primary */
+  border: 1px solid #ffffff;
+  border-radius: 999px;
+  /* #ffffff = --white; unchanged in value, restated so the pair reads together */
+  color: #ffffff;
+  /* .5625rem (9px) -> 10px, and the canon's measured 400 */
+  font-size: 10px;
+  font-weight: 400;
+}
