@@ -1736,6 +1736,21 @@
     --gh-gold-line: color-mix(in srgb, #c2a545 42%, #dedee2);
     --gh-hover: rgb(36 36 38 / 5%);
     --gh-shadow: 0 24px 70px rgb(21 21 24 / 18%);
+
+    /* The source's whole rem hierarchy rides one fluid root -- 13px on a
+       compact desktop, easing up to 16 at its 2K reference and down again
+       below its 900 layout switch. Our page runs a fixed 16, so the popup
+       carries the source's root as a local number and spends it on the
+       three sizes the organism reads in rem. Without it the same 460 card
+       would print a fifth larger here than it does two clicks away inside
+       the framed catalog -- which IS that build, so the two would be
+       caught side by side. The header title, the step's line and the
+       serif intro are px clamps in the source and stay as they are. */
+    --gh-root: clamp(13px, 0.625vw, 16px);
+    --gh-xs: calc(0.75 * var(--gh-root));    /* --text-xs   */
+    --gh-sm: calc(0.875 * var(--gh-root));   /* --text-sm   */
+    --gh-base: var(--gh-root);               /* --text-base */
+
     --gh-fast: 160ms;
     --gh-panel: 360ms;
     --gh-enter: cubic-bezier(0, 0, 0.2, 1);
@@ -1922,7 +1937,7 @@
   .gsp-group-label {
     margin: 0 0 8px;
     color: var(--gh-muted);
-    font-size: 12px;
+    font-size: var(--gh-xs);
     font-weight: 600;
     letter-spacing: 0.09em;
     line-height: 1.2;
@@ -1987,7 +2002,7 @@
     gap: 4px;
   }
   .gsp-door-copy strong {
-    font-size: 16px;
+    font-size: var(--gh-base);
     font-weight: 600;
     line-height: 1.3;
   }
@@ -1996,7 +2011,7 @@
     align-items: center;
     gap: 6px;
     color: var(--gh-ink-soft);
-    font-size: 14px;
+    font-size: var(--gh-sm);
     line-height: 1.45;
   }
   .gsp-door-title {
@@ -2016,7 +2031,7 @@
     border: 1px solid var(--gh-success-line);
     border-radius: var(--radius);
     color: var(--gh-success);
-    font-size: 12px;
+    font-size: var(--gh-xs);
     font-weight: 600;
     line-height: 1;
     white-space: nowrap;
@@ -2225,6 +2240,13 @@
   .gsp-done[hidden] { display: none; }   /* the class would outrank the UA rule */
   .gsp-done svg { flex-shrink: 0; width: 20px; height: 20px; margin-top: 2px; color: var(--blue-600); }
   .gsp-done p { font-size: 15px; font-weight: 400; line-height: 1.55; color: var(--gh-ink-soft); }
+
+  /* Below the source's 900 layout switch its root eases on down to
+     11.5px at 390 -- 88.5% of desktop, so a title that fits a monitor
+     never renders bigger on a phone. Same line, same numbers. */
+  @media (max-width: 900px) {
+    .start-overlay { --gh-root: clamp(11.5px, calc(10.35px + 0.295vw), 13px); }
+  }
 
   /* Narrow screens: the source's own hub breakpoint (640) and its own
      answer -- the panel drops its frame and takes the whole viewport,
