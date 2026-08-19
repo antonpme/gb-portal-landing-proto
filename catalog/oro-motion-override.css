@@ -1,0 +1,103 @@
+/*
+ * oro-motion-override.css — the embedded catalog's drawers, retimed to the
+ * page's motion language.
+ * ---------------------------------------------------------------------------
+ * gbppl-catalog-drawer-tempo
+ *
+ * Why this file exists at all. site/catalog/ is a VENDORED build of v1
+ * (ai-consierge, approved reference, separate deploy): its js and css are
+ * minified build output and nobody edits them by hand. So the retiming rides
+ * on top, as one stylesheet loaded after index-DiH5G4Dz.css, overriding only
+ * the `animation` shorthand of the drawers.
+ *
+ * Why literal numbers. Our --mo-* tokens live on the prototype's :root, one
+ * document up. Nothing crosses an iframe boundary, so every value below is
+ * written out with the token it is a copy of named in the comment. When
+ * studio/system/tokens.css moves, this file has to be moved by hand.
+ *
+ * Ton's note (2026-08-19): inside the frame the panels "open too fast for
+ * everything around them" — the door takes 1200ms to cross the screen and the
+ * Start popup 500ms to be born, and then a 640px drawer snapped in at 360ms.
+ *
+ * The retiming, against studio/system/MOTION.md:
+ *
+ *   surface            was                       now
+ *   side drawers       360ms ease-enter          800ms --mo-enter
+ *     (filters, favorites, save-shortlist, account)
+ *   drawer backdrop    280ms ease                320ms ease-out  (= --tf-dim)
+ *   drawer exit        280ms --mo-exit           unchanged, and see the ceiling below
+ *
+ * 800ms sits where the brief asked: two thirds of the door (--mo-large 1200),
+ * comfortably past the popup (--mo-medium 500). A drawer is a smaller door, so
+ * it takes the door's curve, --mo-enter, which has a real middle you can watch.
+ *
+ * The veil is gone. v1's drawer-enter carried the panel in at opacity .72 and
+ * only reached full density on arrival. At 360ms that is invisible; at 800ms
+ * the grid shows through the panel for most of the journey. MOTION's first
+ * choreography settles this for the whole family: the door is DENSE from the
+ * first pixel (--tf-veil and --tf-veil-arrive are both 1, set the hard way).
+ * The drawers now travel dense too, which is why this file names its own
+ * keyframes instead of only changing durations.
+ *
+ * THE EXIT CEILING (the one thing CSS cannot reach from here). v1 unmounts an
+ * open drawer on a hard-coded window.setTimeout(280) — App.tsx:1754 for
+ * favorites, :1913 for filters, :4079 and :4267 for the save and account
+ * drawers. Stretch the exit past 280ms in CSS and React tears the panel out of
+ * the DOM while it is still a third of the way on screen: a pop, not a
+ * departure. So the exits keep their 280ms. They already carry --mo-exit's
+ * curve, and MOTION does say exits accelerate — but 280 out against 800 in is
+ * a sharper ratio than the door's (640/1200) or the popup's (350/500). Making
+ * the exit proportional means touching v1's own source and rebuilding, which is
+ * out of bounds here. Flagged for Ton.
+ *
+ * Micro motion is deliberately untouched: hovers, chips, icon buttons, the
+ * category dropdown (mega-enter, 160ms = --mo-micro) all keep their tempo.
+ *
+ * Scope. Everything below is behind html.is-embed, the class v1 sets from
+ * ?embed=1. Opened straight at /catalog/ this vendored copy still behaves
+ * exactly like the approved reference deploy it was copied from.
+ */
+
+/* Dense from the first pixel — see the veil note above. Named apart from v1's
+   own drawer-enter so the original keyframes are left alone entirely. */
+@keyframes oro-drawer-enter {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* The side drawers of the 640px family. In today's guest embed only filters
+   and favorites can be reached; the save-shortlist drawer — and the account
+   drawer, which is a .save-shortlist-panel wearing a second class — share the
+   identical animation and geometry, so they are retimed with them and the
+   family never splits. */
+html.is-embed .filters-panel,
+html.is-embed .favorites-panel,
+html.is-embed .save-shortlist-panel {
+  /* 800ms = between --mo-medium (500) and --mo-large (1200);
+     cubic-bezier(0.37, 0, 0.18, 1) = --mo-enter, the door's own curve */
+  animation: oro-drawer-enter 800ms cubic-bezier(0.37, 0, 0.18, 1);
+}
+
+/* The dim behind an open drawer inside the frame. 320ms is --tf-dim, the value
+   the door uses for its own backdrop, so one dim answers the other. It still
+   lands well before the panel does, which is the order the door keeps too:
+   the lights go down first, the panel arrives into them. */
+html.is-embed .drawer-embed-backdrop {
+  animation: embed-backdrop-enter 320ms ease-out both;
+}
+
+/*
+ * Exits stay at 280ms — the JS unmount ceiling documented above. Written out
+ * anyway, with --mo-exit named, so the next person reads the whole tempo of
+ * these drawers in one file instead of half here and half in a minified bundle.
+ */
+html.is-embed .filters-panel.is-closing,
+html.is-embed .favorites-panel.is-closing,
+html.is-embed .save-shortlist-panel.is-closing {
+  /* cubic-bezier(0.4, 0, 1, 1) = --mo-exit */
+  animation: drawer-exit 280ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+html.is-embed .drawer-embed-backdrop.is-closing {
+  animation: embed-backdrop-exit 280ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
