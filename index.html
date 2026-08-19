@@ -847,26 +847,13 @@
     transform: none;
     transition: opacity var(--tf-out) ease-in;
   }
-  @media (prefers-reduced-motion: reduce) {
-    /* The phases collapse into fades: travel becomes the fade's own
-       duration, the veil becomes plain transparency, nothing moves.
-       The JS reads these values too, so its clock shortens with them. */
-    .catalog-overlay {
-      --tf-travel: 280ms;
-      --tf-veil: 0;
-      --tf-veil-arrive: 1;
-      --tf-settle: 0ms;
-      --tf-reveal-at: 120ms;
-      --tf-exit: 240ms;
-      --tf-exit-lag: 80ms;
-      --tf-dim-out-delay: 200ms;
-    }
-    .catalog-panel,
-    .catalog-overlay.open .catalog-panel,
-    .catalog-overlay.closing .catalog-panel { transform: none; }
-    .catalog-frame,
-    .catalog-overlay.revealed .catalog-frame { transform: none; }
-  }
+  /* gbppl-tiffany-overlay-5: the reduced-motion branch is deliberately OFF.
+     Windows' "animation effects" toggle makes browsers report reduce, and on
+     such machines the ride collapsed into a fade — T saw "appears, no travel"
+     while Tiffany and the live site (which ignore the preference) kept
+     gliding. The signature choreography must be guaranteed everywhere
+     (T 19.08). If accessibility asks for it back, restore the block from
+     git history (gbppl-tiffany-overlay-2). */
   /* Scroll lock while the overlay is open (Ton's overlay bug list
      2026-08-12: the page scrolled behind the panel and its scrollbar
      stood beside the overlay, a double scrollbar). v1's
