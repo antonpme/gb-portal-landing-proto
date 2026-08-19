@@ -1712,7 +1712,24 @@
      framed catalog's geometry (DECISIONS-BANK item 4), and in the source
      hub the dismiss control sits right, opposite the title. Kept from
      the drawer: the dim, Esc, backdrop click, the --scrollbar-width
-     scroll lock and the focus hand-off. */
+     scroll lock and the focus hand-off.
+
+     SECOND PASS, gbppl-start-popup-2 (Russell via Ton, 2026-08-19).
+     Russell wanted the hub simpler and one of its doors honest:
+     (1) the two labelled groups are gone -- three options, one flat white
+         card, hairlines the only division;
+     (2) Live Chat opens a chat that looks like a chat: the popup takes the
+         height of the site's own live Pubble widget (370x600, radius 4,
+         shadow 0 5px 40px/16%) while keeping our 460 shell, our radius 5
+         and our surfaces, and the card inside becomes header / scrolling
+         log / composer, with a local send-and-reply so a click feels
+         alive and a PROTOTYPE tag on the reply so it never lies;
+     (3) Request a call becomes Call Us: the number rides on the door and
+         the door is a tel: link, so a phone dials straight from the list;
+         a desktop gets a small step with the number in Noto Serif, Copy
+         number and Call now. The "leave your number" form is retired
+         whole. The split between the two is the same 640 the fullscreen
+         breakpoint already draws. */
   .start-overlay {
     position: fixed;
     inset: 0;
@@ -1795,6 +1812,14 @@
     box-shadow: var(--gh-shadow);
   }
   .start-panel:not([data-view="doors"]) { max-height: 100%; }
+  /* Live chat is the one step that claims a height of its own
+     (gbppl-start-popup-2): a chat that hugs three lines of greeting reads
+     as a notice, not as a conversation. 600 is the height of the site's
+     own live Pubble panel; its 370 width is NOT taken, because the popup
+     is one object across its steps and a shell that narrowed mid-flight
+     would read as a second window. So: our 460 shell, the live widget's
+     600 of room to talk in. */
+  .start-panel[data-view="chat"] { height: min(600px, 100%); }
   .start-panel:focus { outline: none; }
 
   /* Enter and exit are the source's own hub keyframes, re-anchored to the
@@ -1920,6 +1945,19 @@
   .start-panel[data-view="chat"]    .gsp-view[data-view="chat"],
   .start-panel[data-view="meeting"] .gsp-view[data-view="meeting"],
   .start-panel[data-view="call"]    .gsp-view[data-view="call"] { display: block; }
+  /* On the chat step the body stops being the scroller and becomes a
+     frame: the log inside does the scrolling, so the body hands its whole
+     height down and keeps a narrower 16px gutter (gbppl-start-popup-2). */
+  .start-panel[data-view="chat"] .gsp-body {
+    display: grid;
+    padding: 16px;
+    overflow: hidden;
+  }
+  .start-panel[data-view="chat"] .gsp-view[data-view="chat"] {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
 
   .gsp-intro { margin-bottom: 20px; }
   .gsp-intro h2 {
@@ -1931,18 +1969,12 @@
     color: var(--gh-ink);
   }
 
-  /* ---- The doors, as the source's option groups -------------------- */
-  .gsp-groups { display: grid; gap: 20px; }
-  .gsp-group { min-width: 0; }
-  .gsp-group-label {
-    margin: 0 0 8px;
-    color: var(--gh-muted);
-    font-size: var(--gh-xs);
-    font-weight: 600;
-    letter-spacing: 0.09em;
-    line-height: 1.2;
-    text-transform: uppercase;
-  }
+  /* ---- The doors, one flat card ------------------------------------
+     The source stacks its options in labelled groups; ours are three and
+     they answer one question, so gbppl-start-popup-2 drops the labels and
+     the 20px gap between groups with them. Nothing else moves: the intro
+     still holds its 20px above the card, the body its 24px all round, so
+     removing the groups leaves no hole behind. */
   .gsp-doors {
     overflow: hidden;
     background: var(--gh-white);
@@ -2071,7 +2103,9 @@
     line-height: 1.1;
     letter-spacing: -0.35px;
     text-transform: uppercase;
-    transition: background 150ms ease, border-color 150ms ease;
+    text-decoration: none;   /* Call now wears the button as an <a> */
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
   }
   .gsp-btn:hover:not(:disabled) { background: var(--blue-700); border-color: var(--blue-700); }
   .gsp-btn:disabled {
@@ -2089,8 +2123,28 @@
     color: var(--gh-muted);
   }
 
-  /* ---- Door 1: live chat, a stand-in window ---------------------- */
-  .gsp-chat-log { padding: 20px; display: flex; gap: 12px; }
+  /* ---- Door 1: live chat, a chat-shaped chat ----------------------
+     gbppl-start-popup-2. Three bands inside the white card: the person,
+     the log, the composer. The measurements are the live site's Pubble
+     widget read through our own language -- its 600 of height, its
+     52-high header band and its footer rule, but our 5px radius, our
+     #dedee2 hairline, our Paper and Canvas, our Blue 600 as the guest's
+     voice. */
+  .gsp-chat {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+  }
+  .gsp-chat-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--gh-white);
+    border-bottom: 1px solid var(--gh-line);
+  }
   .gsp-chat-avatar {
     flex-shrink: 0;
     width: 32px;
@@ -2104,28 +2158,125 @@
     font-family: 'Noto Serif', Georgia, serif;
     font-size: 13px;
   }
-  .gsp-chat-who { display: flex; align-items: baseline; gap: 8px; }
-  .gsp-chat-name { font-size: 13px; font-weight: 600; color: var(--gh-ink); }
-  .gsp-chat-time { font-size: 12px; font-weight: 400; color: var(--gh-muted); }
-  .gsp-chat-bubble {
-    margin-top: 8px;
-    padding: 12px 14px;
-    background: var(--gh-canvas);
+  .gsp-chat-id { display: grid; gap: 2px; min-width: 0; }
+  .gsp-chat-name { font-size: 14px; font-weight: 600; line-height: 1.2; color: var(--gh-ink); }
+  /* The green dot is the source's own Success, the same one the door's
+     "Online now" pill wears, so the promise on the list is the promise
+     inside. */
+  .gsp-chat-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    line-height: 1.2;
+    color: var(--gh-ink-soft);
+  }
+  .gsp-chat-state i {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+    border-radius: 50%;
+    background: var(--gh-success);
+  }
+  .gsp-chat-log {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    background: var(--gh-paper);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .gsp-msg { display: flex; }
+  .gsp-msg--them { justify-content: flex-start; }
+  .gsp-msg--you  { justify-content: flex-end; }
+  .gsp-bubble {
+    max-width: 82%;
+    padding: 10px 14px;
+    border: 1px solid var(--gh-line);
     border-radius: var(--radius);
+    background: var(--gh-white);
     font-size: 14px;
     font-weight: 400;
     line-height: 1.5;
     color: var(--gh-ink-soft);
   }
+  .gsp-msg--you .gsp-bubble {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: var(--white);
+  }
+  /* The stand-in says so on its own reply rather than under a banner:
+     one 11px caps tag on the bubble that answered. */
+  .gsp-bubble-tag {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gh-muted);
+  }
+  .gsp-typing { display: inline-flex; align-items: center; gap: 4px; padding: 13px 14px; }
+  .gsp-typing i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gh-muted);
+    animation: gsp-typing 1.2s ease-in-out infinite;
+  }
+  .gsp-typing i:nth-child(2) { animation-delay: 0.15s; }
+  .gsp-typing i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes gsp-typing {
+    0%, 60%, 100% { opacity: 0.3; }
+    30%           { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gsp-typing i { animation: none; opacity: 0.6; }
+  }
   .gsp-chat-entry {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 20px;
+    gap: 10px;
+    padding: 10px 12px 10px 16px;
+    background: var(--gh-white);
     border-top: 1px solid var(--gh-line);
   }
-  .gsp-chat-entry .gsp-underline { flex: 1; height: 44px; }
-  .gsp-chat-entry .gsp-btn { width: auto; min-width: 104px; }
+  .gsp-chat-input {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--gh-ink);
+  }
+  .gsp-chat-input::placeholder { color: var(--gh-muted); }
+  .gsp-chat-input:focus { outline: none; }
+  .gsp-send {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid var(--blue-600);
+    border-radius: var(--radius);
+    background: var(--blue-600);
+    color: var(--white);
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease;
+  }
+  .gsp-send:hover:not(:disabled) { background: var(--blue-700); border-color: var(--blue-700); }
+  .gsp-send:disabled {
+    background: var(--zinc-200);
+    border-color: var(--zinc-200);
+    color: var(--zinc-400);
+    cursor: not-allowed;
+  }
 
   /* ---- Door 2: book a meeting, a stand-in calendar ---------------- */
   .gsp-cal { padding: 20px; }
@@ -2200,40 +2351,58 @@
   }
   .gsp-confirm { margin-top: 24px; }
 
-  /* ---- Door 3: request a call, underline fields ------------------ */
-  /* Underline recipe (DECISIONS-BANK login harvest, confirmed on the
-     live contact page): border-bottom alone, Inter 300 16, labels 11
-     caps 600. Focus moves the rule to Blue 600, the state accent, and
-     nothing else moves. */
-  .gsp-form { padding: 20px; }
-  .gsp-field + .gsp-field { margin-top: 22px; }
-  .gsp-label {
-    display: block;
-    margin-bottom: 6px;
+  /* ---- Door 3: call us, the number itself ------------------------
+     gbppl-start-popup-2. The underline form is retired with the
+     "leave your number" idea it served. What is left is the number, set
+     in the source's Noto Serif at the scale it uses for a page title, so
+     it can be read off a screen from across a desk; a quiet Copy beside
+     a blue Call now; and one 12px line that appears when the clipboard
+     took it. */
+  .gsp-callcard { padding: 28px 20px 24px; text-align: center; }
+  .gsp-call-label {
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--gh-muted);
   }
-  .gsp-underline {
+  .gsp-call-number {
     display: block;
-    width: 100%;
-    height: 48px;
-    padding: 0;
-    border: 0;
-    border-bottom: 1px solid var(--zinc-400);
-    border-radius: 0;
-    background: transparent;
-    font-family: inherit;
-    font-size: 16px;
-    font-weight: 300;
+    margin-top: 10px;
+    font-family: 'Noto Serif', Georgia, serif;
+    font-size: clamp(30px, 2.6vw, 36px);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
     color: var(--gh-ink);
-    transition: border-color 150ms ease;
+    text-decoration: none;
   }
-  .gsp-underline::placeholder { color: var(--gh-muted); }
-  .gsp-underline:focus { outline: none; border-bottom-color: var(--blue-600); }
-  .gsp-form .gsp-btn { margin-top: 28px; }
+  .gsp-call-number:hover { color: var(--blue-600); }
+  .gsp-call-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .gsp-call-actions .gsp-btn { flex: 1; }
+  .gsp-btn--quiet {
+    background: var(--gh-white);
+    border-color: var(--gh-line);
+    color: var(--gh-ink);
+  }
+  .gsp-btn--quiet:hover:not(:disabled) {
+    background: var(--gh-canvas);
+    border-color: var(--zinc-300);
+  }
+  .gsp-call-copied {
+    min-height: 18px;
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--gh-muted);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+  .gsp-call-copied.shown { opacity: 1; }
   /* Quiet confirmation: no banner, no green, no exclamation. A blue
      check (state accent) and one line. */
   .gsp-done { display: flex; align-items: flex-start; gap: 12px; padding: 24px 20px; }
@@ -2267,8 +2436,12 @@
     .gsp-heading { gap: 4px; }
     .gsp-body { padding: 20px 16px max(20px, env(safe-area-inset-bottom)); }
     .gsp-door { min-height: 72px; padding-inline: 12px; }
-    .gsp-chat-entry { flex-wrap: wrap; }
-    .gsp-chat-entry .gsp-btn { width: 100%; }
+    /* Fullscreen already gives the chat all the height there is, so the
+       600 ceiling steps aside and the body keeps the phone's own gutter
+       (gbppl-start-popup-2). */
+    .start-panel[data-view="chat"] { height: 100dvh; }
+    .start-panel[data-view="chat"] .gsp-body { padding: 12px 12px max(12px, env(safe-area-inset-bottom)); }
+    .gsp-bubble { max-width: 88%; }
   }
 
   /* ============ PAGE META (breadcrumbs + title card) ============
@@ -3258,7 +3431,10 @@
        the approved page's own "Chat with us" language -- see the CSS block
        for what was transferred and from where. Three doors to a person,
        each swapping the popup to its own step in place. Reachable from
-       ?hero=start in every layout and every nav variant. -->
+       ?hero=start in every layout and every nav variant.
+       Second pass gbppl-start-popup-2 (Russell via Ton 2026-08-19): one
+       flat list of three, a full-height Live Chat, and Call Us in place
+       of the call-back form. See the CSS provenance for the whole of it. -->
   <div class="start-overlay" id="gbStartPanel" aria-hidden="true">
     <div class="start-backdrop" id="gbStartBackdrop"></div>
     <div class="start-panel" id="gbStartDialog" data-view="doors" role="dialog" aria-modal="true"
@@ -3282,81 +3458,88 @@
 
       <div class="gsp-body">
 
-        <!-- STEP 1: three doors, in the source's two labelled groups. The
-             glyphs are the source's own inline strokes so the disc can
-             colour them; the tints are its Success green and brand Gold. -->
+        <!-- STEP 1: three doors in ONE flat card (gbppl-start-popup-2,
+             Russell via Ton 2026-08-19: three simple options, "choose how
+             you would like to talk"). The two labelled groups and their
+             12/600 caps are gone; the hairlines between the doors are the
+             only division left. The glyphs are the source's own inline
+             strokes so the disc can colour them; the tints are its
+             Success green and brand Gold. -->
         <div class="gsp-view" data-view="doors">
-          <div class="gsp-intro"><h2>How would you like us to help?</h2></div>
+          <div class="gsp-intro"><h2>How would you like to talk to us?</h2></div>
 
-          <div class="gsp-groups">
-            <section class="gsp-group" aria-labelledby="gspGroupNow">
-              <h3 class="gsp-group-label" id="gspGroupNow">Get help now</h3>
-              <div class="gsp-doors">
-                <button class="gsp-door" type="button" data-door="chat" aria-label="Live chat. Talk to us now, a real person is online.">
-                  <span class="gsp-door-icon gsp-door-icon--live" aria-hidden="true">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 18.5 3.8 21l.5-4A8.5 8.5 0 1 1 7 19.5"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke-width="2"/></svg>
-                  </span>
-                  <span class="gsp-door-copy">
-                    <span class="gsp-door-title">
-                      <strong>Live chat</strong>
-                      <span class="gsp-online"><i aria-hidden="true"></i>Online now</span>
-                    </span>
-                    <span>Talk to us now</span>
-                  </span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-                </button>
-              </div>
-            </section>
+          <div class="gsp-doors">
+            <button class="gsp-door" type="button" data-door="chat" aria-label="Live chat. Get help right now, an expert is online.">
+              <span class="gsp-door-icon gsp-door-icon--live" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 18.5 3.8 21l.5-4A8.5 8.5 0 1 1 7 19.5"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke-width="2"/></svg>
+              </span>
+              <span class="gsp-door-copy">
+                <span class="gsp-door-title">
+                  <strong>Live Chat</strong>
+                  <span class="gsp-online"><i aria-hidden="true"></i>Online now</span>
+                </span>
+                <span>Get help right now</span>
+              </span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </button>
 
-            <section class="gsp-group" aria-labelledby="gspGroupPlan">
-              <h3 class="gsp-group-label" id="gspGroupPlan">Schedule or call</h3>
-              <div class="gsp-doors">
-                <button class="gsp-door" type="button" data-door="meeting">
-                  <span class="gsp-door-icon gsp-door-icon--book" aria-hidden="true">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="15" rx="1.5"/><path d="M7.5 3v5M16.5 3v5M3.5 10h17M8 14h3M8 17h6"/></svg>
-                  </span>
-                  <span class="gsp-door-copy">
-                    <strong>Book a meeting</strong>
-                    <span>Pick a time that suits you</span>
-                  </span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-                </button>
+            <button class="gsp-door" type="button" data-door="meeting">
+              <span class="gsp-door-icon gsp-door-icon--book" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="15" rx="1.5"/><path d="M7.5 3v5M16.5 3v5M3.5 10h17M8 14h3M8 17h6"/></svg>
+              </span>
+              <span class="gsp-door-copy">
+                <strong>Book a Meeting</strong>
+                <span>Pick a time that suits you</span>
+              </span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </button>
 
-                <button class="gsp-door" type="button" data-door="call">
-                  <span class="gsp-door-icon" aria-hidden="true">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 3.5 5.4 4.8c-1 .5-1.5 1.7-1.1 2.8 2.2 5.9 6.2 9.9 12.1 12.1 1.1.4 2.3-.1 2.8-1.1l1.3-2.8-4.8-2.1-1.2 2.1a12.6 12.6 0 0 1-6.3-6.3l2.1-1.2-2.1-4.8Z"/></svg>
-                  </span>
-                  <span class="gsp-door-copy">
-                    <strong>Request a call</strong>
-                    <span>Leave your number, we call you back</span>
-                  </span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-                </button>
-              </div>
-            </section>
+            <!-- The third door IS the phone line: an <a href="tel:"> so a
+                 phone dials straight out of the list. On a wide screen the
+                 JS keeps the click and opens the small number step
+                 instead, where a mouse can copy it (gbppl-start-popup-2). -->
+            <a class="gsp-door" data-door="call" href="tel:+18478010345" aria-label="Call us at 847.801.0345">
+              <span class="gsp-door-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 3.5 5.4 4.8c-1 .5-1.5 1.7-1.1 2.8 2.2 5.9 6.2 9.9 12.1 12.1 1.1.4 2.3-.1 2.8-1.1l1.3-2.8-4.8-2.1-1.2 2.1a12.6 12.6 0 0 1-6.3-6.3l2.1-1.2-2.1-4.8Z"/></svg>
+              </span>
+              <span class="gsp-door-copy">
+                <strong>Call Us</strong>
+                <span>Prefer to talk? 847.801.0345</span>
+              </span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </a>
           </div>
         </div>
 
-        <!-- STEP 2a: live chat, a stand-in window. The step's name and its
-             one line live in the header now, as they do in the source. -->
+        <!-- STEP 2a: live chat, a full-height window (gbppl-start-popup-2).
+             It used to be a compact stand-in card; Russell asked for a
+             chat that looks like a chat, so the popup grows to the
+             proportions of a live chat widget (the site's own Pubble panel
+             is 370x600) and the card becomes three bands: the person at
+             the top, the scrolling log, the composer. The identity lives
+             here rather than in the popup header so the two do not say
+             the same thing twice. -->
         <div class="gsp-view" data-view="chat">
-          <div class="gsp-card">
-            <div class="gsp-chat-log">
+          <div class="gsp-card gsp-chat">
+            <div class="gsp-chat-head">
               <span class="gsp-chat-avatar" aria-hidden="true">GB</span>
-              <div>
-                <div class="gsp-chat-who">
-                  <span class="gsp-chat-name">Gifting expert</span>
-                  <span class="gsp-chat-time">now</span>
-                </div>
-                <p class="gsp-chat-bubble">Hi, you have reached a gifting expert. Tell me the occasion and roughly how many people, and I will come back with two or three directions.</p>
+              <span class="gsp-chat-id">
+                <strong class="gsp-chat-name">Gifting Expert</strong>
+                <span class="gsp-chat-state"><i aria-hidden="true"></i>Online</span>
+              </span>
+            </div>
+            <div class="gsp-chat-log" id="gbChatLog" role="log" aria-live="polite" aria-label="Conversation">
+              <div class="gsp-msg gsp-msg--them">
+                <p class="gsp-bubble">Hi, you have reached a gifting expert. Tell me the occasion and roughly how many people, and I will come back with two or three directions.</p>
               </div>
             </div>
-            <div class="gsp-chat-entry">
-              <input class="gsp-underline" type="text" placeholder="Write a message" aria-label="Message">
-              <button class="gsp-btn" type="button" disabled>Send</button>
-            </div>
+            <form class="gsp-chat-entry" id="gbChatForm" autocomplete="off">
+              <input class="gsp-chat-input" id="gbChatInput" type="text" placeholder="Write a message" aria-label="Message">
+              <button class="gsp-send" id="gbChatSend" type="submit" aria-label="Send message" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h13M12 6.5l5.5 5.5-5.5 5.5"/></svg>
+              </button>
+            </form>
           </div>
-          <p class="gsp-note">Prototype: the chat window is a stand-in, nothing is sent.</p>
         </div>
 
         <!-- STEP 2b: book a meeting, a stand-in calendar. The day cells
@@ -3394,28 +3577,22 @@
           <p class="gsp-note">Prototype: the month is fixed and nothing is scheduled.</p>
         </div>
 
-        <!-- STEP 2c: request a call, underline fields -->
+        <!-- STEP 2c: call us (gbppl-start-popup-2). The "leave your number
+             and we call you back" form is gone: Russell's third option is
+             the guest calling US. A phone dials from the door itself and
+             never reaches this step; a desktop lands here, where the
+             number is big enough to read across a desk, copyable in one
+             click, and still a tel: link for whoever has FaceTime or
+             Teams wired to it. -->
         <div class="gsp-view" data-view="call">
-          <div class="gsp-card">
-            <form class="gsp-form" id="gbStartCallForm">
-              <div class="gsp-field">
-                <label class="gsp-label" for="gspName">Name</label>
-                <input class="gsp-underline" id="gspName" type="text" placeholder="Your name">
-              </div>
-              <div class="gsp-field">
-                <label class="gsp-label" for="gspPhone">Phone</label>
-                <input class="gsp-underline" id="gspPhone" type="tel" placeholder="+1 (___) ___-____">
-              </div>
-              <div class="gsp-field">
-                <label class="gsp-label" for="gspWhen">Best time to call</label>
-                <input class="gsp-underline" id="gspWhen" type="text" placeholder="Weekday mornings, Central">
-              </div>
-              <button class="gsp-btn" type="submit">Request a call</button>
-            </form>
-            <div class="gsp-done" id="gbStartCalled" hidden>
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 19a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="m6 10 2.8 2.8L14.4 7.2"/></svg>
-              <p>We got you. Expect a call within one business day.</p>
+          <div class="gsp-card gsp-callcard">
+            <p class="gsp-call-label">Gifting desk</p>
+            <a class="gsp-call-number" href="tel:+18478010345">847.801.0345</a>
+            <div class="gsp-call-actions">
+              <button class="gsp-btn gsp-btn--quiet" id="gbCallCopy" type="button">Copy number</button>
+              <a class="gsp-btn" href="tel:+18478010345">Call now</a>
             </div>
+            <p class="gsp-call-copied" id="gbCallCopied" role="status" aria-live="polite"></p>
           </div>
         </div>
 
@@ -3877,11 +4054,15 @@
   var startOpener   = null;
   var startCloseTimer = null;
 
+  /* gbppl-start-popup-2: the chat step carries its own header inside the
+     card (name and the green dot), so the popup header stays a plain
+     level marker there and does not say the same thing twice. Call us
+     spends its line on the hours, which the number card does not show. */
   var START_VIEWS = {
     doors:   { title: 'Talk to a gifting expert', meta: '' },
-    chat:    { title: 'Live chat',      meta: 'An expert is on the other side, not a bot.' },
+    chat:    { title: 'Live chat',      meta: '' },
     meeting: { title: 'Book a meeting', meta: 'Thirty minutes, at a time that suits you.' },
-    call:    { title: 'Request a call', meta: 'An expert calls you back.' }
+    call:    { title: 'Call us',        meta: 'Weekdays, 9 to 5 Central.' }
   };
 
   function setStartView(view, motion) {
@@ -3942,11 +4123,23 @@
     setStartView('doors', 'back');
     startDialog.focus();
   });
+  /* The formfactor split for Call us (gbppl-start-popup-2) rides the
+     SAME 640 the fullscreen breakpoint uses, so "phone" means one thing
+     in the CSS and in the JS: at or below it the popup is fullscreen and
+     the third door is simply its tel: link, dialer and all -- no step,
+     nothing to copy with a thumb. Above it the click is kept and the
+     number step opens, where a mouse can copy or hand the call to
+     FaceTime or Teams. */
+  var startPhoneMQ = window.matchMedia('(max-width: 640px)');
   var startDoors = startDialog.querySelectorAll('.gsp-door');
   for (var sd = 0; sd < startDoors.length; sd++) {
-    startDoors[sd].addEventListener('click', function () {
-      setStartView(this.getAttribute('data-door'), 'forward');
+    startDoors[sd].addEventListener('click', function (e) {
+      var door = this.getAttribute('data-door');
+      if (door === 'call' && startPhoneMQ.matches) return;   // let tel: dial
+      if (this.tagName === 'A') e.preventDefault();
+      setStartView(door, 'forward');
       startBack.focus();
+      if (door === 'chat') focusChat();
     });
   }
 
@@ -4012,14 +4205,113 @@
     bookedBox.hidden = false;
   });
 
-  /* Request a call: the form gives way to the confirmation inside the
-     same white card, nothing navigates. */
-  var callForm  = document.getElementById('gbStartCallForm');
-  var calledBox = document.getElementById('gbStartCalled');
-  callForm.addEventListener('submit', function (e) {
+  /* ---- Live chat, a stand-in that answers (gbppl-start-popup-2) ----
+     Everything happens on this page and nothing is sent: the guest's
+     line lands in the log, three dots answer for a beat, and about a
+     second later a polite reply arrives wearing a PROTOTYPE tag. That
+     tag is the whole honesty of it -- the demo feels alive under a
+     click, and never claims a person is reading. The replies walk a
+     short script and the last one repeats, which is enough for a demo
+     and cheaper than pretending to understand. */
+  var chatLog   = document.getElementById('gbChatLog');
+  var chatForm  = document.getElementById('gbChatForm');
+  var chatInput = document.getElementById('gbChatInput');
+  var chatSend  = document.getElementById('gbChatSend');
+  var chatTimer = null;
+  var chatTurn  = 0;
+  var CHAT_REPLIES = [
+    'Thank you, that helps. A gifting expert would pick this up from here and come back with two or three directions and a budget for each.',
+    'Noted. On the live site this thread reaches our gifting desk during business hours, usually within a couple of minutes.',
+    'Still with you. Anything you type here stays in this prototype window.'
+  ];
+
+  function chatScroll() { chatLog.scrollTop = chatLog.scrollHeight; }
+  /* The caret is handed over only on a pointer: on a phone it would
+     throw the keyboard over the log the guest just opened. */
+  function focusChat() {
+    chatScroll();
+    if (!startPhoneMQ.matches) chatInput.focus();
+  }
+  function chatAppend(who, text, tag) {
+    var row = document.createElement('div');
+    row.className = 'gsp-msg gsp-msg--' + who;
+    var bubble = document.createElement('p');
+    bubble.className = 'gsp-bubble';
+    bubble.textContent = text;
+    if (tag) {
+      var mark = document.createElement('span');
+      mark.className = 'gsp-bubble-tag';
+      mark.textContent = tag;
+      bubble.appendChild(mark);
+    }
+    row.appendChild(bubble);
+    chatLog.appendChild(row);
+    chatScroll();
+    return row;
+  }
+  chatInput.addEventListener('input', function () {
+    chatSend.disabled = !chatInput.value.trim();
+  });
+  chatForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    callForm.hidden = true;
-    calledBox.hidden = false;
+    var said = chatInput.value.trim();
+    if (!said) return;
+    chatAppend('you', said);
+    chatInput.value = '';
+    chatSend.disabled = true;
+    clearTimeout(chatTimer);
+    var typing = document.createElement('div');
+    typing.className = 'gsp-msg gsp-msg--them';
+    typing.innerHTML = '<span class="gsp-bubble gsp-typing" aria-label="Typing"><i></i><i></i><i></i></span>';
+    chatLog.appendChild(typing);
+    chatScroll();
+    chatTimer = setTimeout(function () {
+      if (typing.parentNode) typing.parentNode.removeChild(typing);
+      chatAppend('them',
+        CHAT_REPLIES[Math.min(chatTurn, CHAT_REPLIES.length - 1)],
+        'Prototype reply');
+      chatTurn++;
+    }, 1000);
+  });
+
+  /* ---- Call us: the number, and one click to carry it away ----
+     Clipboard API where it is granted, the old textarea trick where it
+     is not, and if both refuse the line says so instead of lying. The
+     confirmation is deliberately quiet: 12px grey that fades in and
+     leaves after two seconds. */
+  var CALL_NUMBER = '847.801.0345';
+  var callCopy    = document.getElementById('gbCallCopy');
+  var callCopied  = document.getElementById('gbCallCopied');
+  var callCopyTimer = null;
+
+  function callSay(line) {
+    clearTimeout(callCopyTimer);
+    callCopied.textContent = line;
+    callCopied.classList.add('shown');
+    callCopyTimer = setTimeout(function () {
+      callCopied.classList.remove('shown');
+    }, 2000);
+  }
+  function callCopyFallback() {
+    var pad = document.createElement('textarea');
+    pad.value = CALL_NUMBER;
+    pad.setAttribute('readonly', '');
+    pad.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(pad);
+    pad.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+    document.body.removeChild(pad);
+    callSay(ok ? 'Copied' : 'Copy it by hand: ' + CALL_NUMBER);
+  }
+  callCopy.addEventListener('click', function () {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(CALL_NUMBER).then(function () {
+        callSay('Copied');
+      }, callCopyFallback);
+    } else {
+      callCopyFallback();
+    }
   });
 
   /* ---- PROTO panel collapse (Ton's feedback 2026-08-12) ----
