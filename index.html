@@ -1729,7 +1729,17 @@
          a desktop gets a small step with the number in Noto Serif, Copy
          number and Call now. The "leave your number" form is retired
          whole. The split between the two is the same 640 the fullscreen
-         breakpoint already draws. */
+         breakpoint already draws.
+
+     THIRD PASS, gbppl-start-popup-3 (Ton, 2026-08-19), two corrections:
+     (1) the chat of the second pass was invented, and it did not need to
+         be -- v1 has a designed live-specialist thread. It is transferred
+         here whole (see the Door 1 block below for the exact source
+         lines); our version is deleted, its local send-and-reply kept
+         because the source has the same move natively;
+     (2) the steps stop jumping: chat asked for 600 while the calendar
+         stood at 696, so both now take --gsp-step-h = 696, the
+         calendar's own natural height. */
   .start-overlay {
     position: fixed;
     inset: 0;
@@ -1752,7 +1762,16 @@
     --gh-gold-bg: color-mix(in srgb, #c2a545 12%, #ffffff);
     --gh-gold-line: color-mix(in srgb, #c2a545 42%, #dedee2);
     --gh-hover: rgb(36 36 38 / 5%);
+    --gh-ink-hover: #111113;        /* --color-bg-interactive-hover */
     --gh-shadow: 0 24px 70px rgb(21 21 24 / 18%);
+
+    /* ONE HEIGHT FOR THE TALL STEPS (gbppl-start-popup-3, Ton: "let them
+       be the same"). The calendar is the tallest thing the popup ever
+       holds and it is built of fixed pixels, so it measures 696 at every
+       width; that number becomes the shared ceiling and the chat rises
+       to meet it. The window now keeps its size across Back and forward
+       between the two steps instead of jumping. */
+    --gsp-step-h: 696px;
 
     /* The source's whole rem hierarchy rides one fluid root -- 13px on a
        compact desktop, easing up to 16 at its 2K reference and down again
@@ -1812,14 +1831,16 @@
     box-shadow: var(--gh-shadow);
   }
   .start-panel:not([data-view="doors"]) { max-height: 100%; }
-  /* Live chat is the one step that claims a height of its own
-     (gbppl-start-popup-2): a chat that hugs three lines of greeting reads
-     as a notice, not as a conversation. 600 is the height of the site's
-     own live Pubble panel; its 370 width is NOT taken, because the popup
-     is one object across its steps and a shell that narrowed mid-flight
-     would read as a second window. So: our 460 shell, the live widget's
-     600 of room to talk in. */
-  .start-panel[data-view="chat"] { height: min(600px, 100%); }
+  /* The two tall steps share one height (gbppl-start-popup-3). Chat asked
+     for a height of its own in the second pass and took 600, the live
+     Pubble panel's; the calendar meanwhile stood at its natural 696, and
+     the window jumped between them. Now both take --gsp-step-h, measured
+     off the calendar, and the shell holds still while the guest moves
+     between steps. The width never changes: the popup is one object
+     across its levels, and a shell that narrowed mid-flight would read
+     as a second window. */
+  .start-panel[data-view="chat"],
+  .start-panel[data-view="meeting"] { height: min(var(--gsp-step-h), 100%); }
   .start-panel:focus { outline: none; }
 
   /* Enter and exit are the source's own hub keyframes, re-anchored to the
@@ -1946,16 +1967,19 @@
   .start-panel[data-view="meeting"] .gsp-view[data-view="meeting"],
   .start-panel[data-view="call"]    .gsp-view[data-view="call"] { display: block; }
   /* On the chat step the body stops being the scroller and becomes a
-     frame: the log inside does the scrolling, so the body hands its whole
-     height down and keeps a narrower 16px gutter (gbppl-start-popup-2). */
+     frame, so the transferred organism can keep its own two rows: the
+     scrolling thread and the composer pinned under it, exactly as the
+     source panel is built (gbppl-start-popup-3). The 24px gutter goes
+     too -- in the source the chat runs edge to edge and carries its own
+     padding inside. */
   .start-panel[data-view="chat"] .gsp-body {
     display: grid;
-    padding: 16px;
+    padding: 0;
     overflow: hidden;
   }
   .start-panel[data-view="chat"] .gsp-view[data-view="chat"] {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
     min-height: 0;
   }
 
@@ -2123,159 +2147,248 @@
     color: var(--gh-muted);
   }
 
-  /* ---- Door 1: live chat, a chat-shaped chat ----------------------
-     gbppl-start-popup-2. Three bands inside the white card: the person,
-     the log, the composer. The measurements are the live site's Pubble
-     widget read through our own language -- its 600 of height, its
-     52-high header band and its footer rule, but our 5px radius, our
-     #dedee2 hairline, our Paper and Canvas, our Blue 600 as the guest's
-     voice. */
-  .gsp-chat {
-    flex: 1;
-    min-height: 0;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    overflow: hidden;
-  }
-  .gsp-chat-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    background: var(--gh-white);
-    border-bottom: 1px solid var(--gh-line);
-  }
-  .gsp-chat-avatar {
-    flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--gh-canvas);
-    color: var(--gh-ink-soft);
+  /* ---- Door 1: live chat, TRANSFERRED FROM v1 ---------------------
+     gbppl-start-popup-3 (Ton, 2026-08-19: "Live Chat is already designed
+     in v1 -- just take it from there and put it in this container, do
+     not invent anything"). The second pass had a chat of our own making;
+     it is gone. What stands here is the approved organism's live
+     specialist thread, carried over as it is:
+
+       ai-consierge/src/App.tsx
+         LiveSpecialistPanel      3408-3540  (structure, copy, behaviour)
+         ConciergeChatBubble      3213-3234  (bubble, one <p> per line)
+         LiveTeamAvatar           3205-3211  (the 40px green face)
+       ai-consierge/src/styles.css
+         .assistance-panel__status/.availability-dot  4440-4456
+         .concierge-panel__body                       3030-3035, 4504-4508
+         .concierge-chat*                             4510-4637
+         .concierge-composer* (+ .chip 2457-2487)     4671-4783
+         the <=640 overrides                          6191-6220
+
+     The class names are the source's own, unchanged, so the two files
+     can be read side by side. Only the token NAMES are rewritten to the
+     aliases this popup already declares, and every one holds the same
+     hex the source resolves to, so nothing computes differently; the
+     spacing scale is spent as its literals (--space-1..8 = 4, 8, 12, 16,
+     20, 24, 32). Note what the transfer brings back that our invention
+     had overwritten: the visitor's bubble is INK, not Blue; the corner
+     nearest the speaker stays sharp while the other three round off; the
+     answering face is the same green round the door wears; and three
+     suggestion chips sit above the field. */
+  .assistance-panel__status {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    font-family: 'Noto Serif', Georgia, serif;
-    font-size: 13px;
-  }
-  .gsp-chat-id { display: grid; gap: 2px; min-width: 0; }
-  .gsp-chat-name { font-size: 14px; font-weight: 600; line-height: 1.2; color: var(--gh-ink); }
-  /* The green dot is the source's own Success, the same one the door's
-     "Online now" pill wears, so the promise on the list is the promise
-     inside. */
-  .gsp-chat-state {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    line-height: 1.2;
+    gap: 6px;
     color: var(--gh-ink-soft);
+    font-size: clamp(12px, 0.55vw, 13px);
+    line-height: 1.35;
   }
-  .gsp-chat-state i {
-    width: 6px;
-    height: 6px;
-    flex: 0 0 6px;
-    border-radius: 50%;
+  .availability-dot {
+    width: 7px;
+    height: 7px;
+    display: inline-block;
+    flex: 0 0 7px;
     background: var(--gh-success);
+    border-radius: 50%;
   }
-  .gsp-chat-log {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 16px;
+
+  .concierge-panel__body {
+    padding: 0;
     background: var(--gh-paper);
     overflow-y: auto;
     overscroll-behavior: contain;
+    scroll-behavior: smooth;
   }
-  .gsp-msg { display: flex; }
-  .gsp-msg--them { justify-content: flex-start; }
-  .gsp-msg--you  { justify-content: flex-end; }
-  .gsp-bubble {
-    max-width: 82%;
-    padding: 10px 14px;
-    border: 1px solid var(--gh-line);
-    border-radius: var(--radius);
+  .concierge-chat {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px 24px 32px;
+  }
+  .concierge-chat-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    animation: concierge-chat-message-enter 280ms var(--gh-enter) both;
+  }
+  @keyframes concierge-chat-message-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .concierge-chat-message--user { justify-content: flex-end; }
+  .concierge-chat-message__avatar {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    flex: 0 0 28px;
+    place-items: center;
+    margin: 2px 0 0;
+    background: var(--gh-ink);
+    border-radius: 50%;
+    color: var(--gh-white);
+  }
+  .concierge-chat-message__avatar svg { display: block; transform: translateX(0.5px); }
+  /* One size, one grid, one 24px glyph with 8px of air */
+  .concierge-chat-message__avatar--lg {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+  /* A person is not the house, so the team's face stays the quiet green
+     the visitor chose from -- the door's own disc, one level up. */
+  .concierge-chat-message__avatar--team {
+    background: var(--gh-success-bg);
+    border: 1px solid var(--gh-success-line);
+    color: var(--gh-success);
+  }
+  /* A bubble points at its speaker: the top corner nearest them stays
+     sharp, the other three round off. */
+  .concierge-chat-message__bubble {
+    max-width: min(84%, 360px);
+    padding: 12px 14px;
     background: var(--gh-white);
-    font-size: 14px;
+    border: 1px solid var(--gh-line);
+    border-radius: 4px 12px 12px 12px;
+    color: var(--gh-ink);
+    box-shadow: 0 1px 0 rgb(24 24 24 / 3%);
+  }
+  .concierge-chat-message--user .concierge-chat-message__bubble {
+    background: var(--gh-ink);
+    border-color: var(--gh-ink);
+    border-radius: 12px 4px 12px 12px;
+    color: var(--gh-white);
+  }
+  .concierge-chat-message__bubble p {
+    margin: 0;
+    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    font-size: clamp(14px, 0.625vw, 15px);   /* --concierge-chat-copy */
     font-weight: 400;
     line-height: 1.5;
-    color: var(--gh-ink-soft);
   }
-  .gsp-msg--you .gsp-bubble {
-    background: var(--blue-600);
-    border-color: var(--blue-600);
-    color: var(--white);
-  }
-  /* The stand-in says so on its own reply rather than under a banner:
-     one 11px caps tag on the bubble that answered. */
-  .gsp-bubble-tag {
-    display: block;
-    margin-top: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--gh-muted);
-  }
-  .gsp-typing { display: inline-flex; align-items: center; gap: 4px; padding: 13px 14px; }
-  .gsp-typing i {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--gh-muted);
-    animation: gsp-typing 1.2s ease-in-out infinite;
-  }
-  .gsp-typing i:nth-child(2) { animation-delay: 0.15s; }
-  .gsp-typing i:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes gsp-typing {
-    0%, 60%, 100% { opacity: 0.3; }
-    30%           { opacity: 1; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .gsp-typing i { animation: none; opacity: 0.6; }
-  }
-  .gsp-chat-entry {
+  .concierge-chat-message__bubble p + p { margin-top: 8px; }
+  .concierge-chat-message--thinking .concierge-chat-message__bubble {
+    min-width: 58px;
+    min-height: 42px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px 10px 16px;
+    gap: 5px;
+  }
+  .concierge-chat-message--thinking .concierge-chat-message__bubble > span {
+    width: 5px;
+    height: 5px;
+    background: var(--gh-muted);
+    border-radius: 50%;
+    animation: concierge-chat-thinking 700ms ease-in-out infinite alternate;
+  }
+  .concierge-chat-message--thinking .concierge-chat-message__bubble > span:nth-child(2) { animation-delay: 110ms; }
+  .concierge-chat-message--thinking .concierge-chat-message__bubble > span:nth-child(3) { animation-delay: 220ms; }
+  @keyframes concierge-chat-thinking {
+    to { opacity: 0.3; transform: translateY(-2px); }
+  }
+
+  .concierge-composer {
+    display: grid;
+    gap: 8px;
+    padding: 12px 24px 14px;
     background: var(--gh-white);
     border-top: 1px solid var(--gh-line);
   }
-  .gsp-chat-input {
-    flex: 1;
-    min-width: 0;
-    height: 40px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--gh-ink);
+  /* They wrap: every suggestion on screen, the panel taller by a row
+     instead of narrower by a secret. */
+  .concierge-composer__suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 0 2px;
   }
-  .gsp-chat-input::placeholder { color: var(--gh-muted); }
-  .gsp-chat-input:focus { outline: none; }
-  .gsp-send {
-    width: 40px;
-    height: 40px;
-    flex: 0 0 40px;
+  /* The .chip recipe, styles.css 2457-2487 */
+  .concierge-composer__suggestions button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    background: var(--gh-white);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--gh-line);
+    color: var(--zinc-800);
+    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+    cursor: pointer;
+    transition:
+      transform var(--gh-fast) var(--gh-move),
+      background var(--gh-fast),
+      box-shadow var(--gh-fast),
+      color var(--gh-fast);
+  }
+  .concierge-composer__suggestions button:hover,
+  .concierge-composer__suggestions button:focus-visible {
+    background: var(--gh-ink);
+    box-shadow: inset 0 0 0 1px var(--gh-ink);
+    color: var(--gh-white);
+  }
+  .concierge-composer__suggestions button:active { transform: translateY(1px); }
+  .concierge-composer__suggestions button:disabled { cursor: wait; opacity: 0.45; }
+  .concierge-composer__field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 12px;
+  }
+  .concierge-composer__field input {
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    padding: 0 4px;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--gh-muted);
+    border-radius: 0;
+    outline: 0;
+    color: var(--gh-ink);
+    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    font-size: clamp(14px, 0.625vw, 15px);
+    transition: border-color var(--gh-fast) var(--gh-move);
+  }
+  .concierge-composer__field input::placeholder { color: var(--gh-muted); }
+  .concierge-composer__field input:focus { border-bottom-color: var(--gh-ink); }
+  .concierge-composer__field input:disabled { color: var(--gh-muted); cursor: wait; }
+  .concierge-composer__field > button {
+    width: 44px;
+    height: 44px;
     display: grid;
     place-items: center;
     padding: 0;
-    border: 1px solid var(--blue-600);
+    background: var(--gh-ink);
+    border: 0;
     border-radius: var(--radius);
-    background: var(--blue-600);
-    color: var(--white);
+    color: var(--gh-white);
     cursor: pointer;
-    transition: background 150ms ease, border-color 150ms ease;
+    transition: background-color var(--gh-fast) var(--gh-move), transform var(--gh-fast) var(--gh-move);
   }
-  .gsp-send:hover:not(:disabled) { background: var(--blue-700); border-color: var(--blue-700); }
-  .gsp-send:disabled {
-    background: var(--zinc-200);
-    border-color: var(--zinc-200);
-    color: var(--zinc-400);
-    cursor: not-allowed;
+  .concierge-composer__field > button:not(:disabled):hover { background: var(--gh-ink-hover); }
+  .concierge-composer__field > button:not(:disabled):active { transform: scale(0.97); }
+  .concierge-composer__field > button:disabled { cursor: default; opacity: 0.28; }
+  .concierge-composer__hint {
+    margin: 0;
+    color: var(--gh-muted);
+    font-size: clamp(12px, 0.55vw, 13px);
+    line-height: 1.4;
+  }
+  .concierge-composer button:focus-visible {
+    outline: 2px solid var(--gh-ink);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .concierge-chat-message { animation: none; }
+    .concierge-chat-message--thinking .concierge-chat-message__bubble > span { animation: none; }
+    .concierge-panel__body { scroll-behavior: auto; }
   }
 
   /* ---- Door 2: book a meeting, a stand-in calendar ---------------- */
@@ -2436,12 +2549,16 @@
     .gsp-heading { gap: 4px; }
     .gsp-body { padding: 20px 16px max(20px, env(safe-area-inset-bottom)); }
     .gsp-door { min-height: 72px; padding-inline: 12px; }
-    /* Fullscreen already gives the chat all the height there is, so the
-       600 ceiling steps aside and the body keeps the phone's own gutter
-       (gbppl-start-popup-2). */
-    .start-panel[data-view="chat"] { height: 100dvh; }
-    .start-panel[data-view="chat"] .gsp-body { padding: 12px 12px max(12px, env(safe-area-inset-bottom)); }
-    .gsp-bubble { max-width: 88%; }
+    /* Fullscreen already gives every step all the height there is, so
+       the shared 696 ceiling steps aside (gbppl-start-popup-3). */
+    .start-panel[data-view="chat"],
+    .start-panel[data-view="meeting"] { height: 100dvh; }
+    .start-panel[data-view="chat"] .gsp-body { padding: 0; }
+    /* The source's own <=640 chat overrides, styles.css 6191-6220 */
+    .concierge-chat { gap: 16px; padding: 20px 16px 32px; }
+    .concierge-chat-message { gap: 8px; }
+    .concierge-chat-message__bubble { max-width: calc(100% - 46px); }
+    .concierge-composer { padding: 8px 16px max(8px, env(safe-area-inset-bottom)); }
   }
 
   /* ============ PAGE META (breadcrumbs + title card) ============
@@ -3434,7 +3551,10 @@
        ?hero=start in every layout and every nav variant.
        Second pass gbppl-start-popup-2 (Russell via Ton 2026-08-19): one
        flat list of three, a full-height Live Chat, and Call Us in place
-       of the call-back form. See the CSS provenance for the whole of it. -->
+       of the call-back form. Third pass gbppl-start-popup-3 (Ton, same
+       day): the Live Chat is v1's own thread, transferred rather than
+       designed, and the tall steps share one height. See the CSS
+       provenance for the whole of it. -->
   <div class="start-overlay" id="gbStartPanel" aria-hidden="true">
     <div class="start-backdrop" id="gbStartBackdrop"></div>
     <div class="start-panel" id="gbStartDialog" data-view="doors" role="dialog" aria-modal="true"
@@ -3511,35 +3631,46 @@
           </div>
         </div>
 
-        <!-- STEP 2a: live chat, a full-height window (gbppl-start-popup-2).
-             It used to be a compact stand-in card; Russell asked for a
-             chat that looks like a chat, so the popup grows to the
-             proportions of a live chat widget (the site's own Pubble panel
-             is 370x600) and the card becomes three bands: the person at
-             the top, the scrolling log, the composer. The identity lives
-             here rather than in the popup header so the two do not say
-             the same thing twice. -->
+        <!-- STEP 2a: live chat, TRANSFERRED FROM v1 (gbppl-start-popup-3).
+             The DOM below is LiveSpecialistPanel's, App.tsx 3477-3538,
+             hand-compiled from JSX: the same wrappers in the same order,
+             the same class names, the same words, the same three
+             suggestions. Only the header rides in our popup's own band
+             (which is the source's AssistancePanelHeader anyway, already
+             transferred in the first pass) and the icons are the source's
+             Icon "chat" 24 and Icon "arrow" 19 written out as inline
+             strokes, since we have no Icon component here.
+             The greeting is one <article> because the source seeds the
+             thread with exactly one agent message, split on its newline
+             into two <p> by ConciergeChatBubble. -->
         <div class="gsp-view" data-view="chat">
-          <div class="gsp-card gsp-chat">
-            <div class="gsp-chat-head">
-              <span class="gsp-chat-avatar" aria-hidden="true">GB</span>
-              <span class="gsp-chat-id">
-                <strong class="gsp-chat-name">Gifting Expert</strong>
-                <span class="gsp-chat-state"><i aria-hidden="true"></i>Online</span>
-              </span>
+          <div class="concierge-panel__body" id="gbChatBody">
+            <div class="concierge-chat" id="gbChatLog" aria-live="polite">
+              <article class="concierge-chat-message concierge-chat-message--agent">
+                <span class="concierge-chat-message__avatar concierge-chat-message__avatar--lg concierge-chat-message__avatar--team" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 18.5 3.8 21l.5-4A8.5 8.5 0 1 1 7 19.5"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke-width="2"/></svg>
+                </span>
+                <div class="concierge-chat-message__bubble">
+                  <p>Hi. You&rsquo;re chatting with a GildedBox gifting specialist.</p>
+                  <p>How can I help today?</p>
+                </div>
+              </article>
             </div>
-            <div class="gsp-chat-log" id="gbChatLog" role="log" aria-live="polite" aria-label="Conversation">
-              <div class="gsp-msg gsp-msg--them">
-                <p class="gsp-bubble">Hi, you have reached a gifting expert. Tell me the occasion and roughly how many people, and I will come back with two or three directions.</p>
-              </div>
-            </div>
-            <form class="gsp-chat-entry" id="gbChatForm" autocomplete="off">
-              <input class="gsp-chat-input" id="gbChatInput" type="text" placeholder="Write a message" aria-label="Message">
-              <button class="gsp-send" id="gbChatSend" type="submit" aria-label="Send message" disabled>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h13M12 6.5l5.5 5.5-5.5 5.5"/></svg>
-              </button>
-            </form>
           </div>
+          <form class="concierge-composer" id="gbChatForm" autocomplete="off">
+            <div class="concierge-composer__suggestions" id="gbChatSuggestions" aria-label="Suggested messages">
+              <button type="button">I need help choosing gifts</button>
+              <button type="button">I have an existing order</button>
+              <button type="button">I&rsquo;d like a custom proposal</button>
+            </div>
+            <div class="concierge-composer__field">
+              <input id="gbChatInput" type="text" placeholder="Message a gifting specialist&hellip;" aria-label="Message a gifting specialist">
+              <button id="gbChatSend" type="submit" aria-label="Send message" disabled>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
+              </button>
+            </div>
+            <p class="concierge-composer__hint">You&rsquo;re chatting with a real member of the GildedBox team.</p>
+          </form>
         </div>
 
         <!-- STEP 2b: book a meeting, a stand-in calendar. The day cells
@@ -4054,13 +4185,18 @@
   var startOpener   = null;
   var startCloseTimer = null;
 
-  /* gbppl-start-popup-2: the chat step carries its own header inside the
-     card (name and the green dot), so the popup header stays a plain
-     level marker there and does not say the same thing twice. Call us
-     spends its line on the hours, which the number card does not show. */
+  /* The chat step's header is the source's own (App.tsx 3487-3498):
+     "Chat with our team" over the availability status, dot and all --
+     which is why the meta is written as markup here and not as text
+     (gbppl-start-popup-3). Every string below is a literal in this file;
+     nothing a guest types ever reaches innerHTML. Call us spends its
+     line on the hours, which the number card does not show. */
   var START_VIEWS = {
     doors:   { title: 'Talk to a gifting expert', meta: '' },
-    chat:    { title: 'Live chat',      meta: '' },
+    chat:    { title: 'Chat with our team',
+               meta: '<span class="assistance-panel__status">' +
+                     '<i class="availability-dot" aria-hidden="true"></i>' +
+                     'Online now · A real person</span>' },
     meeting: { title: 'Book a meeting', meta: 'Thirty minutes, at a time that suits you.' },
     call:    { title: 'Call us',        meta: 'Weekdays, 9 to 5 Central.' }
   };
@@ -4069,7 +4205,7 @@
     var head = START_VIEWS[view] || START_VIEWS.doors;
     startDialog.setAttribute('data-view', view);
     startTitle.textContent = head.title;
-    startMeta.textContent = head.meta;
+    startMeta.innerHTML = head.meta;
     startMeta.hidden = !head.meta;
     /* Restart the level animation: the attribute has to leave and come
        back with a reflow between, or the same value never replays. */
@@ -4205,73 +4341,113 @@
     bookedBox.hidden = false;
   });
 
-  /* ---- Live chat, a stand-in that answers (gbppl-start-popup-2) ----
-     Everything happens on this page and nothing is sent: the guest's
-     line lands in the log, three dots answer for a beat, and about a
-     second later a polite reply arrives wearing a PROTOTYPE tag. That
-     tag is the whole honesty of it -- the demo feels alive under a
-     click, and never claims a person is reading. The replies walk a
-     short script and the last one repeats, which is enough for a demo
-     and cheaper than pretending to understand. */
+  /* ---- Live chat: LiveSpecialistPanel's behaviour, transferred ----
+     gbppl-start-popup-3. React's sendMessage / isReplying / the reply
+     timer (App.tsx 3441-3475) rewritten as the same three moves in plain
+     DOM, with the source's numbers and the source's words:
+       - a line the visitor sends becomes a --user message at once;
+       - the thread is "replying": the field and the three suggestions go
+         inert, the thinking bubble with its three dots takes the floor;
+       - 850ms later (0 under prefers-reduced-motion, the source's
+         motionDelay) the specialist answers with the one sentence the
+         source answers with, and the caret goes back to the field;
+       - every change scrolls the body to the bottom on the next frame,
+         smoothly, because the body carries scroll-behavior.
+     Nothing leaves the page, exactly as in v1. */
+  var chatBody  = document.getElementById('gbChatBody');
   var chatLog   = document.getElementById('gbChatLog');
   var chatForm  = document.getElementById('gbChatForm');
   var chatInput = document.getElementById('gbChatInput');
   var chatSend  = document.getElementById('gbChatSend');
+  var chatSuggestions = document.getElementById('gbChatSuggestions');
   var chatTimer = null;
-  var chatTurn  = 0;
-  var CHAT_REPLIES = [
-    'Thank you, that helps. A gifting expert would pick this up from here and come back with two or three directions and a budget for each.',
-    'Noted. On the live site this thread reaches our gifting desk during business hours, usually within a couple of minutes.',
-    'Still with you. Anything you type here stays in this prototype window.'
-  ];
+  var chatReplying = false;
+  var CHAT_REPLY = 'Thank you. I’ve got that. Let me take a closer look so I can point you in the right direction.';
+  var CHAT_REPLY_MS = 850;
 
-  function chatScroll() { chatLog.scrollTop = chatLog.scrollHeight; }
+  function chatReduced() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+  function chatScroll() {
+    window.requestAnimationFrame(function () {
+      chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: 'smooth' });
+    });
+  }
   /* The caret is handed over only on a pointer: on a phone it would
-     throw the keyboard over the log the guest just opened. */
+     throw the keyboard over the thread the guest just opened. */
   function focusChat() {
     chatScroll();
     if (!startPhoneMQ.matches) chatInput.focus();
   }
-  function chatAppend(who, text, tag) {
-    var row = document.createElement('div');
-    row.className = 'gsp-msg gsp-msg--' + who;
-    var bubble = document.createElement('p');
-    bubble.className = 'gsp-bubble';
-    bubble.textContent = text;
-    if (tag) {
-      var mark = document.createElement('span');
-      mark.className = 'gsp-bubble-tag';
-      mark.textContent = tag;
-      bubble.appendChild(mark);
+  function chatSyncSend() {
+    chatSend.disabled = !chatInput.value.trim() || chatReplying;
+  }
+  function chatSetReplying(on) {
+    chatReplying = on;
+    startDialog.setAttribute('aria-busy', String(on));
+    chatInput.disabled = on;
+    var chips = chatSuggestions.querySelectorAll('button');
+    for (var i = 0; i < chips.length; i++) chips[i].disabled = on;
+    chatSyncSend();
+  }
+  /* ConciergeChatBubble, App.tsx 3213-3234: the avatar rides only on the
+     agent's side, and the text is split on newlines into one <p> each. */
+  function chatMessage(role, text) {
+    var row = document.createElement('article');
+    row.className = 'concierge-chat-message concierge-chat-message--' + role;
+    if (role === 'agent') {
+      var face = document.createElement('span');
+      face.className = 'concierge-chat-message__avatar concierge-chat-message__avatar--lg concierge-chat-message__avatar--team';
+      face.setAttribute('aria-hidden', 'true');
+      face.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 18.5 3.8 21l.5-4A8.5 8.5 0 1 1 7 19.5"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke-width="2"/></svg>';
+      row.appendChild(face);
+    }
+    var bubble = document.createElement('div');
+    bubble.className = 'concierge-chat-message__bubble';
+    var lines = text.split('\n');
+    for (var l = 0; l < lines.length; l++) {
+      var p = document.createElement('p');
+      p.textContent = lines[l];
+      bubble.appendChild(p);
     }
     row.appendChild(bubble);
     chatLog.appendChild(row);
     chatScroll();
     return row;
   }
-  chatInput.addEventListener('input', function () {
-    chatSend.disabled = !chatInput.value.trim();
-  });
+  function chatSend_(value) {
+    var clean = (value || '').trim();
+    if (!clean || chatReplying) return;
+    chatMessage('user', clean);
+    chatInput.value = '';
+    chatSetReplying(true);
+    var thinking = document.createElement('div');
+    thinking.className = 'concierge-chat-message concierge-chat-message--agent concierge-chat-message--thinking';
+    thinking.setAttribute('role', 'status');
+    thinking.setAttribute('aria-label', 'Gifting specialist is replying');
+    thinking.innerHTML =
+      '<span class="concierge-chat-message__avatar concierge-chat-message__avatar--lg concierge-chat-message__avatar--team" aria-hidden="true">' +
+      '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 18.5 3.8 21l.5-4A8.5 8.5 0 1 1 7 19.5"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke-width="2"/></svg></span>' +
+      '<div class="concierge-chat-message__bubble"><span></span><span></span><span></span></div>';
+    chatLog.appendChild(thinking);
+    chatScroll();
+    clearTimeout(chatTimer);
+    chatTimer = setTimeout(function () {
+      if (thinking.parentNode) thinking.parentNode.removeChild(thinking);
+      chatMessage('agent', CHAT_REPLY);
+      chatSetReplying(false);
+      if (!startPhoneMQ.matches) chatInput.focus();
+    }, chatReduced() ? 0 : CHAT_REPLY_MS);
+  }
+  chatInput.addEventListener('input', chatSyncSend);
   chatForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var said = chatInput.value.trim();
-    if (!said) return;
-    chatAppend('you', said);
-    chatInput.value = '';
-    chatSend.disabled = true;
-    clearTimeout(chatTimer);
-    var typing = document.createElement('div');
-    typing.className = 'gsp-msg gsp-msg--them';
-    typing.innerHTML = '<span class="gsp-bubble gsp-typing" aria-label="Typing"><i></i><i></i><i></i></span>';
-    chatLog.appendChild(typing);
-    chatScroll();
-    chatTimer = setTimeout(function () {
-      if (typing.parentNode) typing.parentNode.removeChild(typing);
-      chatAppend('them',
-        CHAT_REPLIES[Math.min(chatTurn, CHAT_REPLIES.length - 1)],
-        'Prototype reply');
-      chatTurn++;
-    }, 1000);
+    chatSend_(chatInput.value);
+  });
+  chatSuggestions.addEventListener('click', function (e) {
+    var chip = e.target.closest ? e.target.closest('button') : null;
+    if (!chip || chip.disabled) return;
+    chatSend_(chip.textContent);
   });
 
   /* ---- Call us: the number, and one click to carry it away ----
