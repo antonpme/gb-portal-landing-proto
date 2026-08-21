@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GildedBox Checkout — DD-130 Prototype</title>
 <!-- ============================================================
-     gbppl-checkout-1 — the DD-130 checkout prototype moves into the
+     gbppl-checkout-2 — the DD-130 checkout prototype moves into the
      shared Pages prototype, so the team can walk portal -> cart ->
      checkout on one public link.
 
@@ -17,8 +17,13 @@
        · the product image moved to checkout-assets\;
        · the logo and the Home crumb lead back to index.html, carrying
          the query string so the portal's view survives the round trip.
-     The black demo bar stays: the team switches the three entry-point
-     scenarios with it.
+     The three entry-point scenarios stay switchable, but not from a
+     black bar over the page any more: gbppl-checkout-2 retires it in
+     favour of the prototype's ONE service chrome, the PROTO panel that
+     index.html already carries (right screen edge, collapsed by
+     default, mono caps on Zinc 950). Same controls, same setScenario,
+     same Reset; only the shell changed — and the site header is now
+     the first thing on the page, exactly as gildedbox.com renders it.
      ============================================================ -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -130,6 +135,127 @@
   }
   gb-site-header i, gb-site-footer i { font-style: revert; }
 
+  /* ============================================================
+     DEMO CONTROLS (PROTO PANEL) — gbppl-checkout-2.
+     Literal transfer of the panel index.html has worn since Ton's
+     feedback of 2026-08-12: a vertical dark panel fixed to the RIGHT
+     screen edge, centered in the viewport, deliberately service-grade
+     (Zinc 950 ground, mono caps labels) so it can never be read as
+     part of the design again — which is exactly what the black bar
+     across the top of this page was starting to be. Collapsed by
+     default (gbppl-mark-triple: these links go to people who did not
+     ask for a control room); the edge tab is the whole affordance.
+     z-index 30 keeps it UNDER the drawers (40) and the modal (50),
+     the same order the catalog overlay holds in index.html.
+     Colours ride the shared --zinc-* scale out of demo/assets/tokens.css,
+     the same one the panel uses at home. The class selectors outrank
+     Tailwind's preflight element rules, so the CDN sheet injected
+     after this block leaves the panel alone.
+     ============================================================ */
+  .demo-controls {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace;
+  }
+  /* Edge tab: collapse/expand handle, survives alone when collapsed */
+  .demo-tab {
+    width: 22px;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--zinc-950);
+    border: 1px solid var(--zinc-700);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    color: var(--zinc-400);
+    font-family: inherit;
+  }
+  .demo-tab:hover { color: #fff; }
+  .demo-tab svg { display: block; width: 12px; height: 12px; }
+  /* Chevron points where the panel will go: right = hide, left = show */
+  .demo-controls.collapsed .demo-tab svg { transform: rotate(180deg); }
+  .demo-tab-text {
+    writing-mode: vertical-rl;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .demo-panel {
+    width: 168px;
+    background: var(--zinc-950);
+    border: 1px solid var(--zinc-700);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .demo-controls.collapsed .demo-panel { display: none; }
+  .demo-brand {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--zinc-50);
+  }
+  .demo-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .demo-group + .demo-group,
+  .demo-brand + .demo-group {
+    border-top: 1px solid var(--zinc-800);
+    padding-top: 10px;
+  }
+  .demo-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--zinc-400);
+  }
+  .demo-panel button {
+    width: 100%;
+    padding: 7px 10px;
+    text-align: left;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--zinc-300);
+    background: var(--zinc-900);
+    border: 1px solid var(--zinc-700);
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: color 120ms ease, border-color 120ms ease;
+  }
+  .demo-panel button:hover {
+    color: #fff;
+    border-color: var(--zinc-500);
+  }
+  /* Active state inverts to near-white: unmistakable on the dark ground */
+  .demo-panel button.variant-active {
+    color: var(--zinc-950);
+    background: var(--zinc-50);
+    border-color: var(--zinc-50);
+  }
+  /* The one sentence the old bar carried per scenario. It is a note, not
+     a control: it wraps (the only thing in the panel that does), sits a
+     step below the buttons and stays on the quiet Zinc 500 ink. */
+  .demo-note {
+    font-size: 9px;
+    line-height: 1.45;
+    letter-spacing: 0.2px;
+    color: var(--zinc-500);
+    margin-top: 2px;
+  }
+
   [x-cloak] { display: none !important; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -139,34 +265,10 @@
 </head>
 <body class="bg-zinc-50 min-h-screen" x-data="checkoutApp()" x-cloak>
 
-<!-- ========== DEMO SCENARIO SWITCHER (service bar — sits ABOVE the site chrome on purpose:
-     everything below this line is the page as gildedbox.com renders it) ========== -->
-<div class="bg-zinc-900 text-white">
-  <div class="gb-container py-4 flex items-center gap-6">
-    <span class="text-[10px] uppercase tracking-[0.18em] text-zinc-400 font-semibold whitespace-nowrap">Demo · Entry point</span>
-    <div class="inline-flex bg-zinc-800 rounded-md p-0.5 flex-shrink-0">
-      <button @click="setScenario('customizer')" :class="scenario === 'customizer' ? 'bg-white text-zinc-900' : 'text-zinc-300 hover:text-white'" class="px-4 py-2 text-xs font-medium rounded transition">
-        From Customizer
-      </button>
-      <button @click="setScenario('portalEmpty')" :class="scenario === 'portalEmpty' ? 'bg-white text-zinc-900' : 'text-zinc-300 hover:text-white'" class="px-4 py-2 text-xs font-medium rounded transition">
-        From Portal · Empty
-      </button>
-      <button @click="setScenario('portalLoaded')" :class="scenario === 'portalLoaded' ? 'bg-white text-zinc-900' : 'text-zinc-300 hover:text-white'" class="px-4 py-2 text-xs font-medium rounded transition">
-        From Portal · Loaded list
-      </button>
-    </div>
-    <span class="text-xs text-zinc-400 flex-1 leading-snug" x-show="scenario === 'customizer'">
-      Customer arrived from the 3D Customizer. One recipient already has personalization, but address and shipping aren't set yet.
-    </span>
-    <span class="text-xs text-zinc-400 flex-1 leading-snug" x-show="scenario === 'portalEmpty'">
-      Fresh checkout from the portal. No gift receivers yet — user adds them from scratch or uploads a personalization file.
-    </span>
-    <span class="text-xs text-zinc-400 flex-1 leading-snug" x-show="scenario === 'portalLoaded'">
-      Jorge's mixed cart (19.08): a customized Executive Travel Set going to five people, plus nine Yeti duos to one office address with no personalization at all — the row that used to demand a full name.
-    </span>
-    <button @click="resetDemo()" class="text-xs text-zinc-400 hover:text-white underline underline-offset-4 whitespace-nowrap flex-shrink-0">Reset demo</button>
-  </div>
-</div>
+<!-- The scenario switcher used to stand here, a black bar above the site
+     chrome. It went to the PROTO panel at the foot of this file
+     (gbppl-checkout-2), and the page now opens on the site header —
+     everything from here down is the page as gildedbox.com renders it. -->
 
 <!-- ========== SITE HEADER — the real thing: the measured <gb-site-header>
      from demo\, the same component the demo-live pages use. Not a lookalike
@@ -751,7 +853,8 @@
          all, the modal's Import. Cancel stays a text link, Overwrite all keeps
          its red outline, and the ghost buttons in the step-2 band stay ghosts.
          The only black left on the page is furniture: the active toggle
-         segment, the demo bar, and the site header and footer.
+         segment and the site header and footer (the demo bar was the
+         third, until gbppl-checkout-2 sent it to the PROTO panel).
          ============================================================ -->
     <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
       <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-black">Cancel</button>
@@ -1164,6 +1267,55 @@
     </div>
   </div>
 </div>
+
+<!-- ========== DEMO CONTROLS: the PROTO panel, gbppl-checkout-2.
+     The prototype's one piece of service chrome, worn here exactly as
+     index.html wears it: same shell, same tab, same collapsed start.
+     The controls inside are this page's own — the three entry points
+     ride the untouched setScenario, Reset demo the untouched resetDemo
+     — and they are Alpine, because the page already is: the panel sits
+     inside the body's x-data, so `scenario` lights the active button
+     with no wiring of its own. Only the collapse is vanilla, the same
+     class toggle as at home; the shell should not need a framework to
+     open. ========== -->
+<div class="demo-controls collapsed" id="demoControls">
+  <button class="demo-tab" id="demoTab" type="button" aria-expanded="false" aria-label="Expand prototype controls">
+    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg>
+    <span class="demo-tab-text">Proto</span>
+  </button>
+  <div class="demo-panel">
+    <span class="demo-brand">Proto</span>
+    <div class="demo-group">
+      <span class="demo-label">Scenario</span>
+      <button type="button" @click="setScenario('customizer')" :class="scenario === 'customizer' ? 'variant-active' : ''">From Customizer</button>
+      <button type="button" @click="setScenario('portalEmpty')" :class="scenario === 'portalEmpty' ? 'variant-active' : ''">Portal · Empty</button>
+      <button type="button" @click="setScenario('portalLoaded')" :class="scenario === 'portalLoaded' ? 'variant-active' : ''">Portal · Loaded</button>
+      <!-- The line the old bar printed beside the buttons, verbatim -->
+      <p class="demo-note" x-show="scenario === 'customizer'">Customer arrived from the 3D Customizer. One recipient already has personalization, but address and shipping aren't set yet.</p>
+      <p class="demo-note" x-show="scenario === 'portalEmpty'">Fresh checkout from the portal. No gift receivers yet — user adds them from scratch or uploads a personalization file.</p>
+      <p class="demo-note" x-show="scenario === 'portalLoaded'">Jorge's mixed cart (19.08): a customized Executive Travel Set going to five people, plus nine Yeti duos to one office address with no personalization at all — the row that used to demand a full name.</p>
+    </div>
+    <div class="demo-group">
+      <button type="button" @click="resetDemo()">Reset demo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---- PROTO panel collapse, the transfer of index.html's own handler.
+   Shell-only state: a class on the container, no persistence. ---- */
+(function () {
+  'use strict';
+  var demoControls = document.getElementById('demoControls');
+  var demoTab      = document.getElementById('demoTab');
+  demoTab.addEventListener('click', function () {
+    var collapsed = demoControls.classList.toggle('collapsed');
+    demoTab.setAttribute('aria-expanded', String(!collapsed));
+    demoTab.setAttribute('aria-label',
+      collapsed ? 'Expand prototype controls' : 'Collapse prototype controls');
+  });
+})();
+</script>
 
 <!-- Site chrome custom elements: they render their own markup on upgrade,
      no fetch, so they work from file:// exactly as on the demo pages. -->
