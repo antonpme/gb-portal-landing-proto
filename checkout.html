@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GildedBox Checkout — DD-130 Prototype</title>
 <!-- ============================================================
-     gbppl-checkout-2 — the DD-130 checkout prototype moves into the
+     gbppl-checkout-3 — the DD-130 checkout prototype moves into the
      shared Pages prototype, so the team can walk portal -> cart ->
-     checkout on one public link.
+     checkout on one public link. checkout-3: Place Order wears the
+     BUTTON XL live ladder, and the add-a-gift action becomes a real
+     button — centered tertiary on an empty table, a blue text action
+     under the rows once they exist.
 
      SOURCE OF TRUTH is still studio\checkout\DD-130-checkout-prototype.html;
      this is a copy with three things changed and nothing else:
@@ -134,6 +137,36 @@
     display: revert; vertical-align: revert;
   }
   gb-site-header i, gb-site-footer i { font-style: revert; }
+
+  /* ============================================================
+     BUTTON XL — the live ladder from demo/assets/tokens.css (56/64/72,
+     measured off the product page Continue, the single primary action
+     of its template). Place Order is this page's single committing
+     action, so it wears the largest class (Ton, 21.08: the small
+     Place Order "не использовал нормальный компонент").
+     ============================================================ */
+  .btn-xl {
+    min-height: var(--btn-xl-min-h, 56px);
+    padding: var(--btn-xl-pad-y, 8px) var(--btn-xl-pad-x, 24px);
+    font-size: var(--btn-label-font-size, 11px);
+    font-weight: var(--btn-label-font-weight, 600);
+    letter-spacing: var(--btn-label-letter-spacing, 1px);
+    border-radius: 5px;
+    text-transform: uppercase;
+  }
+  @media (min-width: 1280px) {
+    .btn-xl {
+      min-height: var(--btn-xl-min-h-xl, 64px);
+      padding-left: var(--btn-xl-pad-x-xl, 32px);
+      padding-right: var(--btn-xl-pad-x-xl, 32px);
+    }
+  }
+  @media (min-width: 2000px) {
+    .btn-xl {
+      min-height: var(--btn-xl-min-h-2xl, 72px);
+      font-size: var(--btn-label-font-size-2xl, 12px);
+    }
+  }
 
   /* ============================================================
      DEMO CONTROLS (PROTO PANEL) — gbppl-checkout-2.
@@ -687,19 +720,27 @@
                   </tbody>
                 </table>
 
-                <!-- Empty state -->
-                <div x-show="shipment.recipients.length === 0" class="py-10 text-center border-b border-zinc-100">
+                <!-- Empty state: the add button stands centered as a tertiary (outlined)
+                     button — Ton, 21.08: a bare text row read as a caption, not a control,
+                     and an empty table's one action belongs in its middle. Once rows exist
+                     the same action moves under the last row, compact. The label is
+                     contextual too: "someone else" only makes sense after the first row. -->
+                <div x-show="shipment.recipients.length === 0" class="py-12 text-center border-b border-zinc-100">
                   <p class="text-sm text-zinc-500">No gift receivers yet.</p>
-                  <p class="text-xs text-zinc-400 mt-1">Click <span class="font-medium">Add a gift for someone else</span> below, or take the template round trip under <span class="font-medium">Bulk Personalize</span> above.</p>
+                  <button @click="addRecipient(product.id, shipment.id)" class="mt-4 inline-flex items-center gap-2 px-6 min-h-[42px] border border-zinc-900 rounded-[5px] text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-900 hover:bg-zinc-900 hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    Add a gift
+                  </button>
+                  <p class="text-xs text-zinc-400 mt-3">Or take the template round trip under <span class="font-medium">Bulk Personalize</span> above.</p>
                 </div>
 
                 <!-- Add another gift + pagination + shipment tally.
                      The label says what the click DOES, not what it adds a row of (approved copy
                      set, 21.08). The leading "+" of the approved string is the icon, not a
                      character — drawing both would give the button two plus signs. -->
-                <div class="flex items-center justify-between gap-6 py-4">
+                <div class="flex items-center justify-between gap-6 py-4" x-show="shipment.recipients.length > 0">
                   <div class="min-w-0">
-                    <button @click="addRecipient(product.id, shipment.id)" class="flex items-center gap-2 px-2 py-1.5 rounded-[5px] text-[11px] font-semibold uppercase tracking-[0.1em] hover:text-black text-zinc-700 transition-colors">
+                    <button @click="addRecipient(product.id, shipment.id)" class="flex items-center gap-2 px-2 py-1.5 rounded-[5px] text-[11px] font-semibold uppercase tracking-[0.1em] text-blue-700 hover:text-blue-800 transition-colors">
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                       Add a gift for someone else
                     </button>
@@ -798,8 +839,9 @@
         <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() > 1">s</span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
         <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
       </div>
-      <!-- Primary action = system blue (Ton, 21.08: black Place Order was the old prototype's mistake) -->
-      <button class="w-full mt-6 py-3.5 bg-blue-600 text-white text-[11px] font-semibold uppercase tracking-[0.14em] rounded-[5px] hover:bg-blue-700 transition-colors">Place Order</button>
+      <!-- Primary action = system blue (Ton, 21.08: black Place Order was the old
+           prototype's mistake), in the BUTTON XL size class (see .btn-xl above). -->
+      <button class="btn-xl w-full mt-6 bg-blue-600 text-white hover:bg-blue-700 transition-colors">Place Order</button>
       <p class="text-xs text-zinc-500 mt-3 text-center" x-show="anyDefer()">Some recipient details will be completed later via link</p>
     </div>
   </section>
