@@ -4035,12 +4035,14 @@
         <!-- Cart at the very corner (gbppl-portal-header-3): the
              strongest position for the way out to checkout, and the
              farthest its blue badge stands from the blue CTA.
-             Placeholder: no drawer opens yet, count non-zero so the
-             badge can be judged. Glyph = nucleo 48-cart, basket,
-             handle and wheels verbatim; the three 3-unit content
-             ticks dropped (1.4px at this box reads as lint). Badge =
-             the transferred header's own .gbh-count. -->
-        <button class="gbh-icon-button pth-icon" type="button" aria-label="Cart, 3 items" title="Your cart">
+             No drawer opens; since gbppl-checkout-1 the cart is the
+             door to checkout.html and carries the query string over
+             (wired by the one script at the foot of this file). Count
+             non-zero so the badge can be judged. Glyph = nucleo
+             48-cart, basket, handle and wheels verbatim; the three
+             3-unit content ticks dropped (1.4px at this box reads as
+             lint). Badge = the transferred header's own .gbh-count. -->
+        <button class="gbh-icon-button pth-icon" type="button" aria-label="Cart, 3 items" title="Your cart" data-gbppl-cart>
           <svg width="22.8" height="22.8" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M8.49994 10H41L37.569 21.4367C36.9345 23.5517 34.9879 25 32.7798 25H10.4999" stroke="currentColor" stroke-width="1.684" fill="none" stroke-linecap="butt"></path><path d="M11 45C13.2091 45 15 43.2091 15 41C15 38.7909 13.2091 37 11 37C8.79086 37 7 38.7909 7 41C7 43.2091 8.79086 45 11 45Z" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M37 45C39.2091 45 41 43.2091 41 41C41 38.7909 39.2091 37 37 37C34.7909 37 33 38.7909 33 41C33 43.2091 34.7909 45 37 45Z" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M41 32H9.46174C7.17727 32 6.08953 29.1885 7.77914 27.651L10.6923 25L7.81067 5.14103C7.63231 3.91188 6.57863 3.00005 5.33661 3.00003L3 3" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
           <span class="gbh-count" aria-hidden="true">3</span>
         </button>
@@ -4078,7 +4080,10 @@
              portal measurement; see the .gbh-cta label rule. -->
         <a class="gbh-cta" href="#"><span data-pc-section="label">Book a Meeting</span></a>
         <a class="gbh-cta gbh-cta--outline" href="#"><span data-pc-section="label">My Portal</span></a>
-        <button class="gbh-icon-button" type="button" aria-label="Cart, 3 items">
+        <!-- The site header's cart is the same door as the portal bar's
+             (gbppl-checkout-1): both go to checkout.html with the query
+             string attached. -->
+        <button class="gbh-icon-button" type="button" aria-label="Cart, 3 items" title="Your cart" data-gbppl-cart>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>
           <span class="gbh-count" aria-hidden="true">3</span>
         </button>
@@ -5777,6 +5782,34 @@
     ? (params.get('lock') === 'stack' ? 'stack' : 'divider')
     : 'off');
   render();
+})();
+</script>
+
+<!-- ============================================================
+     THE CART IS A DOOR — gbppl-checkout-1.
+     Both headers carry a cart glyph: the site bar's and, since
+     gbppl-portal-header-3, the portal bar's, hard against the corner.
+     Neither opened anything. They now lead to checkout.html, the
+     DD-130 prototype living in this repo since gbppl-checkout-1.
+
+     The query string rides along, so the view the visitor is standing
+     in (?pth=1, ?nav=, ?v=, ?lock=, ?hero=, ?layout=) survives the
+     round trip and the way back from checkout lands them where they
+     were. Written as a listener rather than as two <a> elements
+     because .gbh-icon-button is measured live geometry on a <button>,
+     and the badge sits inside it: swapping the tag would put the
+     harvested header's own anatomy at risk for nothing.
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+  var carts = document.querySelectorAll('[data-gbppl-cart]');
+  for (var i = 0; i < carts.length; i++) {
+    carts[i].style.cursor = 'pointer';
+    carts[i].addEventListener('click', function () {
+      location.href = 'checkout.html' + location.search;
+    });
+  }
 })();
 </script>
 

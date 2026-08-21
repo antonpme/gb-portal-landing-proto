@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GildedBox Checkout — DD-130 Prototype</title>
+<!-- ============================================================
+     gbppl-checkout-1 — the DD-130 checkout prototype moves into the
+     shared Pages prototype, so the team can walk portal -> cart ->
+     checkout on one public link.
+
+     SOURCE OF TRUTH is still studio\checkout\DD-130-checkout-prototype.html;
+     this is a copy with three things changed and nothing else:
+       · the vendored site-chrome\ paths point at demo\, which holds the
+         very files site-chrome was copied FROM (byte-identical, checked);
+         no second copy of the chrome lands in this repo;
+       · the product image moved to checkout-assets\;
+       · the logo and the Home crumb lead back to index.html, carrying
+         the query string so the portal's view survives the round trip.
+     The black demo bar stays: the team switches the three entry-point
+     scenarios with it.
+     ============================================================ -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Noto Serif rides along for the vendored site chrome (footer headings) -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+     SITE CHROME — the measured header/footer components, taken straight
+     from demo\ here (in the checkout repo they are vendored into
+     site-chrome\; see its README — same bytes, this repo is the source).
+     Loaded AFTER the Tailwind CDN so component rules win wherever they
+     declare a property; the antidote at the end of this <style> covers
+     what they left to the browser. shell.css comes only for the
+     .gb-container clamp ladder — shell.js is NOT loaded, so nothing
+     stamps `gb-demo` on the body and the demo grounding stays away.
+     ============================================================ -->
+<link rel="stylesheet" href="demo/assets/tokens.css">
+<link rel="stylesheet" href="demo/components/shell.css">
+<link rel="stylesheet" href="demo/components/header.css">
+<link rel="stylesheet" href="demo/components/footer.css">
+<style>
+  /* ============================================================
+     MOTION — the Oro motion language, literal copies of the
+     --mo-* tokens in studio/system/tokens.css (which lifted them
+     from portal-landing-prototype, gbppl-motion-pass 2026-08-19).
+     Named by the SIZE OF THE JOURNEY, never by component.
+     Principle Ton-7: the signature choreography ignores
+     prefers-reduced-motion — no polite branch below.
+     This file is standalone (Tailwind CDN, no build), so the
+     values are literals here and the provenance is this comment.
+     ============================================================ */
+  :root {
+    --mo-enter:  cubic-bezier(0.37, 0, 0.18, 1); /* big entrances */
+    --mo-arrive: cubic-bezier(0, 0, 0.2, 1);     /* content settling into place */
+    --mo-exit:   cubic-bezier(0.4, 0, 1, 1);     /* leaving accelerates */
+    --mo-move:   cubic-bezier(0.4, 0, 0.2, 1);   /* in-place moves, height, steps */
+
+    --mo-large: 1200ms;      /* the door across the screen */
+    --mo-medium: 500ms;      /* a popup out of its button */
+    --mo-medium-out: 350ms;  /* ...and back into it */
+    --mo-small: 280ms;       /* steps, height, side moves */
+    --mo-small-out: 90ms;    /* the quiet leave before a step */
+    --mo-micro: 160ms;       /* hovers, chips, icon-buttons */
+
+    --mo-drawer-in: 800ms;   /* the side drawer, same clock as the v1 catalog door */
+  }
+
+  body { font-family: 'Inter', sans-serif; color: #18181b; }
+  .font-serif { font-family: 'Cormorant Garamond', serif; }
+
+  /* A row arriving in the table: content settling, small journey. */
+  .row-enter { animation: rowIn var(--mo-small) var(--mo-arrive); }
+  @keyframes rowIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* The drawer crosses the whole screen: the long entrance on the brand curve. */
+  .drawer-enter { animation: drawerIn var(--mo-drawer-in) var(--mo-enter); }
+  @keyframes drawerIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+  /* Leaving accelerates and is shorter than arriving: the overlay fades while
+     the panel slides back into the edge it came from. */
+  .overlay-leave { transition: opacity var(--mo-medium-out) var(--mo-exit); }
+  .overlay-leave aside { transition: transform var(--mo-medium-out) var(--mo-exit); }
+  .overlay-leave-end aside { transform: translateX(100%); }
+  .modal-leave { transition: opacity var(--mo-medium-out) var(--mo-exit); }
+  .menu-leave  { transition: opacity var(--mo-small-out) var(--mo-exit); }
+
+  .modal-enter { animation: modalIn var(--mo-small) var(--mo-enter); }
+  @keyframes modalIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+  .menu-enter { animation: menuIn var(--mo-small) var(--mo-enter); }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Tailwind's own transition utilities land on the micro clock and the in-place
+     curve. Scoped through `body` so they outrank the CDN sheet injected after
+     this block; no transition:all anywhere. */
+  body .transition,
+  body .transition-colors,
+  body .transition-opacity,
+  body .transition-transform {
+    transition-duration: var(--mo-micro);
+    transition-timing-function: var(--mo-move);
+  }
+
+  /* ============================================================
+     PREFLIGHT ANTIDOTE — the site chrome was authored on pages with no
+     CSS reset at all, so it inherited the browser defaults for anything
+     it did not declare. Tailwind's preflight takes those away. Inside
+     the two chrome elements we hand them straight back with `revert`,
+     which rolls the property back past every author sheet to the UA
+     value. Scoped to the chrome: the prototype itself wants preflight
+     (its `border` utilities rely on preflight's `border-style: solid`).
+     ============================================================ */
+  gb-site-header h1, gb-site-header h2, gb-site-header h3,
+  gb-site-header h4, gb-site-header h5, gb-site-header h6,
+  gb-site-footer h1, gb-site-footer h2, gb-site-footer h3,
+  gb-site-footer h4, gb-site-footer h5, gb-site-footer h6 {
+    font-size: revert; font-weight: revert; margin: revert;
+  }
+  gb-site-header p, gb-site-footer p,
+  gb-site-header ul, gb-site-footer ul,
+  gb-site-header ol, gb-site-footer ol,
+  gb-site-header li, gb-site-footer li {
+    margin: revert; padding: revert; list-style: revert;
+  }
+  gb-site-header svg, gb-site-footer svg,
+  gb-site-header img, gb-site-footer img {
+    display: revert; vertical-align: revert;
+  }
+  gb-site-header i, gb-site-footer i { font-style: revert; }
+
+  [x-cloak] { display: none !important; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; } /* zinc-300 */
+  ::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }                /* zinc-400 */
+</style>
+</head>
+<body class="bg-zinc-50 min-h-screen" x-data="checkoutApp()" x-cloak>
+
+<!-- ========== DEMO SCENARIO SWITCHER (service bar — sits ABOVE the site chrome on purpose:
+     everything below this line is the page as gildedbox.com renders it) ========== -->
+<div class="bg-zinc-900 text-white">
+  <div class="gb-container py-4 flex items-center gap-6">
+    <span class="text-[10px] uppercase tracking-[0.18em] text-zinc-400 font-semibold whitespace-nowrap">Demo · Entry point</span>
+    <div class="inline-flex bg-zinc-800 rounded-md p-0.5 flex-shrink-0">
+      <button @click="setScenario('customizer')" :class="scenario === 'customizer' ? 'bg-white text-zinc-900' : 'text-zinc-300 hover:text-white'" class="px-4 py-2 text-xs font-medium rounded transition">
+        From Customizer
+      </button>
+      <button @click="setScenario('portalEmpty')" :class="scenario === 'portalEmpty' ? 'bg-white text-zinc-900' : 'text-zinc-300 hover:text-white'" class="px-4 py-2 text-xs font-medium rounded transition">
+        From Portal · Empty
+      </button>
+      <button @click="setScenario('portalLoaded')" :class="scenario === 'portalLoaded' ? 'bg-white text-zinc-900' : 'text-zinc-300 hover:text-white'" class="px-4 py-2 text-xs font-medium rounded transition">
+        From Portal · Loaded list
+      </button>
+    </div>
+    <span class="text-xs text-zinc-400 flex-1 leading-snug" x-show="scenario === 'customizer'">
+      Customer arrived from the 3D Customizer. One recipient already has personalization, but address and shipping aren't set yet.
+    </span>
+    <span class="text-xs text-zinc-400 flex-1 leading-snug" x-show="scenario === 'portalEmpty'">
+      Fresh checkout from the portal. No gift receivers yet — user adds them from scratch or uploads a personalization file.
+    </span>
+    <span class="text-xs text-zinc-400 flex-1 leading-snug" x-show="scenario === 'portalLoaded'">
+      Jorge's mixed cart (19.08): a customized Executive Travel Set going to five people, plus nine Yeti duos to one office address with no personalization at all — the row that used to demand a full name.
+    </span>
+    <button @click="resetDemo()" class="text-xs text-zinc-400 hover:text-white underline underline-offset-4 whitespace-nowrap flex-shrink-0">Reset demo</button>
+  </div>
+</div>
+
+<!-- ========== SITE HEADER — the real thing: the measured <gb-site-header>
+     from demo\, the same component the demo-live pages use. Not a lookalike
+     drawn from a screenshot: instrument-checked against gildedbox.com. Its
+     links are stubs, except the logo, which the script at the foot of this
+     page points home (gbppl-checkout-1). ========== -->
+<gb-site-header logo-src="demo/assets/gildedbox-logo.svg"></gb-site-header>
+
+<!-- ========== BREADCRUMBS + PAGE TITLE (site frame) ========== -->
+<div class="gb-container pt-7">
+  <nav class="flex items-center gap-2.5 text-[13px] text-zinc-400">
+    <!-- href is filled in at the foot of the page so the query string rides along -->
+    <a href="index.html" data-gbppl-home class="hover:text-zinc-700 transition-colors">Home</a>
+    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+    <span class="text-zinc-500">Checkout</span>
+  </nav>
+  <h1 class="font-serif text-6xl font-medium mt-5 mb-8">Checkout</h1>
+</div>
+
+<!-- ========== MAIN CONTAINER ========== -->
+<main class="gb-container pb-24 space-y-6">
+
+  <!-- ========== PRODUCT CARDS — one card per gift in the cart, stacked (live does the same) ========== -->
+  <template x-for="(product, pIdx) in products" :key="product.id">
+    <!-- 5px on every corner is the house rule (Ton, 21.08). No overflow-hidden here:
+         the step-2 menus hang out of this box and must not be clipped. -->
+    <article class="bg-white border border-zinc-200 rounded-[5px]">
+      <div class="grid grid-cols-[360px_1fr]">
+
+        <!-- ===== LEFT: product image ===== -->
+        <div class="border-r border-zinc-200 px-10 py-14 flex flex-col items-center justify-center">
+          <img :src="product.image" :alt="product.name" class="w-full object-contain">
+          <button @click="removeProduct(pIdx)" class="mt-10 inline-flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-red-600 transition-colors uppercase tracking-wider">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            Remove gift
+          </button>
+        </div>
+
+        <!-- ===== RIGHT: product header + shipments ===== -->
+        <div class="p-8 space-y-5">
+
+          <!-- ===== Product header ===== -->
+          <div class="flex items-start justify-between pb-1">
+            <div>
+              <h2 class="font-serif text-3xl font-medium" x-text="product.name"></h2>
+              <p class="text-zinc-500 text-sm mt-1">
+                <span x-text="product.shipments.length"></span> shipment<span x-show="product.shipments.length > 1">s</span>
+                · <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span> total
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-zinc-500 text-[11px] uppercase tracking-[0.15em]">Product total</p>
+              <p class="font-serif text-3xl font-medium">$<span x-text="productTotal(product).toLocaleString()"></span></p>
+            </div>
+          </div>
+
+          <!-- ===== SHIPMENTS within this product ===== -->
+          <template x-for="(shipment, sIdx) in product.shipments" :key="shipment.id">
+            <section class="border border-zinc-200 rounded-[5px]">
+
+              <!-- ============================================================
+                   STEP 1 — the numbered gray band, as live renders it.
+                   The heading asks the question instead of naming a field, and
+                   the toggle answers it in the same words (approved copy set,
+                   21.08); the underlying addressMode is still same/different.
+                   Black, not blue: the toggle is furniture, not a state chip.
+                   ============================================================ -->
+              <!-- The band itself keeps its full width; only its two top corners follow the
+                   section's 5px so the gray does not poke past the rounded border. -->
+              <header class="bg-zinc-100/70 border-b border-zinc-200 rounded-t-[5px] px-6 py-4 flex items-center gap-6 min-h-[68px]">
+                <h3 class="font-serif text-2xl leading-none">1. Where should we deliver these gifts?</h3>
+                <!-- Toggle Button, the system component: a white parent with padding, the black
+                     active segment floats INSIDE it with its own 5px corners (Ton, 21.08). -->
+                <div class="inline-flex gap-1 bg-white border border-zinc-300 rounded-[5px] p-1">
+                  <button @click="shipment.addressMode='same'"
+                          :class="shipment.addressMode==='same' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50'"
+                          class="px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.1em] rounded-[5px] transition-colors">One address</button>
+                  <button @click="shipment.addressMode='different'"
+                          :class="shipment.addressMode==='different' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50'"
+                          class="px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.1em] rounded-[5px] transition-colors">Different addresses</button>
+                </div>
+                <button x-show="product.shipments.length > 1" @click="removeShipment(product.id, shipment.id)" class="ml-auto flex items-center gap-1.5 px-2 py-1.5 text-xs text-zinc-500 hover:text-red-600 hover:bg-red-50 rounded-[5px]">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                  Remove
+                </button>
+              </header>
+
+              <!-- One line under the toggle, changing with it: the consequence of the choice
+                   said out loud before any field is asked for (approved copy set, 21.08). -->
+              <p class="px-6 pt-4 -mb-1 text-xs text-zinc-500"
+                 x-text="shipment.addressMode === 'same'
+                   ? 'All gifts in this order will be delivered to one address.'
+                   : 'Each gift in this order will be delivered to a different address.'"></p>
+
+              <!-- ===== STEP 1 BODY · ONE ADDRESS: address + shipping method ===== -->
+              <div x-show="shipment.addressMode === 'same'" class="px-6 py-5 space-y-5" x-data="{ shipToOpen: false }">
+                <div>
+                  <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500 mb-2">Address</p>
+                  <div class="relative">
+                    <button @click="shipToOpen = !shipToOpen"
+                            class="w-full flex items-center justify-between gap-4 bg-zinc-50 border border-zinc-300 rounded-[5px] px-4 py-3 text-left hover:border-zinc-500 focus:outline-none focus:border-blue-600 transition-colors">
+                      <span class="text-sm truncate" :class="shipment.shipToLabel ? 'text-zinc-900' : 'text-zinc-400'" x-text="shipment.shipToLabel || 'Select an address'"></span>
+                      <svg class="w-4 h-4 text-zinc-500 flex-shrink-0 transition-transform" :class="shipToOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                    </button>
+                    <div x-show="shipToOpen" @click.outside="shipToOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-1 bg-white border border-zinc-200 rounded-[5px] shadow-lg z-30 overflow-hidden">
+                      <template x-for="addr in addressBook" :key="addr.id">
+                        <button @click="shipment.shipToLabel = addr.name + ', ' + addr.label; shipment.shipToId = addr.id; shipToOpen = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+                          <p class="font-medium" x-text="addr.name"></p>
+                          <p class="text-xs text-zinc-500 truncate" x-text="addr.label"></p>
+                        </button>
+                      </template>
+                      <button @click="shipToOpen = false; openAddressBookDrawer(product.id, shipment.id)" class="w-full text-left px-4 py-2.5 text-sm bg-zinc-50 hover:bg-zinc-100 flex items-center gap-2 font-medium border-t border-zinc-200">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        Add new address
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Shipping method — price only, the way live shows it. Selection stays blue (Ton-5). -->
+                <div>
+                  <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500 mb-2">Shipping method</p>
+                  <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+                    <template x-for="opt in shippingOptions" :key="'ship-'+opt.id">
+                      <label
+                        :class="shipment.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-white hover:border-zinc-400'"
+                        class="cursor-pointer border rounded-[5px] p-4 flex items-center transition-colors">
+                        <span class="flex items-center gap-3 min-w-0">
+                          <input type="radio" :name="'ship-' + shipment.id" :value="opt.id" x-model="shipment.shipping" class="accent-blue-600 w-4 h-4 flex-shrink-0">
+                          <span class="min-w-0">
+                            <span class="text-sm font-medium block leading-tight truncate" x-text="opt.label"></span>
+                            <span class="text-[13px] text-zinc-500 block">$<span x-text="opt.cost"></span></span>
+                          </span>
+                        </span>
+                      </label>
+                    </template>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== STEP 1 BODY · DIFFERENT ADDRESSES: the step collapses to one summary line ===== -->
+              <div x-show="shipment.addressMode === 'different'" class="px-6 py-5">
+                <p class="font-serif text-xl text-zinc-900" x-text="differentSummary(shipment)"></p>
+              </div>
+
+              <!-- Hint: pick address first (One address without an address chosen) — Russell rule #1 -->
+              <div x-show="shipment.addressMode === 'same' && !shipment.shipToId" class="mx-6 mb-5 flex items-center gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-[5px] px-3 py-2">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                <span>Pick where this ships in step 1 to continue.</span>
+              </div>
+
+              <!-- Disabled-until-address wrapper (One address + nothing chosen) — Russell rule #1 -->
+              <div class="transition-opacity" :class="(shipment.addressMode === 'same' && !shipment.shipToId) ? 'opacity-40 pointer-events-none' : ''">
+
+              <!-- Details chooser (Variant 3) — cards before selection, compact summary bar after.
+                   Russell feedback: separate personalization from delivery; don't show by default.
+                   TEMPORARILY HIDDEN (Ton, 21.08): live hid "send later" — 3 customers picked it with no
+                   personalization (DD-141). detailsMode now defaults to 'now' in every scenario, so the
+                   chooser and summary bar never render. To restore: defaults back to null and drop the
+                   two `false &&` guards below. -->
+              <div class="px-6" x-show="false && true">
+                <!-- Before selection: 2 cards with descriptions -->
+                <div x-show="false && !shipment.detailsMode" x-transition.opacity.duration.280ms class="space-y-3 py-5">
+                  <p class="text-sm text-zinc-700">How would you like to add recipient details?</p>
+                  <div class="grid grid-cols-2 gap-3">
+                    <button @click="shipment.detailsMode='now'" class="text-left p-5 border border-zinc-200 rounded-lg hover:border-blue-600 hover:shadow-sm transition-colors">
+                      <div class="flex items-center gap-2.5 mb-2">
+                        <svg class="w-5 h-5 text-zinc-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                        <h4 class="font-medium text-zinc-900">Add details now</h4>
+                      </div>
+                      <p class="text-xs text-zinc-500 pl-[30px]">Fill in recipient details here.</p>
+                    </button>
+                    <button @click="shipment.detailsMode='later'" class="text-left p-5 border border-zinc-200 rounded-lg hover:border-blue-600 hover:shadow-sm transition-colors">
+                      <div class="flex items-center gap-2.5 mb-2">
+                        <svg class="w-5 h-5 text-zinc-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+                        <h4 class="font-medium text-zinc-900">Send recipients a link</h4>
+                      </div>
+                      <p class="text-xs text-zinc-500 pl-[30px]">Recipients fill in via a link.</p>
+                    </button>
+                  </div>
+                </div>
+                <!-- After selection: compact summary bar -->
+                <div x-show="false && shipment.detailsMode" x-transition.opacity.duration.280ms class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-md px-4 py-2.5 my-5">
+                  <span class="flex items-center gap-2">
+                    <span class="text-[10px] uppercase tracking-[0.15em] text-zinc-500 font-semibold">Details</span>
+                    <span class="text-sm font-medium text-blue-700" x-text="shipment.detailsMode === 'now' ? 'Adding details now' : 'Sending recipients a link'"></span>
+                  </span>
+                  <button @click="shipment.detailsMode = null" class="text-zinc-500 hover:text-black text-xs underline underline-offset-2">Change choice</button>
+                </div>
+              </div>
+
+              <!-- Defer banner — dormant branch, kept for the day "send later" comes back -->
+              <div x-show="shipment.detailsMode === 'later'" class="flex items-start gap-3 px-6 py-4 text-sm">
+                <svg class="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+                <div class="flex-1 space-y-1">
+                  <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <span class="text-zinc-700">We'll email a link to complete details later.</span>
+                    <span class="inline-flex items-center gap-2">
+                      <span class="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Remind me</span>
+                      <input type="date" x-model="shipment.deadline" class="text-xs bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-0.5 focus:outline-none focus:border-blue-600">
+                    </span>
+                  </div>
+                  <p class="text-xs text-zinc-500 leading-snug">Your order will be placed and charged now, but nothing ships until your recipients complete personalization on the portal via the link.</p>
+                </div>
+              </div>
+
+              <!-- ============================================================
+                   STEP 2 — same gray band as step 1. Live calls this step
+                   "Specify Gift Details"; Patrick Brandell (18.08): "I haven't
+                   come across that before". Ours asks the question the step
+                   answers, and the grey line under it keeps the permission
+                   that personalization is optional (DD-141 #3, approved copy
+                   set 21.08).
+                   ============================================================ -->
+              <div class="bg-zinc-100/70 border-y border-zinc-200 px-6 py-4 flex items-start justify-between gap-6" x-show="shipment.detailsMode === 'now'">
+                <div class="min-w-0">
+                  <h3 class="font-serif text-2xl leading-tight">2. Who is This Gift For?</h3>
+                  <p class="text-zinc-500 text-xs mt-1" x-show="selectedCount(shipment) === 0">Tell us who this gift is for, then add personalization if desired.</p>
+                  <p class="text-blue-600 text-xs mt-1 font-medium" x-show="selectedCount(shipment) > 0"><span x-text="selectedCount(shipment)"></span> selected</p>
+                </div>
+                <!-- ============================================================
+                     TWO MENU BUTTONS (Ton, 21.08). The three ghost buttons that used to
+                     sprawl across this band collapse into two of the same size:
+                       · Bulk Personalize — always live, the template round trip;
+                       · Edit Selected    — the old Bulk Actions, now always in its place
+                                            and merely disabled until rows are ticked, so
+                                            the band never changes shape under the cursor.
+                     ============================================================ -->
+                <div class="flex items-center gap-2 flex-shrink-0">
+
+                  <!-- ===== Bulk Personalize ===== -->
+                  <div class="relative">
+                    <button @click="tplMenuOpen = tplMenuOpen === shipment.id ? null : shipment.id; bulkMenuOpen = null"
+                            class="flex items-center gap-2 px-3.5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.1em] border border-zinc-400 bg-white/60 hover:bg-white rounded-[5px] transition-colors">
+                      <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                      <span>Bulk Personalize</span>
+                      <svg class="w-3 h-3 ml-1 transition-transform" :class="tplMenuOpen === shipment.id ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                    </button>
+                    <div x-show="tplMenuOpen === shipment.id" x-cloak @click.outside="tplMenuOpen = null" x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute right-0 top-full mt-2 w-[300px] bg-white border border-zinc-200 rounded-[5px] shadow-xl z-50 overflow-hidden">
+                      <div class="p-2">
+                        <button @click="downloadTemplate()" class="w-full flex items-center gap-3 px-3 py-2 rounded-[5px] text-sm text-left hover:bg-zinc-50">
+                          <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                          <span>Download blank template</span>
+                        </button>
+                        <button @click="openCSVModal(product.id, shipment.id)" class="w-full flex items-center gap-3 px-3 py-2 rounded-[5px] text-sm text-left hover:bg-zinc-50">
+                          <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                          <span>Upload filled template</span>
+                        </button>
+                      </div>
+                      <p class="border-t border-zinc-100 px-4 py-2.5 text-[11px] text-zinc-500 leading-snug">Fill the template once — we apply it to every row.</p>
+                    </div>
+                  </div>
+
+                  <!-- ===== Edit Selected (was Bulk Actions) ===== -->
+                  <div class="relative">
+                    <button
+                      :disabled="selectedCount(shipment) === 0"
+                      :class="selectedCount(shipment) === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white'"
+                      :title="selectedCount(shipment) === 0 ? 'Select rows first' : ''"
+                      @click="bulkMenuOpen = bulkMenuOpen === shipment.id ? null : shipment.id; tplMenuOpen = null"
+                      class="flex items-center gap-2 px-3.5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.1em] border border-zinc-400 bg-white/60 rounded-[5px] transition-colors">
+                      <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                      <span>Edit Selected<span x-show="selectedCount(shipment) > 0"> · <span x-text="selectedCount(shipment)"></span></span></span>
+                      <svg class="w-3 h-3 ml-1 transition-transform" :class="bulkMenuOpen === shipment.id ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                    </button>
+                    <!-- The menu no longer explains itself: the button already says Edit Selected and
+                         only opens with rows in hand, so live's intro line and the "select rows first"
+                         apology both went away with the gating they described. -->
+                    <div x-show="bulkMenuOpen === shipment.id" x-cloak @click.outside="bulkMenuOpen = null" x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute right-0 top-full mt-2 w-[300px] bg-white border border-zinc-200 rounded-[5px] shadow-xl z-50 overflow-hidden">
+                      <div class="p-2">
+                        <div class="px-3 pt-2 pb-1.5 text-[10px] uppercase tracking-wider text-zinc-400 font-semibold">
+                          Apply to selected rows (<span x-text="selectedCount(shipment)"></span>)
+                        </div>
+                        <button @click="bulkApply(product.id, shipment.id, 'greeting')"
+                                class="w-full flex items-center gap-3 px-3 py-2 rounded-[5px] text-sm text-left hover:bg-zinc-50">
+                          <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25"/></svg>
+                          <span>Apply greeting card</span>
+                        </button>
+                        <button @click="bulkApply(product.id, shipment.id, 'item')"
+                                class="w-full flex items-center gap-3 px-3 py-2 rounded-[5px] text-sm text-left hover:bg-zinc-50">
+                          <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                          <span>Apply gift personalization</span>
+                        </button>
+                        <button @click="bulkApply(product.id, shipment.id, 'video')"
+                                class="w-full flex items-center gap-3 px-3 py-2 rounded-[5px] text-sm text-left hover:bg-zinc-50">
+                          <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+                          <span>Attach video message</span>
+                        </button>
+                      </div>
+                      <div class="border-t border-zinc-100 p-2">
+                        <button @click="bulkDelete(product.id, shipment.id)" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-red-50 text-red-600 rounded-[5px] text-sm text-left">
+                          <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397"/></svg>
+                          <span>Delete selected</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== RECIPIENT TABLE ===== -->
+              <div x-show="shipment.detailsMode === 'now'" class="px-6">
+                <table class="w-full table-fixed">
+                  <thead class="border-b border-zinc-200">
+                    <tr class="text-[13px] text-zinc-800">
+                      <!-- text-left, or the browser's own `th { text-align: center }` parks the
+                           select-all box 12px right of every checkbox below it in the 40px column. -->
+                      <th class="w-10 py-3.5 text-left"><input type="checkbox" @change="toggleAllSelected(shipment, $event.target.checked)" :checked="allSelected(shipment)" class="accent-blue-600 w-4 h-4"></th>
+                      <!-- The column no longer has to explain WHO this is: the step heading above asks
+                           "Who is this gift for?", so the column can say what the field is FOR
+                           (approved copy set, 21.08 — replaces "Gift Receiver Name", DD-141 #6). -->
+                      <th class="text-left py-3.5 pr-4 font-medium w-[220px]">
+                        <button class="inline-flex items-center gap-1.5 hover:text-black">Name for personalization <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg></button>
+                      </th>
+                      <th class="text-left py-3.5 pr-4 font-medium w-[190px]" x-show="shipment.addressMode === 'different'">Address</th>
+                      <template x-for="i in 3" :key="'th-item-'+i">
+                        <th class="text-left py-3.5 pr-4 font-medium">Personalize Item <span x-text="i"></span></th>
+                      </template>
+                      <th class="text-left py-3.5 pr-4 font-medium">Greeting Card</th>
+                      <!-- Qty sits at the far end of the row, away from Name and Address: next to them people
+                           read it as "how many go to this person / this place" (Ton, 21.08). It counts gifts
+                           carrying THIS personalization. -->
+                      <th class="text-left py-3.5 font-medium w-[132px]" title="How many gifts with this personalization">Gifts</th>
+                      <th class="py-3.5 w-10"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="recipient in paginatedRecipients(shipment)" :key="recipient.id">
+                      <tr @click="openRecipientDrawer(product.id, shipment.id, recipient.id)"
+                          class="group border-b border-zinc-100 row-enter cursor-pointer hover:bg-zinc-50"
+                          :class="recipient.hasError ? 'bg-red-50/40' : ''">
+                        <td class="py-3" @click.stop><input type="checkbox" x-model="recipient.selected" class="accent-blue-600 w-4 h-4"></td>
+                        <td class="py-3 pr-4" @click.stop>
+                          <!-- The underline is always there: clients could not tell this cell was a field at all
+                               (meeting 20.08 — "inputs look disabled"). The placeholder now names what may go in
+                               and that none of it is required (approved copy set, 21.08). -->
+                          <input type="text" x-model="recipient.name" placeholder="Name or initials (optional)" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
+                          <p x-show="recipient.hasError" class="text-red-600 text-xs mt-1" x-text="recipient.errorMsg"></p>
+                        </td>
+                        <!-- Address (only when shipping to multiple locations) -->
+                        <td class="py-3 pr-4 align-top" x-show="shipment.addressMode === 'different'" @click.stop>
+                          <button @click.stop="openAddressDrawer(product.id, shipment.id, recipient.id)" class="block w-full text-left">
+                            <template x-if="recipient.address">
+                              <span class="block max-w-full">
+                                <span class="block truncate text-[13px] text-zinc-800" :title="recipient.address" x-text="recipient.address"></span>
+                                <span class="block text-[10px] text-zinc-500 mt-0.5 uppercase tracking-wider">
+                                  <span x-text="shippingLabel(recipient.shipping || 'ground')"></span>
+                                  · $<span x-text="shippingCost(recipient.shipping || 'ground')"></span>
+                                </span>
+                              </span>
+                            </template>
+                            <template x-if="!recipient.address">
+                              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-600 group-hover:text-black transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                Add
+                              </span>
+                            </template>
+                          </button>
+                        </td>
+                        <!-- Personalize Item 1 / 2 / 3 — live keeps three columns for every gift; a gift with
+                             fewer engravable parts says so with a dash instead of inviting an entry that
+                             cannot exist (Jorge, 19.08: the platform demanded details for un-customizable items). -->
+                        <template x-for="i in 3" :key="'cell-item-'+i">
+                          <td class="py-3 pr-4">
+                            <template x-if="i > productItemCount(product)">
+                              <span class="text-zinc-300 text-sm" title="Nothing to personalize on this gift">—</span>
+                            </template>
+                            <template x-if="i <= productItemCount(product) && recipient['item' + i]">
+                              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-700">
+                                <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                Filled
+                              </span>
+                            </template>
+                            <template x-if="i <= productItemCount(product) && !recipient['item' + i]">
+                              <span class="inline-flex items-center gap-1.5 text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                Add
+                              </span>
+                            </template>
+                          </td>
+                        </template>
+                        <!-- Greeting Card -->
+                        <td class="py-3 pr-4">
+                          <template x-if="recipient.greeting && recipient.greeting.message">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-700">
+                              <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                              Filled
+                            </span>
+                          </template>
+                          <template x-if="!recipient.greeting || !recipient.greeting.message">
+                            <span class="inline-flex items-center gap-1.5 text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                              Add
+                            </span>
+                          </template>
+                        </td>
+                        <!-- Gifts (was Qty, was third from the left) -->
+                        <td class="py-3" @click.stop title="How many gifts with this personalization">
+                          <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[5px] overflow-hidden">
+                            <button @click="recipient.qty > 1 && recipient.qty--" class="px-2 py-1 text-zinc-500 hover:bg-zinc-100 hover:text-black">
+                              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                            </button>
+                            <input type="number" x-model.number="recipient.qty" min="1" class="w-10 text-center text-sm font-medium bg-transparent border-x border-zinc-200 py-1 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
+                            <button @click="recipient.qty++" class="px-2 py-1 text-zinc-500 hover:bg-zinc-100 hover:text-black">
+                              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                            </button>
+                          </div>
+                        </td>
+                        <td class="py-3" @click.stop>
+                          <button @click.stop="removeRecipient(product.id, shipment.id, recipient.id)" class="p-1 text-zinc-400 hover:text-red-600" title="Remove gift receiver">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                          </button>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+
+                <!-- Empty state -->
+                <div x-show="shipment.recipients.length === 0" class="py-10 text-center border-b border-zinc-100">
+                  <p class="text-sm text-zinc-500">No gift receivers yet.</p>
+                  <p class="text-xs text-zinc-400 mt-1">Click <span class="font-medium">Add a gift for someone else</span> below, or take the template round trip under <span class="font-medium">Bulk Personalize</span> above.</p>
+                </div>
+
+                <!-- Add another gift + pagination + shipment tally.
+                     The label says what the click DOES, not what it adds a row of (approved copy
+                     set, 21.08). The leading "+" of the approved string is the icon, not a
+                     character — drawing both would give the button two plus signs. -->
+                <div class="flex items-center justify-between gap-6 py-4">
+                  <div class="min-w-0">
+                    <button @click="addRecipient(product.id, shipment.id)" class="flex items-center gap-2 px-2 py-1.5 rounded-[5px] text-[11px] font-semibold uppercase tracking-[0.1em] hover:text-black text-zinc-700 transition-colors">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                      Add a gift for someone else
+                    </button>
+                    <p class="text-xs text-zinc-500 mt-1 pl-2">Add the same gift for another person and personalize it separately.</p>
+                  </div>
+                  <div class="flex items-center gap-4 flex-shrink-0">
+                    <div class="flex items-center gap-1" x-show="totalPages(shipment) > 1">
+                      <button @click="shipment.page = Math.max(1, shipment.page - 1)" class="p-1.5 text-zinc-400 hover:text-black" :disabled="shipment.page === 1"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></button>
+                      <template x-for="p in pageNumbers(shipment)" :key="p">
+                        <button @click="shipment.page = p" :class="shipment.page === p ? 'bg-blue-600 text-white' : 'text-zinc-600 hover:bg-zinc-100'" class="w-8 h-8 rounded-full text-xs font-medium" x-text="p"></button>
+                      </template>
+                      <button @click="shipment.page = Math.min(totalPages(shipment), shipment.page + 1)" class="p-1.5 text-zinc-400 hover:text-black" :disabled="shipment.page === totalPages(shipment)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></button>
+                    </div>
+                    <span class="text-xs text-zinc-500">
+                      <span class="font-medium text-zinc-900" x-text="shipment.recipients.length"></span> recipient<span x-show="shipment.recipients.length !== 1">s</span>
+                      · <span class="font-medium text-zinc-900" x-text="shipmentGifts(shipment)"></span> gift<span x-show="shipmentGifts(shipment) !== 1">s</span>
+                      · $<span class="font-medium text-zinc-900" x-text="shipmentTotal(product, shipment).toLocaleString()"></span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Deferred-details block — dormant branch (shown only if "send later" ever comes back) -->
+              <div x-show="shipment.detailsMode === 'later'" class="px-6 py-6 space-y-6">
+                <div>
+                  <h3 class="font-serif text-2xl">Order quantity</h3>
+                  <p class="text-zinc-500 text-xs mt-1">Pay for the gift sets now. Recipients fill in personalization through the link before the deadline.</p>
+                </div>
+
+                <div class="flex items-center gap-6">
+                  <span class="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Number of gifts</span>
+                  <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[5px] overflow-hidden">
+                    <button @click="shipment.deferQty > 1 && shipment.deferQty--" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-black">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                    </button>
+                    <input type="number" x-model.number="shipment.deferQty" min="1" class="w-16 text-center text-base font-medium bg-transparent border-x border-zinc-200 py-2 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
+                    <button @click="shipment.deferQty++" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-black">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    </button>
+                  </div>
+                  <span class="text-xs text-zinc-500">
+                    <span class="font-medium text-zinc-900" x-text="shipmentGifts(shipment)"></span> gift<span x-show="shipmentGifts(shipment) !== 1">s</span>
+                    · $<span class="font-medium text-zinc-900" x-text="shipmentTotal(product, shipment).toLocaleString()"></span>
+                  </span>
+                </div>
+
+                <div class="border-t border-zinc-200 pt-5">
+                  <!-- One plain button, not the two-item menu: this branch never shows the table,
+                       so there is nothing to upload a filled template back into. -->
+                  <button @click="downloadTemplate()" class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border border-zinc-300 hover:bg-zinc-50 bg-white rounded-[5px]">
+                    <svg class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                    Download blank template
+                  </button>
+                  <p class="text-xs text-zinc-400 mt-2 leading-snug">Optional. Pre-fill recipient details offline, then upload via the link.</p>
+                </div>
+              </div>
+
+              </div><!-- end disabled-until-address wrapper -->
+            </section>
+          </template>
+
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <!-- ========== PAYMENT / SUMMARY STUB ========== -->
+  <section class="grid grid-cols-2 gap-6 pt-6">
+    <div class="bg-white border border-zinc-200 rounded-[5px] p-8">
+      <h3 class="font-serif text-2xl mb-1">Payment Information</h3>
+      <p class="text-zinc-500 text-xs mb-6">Stub — out of scope for this prototype</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500 mb-2">Billing address <span class="text-red-500">*</span></p>
+          <select class="w-full bg-zinc-50 border border-zinc-300 rounded-[5px] px-4 py-3 text-sm"><option>— Please Select —</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white border border-zinc-200 rounded-[5px] p-8">
+      <h3 class="font-serif text-2xl mb-1">Order Summary</h3>
+      <p class="text-zinc-500 text-xs mb-6">Recalculates live as you edit</p>
+      <div class="space-y-3 text-sm">
+        <template x-for="product in products" :key="'sum-' + product.id">
+          <div class="pb-2 border-b border-zinc-100">
+            <div class="flex justify-between font-medium">
+              <span x-text="product.name"></span>
+              <span>$<span x-text="productTotal(product).toLocaleString()"></span></span>
+            </div>
+            <p class="text-xs text-zinc-500 mt-0.5">
+              <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span> ×
+              <span x-text="product.shipments.length"></span> shipment<span x-show="product.shipments.length > 1">s</span>
+            </p>
+          </div>
+        </template>
+        <div class="flex justify-between"><span class="text-zinc-600">Sub-Total</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
+        <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() > 1">s</span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
+        <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
+      </div>
+      <!-- Primary action = system blue (Ton, 21.08: black Place Order was the old prototype's mistake) -->
+      <button class="w-full mt-6 py-3.5 bg-blue-600 text-white text-[11px] font-semibold uppercase tracking-[0.14em] rounded-[5px] hover:bg-blue-700 transition-colors">Place Order</button>
+      <p class="text-xs text-zinc-500 mt-3 text-center" x-show="anyDefer()">Some recipient details will be completed later via link</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ========== SITE FOOTER — the measured <gb-site-footer> component, same
+     provenance as the header (site-chrome\footer.*). The page ends where
+     gildedbox.com ends. ========== -->
+<gb-site-footer></gb-site-footer>
+
+<!-- ====================================================== -->
+<!-- ===== GREETING CARD DRAWER (master mode for Bulk Actions) ==== -->
+<!-- ====================================================== -->
+<div x-show="drawer.open && drawer.type === 'greeting'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40">
+  <div class="absolute inset-0 bg-black/30" @click="closeDrawer()"></div>
+  <aside class="absolute right-0 top-0 bottom-0 w-[560px] bg-white shadow-2xl drawer-enter overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
+      <div>
+        <h3 class="font-serif text-2xl" x-text="drawer.master ? 'Greeting card · apply to all' : 'Greeting card'"></h3>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="!drawer.master && currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.master">Apply to every recipient. Custom rows are preserved unless overwritten.</p>
+      </div>
+      <button @click="closeDrawer()" class="p-1 text-zinc-400 hover:text-black"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="px-8 py-8 space-y-7">
+
+      <div>
+        <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">To</label>
+        <input type="text" x-model="drawer.data.to" placeholder="Recipient name on card" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+        <p class="text-[11px] text-zinc-400 mt-1.5" x-show="drawer.master">In apply-to-all mode you can use <code class="bg-zinc-100 px-1 rounded text-zinc-600">{{name}}</code> for per-row substitution.</p>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-baseline mb-1">
+          <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Message</label>
+          <span class="text-[11px] text-zinc-400"><span x-text="(drawer.data.message || '').length"></span> / 280</span>
+        </div>
+        <textarea x-model="drawer.data.message" rows="4" maxlength="280" placeholder="Write your message..." class="w-full bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-3 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 resize-none transition"></textarea>
+      </div>
+
+      <div>
+        <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">From</label>
+        <input type="text" x-model="drawer.data.from" placeholder="Your name or company" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+      </div>
+
+    </div>
+    <!-- ============================================================
+         PRIMARY = BLUE 600, everywhere (Ton, 21.08). One committing button per
+         surface wears the accent — Place Order, every drawer's Save / Apply to
+         all, the modal's Import. Cancel stays a text link, Overwrite all keeps
+         its red outline, and the ghost buttons in the step-2 band stay ghosts.
+         The only black left on the page is furniture: the active toggle
+         segment, the demo bar, and the site header and footer.
+         ============================================================ -->
+    <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
+      <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-black">Cancel</button>
+      <div class="flex items-center gap-2">
+        <button x-show="drawer.master" @click="saveMasterGreeting(true)" class="px-4 py-2 text-sm border border-red-300 text-red-700 rounded-md hover:bg-red-50">Overwrite all</button>
+        <button @click="saveGreeting()" class="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium" x-text="drawer.master ? 'Apply to all' : 'Save'"></button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ====================================================== -->
+<!-- ===== ITEM PERSONALIZATION DRAWER ==== -->
+<!-- ====================================================== -->
+<div x-show="drawer.open && drawer.type === 'item'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40">
+  <div class="absolute inset-0 bg-black/30" @click="closeDrawer()"></div>
+  <aside class="absolute right-0 top-0 bottom-0 w-[640px] bg-white shadow-2xl drawer-enter overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
+      <div>
+        <h3 class="font-serif text-2xl" x-text="drawer.master ? 'Gift personalization · apply to all' : 'Gift personalization'"></h3>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="!drawer.master && currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.master">Apply Item 1 and Item 2 to every recipient in this shipment.</p>
+      </div>
+      <button @click="closeDrawer()" class="p-1 text-zinc-400 hover:text-black"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="px-8 py-8 space-y-7">
+
+      <!-- One row per part this gift can carry — the list comes from the product,
+           so the drawer never asks for an engraving the gift does not have. -->
+      <template x-for="(it, idx) in productItems(currentProduct())" :key="'master-item-'+idx">
+        <div class="grid grid-cols-[72px_1fr_212px] gap-5 items-center">
+          <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Item <span x-text="idx + 1"></span></p>
+            <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
+            <p class="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider" x-text="it.sub"></p>
+          </div>
+          <div>
+            <template x-if="it.kind === 'initials'">
+              <div>
+                <div class="flex gap-2.5">
+                  <template x-for="i in 3" :key="'mslot-'+idx+'-'+i">
+                    <input
+                      type="text"
+                      maxlength="1"
+                      :value="itemSlotValue('item' + (idx+1), i-1)"
+                      @input="updateItemSlot('item' + (idx+1), i-1, $event.target.value, $event)"
+                      @keydown="itemSlotKeydown('item' + (idx+1), i-1, $event)"
+                      class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
+                  </template>
+                </div>
+                <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Initials (3 chars · A–Z, 0–9)</p>
+              </div>
+            </template>
+            <template x-if="it.kind !== 'initials'">
+              <div>
+                <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+                <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+    </div>
+    <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
+      <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-black">Cancel</button>
+      <button @click="saveItem()" class="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium" x-text="drawer.master ? 'Apply to all' : 'Save'"></button>
+    </div>
+  </aside>
+</div>
+
+<!-- ====================================================== -->
+<!-- ===== RECIPIENT FULL DRAWER (row click) ==== -->
+<!-- ====================================================== -->
+<div x-show="drawer.open && drawer.type === 'recipient'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40" x-data="{ recipientTab: 'items' }" x-effect="if (drawer.open && drawer.type === 'recipient') recipientTab = 'items'">
+  <div class="absolute inset-0 bg-black/30" @click="closeDrawer()"></div>
+  <aside class="absolute right-0 top-0 bottom-0 w-[640px] bg-white shadow-2xl drawer-enter overflow-y-auto flex flex-col">
+    <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
+      <div>
+        <h3 class="font-serif text-2xl">Personalization</h3>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
+      </div>
+      <button @click="closeDrawer()" class="p-1 text-zinc-400 hover:text-black"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+
+    <!-- TABS — distributed evenly across drawer width, filled state shown via green check-circle icon -->
+    <div class="sticky top-[73px] bg-white border-b border-zinc-200 z-10 px-8 flex">
+      <button @click="recipientTab = 'items'"
+              :class="recipientTab === 'items' ? 'border-blue-600 text-blue-700' : 'border-transparent text-zinc-500 hover:text-zinc-700'"
+              class="flex-1 px-4 py-3 text-sm font-medium border-b-2 -mb-px inline-flex items-center justify-center gap-2 transition">
+        <span>Gift items</span>
+        <svg x-show="currentRecipient() && (currentRecipient().item1 || currentRecipient().item2 || currentRecipient().item3)" class="w-4 h-4 text-green-600 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+      </button>
+      <button @click="recipientTab = 'greeting'"
+              :class="recipientTab === 'greeting' ? 'border-blue-600 text-blue-700' : 'border-transparent text-zinc-500 hover:text-zinc-700'"
+              class="flex-1 px-4 py-3 text-sm font-medium border-b-2 -mb-px inline-flex items-center justify-center gap-2 transition">
+        <span>Greeting card</span>
+        <svg x-show="currentRecipient() && currentRecipient().greeting && currentRecipient().greeting.message" class="w-4 h-4 text-green-600 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+      </button>
+      <button @click="recipientTab = 'video'"
+              :class="recipientTab === 'video' ? 'border-blue-600 text-blue-700' : 'border-transparent text-zinc-500 hover:text-zinc-700'"
+              class="flex-1 px-4 py-3 text-sm font-medium border-b-2 -mb-px inline-flex items-center justify-center gap-2 transition">
+        <span>Video message</span>
+      </button>
+    </div>
+
+    <div class="px-8 py-8 flex-1">
+
+      <!-- ===== ITEMS PANEL ===== -->
+      <section x-show="recipientTab === 'items'">
+        <div class="space-y-7">
+
+          <!-- Qty gets its full name here, next to the fields it actually counts: the number of gifts
+               carrying THIS personalization (Julia's semantics, meeting 20.08) — not "gifts for this person". -->
+          <div class="flex items-center justify-between border-b border-zinc-200 pb-6">
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Quantity of gifts</p>
+              <p class="text-[11px] text-zinc-400 mt-1">How many gifts with this personalization</p>
+            </div>
+            <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[5px] overflow-hidden">
+              <button @click="drawer.data.qty > 1 && drawer.data.qty--" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-black">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+              </button>
+              <input type="number" x-model.number="drawer.data.qty" min="1" class="w-14 text-center text-base font-medium bg-transparent border-x border-zinc-200 py-2 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
+              <button @click="drawer.data.qty++" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-black">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- One row per part of THIS gift (product.items). The Yeti duo has two;
+               the travel set has three. Nothing invents a field the gift can't carry. -->
+          <template x-for="(it, idx) in productItems(currentProduct())" :key="'rec-item-'+idx">
+            <div class="grid grid-cols-[72px_1fr_212px] gap-5 items-center">
+              <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
+              <div>
+                <p class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Item <span x-text="idx + 1"></span></p>
+                <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
+                <p class="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider" x-text="it.sub"></p>
+              </div>
+              <div>
+                <template x-if="it.kind === 'initials'">
+                  <div>
+                    <div class="flex gap-2.5">
+                      <template x-for="i in 3" :key="'rslot-'+idx+'-'+i">
+                        <input
+                          type="text"
+                          maxlength="1"
+                          :value="itemSlotValue('item' + (idx+1), i-1)"
+                          @input="updateItemSlot('item' + (idx+1), i-1, $event.target.value, $event)"
+                          @keydown="itemSlotKeydown('item' + (idx+1), i-1, $event)"
+                          class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
+                      </template>
+                    </div>
+                    <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Initials (3 chars · A–Z, 0–9)</p>
+                  </div>
+                </template>
+                <template x-if="it.kind !== 'initials'">
+                  <div>
+                    <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+                    <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+
+        </div>
+      </section>
+
+      <!-- ===== GREETING PANEL ===== -->
+      <section x-show="recipientTab === 'greeting'">
+        <div class="space-y-7">
+
+          <div>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">To</label>
+            <input type="text" x-model="drawer.data.greeting.to" placeholder="Recipient name on the card" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-baseline mb-1">
+              <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Message</label>
+              <span class="text-[11px] text-zinc-400"><span x-text="(drawer.data.greeting.message || '').length"></span> / 280</span>
+            </div>
+            <textarea x-model="drawer.data.greeting.message" rows="4" maxlength="280" placeholder="Write your message..." class="w-full bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-3 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 resize-none transition"></textarea>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">From</label>
+            <input type="text" x-model="drawer.data.greeting.from" placeholder="Your name or company" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ===== VIDEO PANEL ===== -->
+      <section x-show="recipientTab === 'video'">
+        <p class="text-sm text-zinc-600 mb-5">Record once, reuse for all recipients in this shipment, or upload individual.</p>
+        <button class="w-full flex items-center gap-4 px-4 py-4 border border-zinc-500 hover:border-zinc-700 transition text-left">
+          <svg class="w-5 h-5 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+          <div>
+            <p class="text-sm text-zinc-900">Click to upload or record</p>
+            <p class="text-[11px] text-zinc-400 uppercase tracking-wider mt-0.5">MP4, MOV · up to 200MB</p>
+          </div>
+        </button>
+      </section>
+    </div>
+
+    <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-6 py-4 flex items-center justify-between">
+      <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-black">Cancel</button>
+      <button @click="saveRecipient()" class="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">Save</button>
+    </div>
+  </aside>
+</div>
+
+<!-- ====================================================== -->
+<!-- ===== ADDRESS DRAWER (Tiffany style + Address book picker) ==== -->
+<!-- ====================================================== -->
+<div x-show="drawer.open && drawer.type === 'address'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40" x-data="{ bookOpen: false }" x-effect="if (!drawer.open) bookOpen = false">
+  <div class="absolute inset-0 bg-black/30" @click="closeDrawer()"></div>
+  <aside class="absolute right-0 top-0 bottom-0 w-[560px] bg-white shadow-2xl drawer-enter overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
+      <div>
+        <h3 class="font-serif text-2xl" x-text="drawer.addressBookMode ? 'Add new address' : 'Shipping address'"></h3>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.addressBookMode">Saved to address book, then selected as Ship To</p>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="!drawer.addressBookMode && currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
+      </div>
+      <button @click="closeDrawer()" class="p-1 text-zinc-400 hover:text-black"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="px-8 py-8 space-y-7">
+
+      <!-- Address book picker (per-recipient mode only — skip when creating a new book entry) -->
+      <div x-show="!drawer.addressBookMode" class="space-y-2">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Use a saved address</p>
+        <div class="relative">
+          <button @click="bookOpen = !bookOpen" class="w-full flex items-center justify-between text-left h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
+            <span class="text-base text-zinc-500">Choose from address book…</span>
+            <svg class="w-4 h-4 text-zinc-500 transition-transform" :class="bookOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+          </button>
+          <div x-show="bookOpen" @click.outside="bookOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-2 bg-white border border-zinc-200 rounded-md shadow-lg z-30 overflow-hidden">
+            <template x-for="addr in addressBook" :key="'book-' + addr.id">
+              <button @click="useAddressBookEntry(addr.id); bookOpen = false" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+                <p class="text-sm font-medium text-zinc-900" x-text="addr.name"></p>
+                <p class="text-xs text-zinc-500 truncate mt-0.5" x-text="addr.label"></p>
+              </button>
+            </template>
+          </div>
+        </div>
+        <p class="text-[11px] text-zinc-400">Or fill in a new address below.</p>
+      </div>
+
+      <!-- Details -->
+      <div class="space-y-5">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Details</p>
+        <div class="grid grid-cols-2 gap-5">
+          <div>
+            <!-- Per-recipient mode: this IS the field the table calls "Name for personalization",
+                 and saving prefills the row that has none yet (Valerie, 20.08) — so it wears the
+                 same words and the same permission to stay empty (approved copy set, 21.08).
+                 Address-book mode keeps the neutral, and genuinely required, "Full name". -->
+            <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1"><span x-text="drawer.addressBookMode ? 'Full name' : 'Name for personalization'"></span> <span class="text-red-500" x-show="drawer.addressBookMode">*</span></label>
+            <input type="text" x-model="drawer.data.name" :placeholder="drawer.addressBookMode ? 'Anton Parkhomenko' : 'Name or initials (optional)'" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">Company <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
+            <input type="text" x-model="drawer.data.company" placeholder="GildedBox" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+          </div>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">Phone <span class="text-zinc-400 font-normal normal-case tracking-normal">(for delivery)</span></label>
+          <input type="tel" x-model="drawer.data.phone" placeholder="+1 555 123 4567" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="space-y-5">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Address</p>
+        <div>
+          <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">Street <span class="text-red-500">*</span></label>
+          <input type="text" x-model="drawer.data.street" placeholder="123 Main St" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">Apt / Suite <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
+          <input type="text" x-model="drawer.data.apt" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+        </div>
+        <div class="grid grid-cols-3 gap-5">
+          <div>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">City <span class="text-red-500">*</span></label>
+            <input type="text" x-model="drawer.data.city" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">State <span class="text-red-500">*</span></label>
+            <input type="text" x-model="drawer.data.state" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">ZIP <span class="text-red-500">*</span></label>
+            <input type="text" x-model="drawer.data.zip" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+          </div>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500 block mb-1">Country <span class="text-red-500">*</span></label>
+          <select x-model="drawer.data.country" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition appearance-none cursor-pointer"><option>United States</option><option>Canada</option><option>Italy</option><option>United Kingdom</option><option>Germany</option><option>France</option></select>
+        </div>
+      </div>
+
+      <!-- Shipping method (only for per-recipient mode, NOT for address book creation) -->
+      <div x-show="!drawer.addressBookMode" class="space-y-3">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Shipping for this address</p>
+        <div class="space-y-2">
+          <template x-for="opt in shippingOptions" :key="'sh-'+opt.id">
+            <label class="flex items-center p-3 border rounded-md cursor-pointer transition" :class="drawer.data.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 hover:border-zinc-400'">
+              <span class="flex items-center gap-3">
+                <input type="radio" name="drawer-shipping" :value="opt.id" x-model="drawer.data.shipping" class="accent-blue-600 w-4 h-4">
+                <span>
+                  <span class="text-sm font-medium block leading-tight" x-text="opt.label"></span>
+                  <span class="block text-[13px] text-zinc-500">$<span x-text="opt.cost"></span></span>
+                </span>
+              </span>
+            </label>
+          </template>
+        </div>
+      </div>
+
+      <!-- Estimated shipping notice (only for address book mode — shipping picked at shipment level) -->
+      <div x-show="drawer.addressBookMode" class="bg-zinc-50 rounded p-3 text-xs text-zinc-600 flex items-center gap-2">
+        <svg class="w-4 h-4 text-zinc-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Shipping method will be selected at the shipment level after saving.</span>
+      </div>
+    </div>
+    <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
+      <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-black">Cancel</button>
+      <button @click="saveAddress()" class="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium" x-text="drawer.addressBookMode ? 'Save & use for this shipment' : 'Save address & shipping'"></button>
+    </div>
+  </aside>
+</div>
+
+<!-- ====================================================== -->
+<!-- ===== CSV UPLOAD MODAL ==== -->
+<!-- ====================================================== -->
+<div x-show="csv.open" x-cloak x-transition:leave="modal-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-8">
+  <div class="absolute inset-0 bg-black/40" @click="csv.open = false"></div>
+  <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl modal-enter">
+    <div class="px-6 py-5 border-b border-zinc-200 flex items-center justify-between">
+      <div>
+        <h3 class="font-serif text-2xl">Upload personalization template</h3>
+        <div class="flex items-center gap-2 mt-2 text-xs">
+          <span :class="csv.step >= 1 ? 'text-blue-600 font-medium' : 'text-zinc-400'">1. Select file</span>
+          <svg class="w-3 h-3 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+          <span :class="csv.step >= 2 ? 'text-blue-600 font-medium' : 'text-zinc-400'">2. Preview & validate</span>
+          <svg class="w-3 h-3 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+          <span :class="csv.step >= 3 ? 'text-blue-600 font-medium' : 'text-zinc-400'">3. Imported</span>
+        </div>
+      </div>
+      <button @click="csv.open = false" class="text-zinc-400 hover:text-black"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+
+    <div x-show="csv.step === 1" class="p-8">
+      <button @click="simulateUpload()" class="w-full flex flex-col items-center gap-3 py-12 border-2 border-dashed border-zinc-300 rounded-lg hover:border-black hover:bg-zinc-50">
+        <svg class="w-12 h-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+        <p class="text-sm font-medium">Drop CSV here or click to select</p>
+        <p class="text-xs text-zinc-500">For demo: clicking simulates an upload with sample data</p>
+      </button>
+      <div class="mt-4 flex items-center gap-2 text-xs text-zinc-600">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Need a template? <button @click="downloadTemplate()" class="underline underline-offset-2">Download blank template</button></span>
+      </div>
+    </div>
+
+    <div x-show="csv.step === 2" class="p-6">
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="bg-zinc-50 rounded p-3 text-center"><p class="font-serif text-2xl" x-text="csv.preview.total"></p><p class="text-xs text-zinc-500 uppercase">Total rows</p></div>
+        <div class="bg-green-50 rounded p-3 text-center"><p class="font-serif text-2xl text-green-700" x-text="csv.preview.valid"></p><p class="text-xs text-green-700 uppercase">Valid</p></div>
+        <div class="bg-red-50 rounded p-3 text-center"><p class="font-serif text-2xl text-red-700" x-text="csv.preview.errors"></p><p class="text-xs text-red-700 uppercase">With errors</p></div>
+      </div>
+      <div class="border border-zinc-200 rounded overflow-hidden max-h-64 overflow-y-auto">
+        <table class="w-full text-xs">
+          <thead class="bg-zinc-50 sticky top-0">
+            <tr><th class="p-2 text-left font-medium">Name</th><th class="p-2 text-left font-medium">Address</th><th class="p-2 text-left font-medium">ZIP</th><th class="p-2 text-left font-medium">Status</th></tr>
+          </thead>
+          <tbody>
+            <template x-for="(row, i) in csv.preview.rows" :key="i">
+              <tr :class="row.error ? 'bg-red-50' : ''" class="border-t border-zinc-100">
+                <td class="p-2" x-text="row.name"></td>
+                <td class="p-2" x-text="row.address"></td>
+                <td class="p-2" :class="row.error ? 'text-red-700 font-medium' : ''" x-text="row.zip || '—'"></td>
+                <td class="p-2">
+                  <span x-show="!row.error" class="inline-flex items-center gap-1 text-green-700"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg> Valid</span>
+                  <span x-show="row.error" class="inline-flex items-center gap-1 text-red-700"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> <span x-text="row.error"></span></span>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-amber-50 border border-amber-200 rounded p-3 mt-3 text-xs text-amber-900" x-show="csv.preview.errors > 0">
+        <strong>Heads up:</strong> rows with errors are imported and highlighted in the table so you can fix them inline.
+      </div>
+    </div>
+
+    <div x-show="csv.step === 3" class="p-8 text-center">
+      <svg class="w-16 h-16 text-green-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <h4 class="font-serif text-2xl mt-3">Imported</h4>
+      <p class="text-sm text-zinc-600 mt-1"><span x-text="csv.preview.total"></span> recipients added to your shipment</p>
+    </div>
+
+    <div class="px-6 py-4 border-t border-zinc-200 flex items-center justify-between">
+      <button @click="csv.open = false" class="text-sm text-zinc-600 hover:text-black" x-text="csv.step === 3 ? 'Done' : 'Cancel'"></button>
+      <button x-show="csv.step === 2" @click="confirmCSVImport()" class="px-5 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">Import all <span x-text="csv.preview.total"></span> rows</button>
+    </div>
+  </div>
+</div>
+
+<!-- Site chrome custom elements: they render their own markup on upgrade,
+     no fetch, so they work from file:// exactly as on the demo pages. -->
+<script src="demo/components/header.js"></script>
+<script src="demo/components/footer.js"></script>
+
+<!-- ========== ALPINE STATE / METHODS ========== -->
+<script>
+function checkoutApp() {
+  return {
+    // ===== ADDRESS BOOK =====
+    addressBook: [
+      { id: 'a1', name: 'Anton Parkhomenko', label: '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US' },
+      { id: 'a2', name: 'Acme NYC Office',   label: '500 5th Ave, New York, NY 10110, US' },
+      { id: 'a3', name: 'Acme LA Studio',    label: '1234 Sunset Blvd, Los Angeles, CA 90028, US' },
+    ],
+
+    // ===== SCENARIO STATE =====
+    scenario: 'customizer',
+
+    setScenario(name) {
+      this.scenario = name;
+      this.bulkMenuOpen = null;
+      this.tplMenuOpen = null;
+      this.drawer = { open: false, type: null, productId: null, shipmentId: null, recipientId: null, master: false, data: this.blankDrawerData() };
+      this.csv = { open: false, step: 1, productId: null, shipmentId: null, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
+
+      if (name === 'customizer')        this.products = [this.scenarioCustomizer()];
+      else if (name === 'portalEmpty')  this.products = [this.scenarioPortalEmpty()];
+      else if (name === 'portalLoaded') this.products = this.scenarioPortalLoaded(); // two products
+    },
+
+    // ===== GIFT CATALOGUE =====
+    // What can actually be engraved / printed on each gift, in table order.
+    // The table always shows three "Personalize Item" columns the way live does;
+    // a gift with fewer parts prints a dash in the extra column instead of an
+    // invitation to fill in something that does not exist (Jorge, 19.08).
+    catalogue: {
+      coffee: [
+        { badge: 'Pearl', label: 'Onyx Candle',    sub: 'Engraved on front lid', kind: 'initials' },
+        { badge: 'Onyx',  label: 'Coffee bag tag', sub: 'Printed tag on bag',    kind: 'text' },
+        { badge: 'Mug',   label: 'Ceramic mug',    sub: 'Printed under handle',  kind: 'text' }
+      ],
+      executive: [
+        { badge: 'Tag',   label: 'Apple AirTag',   sub: 'Engraved on the back',  kind: 'initials' },
+        { badge: 'Leather', label: 'Luggage Tag',  sub: 'Debossed on the front', kind: 'text' },
+        { badge: 'Sleeve', label: 'Passport sleeve', sub: 'Foiled corner',       kind: 'text' }
+      ],
+      // Two items, both plain stock: nothing to engrave, nothing to ask for.
+      yeti: [
+        { badge: '20oz',  label: 'Yeti Tumbler',    sub: 'Laser mark on the base', kind: 'text' },
+        { badge: 'Mug',   label: 'Yeti Travel Mug', sub: 'Laser mark on the base', kind: 'text' }
+      ]
+    },
+
+    // Scenario A: from 3D Customizer.
+    // The customizer doesn't ask for recipient's full name — only personalization
+    // (initials, tag name, greeting) is optionally collected. Full name + address + shipping
+    // are entered later on the checkout page.
+    scenarioCustomizer() {
+      return {
+        id: 1,
+        name: 'Coffee Lover Gift Set',
+        price: 95,
+        image: 'checkout-assets/prototype-gift.png',
+        items: this.catalogue.coffee,
+        shipments: [{
+          id: 11,
+          addressMode: 'same',
+          detailsMode: 'now',   // was null — chooser temporarily hidden, see markup comment
+          shipping: 'ground',
+          deadline: '2025-08-15',
+          page: 1,
+          shipToId: null,
+          shipToLabel: '',
+          deferQty: 1,
+          recipients: [
+            { id: 111, name: '', qty: 1, item1: 'AC', item2: 'Alex', item3: '',
+              greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true },
+              address: '', selected: false }
+          ]
+        }]
+      };
+    },
+
+    // Scenario B: empty checkout from portal. No recipients yet.
+    scenarioPortalEmpty() {
+      return {
+        id: 1,
+        name: 'Coffee Lover Gift Set',
+        price: 95,
+        image: 'checkout-assets/prototype-gift.png',
+        items: this.catalogue.coffee,
+        shipments: [{
+          id: 11,
+          addressMode: 'same',
+          detailsMode: 'now',   // was null — chooser temporarily hidden, see markup comment
+          shipping: 'ground',
+          deadline: '2025-08-15',
+          page: 1,
+          shipToId: null,
+          shipToLabel: '',
+          deferQty: 1,
+          recipients: []
+        }]
+      };
+    },
+
+    // Scenario C: Jorge Garciadealba's cart, 19.08 (live-refs\email-2026-08-19).
+    // Two products in one order — the mixed cart the platform handles worst:
+    //   A. a customized Executive Travel Set going to five named people;
+    //   B. nine Yeti duos to one office address with nothing personalized at all.
+    // Product B is the whole argument in one row: no name, no items, qty 9.
+    scenarioPortalLoaded() {
+      const office = this.addressBook[0];
+      return [
+        {
+          id: 1,
+          name: 'Executive Travel Set',
+          price: 145,
+          image: 'checkout-assets/prototype-gift.png',
+          items: this.catalogue.executive,
+          shipments: [{
+            id: 11,
+            addressMode: 'different',
+            detailsMode: 'now',   // was null — chooser temporarily hidden, see markup comment
+            shipping: 'ground',
+            deadline: '2025-08-15',
+            page: 1,
+            shipToId: null,
+            shipToLabel: '',
+            deferQty: 1,
+            recipients: [
+              { id: 211, name: 'Yuki Tanaka',    qty: 1, item1: 'YT', item2: 'Yuki',   item3: '', greeting: { to: 'Yuki',   message: 'Thanks for hustle this quarter. You moved mountains.', from: 'Engineering', fromMaster: false, custom: true }, address: '5 Bay St, San Francisco, CA, 94103, US',  shipping: 'ground', selected: false },
+              { id: 212, name: 'Léa Bernard',    qty: 1, item1: 'LB', item2: 'Léa',    item3: '', greeting: { to: 'Léa',    message: 'Three years and counting. Thank you.',                from: 'CEO',         fromMaster: false, custom: true }, address: '9 River Ct, Denver, CO, 80202, US',      shipping: 'ground', selected: false },
+              { id: 213, name: 'Henrik Larsson', qty: 1, item1: 'HL', item2: 'Henrik', item3: '', greeting: { to: 'Henrik', message: 'For everything you do behind the scenes.',           from: 'Ops',         fromMaster: false, custom: true }, address: '64 Hill Rd, Boulder, CO, 80301, US',     shipping: 'ground', selected: false },
+              { id: 214, name: 'Aisha Patel',    qty: 2, item1: 'AP', item2: 'Aisha',  item3: '', greeting: { to: 'Aisha',  message: 'Welcome aboard. Glad you joined us.',                from: 'People Ops',  fromMaster: false, custom: true }, address: '12 Park Ave, NY, NY, 10016, US',         shipping: 'ground', selected: false },
+              { id: 215, name: 'Theo Mendez',    qty: 1, item1: 'TM', item2: 'Theo',   item3: '', greeting: { to: 'Theo',   message: 'Year one in the books. Onward!',                    from: 'The team',    fromMaster: false, custom: true }, address: '301 Mission St, SF, CA, 94105, US',      shipping: 'ground', selected: false }
+            ]
+          }]
+        },
+        {
+          id: 2,
+          name: 'Yeti Hydration Duo',
+          price: 89,
+          image: 'checkout-assets/prototype-gift.png',
+          items: this.catalogue.yeti,
+          shipments: [{
+            id: 21,
+            addressMode: 'same',
+            detailsMode: 'now',
+            shipping: 'ground',
+            deadline: '2025-08-15',
+            page: 1,
+            shipToId: office ? office.id : null,
+            shipToLabel: office ? office.name + ', ' + office.label : '',
+            deferQty: 1,
+            recipients: [
+              // One row, nine gifts, no name: "how do I proceed without customizing
+              // those items?" answered by the row itself.
+              { id: 221, name: '', qty: 9, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
+            ]
+          }]
+        }
+      ];
+    },
+
+    // ===== INIT =====
+    init() {
+      this.setScenario('customizer');
+    },
+
+    // ===== DATA MODEL (filled by setScenario in init) =====
+    products: [],
+
+    // Prices, no transit times: live shows the money and nothing else on these cards.
+    shippingOptions: [
+      { id: 'ground',    label: 'UPS Ground',    cost: 29 },
+      { id: '2day',      label: 'UPS 2-Day',     cost: 39 },
+      { id: 'overnight', label: 'UPS Overnight', cost: 49 }
+    ],
+
+    // ===== UI STATE =====
+    // Two menus in the step-2 band, one open at a time; each button clears the other.
+    bulkMenuOpen: null,   // Edit Selected
+    tplMenuOpen: null,    // Bulk Personalize
+    drawer: { open: false, type: null, productId: null, shipmentId: null, recipientId: null, master: false, data: { greeting: { to: '', message: '', from: '' } } },
+    csv: { open: false, step: 1, productId: null, shipmentId: null, preview: { total: 0, valid: 0, errors: 0, rows: [] } },
+
+    // ===== HELPERS =====
+    findProduct(productId) { return this.products.find(p => p.id === productId); },
+    findShipment(productId, shipmentId) {
+      const p = this.findProduct(productId);
+      return p ? p.shipments.find(s => s.id === shipmentId) : null;
+    },
+    findRecipient(productId, shipmentId, recipientId) {
+      const s = this.findShipment(productId, shipmentId);
+      return s ? s.recipients.find(r => r.id === recipientId) : null;
+    },
+
+    // ===== COMPUTEDS =====
+    // In "I'll do it later" mode, gift count comes from shipment.deferQty (set via
+    // the prominent qty selector). In "now" mode, sum recipients[].qty as before.
+    shipmentGifts(s) {
+      if (s.detailsMode === 'later') return s.deferQty || 0;
+      return s.recipients.reduce((sum, r) => sum + (r.qty || 0), 0);
+    },
+    shipmentTotal(p, s) { return this.shipmentGifts(s) * p.price; },
+    productGifts(p) { return p.shipments.reduce((sum, s) => sum + this.shipmentGifts(s), 0); },
+    productTotal(p) { return this.productGifts(p) * p.price; },
+
+    greetingPreview(g) {
+      if (!g || !g.message) return '';
+      const msg = g.message.length > 50 ? g.message.slice(0, 50) + '…' : g.message;
+      return '“' + msg + '”';
+    },
+    shipToName(shipment) {
+      if (!shipment || !shipment.shipToId) return '';
+      const addr = this.addressBook.find(a => a.id === shipment.shipToId);
+      return addr ? addr.name : '';
+    },
+    itemSlotValue(field, idx) {
+      return (this.drawer.data[field] || '').charAt(idx) || '';
+    },
+    updateItemSlot(field, idx, val, evt) {
+      const arr = ((this.drawer.data[field] || '') + '   ').split('').slice(0, 3);
+      arr[idx] = (val || '').toUpperCase();
+      const newVal = arr.join('').replace(/\s+$/g, '');
+      this.drawer.data[field] = newVal;
+      if (val && evt && evt.target.nextElementSibling && evt.target.nextElementSibling.tagName === 'INPUT') {
+        evt.target.nextElementSibling.focus();
+      }
+    },
+    itemSlotKeydown(field, idx, evt) {
+      if (evt.key === 'Backspace' && !evt.target.value && idx > 0 && evt.target.previousElementSibling && evt.target.previousElementSibling.tagName === 'INPUT') {
+        evt.target.previousElementSibling.focus();
+      }
+    },
+    greetingSubLabel(g) {
+      if (!g) return '';
+      if (g.fromMaster) return 'From master card';
+      if (g.custom) return 'Custom';
+      return g.from ? '— ' + g.from : '';
+    },
+
+    // How many of the three table columns this gift can actually fill.
+    productItemCount(p) { return (p && p.items) ? p.items.length : 3; },
+    productItems(p) { return (p && p.items) ? p.items : []; },
+
+    selectedCount(s) { return s.recipients.filter(r => r.selected).length; },
+    allSelected(s) { return s.recipients.length > 0 && s.recipients.every(r => r.selected); },
+
+    // applyDisabledReason() lived here: three sentences explaining why the items inside
+    // the menu were greyed out. The gate moved up to the Edit Selected button itself
+    // (disabled with a "Select rows first" tooltip until rows are ticked), so the menu
+    // never opens in a state that needs an apology, and the helper went with it.
+
+    // Dynamic headline for Different-per-recipient mode.
+    // Mirrors the Same-mode pattern: small label + one informative serif line.
+    differentSummary(shipment) {
+      if (!shipment) return '';
+      const recipients = shipment.recipients || [];
+      if (recipients.length === 0) return 'No recipients yet';
+      const withAddress = recipients.filter(r => r.address);
+      const cities = new Set();
+      withAddress.forEach(r => {
+        const parsed = this.parseAddress(r.address);
+        if (parsed.city) cities.add(parsed.city);
+      });
+      const n = recipients.length;
+      const c = cities.size;
+      const recipWord = n === 1 ? 'recipient' : 'recipients';
+      if (c === 0) return `${n} ${recipWord} · addresses pending`;
+      const cityWord = c === 1 ? 'city' : 'cities';
+      return `Going to ${n} ${recipWord} across ${c} ${cityWord}`;
+    },
+
+    shippingCost(shippingId) {
+      const opt = this.shippingOptions.find(o => o.id === shippingId);
+      return opt ? opt.cost : 0;
+    },
+    shippingLabel(shippingId) {
+      const opt = this.shippingOptions.find(o => o.id === shippingId);
+      return opt ? opt.label : '';
+    },
+    estimatedShipping(s) {
+      if (s.addressMode === 'same') {
+        return this.shippingCost(s.shipping);
+      }
+      // Different per recipient: sum of per-recipient shipping costs
+      return s.recipients.reduce((sum, r) => sum + this.shippingCost(r.shipping || 'ground'), 0);
+    },
+
+    paginatedRecipients(s) {
+      const start = (s.page - 1) * 10;
+      return s.recipients.slice(start, start + 10);
+    },
+    totalPages(s) { return Math.max(1, Math.ceil(s.recipients.length / 10)); },
+    pageNumbers(s) {
+      const total = this.totalPages(s);
+      const current = s.page;
+      const pages = [];
+      const start = Math.max(1, current - 2);
+      const end = Math.min(total, start + 4);
+      for (let i = start; i <= end; i++) pages.push(i);
+      return pages;
+    },
+
+    orderSubtotal() { return this.products.reduce((sum, p) => sum + this.productTotal(p), 0); },
+    totalShipments() { return this.products.reduce((sum, p) => sum + p.shipments.length, 0); },
+    orderShipping() {
+      return this.products.reduce((sum, p) =>
+        sum + p.shipments.reduce((s, sh) => s + this.estimatedShipping(sh), 0), 0);
+    },
+    anyDefer() {
+      return this.products.some(p => p.shipments.some(s => s.detailsMode === 'later'));
+    },
+
+    currentProduct()   { return this.findProduct(this.drawer.productId); },
+    currentShipment()  { return this.findShipment(this.drawer.productId, this.drawer.shipmentId); },
+    currentRecipient() { return this.findRecipient(this.drawer.productId, this.drawer.shipmentId, this.drawer.recipientId); },
+
+    // ===== ACTIONS: RECIPIENTS =====
+    toggleAllSelected(s, checked) { s.recipients.forEach(r => r.selected = checked); },
+    addRecipient(productId, shipmentId) {
+      const s = this.findShipment(productId, shipmentId);
+      s.recipients.push({ id: Date.now(), name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false });
+      s.page = this.totalPages(s);
+    },
+    removeRecipient(productId, shipmentId, recipientId) {
+      const s = this.findShipment(productId, shipmentId);
+      s.recipients = s.recipients.filter(r => r.id !== recipientId);
+      if (s.page > this.totalPages(s)) s.page = this.totalPages(s);
+    },
+
+    // ===== ACTIONS: SHIPMENTS (inside a product) =====
+    addShipment(productId) {
+      const p = this.findProduct(productId);
+      const newId = Date.now();
+      const firstAddr = this.addressBook[0];
+      p.shipments.push({
+        id: newId,
+        addressMode: 'same',
+        detailsMode: 'now',   // was null — chooser temporarily hidden, see markup comment
+        shipping: 'ground',
+        deadline: '2025-08-15',
+        page: 1,
+        shipToId: firstAddr ? firstAddr.id : null,
+        shipToLabel: firstAddr ? firstAddr.label : '',
+        deferQty: 1,
+        recipients: [
+          { id: newId + 1, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
+        ]
+      });
+    },
+    removeShipment(productId, shipmentId) {
+      const p = this.findProduct(productId);
+      if (p.shipments.length <= 1) {
+        alert('At least one shipment is required. Remove the product instead if you don\'t need this gift.');
+        return;
+      }
+      p.shipments = p.shipments.filter(s => s.id !== shipmentId);
+    },
+
+    // ===== ACTIONS: PRODUCTS =====
+    addProduct() {
+      const newId = Date.now();
+      this.products.push({
+        id: newId,
+        name: 'New Gift Set',
+        price: 95,
+        image: 'checkout-assets/prototype-gift.png',
+        items: this.catalogue.coffee,
+        shipments: [{
+          id: newId + 100,
+          addressMode: 'same',
+          detailsMode: 'now',   // was null — chooser temporarily hidden, see markup comment
+          shipping: 'ground',
+          deadline: '2025-08-15',
+          page: 1,
+          deferQty: 1,
+          recipients: [
+            { id: newId + 101, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
+          ]
+        }]
+      });
+    },
+    removeProduct(idx) {
+      if (this.products.length <= 1) return;
+      if (!confirm('Remove this product and all its shipments?')) return;
+      this.products.splice(idx, 1);
+    },
+
+    // ===== DRAWERS =====
+    // All four drawers stay in the DOM behind x-show and share one `drawer.data`
+    // bag, so Alpine keeps evaluating the greeting panel's `drawer.data.greeting.to`
+    // even while the item drawer is the one on screen. The bag therefore always
+    // carries an empty greeting; without it every open threw "cannot read
+    // properties of undefined" into the console.
+    blankDrawerData() {
+      return { greeting: { to: '', message: '', from: '' } };
+    },
+
+    openGreetingDrawer(productId, shipmentId, recipientId) {
+      const r = this.findRecipient(productId, shipmentId, recipientId);
+      this.drawer = {
+        open: true, type: 'greeting', productId, shipmentId, recipientId, master: false,
+        data: { ...this.blankDrawerData(), ...(r.greeting || {}) }
+      };
+    },
+    openItemDrawer(productId, shipmentId, recipientId) {
+      const r = this.findRecipient(productId, shipmentId, recipientId);
+      this.drawer = {
+        open: true, type: 'item', productId, shipmentId, recipientId, master: false,
+        data: { ...this.blankDrawerData(), item1: r.item1 || '', item2: r.item2 || '', item3: r.item3 || '' }
+      };
+    },
+    useAddressBookEntry(id) {
+      const addr = this.addressBook.find(a => a.id === id);
+      if (!addr) return;
+      const parsed = this.parseAddress(addr.label);
+      Object.assign(this.drawer.data, { name: addr.name, ...parsed });
+    },
+    parseAddress(label) {
+      const empty = { street: '', apt: '', city: '', state: '', zip: '', country: 'United States' };
+      if (!label) return empty;
+      const parts = label.split(',').map(s => s.trim()).filter(Boolean);
+      const normalizeCountry = c => (c === 'US' || c === 'USA') ? 'United States' : c;
+      // "street, city, state zip, country"
+      if (parts.length === 4) {
+        const sz = parts[2].split(/\s+/);
+        return { street: parts[0], apt: '', city: parts[1], state: sz[0] || '', zip: sz.slice(1).join(' ') || '', country: normalizeCountry(parts[3]) };
+      }
+      // "street, city, state, zip, country"
+      if (parts.length === 5) {
+        return { street: parts[0], apt: '', city: parts[1], state: parts[2], zip: parts[3], country: normalizeCountry(parts[4]) };
+      }
+      // "street, apt, city, state, zip, country"
+      if (parts.length === 6) {
+        return { street: parts[0], apt: parts[1], city: parts[2], state: parts[3], zip: parts[4], country: normalizeCountry(parts[5]) };
+      }
+      return { ...empty, street: label };
+    },
+    openAddressDrawer(productId, shipmentId, recipientId) {
+      const r = this.findRecipient(productId, shipmentId, recipientId);
+      const parsed = this.parseAddress(r && r.address);
+      this.drawer = {
+        open: true, type: 'address', productId, shipmentId, recipientId, master: false, addressBookMode: false,
+        data: { ...this.blankDrawerData(), name: (r && r.name) || '', company: '', phone: '', ...parsed, shipping: (r && r.shipping) || 'ground' }
+      };
+    },
+    openAddressBookDrawer(productId, shipmentId) {
+      this.drawer = {
+        open: true, type: 'address', productId, shipmentId, recipientId: null, master: false, addressBookMode: true,
+        data: { ...this.blankDrawerData(), name: '', company: '', phone: '', street: '', apt: '', city: '', state: '', zip: '', country: 'United States', shipping: 'ground' }
+      };
+    },
+    openMasterDrawer(productId, shipmentId, type) {
+      this.bulkMenuOpen = null;
+      this.drawer = {
+        open: true, type, productId, shipmentId, recipientId: null, master: true,
+        data: type === 'greeting'
+          ? { ...this.blankDrawerData(), to: '', message: '', from: '' }
+          : { ...this.blankDrawerData(), item1: '', item2: '', item3: '' }
+      };
+    },
+    openRecipientDrawer(productId, shipmentId, recipientId) {
+      const r = this.findRecipient(productId, shipmentId, recipientId);
+      if (!r) return;
+      this.drawer = {
+        open: true, type: 'recipient', productId, shipmentId, recipientId, master: false,
+        data: {
+          qty: r.qty || 1,
+          item1: r.item1 || '',
+          item2: r.item2 || '',
+          item3: r.item3 || '',
+          greeting: { ...(r.greeting || { to: '', message: '', from: '' }) }
+        }
+      };
+    },
+    saveRecipient() {
+      const r = this.currentRecipient();
+      if (!r) return;
+      r.qty = Math.max(1, this.drawer.data.qty || 1);
+      r.item1 = this.drawer.data.item1;
+      r.item2 = this.drawer.data.item2;
+      r.item3 = this.drawer.data.item3;
+      const g = this.drawer.data.greeting;
+      if (g.message || g.to || g.from) {
+        r.greeting = { ...g, fromMaster: false, custom: true };
+      } else {
+        r.greeting = null;
+      }
+      this.closeDrawer();
+    },
+    closeDrawer() { this.drawer.open = false; },
+
+    // The greeting drawer types into the flat to/message/from of drawer.data;
+    // pick exactly those three so the shared bag's other keys never ride along.
+    greetingFromDrawer(flags) {
+      const d = this.drawer.data;
+      return Object.assign({ to: d.to || '', message: d.message || '', from: d.from || '' }, flags);
+    },
+    saveGreeting() {
+      const s = this.currentShipment();
+      if (this.drawer.master) {
+        s.recipients.forEach(r => {
+          if (!r.greeting || !r.greeting.custom) {
+            r.greeting = this.greetingFromDrawer({ fromMaster: true, custom: false });
+          }
+        });
+      } else {
+        const r = this.currentRecipient();
+        r.greeting = this.greetingFromDrawer({ fromMaster: false, custom: true });
+      }
+      this.closeDrawer();
+    },
+    saveMasterGreeting(overwrite) {
+      const s = this.currentShipment();
+      s.recipients.forEach(r => {
+        if (overwrite || !r.greeting || !r.greeting.custom) {
+          r.greeting = this.greetingFromDrawer({ fromMaster: true, custom: false });
+        }
+      });
+      this.closeDrawer();
+    },
+    saveItem() {
+      const s = this.currentShipment();
+      // Apply-to-all still writes every row of the shipment, selection or not —
+      // the long-standing gap between this menu's wording and its reach (ANATOMY §5).
+      const write = r => {
+        r.item1 = this.drawer.data.item1;
+        r.item2 = this.drawer.data.item2;
+        r.item3 = this.drawer.data.item3;
+      };
+      if (this.drawer.master) s.recipients.forEach(write);
+      else { const r = this.currentRecipient(); if (r) write(r); }
+      this.closeDrawer();
+    },
+    saveAddress() {
+      const d = this.drawer.data;
+      const label = `${d.street}${d.apt ? ', ' + d.apt : ''}, ${d.city}, ${d.state} ${d.zip}, ${d.country}`;
+      const hasAddress = !!(d.street || d.city || d.zip);
+
+      if (this.drawer.addressBookMode) {
+        if (!hasAddress) { this.closeDrawer(); return; }
+        const newId = 'a' + Date.now();
+        this.addressBook.push({ id: newId, name: d.name || 'Unnamed', label });
+        const s = this.currentShipment();
+        if (s) { s.shipToId = newId; s.shipToLabel = label; }
+      } else {
+        const r = this.currentRecipient();
+        if (r) {
+          if (hasAddress) {
+            r.address = label;
+            r.hasError = !d.zip;
+            r.errorMsg = !d.zip ? 'ZIP code required' : '';
+          }
+          // Prefill the gift receiver name from the shipping name, once (Valerie, meeting 20.08).
+          // A row that never got a name takes the one just typed into the address; anything the user
+          // already wrote stays as it is, so re-saving an address never overwrites their own edit.
+          if (!r.name && d.name) r.name = d.name;
+          // Shipping is independent: user may open drawer just to pick shipping.
+          r.shipping = d.shipping;
+        }
+      }
+      this.closeDrawer();
+    },
+
+    // ===== BULK =====
+    bulkApply(productId, shipmentId, kind) {
+      this.bulkMenuOpen = null;
+      if (kind === 'greeting') this.openMasterDrawer(productId, shipmentId, 'greeting');
+      else if (kind === 'item') this.openMasterDrawer(productId, shipmentId, 'item');
+      else if (kind === 'video') alert('Video bulk attach: opens video picker (out of scope for static prototype)');
+    },
+    // "Clear personalization" left with live's menu shape: the live menu ends with
+    // one red destructive, Delete selected. The old bulkClear had no button left.
+    bulkDelete(productId, shipmentId) {
+      const s = this.findShipment(productId, shipmentId);
+      const selected = s.recipients.filter(r => r.selected);
+      if (selected.length === 0) return;
+      if (!confirm(`Remove ${selected.length} recipient(s)?`)) return;
+      s.recipients = s.recipients.filter(r => !r.selected);
+      this.bulkMenuOpen = null;
+    },
+
+    // ===== CSV =====
+    downloadTemplate() {
+      this.bulkMenuOpen = null;
+      this.tplMenuOpen = null;
+      const csv = 'Gift Receiver Name,Gifts,Address Line 1,City,State,ZIP,Country,Personalize Item 1,Personalize Item 2,Personalize Item 3,Greeting To,Greeting Message,Greeting From\nJane Doe,1,123 Main St,New York,NY,10001,US,JD,Jane,,Jane,"Happy birthday!","From Acme"\n';
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'gildedbox-recipients-template.csv';
+      a.click();
+    },
+    openCSVModal(productId, shipmentId) {
+      this.bulkMenuOpen = null;
+      this.tplMenuOpen = null;
+      this.csv = { open: true, step: 1, productId, shipmentId, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
+    },
+    simulateUpload() {
+      const sample = [
+        { name: 'Emma Schultz',    address: '15 Oak Ave, Boston, MA',         zip: '02115' },
+        { name: 'Marcus Lee',      address: '42 Pine St, Seattle, WA',        zip: '98101' },
+        { name: 'Sofia Romano',    address: '88 Elm Rd, Brooklyn, NY',        zip: '',     error: 'ZIP required' },
+        { name: 'Aiden Carter',    address: '101 Cedar Ln, Austin, TX',       zip: '78701' },
+        { name: 'Yuki Tanaka',     address: '5 Bay St, San Francisco, CA',    zip: '94103' },
+        { name: 'Olivia Black',    address: '77 Spruce Dr, Portland, OR',     zip: '97201' },
+        { name: 'Daniel Park',     address: '23 Maple St, Chicago, IL',       zip: '',     error: 'ZIP required' },
+        { name: 'Léa Bernard',     address: '9 River Ct, Denver, CO',         zip: '80202' },
+        { name: 'Henrik Larsson',  address: '64 Hill Rd, Boulder, CO',        zip: '80301' },
+        { name: 'Aisha Patel',     address: '12 Park Ave, NY, NY',            zip: '10016' },
+        { name: 'Theo Mendez',     address: '301 Mission St, SF, CA',         zip: '94105' },
+        { name: 'Nora Holm',       address: '18 Lakeshore, Minneapolis, MN',  zip: '55401' },
+        { name: 'Idris Bello',     address: '4 Beach Pl, Miami, FL',          zip: '33139' },
+        { name: 'Frida Lindqvist', address: '99 Birch St, Madison, WI',       zip: '53703' },
+        { name: 'Omar Khalil',     address: '7 Granite Way, Phoenix, AZ',     zip: '',     error: 'ZIP required' },
+        { name: 'Camille Doré',    address: '50 Forest Dr, Atlanta, GA',      zip: '30303' },
+        { name: 'Jonas Weber',     address: '21 Liberty St, Philadelphia',    zip: '19106' },
+        { name: 'Ruby Hall',       address: '6 Sunset Blvd, LA, CA',          zip: '90028' },
+        { name: 'Ezra Levin',      address: '85 Cherry St, Nashville, TN',    zip: '37203' },
+        { name: 'Mira Khan',       address: '17 Holly Ln, Charlotte, NC',     zip: '28202' },
+      ];
+      const errors = sample.filter(r => r.error).length;
+      this.csv.preview = { total: sample.length, valid: sample.length - errors, errors, rows: sample };
+      this.csv.step = 2;
+    },
+    confirmCSVImport() {
+      const s = this.findShipment(this.csv.productId, this.csv.shipmentId);
+      this.csv.preview.rows.forEach((row, i) => {
+        s.recipients.push({
+          id: Date.now() + i,
+          name: row.name,
+          qty: 1,
+          item1: '',
+          item2: '',
+          item3: '',
+          greeting: null,
+          address: row.address,
+          selected: false,
+          hasError: !!row.error,
+          errorMsg: row.error || ''
+        });
+      });
+      if (s.addressMode === 'same') s.addressMode = 'different';
+      this.csv.step = 3;
+    },
+
+    resetDemo() { location.reload(); }
+  };
+}
+</script>
+
+<!-- ============================================================
+     THE WAY BACK — gbppl-checkout-1.
+     The portal sends people here through either cart with its query
+     string attached (?pth=1&nav=... and friends decide which chrome
+     index.html wears), so the two doors back have to carry the same
+     string or the prototype would land on a different view than the
+     one it was left in.
+
+     The header's brand link belongs to <gb-site-header>, which is a
+     demo\ component shared with the demo-live pages: it is not edited
+     for this page, its href is retargeted here after the element has
+     upgraded. The crumb already points home in the markup; the script
+     only appends the query.
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+  var home = 'index.html' + location.search;
+  var wire = function () {
+    var brand = document.querySelector('gb-site-header .gbh-brand');
+    if (brand) { brand.setAttribute('href', home); brand.setAttribute('title', 'Back to the prototype'); }
+    var crumbs = document.querySelectorAll('[data-gbppl-home]');
+    for (var i = 0; i < crumbs.length; i++) crumbs[i].setAttribute('href', home);
+    return !!brand;
+  };
+  /* The custom element upgrades on its own script's execution, which has
+     already run by the time this one does; the rAF is only insurance for a
+     slow parse order, and gives up rather than polling forever. */
+  if (!wire()) requestAnimationFrame(wire);
+})();
+</script>
+
+</body>
+</html>
