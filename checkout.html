@@ -5,12 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GildedBox Checkout — DD-130 Prototype</title>
 <!-- ============================================================
-     gbppl-checkout-4 — the DD-130 checkout prototype moves into the
+     gbppl-checkout-5 — the DD-130 checkout prototype moves into the
      shared Pages prototype, so the team can walk portal -> cart ->
      checkout on one public link. checkout-3: Place Order wears the
      BUTTON XL live ladder, and the add-a-gift action becomes a real
      button — centered tertiary on an empty table, a blue text action
      under the rows once they exist.
+
+     checkout-5 adds a SECOND FLOW next to the first, switchable from
+     the PROTO panel's new Version group. V1 · Quick fix is the page
+     exactly as checkout-4 left it, and nothing in it moved. V2 · Pool
+     answers the root of DD-141 instead of patching it: the gifts are
+     NOT personalized by default, the quantity lives on the gift (a
+     stepper in the product header, the shared pool), and personalization
+     is an add-on reached through a two-door fork — "Personalize each
+     gift" opens the V1 table, whose rows subtract from the pool, and
+     "One personalization for all" opens a single inline form that every
+     gift in the pool carries. The fork is the details chooser Variant 3
+     organism woken from its `false &&` sleep further down this file:
+     same two tiles, same collapse into a blue summary bar with Change
+     choice. The two flows keep separate row arrays (recipients for V1,
+     rowsV2 for V2), so switching versions never edits the other's data.
 
      checkout-4, colour and type audit (Ton, 21.08: "проверьте, чтобы
      все цвета и шрифты соответствовали нашей системе"). Three things
@@ -401,10 +416,42 @@
           <div class="flex items-start justify-between pb-1">
             <div>
               <h2 class="font-serif text-3xl" x-text="product.name"></h2>
-              <p class="text-zinc-500 text-sm mt-1">
+              <!-- V1: the count is read-only here, because quantity lives per row in the table. -->
+              <p class="text-zinc-500 text-sm mt-1" x-show="uiVersion === 'v1'">
                 <span x-text="product.shipments.length"></span> shipment<span x-show="product.shipments.length > 1">s</span>
                 · <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span> total
               </p>
+              <!-- ============================================================
+                   V2: QUANTITY LIVES ON THE GIFT (Ton, meeting 20.08). The number
+                   of gifts is the first thing the card states and the only place
+                   it is set — one pool per shipment, personalized or not. Under
+                   the same Russell gate as the body below: nothing about this
+                   gift is editable before we know where it ships.
+                   ============================================================ -->
+              <div x-show="uiVersion === 'v2'" class="mt-2.5 flex items-center gap-4"
+                   x-effect="if (uiVersion === 'v2') syncPool(product)"
+                   :class="product.shipments.some(s => s.addressMode === 'same' && !s.shipToId) ? 'opacity-40 pointer-events-none' : ''">
+                <span class="gb-eyebrow">Gifts</span>
+                <!-- The ring is the pool saying it grew on its own: a personalization row
+                     asked for more gifts than the pool held, so the pool came up to meet it. -->
+                <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[5px] overflow-hidden transition-colors"
+                     :class="product.shipments[0] && product.shipments[0].poolGrown ? 'border-blue-600 ring-2 ring-blue-200' : ''">
+                  <button @click="bumpPool(product, -1)"
+                          :title="poolFloorReason(product)"
+                          class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                  </button>
+                  <input type="number" min="1" :value="productPool(product)" @input="setPoolValue(product, $event.target.value)" class="w-14 text-center text-base font-medium bg-transparent border-x border-zinc-200 py-2 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
+                  <button @click="bumpPool(product, 1)" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                  </button>
+                </div>
+                <p class="text-zinc-500 text-sm">
+                  <span x-text="product.shipments.length"></span> shipment<span x-show="product.shipments.length > 1">s</span>
+                  · <span x-text="productPool(product)"></span> gift<span x-show="productPool(product) !== 1">s</span> total
+                </p>
+                <p class="text-xs text-blue-700" x-show="product.shipments[0] && product.shipments[0].poolGrown" x-cloak>Raised to fit your personalizations.</p>
+              </div>
             </div>
             <div class="text-right">
               <p class="gb-eyebrow">Product total</p>
@@ -571,9 +618,25 @@
                    set 21.08).
                    ============================================================ -->
               <div class="bg-zinc-100/70 border-y border-zinc-200 px-6 py-4 flex items-start justify-between gap-6" x-show="shipment.detailsMode === 'now'">
-                <div class="min-w-0">
+                <div class="min-w-0" x-show="uiVersion === 'v1'">
                   <h3 class="font-serif text-2xl leading-tight">2. Who is This Gift For?</h3>
                   <p class="text-zinc-500 text-xs mt-1" x-show="selectedCount(shipment) === 0">Tell us who this gift is for, then add personalization if desired.</p>
+                  <p class="text-blue-600 text-xs mt-1 font-medium" x-show="selectedCount(shipment) > 0"><span x-text="selectedCount(shipment)"></span> selected</p>
+                </div>
+                <!-- ============================================================
+                     V2 heading. "Who is this gift for?" is the right question only
+                     once you have agreed there is a per-gift someone — and the
+                     whole point of V2 is that most orders have not (Brian the
+                     coordinator, DD-141 #6). So the step names the thing it is
+                     about, and the line under it says the default out loud, which
+                     is also the permission Julia asked for: leave it all blank.
+                     ============================================================ -->
+                <div class="min-w-0" x-show="uiVersion === 'v2'">
+                  <h3 class="font-serif text-2xl leading-tight">2. Personalization</h3>
+                  <!-- Only while the fork is untouched: once a door is open the blue bar
+                       below states where things stand, and two answers in a row is one
+                       too many (Art: the interface is already wordy). -->
+                  <p class="text-zinc-500 text-xs mt-1" x-show="selectedCount(shipment) === 0 && !shipment.persoMode">Every gift in this order is the same unless you say otherwise.</p>
                   <p class="text-blue-600 text-xs mt-1 font-medium" x-show="selectedCount(shipment) > 0"><span x-text="selectedCount(shipment)"></span> selected</p>
                 </div>
                 <!-- ============================================================
@@ -584,7 +647,9 @@
                                             and merely disabled until rows are ticked, so
                                             the band never changes shape under the cursor.
                      ============================================================ -->
-                <div class="flex items-center gap-2 flex-shrink-0">
+                <!-- In V2 the two menus only exist behind door A: there is no table to
+                     bulk-edit or upload into until the per-gift list is open. -->
+                <div class="flex items-center gap-2 flex-shrink-0" x-show="uiVersion === 'v1' || shipment.persoMode === 'each'">
 
                   <!-- ===== Bulk Personalize ===== -->
                   <div class="relative">
@@ -656,8 +721,159 @@
                 </div>
               </div>
 
+              <!-- ============================================================
+                   V2 · THE PERSONALIZATION FORK.
+                   The organism is the details chooser Variant 3 that sleeps under
+                   two `false &&` guards above: two tiles with an icon, a title and
+                   a line of description, collapsing after the click into a compact
+                   blue summary bar with "Change choice". Same shape, new question —
+                   there it asked WHEN details arrive, here it asks WHETHER, and in
+                   what shape. The unchosen state is a real answer, not an empty
+                   one: the gifts are identical and the order is already complete.
+                   ============================================================ -->
+              <div x-show="uiVersion === 'v2' && shipment.detailsMode === 'now'" class="px-6">
+
+                <!-- ===== Default: nothing personalized ===== -->
+                <div x-show="!shipment.persoMode" x-transition.opacity.duration.280ms class="py-5 space-y-5">
+
+                  <p class="text-sm text-zinc-700" x-text="identicalLine(shipment)"></p>
+
+                  <!-- Julia, meeting 20.08: a large share of un-personalized orders still
+                       want ONE card in every box. That is not "personalization" to the
+                       person ordering, so it stands here, outside the fork, as a plain
+                       yes/no with the field folded away until it is a yes. -->
+                  <div class="border border-zinc-200 rounded-[5px]">
+                    <label class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[5px]">
+                      <input type="checkbox" x-model="shipment.genericCard.on" class="accent-blue-600 w-4 h-4 flex-shrink-0">
+                      <span class="text-sm text-zinc-900">Add a greeting card to all gifts</span>
+                      <span class="text-xs text-zinc-500">One card, the same message in every box</span>
+                    </label>
+                    <div x-show="shipment.genericCard.on" x-cloak x-transition.opacity.duration.280ms class="border-t border-zinc-200 px-4 py-5 space-y-6">
+                      <div>
+                        <div class="flex justify-between items-baseline mb-1">
+                          <label class="gb-eyebrow">Message</label>
+                          <span class="text-[11px] text-zinc-400"><span x-text="(shipment.genericCard.message || '').length"></span> / 280</span>
+                        </div>
+                        <textarea x-model="shipment.genericCard.message" rows="3" maxlength="280" placeholder="Write your message..." class="w-full bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-2 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 resize-none transition"></textarea>
+                      </div>
+                      <div>
+                        <label class="gb-eyebrow block mb-1">From</label>
+                        <input type="text" x-model="shipment.genericCard.from" placeholder="Your name or company" class="w-full h-14 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+                      </div>
+                      <p class="text-xs text-zinc-500" x-text="appliedToAll(shipment)"></p>
+                    </div>
+                  </div>
+
+                  <!-- ===== The two doors ===== -->
+                  <div class="border-t border-zinc-200 pt-5 space-y-3">
+                    <p class="gb-eyebrow">Or add personalization</p>
+                    <div class="grid grid-cols-2 gap-3">
+                      <button @click="chooseMode(shipment, 'each')" class="text-left p-5 border border-zinc-200 rounded-[5px] hover:border-blue-600 hover:shadow-sm transition-colors">
+                        <div class="flex items-center gap-2.5 mb-2">
+                          <svg class="w-5 h-5 text-zinc-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                          <h4 class="font-medium text-zinc-900">Personalize each gift</h4>
+                        </div>
+                        <p class="text-xs text-zinc-500 pl-[30px]">Add names and details per gift.</p>
+                      </button>
+                      <button @click="chooseMode(shipment, 'all')" class="text-left p-5 border border-zinc-200 rounded-[5px] hover:border-blue-600 hover:shadow-sm transition-colors">
+                        <div class="flex items-center gap-2.5 mb-2">
+                          <svg class="w-5 h-5 text-zinc-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-6a2.25 2.25 0 00-2.25 2.25v6"/></svg>
+                          <h4 class="font-medium text-zinc-900">One personalization for all</h4>
+                        </div>
+                        <p class="text-xs text-zinc-500 pl-[30px]">Same message and details on every gift.</p>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ===== After the choice: the compact summary bar ===== -->
+                <div x-show="shipment.persoMode" x-cloak x-transition.opacity.duration.280ms class="flex items-center justify-between gap-6 bg-blue-50 border border-blue-200 rounded-[5px] px-4 py-2.5 my-5">
+                  <span class="flex items-center gap-2 min-w-0">
+                    <span class="gb-eyebrow">Personalization</span>
+                    <span class="text-sm font-medium text-blue-700 truncate" x-text="shipment.persoMode === 'each' ? 'Each gift on its own' : 'One personalization for all'"></span>
+                  </span>
+                  <span class="flex items-center gap-4 flex-shrink-0">
+                    <!-- The pool split, next to the fork that caused it: every row of door A
+                         takes gifts out of the plain pile and nothing is ever double-counted. -->
+                    <span class="text-xs text-zinc-600" x-text="shipment.persoMode === 'each' ? poolSummary(shipment) : appliedToAll(shipment)"></span>
+                    <button @click="shipment.persoMode = null" class="text-zinc-500 hover:text-zinc-900 text-xs underline underline-offset-2">Change choice</button>
+                  </span>
+                </div>
+
+                <!-- ===== Door B: one form, filled once ===== -->
+                <div x-show="shipment.persoMode === 'all'" x-cloak class="pb-7 space-y-8">
+                  <div class="space-y-7">
+                    <p class="gb-eyebrow">Gift personalization</p>
+                    <!-- Same fields as the drawer, same rows the gift actually has — only
+                         inline, and written to the shipment once instead of to every row. -->
+                    <template x-for="(it, idx) in productItems(product)" :key="'uni-item-'+shipment.id+'-'+idx">
+                      <div class="grid grid-cols-[72px_1fr_212px] gap-5 items-center">
+                        <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
+                        <div>
+                          <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
+                          <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
+                          <p class="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider" x-text="it.sub"></p>
+                        </div>
+                        <div>
+                          <template x-if="it.kind === 'initials'">
+                            <div>
+                              <div class="flex gap-2.5">
+                                <template x-for="i in 3" :key="'uslot-'+shipment.id+'-'+idx+'-'+i">
+                                  <input
+                                    type="text"
+                                    maxlength="1"
+                                    :value="slotValue(shipment.uniform, 'item' + (idx+1), i-1)"
+                                    @input="updateSlot(shipment.uniform, 'item' + (idx+1), i-1, $event.target.value, $event)"
+                                    @keydown="slotKeydown($event)"
+                                    class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
+                                </template>
+                              </div>
+                              <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Initials (3 chars · A–Z, 0–9)</p>
+                            </div>
+                          </template>
+                          <template x-if="it.kind !== 'initials'">
+                            <div>
+                              <input type="text" :value="shipment.uniform['item' + (idx+1)] || ''" @input="shipment.uniform['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+                              <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Name (<span x-text="(shipment.uniform['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+
+                  <div class="border-t border-zinc-200 pt-7 space-y-7">
+                    <p class="gb-eyebrow">Greeting card</p>
+                    <div class="grid grid-cols-2 gap-8">
+                      <div>
+                        <label class="gb-eyebrow block mb-1">To</label>
+                        <input type="text" x-model="shipment.uniform.greeting.to" placeholder="Name on the card (optional)" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+                      </div>
+                      <div>
+                        <label class="gb-eyebrow block mb-1">From</label>
+                        <input type="text" x-model="shipment.uniform.greeting.from" placeholder="Your name or company" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between items-baseline mb-1">
+                        <label class="gb-eyebrow">Message</label>
+                        <span class="text-[11px] text-zinc-400"><span x-text="(shipment.uniform.greeting.message || '').length"></span> / 280</span>
+                      </div>
+                      <textarea x-model="shipment.uniform.greeting.message" rows="3" maxlength="280" placeholder="Write your message..." class="w-full bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-2 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 resize-none transition"></textarea>
+                    </div>
+                  </div>
+
+                  <!-- No Save button: there is one copy of this form and it IS the state.
+                       The line says where what you typed ends up. -->
+                  <p class="flex items-center gap-2 text-xs text-zinc-500">
+                    <svg class="w-4 h-4 text-zinc-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span x-text="appliedToAll(shipment)"></span>
+                  </p>
+                </div>
+              </div>
+
               <!-- ===== RECIPIENT TABLE ===== -->
-              <div x-show="shipment.detailsMode === 'now'" class="px-6">
+              <div x-show="shipment.detailsMode === 'now' && (uiVersion === 'v1' || shipment.persoMode === 'each')" class="px-6">
                 <table class="w-full table-fixed">
                   <thead class="border-b border-zinc-200">
                     <tr class="text-[13px] text-zinc-800">
@@ -779,7 +995,7 @@
                      and an empty table's one action belongs in its middle. Once rows exist
                      the same action moves under the last row, compact. The label is
                      contextual too: "someone else" only makes sense after the first row. -->
-                <div x-show="shipment.recipients.length === 0" class="py-12 text-center border-b border-zinc-100">
+                <div x-show="rows(shipment).length === 0" class="py-12 text-center border-b border-zinc-100">
                   <p class="text-sm text-zinc-500">No gift receivers yet.</p>
                   <!-- Outlined = the system's tertiary. Its hover is the Zinc 100 wash both
                        outlined buttons of index.html wear (.gbh-cta--outline, .btn-start-outline),
@@ -796,7 +1012,7 @@
                      The label says what the click DOES, not what it adds a row of (approved copy
                      set, 21.08). The leading "+" of the approved string is the icon, not a
                      character — drawing both would give the button two plus signs. -->
-                <div class="flex items-center justify-between gap-6 py-4" x-show="shipment.recipients.length > 0">
+                <div class="flex items-center justify-between gap-6 py-4" x-show="rows(shipment).length > 0">
                   <div class="min-w-0">
                     <!-- Base blue-600, hover blue-700 — the system pair (tokens.css: "Blue 700
                          is the live CTA hover"), not an invented 700→800 step. -->
@@ -815,7 +1031,7 @@
                       <button @click="shipment.page = Math.min(totalPages(shipment), shipment.page + 1)" class="p-1.5 text-zinc-400 hover:text-zinc-900" :disabled="shipment.page === totalPages(shipment)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></button>
                     </div>
                     <span class="text-xs text-zinc-500">
-                      <span class="font-medium text-zinc-900" x-text="shipment.recipients.length"></span> recipient<span x-show="shipment.recipients.length !== 1">s</span>
+                      <span class="font-medium text-zinc-900" x-text="rows(shipment).length"></span> recipient<span x-show="rows(shipment).length !== 1">s</span>
                       · <span class="font-medium text-zinc-900" x-text="shipmentGifts(shipment)"></span> gift<span x-show="shipmentGifts(shipment) !== 1">s</span>
                       · $<span class="font-medium text-zinc-900" x-text="shipmentTotal(product, shipment).toLocaleString()"></span>
                     </span>
@@ -1387,6 +1603,15 @@
   </button>
   <div class="demo-panel">
     <span class="demo-brand">Proto</span>
+    <!-- Version is the outer axis: each of the three scenarios below runs in
+         either flow, so the panel asks which flow first (gbppl-checkout-5). -->
+    <div class="demo-group">
+      <span class="demo-label">Version</span>
+      <button type="button" @click="uiVersion = 'v1'" :class="uiVersion === 'v1' ? 'variant-active' : ''">V1 · Quick fix</button>
+      <button type="button" @click="uiVersion = 'v2'" :class="uiVersion === 'v2' ? 'variant-active' : ''">V2 · Pool</button>
+      <p class="demo-note" x-show="uiVersion === 'v1'">The agreed quick fixes on top of today's flow: renamed step 2, one row per personalization, quantity inside the row.</p>
+      <p class="demo-note" x-show="uiVersion === 'v2'">Gifts are not personalized by default. Quantity is a pool on the gift; personalization is an add-on behind a two-door fork — per gift, or one for all.</p>
+    </div>
     <div class="demo-group">
       <span class="demo-label">Scenario</span>
       <button type="button" @click="setScenario('customizer')" :class="scenario === 'customizer' ? 'variant-active' : ''">From Customizer</button>
@@ -1437,6 +1662,32 @@ function checkoutApp() {
 
     // ===== SCENARIO STATE =====
     scenario: 'customizer',
+
+    // ===== VERSION STATE (gbppl-checkout-5) =====
+    // 'v1' is the page as checkout-4 left it — the agreed quick fixes on today's
+    // flow. 'v2' is the pool flow: gifts unpersonalized by default, quantity on
+    // the gift, personalization behind the fork. Switched from the PROTO panel;
+    // setScenario deliberately leaves it alone, so every scenario can be walked
+    // in both. The two flows share the markup and the money, never the rows.
+    uiVersion: 'v1',
+
+    // Everything V2 keeps on a shipment, in one place. V1 reads none of it, which
+    // is why adding these fields to the scenarios below changes nothing for V1.
+    //   poolQty     the gifts ordered — the pool, set in the product header
+    //   persoMode   null (identical gifts) | 'each' (door A) | 'all' (door B)
+    //   rowsV2      door A's rows; V1's own list stays untouched in `recipients`
+    //   uniform     door B's single personalization
+    //   genericCard the one card an un-personalized order still wants (Julia)
+    v2Fields(pool, mode, extra) {
+      return Object.assign({
+        poolQty: pool,
+        persoMode: mode || null,
+        poolGrown: false,
+        rowsV2: [],
+        uniform: { item1: '', item2: '', item3: '', greeting: { to: '', message: '', from: '' } },
+        genericCard: { on: false, message: '', from: '' }
+      }, extra || {});
+    },
 
     setScenario(name) {
       this.scenario = name;
@@ -1494,6 +1745,12 @@ function checkoutApp() {
           shipToId: null,
           shipToLabel: '',
           deferQty: 1,
+          // V2: one gift, and the customizer already carried its personalization in.
+          // One gift with one personalization IS door B, so the fork opens collapsed
+          // on "One personalization for all" with the customizer's own values in it.
+          ...this.v2Fields(1, 'all', {
+            uniform: { item1: 'AC', item2: 'Alex', item3: '', greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton' } }
+          }),
           recipients: [
             { id: 111, name: '', qty: 1, item1: 'AC', item2: 'Alex', item3: '',
               greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true },
@@ -1521,6 +1778,10 @@ function checkoutApp() {
           shipToId: null,
           shipToLabel: '',
           deferQty: 1,
+          // V2: the Brian Coordinator order (DD-141 #6) — a dozen identical gifts to
+          // one place, nothing to personalize and no Full Name to invent. The fork
+          // starts unchosen, which in V2 is a finished order, not an empty one.
+          ...this.v2Fields(12, null),
           recipients: []
         }]
       };
@@ -1533,6 +1794,15 @@ function checkoutApp() {
     // Product B is the whole argument in one row: no name, no items, qty 9.
     scenarioPortalLoaded() {
       const office = this.addressBook[0];
+      // The five named people, written once. V1 and V2 each get their own copy:
+      // the flows never share a row, so walking one never edits the other.
+      const travelPeople = () => JSON.parse(JSON.stringify([
+        { id: 211, name: 'Yuki Tanaka',    qty: 1, item1: 'YT', item2: 'Yuki',   item3: '', greeting: { to: 'Yuki',   message: 'Thanks for hustle this quarter. You moved mountains.', from: 'Engineering', fromMaster: false, custom: true }, address: '5 Bay St, San Francisco, CA, 94103, US',  shipping: 'ground', selected: false },
+        { id: 212, name: 'Léa Bernard',    qty: 1, item1: 'LB', item2: 'Léa',    item3: '', greeting: { to: 'Léa',    message: 'Three years and counting. Thank you.',                from: 'CEO',         fromMaster: false, custom: true }, address: '9 River Ct, Denver, CO, 80202, US',      shipping: 'ground', selected: false },
+        { id: 213, name: 'Henrik Larsson', qty: 1, item1: 'HL', item2: 'Henrik', item3: '', greeting: { to: 'Henrik', message: 'For everything you do behind the scenes.',           from: 'Ops',         fromMaster: false, custom: true }, address: '64 Hill Rd, Boulder, CO, 80301, US',     shipping: 'ground', selected: false },
+        { id: 214, name: 'Aisha Patel',    qty: 2, item1: 'AP', item2: 'Aisha',  item3: '', greeting: { to: 'Aisha',  message: 'Welcome aboard. Glad you joined us.',                from: 'People Ops',  fromMaster: false, custom: true }, address: '12 Park Ave, NY, NY, 10016, US',         shipping: 'ground', selected: false },
+        { id: 215, name: 'Theo Mendez',    qty: 1, item1: 'TM', item2: 'Theo',   item3: '', greeting: { to: 'Theo',   message: 'Year one in the books. Onward!',                    from: 'The team',    fromMaster: false, custom: true }, address: '301 Mission St, SF, CA, 94105, US',      shipping: 'ground', selected: false }
+      ]));
       return [
         {
           id: 1,
@@ -1550,13 +1820,10 @@ function checkoutApp() {
             shipToId: null,
             shipToLabel: '',
             deferQty: 1,
-            recipients: [
-              { id: 211, name: 'Yuki Tanaka',    qty: 1, item1: 'YT', item2: 'Yuki',   item3: '', greeting: { to: 'Yuki',   message: 'Thanks for hustle this quarter. You moved mountains.', from: 'Engineering', fromMaster: false, custom: true }, address: '5 Bay St, San Francisco, CA, 94103, US',  shipping: 'ground', selected: false },
-              { id: 212, name: 'Léa Bernard',    qty: 1, item1: 'LB', item2: 'Léa',    item3: '', greeting: { to: 'Léa',    message: 'Three years and counting. Thank you.',                from: 'CEO',         fromMaster: false, custom: true }, address: '9 River Ct, Denver, CO, 80202, US',      shipping: 'ground', selected: false },
-              { id: 213, name: 'Henrik Larsson', qty: 1, item1: 'HL', item2: 'Henrik', item3: '', greeting: { to: 'Henrik', message: 'For everything you do behind the scenes.',           from: 'Ops',         fromMaster: false, custom: true }, address: '64 Hill Rd, Boulder, CO, 80301, US',     shipping: 'ground', selected: false },
-              { id: 214, name: 'Aisha Patel',    qty: 2, item1: 'AP', item2: 'Aisha',  item3: '', greeting: { to: 'Aisha',  message: 'Welcome aboard. Glad you joined us.',                from: 'People Ops',  fromMaster: false, custom: true }, address: '12 Park Ave, NY, NY, 10016, US',         shipping: 'ground', selected: false },
-              { id: 215, name: 'Theo Mendez',    qty: 1, item1: 'TM', item2: 'Theo',   item3: '', greeting: { to: 'Theo',   message: 'Year one in the books. Onward!',                    from: 'The team',    fromMaster: false, custom: true }, address: '301 Mission St, SF, CA, 94105, US',      shipping: 'ground', selected: false }
-            ]
+            // V2: this half of Jorge's cart IS personalized, one entry per person —
+            // door A, already open, six gifts in the pool because Aisha takes two.
+            ...this.v2Fields(6, 'each', { rowsV2: travelPeople() }),
+            recipients: travelPeople()
           }]
         },
         {
@@ -1575,6 +1842,10 @@ function checkoutApp() {
             shipToId: office ? office.id : null,
             shipToLabel: office ? office.name + ', ' + office.label : '',
             deferQty: 1,
+            // V2: the other half, and the whole argument. Nine gifts in the pool, the
+            // fork untouched, no rows at all — the question Jorge asked ("how do I
+            // proceed without customizing those items?") never gets asked of him.
+            ...this.v2Fields(9, null),
             recipients: [
               // One row, nine gifts, no name: "how do I proceed without customizing
               // those items?" answered by the row itself.
@@ -1615,13 +1886,126 @@ function checkoutApp() {
     },
     findRecipient(productId, shipmentId, recipientId) {
       const s = this.findShipment(productId, shipmentId);
-      return s ? s.recipients.find(r => r.id === recipientId) : null;
+      return s ? this.rows(s).find(r => r.id === recipientId) : null;
+    },
+
+    // ===== THE ROW LIST, PER VERSION =====
+    // One accessor stands between the table (and everything that edits it) and the
+    // array behind it. In V1 that array is `recipients`, exactly as before; in V2 it
+    // is `rowsV2`. Both versions therefore run the same table, the same drawers, the
+    // same bulk menu and the same CSV import, and neither can reach the other's data
+    // — which is what lets V1 stay bit-for-bit the flow the team already reviewed.
+    rows(s) {
+      if (!s) return [];
+      if (this.uiVersion !== 'v2') return s.recipients;
+      if (!s.rowsV2) s.rowsV2 = [];
+      return s.rowsV2;
+    },
+    setRows(s, arr) {
+      if (this.uiVersion === 'v2') s.rowsV2 = arr; else s.recipients = arr;
+    },
+    blankRow() {
+      return { id: Date.now(), name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false };
+    },
+
+    // ===== V2: THE POOL =====
+    // The pool is the order: how many of this gift are being bought. Door A's rows
+    // are carved OUT of it, they never add to it — that is the whole difference from
+    // V1, where the order size was whatever the rows happened to sum to.
+    personalizedGifts(s) {
+      if (!s || s.persoMode !== 'each') return 0;
+      return (s.rowsV2 || []).reduce((sum, r) => sum + (r.qty || 0), 0);
+    },
+    poolOf(s) { return Math.max(1, s.poolQty || 0, this.personalizedGifts(s)); },
+    plainGifts(s) { return Math.max(0, this.poolOf(s) - this.personalizedGifts(s)); },
+    productPool(p) { return p.shipments.reduce((n, s) => n + this.poolOf(s), 0); },
+
+    // Overflow: the pool GROWS to fit rather than refusing the row. Refusing would
+    // dead-end the user mid-table and send them back up to the header to unlock the
+    // thing they were already doing; and an order can never hold fewer gifts than it
+    // holds personalizations, so the number they typed is simply out of date. The
+    // pool comes up to meet the rows, the stepper rings blue and says why, and the
+    // total moves in the same breath — nothing happens silently.
+    syncPool(p) {
+      p.shipments.forEach(s => {
+        const need = this.personalizedGifts(s);
+        if (need > (s.poolQty || 0)) {
+          s.poolQty = need;
+          s.poolGrown = true;
+          setTimeout(() => { s.poolGrown = false; }, 2400);
+        }
+      });
+    },
+    // ...and it never shrinks below them: the minus button stops at the floor and
+    // its tooltip says which gifts are holding it there.
+    poolFloor(p) {
+      const s = p.shipments[0];
+      return s ? Math.max(1, this.personalizedGifts(s)) : 1;
+    },
+    bumpPool(p, delta) {
+      const s = p.shipments[0];
+      if (!s) return;
+      s.poolQty = Math.max(this.poolFloor(p), this.poolOf(s) + delta);
+    },
+    setPoolValue(p, val) {
+      const s = p.shipments[0];
+      if (!s) return;
+      const n = parseInt(val, 10);
+      const floor = this.poolFloor(p);
+      s.poolQty = (isNaN(n) || n < floor) ? floor : n;
+    },
+    poolFloorReason(p) {
+      const s = p.shipments[0];
+      if (!s || this.poolOf(s) > this.poolFloor(p)) return '';
+      const n = this.personalizedGifts(s);
+      if (n === 0) return 'An order needs at least one gift';
+      return n + ' gift' + (n === 1 ? '' : 's') + ' already carry their own personalization';
+    },
+
+    // ===== V2: THE FORK =====
+    poolSummary(s) {
+      const n = this.poolOf(s);
+      return n + ' gift' + (n === 1 ? '' : 's') + ': ' + this.plainGifts(s) + ' plain + ' + this.personalizedGifts(s) + ' personalized';
+    },
+    identicalLine(s) {
+      const n = this.poolOf(s);
+      if (n === 1) return 'This gift is not personalized — nothing more is needed.';
+      return 'All ' + n + ' gifts are identical — no personalization needed.';
+    },
+    appliedToAll(s) {
+      const n = this.poolOf(s);
+      return n === 1 ? 'Applied to this gift.' : 'Applied to all ' + n + ' gifts.';
+    },
+    // Door A on an empty list opens with one row waiting, so the door leads
+    // somewhere. Change choice only clears the mode — never the work behind it.
+    chooseMode(s, mode) {
+      s.persoMode = mode;
+      if (mode === 'each' && this.rows(s).length === 0) this.rows(s).push(this.blankRow());
+    },
+
+    // Three-slot initials, on any bag of fields: the drawer's `drawer.data` in V1,
+    // a shipment's `uniform` in door B of V2.
+    slotValue(bag, field, idx) { return ((bag && bag[field]) || '').charAt(idx) || ''; },
+    updateSlot(bag, field, idx, val, evt) {
+      const arr = ((bag[field] || '') + '   ').split('').slice(0, 3);
+      arr[idx] = (val || '').toUpperCase();
+      bag[field] = arr.join('').replace(/\s+$/g, '');
+      if (val && evt && evt.target.nextElementSibling && evt.target.nextElementSibling.tagName === 'INPUT') {
+        evt.target.nextElementSibling.focus();
+      }
+    },
+    slotKeydown(evt) {
+      if (evt.key === 'Backspace' && !evt.target.value && evt.target.previousElementSibling && evt.target.previousElementSibling.tagName === 'INPUT') {
+        evt.target.previousElementSibling.focus();
+      }
     },
 
     // ===== COMPUTEDS =====
     // In "I'll do it later" mode, gift count comes from shipment.deferQty (set via
     // the prominent qty selector). In "now" mode, sum recipients[].qty as before.
     shipmentGifts(s) {
+      // V2 counts the pool, not the rows: the rows are a subset of it.
+      if (this.uiVersion === 'v2') return this.poolOf(s);
       if (s.detailsMode === 'later') return s.deferQty || 0;
       return s.recipients.reduce((sum, r) => sum + (r.qty || 0), 0);
     },
@@ -1639,18 +2023,9 @@ function checkoutApp() {
       const addr = this.addressBook.find(a => a.id === shipment.shipToId);
       return addr ? addr.name : '';
     },
-    itemSlotValue(field, idx) {
-      return (this.drawer.data[field] || '').charAt(idx) || '';
-    },
-    updateItemSlot(field, idx, val, evt) {
-      const arr = ((this.drawer.data[field] || '') + '   ').split('').slice(0, 3);
-      arr[idx] = (val || '').toUpperCase();
-      const newVal = arr.join('').replace(/\s+$/g, '');
-      this.drawer.data[field] = newVal;
-      if (val && evt && evt.target.nextElementSibling && evt.target.nextElementSibling.tagName === 'INPUT') {
-        evt.target.nextElementSibling.focus();
-      }
-    },
+    // The drawer's own slots are the generic ones above, aimed at drawer.data.
+    itemSlotValue(field, idx) { return this.slotValue(this.drawer.data, field, idx); },
+    updateItemSlot(field, idx, val, evt) { this.updateSlot(this.drawer.data, field, idx, val, evt); },
     itemSlotKeydown(field, idx, evt) {
       if (evt.key === 'Backspace' && !evt.target.value && idx > 0 && evt.target.previousElementSibling && evt.target.previousElementSibling.tagName === 'INPUT') {
         evt.target.previousElementSibling.focus();
@@ -1667,8 +2042,8 @@ function checkoutApp() {
     productItemCount(p) { return (p && p.items) ? p.items.length : 3; },
     productItems(p) { return (p && p.items) ? p.items : []; },
 
-    selectedCount(s) { return s.recipients.filter(r => r.selected).length; },
-    allSelected(s) { return s.recipients.length > 0 && s.recipients.every(r => r.selected); },
+    selectedCount(s) { return this.rows(s).filter(r => r.selected).length; },
+    allSelected(s) { const rs = this.rows(s); return rs.length > 0 && rs.every(r => r.selected); },
 
     // applyDisabledReason() lived here: three sentences explaining why the items inside
     // the menu were greyed out. The gate moved up to the Edit Selected button itself
@@ -1679,7 +2054,7 @@ function checkoutApp() {
     // Mirrors the Same-mode pattern: small label + one informative serif line.
     differentSummary(shipment) {
       if (!shipment) return '';
-      const recipients = shipment.recipients || [];
+      const recipients = this.rows(shipment) || [];
       if (recipients.length === 0) return 'No recipients yet';
       const withAddress = recipients.filter(r => r.address);
       const cities = new Set();
@@ -1708,14 +2083,14 @@ function checkoutApp() {
         return this.shippingCost(s.shipping);
       }
       // Different per recipient: sum of per-recipient shipping costs
-      return s.recipients.reduce((sum, r) => sum + this.shippingCost(r.shipping || 'ground'), 0);
+      return this.rows(s).reduce((sum, r) => sum + this.shippingCost(r.shipping || 'ground'), 0);
     },
 
     paginatedRecipients(s) {
       const start = (s.page - 1) * 10;
-      return s.recipients.slice(start, start + 10);
+      return this.rows(s).slice(start, start + 10);
     },
-    totalPages(s) { return Math.max(1, Math.ceil(s.recipients.length / 10)); },
+    totalPages(s) { return Math.max(1, Math.ceil(this.rows(s).length / 10)); },
     pageNumbers(s) {
       const total = this.totalPages(s);
       const current = s.page;
@@ -1741,15 +2116,15 @@ function checkoutApp() {
     currentRecipient() { return this.findRecipient(this.drawer.productId, this.drawer.shipmentId, this.drawer.recipientId); },
 
     // ===== ACTIONS: RECIPIENTS =====
-    toggleAllSelected(s, checked) { s.recipients.forEach(r => r.selected = checked); },
+    toggleAllSelected(s, checked) { this.rows(s).forEach(r => r.selected = checked); },
     addRecipient(productId, shipmentId) {
       const s = this.findShipment(productId, shipmentId);
-      s.recipients.push({ id: Date.now(), name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false });
+      this.rows(s).push(this.blankRow());
       s.page = this.totalPages(s);
     },
     removeRecipient(productId, shipmentId, recipientId) {
       const s = this.findShipment(productId, shipmentId);
-      s.recipients = s.recipients.filter(r => r.id !== recipientId);
+      this.setRows(s, this.rows(s).filter(r => r.id !== recipientId));
       if (s.page > this.totalPages(s)) s.page = this.totalPages(s);
     },
 
@@ -1768,6 +2143,7 @@ function checkoutApp() {
         shipToId: firstAddr ? firstAddr.id : null,
         shipToLabel: firstAddr ? firstAddr.label : '',
         deferQty: 1,
+        ...this.v2Fields(1, null),
         recipients: [
           { id: newId + 1, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
         ]
@@ -1799,6 +2175,7 @@ function checkoutApp() {
           deadline: '2025-08-15',
           page: 1,
           deferQty: 1,
+          ...this.v2Fields(1, null),
           recipients: [
             { id: newId + 101, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
           ]
@@ -1924,7 +2301,7 @@ function checkoutApp() {
     saveGreeting() {
       const s = this.currentShipment();
       if (this.drawer.master) {
-        s.recipients.forEach(r => {
+        this.rows(s).forEach(r => {
           if (!r.greeting || !r.greeting.custom) {
             r.greeting = this.greetingFromDrawer({ fromMaster: true, custom: false });
           }
@@ -1937,7 +2314,7 @@ function checkoutApp() {
     },
     saveMasterGreeting(overwrite) {
       const s = this.currentShipment();
-      s.recipients.forEach(r => {
+      this.rows(s).forEach(r => {
         if (overwrite || !r.greeting || !r.greeting.custom) {
           r.greeting = this.greetingFromDrawer({ fromMaster: true, custom: false });
         }
@@ -1953,7 +2330,7 @@ function checkoutApp() {
         r.item2 = this.drawer.data.item2;
         r.item3 = this.drawer.data.item3;
       };
-      if (this.drawer.master) s.recipients.forEach(write);
+      if (this.drawer.master) this.rows(s).forEach(write);
       else { const r = this.currentRecipient(); if (r) write(r); }
       this.closeDrawer();
     },
@@ -1998,10 +2375,10 @@ function checkoutApp() {
     // one red destructive, Delete selected. The old bulkClear had no button left.
     bulkDelete(productId, shipmentId) {
       const s = this.findShipment(productId, shipmentId);
-      const selected = s.recipients.filter(r => r.selected);
+      const selected = this.rows(s).filter(r => r.selected);
       if (selected.length === 0) return;
       if (!confirm(`Remove ${selected.length} recipient(s)?`)) return;
-      s.recipients = s.recipients.filter(r => !r.selected);
+      this.setRows(s, this.rows(s).filter(r => !r.selected));
       this.bulkMenuOpen = null;
     },
 
@@ -2051,7 +2428,7 @@ function checkoutApp() {
     confirmCSVImport() {
       const s = this.findShipment(this.csv.productId, this.csv.shipmentId);
       this.csv.preview.rows.forEach((row, i) => {
-        s.recipients.push({
+        this.rows(s).push({
           id: Date.now() + i,
           name: row.name,
           qty: 1,
