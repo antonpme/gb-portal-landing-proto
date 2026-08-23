@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>GildedBox — Design Prototypes</title>
+<title>GildedBox — Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
-     gbppl-hub-5 — the ONE DOOR. Ton, 2026-08-23: every prototype
+     gbppl-hub-6 — the ONE DOOR. Ton, 2026-08-23: every prototype
      should open from a single place, and that place should be behind
      a password and should look like us.
 
@@ -236,6 +236,20 @@ button { font-family: inherit; cursor: pointer; }
   text-transform: uppercase;
   color: var(--zinc-500);
 }
+/* Section nav in the bar (Ton, 23.08: the Design System shelf was an
+   orphan at the bottom — the bar now names all three shelves). Quiet
+   zinc voice; the shelf in view wears blue, because active = state. */
+.hub-nav { display: none; align-items: center; gap: 28px; }
+@media (min-width: 768px) { .hub-nav { display: inline-flex; } }
+.hub-nav a {
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.hub-nav a:hover { color: var(--zinc-900); }
+.hub-nav a.active { color: var(--blue-600); }
+
 /* The quiet door back to the lock, in the .pth-away voice. */
 .hub-lockout {
   padding: 0;
@@ -502,8 +516,8 @@ button { font-family: inherit; cursor: pointer; }
 <div class="gate" id="gate">
   <div class="gate-card">
     <img class="gate-mark" src="system/assets/gildedbox-logo.svg" alt="GildedBox" width="126" height="42">
-    <h1 class="gate-h1">Design Prototypes</h1>
-    <p class="gate-sub">This room is not the live site. Enter the access code to see what is being built.</p>
+    <h1 class="gate-h1">Design Studio</h1>
+    <p class="gate-sub">The design studio of GildedBox — prototypes, sandboxes, and the Oro design system. This is not the live site: enter the access code to see what is being built.</p>
 
     <!-- The form wears the auth organism's OWN classes (demo/components/auth.css),
          not local copies of its numbers — Ton, 23.08: if it's in the system, it is
@@ -538,11 +552,16 @@ button { font-family: inherit; cursor: pointer; }
   <header class="hub-bar">
     <div class="gb-container hub-bar-in">
       <div class="hub-wrap hub-bar-row">
-        <a class="hub-lock" href="index.html" aria-label="GildedBox Prototypes, home">
+        <a class="hub-lock" href="index.html" aria-label="GildedBox Design Studio, home">
           <img class="hub-mark" src="system/assets/gildedbox-logo.svg" alt="GildedBox" width="126" height="42">
           <span class="hub-rule" aria-hidden="true"></span>
-          <span class="hub-word">Prototypes</span>
+          <span class="hub-word">Design Studio</span>
         </a>
+        <nav class="hub-nav" aria-label="Sections">
+          <a href="#live">Live Prototype</a>
+          <a href="#sandboxes">Sandboxes</a>
+          <a href="#design-system">Design System</a>
+        </nav>
         <button class="hub-lockout" id="hub-lockout" type="button">Lock</button>
       </div>
     </div>
@@ -553,7 +572,7 @@ button { font-family: inherit; cursor: pointer; }
       <div class="hub-wrap">
 
         <!-- ---- LIVE PROTOTYPE ---- -->
-        <section class="hub-shelf">
+        <section class="hub-shelf" id="live">
           <h2 class="hub-h2">Live Prototype</h2>
           <p class="hub-lede">One walk, assembled out of everything that has been approved.</p>
 
@@ -581,7 +600,7 @@ button { font-family: inherit; cursor: pointer; }
         </section>
 
         <!-- ---- SANDBOXES ---- -->
-        <section class="hub-shelf">
+        <section class="hub-shelf" id="sandboxes">
           <h2 class="hub-h2">Sandboxes</h2>
           <p class="hub-lede">Parallel rooms, one open question each. They move; the walk above does not.</p>
 
@@ -634,7 +653,7 @@ button { font-family: inherit; cursor: pointer; }
              COMING SOON. It carries no IN PROGRESS chip either: the
              sandboxes wear that because they are questions still being
              answered, and the system is not a question. -->
-        <section class="hub-shelf">
+        <section class="hub-shelf" id="design-system">
           <h2 class="hub-h2">Design System</h2>
           <p class="hub-lede">Components, props and tokens — the Oro showcase, where every part of the walk above is kept.</p>
 
@@ -794,7 +813,7 @@ button { font-family: inherit; cursor: pointer; }
     clearError();
     input.value = '';
     input.focus();
-    document.title = 'GildedBox — Design Prototypes';
+    document.title = 'GildedBox — Design Studio';
   }
 
   function clearError() {
@@ -835,6 +854,27 @@ button { font-family: inherit; cursor: pointer; }
   });
 
   lockout.addEventListener('click', closeHub);
+
+  // Scrollspy for the bar nav: the shelf in view wears blue (active = state).
+  var navLinks = document.querySelectorAll('.hub-nav a');
+  if ('IntersectionObserver' in window && navLinks.length) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        navLinks.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+        });
+      });
+    }, { rootMargin: '-30% 0px -55% 0px' });
+    document.querySelectorAll('.hub-shelf[id]').forEach(function (s) { spy.observe(s); });
+    // The last shelf is short and sits at the page's end, so the spy window
+    // can never reach it; the bottom of the page hands it the state instead.
+    window.addEventListener('scroll', function () {
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) {
+        navLinks.forEach(function (a, i) { a.classList.toggle('active', i === navLinks.length - 1); });
+      }
+    }, { passive: true });
+  }
 
   if (held()) openHub(false);
   else input.focus();
