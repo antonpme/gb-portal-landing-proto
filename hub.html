@@ -6,7 +6,7 @@
 <title>GildedBox — Design Prototypes</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
-     gbppl-hub-1 — the ONE DOOR. Ton, 2026-08-23: every prototype
+     gbppl-hub-2 — the ONE DOOR. Ton, 2026-08-23: every prototype
      should open from a single place, and that place should be behind
      a password and should look like us.
 
@@ -44,6 +44,8 @@
      relative paths, that checkout.html reaches for. -->
 <link rel="stylesheet" href="demo/assets/tokens.css">
 <link rel="stylesheet" href="demo/components/shell.css">
+<!-- The auth organism itself — the gate form wears its classes, no local twins. -->
+<link rel="stylesheet" href="demo/components/auth.css">
 
 <style>
 /* ============================================================
@@ -140,107 +142,17 @@ button { font-family: inherit; cursor: pointer; }
 .gate-form { margin-top: 32px; text-align: left; }
 @media (min-width: 1280px) { .gate-form { margin-top: 40px; } }
 
-/* Label, verbatim .gba-label: 11 / 12 caps 600, ls 0.5, Zinc 500. */
-.gate-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.5;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--zinc-500);
-}
-@media (min-width: 1280px) { .gate-label { font-size: 12px; } }
-
-/* Underline input, verbatim .gba-input: border-bottom only, Zinc 400,
-   Inter 300 14 / 16, the 48 / 56 control family, hover into Blue 600,
-   focus gives nothing but a fading placeholder — the live behaviour,
-   which is quieter than any ring we could draw. */
-.gate-input {
-  width: 100%;
-  min-height: var(--form-ctl-h);
-  margin: 0;
-  padding: 0 12px;
-  display: block;
-  background: transparent;
-  border: 0 solid var(--zinc-400);
-  border-bottom-width: 1px;
-  border-radius: 0;
-  font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 1;
-  letter-spacing: 0.2px;
-  color: var(--zinc-800);
-  appearance: none;
-  outline: none;
-  transition: border-color 0.2s var(--mo-move), color 0.2s var(--mo-move);
-}
-.gate-input::placeholder {
-  color: var(--zinc-400);
-  opacity: 1;
-  transition: opacity 0.2s var(--mo-move);
-}
-.gate-input:hover { border-color: var(--blue-600); }
-.gate-input:focus::placeholder { opacity: 0; }
-@media (min-width: 1280px) {
-  .gate-input { min-height: var(--form-ctl-h-xl); font-size: 16px; }
-}
-
-/* Error, verbatim the organism: Red 500 on the line, Red 600 message
-   at 11px flush right, and it only ever speaks after a submit. */
-.gate-input.invalid,
-.gate-input.invalid:hover { border-color: var(--red-500); }
-.gate-error {
-  display: block;
-  min-height: 17px;
-  margin-top: 4px;
-  font-size: 11px;
-  letter-spacing: 0.2px;
-  text-align: right;
-  color: var(--red-600);
-}
-
-/* Submit: BUTTON L in Blue 600 (.gba-btn), label span at ls 1px with
-   the arrow standing absolute at the right pad. */
-.gate-btn {
-  position: relative;
-  width: 100%;
-  min-height: var(--btn-l-min-h);
-  margin-top: 8px;
-  padding: var(--btn-l-pad-y) var(--btn-l-pad-x);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--blue-600);
-  border: 0;
-  border-radius: var(--radius);
-  color: var(--zinc-50);
-  text-transform: uppercase;
-  transition: background-color var(--mo-micro) var(--mo-move), opacity var(--mo-micro) var(--mo-move);
-}
-.gate-btn:hover { background: var(--blue-700); }
-.gate-btn:disabled { opacity: 0.6; pointer-events: none; }
-.gate-btn-label {
-  padding: 0 24px;
-  font-size: var(--btn-label-font-size);
-  font-weight: var(--btn-label-font-weight);
-  letter-spacing: var(--btn-label-letter-spacing);
-  line-height: var(--btn-label-line-height);
-}
-.gate-btn-icon {
-  position: absolute;
-  top: 50%;
-  right: var(--btn-l-pad-x);
-  transform: translateY(-50%);
-  display: flex;
-}
-.gate-btn-icon svg { width: 16px; height: 16px; }
-@media (min-width: 1280px) {
-  .gate-btn { min-height: var(--btn-l-min-h-xl); padding-left: var(--btn-l-pad-x-xl); padding-right: var(--btn-l-pad-x-xl); }
-  .gate-btn-icon { right: var(--btn-l-pad-x-xl); }
-  .gate-btn-icon svg { width: 20px; height: 20px; }
-}
+/* The form atoms (label, input, error, button) come from
+   demo/components/auth.css — the organism's own classes. The local
+   twins that used to sit here were exactly the drift Ton caught
+   (23.08): the Enter label wore the CTA ladder's 11px instead of
+   the organism's 14/15/16. Only gate-specific layout stays local. */
+.gate-form .gba-field { padding: 0; }
+.gate-form .gba-btn { border: 0; cursor: pointer; }
+/* auth.css expects the demo pages' zeroed-border ground (it only sets
+   border-color and the bottom width); this page has no such reset, so
+   the UA's full input frame must be zeroed here once. */
+.gate-form .gba-input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
 
 /* The gate leaving: shorter than the arrival and on the exit curve,
    because it never has to land anywhere. */
@@ -564,15 +476,24 @@ button { font-family: inherit; cursor: pointer; }
     <h1 class="gate-h1">Design Prototypes</h1>
     <p class="gate-sub">This room is not the live site. Enter the access code to see what is being built.</p>
 
+    <!-- The form wears the auth organism's OWN classes (demo/components/auth.css),
+         not local copies of its numbers — Ton, 23.08: if it's in the system, it is
+         a component; a hand-rolled twin with drifting sizes is exactly the bug he
+         caught (the Enter label sat at the CTA ladder's 11px instead of the
+         organism's 14/15/16). -->
     <form class="gate-form" id="gate-form" novalidate>
-      <label class="gate-label" for="gate-code">Access code</label>
-      <input class="gate-input" id="gate-code" name="code" type="password"
-             autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
-             placeholder="Enter your access code" aria-describedby="gate-error">
-      <span class="gate-error" id="gate-error" role="alert"></span>
-      <button class="gate-btn" id="gate-submit" type="submit">
-        <span class="gate-btn-label">Enter</span>
-        <span class="gate-btn-icon" aria-hidden="true">
+      <div class="gba-field">
+        <label class="gba-label" for="gate-code">Access code</label>
+        <div class="gba-inputwrap">
+          <input class="gba-input" id="gate-code" name="code" type="password"
+                 autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+                 placeholder="Enter your access code" aria-describedby="gate-error">
+        </div>
+        <span class="gba-error" id="gate-error" role="alert"></span>
+      </div>
+      <button class="gba-btn" id="gate-submit" type="submit">
+        <span class="gba-btn-label">Enter</span>
+        <span class="gba-btn-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </span>
       </button>
