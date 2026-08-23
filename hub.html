@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GildedBox — Design Prototypes</title>
+<link rel="icon" href="data:," />
+<!-- ============================================================
+     gbppl-hub-1 — the ONE DOOR. Ton, 2026-08-23: every prototype
+     should open from a single place, and that place should be behind
+     a password and should look like us.
+
+     So this page is two screens in one file.
+
+       SCREEN 1, the gate. A login window in the language of our auth
+       organism (demo\components\auth.css, harvested off
+       portal.gildedbox.com/guest/auth): the wordmark, a serif title,
+       one underline field with the live focus/error behaviour, and
+       the BUTTON L submit in Blue 600. It is NOT system auth — no
+       Basic realm, no browser dialog — because the browser's own box
+       is the one surface in this project we cannot design.
+
+       SCREEN 2, the hub. A thin bar wearing the portal header's
+       identity lock (GildedBox | PROTOTYPES) over two shelves:
+       LIVE PROTOTYPE, the one connected walk assembled out of what
+       has been approved, and SANDBOXES, the parallel rooms where
+       single questions are still being answered.
+
+     WHEN THIS MOVES TO THE VPS this file becomes the root index.html
+     and the doors below stay exactly as they are — they are all
+     relative and all inside this same folder. The only thing that
+     changes on that day is the lock: see the note over ACCESS_HASH.
+
+     Nothing here is a new size, colour or curve. Everything is spent
+     out of demo\assets\tokens.css, the auth organism, and the portal
+     header lock already standing in index.html.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<!-- The system, and the container ladder. Same two files, same
+     relative paths, that checkout.html reaches for. -->
+<link rel="stylesheet" href="demo/assets/tokens.css">
+<link rel="stylesheet" href="demo/components/shell.css">
+
+<style>
+/* ============================================================
+   MOTION
+   ------------------------------------------------------------
+   The motion family is not in tokens.css yet — it lives inline at
+   the head of index.html (gbppl-motion). The four values this page
+   spends are copied verbatim from there, and when the family moves
+   into the tokens this block deletes itself.
+   ============================================================ */
+:root {
+  --mo-enter:  cubic-bezier(0.37, 0, 0.18, 1);   /* the long arrival */
+  --mo-exit:   cubic-bezier(0.4, 0, 1, 1);       /* anything leaving */
+  --mo-move:   cubic-bezier(0.4, 0, 0.2, 1);     /* in-place travel */
+  --mo-small:      280ms;
+  --mo-small-out:   90ms;
+  --mo-micro:      160ms;
+}
+
+/* ---------------- GROUND ----------------
+   shell.js is not loaded (nothing needs a custom element here), so
+   the demo grounding is stamped by hand rather than by `gb-demo`. */
+html, body {
+  margin: 0;
+  background: var(--live-body);
+  color: var(--zinc-900);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-root);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+/* The two screens never coexist: `hidden` is the switch, and the
+   attribute must beat the display rules the screens set. */
+[hidden] { display: none !important; }
+
+/* ============================================================
+   SCREEN 1 — THE GATE
+   ============================================================ */
+
+/* The column of the auth organism (.gba-section) shrunk to a window:
+   the live one is a 600 column with no border, ours is a card,
+   because it stands alone on the page with nothing else to hold it. */
+.gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.gate-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 32px;
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+@media (min-width: 1280px) {
+  .gate-card { max-width: 480px; padding: 56px 48px; }
+}
+
+/* The wordmark at the compact pair the header already owns
+   (126x42, the pth bar's small step). No new size invented. */
+.gate-mark { display: block; width: 126px; height: 42px; margin: 0 auto; }
+
+/* The serif title. This is exactly the auth organism's verify-step
+   title (.gba-vh1): Noto Serif 500, 22 / 28 from 1280, leading
+   tight, tracking -0.025em — the one serif that route allows. */
+.gate-h1 {
+  margin: 24px 0 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+.gate-sub {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+@media (min-width: 1280px) {
+  .gate-h1 { font-size: 28px; }
+  .gate-sub { font-size: 14px; }
+}
+
+.gate-form { margin-top: 32px; text-align: left; }
+@media (min-width: 1280px) { .gate-form { margin-top: 40px; } }
+
+/* Label, verbatim .gba-label: 11 / 12 caps 600, ls 0.5, Zinc 500. */
+.gate-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+@media (min-width: 1280px) { .gate-label { font-size: 12px; } }
+
+/* Underline input, verbatim .gba-input: border-bottom only, Zinc 400,
+   Inter 300 14 / 16, the 48 / 56 control family, hover into Blue 600,
+   focus gives nothing but a fading placeholder — the live behaviour,
+   which is quieter than any ring we could draw. */
+.gate-input {
+  width: 100%;
+  min-height: var(--form-ctl-h);
+  margin: 0;
+  padding: 0 12px;
+  display: block;
+  background: transparent;
+  border: 0 solid var(--zinc-400);
+  border-bottom-width: 1px;
+  border-radius: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.2px;
+  color: var(--zinc-800);
+  appearance: none;
+  outline: none;
+  transition: border-color 0.2s var(--mo-move), color 0.2s var(--mo-move);
+}
+.gate-input::placeholder {
+  color: var(--zinc-400);
+  opacity: 1;
+  transition: opacity 0.2s var(--mo-move);
+}
+.gate-input:hover { border-color: var(--blue-600); }
+.gate-input:focus::placeholder { opacity: 0; }
+@media (min-width: 1280px) {
+  .gate-input { min-height: var(--form-ctl-h-xl); font-size: 16px; }
+}
+
+/* Error, verbatim the organism: Red 500 on the line, Red 600 message
+   at 11px flush right, and it only ever speaks after a submit. */
+.gate-input.invalid,
+.gate-input.invalid:hover { border-color: var(--red-500); }
+.gate-error {
+  display: block;
+  min-height: 17px;
+  margin-top: 4px;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+  text-align: right;
+  color: var(--red-600);
+}
+
+/* Submit: BUTTON L in Blue 600 (.gba-btn), label span at ls 1px with
+   the arrow standing absolute at the right pad. */
+.gate-btn {
+  position: relative;
+  width: 100%;
+  min-height: var(--btn-l-min-h);
+  margin-top: 8px;
+  padding: var(--btn-l-pad-y) var(--btn-l-pad-x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue-600);
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--zinc-50);
+  text-transform: uppercase;
+  transition: background-color var(--mo-micro) var(--mo-move), opacity var(--mo-micro) var(--mo-move);
+}
+.gate-btn:hover { background: var(--blue-700); }
+.gate-btn:disabled { opacity: 0.6; pointer-events: none; }
+.gate-btn-label {
+  padding: 0 24px;
+  font-size: var(--btn-label-font-size);
+  font-weight: var(--btn-label-font-weight);
+  letter-spacing: var(--btn-label-letter-spacing);
+  line-height: var(--btn-label-line-height);
+}
+.gate-btn-icon {
+  position: absolute;
+  top: 50%;
+  right: var(--btn-l-pad-x);
+  transform: translateY(-50%);
+  display: flex;
+}
+.gate-btn-icon svg { width: 16px; height: 16px; }
+@media (min-width: 1280px) {
+  .gate-btn { min-height: var(--btn-l-min-h-xl); padding-left: var(--btn-l-pad-x-xl); padding-right: var(--btn-l-pad-x-xl); }
+  .gate-btn-icon { right: var(--btn-l-pad-x-xl); }
+  .gate-btn-icon svg { width: 20px; height: 20px; }
+}
+
+/* The gate leaving: shorter than the arrival and on the exit curve,
+   because it never has to land anywhere. */
+.gate.is-leaving {
+  animation: gateOut var(--mo-small-out) var(--mo-exit) forwards;
+  pointer-events: none;
+}
+@keyframes gateOut {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+
+/* ============================================================
+   SCREEN 2 — THE HUB
+   ============================================================ */
+
+.hub { display: flex; flex-direction: column; min-height: 100vh; }
+.hub.is-arriving { animation: hubIn var(--mo-small) var(--mo-enter); }
+@keyframes hubIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- The bar ----
+   The portal header's identity lock (index.html .pth-lock) at its
+   compact step — mark 126x42, hairline 24, word 12 — in a 64 bar.
+   Thin on purpose: this chrome names the building, it does not
+   navigate, so it takes 16 less than the 80 the real bars stand at. */
+.hub-bar {
+  border-bottom: 1px solid var(--zinc-200);
+  background: var(--white);
+}
+/* The bar's contents stand on the SAME 1080 column as the shelves, so
+   the wordmark and "Live Prototype" share one left edge and the bar
+   reads as the top of the page rather than a strip laid over it. */
+.hub-bar-in {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.hub-bar-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.hub-lock { display: inline-flex; align-items: center; gap: 16px; flex: 0 0 auto; }
+.hub-mark { display: block; width: 126px; height: 42px; }
+.hub-rule { width: 1px; height: 24px; background: var(--zinc-300); flex: 0 0 auto; }
+.hub-word {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+/* The quiet door back to the lock, in the .pth-away voice. */
+.hub-lockout {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.hub-lockout:hover { color: var(--zinc-900); }
+
+/* ---- The shelves ---- */
+.hub-body { flex: 1 0 auto; padding: 48px 0 64px; }
+@media (min-width: 1280px) { .hub-body { padding: 72px 0 96px; } }
+.hub-wrap { max-width: 1080px; margin: 0 auto; }
+
+.hub-shelf + .hub-shelf { margin-top: 56px; }
+@media (min-width: 1280px) { .hub-shelf + .hub-shelf { margin-top: 72px; } }
+
+.hub-h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) { .hub-h2 { font-size: 26px; } }
+.hub-lede {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+
+/* The eyebrow role, one voice for the whole file
+   (12 / 600 / 0.12em / uppercase / Zinc 500). */
+.hub-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+
+/* ---- The doors ----
+   Idle Zinc 200, and on hover the border goes all the way to Zinc 900
+   with the gift card's own shadow under it — the auth method card's
+   selected state, spent here as the hover. Nothing moves but the
+   arrow, which steps 4px the way the chevrons do. */
+.door {
+  position: relative;
+  display: block;
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  transition: border-color var(--mo-micro) var(--mo-move),
+              box-shadow var(--mo-micro) var(--mo-move);
+}
+.door:hover { border-color: var(--zinc-900); box-shadow: var(--shadow-card); }
+.door-arrow {
+  display: inline-flex;
+  color: var(--zinc-900);
+  transition: transform var(--mo-micro) var(--mo-move);
+}
+.door:hover .door-arrow { transform: translateX(4px); }
+
+/* The one big door. Two columns from 1024: the flow's own pitch on the
+   left, and on the right the three rooms named as a list — a real index
+   into the walk, which is also what stops a 1080 card from being half
+   empty. Below that width the list folds under the pitch, divided by a
+   hairline instead of standing beside one. */
+.door--live { margin-top: 24px; padding: 32px 24px; }
+@media (min-width: 768px)  { .door--live { padding: 40px 32px; } }
+@media (min-width: 1024px) {
+  .door--live {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 48px;
+  }
+}
+@media (min-width: 1280px) { .door--live { padding: 48px 40px; gap: 56px; } }
+.door-title {
+  margin: 12px 0 0;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) { .door-title { font-size: 24px; } }
+.door-desc {
+  margin: 10px 0 0;
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+
+/* Primary action of the big door: BUTTON L again, this time the
+   auto-width one — same height family, same label span. */
+.door-cta {
+  margin-top: 28px;
+  min-height: var(--btn-l-min-h);
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: var(--btn-l-pad-y) var(--btn-l-pad-x);
+  background: var(--blue-600);
+  border-radius: var(--radius);
+  color: var(--zinc-50);
+  text-transform: uppercase;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+.door-cta:hover { background: var(--blue-700); }
+.door-cta span {
+  font-size: var(--btn-label-font-size);
+  font-weight: var(--btn-label-font-weight);
+  letter-spacing: var(--btn-label-letter-spacing);
+  line-height: var(--btn-label-line-height);
+}
+.door-cta svg { width: 16px; height: 16px; }
+@media (min-width: 1280px) {
+  .door-cta { min-height: var(--btn-l-min-h-xl); padding-left: var(--btn-l-pad-x-xl); padding-right: var(--btn-l-pad-x-xl); }
+}
+
+/* The three rooms of the connected walk, named under the button so
+   the flow can be entered in the middle when someone needs to. */
+.door-stops {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--zinc-200);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 16px;
+}
+.door-stops-title { display: none; }
+.door-stop {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-600);
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.door-stop:hover { color: var(--blue-600); }
+.door-stop-dot {
+  width: 5px; height: 5px;
+  border-radius: var(--radius-circle);
+  background: var(--zinc-300);
+  flex: 0 0 auto;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+.door-stop:hover .door-stop-dot { background: var(--blue-600); }
+.door-stops-sep { color: var(--zinc-300); font-size: 13px; }
+
+/* From 1024 the row becomes the right-hand index: the hairline turns
+   from a rule underneath into the column's own left edge, the slashes
+   go (a list does not need them) and the eyebrow names the group. */
+@media (min-width: 1024px) {
+  .door-stops {
+    margin-top: 0;
+    padding: 0 0 0 32px;
+    border-top: 0;
+    border-left: 1px solid var(--zinc-200);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .door-stops-title { display: block; margin-bottom: 14px; }
+  .door-stops-sep { display: none; }
+  .door-stop { padding: 8px 0; }
+}
+
+/* ---- The sandboxes ---- */
+.sandboxes {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px)  { .sandboxes { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .sandboxes { grid-template-columns: repeat(3, 1fr); } }
+
+.door--box {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+}
+@media (min-width: 1280px) { .door--box { padding: 28px 24px; } }
+.door--box .door-title { font-size: 17px; margin-top: 14px; }
+.door--box .door-desc { margin-top: 8px; font-size: 13px; flex: 1 0 auto; }
+.door-foot {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.door-path {
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+}
+
+/* IN PROGRESS chip. Zinc, not amber: the system owns no amber, and
+   the only warm value it does own is the legacy gold that Ton has
+   ruled off these pages. A Zinc 100 chip in the eyebrow voice says
+   "not finished" without adding a colour to the palette. */
+.chip {
+  display: inline-block;
+  align-self: flex-start;   /* the card is a flex column; without this
+                               the chip stretches into a full-width band */
+  padding: 4px 8px;
+  background: var(--zinc-100);
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+
+/* ---- The quiet line at the bottom ---- */
+.hub-foot {
+  flex: 0 0 auto;
+  padding: 24px 0 32px;
+  border-top: 1px solid var(--zinc-200);
+}
+.hub-foot p {
+  margin: 0;
+  max-width: 1080px;
+  margin: 0 auto;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate.is-leaving, .hub.is-arriving { animation: none; }
+  * { transition-duration: 1ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SCREEN 1 — THE GATE
+     ============================================================ -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <img class="gate-mark" src="demo/assets/gildedbox-logo.svg" alt="GildedBox" width="126" height="42">
+    <h1 class="gate-h1">Design Prototypes</h1>
+    <p class="gate-sub">This room is not the live site. Enter the access code to see what is being built.</p>
+
+    <form class="gate-form" id="gate-form" novalidate>
+      <label class="gate-label" for="gate-code">Access code</label>
+      <input class="gate-input" id="gate-code" name="code" type="password"
+             autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+             placeholder="Enter your access code" aria-describedby="gate-error">
+      <span class="gate-error" id="gate-error" role="alert"></span>
+      <button class="gate-btn" id="gate-submit" type="submit">
+        <span class="gate-btn-label">Enter</span>
+        <span class="gate-btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2 — THE HUB
+     ============================================================ -->
+<div class="hub" id="hub" hidden>
+
+  <header class="hub-bar">
+    <div class="gb-container hub-bar-in">
+      <div class="hub-wrap hub-bar-row">
+        <a class="hub-lock" href="hub.html" aria-label="GildedBox Prototypes, home">
+          <img class="hub-mark" src="demo/assets/gildedbox-logo.svg" alt="GildedBox" width="126" height="42">
+          <span class="hub-rule" aria-hidden="true"></span>
+          <span class="hub-word">Prototypes</span>
+        </a>
+        <button class="hub-lockout" id="hub-lockout" type="button">Lock</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="hub-body">
+    <div class="gb-container">
+      <div class="hub-wrap">
+
+        <!-- ---- LIVE PROTOTYPE ---- -->
+        <section class="hub-shelf">
+          <h2 class="hub-h2">Live Prototype</h2>
+          <p class="hub-lede">One walk, assembled out of everything that has been approved.</p>
+
+          <div class="door door--live">
+            <div class="door-pitch">
+              <span class="hub-eyebrow">Portal landing → Catalog → Checkout</span>
+              <h3 class="door-title">The connected flow</h3>
+              <p class="door-desc">The whole journey in one piece: the portal landing opens the catalog, the catalog opens a gift, the gift lands in checkout. Every link inside works — walk it end to end the way a client would.</p>
+
+              <a class="door-cta" href="index.html">
+                <span>Open the prototype</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+
+            <div class="door-stops">
+              <span class="hub-eyebrow door-stops-title">Enter at</span>
+              <a class="door-stop" href="index.html"><span class="door-stop-dot" aria-hidden="true"></span>Portal landing</a>
+              <span class="door-stops-sep" aria-hidden="true">/</span>
+              <a class="door-stop" href="catalog/"><span class="door-stop-dot" aria-hidden="true"></span>Category page</a>
+              <span class="door-stops-sep" aria-hidden="true">/</span>
+              <a class="door-stop" href="checkout.html"><span class="door-stop-dot" aria-hidden="true"></span>Checkout</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---- SANDBOXES ---- -->
+        <section class="hub-shelf">
+          <h2 class="hub-h2">Sandboxes</h2>
+          <p class="hub-lede">Parallel rooms, one open question each. They move; the walk above does not.</p>
+
+          <div class="sandboxes">
+
+            <a class="door door--box" href="checkout.html?v=2">
+              <span class="chip">In progress</span>
+              <h3 class="door-title">Checkout · V2 Pool</h3>
+              <p class="door-desc">Gifts unpersonalized by default, quantity as a pool on the gift, personalization behind a two-door fork.</p>
+              <span class="door-foot">
+                <span class="door-path">checkout.html?v=2</span>
+                <span class="door-arrow" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </span>
+              </span>
+            </a>
+
+            <a class="door door--box" href="index.html?pth=1">
+              <span class="chip">In progress</span>
+              <h3 class="door-title">Portal header</h3>
+              <p class="door-desc">The portal's own bar instead of the website's: the GildedBox | Portal lock, and the utilities ordered out to the edge.</p>
+              <span class="door-foot">
+                <span class="door-path">index.html?pth=1</span>
+                <span class="door-arrow" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </span>
+              </span>
+            </a>
+
+            <a class="door door--box" href="index.html?hero=start">
+              <span class="chip">In progress</span>
+              <h3 class="door-title">Start Gifting layouts</h3>
+              <p class="door-desc">The hero of the portal landing rebuilt around the Start Gifting entry, with the greeting kept out of its way.</p>
+              <span class="door-foot">
+                <span class="door-path">index.html?hero=start</span>
+                <span class="door-arrow" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </span>
+              </span>
+            </a>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="hub-foot">
+    <div class="gb-container">
+      <p>Internal design prototypes · not the live site.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   THE LOCK
+   ------------------------------------------------------------
+   A gate for honest people, and it says so out loud. The page is
+   static HTML on GitHub Pages: the markup of screen 2 is already in
+   the response, so anyone who opens devtools is past this in four
+   seconds. What the hash buys is that the code never sits in the
+   source as a readable string, and that a stranger who lands on the
+   URL sees a locked door rather than the client's unfinished work.
+
+   THE REAL LOCK ARRIVES WITH THE VPS — Basic auth at the nginx level,
+   or a session cookie from a tiny handler — and then this screen can
+   either stay as the face of that lock or come out altogether.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* sha256('gilded-oro-18'). The code itself appears nowhere here. */
+  var ACCESS_HASH = '391f502ab794ad5778024f46a0e70a7ced064c90e9b50bbc99fa8f94473dd38c';
+
+  /* Session, not local: closing the tab locks the door again, which is
+     what you want on a laptop that gets shown around in a meeting. */
+  var FLAG = 'gbppl-hub-open';
+
+  var gate    = document.getElementById('gate');
+  var hub     = document.getElementById('hub');
+  var form    = document.getElementById('gate-form');
+  var input   = document.getElementById('gate-code');
+  var errorEl = document.getElementById('gate-error');
+  var submit  = document.getElementById('gate-submit');
+  var lockout = document.getElementById('hub-lockout');
+
+  /* ---- sha256 ----
+     crypto.subtle is there on https and, in Chrome, on file:// too;
+     the fallback keeps the page working anywhere else (an http://
+     preview server, an older browser) rather than failing open. */
+  function sha256(text) {
+    if (window.crypto && window.crypto.subtle) {
+      return window.crypto.subtle
+        .digest('SHA-256', new TextEncoder().encode(text))
+        .then(function (buf) {
+          return Array.prototype.map
+            .call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); })
+            .join('');
+        });
+    }
+    return Promise.resolve(sha256Sync(text));
+  }
+
+  /* FIPS 180-4, the plain loop. Only ever reached by the fallback. */
+  function sha256Sync(text) {
+    var K = [
+      0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    var bytes = [], i, j;
+    for (i = 0; i < text.length; i++) {
+      var c = text.charCodeAt(i);
+      if (c < 128) bytes.push(c);
+      else if (c < 2048) bytes.push(192 | (c >> 6), 128 | (c & 63));
+      else bytes.push(224 | (c >> 12), 128 | ((c >> 6) & 63), 128 | (c & 63));
+    }
+    var bitLen = bytes.length * 8;
+    bytes.push(0x80);
+    while (bytes.length % 64 !== 56) bytes.push(0);
+    for (i = 7; i >= 0; i--) bytes.push((i < 4 ? Math.floor(bitLen / Math.pow(2, 8 * i)) : 0) & 255);
+    var rr = function (x, n) { return (x >>> n) | (x << (32 - n)); };
+    var w = new Array(64);
+    for (i = 0; i < bytes.length; i += 64) {
+      for (j = 0; j < 16; j++) {
+        w[j] = (bytes[i + j * 4] << 24) | (bytes[i + j * 4 + 1] << 16) | (bytes[i + j * 4 + 2] << 8) | bytes[i + j * 4 + 3];
+      }
+      for (j = 16; j < 64; j++) {
+        var s0 = rr(w[j - 15], 7) ^ rr(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+        var s1 = rr(w[j - 2], 17) ^ rr(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+        w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+      }
+      var a = H[0], b = H[1], c2 = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (j = 0; j < 64; j++) {
+        var S1 = rr(e, 6) ^ rr(e, 11) ^ rr(e, 25);
+        var ch = (e & f) ^ (~e & g);
+        var t1 = (h + S1 + ch + K[j] + w[j]) | 0;
+        var S0 = rr(a, 2) ^ rr(a, 13) ^ rr(a, 22);
+        var mj = (a & b) ^ (a & c2) ^ (b & c2);
+        var t2 = (S0 + mj) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c2; c2 = b; b = a; a = (t1 + t2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c2) | 0; H[3] = (H[3] + d) | 0;
+      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    return H.map(function (x) { return ('0000000' + (x >>> 0).toString(16)).slice(-8); }).join('');
+  }
+
+  function held() {
+    try { return sessionStorage.getItem(FLAG) === '1'; } catch (e) { return false; }
+  }
+
+  /* Opening for the second time in a session is not an event: no
+     animation, the hub is simply the page. */
+  function openHub(animate) {
+    gate.hidden = true;
+    hub.hidden = false;
+    if (animate) {
+      hub.classList.add('is-arriving');
+      hub.addEventListener('animationend', function () { hub.classList.remove('is-arriving'); }, { once: true });
+    }
+    document.title = 'GildedBox — Prototypes';
+  }
+
+  function closeHub() {
+    try { sessionStorage.removeItem(FLAG); } catch (e) {}
+    hub.hidden = true;
+    gate.hidden = false;
+    gate.classList.remove('is-leaving');
+    clearError();
+    input.value = '';
+    input.focus();
+    document.title = 'GildedBox — Design Prototypes';
+  }
+
+  function clearError() {
+    input.classList.remove('invalid');
+    errorEl.textContent = '';
+  }
+
+  /* The organism's rule: the error only ever speaks after a submit,
+     and the next keystroke takes it back. */
+  function showError(msg) {
+    input.classList.add('invalid');
+    errorEl.textContent = msg;
+  }
+
+  input.addEventListener('input', clearError);
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var value = input.value.trim();
+    if (!value) { showError('Enter the access code'); input.focus(); return; }
+
+    submit.disabled = true;
+    sha256(value).then(function (hex) {
+      submit.disabled = false;
+      if (hex !== ACCESS_HASH) {
+        showError('That code does not open this door');
+        input.select();
+        return;
+      }
+      clearError();
+      try { sessionStorage.setItem(FLAG, '1'); } catch (e) {}
+      gate.classList.add('is-leaving');
+      gate.addEventListener('animationend', function () { openHub(true); }, { once: true });
+    }).catch(function () {
+      submit.disabled = false;
+      showError('Could not check the code — reload the page');
+    });
+  });
+
+  lockout.addEventListener('click', closeHub);
+
+  if (held()) openHub(false);
+  else input.focus();
+})();
+</script>
+
+</body>
+</html>
