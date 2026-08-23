@@ -1,0 +1,286 @@
+/* ============================================================
+   gbppl-oro-1 — THE SHOWCASE CHROME
+   ------------------------------------------------------------
+   The frame every page of the Oro showcase wears: the rail on the
+   left, the column on the right, and the type roles the documents
+   speak in. One definition, seven pages — the showcase is not
+   allowed to break its own first rule (Ton-6: reuse before you
+   draw) by hand-sewing this frame into every file.
+
+   Everything below is spent out of system\assets\tokens.css. No
+   colour, no radius, no curve and no duration is invented here;
+   where a number is not a token it is a layout measure (a rail
+   width, a column max) and is marked as such.
+
+   The type roles come from TYPE-SCALE.md: Noto Serif for titles
+   (serif is TITLES ONLY, BRAND.md), Inter for everything else,
+   and role 44 Eyebrow for the small unsaturated all-caps.
+   ============================================================ */
+
+/* The box model of the system (same rule shell.css opens with;
+   the showcase does not use the container ladder, so it takes the
+   reset alone rather than pulling a component it does not wear). */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--white); }
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--zinc-700);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-root);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ---- Eyebrow, type role 44, straight off the tokens ---- */
+.gb-eyebrow {
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--eyebrow-color);
+}
+
+/* ============================================================
+   THE SHELL
+   ============================================================ */
+/* Below 1024 the rail is a band across the top and the column runs
+   under it, so the shell is a COLUMN and only becomes a row when
+   there is width to put a rail beside the text. (Left as a row, a
+   100%-wide rail pushes the column off the screen — the flex line
+   does not wrap.) */
+.oro {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+@media (min-width: 1024px) {
+  .oro { flex-direction: row; align-items: flex-start; }
+}
+
+/* ---- The rail ----
+   264px is a layout measure, not a token: the system has no rail
+   width yet. It is the narrowest width that holds "Tone of Voice"
+   and its SOON plaque on one line. */
+.oro-rail {
+  flex: 0 0 auto;
+  width: 100%;
+  background: var(--zinc-50);
+  border-bottom: 1px solid var(--zinc-200);
+  padding: 24px 16px;
+}
+@media (min-width: 1024px) {
+  .oro-rail {
+    position: sticky;
+    top: 0;
+    width: 264px;
+    height: 100vh;
+    overflow-y: auto;
+    border-bottom: 0;
+    border-right: 1px solid var(--zinc-200);
+    padding: 32px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* The identity lock of the showcase: the name in the title voice,
+   the discipline under it in the eyebrow. Same two-part lock the
+   hub bar wears (GildedBox | PROTOTYPES), set vertically because
+   a rail is tall, not wide. */
+.oro-lock { display: block; margin-bottom: 28px; }
+.oro-lock-name {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--zinc-950);
+}
+.oro-lock-sub { display: block; margin-top: 7px; }
+
+/* ---- The sections ---- */
+.oro-nav { display: flex; flex-direction: column; gap: 2px; }
+
+.oro-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.3;
+  letter-spacing: 0.2px;
+  color: var(--zinc-700);
+  transition:
+    background-color var(--mo-micro) var(--mo-move),
+    border-color var(--mo-micro) var(--mo-move),
+    color var(--mo-micro) var(--mo-move);
+}
+.oro-link:hover { background: var(--zinc-100); color: var(--zinc-900); }
+
+/* ACTIVE = STATE, and state speaks in the accent (Ton-5: "активный
+   пункт меню" is named in the principle by name). The fill and the
+   hairline are the portal sidebar's own active pair, Blue 50 over
+   Blue 200 (tokens.css: "Blue = CTA and sidebar active state").
+   Zinc 100 is not used here: it is the HOVER, and a grey active
+   item would contradict the very rule the About page states three
+   screens to the right. */
+.oro-link[aria-current="page"] {
+  background: var(--blue-50);
+  border-color: var(--blue-200);
+  color: var(--blue-700);
+  font-weight: 500;
+}
+.oro-link[aria-current="page"]:hover { background: var(--blue-50); color: var(--blue-700); }
+
+/* A section that is not written yet. It refuses every affordance —
+   no hover, no pointer — and says so with a plaque in the eyebrow
+   voice on a Zinc 100 ground. The hub's own COMING SOON card,
+   shrunk to a line. */
+.oro-link--soon { color: var(--zinc-400); cursor: default; }
+.oro-link--soon:hover { background: transparent; color: var(--zinc-400); }
+.oro-soon {
+  flex: 0 0 auto;
+  padding: 3px 6px;
+  background: var(--zinc-100);
+  border-radius: var(--radius);
+  font-size: 10px;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--zinc-400);
+}
+
+/* ---- The door back ---- */
+.oro-back {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--zinc-200);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+  transition: color var(--mo-micro) var(--mo-move);
+}
+@media (min-width: 1024px) { .oro-back { margin-top: auto; } }
+.oro-back:hover { color: var(--zinc-900); }
+.oro-back svg { width: 15px; height: 15px; flex: 0 0 auto; }
+
+/* ============================================================
+   THE COLUMN
+   ------------------------------------------------------------
+   860px is a layout measure: the width at which a 16px Inter
+   paragraph runs about 90 characters, which is where this kind of
+   document reads. The system's container ladder is not used —
+   it describes the product's full-bleed pages, not a document.
+   ============================================================ */
+.oro-main { flex: 1 1 auto; min-width: 0; padding: 40px 16px 0; }
+@media (min-width: 1024px) { .oro-main { padding: 64px 40px 0; } }
+@media (min-width: 1600px) { .oro-main { padding: 80px 64px 0; } }
+.oro-col { max-width: 860px; }
+
+/* ---- Head of the page ---- */
+.oro-head { padding-bottom: 36px; border-bottom: 1px solid var(--zinc-200); }
+.oro-h1 {
+  margin: 14px 0 0;
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--zinc-950);
+}
+@media (min-width: 1280px) { .oro-h1 { font-size: 42px; } }
+.oro-lede {
+  margin: 16px 0 0;
+  max-width: 62ch;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--zinc-500);
+}
+
+/* ---- Sections ---- */
+.oro-section { padding: 48px 0 0; }
+@media (min-width: 1280px) { .oro-section { padding-top: 64px; } }
+.oro-h2 {
+  margin: 12px 0 0;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) { .oro-h2 { font-size: 28px; } }
+.oro-h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.1px;
+  color: var(--zinc-900);
+}
+.oro-p {
+  margin: 18px 0 0;
+  max-width: 68ch;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--zinc-700);
+}
+.oro-p a {
+  color: var(--blue-700);
+  border-bottom: 1px solid var(--blue-200);
+  transition: border-color var(--mo-micro) var(--mo-move);
+}
+.oro-p a:hover { border-bottom-color: var(--blue-700); }
+.oro-note {
+  margin: 18px 0 0;
+  max-width: 68ch;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--zinc-500);
+}
+.oro-strong { font-weight: 600; color: var(--zinc-900); }
+
+/* A quiet card, the one surface this document draws on. Zinc 200
+   hairline, the 5px brand radius, white ground — the hub door at
+   rest, without the hover it has no business offering. */
+.oro-card {
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+@media (min-width: 1280px) { .oro-card { padding: 24px; } }
+
+/* ---- The foot ---- */
+.oro-foot {
+  margin-top: 64px;
+  padding: 24px 0 40px;
+  border-top: 1px solid var(--zinc-200);
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+}
+.oro-foot a { border-bottom: 1px solid var(--zinc-200); }
+.oro-foot a:hover { color: var(--zinc-700); border-bottom-color: var(--zinc-400); }
+
+/* Ton-7 says the SIGNATURE ignores reduced-motion. Nothing on
+   these pages is the signature: the rail hovers and the copy
+   toast are utility micro-motion, and utility motion is allowed
+   to be polite. */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+}

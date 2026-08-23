@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Oro — GildedBox Design System</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-oro-1 — THE SHOWCASE, ABOUT
+     ------------------------------------------------------------
+     The front door of Oro. Two things live on this page and
+     nothing else: what the system IS, and how work moves through
+     it. The rules are on the FRONT, typeset, not buried in a
+     markdown file nobody opens — a design system that keeps its
+     own rules out of sight is a folder, not a system.
+
+     THE SHOWCASE STANDS NEXT TO THE REAL FILES, NOT ON COPIES.
+     This page loads ..\assets\tokens.css, the same stylesheet the
+     live prototype loads. Every colour, radius, curve and duration
+     you see is resolved out of that file at render time. When a
+     token changes, this page changes with it; it cannot drift,
+     because there is nothing here to drift from.
+
+     The frame (rail, column, type roles) is oro.css, one
+     definition for all seven sections. The showcase obeys its own
+     first rule: reuse before you draw.
+
+     No gold. Ton's veto of 2026-07-30 holds on this page like
+     every other: the only gold in the building is on the Colors
+     page, behind a DO NOT USE plaque.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<!-- The system itself, and then the showcase frame. -->
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="oro.css">
+
+<style>
+/* ============================================================
+   ABOUT — page-local composition
+   ------------------------------------------------------------
+   Only what this one document needs: the three-card tree, the
+   numbered principles and the decision chain. Anything a second
+   page ends up wanting moves down into oro.css.
+   ============================================================ */
+
+/* ---- The numbered principles ----
+   The numeral is set in the title serif and held back to Zinc 300:
+   it counts, it does not shout. Ton judges typography without
+   mercy, so the hierarchy has to read at a glance — numeral,
+   then title, then body, three clearly separate weights. */
+.pr { display: flex; gap: 18px; padding: 32px 0 0; }
+@media (min-width: 768px) { .pr { gap: 28px; } }
+.pr + .pr { margin-top: 4px; }
+
+.pr-num {
+  flex: 0 0 auto;
+  width: 40px;
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--zinc-300);
+  padding-top: 2px;
+}
+@media (min-width: 768px) { .pr-num { width: 52px; font-size: 38px; } }
+.pr-body { flex: 1 1 auto; min-width: 0; }
+.pr-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: var(--zinc-950);
+}
+@media (min-width: 1280px) { .pr-title { font-size: 22px; } }
+.pr-body .oro-p { margin-top: 12px; }
+
+/* ---- The tree: three cards, two arrows ---- */
+.tree {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+@media (min-width: 900px) { .tree { flex-direction: row; align-items: stretch; gap: 0; } }
+
+.tree-card {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+/* system/ is the source, so it is the one card the eye lands on
+   first: Zinc 50 ground, the same "this is the base" fill the
+   catalog card wears. Nothing louder — a source is not a CTA. */
+.tree-card--source { background: var(--zinc-50); border-color: var(--zinc-300); }
+
+.tree-path {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: var(--zinc-950);
+}
+.tree-role { margin: 4px 0 0; }
+.tree-desc {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--zinc-600);
+}
+
+.tree-arrow {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--zinc-300);
+  padding: 4px 0;
+}
+@media (min-width: 900px) { .tree-arrow { padding: 0 14px; } }
+.tree-arrow svg { width: 20px; height: 20px; }
+/* Stacked, the arrow points down the column; in a row it points
+   across it. One glyph, rotated — not two drawings. */
+@media (max-width: 899px) { .tree-arrow svg { transform: rotate(90deg); } }
+
+.tree-return {
+  margin: 14px 0 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--zinc-500);
+}
+.tree-return svg { width: 16px; height: 16px; flex: 0 0 auto; margin-top: 3px; color: var(--zinc-400); }
+
+/* ---- The chain of questions ----
+   A vertical spine with a node per step. The spine is the Zinc 200
+   hairline this whole document is ruled with; the nodes are the
+   5px dot the hub uses on its stop list. The last node is Blue:
+   it is the step where something becomes part of the system, and
+   arriving somewhere is a state. */
+.chain { margin: 22px 0 0; padding: 0; list-style: none; }
+.chain-step {
+  position: relative;
+  padding: 0 0 22px 34px;
+  border-left: 1px solid var(--zinc-200);
+}
+.chain-step:last-child { padding-bottom: 0; border-left-color: transparent; }
+.chain-step::before {
+  content: "";
+  position: absolute;
+  left: -4px; top: 5px;
+  width: 7px; height: 7px;
+  border-radius: var(--radius-circle);
+  background: var(--zinc-300);
+}
+.chain-step--land::before { background: var(--blue-600); }
+.chain-q {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--zinc-900);
+}
+.chain-a { margin: 6px 0 0; font-size: 14px; line-height: 1.7; color: var(--zinc-600); }
+.chain-a em { font-style: normal; font-weight: 600; color: var(--zinc-800); }
+
+/* ---- The two-colour rule, shown rather than described ---- */
+.rule2 { margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.rule2-card {
+  flex: 1 1 240px;
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.rule2-swatch {
+  width: 100%; height: 8px;
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+}
+.rule2-swatch--state { background: var(--blue-600); }
+.rule2-swatch--furniture { background: var(--black); }
+.rule2-swatch--gold {
+  background: var(--gold-beta);
+  /* The strike is the plaque: the value exists on live and is not
+     ours to spend. Drawn with the page's own hairline colour. */
+  position: relative; overflow: hidden;
+}
+/* Three words, three columns, one line — the rule is a triptych and
+   a 2 + 1 wrap would read as "two rules and a footnote". */
+@media (min-width: 900px) { .rule2-card { flex: 1 1 0; min-width: 0; } }
+.rule2-swatch--gold::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 5px,
+    var(--white) 5px 7px
+  );
+}
+.rule2-list { margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: var(--zinc-600); }
+.rule2-list li::marker { color: var(--zinc-300); }
+
+/* ---- The motion strip ----
+   The durations are read out of the tokens by name, so the row is
+   a readout of the file rather than a table typed next to it. */
+.mo { margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.mo-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 11px;
+  background: var(--zinc-50);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--zinc-600);
+}
+.mo-chip b { font-weight: 600; color: var(--zinc-900); }
+.mo-chip span { color: var(--zinc-400); }
+</style>
+</head>
+
+<body>
+<div class="oro">
+
+  <!-- ============================================================
+       THE RAIL
+       ============================================================ -->
+  <nav class="oro-rail" aria-label="Design system sections">
+    <a class="oro-lock" href="index.html">
+      <span class="oro-lock-name">Oro</span>
+      <span class="oro-lock-sub gb-eyebrow">Design system</span>
+    </a>
+
+    <div class="oro-nav">
+      <a class="oro-link" href="index.html" aria-current="page">About</a>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Branding <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Tone of Voice <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Typography <span class="oro-soon">Soon</span></span>
+      <a class="oro-link" href="colors.html">Colors</a>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Components <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Tokens <span class="oro-soon">Soon</span></span>
+    </div>
+
+    <a class="oro-back" href="../../index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      Prototypes hub
+    </a>
+  </nav>
+
+  <!-- ============================================================
+       THE COLUMN
+       ============================================================ -->
+  <main class="oro-main">
+    <div class="oro-col">
+
+      <header class="oro-head">
+        <span class="gb-eyebrow">Introduction</span>
+        <h1 class="oro-h1">Oro</h1>
+        <p class="oro-lede">The design system of GildedBox: one place where the colours, the type, the components, the patterns and the motion of the product are decided — and one place they are taken from.</p>
+      </header>
+
+      <!-- ---- WHAT IS ORO ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">01</span>
+        <h2 class="oro-h2">What Oro is</h2>
+
+        <p class="oro-p">Oro is the single source of design truth for GildedBox. It holds four layers, in this order: <span class="oro-strong">tokens</span>, the raw values — colour, radius, elevation, type, spacing, the button ladders, the motion clock; <span class="oro-strong">components</span>, the assembled organisms those values make — the header, the footer, the auth form, the catalog; <span class="oro-strong">patterns</span>, the way components are arranged into a screen; and <span class="oro-strong">motion</span>, the way all of it moves. The name comes from the brand's Figma library. The system outgrew the library and kept the name.</p>
+
+        <p class="oro-p">Nothing in Oro is invented. Every value carries its provenance in the file beside it — <span class="oro-strong">measured live</span> on the product, <span class="oro-strong">recorded</span> from an earlier measurement, <span class="oro-strong">interpolated</span> by a stated formula, or honestly marked <span class="oro-strong">felt</span> where live gives no number. Where the live product and Figma disagree, live wins and the disagreement is written down rather than quietly resolved. That is why the token file reads like an argument: it is one.</p>
+
+        <p class="oro-p">Why it exists: so the same product looks like the same product on every surface it appears on; so a screen can be assembled out of parts that already fit instead of drawn again from nothing; and so hand-off to engineering is a mapping, not a redraw — the tokens already speak the front end's language and the final delivery is a theme preset, not a folder of pictures.</p>
+      </section>
+
+      <!-- ---- HOW WE WORK ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">02</span>
+        <h2 class="oro-h2">How we work</h2>
+        <p class="oro-p">Five rules. They are not a style guide — they decide where a thing is allowed to be made and what colour it is allowed to be when it gets there.</p>
+
+        <!-- 1. THE TREE -->
+        <div class="pr">
+          <div class="pr-num">1</div>
+          <div class="pr-body">
+            <h3 class="pr-title">The tree: system → live → sandbox</h3>
+            <p class="oro-p">Three folders, three different permissions. Which folder a file sits in tells you what it is allowed to do.</p>
+
+            <div class="tree">
+              <div class="tree-card tree-card--source">
+                <span class="tree-path">system/</span>
+                <p class="tree-role gb-eyebrow">The source</p>
+                <p class="tree-desc">Every component, token and pattern, defined once. If it is real, it is here — and it is here only once.</p>
+              </div>
+
+              <div class="tree-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </div>
+
+              <div class="tree-card">
+                <span class="tree-path">live/</span>
+                <p class="tree-role gb-eyebrow">The consumer</p>
+                <p class="tree-desc">The approved walk. It spends the system and adds nothing: no local colour, no local size, no hand-sewn twin of an organism that already exists.</p>
+              </div>
+
+              <div class="tree-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </div>
+
+              <div class="tree-card">
+                <span class="tree-path">sandbox/</span>
+                <p class="tree-role gb-eyebrow">The freedom</p>
+                <p class="tree-desc">The room where you may step outside the system on purpose, while a question is still open. New patterns are allowed to be wrong here and nowhere else.</p>
+              </div>
+            </div>
+
+            <p class="tree-return">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 5 5v4"/></svg>
+              Work approved in the sandbox does not travel sideways. It goes back into <span class="oro-strong">system/</span> first and reaches <span class="oro-strong">live/</span> from there.
+            </p>
+
+            <p class="oro-note">The test is mechanical: any hardcoded value on a <span class="oro-strong">live/</span> page is a structural bug even when it looks exactly right. Either the page is cheating, or the component it needed is missing — and both are fixed in <span class="oro-strong">system/</span>.</p>
+          </div>
+        </div>
+
+        <!-- 2. THE CYCLE -->
+        <div class="pr">
+          <div class="pr-num">2</div>
+          <div class="pr-body">
+            <h3 class="pr-title">The cycle of the new</h3>
+            <p class="oro-p">A new component is the last resort, not the first move. Every new thing walks the same four questions, in order, and only a run of "no" earns a fifth answer.</p>
+
+            <ol class="chain">
+              <li class="chain-step">
+                <p class="chain-q">Draw it freely in the sandbox</p>
+                <p class="chain-a">At concept and wireframe the idea is <em>not</em> limited by what exists. Constraints applied here kill the idea before it is understood.</p>
+              </li>
+              <li class="chain-step">
+                <p class="chain-q">Do we already have this?</p>
+                <p class="chain-a">Once the concept is approved it gets broken down: what already exists, and what is genuinely missing. If something fits <em>as it is</em>, use it as it is.</p>
+              </li>
+              <li class="chain-step">
+                <p class="chain-q">Can something existing be extended?</p>
+                <p class="chain-a">A version, a variant, a size step on a component that is already standing. Extending keeps one thing to maintain instead of two that drift.</p>
+              </li>
+              <li class="chain-step">
+                <p class="chain-q">Only now: a new component</p>
+                <p class="chain-a">If nothing fits and nothing can be stretched, a new component is made — deliberately, and named. This is the only way the library grows.</p>
+              </li>
+              <li class="chain-step chain-step--land">
+                <p class="chain-q">Approved things are born in system/</p>
+                <p class="chain-a">The new component is written into <em>system/</em> first, and only travels from there to <em>live/</em>. A component that appears on live without a home in the system does not exist yet.</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- 3. THE TWO COLOURS -->
+        <div class="pr">
+          <div class="pr-num">3</div>
+          <div class="pr-body">
+            <h3 class="pr-title">Blue is state. Black is furniture. Gold is neither.</h3>
+            <p class="oro-p">The palette carries a language, and the language has exactly two words. Break it and the product loses its way of saying "this one is selected".</p>
+
+            <div class="rule2">
+              <div class="rule2-card">
+                <div class="rule2-swatch rule2-swatch--state"></div>
+                <h4 class="oro-h3">Blue — state and action</h4>
+                <ul class="rule2-list">
+                  <li>The primary CTA</li>
+                  <li>The active navigation item</li>
+                  <li>Checked radios, switches, checkboxes</li>
+                  <li>The selected day, the selected card</li>
+                  <li>A count on an icon — a count is a state</li>
+                </ul>
+              </div>
+
+              <div class="rule2-card">
+                <div class="rule2-swatch rule2-swatch--furniture"></div>
+                <h4 class="oro-h3">Black — the permanent furniture</h4>
+                <ul class="rule2-list">
+                  <li>The things that are always there</li>
+                  <li>Book a meeting, Explore gifts</li>
+                  <li>The dark chrome, the footer</li>
+                  <li>Furniture does not shout in colour at all</li>
+                </ul>
+              </div>
+
+              <div class="rule2-card">
+                <div class="rule2-swatch rule2-swatch--gold"></div>
+                <h4 class="oro-h3">Gold — not in the UI</h4>
+                <ul class="rule2-list">
+                  <li>Vetoed for interface use, 2026-07-30</li>
+                  <li>Legacy points on live still wear it</li>
+                  <li>It is documented, not spent</li>
+                  <li>See <a href="colors.html" style="color:var(--blue-700);border-bottom:1px solid var(--blue-200);">Colors</a> for the exact values</li>
+                </ul>
+              </div>
+            </div>
+
+            <p class="oro-note">The trap in this rule is that both halves sound like "do not shout". They are not the same instruction: furniture stays quiet by having no colour, while state is <span class="oro-strong">obliged</span> to be coloured. A grey active item is not restraint — it is the loss of the word for "chosen".</p>
+          </div>
+        </div>
+
+        <!-- 4. MOTION -->
+        <div class="pr">
+          <div class="pr-num">4</div>
+          <div class="pr-body">
+            <h3 class="pr-title">The signature plays everywhere</h3>
+            <p class="oro-p">Motion is part of the DNA, not decoration applied afterwards. Curves and durations are named by the <span class="oro-strong">size of the journey</span>, never by the component that happens to be travelling — which is why a new animation is a choice between existing values, not a new number.</p>
+
+            <div class="mo">
+              <span class="mo-chip"><b>large</b> 1200ms <span>a door across the screen</span></span>
+              <span class="mo-chip"><b>medium</b> 500ms <span>a popup out of its button</span></span>
+              <span class="mo-chip"><b>medium-out</b> 350ms <span>and back into it</span></span>
+              <span class="mo-chip"><b>small</b> 280ms <span>steps, height, side moves</span></span>
+              <span class="mo-chip"><b>small-out</b> 90ms <span>the quiet leave</span></span>
+              <span class="mo-chip"><b>micro</b> 160ms <span>hovers, chips, icons</span></span>
+            </div>
+
+            <p class="oro-note">The signature choreography does <span class="oro-strong">not</span> yield to <code>prefers-reduced-motion</code>: a system animation switch was hiding the brand's own entrance entirely while every competitor still moved. Politeness is allowed for utility micro-motion — typing dots, a drawn checkmark, the hovers on this page — and nowhere else. Motion changes strategically or not at all; there is no such thing as chaotic motion.</p>
+          </div>
+        </div>
+
+        <!-- 5. REUSE -->
+        <div class="pr">
+          <div class="pr-num">5</div>
+          <div class="pr-body">
+            <h3 class="pr-title">Reuse before you draw</h3>
+            <p class="oro-p">Faced with any screen, component or element, the first question is never "how should this look" — it is <span class="oro-strong">"do we already have one?"</span>. If there is a GildedBox header, the page uses the GildedBox header. Same for the footer, the auth form, the catalog, the cards. An approximate redrawing of something that already exists is not a shortcut; it is a defect, and it is caught immediately because the copy's numbers always drift from the original's.</p>
+            <p class="oro-note">This is the rule this very showcase is measured against first. Its frame is one stylesheet for all seven sections, and every value on it resolves out of <span class="oro-strong">system/assets/tokens.css</span> — the same file the prototype loads. A document that argued for reuse in hand-sewn CSS would not be worth reading.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="oro-foot">
+        Oro · GildedBox design system · maintained in <a href="../assets/tokens.css">system/</a>
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+</body>
+</html>

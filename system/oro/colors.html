@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Colors — Oro, GildedBox Design System</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-oro-1 — THE SHOWCASE, COLORS
+     ------------------------------------------------------------
+     The palette, and what each step of it is FOR.
+
+     NOTHING ON THIS PAGE IS TRANSCRIBED. Every swatch is painted
+     with var(--token) out of ..\assets\tokens.css, and the hex
+     printed beside it is read back out of the rendered pixel at
+     load time (getComputedStyle -> rgb -> hex). The page cannot
+     print a value the system does not actually hold: if a token
+     changes, the label changes with it, and if a token is deleted
+     the swatch goes blank and says so. The static hex in the
+     markup is a fallback for a scriptless read, and the script
+     overwrites it.
+
+     THE PROVENANCE IS PART OF THE COLOUR. Each row carries the
+     status of its value: measured on the live product by
+     instrument, recorded from an earlier live read, or never seen
+     live at all. A design system that shows only the hex is
+     hiding the half that matters — several of these steps exist
+     in the file and have never once been painted on the product.
+     Sources: COLORS.md (harvest 2026-08-17, seven widths),
+     SYSTEM.md (live 2026-08-12), the live auth states (18.08),
+     and the comments in tokens.css itself.
+
+     WHAT IS DELIBERATELY MISSING. There is no amber and no green
+     on this page, because there is no amber and no green in the
+     system: the status family was never measured and no token was
+     ever invented for it. The gap is shown as a gap. Inventing a
+     warning colour here would put a value into the showcase that
+     exists nowhere else in the product — the exact failure this
+     page is built to prevent.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="oro.css">
+
+<style>
+/* ============================================================
+   COLORS — page-local composition
+   ============================================================ */
+
+/* ---- The swatch block ----
+   ONE block with internal hairlines, not a scatter of cards
+   (Russell, 08-11: "цельные формы"). A scale is a single object;
+   cutting it into eleven cards makes eleven objects and loses the
+   thing the reader came for, which is the ladder. */
+.sw {
+  margin: 22px 0 0;
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+}
+.sw-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--zinc-200);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+.sw-row:first-child { border-top: 0; }
+.sw-row:hover { background: var(--zinc-50); }
+.sw-row:focus-visible { outline: 2px solid var(--blue-600); outline-offset: -2px; }
+
+/* The chip. A 5px radius like everything else, and a hairline so
+   the near-white steps have an edge to stand on — #fafafa on
+   #ffffff is otherwise an invisible swatch. */
+.sw-chip {
+  flex: 0 0 auto;
+  width: 68px;
+  height: 44px;
+  border-radius: var(--radius);
+  border: 1px solid var(--zinc-200);
+}
+.sw-id { flex: 0 0 auto; width: 132px; }
+.sw-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  color: var(--zinc-900);
+}
+.sw-hex {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  color: var(--zinc-500);
+  font-variant-numeric: tabular-nums;
+}
+.sw-role {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--zinc-600);
+}
+.sw-status { flex: 0 0 auto; margin-left: auto; }
+
+@media (max-width: 767px) {
+  .sw-row { flex-wrap: wrap; gap: 10px 14px; }
+  .sw-chip { width: 100%; height: 32px; }
+  .sw-id { width: auto; }
+  .sw-role { flex: 1 1 100%; }
+  .sw-status { margin-left: 0; }
+}
+
+/* ---- The provenance plaque ----
+   Zinc, never colour. A provenance is a fact about the value, not
+   a state of the interface, and the interface's two words (blue =
+   state, black = furniture) are not up for borrowing. */
+.st {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--zinc-100);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 10px;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--zinc-600);
+  white-space: nowrap;
+}
+/* Never painted on the product: the plaque empties out to match. */
+.st--pending { background: transparent; border-color: var(--zinc-200); color: var(--zinc-400); }
+/* Ruled out of the UI. */
+.st--veto { background: var(--zinc-900); color: var(--zinc-100); }
+
+/* ---- The hatch, for a value that exists and may not be spent ---- */
+.sw-chip--struck { position: relative; overflow: hidden; }
+.sw-chip--struck::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(-45deg, transparent 0 5px, var(--white) 5px 7px);
+}
+
+/* ---- The gap: a status family the system does not own ---- */
+.gap {
+  margin: 22px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 16px;
+  border: 1px dashed var(--zinc-300);
+  border-radius: var(--radius);
+  background: var(--zinc-50);
+}
+.gap-chip {
+  flex: 0 0 auto;
+  width: 68px; height: 44px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--zinc-300);
+  background: var(--white);
+}
+.gap-body { display: block; flex: 1 1 auto; min-width: 0; }
+.gap-title { display: block; margin: 0; font-size: 14px; font-weight: 600; color: var(--zinc-700); }
+.gap-desc { display: block; margin: 5px 0 0; font-size: 14px; line-height: 1.6; color: var(--zinc-500); }
+@media (max-width: 767px) { .gap { flex-wrap: wrap; } .gap-chip { width: 100%; height: 32px; } }
+
+/* ---- The blue, shown rather than described ----
+   Three live carriers of the accent, standing next to the rule
+   that explains them. They are painted by the same tokens the
+   product is painted by, so this row is a working sample, not a
+   picture of one. */
+.demo {
+  margin: 22px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 28px;
+  padding: 22px 20px;
+  background: var(--zinc-50);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+}
+/* Label row, then a control row exactly one icon-button tall. The
+   four samples are different heights by nature (a 36px button next
+   to a 44px icon button); giving every cell the same two rows puts
+   their labels on one line and centres each control in its own. */
+.demo-cell {
+  display: grid;
+  grid-template-rows: auto var(--icon-button-size);
+  align-items: center;
+  justify-items: start;
+  gap: 9px;
+}
+.demo-label { align-self: end; color: var(--zinc-400); }
+
+/* The primary action: BUTTON M off the live ladder, Blue 600,
+   hover 600 -> 700. Every number is a token. */
+.demo-btn {
+  min-height: var(--btn-min-h);
+  padding: var(--btn-pad-y) var(--btn-pad-x-xl);
+  background: var(--blue-600);
+  color: var(--zinc-50);
+  border: 0;
+  border-radius: var(--radius);
+  font-size: var(--btn-label-font-size);
+  font-weight: var(--btn-label-font-weight);
+  letter-spacing: var(--btn-label-letter-spacing);
+  line-height: var(--btn-label-line-height);
+  text-transform: uppercase;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+.demo-btn:hover { background: var(--blue-700); }
+
+/* The active navigation item: the portal sidebar's own pair. */
+.demo-nav {
+  display: inline-flex;
+  padding: 9px 12px;
+  background: var(--blue-50);
+  border: 1px solid var(--blue-200);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue-700);
+}
+
+/* The count badge, straight off its own token block. */
+.demo-badge-wrap {
+  position: relative;
+  width: var(--icon-button-size);
+  height: var(--icon-button-size);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-circle);
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  color: var(--zinc-900);
+}
+.demo-badge-wrap svg { width: 22px; height: 22px; }
+.demo-badge {
+  position: absolute;
+  top: var(--count-badge-offset);
+  right: var(--count-badge-offset);
+  min-width: var(--count-badge-size);
+  height: var(--count-badge-size);
+  display: grid;
+  place-items: center;
+  padding: var(--count-badge-pad);
+  background: var(--count-badge-fill);
+  border: var(--count-badge-ring);
+  border-radius: var(--count-badge-radius);
+  color: var(--count-badge-ink);
+  font-size: var(--count-badge-font-size);
+  font-weight: var(--count-badge-font-weight);
+  line-height: 1;
+}
+
+/* The focused field: the live auth underline, taking its focus. */
+.demo-field {
+  width: 190px;
+  padding: 8px 2px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--zinc-400);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--zinc-800);
+  transition: border-color var(--mo-micro) var(--mo-move);
+}
+.demo-field:focus { outline: 0; border-bottom-color: var(--blue-600); }
+
+/* ---- The copy toast ----
+   Zinc 900 on the page's own radius, in from below on the small
+   step and out on the quiet one. Utility motion, so it is allowed
+   to be polite about reduced-motion (oro.css handles that). */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translate(-50%, 12px);
+  padding: 10px 16px;
+  background: var(--zinc-900);
+  color: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--mo-small-out) var(--mo-exit),
+    transform var(--mo-small-out) var(--mo-exit);
+  z-index: 20;
+}
+.toast.is-up {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition:
+    opacity var(--mo-small) var(--mo-arrive),
+    transform var(--mo-small) var(--mo-arrive);
+}
+.toast b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.hint {
+  margin: 14px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+}
+</style>
+</head>
+
+<body>
+<div class="oro">
+
+  <!-- ============================================================
+       THE RAIL
+       ============================================================ -->
+  <nav class="oro-rail" aria-label="Design system sections">
+    <a class="oro-lock" href="index.html">
+      <span class="oro-lock-name">Oro</span>
+      <span class="oro-lock-sub gb-eyebrow">Design system</span>
+    </a>
+
+    <div class="oro-nav">
+      <a class="oro-link" href="index.html">About</a>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Branding <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Tone of Voice <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Typography <span class="oro-soon">Soon</span></span>
+      <a class="oro-link" href="colors.html" aria-current="page">Colors</a>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Components <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Tokens <span class="oro-soon">Soon</span></span>
+    </div>
+
+    <a class="oro-back" href="../../index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      Prototypes hub
+    </a>
+  </nav>
+
+  <!-- ============================================================
+       THE COLUMN
+       ============================================================ -->
+  <main class="oro-main">
+    <div class="oro-col">
+
+      <header class="oro-head">
+        <span class="gb-eyebrow">Foundations</span>
+        <h1 class="oro-h1">Colors</h1>
+        <p class="oro-lede">One grey scale, one accent, one status colour, and a gold that is documented rather than spent. Every swatch below is painted by its token and reads its own hex back out of the rendered page.</p>
+        <p class="hint">Click any row to copy its hex.</p>
+      </header>
+
+      <!-- ---- ZINC ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">01 · The scale</span>
+        <h2 class="oro-h2">Zinc — the only grey in the brand</h2>
+        <p class="oro-p">Every neutral surface, hairline and ink in the product comes off this one ladder. Grey is where the product spends almost all of its colour budget, so the ladder is kept whole even where the live product has not yet used a step: a scale with holes in it stops being a scale.</p>
+
+        <div class="sw">
+          <button class="sw-row" type="button" data-var="--zinc-50">
+            <span class="sw-chip" style="background: var(--zinc-50);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-50</span><span class="sw-hex">#fafafa</span></span>
+            <span class="sw-role">Card interiors, and the ink laid on a blue action — the text on a primary button is this, not pure white.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-100">
+            <span class="sw-chip" style="background: var(--zinc-100);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-100</span><span class="sw-hex">#f4f4f5</span></span>
+            <span class="sw-role">Section grounds, chips and badge fills — the quiet band that separates one part of a page from the next.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-200">
+            <span class="sw-chip" style="background: var(--zinc-200);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-200</span><span class="sw-hex">#e4e4e7</span></span>
+            <span class="sw-role">Our hairline: card borders, rules, dividers. Declared on live but never actually painted there — the live default border is neutral-200 <b style="font-weight:600">#e5e5e5</b>, off our scale.</span>
+            <span class="sw-status"><span class="st st--pending">Declared only</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-300">
+            <span class="sw-chip" style="background: var(--zinc-300);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-300</span><span class="sw-hex">#d4d4d8</span></span>
+            <span class="sw-role">Held-back marks: inert dots, the numerals on this page's principles, a divider inside a lock. Never met on live in either measurement pass.</span>
+            <span class="sw-status"><span class="st st--pending">Not seen live</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-400">
+            <span class="sw-chip" style="background: var(--zinc-400);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-400</span><span class="sw-hex">#a1a1aa</span></span>
+            <span class="sw-role">Muted ink — breadcrumbs, footnotes, a path under a card. Also the resting underline of a form field.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-500">
+            <span class="sw-chip" style="background: var(--zinc-500);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-500</span><span class="sw-hex">#71717a</span></span>
+            <span class="sw-role">Secondary ink: field labels, subtitles, and the Eyebrow role. Also the border of a filter chip. Contrast on a zinc-50 ground is 4.63:1.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-600">
+            <span class="sw-chip" style="background: var(--zinc-600);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-600</span><span class="sw-hex">#52525b</span></span>
+            <span class="sw-role">Body ink at length, and the border of a selected option card on the product page.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-700">
+            <span class="sw-chip" style="background: var(--zinc-700);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-700</span><span class="sw-hex">#3f3f46</span></span>
+            <span class="sw-role">Strong ink one step short of a heading. Its only live sighting is the gift card title in the portal, read 12.08 and not re-confirmed since.</span>
+            <span class="sw-status"><span class="st">Recorded 12.08</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-800">
+            <span class="sw-chip" style="background: var(--zinc-800);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-800</span><span class="sw-hex">#27272a</span></span>
+            <span class="sw-role">The dark button fill (Book a meeting, Explore gifts) and the ink a person types into a field.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-900">
+            <span class="sw-chip" style="background: var(--zinc-900);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-900</span><span class="sw-hex">#18181b</span></span>
+            <span class="sw-role">Heading ink, and the default ink of our own pages. Note the live product's body text is <b style="font-weight:600">#191919</b>, next door to this and not on the scale.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+
+          <button class="sw-row" type="button" data-var="--zinc-950">
+            <span class="sw-chip" style="background: var(--zinc-950);"></span>
+            <span class="sw-id"><span class="sw-name">zinc-950</span><span class="sw-hex">#09090b</span></span>
+            <span class="sw-role">The darkest heading ink, for a page title carrying a whole screen. Live runs two competing heading inks — this and zinc-900 — and both are real.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+        </div>
+
+        <h3 class="oro-h3" style="margin-top:34px;">The absolute ends</h3>
+        <div class="sw">
+          <button class="sw-row" type="button" data-var="--white">
+            <span class="sw-chip" style="background: var(--white);"></span>
+            <span class="sw-id"><span class="sw-name">white</span><span class="sw-hex">#ffffff</span></span>
+            <span class="sw-role">Page ground, and the ink on every dark surface. Not the same as zinc-50: the two are used for different jobs and never swapped.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+          <button class="sw-row" type="button" data-var="--black">
+            <span class="sw-chip" style="background: var(--black);"></span>
+            <span class="sw-id"><span class="sw-name">black</span><span class="sw-hex">#000000</span></span>
+            <span class="sw-role">The permanent furniture: the footer, the dark hero, the closing band. True black, with a <b style="font-weight:600">#3d3d3d</b> hairline drawn on it.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ---- BLUE ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">02 · The accent</span>
+        <h2 class="oro-h2">Blue — state and action</h2>
+        <p class="oro-p">The accent has one job and the job is a sentence: <span class="oro-strong">blue says what is happening or what has been chosen.</span> The primary CTA, the active navigation item, a checked radio, a live switch, a ticked checkbox, the selected day of a calendar, the count on a cart. Everything that is simply always there stays black — that is furniture, and furniture does not wear the accent.</p>
+
+        <div class="sw">
+          <button class="sw-row" type="button" data-var="--blue-600">
+            <span class="sw-chip" style="background: var(--blue-600);"></span>
+            <span class="sw-id"><span class="sw-name">blue-600</span><span class="sw-hex">#2563eb</span></span>
+            <span class="sw-role">The action itself. Fill of every primary CTA on the product — Load more, Sign in, Continue — and of the count badge. Its ink is zinc-50.</span>
+            <span class="sw-status"><span class="st">Live 17.08</span></span>
+          </button>
+          <button class="sw-row" type="button" data-var="--blue-700">
+            <span class="sw-chip" style="background: var(--blue-700);"></span>
+            <span class="sw-id"><span class="sw-name">blue-700</span><span class="sw-hex">#1d4ed8</span></span>
+            <span class="sw-role">One step down for the hover: the live CTA goes 600 → 700 and nothing else about it moves. Also the ink of a link in running text.</span>
+            <span class="sw-status"><span class="st">Recorded 12.08</span></span>
+          </button>
+          <button class="sw-row" type="button" data-var="--blue-50">
+            <span class="sw-chip" style="background: var(--blue-50);"></span>
+            <span class="sw-id"><span class="sw-name">blue-50</span><span class="sw-hex">#eff6ff</span></span>
+            <span class="sw-role">The fill of a selected row — the active item of the portal sidebar, and the active section of the rail to the left of this text.</span>
+            <span class="sw-status"><span class="st st--pending">Awaiting portal</span></span>
+          </button>
+          <button class="sw-row" type="button" data-var="--blue-200">
+            <span class="sw-chip" style="background: var(--blue-200);"></span>
+            <span class="sw-id"><span class="sw-name">blue-200</span><span class="sw-hex">#bfdbfe</span></span>
+            <span class="sw-role">The hairline that goes with that fill, and the underline under a link. The quiet half of the pair — blue-50 alone reads as a smudge without it.</span>
+            <span class="sw-status"><span class="st st--pending">Awaiting portal</span></span>
+          </button>
+        </div>
+
+        <div class="demo">
+          <div class="demo-cell">
+            <span class="demo-label gb-eyebrow">Primary action</span>
+            <button class="demo-btn" type="button">Continue</button>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label gb-eyebrow">Active item</span>
+            <span class="demo-nav">Gift recipients</span>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label gb-eyebrow">Count</span>
+            <span class="demo-badge-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span class="demo-badge">3</span>
+            </span>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label gb-eyebrow">Focus</span>
+            <input class="demo-field" type="text" placeholder="Click here" aria-label="Focus sample">
+          </div>
+        </div>
+        <p class="hint">Live samples, painted by the same tokens the product is painted by. Hover the button to see 600 → 700; click the field to take the focus.</p>
+
+        <p class="oro-note">One recorded deviation, not adopted: the active filter tab of the live catalog is sky-600 <span class="oro-strong">#0284c7</span>, a second blue off a foreign scale. It is written down as a live fact and it is not our accent.</p>
+      </section>
+
+      <!-- ---- STATUS ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">03 · Status</span>
+        <h2 class="oro-h2">Error is the one status colour we own</h2>
+        <p class="oro-p">Red entered the system the only honest way: it was found on the live product. Submitting the guest sign-in empty paints the field border and the message beneath it, and both values were read straight off that screen. They sit on the Tailwind Red scale — a foreign ladder, kept as measured rather than snapped to something of ours.</p>
+
+        <div class="sw">
+          <button class="sw-row" type="button" data-var="--red-500">
+            <span class="sw-chip" style="background: var(--red-500);"></span>
+            <span class="sw-id"><span class="sw-name">red-500</span><span class="sw-hex">#ef4444</span></span>
+            <span class="sw-role">The border of an invalid field, and the required asterisk in our own forms.</span>
+            <span class="sw-status"><span class="st">Live 18.08</span></span>
+          </button>
+          <button class="sw-row" type="button" data-var="--red-600">
+            <span class="sw-chip" style="background: var(--red-600);"></span>
+            <span class="sw-id"><span class="sw-name">red-600</span><span class="sw-hex">#dc2626</span></span>
+            <span class="sw-role">The ink of the message that explains the error. One step darker than the border, so the words carry and the outline does not.</span>
+            <span class="sw-status"><span class="st">Live 18.08</span></span>
+          </button>
+        </div>
+
+        <div class="gap">
+          <span class="gap-chip" aria-hidden="true"></span>
+          <span class="gap-body">
+            <span class="gap-title">Warning and success — no value, and that is the state of it</span>
+            <span class="gap-desc">The system owns no amber and no green. Six live pages were measured across seven widths each and the status family never appeared; nothing on the public product is amber or green, and the portal that would show them sits behind a login we have not harvested. So no token exists, and none is invented here. The day a real success or warning surface is measured, it gets a token and this gap closes.</span>
+          </span>
+        </div>
+
+        <p class="oro-note">In the meantime, "not finished" and "in progress" are said in Zinc — a zinc-100 plaque in the eyebrow voice, as used on the hub cards and on the rail beside this text. It says the same thing without adding a colour the product cannot back up.</p>
+      </section>
+
+      <!-- ---- GOLD ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">04 · Legacy</span>
+        <h2 class="oro-h2">Gold — documented, not spent</h2>
+        <p class="oro-p">Gold is in the brand's history and it is on the live product today. It is <span class="oro-strong">not</span> in the interface language of this system: the veto is from the owner, 2026-07-30, and it has held through every review since. These values are recorded so that a legacy screen can be read and reproduced faithfully — never so that a new one can be painted with them.</p>
+
+        <div class="sw">
+          <button class="sw-row" type="button" data-var="--gold-beta">
+            <span class="sw-chip sw-chip--struck" style="background: var(--gold-beta);"></span>
+            <span class="sw-id"><span class="sw-name">gold-beta</span><span class="sw-hex">#bea042</span></span>
+            <span class="sw-role">The live legacy gold: the Beta chip, the hover of a megamenu link, the concierge avatar's pen. Measured on the site 12.08.</span>
+            <span class="sw-status"><span class="st st--veto">Do not use</span></span>
+          </button>
+          <button class="sw-row" type="button" data-var="--auth-required-gold">
+            <span class="sw-chip sw-chip--struck" style="background: var(--auth-required-gold);"></span>
+            <span class="sw-id"><span class="sw-name">auth-required-gold</span><span class="sw-hex">#bd9f58</span></span>
+            <span class="sw-role">The required asterisk beside the labels of the guest sign-in form. A second gold, measured 18.08, and not equal to the first.</span>
+            <span class="sw-status"><span class="st st--veto">Do not use</span></span>
+          </button>
+        </div>
+
+        <p class="oro-note">There is a third: the brand book records <span class="oro-strong">#c2a545</span> as the gold, and no measurement has ever matched it. Three golds, none of them the same, none of them a token any new work may reach for. Our own required asterisk is red-500 — the form on the hub already wears it.</p>
+      </section>
+
+      <footer class="oro-foot">
+        Source: <a href="../assets/tokens.css">system/assets/tokens.css</a> · every hex on this page is read back out of that file at load.
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   gbppl-oro-1 — THE READOUT AND THE COPY
+   ------------------------------------------------------------
+   Two jobs, one pass over the rows.
+
+   1. READ THE HEX BACK OUT OF THE PAGE. The chip is painted with
+      var(--token); getComputedStyle gives the resolved rgb(); the
+      rgb is turned into a hex and written into the label. So the
+      page reports what the browser actually rendered, not what
+      somebody typed next to it. If a token were renamed or
+      deleted the chip would paint nothing and the row would say
+      so out loud rather than lying with a stale hex.
+
+   2. COPY IT. The whole row is the target — a 68x44 chip is a
+      small thing to ask a person to hit. Clipboard API first;
+      where it is unavailable (an old file:// context is the case
+      we actually hit) a hidden textarea and execCommand carry it.
+   ============================================================ */
+(function () {
+  var rows = Array.prototype.slice.call(document.querySelectorAll('.sw-row'));
+  var toast = document.getElementById('toast');
+  var timer = null;
+
+  function toHex(computed) {
+    var m = String(computed).match(/-?\d+(\.\d+)?/g);
+    if (!m || m.length < 3) return null;
+    // A fully transparent paint means the token did not resolve.
+    if (m.length > 3 && parseFloat(m[3]) === 0) return null;
+    return '#' + m.slice(0, 3).map(function (n) {
+      return ('0' + Math.round(parseFloat(n)).toString(16)).slice(-2);
+    }).join('');
+  }
+
+  rows.forEach(function (row) {
+    var chip = row.querySelector('.sw-chip');
+    var out  = row.querySelector('.sw-hex');
+    var name = row.querySelector('.sw-name');
+    if (!chip || !out) return;
+
+    var hex = toHex(getComputedStyle(chip).backgroundColor);
+    if (hex) {
+      out.textContent = hex;
+      row.dataset.hex = hex;
+    } else {
+      /* The token is gone. Say it, do not keep printing the value
+         it used to have. */
+      out.textContent = 'unresolved';
+      row.disabled = true;
+      row.style.opacity = '0.55';
+    }
+
+    row.setAttribute('aria-label',
+      'Copy ' + (name ? name.textContent : row.dataset.var) + (hex ? ', ' + hex : ''));
+
+    row.addEventListener('click', function () {
+      var value = row.dataset.hex;
+      if (!value) return;
+      copy(value).then(function (ok) {
+        show(ok ? value : null);
+      });
+    });
+  });
+
+  function copy(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text)
+        .then(function () { return true; })
+        .catch(function () { return legacy(text); });
+    }
+    return Promise.resolve(legacy(text));
+  }
+
+  function legacy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) { return false; }
+  }
+
+  function show(value) {
+    toast.innerHTML = value
+      ? 'Copied <b>' + value + '</b>'
+      : 'Could not reach the clipboard';
+    toast.classList.add('is-up');
+    clearTimeout(timer);
+    timer = setTimeout(function () { toast.classList.remove('is-up'); }, 1600);
+  }
+})();
+</script>
+</body>
+</html>
