@@ -5,9 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GildedBox Checkout — DD-130 Prototype</title>
 <!-- ============================================================
-     gbppl-checkout-8 — the DD-130 checkout prototype moves into the
+     gbppl-checkout-9 — the DD-130 checkout prototype moves into the
      shared Pages prototype, so the team can walk portal -> cart ->
      checkout on one public link.
+
+     checkout-9 only re-addresses the two doors back. The root of the
+     repo now belongs to the locked hub, and the portal landing has
+     moved to portal.html — so the header logo and the Home crumb,
+     which lead back into the WALK and not into the gate, point there.
+     The query string still rides along, so the portal is found in the
+     view it was left in. Nothing on this page moved by a pixel.
 
      checkout-8 gives the page ONE new line and nothing else: init()
      reads ?v= off the URL, so hub.html's "Checkout · V2 Pool" card
@@ -51,12 +58,12 @@
          very files site-chrome was copied FROM (byte-identical, checked);
          no second copy of the chrome lands in this repo;
        · the product image moved to checkout-assets\;
-       · the logo and the Home crumb lead back to index.html, carrying
+       · the logo and the Home crumb lead back to portal.html, carrying
          the query string so the portal's view survives the round trip.
      The three entry-point scenarios stay switchable, but not from a
      black bar over the page any more: gbppl-checkout-2 retires it in
      favour of the prototype's ONE service chrome, the PROTO panel that
-     index.html already carries (right screen edge, collapsed by
+     portal.html already carries (right screen edge, collapsed by
      default, mono caps on Zinc 950). Same controls, same setScenario,
      same Reset; only the shell changed — and the site header is now
      the first thing on the page, exactly as gildedbox.com renders it.
@@ -241,7 +248,7 @@
 
   /* ============================================================
      DEMO CONTROLS (PROTO PANEL) — gbppl-checkout-2.
-     Literal transfer of the panel index.html has worn since Ton's
+     Literal transfer of the panel portal.html has worn since Ton's
      feedback of 2026-08-12: a vertical dark panel fixed to the RIGHT
      screen edge, centered in the viewport, deliberately service-grade
      (Zinc 950 ground, mono caps labels) so it can never be read as
@@ -250,7 +257,7 @@
      default (gbppl-mark-triple: these links go to people who did not
      ask for a control room); the edge tab is the whole affordance.
      z-index 30 keeps it UNDER the drawers (40) and the modal (50),
-     the same order the catalog overlay holds in index.html.
+     the same order the catalog overlay holds in portal.html.
      Colours ride the shared --zinc-* scale out of demo/assets/tokens.css,
      the same one the panel uses at home. The class selectors outrank
      Tailwind's preflight element rules, so the CDN sheet injected
@@ -385,7 +392,7 @@
 <div class="gb-container pt-7">
   <nav class="flex items-center gap-2.5 text-[13px] text-zinc-400">
     <!-- href is filled in at the foot of the page so the query string rides along -->
-    <a href="index.html" data-gbppl-home class="hover:text-zinc-700 transition-colors">Home</a>
+    <a href="portal.html" data-gbppl-home class="hover:text-zinc-700 transition-colors">Home</a>
     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
     <span class="text-zinc-500">Checkout</span>
   </nav>
@@ -1013,7 +1020,7 @@
                 <div x-show="rows(shipment).length === 0" class="py-12 text-center border-b border-zinc-100">
                   <p class="text-sm text-zinc-500">No gift receivers yet.</p>
                   <!-- Outlined = the system's tertiary. Its hover is the Zinc 100 wash both
-                       outlined buttons of index.html wear (.gbh-cta--outline, .btn-start-outline),
+                       outlined buttons of portal.html wear (.gbh-cta--outline, .btn-start-outline),
                        not an inversion to a solid Zinc 900 fill: the prototype has one outlined
                        hover and this button spends it. -->
                   <button @click="addRecipient(product.id, shipment.id)" class="mt-4 inline-flex items-center gap-2 px-6 min-h-[42px] border border-zinc-900 rounded-[5px] text-[11px] font-semibold uppercase tracking-[1px] text-zinc-900 hover:bg-zinc-100 transition-colors">
@@ -1603,7 +1610,7 @@
 
 <!-- ========== DEMO CONTROLS: the PROTO panel, gbppl-checkout-2.
      The prototype's one piece of service chrome, worn here exactly as
-     index.html wears it: same shell, same tab, same collapsed start.
+     portal.html wears it: same shell, same tab, same collapsed start.
      The controls inside are this page's own — the three entry points
      ride the untouched setScenario, Reset demo the untouched resetDemo
      — and they are Alpine, because the page already is: the panel sits
@@ -1644,7 +1651,7 @@
 </div>
 
 <script>
-/* ---- PROTO panel collapse, the transfer of index.html's own handler.
+/* ---- PROTO panel collapse, the transfer of portal.html's own handler.
    Shell-only state: a class on the container, no persistence. ---- */
 (function () {
   'use strict';
@@ -2480,7 +2487,7 @@ function checkoutApp() {
      THE WAY BACK — gbppl-checkout-1.
      The portal sends people here through either cart with its query
      string attached (?pth=1&nav=... and friends decide which chrome
-     index.html wears), so the two doors back have to carry the same
+     portal.html wears), so the two doors back have to carry the same
      string or the prototype would land on a different view than the
      one it was left in.
 
@@ -2493,7 +2500,7 @@ function checkoutApp() {
 <script>
 (function () {
   'use strict';
-  var home = 'index.html' + location.search;
+  var home = 'portal.html' + location.search;
   var wire = function () {
     var brand = document.querySelector('gb-site-header .gbh-brand');
     if (brand) { brand.setAttribute('href', home); brand.setAttribute('title', 'Back to the prototype'); }
