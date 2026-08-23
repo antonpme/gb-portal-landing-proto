@@ -6,7 +6,7 @@
 <title>GildedBox — Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
-     gbppl-hub-6 — the ONE DOOR. Ton, 2026-08-23: every prototype
+     gbppl-hub-7 — the ONE DOOR. Ton, 2026-08-23: every prototype
      should open from a single place, and that place should be behind
      a password and should look like us.
 
@@ -20,8 +20,15 @@
        Basic realm, no browser dialog — because the browser's own box
        is the one surface in this project we cannot design.
 
-       SCREEN 2, the hub. A thin bar wearing the portal header's
-       identity lock (GildedBox | PROTOTYPES) over three shelves:
+       SCREEN 2, the hub. THE LIVE BAR — hub-7, Ton the same day:
+       "почему для хаба не используем те же стили? Навигация не такая,
+       как навигация в GildedBox." The bar that stood here was 64px
+       tall with a 13px zinc nav of its own making; it is now the site
+       header organism itself (system\components\header.css) — the
+       80px plank, the .gbh-nav voice, the header's quiet outline
+       button — carrying the portal's identity lock, GildedBox |
+       DESIGN STUDIO, which moved into that file as a system atom.
+       Under it, three shelves:
        LIVE PROTOTYPE, the one connected walk assembled out of what
        has been approved; SANDBOXES, the parallel rooms where single
        questions are still being answered; and DESIGN SYSTEM, which
@@ -80,6 +87,10 @@
 <link rel="stylesheet" href="system/components/shell.css">
 <!-- The auth organism itself — the gate form wears its classes, no local twins. -->
 <link rel="stylesheet" href="system/components/auth.css">
+<!-- The site header organism — the hub bar wears its classes (hub-7). Same
+     file, same relative path, that live\checkout.html and the demo-live
+     pages reach for; the studio variant lives at the foot of it. -->
+<link rel="stylesheet" href="system/components/header.css">
 
 <style>
 /* The local MOTION block that stood here is gone, hub-5, 2026-08-23.
@@ -200,67 +211,30 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 /* ---- The bar ----
-   The portal header's identity lock (portal.html .pth-lock) at its
-   compact step — mark 126x42, hairline 24, word 12 — in a 64 bar.
-   Thin on purpose: this chrome names the building, it does not
-   navigate, so it takes 16 less than the 80 the real bars stand at. */
-.hub-bar {
-  border-bottom: 1px solid var(--zinc-200);
-  background: var(--white);
-}
-/* The bar's contents stand on the SAME 1080 column as the shelves, so
-   the wordmark and "Live Prototype" share one left edge and the bar
-   reads as the top of the page rather than a strip laid over it. */
-.hub-bar-in {
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-.hub-bar-row {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-.hub-lock { display: inline-flex; align-items: center; gap: 16px; flex: 0 0 auto; }
-.hub-mark { display: block; width: 126px; height: 42px; }
-.hub-rule { width: 1px; height: 24px; background: var(--zinc-300); flex: 0 0 auto; }
-.hub-word {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
-  color: var(--zinc-500);
-}
-/* Section nav in the bar (Ton, 23.08: the Design System shelf was an
-   orphan at the bottom — the bar now names all three shelves). Quiet
-   zinc voice; the shelf in view wears blue, because active = state. */
-.hub-nav { display: none; align-items: center; gap: 28px; }
-@media (min-width: 768px) { .hub-nav { display: inline-flex; } }
-.hub-nav a {
-  font-size: 13px;
-  letter-spacing: 0.2px;
-  color: var(--zinc-500);
-  transition: color var(--mo-micro) var(--mo-move);
-}
-.hub-nav a:hover { color: var(--zinc-900); }
-.hub-nav a.active { color: var(--blue-600); }
+   THERE IS NO BAR CSS HERE ANY MORE — hub-7, Ton 2026-08-23:
+   "почему для хаба не используем те же стили? Навигация не такая,
+   как навигация в GildedBox. Мы должны использовать те же компоненты
+   и стили, что на лайве."
 
-/* The quiet door back to the lock, in the .pth-away voice. */
-.hub-lockout {
-  padding: 0;
-  background: transparent;
-  border: 0;
-  font-size: 13px;
-  letter-spacing: 0.2px;
-  color: var(--zinc-500);
-  transition: color var(--mo-micro) var(--mo-move);
-}
-.hub-lockout:hover { color: var(--zinc-900); }
+   He was right, and the diff was measurable: this block used to hold a
+   64px plank with a 13px Zinc 500 sentence-case nav, while every live
+   page stands at 80 with Inter 500 UPPERCASE 14/16 at 0.5 tracking.
+   Two headers, two vocabularies, one building.
+
+   The bar is now system\components\header.css, worn by the classes
+   .gb-header / .gbh-bar / .gbh-nav / .gbh-link / .gbh-actions /
+   .gbh-cta--outline — the same file live\checkout.html and the
+   demo-live pages link. The component <gb-site-header> itself could
+   not be worn whole: header.js hard-codes live's own menu and its
+   Book a Meeting / My Portal pair, with no slot or attribute for a
+   different set. So the hub takes the CLASSES, which is the honest
+   reuse — not a copy of their values.
+
+   The three things the studio bar needs beyond live (the identity
+   lock, an active state for the nav link, and a grid wide enough for
+   the lock) went INTO header.css as a documented variant, so that the
+   next surface that needs a lock finds one instead of writing it
+   again. Nothing about the bar is decided in this file. */
 
 /* ---- The shelves ---- */
 .hub-body { flex: 1 0 auto; padding: 48px 0 64px; }
@@ -549,20 +523,36 @@ button { font-family: inherit; cursor: pointer; }
      ============================================================ -->
 <div class="hub" id="hub" hidden>
 
-  <header class="hub-bar">
-    <div class="gb-container hub-bar-in">
-      <div class="hub-wrap hub-bar-row">
-        <a class="hub-lock" href="index.html" aria-label="GildedBox Design Studio, home">
-          <img class="hub-mark" src="system/assets/gildedbox-logo.svg" alt="GildedBox" width="126" height="42">
-          <span class="hub-rule" aria-hidden="true"></span>
-          <span class="hub-word">Design Studio</span>
-        </a>
-        <nav class="hub-nav" aria-label="Sections">
-          <a href="#live">Live Prototype</a>
-          <a href="#sandboxes">Sandboxes</a>
-          <a href="#design-system">Design System</a>
-        </nav>
-        <button class="hub-lockout" id="hub-lockout" type="button">Lock</button>
+  <!-- THE BAR — the live one (hub-7). Every class below comes from
+       system\components\header.css: the 80px plank on the page's own
+       .gb-container ladder, the nav in the live nav-link voice, and
+       the header's own quiet button on the right. The bar no longer
+       shares the shelves' 1080 column — it spans the page the way it
+       does on every live page, because it is that bar. -->
+  <header class="gb-header gb-header--studio">
+    <div class="gb-container gbh-bar gbh-bar--studio">
+      <!-- The portal's identity lock, now a system atom: mark,
+           hairline, and the word that names the building. -->
+      <a class="gbh-lock" href="index.html" aria-label="GildedBox Design Studio, home">
+        <img class="gbh-lock__mark" src="system/assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+        <span class="gbh-lock__rule" aria-hidden="true"></span>
+        <span class="gbh-lock__word">Design Studio</span>
+      </a>
+      <!-- The three shelves, in live's nav voice. The shelf in view
+           wears .is-active (Blue 600) — the one thing live's nav does
+           not do, because live's nav never names where you are. -->
+      <nav class="gbh-nav" aria-label="Sections">
+        <a class="gbh-link" href="#live">Live Prototype</a>
+        <a class="gbh-link" href="#sandboxes">Sandboxes</a>
+        <a class="gbh-link" href="#design-system">Design System</a>
+      </nav>
+      <!-- LOCK in the header's quiet button: .gbh-cta--outline is the
+           live MY PORTAL — transparent, Zinc 900 hairline, the M ladder
+           36/42/48 — and the label keeps live's own span anatomy. -->
+      <div class="gbh-actions">
+        <button class="gbh-cta gbh-cta--outline" id="hub-lockout" type="button">
+          <span data-pc-section="label">Lock</span>
+        </button>
       </div>
     </div>
   </header>
@@ -858,12 +848,15 @@ button { font-family: inherit; cursor: pointer; }
   // Scrollspy for the bar nav: the shelf in view wears blue (active = state).
   // A click is an explicit statement of intent, so it sets the state itself —
   // the observer only has to keep up with free scrolling afterwards.
-  var navLinks = document.querySelectorAll('.hub-nav a');
+  // hub-7: the links are .gbh-link now and the state class is the
+  // header organism's own .is-active — the selectors moved, the
+  // behaviour did not.
+  var navLinks = document.querySelectorAll('.gbh-nav .gbh-link');
   var navClickMute = 0; // the spy stays quiet briefly after a click, or it overrides the intent
   navLinks.forEach(function (link) {
     link.addEventListener('click', function () {
       navClickMute = Date.now();
-      navLinks.forEach(function (a) { a.classList.toggle('active', a === link); });
+      navLinks.forEach(function (a) { a.classList.toggle('is-active', a === link); });
     });
   });
   if ('IntersectionObserver' in window && navLinks.length) {
@@ -872,7 +865,7 @@ button { font-family: inherit; cursor: pointer; }
       entries.forEach(function (e) {
         if (!e.isIntersecting) return;
         navLinks.forEach(function (a) {
-          a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+          a.classList.toggle('is-active', a.getAttribute('href') === '#' + e.target.id);
         });
       });
     }, { rootMargin: '-30% 0px -55% 0px' });
@@ -882,7 +875,7 @@ button { font-family: inherit; cursor: pointer; }
     window.addEventListener('scroll', function () {
       if (Date.now() - navClickMute < 800) return;
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) {
-        navLinks.forEach(function (a, i) { a.classList.toggle('active', i === navLinks.length - 1); });
+        navLinks.forEach(function (a, i) { a.classList.toggle('is-active', i === navLinks.length - 1); });
       }
     }, { passive: true });
   }
