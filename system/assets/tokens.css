@@ -6,6 +6,12 @@
    и сохранить эту шапку). Ничего не менять локально: любое
    исправление сначала попадает в studio\system\tokens.css.
    Vendored 2026-08-18 для demo-лайва (site\demo\).
+   RE-SYNCED 2026-08-23: копия отставала от источника на три блока,
+   заведённые 19.08 (MOTION, EYEBROW, COUNT BADGE). Они добавлены
+   ПЕРЕД demo-local блоком, чтобы demo-local остался последним и
+   следующий синк остался безопасным. Ничего не изменено и не
+   удалено: правка чисто аддитивная. Повод — витрина system\oro\,
+   которая обязана показывать систему целиком.
    ============================================================ */
 
 /* ============================================================
@@ -389,6 +395,100 @@
      Other classes exist (Ton sees four sizes on the portal): their
      ladders wait for the portal harvest (storageState pending).
    ============================================================ */
+
+/* ============================================================
+   MOTION (Oro motion language, lifted from the prototype
+   2026-08-19, gbppl-motion-pass; Ton: "моушен — часть языка,
+   меняется только стратегически"). Curves and durations are
+   named by the SIZE OF THE JOURNEY, never by component.
+
+   Principle Ton-7: signature choreography ignores
+   prefers-reduced-motion (Windows' animation toggle was hiding
+   the ride entirely); politeness is allowed only for utility
+   micro-motion (typing dots, checkmark draw).
+
+   The catalog door keeps its own literal --tf-* clock in the
+   prototype (approved as-is); everything else rides these.
+   ============================================================ */
+:root {
+  --mo-enter:  cubic-bezier(0.37, 0, 0.18, 1); /* big entrances; the door's own curve */
+  --mo-arrive: cubic-bezier(0, 0, 0.2, 1);     /* content settling into place */
+  --mo-exit:   cubic-bezier(0.4, 0, 1, 1);     /* leaving accelerates */
+  --mo-move:   cubic-bezier(0.4, 0, 0.2, 1);   /* in-place moves, height, steps */
+
+  --mo-large: 1200ms;      /* the door across the screen */
+  --mo-medium: 500ms;      /* a popup out of its button */
+  --mo-medium-out: 350ms;  /* ...and back into it */
+  --mo-small: 280ms;       /* steps, height, side moves */
+  --mo-small-out: 90ms;    /* the quiet leave before a step */
+  --mo-micro: 160ms;       /* hovers, chips, icon-buttons */
+}
+
+/* ============================================================
+   EYEBROW (type role 44, named by Ton 2026-08-19: "нужен
+   небольшой ненасыщенный all-caps — это Eyebrow, других
+   капс-подписей не заводим"). One definition for the page
+   eyebrow (COMPANY GIFTING FOR:) and the ren-skin sidebar
+   section titles; contrast on zinc-50 ground = 4.63:1.
+   ============================================================ */
+:root {
+  --eyebrow-size: 12px;
+  --eyebrow-weight: 600;
+  --eyebrow-tracking: 0.12em;
+  --eyebrow-color: var(--zinc-500);
+  /* usage: text-transform: uppercase; font: var(--eyebrow-weight)
+     var(--eyebrow-size) Inter; letter-spacing/color from tokens */
+}
+
+/* ============================================================
+   COUNT BADGE (provenance gbppl-portal-header-2, the cart of
+   the portal bar; made the one definition by Ton 2026-08-19:
+   "то, что сейчас на корзине — идеальный бейдж; чёрное плохо
+   видно, цифры маленькие", gbppl-badge-one).
+
+   The small pill that says HOW MANY on top of an icon button.
+   One atom, one look, everywhere: the cart of both headers,
+   and the filters and favorites triggers of the embedded v1
+   catalog, which reach it through site/catalog/
+   oro-ui-override.css (literal copies, iframe boundary).
+
+   Blue, not black. A count is a STATE, and state speaks in the
+   accent (Principle Ton-5); black is furniture, and a black
+   pill sinks into the stroke glyph it is standing on.
+
+   The ring is 1px, not 2. It exists to lift the pill off the
+   glyph, and every pixel it takes is a pixel the digit loses:
+   at a 16px box, 2px of ring plus 4px of side padding leaves
+   about 11px of clear width, which is where "цифры маленькие"
+   came from. 1px of ring with a 10px digit reads at arm's
+   length and still detaches cleanly.
+
+   Anchored top 2 / right 2 inside the 44px icon button, which
+   puts the pill over the glyph's corner without leaving the
+   button's circle.
+
+   Not this atom: the rectangular product tags on catalog cards
+   (New / Customer Favorite), the Zinc 200 price chip, the "or"
+   rule -- those are labels, not counts.
+   ============================================================ */
+:root {
+  --count-badge-size: 16px;        /* min-width AND height; the pill grows by padding at 2+ digits */
+  --count-badge-pad: 0 4px;
+  --count-badge-radius: 999px;
+  --count-badge-fill: var(--blue-600);
+  --count-badge-ink: var(--white);
+  --count-badge-ring: 1px solid var(--white);
+  --count-badge-font-size: 10px;
+  --count-badge-font-weight: 400;
+  --count-badge-offset: 2px;       /* top and right, inside a 44px icon button */
+  /* usage: position: absolute; top/right: var(--count-badge-offset);
+     min-width/height: var(--count-badge-size); display: grid;
+     place-items: center; padding: var(--count-badge-pad);
+     background: var(--count-badge-fill); border: var(--count-badge-ring);
+     border-radius: var(--count-badge-radius); color: var(--count-badge-ink);
+     font-size/weight from tokens. Worn by .gbh-count. */
+}
+
 
 /* ============================================================
    DEMO-LOCAL ADDITIONS, NOT (YET) IN studio\system\tokens.css
