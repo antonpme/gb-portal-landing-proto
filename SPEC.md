@@ -50,4 +50,4 @@ Computed styles snapshot, taken at local verification of the portal precision wa
 | html (portal body role) | #fcfdfd | rgb(252,253,253) | exact |
 | body (customer working area) | #f4f4f5 (zinc-100) | rgb(244,244,245) | exact |
 
-Known deliberate deviations are marked DEVIATION in the CSS provenance comments of portal.html (sticky vs fixed header, adapted cart badge anchor, simplified footer grid, felt hover values, felt crumb-strip values).
+Known deliberate deviations are marked DEVIATION in the CSS provenance comments of live/portal.html (sticky vs fixed header, adapted cart badge anchor, simplified footer grid, felt hover values, felt crumb-strip values).
