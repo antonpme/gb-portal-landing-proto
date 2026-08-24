@@ -545,29 +545,48 @@ body.gb-demo a.gbh-cta--inverted {
    скролле НЕ на всех страницах, а на определённых, где он лежит
    на видео».
 
-   ЗАМЕР 24.08 (headed Chrome, 1920, JSON — scratchpad
-   hub\header\live-header-measure.json + live-threshold.json).
-   Живая главная носит планку двумя состояниями:
+   Тон, 24.08, вторая подача, дословно: «как только ты начинаешь
+   скроллить, он становится тёмным стеклом — полупрозрачным и
+   матовым. Но когда ты касаешься им следующей секции (белой),
+   тогда он становится белым стеклом. Он залит не полностью: тоже
+   полупрозрачный и матовый, но на белом фоне».
 
-     ПОКОЙ      bg rgba(0,0,0,.01) (Tailwind bg-black/[0.01]),
-                тени нет, блюра нет. Все элементы белые: вордмарк
-                через --logo-color:#ffffff, нав #ffffff, контурная
-                кнопка белая, глиф поиска белый. Book a Meeting
-                остаётся синей и в этом состоянии.
-     ПОСЛЕ      bg rgba(0,0,0,.85) + backdrop-blur(8px), тени
-                по-прежнему НЕТ, элементы остаются белыми.
-     ПОРОГ      scrollY >= 50 ровно. Проверен пошагово (49 =
-                прозрачный, 50 = тёмный) и на обратном ходу
-                вверх — гистерезиса нет.
-     ПЕРЕХОД    transition-colors 500ms cubic-bezier(.4,0,.2,1).
+   ЗАМЕР 24.08 (headed Chrome, JSON — scratchpad hub\header\
+   live-header-measure.json, live-threshold.json, live-stage2.json,
+   live-stage2b.json). У живой планки ТРИ ступени:
 
-   РАСХОЖДЕНИЕ С ОЖИДАНИЕМ ТОНА, ЗАФИКСИРОВАНО СОЗНАТЕЛЬНО:
-   живая планка после порога становится НЕ белой стандартной, а
-   тёмной стеклянной, и элементы остаются белыми (скриншот
-   scratchpad hub\header\live-home-scrolled.png). Здесь стоит
-   измеренное поведение лайва, а не пересказ по памяти (Тон-3:
-   пиксель-перфект к источнику). Если решение будет «всё-таки
-   белеть» — меняется ровно один блок .is-scrolled ниже.
+     1 ПОКОЙ    bg rgba(0,0,0,.01) (bg-black/[0.01]), ни тени, ни
+                блюра. Все элементы белые: вордмарк через
+                --logo-color:#ffffff, нав #ffffff, контурная кнопка
+                белая, глиф белый. Book a Meeting синяя во всех
+                трёх ступенях.
+     2 ТЁМНОЕ   bg rgba(0,0,0,.85) + backdrop-blur(8px), тени нет,
+       СТЕКЛО   элементы остаются белыми.
+                ПОРОГ: scrollY >= 50 ровно (49 = прозрачный,
+                50 = тёмный; обратный ход тот же, гистерезиса нет).
+     3 БЕЛОЕ    bg rgba(255,255,255,.9) + backdrop-blur(6px) — один
+       СТЕКЛО   в один наши --header-glass и стандартный блюр бара,
+                ничего нового мерить не пришлось. Ink возвращается
+                стандартный: нав #18181b, вордмарк #000000, глиф
+                #131313, контурная кнопка Zinc 900.
+                Тень своя: 0 -16px 26px rgba(0,0,0,.4) — направлена
+                ВВЕРХ и при top:0 не видна вовсе (внешняя тень
+                режется по коробке, а вверх уходит за экран).
+                Перенесена как есть, помечена LIVE.
+
+     ПОРОГ 2-3  ГЕОМЕТРИЯ, НЕ ЧИСЛО. Планка белеет ровно тогда,
+                когда её нижний край КАСАЕТСЯ низа героя. Проверено
+                тремя высотами окна (свип 1px):
+                  vh 1080, герой 1081 -> перелом на 1003
+                  vh 900,  герой 900  -> перелом на 821
+                  vh 700,  герой 700  -> перелом на 621
+                каждый раз = высота героя минус 80 (высота бара).
+                Значит порог считается от геометрии героя, и
+                пикселей здесь не хардкодим: JS сравнивает низ
+                секции с низом бара (header.js).
+     ПЕРЕХОД    transition-colors 500ms cubic-bezier(.4,0,.2,1) на
+                всех переключениях; блюр в списке переходов не
+                участвует и щёлкает.
 
    Вариант ОПТ-ИН: без атрибута ни одно правило этого блока не
    включается и планка байт-в-байт прежняя. Позиционирование
@@ -585,7 +604,27 @@ body.gb-demo a.gbh-cta--inverted {
 .gb-header.gb-header--transparent.is-scrolled {
   background: rgba(0, 0, 0, 0.85);   /* LIVE 24.08 */
   backdrop-filter: blur(8px);        /* LIVE 24.08 */
-  box-shadow: none;                  /* LIVE 24.08: тени нет и после порога */
+  box-shadow: none;                  /* LIVE 24.08: тени нет на этой ступени */
+}
+
+/* Ступень 3: планка коснулась белой секции. Ground и блюр — ровно
+   те, что носит стандартный бар (см. начало файла), поэтому здесь
+   стоят те же токен и цифра, а не второе значение того же цвета.
+   Живой класс: bg-[#fcfdfd] lg:bg-white/90 lg:backdrop-blur-[6px] —
+   до 1024 грунт плотный, стекло включается с lg; повторяем ту же
+   ступень. */
+.gb-header.gb-header--transparent.is-past-hero {
+  background: var(--live-body);
+  backdrop-filter: none;
+  /* LIVE 24.08: тень направлена вверх и при top:0 невидима
+     (внешняя тень режется по коробке), перенесена как есть. */
+  box-shadow: 0 -16px 26px rgba(0, 0, 0, 0.4);
+}
+@media (min-width: 1024px) {
+  .gb-header.gb-header--transparent.is-past-hero {
+    background: var(--header-glass);   /* LIVE 24.08 rgba(255,255,255,.9) */
+    backdrop-filter: blur(6px);        /* LIVE 24.08 */
+  }
 }
 
 /* Белый вордмарк. Живой знак — инлайновый SVG, красящий пути через
@@ -616,3 +655,26 @@ body.gb-demo .gb-header--transparent a.gbh-cta--outline {
   border-color: var(--white);   /* LIVE 24.08 */
 }
 .gb-header--transparent .gbh-cta--outline:hover { background: rgba(255, 255, 255, 0.2); }  /* LIVE 24.08 */
+
+/* Ступень 3, ink. Белые правила выше весят до 0-3-2, поэтому
+   возвращение к стандартным чернилам идёт на ступень выше (0-4-2).
+   Значения не новые: это те же самые, что носит бар на всех
+   остальных страницах — вариант просто перестаёт их перекрывать.
+   ДВА ОСОЗНАННЫХ ОТКЛОНЕНИЯ от лайва, оба унаследованы от
+   стандартного бара и не заводятся здесь: живой вордмарк на белом
+   стекле #000000 (наш ассет #18181b) и живой глиф #131313 (наш
+   Zinc 900). Ровнять их надо у стандартного бара разом, а не в
+   одном варианте. */
+.gb-header--transparent.is-past-hero .gbh-brand img { filter: none; }
+.gb-header--transparent.is-past-hero .gbh-link,
+.gb-header--transparent.is-past-hero a.gbh-link,
+body.gb-demo .gb-header--transparent.is-past-hero a.gbh-link { color: var(--zinc-900); }
+.gb-header--transparent.is-past-hero .gbh-icon-button { color: var(--zinc-900); }
+.gb-header--transparent.is-past-hero .gbh-icon-button:hover { background: var(--v1-ink-hover); }
+.gb-header--transparent.is-past-hero .gbh-cta--outline,
+.gb-header--transparent.is-past-hero a.gbh-cta--outline,
+body.gb-demo .gb-header--transparent.is-past-hero a.gbh-cta--outline {
+  color: var(--zinc-900);
+  border-color: var(--zinc-900);
+}
+.gb-header--transparent.is-past-hero .gbh-cta--outline:hover { background: rgba(212, 212, 216, 0.2); }
