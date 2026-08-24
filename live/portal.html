@@ -53,6 +53,18 @@
     --crumb-strip-ink: #b8b8bd;
     --crumb-strip-sep: #6b6b71;
     --radius: 5px;
+    /* Families, root size and the two shadows this page paints.
+       Copied name for name out of system\assets\tokens.css (audit
+       24.08): the rules below stated the same stacks and the same
+       two shadow strings by hand, so no value changed — only its
+       address did. That this page keeps a :root of its own instead
+       of linking the token file is the bigger debt; it is written
+       down in the hub-9 report and not settled here. */
+    --font-sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    --font-serif: 'Noto Serif', Georgia, serif;
+    --font-size-root: 16px;
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-bar: 0 -4px 16px rgba(24, 24, 27, 0.06);
 
     /* ---- gbppl-motion-pass: ONE FAMILY OF RAILS ---------------------
        Every overlay, popup and micro-state on this page moved by its own
@@ -116,8 +128,8 @@
        (sidebar blocks, hero block, metablock) stand on gray. */
     background: var(--zinc-100);
     color: var(--zinc-900);
-    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
-    font-size: 16px;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-root);
     -webkit-font-smoothing: antialiased;
   }
 
@@ -917,6 +929,10 @@
   .catalog-backdrop {
     position: absolute;
     inset: 0;
+    /* NO TOKEN: Zinc 900 at 40%. The system holds no scrim/overlay
+       value; the two backdrops on this page (here and .start-backdrop)
+       are the same number, and the day a token is minted they take it
+       together. Audit 24.08. */
     background: rgba(24, 24, 27, 0.4);
     opacity: 0;
     transition: opacity var(--tf-dim) ease-out;
@@ -1560,7 +1576,7 @@
   .footer__main h3 {
     margin: 0;
     padding: 16px 32px 16px 0;
-    font-family: 'Noto Serif', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: 22px;
     font-weight: 400;
     line-height: 1.45;
@@ -1627,7 +1643,7 @@
   .hero.hero-hidden { display: none; }
 
   .hero h1 {
-    font-family: 'Noto Serif', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: 36px;
     line-height: 1.15;
     font-weight: 600;
@@ -1874,7 +1890,7 @@
      existing .page-title 300 already does; the declaration keeps the
      live provenance readable and the font link is left alone. */
   .hs-title {
-    font-family: 'Noto Serif', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: 32px;      /* <1280, one step under the live 36 */
     line-height: 1.4;     /* live 50.4/36 */
     font-weight: 300;
@@ -1962,7 +1978,7 @@
      which lands it exactly on the live footer column-title role
      (Noto Serif 400 22, harvest public-home 2026-08-17). */
   [data-grid="serif"] .hs-cell-title {
-    font-family: 'Noto Serif', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: 20px;
     font-weight: 300;
     letter-spacing: normal;
@@ -2278,24 +2294,35 @@
     z-index: 42;   /* over the catalog overlay's 40, under nothing else */
     display: none;
 
-    /* Source tokens, transferred literally from ai-consierge/src/styles.css */
-    --gh-white: #ffffff;            /* --color-bg-primary  / primitive-white */
-    --gh-paper: #fbfbfc;            /* --color-bg-secondary / primitive-paper */
-    --gh-canvas: #f4f4f5;           /* --color-bg-catalog  / primitive-canvas */
-    --gh-line: #dedee2;             /* --color-border-default */
-    --gh-ink: #242426;              /* --color-text-primary */
-    --gh-ink-soft: #55555b;         /* --color-text-secondary */
-    --gh-muted: #94949d;            /* --color-text-tertiary */
-    --gh-success: #276c49;
-    --gh-success-bg: color-mix(in srgb, #276c49 9%, #ffffff);
-    --gh-success-line: color-mix(in srgb, #276c49 32%, #dedee2);
-    --gh-gold: #c2a545;
-    --gh-gold-ink: color-mix(in srgb, #c2a545 60%, #242426);
-    --gh-gold-bg: color-mix(in srgb, #c2a545 12%, #ffffff);
-    --gh-gold-line: color-mix(in srgb, #c2a545 42%, #dedee2);
-    --gh-hover: rgb(36 36 38 / 5%);
-    --gh-ink-hover: #111113;        /* --color-bg-interactive-hover */
-    --gh-shadow: 0 24px 70px rgb(21 21 24 / 18%);
+    /* Source tokens, transferred from ai-consierge/src/styles.css.
+       Audit 24.08: half of this list was OUR OWN values retyped as
+       literals — white, the v1 chrome inks, the catalog canvas — so
+       those aliases now point at the tokens instead of restating
+       them (Ton-9: incoming material is brought onto our rules, not
+       woven in as it came). Not a byte of colour moved. The ones
+       still written out are the ones the system genuinely does not
+       hold: paper, the two soft inks, the green (we own no green —
+       the Colors page says so out loud), the brand-book gold
+       #c2a545 (a third gold, and UI-vetoed anyway) and the popup's
+       own deep shadow. They are marked, not invented. */
+    --gh-white: var(--white);       /* --color-bg-primary  / primitive-white */
+    --gh-paper: #fbfbfc;            /* --color-bg-secondary / primitive-paper — NO TOKEN */
+    --gh-canvas: var(--zinc-100);   /* --color-bg-catalog  / primitive-canvas */
+    --gh-line: var(--v1-border);    /* --color-border-default */
+    --gh-ink: var(--v1-ink);        /* --color-text-primary */
+    --gh-ink-soft: #55555b;         /* --color-text-secondary — NO TOKEN */
+    --gh-muted: #94949d;            /* --color-text-tertiary — NO TOKEN */
+    --gh-success: #276c49;          /* NO TOKEN: the system owns no green */
+    --gh-success-bg: color-mix(in srgb, #276c49 9%, var(--white));
+    --gh-success-line: color-mix(in srgb, #276c49 32%, var(--v1-border));
+    --gh-gold: #c2a545;             /* NO TOKEN: BRAND.md gold, neither of
+                                       the two measured golds, UI-vetoed */
+    --gh-gold-ink: color-mix(in srgb, #c2a545 60%, var(--v1-ink));
+    --gh-gold-bg: color-mix(in srgb, #c2a545 12%, var(--white));
+    --gh-gold-line: color-mix(in srgb, #c2a545 42%, var(--v1-border));
+    --gh-hover: var(--v1-ink-hover);
+    --gh-ink-hover: #111113;        /* --color-bg-interactive-hover — NO TOKEN */
+    --gh-shadow: 0 24px 70px rgb(21 21 24 / 18%);  /* NO TOKEN */
 
     /* ONE HEIGHT FOR THE TALL STEPS (gbppl-start-popup-3, Ton: "let them
        be the same"). The calendar is the tallest thing the popup ever
@@ -2354,7 +2381,7 @@
   .start-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(24, 24, 27, 0.4);   /* the catalog overlay's own dim */
+    background: rgba(24, 24, 27, 0.4);   /* the catalog overlay's own dim; NO TOKEN, see .catalog-backdrop */
     opacity: 0;
     transition: opacity 300ms ease-out;
   }
@@ -2653,7 +2680,7 @@
     gap: 2px;
   }
   .gsp-head-title {
-    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    font-family: var(--font-sans);
     font-size: clamp(16px, 0.675vw, 17px);   /* half a step, gbppl-start-roomier */
     font-weight: 600;
     line-height: 1.2;
@@ -2714,7 +2741,7 @@
   .gsp-intro { margin-bottom: 24px; }   /* 20 -> 24, gbppl-start-roomier */
   .gsp-intro h2 {
     margin: 0;
-    font-family: 'Noto Serif', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: clamp(22px, 0.94vw, 24px);   /* half a step, gbppl-start-roomier */
     font-weight: 400;
     line-height: 1.2;
@@ -2994,7 +3021,7 @@
   }
   .concierge-chat-message__bubble p {
     margin: 0;
-    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    font-family: var(--font-sans);
     font-size: clamp(15px, 0.675vw, 16px);   /* --concierge-chat-copy */
     font-weight: 400;
     line-height: 1.5;
@@ -3048,7 +3075,7 @@
     border-radius: 999px;
     box-shadow: inset 0 0 0 1px var(--gh-line);
     color: var(--zinc-800);
-    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    font-family: var(--font-sans);
     font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.01em;
@@ -3085,7 +3112,7 @@
     border-radius: 0;
     outline: 0;
     color: var(--gh-ink);
-    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    font-family: var(--font-sans);
     font-size: clamp(15px, 0.675vw, 16px);
     transition: border-color var(--mo-micro) var(--mo-move);
   }
@@ -3227,7 +3254,7 @@
   .gsp-call-number {
     display: block;
     margin-top: 10px;
-    font-family: 'Noto Serif', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: clamp(30px, 2.6vw, 36px);
     font-weight: 400;
     line-height: 1.15;
@@ -3299,7 +3326,7 @@
   @keyframes gsp-draw { to { stroke-dashoffset: 0; } }
   .gsp-booked-title {
     margin: 20px 0 0;
-    font-family: 'Noto Serif', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: clamp(26px, 2.2vw, 30px);
     font-weight: 400;
     line-height: 1.15;
@@ -3431,7 +3458,7 @@
      ls -0.4px, lh 40px; the visible text sits in Zinc 600 on live
      (span text-surface-600) */
   .page-title {
-    font-family: 'Noto Serif', Georgia, serif;
+    font-family: var(--font-serif);
     font-size: 32px;
     line-height: 40px;
     font-weight: 300;
@@ -3513,7 +3540,7 @@
     background: var(--zinc-50);
     border: 1px solid var(--zinc-200);
     border-radius: var(--radius);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* tailwind shadow-md, exact per live */
+    box-shadow: var(--shadow-card); /* tailwind shadow-md, exact per live */
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -3592,7 +3619,7 @@
     display: none;
     background: var(--white);
     border-top: 1px solid var(--zinc-200);
-    box-shadow: 0 -4px 16px rgba(24, 24, 27, 0.06);
+    box-shadow: var(--shadow-bar);
     min-height: 72px;
     align-items: center;
     gap: 24px;
