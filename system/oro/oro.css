@@ -56,7 +56,9 @@ button { font-family: inherit; cursor: pointer; }
 .oro {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  /* Экран минус студийный бар над оболочкой (hub-9): полный 100vh
+     сделал бы страницу выше экрана на высоту бара. */
+  min-height: calc(100vh - var(--header-h));
 }
 @media (min-width: 1024px) {
   .oro { flex-direction: row; align-items: flex-start; }
@@ -73,12 +75,16 @@ button { font-family: inherit; cursor: pointer; }
   border-bottom: 1px solid var(--zinc-200);
   padding: 24px 16px;
 }
+/* Обе цифры считаются от НИЗА студийного бара: с hub-9 (Тон 24.08)
+   витрина стоит под тем же баром, что live.html и sandboxes.html,
+   и рельса, липнущая к нулю, уезжала бы под него. --header-h — тот
+   же токен, которым бар меряет собственную высоту. */
 @media (min-width: 1024px) {
   .oro-rail {
     position: sticky;
-    top: 0;
+    top: var(--header-h);
     width: 264px;
-    height: 100vh;
+    height: calc(100vh - var(--header-h));
     overflow-y: auto;
     border-bottom: 0;
     border-right: 1px solid var(--zinc-200);
@@ -160,22 +166,12 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--zinc-400);
 }
 
-/* ---- The door back ---- */
-.oro-back {
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 1px solid var(--zinc-200);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  letter-spacing: 0.2px;
-  color: var(--zinc-500);
-  transition: color var(--mo-micro) var(--mo-move);
-}
-@media (min-width: 1024px) { .oro-back { margin-top: auto; } }
-.oro-back:hover { color: var(--zinc-900); }
-.oro-back svg { width: 15px; height: 15px; flex: 0 0 auto; }
+/* ---- The door back ----
+   Ушла с hub-9 (Тон 24.08). Дверь назад в студию теперь несёт
+   студийный бар над витриной: замок GildedBox | DESIGN STUDIO,
+   три пункта навигации и LOCK. Ссылка «← Design Studio» внизу
+   рельсы была бы четвёртым способом сделать то же самое, причём
+   единственным, который выглядит не как навигация студии. */
 
 /* ============================================================
    THE COLUMN
@@ -239,12 +235,18 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 1.75;
   color: var(--zinc-700);
 }
-.oro-p a {
+/* Роль ссылки в тексте. Класс .oro-a — та же роль для ссылки,
+   которая стоит не в абзаце (в списке, в подписи): до hub-9 такая
+   ссылка на странице About носила эти две строки инлайном в
+   атрибуте style, то есть держала копию правила рядом с правилом. */
+.oro-p a,
+.oro-a {
   color: var(--blue-700);
   border-bottom: 1px solid var(--blue-200);
   transition: border-color var(--mo-micro) var(--mo-move);
 }
-.oro-p a:hover { border-bottom-color: var(--blue-700); }
+.oro-p a:hover,
+.oro-a:hover { border-bottom-color: var(--blue-700); }
 .oro-note {
   margin: 18px 0 0;
   max-width: 68ch;

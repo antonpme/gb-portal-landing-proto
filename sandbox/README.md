@@ -12,12 +12,13 @@ Two rules only:
 - **It never gets consumed by `live/`.** The walk in `live/` is a pure consumer
   of `system/`; if a sandbox idea is good enough for the walk, it does not get
   copied there — it gets born in `system/` first (see the cycle below).
-- **It is reachable from the hub.** An experiment nobody can open is a note,
-  not a prototype. Add its door to the SANDBOXES shelf in `/index.html`.
+- **It is reachable from the studio.** An experiment nobody can open is a note,
+  not a prototype. Add its door to `/sandboxes.html` (the shelf became a page of
+  its own on 24.08; `/index.html` is the gate now and nothing else).
 
 ## Where the parametric sandboxes are
 
-The three cards on the hub's SANDBOXES shelf right now — Checkout · V2 Pool,
+The three cards on `/sandboxes.html` right now — Checkout · V2 Pool,
 Portal header, Start Gifting layouts — are **not files in here**. They are
 links into `live/` with a query on them (`live/checkout.html?v=2`,
 `live/portal.html?pth=1`, `live/portal.html?hero=start`): the question is being

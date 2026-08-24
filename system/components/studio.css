@@ -1,0 +1,249 @@
+/* ============================================================
+   STUDIO CHROME — полки, двери, подвал студийных страниц
+   (gbppl-hub-9, Тон 2026-08-24)
+   ------------------------------------------------------------
+   Тон, 24.08: «Live Prototype / Sandboxes / Design System —
+   навигация вверху должна тебя переносить на эти страницы, а не
+   скроллить к этим секциям».
+
+   Хаб перестал быть одностраничником: гейт остался в index.html,
+   а полки разъехались по страницам (live.html, sandboxes.html;
+   Design System = витрина system\oro\). Две страницы носят одну и
+   ту же мебель — карточку-дверь, полку, подвал, — и как только
+   их стало две, копия этих правил в каждом файле превратилась бы
+   ровно в тот двойник, который система запрещает (Тон-6). Поэтому
+   мебель переехала сюда, к остальным компонентам, и страницы её
+   ПОТРЕБЛЯЮТ.
+
+   Что здесь есть и чего здесь нет:
+     ЕСТЬ  полка (заголовок + лид), дверь-карточка в двух ростах,
+           список остановок, чип IN PROGRESS, подвал страницы.
+     НЕТ   бара (это header.css, вариант --studio), грунта (это
+           shell.css, класс gb-demo), кнопки (это auth.css,
+           .gba-btn + модификатор --inline), токенов (tokens.css).
+
+   Ни одного нового цвета, радиуса, кривой и длительности: всё
+   тратится из system\assets\tokens.css. Цифры компоновки
+   (1080 колонка, отступы полок) — те же, что стояли на хабе с
+   hub-3; они переехали строка в строку, ничего не перемерено.
+   ============================================================ */
+
+/* Страница-студия: бар, тело, подвал прижат к низу. */
+.gbs-page { display: flex; flex-direction: column; min-height: 100vh; }
+
+.gbs-body { flex: 1 0 auto; padding: 48px 0 64px; }
+@media (min-width: 1280px) { .gbs-body { padding: 72px 0 96px; } }
+
+/* Колонка документа. Бар шире — он спанит страницу, как на лайве. */
+.gbs-wrap { max-width: 1080px; margin: 0 auto; }
+
+.gbs-shelf + .gbs-shelf { margin-top: 56px; }
+@media (min-width: 1280px) { .gbs-shelf + .gbs-shelf { margin-top: 72px; } }
+
+.gbs-h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) { .gbs-h2 { font-size: 26px; } }
+.gbs-lede {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+
+/* Eyebrow, один голос на все студийные страницы
+   (12 / 600 / 0.12em / uppercase / Zinc 500). */
+.gbs-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+
+/* ---- Двери ----
+   Покой Zinc 200, на ховере бордер уходит в Zinc 900 с тенью
+   карточки под ним — выбранное состояние карточки метода из
+   auth-организма, потраченное здесь как ховер. Не двигается
+   ничего, кроме стрелки: 4px, шаг шевронов. */
+.gbs-door {
+  position: relative;
+  display: block;
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  transition: border-color var(--mo-micro) var(--mo-move),
+              box-shadow var(--mo-micro) var(--mo-move);
+}
+.gbs-door:hover { border-color: var(--zinc-900); box-shadow: var(--shadow-card); }
+.gbs-arrow {
+  display: inline-flex;
+  color: var(--zinc-900);
+  transition: transform var(--mo-micro) var(--mo-move);
+}
+.gbs-door:hover .gbs-arrow { transform: translateX(4px); }
+
+/* Большая дверь. Две колонки с 1024: слева питч потока, справа
+   три остановки списком — настоящий индекс по прогулке, он же
+   то, что не даёт карточке 1080 стоять полупустой. Ниже этой
+   ширины список складывается под питч, отделённый волоском. */
+.gbs-door--live { margin-top: 24px; padding: 32px 24px; }
+@media (min-width: 768px)  { .gbs-door--live { padding: 40px 32px; } }
+@media (min-width: 1024px) {
+  .gbs-door--live {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 48px;
+  }
+}
+@media (min-width: 1280px) { .gbs-door--live { padding: 48px 40px; gap: 56px; } }
+
+.gbs-door-title {
+  margin: 12px 0 0;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) { .gbs-door-title { font-size: 24px; } }
+.gbs-door-desc {
+  margin: 10px 0 0;
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+
+/* Главное действие большой двери — кнопка ФОРМЫ авторизации в
+   inline-версии (auth.css, .gba-btn + .gba-btn--inline). Своей
+   кнопки у студии нет и не будет: до 24.08 здесь стоял двойник
+   .door-cta с геометрией BUTTON L и лейблом мелкой хедерной
+   лестницы (11px) — Тон поймал его как «несистемную кнопку с
+   непонятным шрифтом». Страница назначает кнопке только её
+   место в потоке. */
+.gbs-door--live .gba-btn { margin-top: 28px; }
+
+/* Три остановки прогулки, под кнопкой: в поток можно войти
+   посередине, когда это нужно. */
+.gbs-stops {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--zinc-200);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 16px;
+}
+.gbs-stops-title { display: none; }
+.gbs-stop {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-600);
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.gbs-stop:hover { color: var(--blue-600); }
+.gbs-stop-dot {
+  width: 5px; height: 5px;
+  border-radius: var(--radius-circle);
+  background: var(--zinc-300);
+  flex: 0 0 auto;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+.gbs-stop:hover .gbs-stop-dot { background: var(--blue-600); }
+.gbs-stops-sep { color: var(--zinc-300); font-size: 13px; }
+
+/* С 1024 ряд становится правым индексом: волосок из линии под
+   списком превращается в левый край колонки, слэши уходят
+   (списку они не нужны), eyebrow называет группу. */
+@media (min-width: 1024px) {
+  .gbs-stops {
+    margin-top: 0;
+    padding: 0 0 0 32px;
+    border-top: 0;
+    border-left: 1px solid var(--zinc-200);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .gbs-stops-title { display: block; margin-bottom: 14px; }
+  .gbs-stops-sep { display: none; }
+  .gbs-stop { padding: 8px 0; }
+}
+
+/* ---- Сетка малых дверей ---- */
+.gbs-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px)  { .gbs-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .gbs-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.gbs-door--box {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+}
+@media (min-width: 1280px) { .gbs-door--box { padding: 28px 24px; } }
+.gbs-door--box .gbs-door-title { font-size: 17px; margin-top: 14px; }
+.gbs-door--box .gbs-door-desc { margin-top: 8px; font-size: 13px; flex: 1 0 auto; }
+.gbs-door-foot {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gbs-door-path {
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+}
+
+/* Чип IN PROGRESS. Zinc, не янтарь: янтаря в системе нет, а
+   единственное тёплое, что в ней есть, — легаси-золото, которое
+   Тон с этих страниц вывел. Zinc 100 в eyebrow-голосе говорит
+   «не закончено», не добавляя цвета в палитру. */
+.gbs-chip {
+  display: inline-block;
+  align-self: flex-start;   /* карточка — flex-колонка; без этого
+                               чип растягивается в полосу */
+  padding: 4px 8px;
+  background: var(--zinc-100);
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+
+/* ---- Тихая строка внизу ---- */
+.gbs-foot {
+  flex: 0 0 auto;
+  padding: 24px 0 32px;
+  border-top: 1px solid var(--zinc-200);
+}
+.gbs-foot p {
+  max-width: 1080px;
+  margin: 0 auto;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+}
