@@ -6,6 +6,10 @@
 <title>GildedBox — Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-hub-8 — the gate stops freezing: the crossing plays through
+     reduced-motion (Ton-7) and the JS carries a timer key, because
+     animationend alone left Ton staring at a dead button (24.08).
+
      gbppl-hub-7 — the ONE DOOR. Ton, 2026-08-23: every prototype
      should open from a single place, and that place should be behind
      a password and should look like us.
@@ -476,8 +480,12 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--zinc-400);
 }
 
+/* Ton-7: the gate crossing is brand choreography, it plays regardless of
+   prefers-reduced-motion. The polite branch here used to set animation:none,
+   which left the JS waiting for an animationend that never came — the door
+   froze for anyone with Windows animation effects off (Ton, 24.08). Only
+   utility transitions stay polite. */
 @media (prefers-reduced-motion: reduce) {
-  .gate.is-leaving, .hub.is-arriving { animation: none; }
   * { transition-duration: 1ms !important; }
 }
 </style>
@@ -836,7 +844,13 @@ button { font-family: inherit; cursor: pointer; }
       clearError();
       try { sessionStorage.setItem(FLAG, '1'); } catch (e) {}
       gate.classList.add('is-leaving');
-      gate.addEventListener('animationend', function () { openHub(true); }, { once: true });
+      /* animationend is the cue, but never the only key: if the animation
+         is suppressed (reduced motion, a hidden tab), the timer opens the
+         door anyway. Frozen-gate bug, Ton 24.08. */
+      var crossed = false;
+      var cross = function () { if (crossed) return; crossed = true; openHub(true); };
+      gate.addEventListener('animationend', cross, { once: true });
+      setTimeout(cross, 700);
     }).catch(function () {
       submit.disabled = false;
       showError('Could not check the code — reload the page');
