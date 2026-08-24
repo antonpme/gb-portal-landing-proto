@@ -19,6 +19,32 @@
    выведен наружу тем же способом, что logo-src и catalog-href.
 
    ------------------------------------------------------------
+   ВАРИАНТ НАД ВИДЕО (variant="transparent-dark", Тон 24.08)
+   ------------------------------------------------------------
+   Тон, 24.08: «хедер динамически меняется при скролле с прозрачного
+   на белый НЕ на всех страницах, а на определённых, где он лежит
+   на видео».
+
+   Поэтому вариант ОПТ-ИН, атрибутом, той же манеры, что logo-src и
+   portal-href:
+
+     <gb-site-header variant="transparent-dark" ...>
+
+   Без атрибута этот код не выполняется вовсе, класса на баре нет,
+   и планка байт-в-байт прежняя на всех остальных страницах.
+
+   С атрибутом бар получает .gb-header--transparent, а скролл
+   переключает на нём .is-scrolled по порогу scrollY >= 50 —
+   живая константа, снятая пошагово 24.08 (49 = прозрачный,
+   50 = тёмный, обратно так же, гистерезиса у лайва нет).
+   Всё, что переключение красит, живёт в header.css.
+
+   Слушатель passive и сжат до одного кадра (rAF-защёлка): жест
+   скролла обязан оставаться гладким. Состояние считается сразу
+   при подключении — страницу можно открыть уже прокрученной
+   (возврат по «назад», ссылка с якорем).
+
+   ------------------------------------------------------------
    GIFTS: ССЫЛКА + ВЫПАДАЮЩЕЕ МЕНЮ (gbppl-gifts-menu, Тон 24.08)
    ------------------------------------------------------------
    Тон, 24.08: «клик на Gifts должен вести на страницу категорий»
@@ -167,6 +193,26 @@
       var portalHref = this.getAttribute('portal-href') || '#';
       this.innerHTML = TEMPLATE(logoSrc, catalogHref, portalHref);
       this.__wireMenu();
+      if (this.getAttribute('variant') === 'transparent-dark') this.__wireTransparent();
+    }
+
+    /* Планка над видео. Порог 50 — живая константа (см. шапку). */
+    __wireTransparent() {
+      var bar = this.querySelector('.gb-header');
+      if (!bar) return;
+      bar.classList.add('gb-header--transparent');
+      var THRESHOLD = 50;   /* LIVE 24.08 */
+      var ticking = false;
+      var apply = function () {
+        ticking = false;
+        bar.classList.toggle('is-scrolled', window.scrollY >= THRESHOLD);
+      };
+      apply();
+      window.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(apply);
+      }, { passive: true });
     }
 
     /* Поведение Gifts-меню. Лайв держит его на чистом :hover; мы

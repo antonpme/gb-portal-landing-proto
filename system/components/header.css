@@ -523,11 +523,96 @@ body.gb-demo a.gbh-menu__item {
 .gbh-menu__actions .gbh-cta + .gbh-cta { margin-top: 12px; }  /* LIVE 24.08 */
 
 /* Контурная кнопка на тёмной панели. Геометрия целиком от .gbh-cta
-   (лестница шапки), своё — только белый контур и белый ховер. */
+   (лестница шапки), своё — только белый контур и белый ховер.
+   Третий селектор — тот же антидот 0-2-2 против
+   body.gb-demo a { color: inherit }: без него All Gifts и Customize
+   в тёмной панели наследовали Zinc 900 и тонули (24.08). */
 .gbh-cta--inverted,
-a.gbh-cta--inverted {
+a.gbh-cta--inverted,
+body.gb-demo a.gbh-cta--inverted {
   background: transparent;
   color: var(--white);
   border: 1px solid var(--white);   /* LIVE 24.08 */
 }
 .gbh-cta--inverted:hover { background: rgba(255, 255, 255, 0.2); }  /* LIVE 24.08 */
+
+/* ============================================================
+   ВАРИАНТ: ХЕДЕР НАД ВИДЕО (variant="transparent-dark", Тон 24.08)
+   ------------------------------------------------------------
+   Тон, 24.08: «на живой главной GildedBox.com прозрачный хедер и
+   все элементы белые. При скролле он становится белым и
+   стандартным» и, отдельно: «хедер динамически меняется при
+   скролле НЕ на всех страницах, а на определённых, где он лежит
+   на видео».
+
+   ЗАМЕР 24.08 (headed Chrome, 1920, JSON — scratchpad
+   hub\header\live-header-measure.json + live-threshold.json).
+   Живая главная носит планку двумя состояниями:
+
+     ПОКОЙ      bg rgba(0,0,0,.01) (Tailwind bg-black/[0.01]),
+                тени нет, блюра нет. Все элементы белые: вордмарк
+                через --logo-color:#ffffff, нав #ffffff, контурная
+                кнопка белая, глиф поиска белый. Book a Meeting
+                остаётся синей и в этом состоянии.
+     ПОСЛЕ      bg rgba(0,0,0,.85) + backdrop-blur(8px), тени
+                по-прежнему НЕТ, элементы остаются белыми.
+     ПОРОГ      scrollY >= 50 ровно. Проверен пошагово (49 =
+                прозрачный, 50 = тёмный) и на обратном ходу
+                вверх — гистерезиса нет.
+     ПЕРЕХОД    transition-colors 500ms cubic-bezier(.4,0,.2,1).
+
+   РАСХОЖДЕНИЕ С ОЖИДАНИЕМ ТОНА, ЗАФИКСИРОВАНО СОЗНАТЕЛЬНО:
+   живая планка после порога становится НЕ белой стандартной, а
+   тёмной стеклянной, и элементы остаются белыми (скриншот
+   scratchpad hub\header\live-home-scrolled.png). Здесь стоит
+   измеренное поведение лайва, а не пересказ по памяти (Тон-3:
+   пиксель-перфект к источнику). Если решение будет «всё-таки
+   белеть» — меняется ровно один блок .is-scrolled ниже.
+
+   Вариант ОПТ-ИН: без атрибута ни одно правило этого блока не
+   включается и планка байт-в-байт прежняя. Позиционирование
+   вариант не трогает — sticky и ординаты остаются общими.
+   Ветки prefers-reduced-motion нет намеренно (Тон-7).
+   ============================================================ */
+
+/* 0-2-0, чтобы наверняка перебить lg-правило стекла в начале файла. */
+.gb-header.gb-header--transparent {
+  background: rgba(0, 0, 0, 0.01);   /* LIVE 24.08 */
+  backdrop-filter: none;
+  box-shadow: none;
+  transition: background-color 500ms cubic-bezier(0.4, 0, 0.2, 1);  /* LIVE 24.08 */
+}
+.gb-header.gb-header--transparent.is-scrolled {
+  background: rgba(0, 0, 0, 0.85);   /* LIVE 24.08 */
+  backdrop-filter: blur(8px);        /* LIVE 24.08 */
+  box-shadow: none;                  /* LIVE 24.08: тени нет и после порога */
+}
+
+/* Белый вордмарк. Живой знак — инлайновый SVG, красящий пути через
+   --logo-color:#ffffff; наш стоит картинкой (<img src=...svg>), и
+   переменная внутрь не проходит. Тот же самый файл знака (пути и
+   id совпадают один в один, у нас fill #18181b), поэтому вместо
+   второго ассета — фильтр: brightness(0) кладёт знак в чистый
+   чёрный, invert(1) переворачивает в чистый #ffffff. Ровно тот
+   цвет, что стоит на лайве, и ни одного нового файла. */
+.gb-header--transparent .gbh-brand img { filter: brightness(0) invert(1); }
+
+/* Нав, глифы, контурная кнопка — белые. Пара селекторов на каждое
+   правило по той же причине, что и в антидоте выше, только на
+   ступень выше: цвет ссылок уже держит body.gb-demo a.gbh-link
+   (0-2-2), и вариант обязан весить больше (0-3-2). */
+.gb-header--transparent .gbh-link,
+.gb-header--transparent a.gbh-link,
+body.gb-demo .gb-header--transparent a.gbh-link { color: var(--white); }
+.gb-header--transparent .gbh-icon-button { color: var(--white); }
+/* Подложка глифа — та же живая rgba(255,255,255,.2), что носит
+   инвертированная кнопка панели: на тёмном грунте Zinc-подмес
+   прототипа не читается, а нового значения заводить незачем. */
+.gb-header--transparent .gbh-icon-button:hover { background: rgba(255, 255, 255, 0.2); }
+.gb-header--transparent .gbh-cta--outline,
+.gb-header--transparent a.gbh-cta--outline,
+body.gb-demo .gb-header--transparent a.gbh-cta--outline {
+  color: var(--white);
+  border-color: var(--white);   /* LIVE 24.08 */
+}
+.gb-header--transparent .gbh-cta--outline:hover { background: rgba(255, 255, 255, 0.2); }  /* LIVE 24.08 */
