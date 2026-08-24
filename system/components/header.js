@@ -12,6 +12,11 @@
    Путь к странице категорий — атрибутом catalog-href (по умолчанию
    catalog/index.html, как видит её live\checkout.html); каждая
    страница-потребитель прописывает его явно, глубина у всех разная.
+   Путь к порталу — атрибутом portal-href (по умолчанию "#": кнопка
+   My Portal родилась мёртвой заглушкой прототипа и остаётся ею там,
+   где портала рядом нет). gbppl-liveindex-1: у live\index.html
+   портал есть, и кнопка обязана вести в него, поэтому адрес
+   выведен наружу тем же способом, что logo-src и catalog-href.
 
    ------------------------------------------------------------
    GIFTS: ССЫЛКА + ВЫПАДАЮЩЕЕ МЕНЮ (gbppl-gifts-menu, Тон 24.08)
@@ -115,7 +120,7 @@
     );
   };
 
-  var TEMPLATE = function (logoSrc, catalogHref) {
+  var TEMPLATE = function (logoSrc, catalogHref, portalHref) {
     return (
       '<header class="gb-header">' +
         '<div class="gb-container gbh-bar">' +
@@ -139,7 +144,7 @@
             /* Text-only per live: без глифа календаря (diff measure
                2026-08-12); лейбл в своём span per живой анатомии. */
             '<a class="gbh-cta" href="#"><span data-pc-section="label">Book a Meeting</span></a>' +
-            '<a class="gbh-cta gbh-cta--outline" href="#"><span data-pc-section="label">My Portal</span></a>' +
+            '<a class="gbh-cta gbh-cta--outline" href="' + portalHref + '"><span data-pc-section="label">My Portal</span></a>' +
             '<button class="gbh-icon-button" type="button" aria-label="Cart, 3 items">' +
               '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>' +
               '<span class="gbh-count" aria-hidden="true">3</span>' +
@@ -159,7 +164,8 @@
       this.__rendered = true;
       var logoSrc = this.getAttribute('logo-src') || 'assets/gildedbox-logo.svg';
       var catalogHref = this.getAttribute('catalog-href') || 'catalog/index.html';
-      this.innerHTML = TEMPLATE(logoSrc, catalogHref);
+      var portalHref = this.getAttribute('portal-href') || '#';
+      this.innerHTML = TEMPLATE(logoSrc, catalogHref, portalHref);
       this.__wireMenu();
     }
 
