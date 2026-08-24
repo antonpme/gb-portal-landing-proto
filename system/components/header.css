@@ -302,3 +302,156 @@ a.gbh-cta--outline { color: var(--zinc-900); }
      .gbh-cta { display: none } той же медиа. */
   .gbh-bar--studio .gbh-cta { display: inline-flex; }
 }
+
+/* ============================================================
+   GIFTS: ВЫПАДАЮЩЕЕ МЕНЮ (gbppl-gifts-menu, Тон 24.08)
+   ------------------------------------------------------------
+   Тон, 24.08: «сабменю должно работать везде, где стоит актуальный
+   хедер сайта, и выглядеть один в один с лайвом».
+
+   Каждая цифра снята прибором с https://www.gildedbox.com, ширина
+   1920, 24.08 (getComputedStyle + getBoundingClientRect; JSON
+   снятия — scratchpad hub\gifts\live-submenu-measure.json).
+   Разметка и поведение задокументированы в header.js. Провенанс
+   ниже помечен LIVE 24.08; там, где живое значение совпало с
+   токеном, стоит токен, а не литерал:
+
+     панель      rgba(0,0,0,.8) + blur 3px, тень 0 8px 24px 3px
+                 rgba(0,46,76,.05), радиус 0, паддинг 32, w-max,
+                 absolute top 74 / left 0, z 1001
+     колонки     flex, gap 48, min-width 600
+     заголовок   Inter 600, 12/16, ls .6, uppercase, #a1a1aa
+                 (= --zinc-400 в один в один), mb 16, pb 8
+     пункт       Inter 400, 14/20, ls .2, белый, sentence-case,
+                 паддинг 5px 0, шаг между пунктами 4
+     ховер пункта цвет -> #bea042 (= --gold-beta), opacity .8.
+                 ПЕРЕХОД ТОЛЬКО ПО ЦВЕТУ: у лайва transition-colors
+                 300ms cubic-bezier(.4,0,.2,1), а hover:opacity-80
+                 в список переходов не попадает и щёлкает мгновенно.
+                 Золото здесь не новый акцент, а снятое живое
+                 значение (BRAND.md про новые золотые элементы).
+     кнопки      та же лестница .gbh-cta (36/42/48, пад 8/20, лейбл
+                 11/600/ls 1) — лайв берёт ровно те же классы;
+                 своё здесь только инвертирование под тёмную панель
+                 и зазор 12 между кнопками.
+     появление   @keyframes showBlock лайва: 200ms linear forwards,
+                 opacity 0->1 + translateY(-10px)->0. Ветки
+                 prefers-reduced-motion НЕТ намеренно: фирменный
+                 моушен играет всегда (Тон-7).
+
+   Мобильная ступень своя: с 900px .gbh-nav уходит целиком, и меню
+   уходит вместе с ним. Живого мобильного выдвижного листа (панель
+   на весь экран, шеврон, «назад») мы не переносим — мобильной
+   шапки у прототипа нет в принципе (см. фолбэк выше).
+   ============================================================ */
+
+/* Пункт-обёртка. Живой li несёт mx-2/xl:mx-4 сам, а ссылка внутри
+   только padding: коробка li ровно равна коробке ссылки (снятие:
+   обе x 263.99, w 81). Повторяем расстановку — иначе left: 0
+   панели уехало бы на 16px левее живого. */
+.gbh-navitem {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 16px;
+}
+.gbh-navitem > .gbh-link { margin: 0; }
+
+/* Gifts стал ссылкой, а не кнопкой. Тот же фикс, что ниже держит
+   .gbh-cta: shell.css несёт body.gb-demo a { color: inherit }
+   весом 0-1-1 и перебил бы .gbh-link (0-1-0) — возвращаем цвет
+   селектором той же силы, объявленным позже. Подчёркивание живой
+   нав-пункт не носит. */
+a.gbh-link { color: var(--zinc-900); text-decoration: none; }
+
+/* Панель. top 74 — живая константа: планка 80, ссылка стоит на
+   12 сверху, 12 + 74 = 86 = низ планки + 6. z 1001 тоже живой;
+   он внутри стекового контекста самого хедера (z 31), так что
+   наружу не выстреливает. */
+.gbh-menu {
+  display: none;
+  position: absolute;
+  top: 74px;          /* LIVE 24.08 */
+  left: 0;
+  z-index: 1001;      /* LIVE 24.08 */
+  width: max-content;
+  padding: 32px;      /* LIVE 24.08 */
+  background: rgba(0, 0, 0, 0.8);                    /* LIVE 24.08, вне токенов */
+  backdrop-filter: blur(3px);                        /* LIVE 24.08 */
+  box-shadow: 0 8px 24px 3px rgba(0, 46, 76, 0.05);  /* LIVE 24.08, вне токенов */
+  border-radius: 0;   /* LIVE 24.08: rounded-none, панель не скруглена */
+  transform-origin: top left;
+  text-align: left;
+}
+.gbh-navitem--menu[data-open="true"] .gbh-menu {
+  display: block;
+  animation: gbh-menu-in 200ms linear forwards;  /* LIVE 24.08: showBlock */
+}
+@keyframes gbh-menu-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Мостик над панелью. Разрыв между низом ссылки (68) и верхом
+   панели (86) курсор проходит по воздуху; живой ::before кроет
+   30px над панелью и удерживает наведение на пункте. */
+.gbh-menu::before {
+  content: '';
+  position: absolute;
+  top: -30px;         /* LIVE 24.08 */
+  left: 0;
+  width: 100%;
+  height: 30px;       /* LIVE 24.08 */
+  background: transparent;
+}
+
+.gbh-menu__cols {
+  display: flex;
+  gap: 48px;          /* LIVE 24.08 */
+  min-width: 600px;   /* LIVE 24.08 */
+}
+
+.gbh-menu__title {
+  margin: 0 0 16px;   /* LIVE 24.08 */
+  padding: 0 0 8px;   /* LIVE 24.08 */
+  color: var(--zinc-400);   /* LIVE 24.08 #a1a1aa — токен один в один */
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  line-height: 16px;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.gbh-menu__list { margin: 0; padding: 0; list-style: none; }
+.gbh-menu__list li + li { margin-top: 4px; }  /* LIVE 24.08: space-y-1 */
+
+.gbh-menu__item {
+  display: block;
+  padding: 5px 0;     /* LIVE 24.08 */
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  line-height: 20px;
+  text-transform: none;
+  text-decoration: none;
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);  /* LIVE 24.08 */
+}
+.gbh-menu__item:hover {
+  color: var(--gold-beta);   /* LIVE 24.08 #bea042 — токен один в один */
+  opacity: 0.8;              /* LIVE 24.08: не в списке переходов, щёлкает */
+}
+
+.gbh-menu__actions { display: flex; flex-direction: column; align-items: flex-start; }
+.gbh-menu__actions .gbh-cta + .gbh-cta { margin-top: 12px; }  /* LIVE 24.08 */
+
+/* Контурная кнопка на тёмной панели. Геометрия целиком от .gbh-cta
+   (лестница шапки), своё — только белый контур и белый ховер. */
+.gbh-cta--inverted,
+a.gbh-cta--inverted {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid var(--white);   /* LIVE 24.08 */
+}
+.gbh-cta--inverted:hover { background: rgba(255, 255, 255, 0.2); }  /* LIVE 24.08 */
