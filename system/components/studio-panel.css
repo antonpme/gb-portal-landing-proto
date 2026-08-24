@@ -1,0 +1,137 @@
+/* ============================================================
+   SYSTEM COMPONENT: STUDIO PANEL — дорога домой (gbppl-panel-1,
+   Тон 2026-08-24)
+   ------------------------------------------------------------
+   Тон, 24.08: «когда мы заходим с хаба, пропадает надпись Design
+   Studio и мы не можем вернуться на хаб. Нужна точка возвращения:
+   чтобы всегда была доступна навигация с правой стороны — вот эта
+   открывающаяся панель управления».
+
+   Живые страницы прототипа (live\index.html и дальше) носят хром
+   САЙТА, а не студии: студийного бара с замком там нет и быть не
+   должно — иначе клиент видит нашу мебель поверх своей. Значит,
+   дверь назад обязана жить рядом с содержимым, но не в нём.
+
+   ПРЕЖДЕ ЧЕМ РИСОВАТЬ (Тон-6). Такой язык у нас уже есть: PROTO —
+   плавающая планка у правого края, свёрнутая по умолчанию, тянется
+   за язычок (live\portal.html с 12.08, перенесена в
+   live\checkout.html). Панель ниже — та же анатомия (край, язычок,
+   свёрнутое состояние, вертикальное слово) в другом голосе, и вот
+   почему не буквальный перенос: PROTO это СЛУЖЕБНАЯ консоль
+   прототипа, нарочно «неоформленная» (Zinc 950, моноширинный
+   регистр 9-11px), чтобы её нельзя было прочесть как часть
+   дизайна. Эта панель — наоборот, часть студии, и говорит
+   системным голосом: Inter, шкала Zinc, синий на активном, радиус
+   5, шрифты 14-16 (Тон 24.08: «мелкие шрифты... стандартный размер
+   16 пикселей»). Ни одного нового цвета, радиуса и кривой: всё из
+   system\assets\tokens.css.
+
+   ГДЕ СТОИТ. На live-страницах, у которых своей PROTO-консоли нет
+   (сегодня это live\index.html). Там, где PROTO уже стоит
+   (checkout, portal), второй язычок у того же края был бы дублем
+   аффорданса, поэтому туда добавлена только СТРОКА Design Studio
+   внутрь их собственной панели.
+
+   СЛОЙ. z-index 60 — выше всей стопки прототипа (PROTO 30,
+   хедер 31, дроверы 40, модалка 50). Дорога домой не должна
+   оказаться под тем, что она открывает.
+   ============================================================ */
+
+gb-studio-panel { display: contents; }
+
+.gbsp {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: stretch;
+  font-family: var(--font-sans);
+}
+
+/* Язычок: единственное, что видно в свёрнутом состоянии. Слово
+   вертикально, как у PROTO, но системным кеглем 14. */
+.gbsp-tab {
+  width: 32px;
+  padding: 14px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-right: none;
+  border-radius: var(--radius) 0 0 var(--radius);
+  box-shadow: var(--shadow-card);
+  color: var(--zinc-500);
+  font-family: inherit;
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.gbsp-tab:hover { color: var(--zinc-900); }
+.gbsp-tab svg { display: block; width: 14px; height: 14px; }
+/* Шеврон смотрит туда, куда уедет панель: вправо — спрятать,
+   влево — показать. */
+.gbsp.is-collapsed .gbsp-tab svg { transform: rotate(180deg); }
+.gbsp-tab__word {
+  writing-mode: vertical-rl;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.gbsp-panel {
+  width: 216px;
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-right: none;
+  border-radius: var(--radius) 0 0 var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.gbsp.is-collapsed .gbsp-panel { display: none; }
+
+/* Заголовок в голосе замка студийного бара (.gbh-lock__word,
+   header.css): 14 / 600 / ls .12em / uppercase / Zinc 500. */
+.gbsp-title {
+  display: block;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--zinc-200);
+  color: var(--zinc-500);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.gbsp-list { margin: 0; padding: 0; list-style: none; }
+.gbsp-link,
+body.gb-demo a.gbsp-link {   /* тот же антидот, что в header.css */
+  display: block;
+  padding: 7px 8px;
+  margin: 0 -8px;
+  border-radius: var(--radius);
+  color: var(--zinc-700);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.35;
+  text-decoration: none;
+  transition: color var(--mo-micro) var(--mo-move),
+              background var(--mo-micro) var(--mo-move);
+}
+.gbsp-link:hover,
+body.gb-demo a.gbsp-link:hover { color: var(--zinc-900); background: var(--zinc-50); }
+
+/* Страница, на которой стоишь, — СОСТОЯНИЕ, значит синее (Тон-5). */
+.gbsp-link.is-active,
+body.gb-demo a.gbsp-link.is-active { color: var(--blue-600); font-weight: 500; }
+
+/* Узкие экраны: панель уже язычка не бывает, поэтому просто ужимаем
+   её до ширины поля и оставляем на месте. */
+@media (max-width: 480px) {
+  .gbsp-panel { width: 184px; }
+}
