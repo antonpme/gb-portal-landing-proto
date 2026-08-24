@@ -1,7 +1,25 @@
 /* ============================================================
-   STUDIO CHROME — полки, двери, подвал студийных страниц
-   (gbppl-hub-9, Тон 2026-08-24)
+   STUDIO CHROME — хаб, полки, двери, подвал студийных страниц
+   (gbppl-hub-10, Тон 2026-08-24)
    ------------------------------------------------------------
+   ХАБ ВЕРНУЛСЯ (hub-10, Тон 24.08, второй заход): «У нас нет
+   какой-то одной страницы входа. Наша страница входа — это хаб из
+   трёх точек входа, которые к тому же дублируются в верхней
+   навигации. Сейчас пользователь попадает сразу на Live, и я не
+   могу зайти на саму точку входа». В hub-9 я прочитал «нав должен
+   переносить на страницы» как «index = только гейт, дальше сразу
+   Live» — и потерял саму точку входа. Нав переносит на страницы, а
+   index за гейтом показывает ОБЗОР этих страниц: три равные двери.
+   Отсюда блок ТРИ ДВЕРИ ХАБА в конце файла.
+
+   И вторая правка того же захода: «Мелкие шрифты. На GildedBox
+   вообще нет таких мелких шрифтов. Стандартный размер 16 пикселей.
+   Здесь у тебя какой, 14?» Основной текст студийных страниц
+   (лиды полок, описания дверей) поднят 13/14 → 16, вторичное
+   (пути, подвал, остановки) — до 14/15, заголовки подросли следом,
+   чтобы иерархия не слиплась. Кнопка (.gba-btn, auth.css) не
+   тронута: её лестница 14/15/16 выверена отдельно.
+
    Тон, 24.08: «Live Prototype / Sandboxes / Design System —
    навигация вверху должна тебя переносить на эти страницы, а не
    скроллить к этим секциям».
@@ -43,16 +61,17 @@
 .gbs-h2 {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.025em;
   color: var(--zinc-900);
 }
-@media (min-width: 1280px) { .gbs-h2 { font-size: 26px; } }
+@media (min-width: 1280px) { .gbs-h2 { font-size: 30px; } }
+/* Лид полки — основной текст, значит 16 (Тон 24.08). Было 14. */
 .gbs-lede {
-  margin: 8px 0 0;
-  font-size: 14px;
+  margin: 10px 0 0;
+  font-size: 16px;
   line-height: 1.625;
   letter-spacing: 0.2px;
   color: var(--zinc-500);
@@ -108,17 +127,18 @@
 .gbs-door-title {
   margin: 12px 0 0;
   font-family: var(--font-serif);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 500;
   line-height: 1.3;
   letter-spacing: -0.025em;
   color: var(--zinc-900);
 }
-@media (min-width: 1280px) { .gbs-door-title { font-size: 24px; } }
+@media (min-width: 1280px) { .gbs-door-title { font-size: 28px; } }
+/* Описание двери — основной текст: 16 (Тон 24.08). Было 14. */
 .gbs-door-desc {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   max-width: 60ch;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.625;
   letter-spacing: 0.2px;
   color: var(--zinc-500);
@@ -150,7 +170,7 @@
   align-items: center;
   gap: 10px;
   padding: 4px 0;
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: 0.2px;
   color: var(--zinc-600);
   transition: color var(--mo-micro) var(--mo-move);
@@ -164,7 +184,7 @@
   transition: background-color var(--mo-micro) var(--mo-move);
 }
 .gbs-stop:hover .gbs-stop-dot { background: var(--blue-600); }
-.gbs-stops-sep { color: var(--zinc-300); font-size: 13px; }
+.gbs-stops-sep { color: var(--zinc-300); font-size: 15px; }
 
 /* С 1024 ряд становится правым индексом: волосок из линии под
    списком превращается в левый край колонки, слэши уходят
@@ -200,8 +220,10 @@
   padding: 24px 20px;
 }
 @media (min-width: 1280px) { .gbs-door--box { padding: 28px 24px; } }
-.gbs-door--box .gbs-door-title { font-size: 17px; margin-top: 14px; }
-.gbs-door--box .gbs-door-desc { margin-top: 8px; font-size: 13px; flex: 1 0 auto; }
+.gbs-door--box .gbs-door-title { font-size: 20px; margin-top: 14px; }
+/* 16 и здесь: описание малой двери — тот же основной текст, просто
+   в узкой колонке (было 13, Тон 24.08). */
+.gbs-door--box .gbs-door-desc { margin-top: 10px; font-size: 16px; flex: 1 0 auto; }
 .gbs-door-foot {
   margin-top: 20px;
   display: flex;
@@ -209,8 +231,9 @@
   justify-content: space-between;
   gap: 12px;
 }
+/* Путь под дверью — вторичное, но не мельче 14 (Тон 24.08). */
 .gbs-door-path {
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.2px;
   color: var(--zinc-400);
 }
@@ -226,7 +249,7 @@
   padding: 4px 8px;
   background: var(--zinc-100);
   border-radius: var(--radius);
-  font-size: 11px;
+  font-size: var(--eyebrow-size);   /* 12: голос eyebrow, не мельче */
   font-weight: 600;
   letter-spacing: 0.12em;
   line-height: 1.2;
@@ -243,7 +266,102 @@
 .gbs-foot p {
   max-width: 1080px;
   margin: 0 auto;
-  font-size: 13px;
+  font-size: 14px;   /* вторичное, нижняя граница шкалы (Тон 24.08) */
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+}
+
+/* ============================================================
+   ТРИ ДВЕРИ ХАБА (gbppl-hub-10, Тон 2026-08-24)
+   ------------------------------------------------------------
+   Точка входа студии: за гейтом index.html показывает ОБЗОР трёх
+   разделов, которые дублируются в баре. Тон про прошлую попытку:
+   «Саму точку входа нужно было передизайнить, а ты сделал
+   некрасиво. Выглядит как непонятная бледная колбаса» — широкие
+   бледные плашки во всю колонку 1080. Лекарство ровно от этого:
+   не полосы поперёк страницы, а ТРИ РАВНЫЕ ВЕРТИКАЛЬНЫЕ карточки
+   в ряд, у каждой своя высота содержимого и общий низ.
+
+   Ничего нового не нарисовано (Тон-6): карточка — та же .gbs-door
+   (белое поле, Zinc 200, радиус 5, ховер «Zinc 900 + тень
+   карточки», стрелка +4px), ярлык роли — тот же .gbs-eyebrow,
+   низ — тот же .gbs-door-foot со стрелкой. Модификатор задаёт
+   только рост: крупнее заголовок, описание 16, ряд «что внутри»
+   прижат к низу волоском.
+
+   Грунт хаба — Zinc 50 вместо near-white лайва: три белые
+   карточки обязаны читаться как предметы на поверхности, а на
+   #fcfdfd они растворяются — та самая бледность.
+   ============================================================ */
+
+.gbs-page--hub { background: var(--zinc-50); }
+
+/* Хаб — короткая композиция: строка, подстрока и ряд карточек.
+   На высоком экране она стоит по центру тела, а не висит под баром
+   над полем пустоты. Центрирование срабатывает только когда место
+   есть: содержимое выше тела просто растит тело (flex: 1 0 auto). */
+.gbs-page--hub .gbs-body { display: flex; align-items: center; }
+.gbs-page--hub .gbs-body > .gb-container { width: 100%; }
+
+/* Шапка хаба: заголовок страницы (роль H1, на ступень выше
+   полочного .gbs-h2) и одна строка под ним. Никаких вводных. */
+.gbs-hubhead { max-width: 1080px; }
+.gbs-h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) { .gbs-h1 { font-size: 38px; } }
+.gbs-hub-sub {
+  margin: 12px 0 0;
+  max-width: 60ch;
+  font-size: 16px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+
+/* Ряд дверей. Три — число неделимое: либо все три в ряд, либо
+   стек. Двух-колоночной ступени нет намеренно, иначе третья
+   карточка стоит сиротой в половину ряда. */
+.gbs-entries {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 900px)  { .gbs-entries { margin-top: 40px; grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+@media (min-width: 1280px) { .gbs-entries { margin-top: 48px; gap: 24px; } }
+
+.gbs-door--entry {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px;
+}
+@media (min-width: 1280px) { .gbs-door--entry { padding: 36px 32px; } }
+
+.gbs-door--entry .gbs-door-title { margin-top: 14px; font-size: 26px; }
+@media (min-width: 1280px) { .gbs-door--entry .gbs-door-title { font-size: 30px; } }
+
+/* flex: 1 держит низы трёх карточек на одной линии при разной
+   длине описаний; max-width снят — колонка сама узкая. */
+.gbs-door--entry .gbs-door-desc { max-width: none; flex: 1 0 auto; }
+
+.gbs-door--entry .gbs-door-foot {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--zinc-200);
+}
+
+/* «Что внутри» — тихая опись раздела, не ссылки: вся карточка и
+   так одна ссылка. Голос пути малой двери, шаг в 14. */
+.gbs-entry-inside {
+  font-size: 14px;
+  line-height: 1.5;
   letter-spacing: 0.2px;
   color: var(--zinc-400);
 }
