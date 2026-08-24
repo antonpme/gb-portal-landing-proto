@@ -71,7 +71,12 @@ gb-site-header {
   letter-spacing: 0.5px;
   line-height: 1.5;
   text-transform: uppercase;
-  transition: opacity 160ms;
+  /* LIVE 24.08: живой пункт носит transition-all duration-300
+     ease-in-out, ховер гасит до opacity .8 — гаснет плавно, за
+     300ms. Переносим ровно те свойства, которые у пункта меняются:
+     цвет (прозрачный вариант ниже) и прозрачность. */
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 @media (min-width: 1280px) {
   .gbh-link { font-size: 16px; }
@@ -94,9 +99,57 @@ gb-site-header {
 }
 .gbh-actions { display: flex; align-items: center; gap: 12px; }
 
-/* Кнопочная семья шапки, лестница M 36/42/48 (LIVE BUTTON LADDER
-   в tokens.css; harvest public-home 2026-08-17). Ступень 48
-   включается ровно с 2000px — кастомный порог вне Tailwind-сетки. */
+/* ============================================================
+   КНОПОЧНАЯ СЕМЬЯ ШАПКИ — СВЕРКА С ЛАЙВОМ 2026-08-24
+   ------------------------------------------------------------
+   Тон, 24.08: «самое главное, чтобы в хедере были действительно
+   настоящие системные кнопки правильного размера, и чтобы эти
+   кнопки, как компонент, имели правильные цвета, шрифты,
+   hover-эффекты и всё прочее. Давай сделаем это один раз».
+
+   Прогон прибором по https://www.gildedbox.com (getComputedStyle
+   на главной и на /catalog/products, свип ширин 900..2200,
+   page.hover с выдержкой 600ms; JSON снятия — scratchpad
+   hub\header\live-header-measure.json). Что сошлось и что нет:
+
+     ЛЕСТНИЦА     сошлась полностью. 36 / 42 (>=1280) / 48 (>=2000),
+                  пад 8/16 -> 8/20 с 1280, gap 12 -> 20, радиус 5,
+                  лейбл 11/600/ls 1/uppercase -> 12 с 2000. Ни одной
+                  цифры менять не пришлось.
+     ФОН CTA      РАСХОЖДЕНИЕ. Живая Book a Meeting — Blue 600
+                  #2563eb, а не Zinc 800. Мы носили тёмную с
+                  18.08; live\portal.html уже перекрашивал
+                  заимствованную .gbh-cta локальным .pth-cta
+                  («the one repaint... Blue 600 fill, Blue 700
+                  hover»), то есть владелец отставал от лайва, а
+                  потребитель чинил у себя — та же болезнь, что и
+                  с цветом лейбла ниже. Лечим у владельца, локальная
+                  заплатка портала становится безвредным дублем.
+                  Это и Тон-5: основная CTA синяя.
+     ЛЕЙБЛ CTA    живой #fafafa = --zinc-50, не чистый белый.
+     ХОВЕР CTA    РАСХОЖДЕНИЕ. Живой Blue 700 #1d4ed8 — ТЕМНЕЕ
+                  покоя. Мы светлели (zinc-800 -> zinc-700), и
+                  Тон это поймал дословно: «по ховеру кнопка
+                  становится светлее, а не темнее, как должно быть».
+     КОНТУРНАЯ    покой сошёлся (прозрачная, Zinc 900 текст и
+                  бордер). Ховер РАСХОЖДЕНИЕ: живой
+                  rgba(212,212,216,.2) = Zinc 300 на 20%, у нас
+                  стояла плотная заливка Zinc 100.
+     ПЕРЕХОД      живой 200ms cubic-bezier(.4,0,.2,1) по цвету,
+                  фону и бордеру; у нас было 160ms linear.
+     ИКОНОКНОПКА  живой хедер несёт один глиф-линк (поиск, href
+                  /search): 24px иконошрифт, цвет = цвет бара,
+                  ХОВЕРА НЕТ ВООБЩЕ, только переход цвета 300ms.
+                  Круг 44px с подложкой — v1-канон прототипа
+                  (SYSTEM.md components), сознательно оставлен:
+                  глиф обязан отвечать курсору (прецедент
+                  «the heart answers the pointer»), а лайв тут
+                  пары не даёт. Перенесена только длительность.
+
+   Лестница M 36/42/48 живёт в LIVE BUTTON LADDER (tokens.css;
+   harvest public-home 2026-08-17). Ступень 48 включается ровно
+   с 2000px — кастомный порог вне Tailwind-сетки.
+   ============================================================ */
 .gbh-cta {
   min-height: var(--btn-min-h);
   display: inline-flex;
@@ -104,8 +157,8 @@ gb-site-header {
   justify-content: center;
   gap: 12px;
   padding: var(--btn-pad-y) var(--btn-pad-x);
-  background: var(--zinc-800);
-  color: var(--white);
+  background: var(--blue-600);   /* LIVE 24.08 #2563eb — токен один в один */
+  color: var(--zinc-50);         /* LIVE 24.08 #fafafa — токен один в один */
   border: none;
   border-radius: var(--radius);
   font-size: var(--btn-font-size);
@@ -114,7 +167,10 @@ gb-site-header {
   line-height: var(--btn-line-height);
   text-transform: uppercase;
   white-space: nowrap; /* живые кнопки никогда не переносятся */
-  transition: background 160ms, border-color 160ms;
+  /* LIVE 24.08: 200ms cubic-bezier(.4,0,.2,1) по цвету/фону/бордеру */
+  transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 @media (min-width: 1280px) {
   .gbh-cta {
@@ -130,23 +186,36 @@ gb-site-header {
 @media (min-width: 2000px) {
   .gbh-cta { min-height: var(--btn-min-h-2xl); }
 }
-.gbh-cta:hover { background: var(--zinc-700); }
+/* ТЕМНЕЕТ, а не светлеет: Blue 600 -> Blue 700 (LIVE 24.08). */
+.gbh-cta:hover { background: var(--blue-700); }
 
 /* Контурный MY PORTAL per live: прозрачный, Zinc 900 текст и
-   1px бордер; hover = felt value, лайв цифры не даёт. */
+   1px бордер; ховер — живая полупрозрачная подложка Zinc 300/20
+   (LIVE 24.08 rgba(212,212,216,.2)), а не плотный Zinc 100. */
 .gbh-cta--outline {
   background: transparent;
   color: var(--zinc-900);
   border: 1px solid var(--zinc-900);
 }
-.gbh-cta--outline:hover { background: var(--zinc-100); }
+.gbh-cta--outline:hover { background: rgba(212, 212, 216, 0.2); }  /* LIVE 24.08 */
 
-/* body.gb-demo a { color: inherit } из shell.css весит 0-1-1 и
-   перебивает .gbh-cta (0-1-0): Book a Meeting рендерился тёмным по
-   тёмному. Возвращаем цвет селектором той же силы, объявленным позже
-   (глобальный фикс 18.08; auth.css нёс тот же фикс скоупом). */
-a.gbh-cta { color: var(--white); }
-a.gbh-cta--outline { color: var(--zinc-900); }
+/* АНТИДОТ ПОЛНОЙ СИЛЫ (24.08). shell.css несёт
+   body.gb-demo a { color: inherit } весом 0-1-2, а прежний фикс
+   a.gbh-cta весил 0-1-1 и ПРОИГРЫВАЛ ему: на каждой странице с
+   body.gb-demo лейбл Book a Meeting наследовал Zinc 900 и вставал
+   тёмным по тёмному (Тон, 24.08: «на белом кнопка не того цвета,
+   да ещё и с чёрным текстом»). Прежний комментарий считал вес
+   shell-правила как 0-1-1 — арифметическая ошибка, из-за неё баг
+   и пережил фикс 18.08. Теперь пара селекторов: голый для страниц
+   без грунта и 0-2-2 для страниц с ним. auth.css чинил то же
+   скоупом gb-guest-header; его строки остаются безвредным дублем.
+   Правило распространено и на .gbh-link: ссылка-нав держится на
+   inherit только по счастливой случайности (body несёт Zinc 900),
+   и в прозрачном варианте эта случайность ломается. */
+a.gbh-cta,
+body.gb-demo a.gbh-cta { color: var(--zinc-50); }
+a.gbh-cta--outline,
+body.gb-demo a.gbh-cta--outline { color: var(--zinc-900); }
 
 /* Типографика лейбла = живой span[data-pc-section="label"]
    (harvest public-home-sweep 2026-08-17): 11 / 600 / ls 1px /
@@ -193,7 +262,10 @@ a.gbh-cta--outline { color: var(--zinc-900); }
   border: 0;
   border-radius: var(--radius-circle);
   color: var(--zinc-900);
-  transition: background 160ms;
+  /* Длительность живого глифа (LIVE 24.08: color .3s ease-in-out);
+     подложка — v1-канон прототипа, живой пары у неё нет. */
+  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .gbh-icon-button:hover { background: var(--v1-ink-hover); }
 
@@ -357,12 +429,13 @@ a.gbh-cta--outline { color: var(--zinc-900); }
 }
 .gbh-navitem > .gbh-link { margin: 0; }
 
-/* Gifts стал ссылкой, а не кнопкой. Тот же фикс, что ниже держит
-   .gbh-cta: shell.css несёт body.gb-demo a { color: inherit }
-   весом 0-1-1 и перебил бы .gbh-link (0-1-0) — возвращаем цвет
-   селектором той же силы, объявленным позже. Подчёркивание живой
+/* Gifts стал ссылкой, а не кнопкой. Тот же антидот, что держит
+   .gbh-cta (см. блок выше): shell.css несёт
+   body.gb-demo a { color: inherit } весом 0-1-2, поэтому голого
+   a.gbh-link (0-1-1) мало — рядом стоит 0-2-2. Подчёркивание живой
    нав-пункт не носит. */
-a.gbh-link { color: var(--zinc-900); text-decoration: none; }
+a.gbh-link,
+body.gb-demo a.gbh-link { color: var(--zinc-900); text-decoration: none; }
 
 /* Панель. top 74 — живая константа: планка 80, ссылка стоит на
    12 сверху, 12 + 74 = 86 = низ планки + 6. z 1001 тоже живой;
@@ -426,7 +499,10 @@ a.gbh-link { color: var(--zinc-900); text-decoration: none; }
 .gbh-menu__list { margin: 0; padding: 0; list-style: none; }
 .gbh-menu__list li + li { margin-top: 4px; }  /* LIVE 24.08: space-y-1 */
 
-.gbh-menu__item {
+/* Тот же антидот 0-2-2 (24.08): пункты панели — ссылки, и на
+   страницах с body.gb-demo они наследовали Zinc 900 по тёмному. */
+.gbh-menu__item,
+body.gb-demo a.gbh-menu__item {
   display: block;
   padding: 5px 0;     /* LIVE 24.08 */
   color: var(--white);
