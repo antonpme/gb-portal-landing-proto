@@ -577,6 +577,14 @@ html.is-open #hub {
       }
       clearError();
       try { sessionStorage.setItem(FLAG, '1'); } catch (e) {}
+      /* The guard on a locked page leaves a note saying where the
+         visitor was headed (studio.js): a shared direct link must
+         open itself after the code, not the hub. Read once, burn. */
+      var returnTo = null;
+      try {
+        returnTo = sessionStorage.getItem('gbppl-return');
+        sessionStorage.removeItem('gbppl-return');
+      } catch (e) {}
       gate.classList.add('is-leaving');
       /* animationend is the cue, but never the only key: if the animation
          is suppressed (reduced motion, a hidden tab), the timer opens the
@@ -585,6 +593,7 @@ html.is-open #hub {
       var cross = function () {
         if (crossed) return;
         crossed = true;
+        if (returnTo) { location.replace(returnTo); return; }
         /* No navigation: the hub is the other half of this page, so
            the crossing is a class. Nothing enters the history, which
            is what the old location.replace was buying anyway. */

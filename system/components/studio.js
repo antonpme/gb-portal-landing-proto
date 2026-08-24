@@ -43,8 +43,17 @@
   }
 
   /* replace, не assign: страница за замком не должна оставаться в
-     истории — иначе «назад» из гейта возвращает на неё. */
-  if (guard && !held()) { location.replace(home); return; }
+     истории — иначе «назад» из гейта возвращает на неё.
+     Перед выбросом страница оставляет гейту записку, КУДА шёл
+     человек: расшаренная прямая ссылка должна после ввода кода
+     открыть саму себя, а не хаб (Тон, 24.08: «я могу всегда шарить
+     ссылку на конкретную страницу, правильно?»). Гейт читает и
+     сжигает записку в openHub (index.html). */
+  if (guard && !held()) {
+    try { sessionStorage.setItem('gbppl-return', location.pathname + location.search + location.hash); } catch (e) {}
+    location.replace(home);
+    return;
+  }
 
   function wire() {
     var locks = document.querySelectorAll('[data-studio-lock]');
