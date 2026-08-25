@@ -6,7 +6,7 @@
    каркасные цели = harvest public-home 17.08, правила в home.css):
 
      <gb-home-hero>            видео-герой: титул + underline-CTA;
-                               видео заменено постером (DEVIATION)
+                               фоновое видео живого CDN, постер наш
      <gb-home-heading>         белая полоса с serif-заголовком
                                (Curated Gifts For:)
      <gb-brand-tabs>           PrimeVue-табы логотипов LogoFont +
@@ -14,8 +14,8 @@
                                <gb-brand-tab brand image alt>
      <gb-testimonials>         карусель цитат; дети
                                <gb-testimonial author>текст</...>
-     <gb-banner-video>         чёрная лента The Unboxing; видео
-                               заменено постером (DEVIATION)
+     <gb-banner-video>         чёрная лента The Unboxing; фоновое
+                               видео живого CDN, постер наш
      <gb-banner-conversation>  финальный CTA на градиенте
 
    Все шесть — СТАМПЫ (паттерн gb-listing-card): элемент замещает
@@ -25,7 +25,9 @@
    стилевые правила висят на хуках .gbhm* (home.css).
    Чего на живой главной НЕТ по факту (18.08): подзаголовка героя
    (absence-пробник hero-subtitle), хлебных крошек, продуктовых
-   карточек. Видео двух секций в demo = постеры (DEVIATION);
+   карточек. Видео двух секций (25.08) играет с живого CDN теми же
+   атрибутами, что на сайте; закрыт прежний DEVIATION «постер вместо
+   видео». Постеры остались НАШИ: живые CDN отдаёт 403.
    автопрокрутка карусели и таб-свайп не воспроизводятся (felt),
    кнопки/табы кликабельны. Шевроны карусели: DEVIATION, глиф
    Nucleo заменён инлайн-SVG в 1em-боксе (паттерн футера).
@@ -43,7 +45,41 @@
   function stamp(el, html) {
     var tpl = document.createElement('template');
     tpl.innerHTML = html;
-    el.replaceWith(tpl.content.firstChild);
+    var node = tpl.content.firstChild;
+    el.replaceWith(node);
+    return node;
+  }
+
+  /* Фоновое видео лайва: те же атрибуты, что на www.gildedbox.com
+     (loop muted autoplay playsinline, preload metadata, источник
+     <source type="video/mp4">, role/aria presentation-слоя).
+     poster — НАШ локальный кадр: живые постеры CDN отдаёт 403,
+     сами mp4 отдаются свободно (Access-Control-Allow-Origin: *).
+     Класс .background-video — тот же хук, что носил постер-img,
+     правила home.css не меняются. */
+  function backgroundVideo(a) {
+    return (
+      '<video class="' + esc(a.cls) + ' background-video" ' +
+        (a.priority ? 'fetchpriority="high" ' : '') +
+        'loop muted autoplay playsinline preload="metadata" ' +
+        'poster="' + esc(a.poster) + '" ' +
+        'aria-label="' + esc(a.label) + '" aria-hidden="true" ' +
+        'role="presentation" data-noaudio="true">' +
+        '<source src="' + esc(a.video) + '" type="video/mp4">' +
+      '</video>'
+    );
+  }
+
+  /* Атрибут muted из разобранной строки Chrome читает, но autoplay
+     после replaceWith просыпается не всегда. Ставим свойство руками
+     и просим play(); отказ (политика браузера, отсутствие сети)
+     молча оставляет постер — он и есть fallback. */
+  function startVideo(root) {
+    var v = root && root.querySelector('video.background-video');
+    if (!v) return;
+    v.muted = true;
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
   }
 
   /* Underline-CTA лайва (hero + conversation), один шаблон. */
@@ -51,14 +87,22 @@
     return '<a href="' + esc(href || '#') + '" class="gbhm-underline btn white btn-underline">' + esc(label) + '</a>';
   }
 
+  /* Источники живого сайта, снятые 25.08 (harvest/public-home-video/
+     live-video-probe.json). Оба 2560x1440, отдаются CloudFront'ом
+     публично: hero 4.56 MB, unboxing 13.46 MB. Переопределяются
+     атрибутом video="" на элементе. */
+  var HERO_VIDEO = 'https://cdn.gildedbox.com/uploader/2024/11/07/apple_airpods_3_gift_set_video_update_2_opt.1730987451.mp4';
+  var BANNER_VIDEO = 'https://cdn.gildedbox.com/uploader/2024/10/23/2024-10-23_17_06_54.1729692762.mp4';
+
   /* ---------------- 1. HERO ---------------- */
 
   var HERO_TEMPLATE = function (a) {
     return (
       '<section class="gbhm gbhm-hero js-heroSection heroSection heroVideo bg-black white-text defaultStyle">' +
-        /* DEVIATION: живое фоновое видео (autoplay loop mp4)
-           заменено его собственным постером. */
-        '<img class="gbhm-heroPoster background-video" src="' + esc(a.poster) + '" alt="" aria-hidden="true">' +
+        backgroundVideo({
+          cls: 'gbhm-heroVideo', priority: true,
+          poster: a.poster, video: a.video, label: a.title
+        }) +
         '<div class="gbhm-heroContent background-video-content">' +
           '<div class="container">' +
             '<div class="gbhm-heroRel relative h-full">' +
@@ -86,12 +130,13 @@
 
   class GbHomeHero extends HTMLElement {
     connectedCallback() {
-      stamp(this, HERO_TEMPLATE({
+      startVideo(stamp(this, HERO_TEMPLATE({
         title: this.getAttribute('heading') || 'Impressive Gifts, Your Brand',
         cta: this.getAttribute('cta') || 'Discover Gifts',
         href: this.getAttribute('href') || '#',
-        poster: this.getAttribute('poster') || 'assets/home/hero-poster.jpg'
-      }));
+        poster: this.getAttribute('poster') || 'assets/home/hero-poster.jpg',
+        video: this.getAttribute('video') || HERO_VIDEO
+      })));
     }
   }
 
@@ -320,11 +365,14 @@
     connectedCallback() {
       var h = this.getAttribute('heading') || '';
       var poster = this.getAttribute('poster') || '';
-      stamp(this,
+      startVideo(stamp(this,
         '<section class="gbhm gbhm-banner bannersVideo bg-black text-left defaultStyle">' +
           '<div class="gbhm-bannerVeil absolute"></div>' +
-          /* DEVIATION: живое фоновое видео заменено постером. */
-          '<img class="gbhm-bannerPoster background-video" src="' + esc(poster) + '" alt="" aria-hidden="true">' +
+          backgroundVideo({
+            cls: 'gbhm-bannerVideo', priority: false,
+            poster: poster, video: this.getAttribute('video') || BANNER_VIDEO,
+            label: h
+          }) +
           '<div class="gbhm-bannerContent bannersVideo__content">' +
             '<div class="container">' +
               '<div class="infoHolder">' +
@@ -332,7 +380,7 @@
               '</div>' +
             '</div>' +
           '</div>' +
-        '</section>');
+        '</section>'));
     }
   }
 
