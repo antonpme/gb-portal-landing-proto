@@ -3,39 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GildedBox · Book a meeting</title>
+<title>Book a meeting · GildedBox</title>
 <link rel="icon" href="data:,">
 <!-- ============================================================
-     gbppl-booking-1 — НАШ BOOK A MEETING ВМЕСТО ЧУЖОГО ВИДЖЕТА.
+     gbppl-booking-2 — КАРКАС ЖИВОЙ СТРАНИЦЫ, ФОРМА НАША.
 
-     Тон, 25.08: «Заменить виджет на наш Book a Meeting флоу и
-     дизайн, который мы сделали на странице портала (будет работать
-     через API, не iframe). Перед этим идёт форма: несколько полей,
-     потом резервация слота, потом подтверждение».
+     Тон, 25.08 (дословно): «Страница Book a Meeting сейчас
+     выглядит вот так. Пока мы не переделываем то, как она
+     выглядит, мы переделываем только форму внутри неё.
+     Инкорпорируй новую форму в эту страницу и сделай так, чтобы
+     не было вертикального скролла.»
 
-     ЧТО БЫЛО НА ЛАЙВЕ (harvest\public-book-a-meeting, 25.08,
-     https://www.gildedbox.com/page/contact-us-219): страница без
-     хедера и без футера, один логотип сверху; слева заголовок и три
-     обещания, справа серая карточка с лид-формой из пяти полей; за
-     кнопкой CONTINUE карточка отдавалась iframe'у
-     meetings-na2.hubspot.com — чужому календарю с чужим синим,
-     чужим шрифтом и встречей на 15 минут. Отсюда взяты ДАННЫЕ
-     (поля, обязательности, правила календаря, ротация
-     плейсхолдера) и ничего из вида (Тон-9).
+     РЕШЕНИЕ. Волна gbppl-booking-1 дала странице облик «страницы
+     сайта»: gb-site-header, свой h1 «Book a meeting», лид и
+     gb-site-footer. Это как раз то «как она выглядит», что Тон
+     переделывать запретил. Каркас снят обратно и заменён на
+     каркас живой https://www.gildedbox.com/page/contact-us-219
+     (прибор: studio\harvest\public-book-a-meeting, 25.08, семь
+     ширин): ни хедера, ни футера, один логотип 168x56 сверху,
+     ниже две колонки — слева серифный заголовок и три обещания,
+     справа карточка формы. Внутри карточки стоит наш организм
+     <gb-booking-flow>, а не живая лид-форма с чужим iframe за
+     кнопкой CONTINUE.
 
-     ЧТО ЗДЕСЬ. Страница — чистый потребитель системы (Тон-8): она
-     не рисует ничего своего. Хедер и футер — те же gb-site-header /
-     gb-site-footer, что на index и checkout; сам флоу —
-     <gb-booking-flow> из system\components\booking.js, и его три
-     шага собраны из уже существующего: поля и кнопки от организма
-     авторизации, календарь и рисующаяся синяя галка — от двери
-     Book a Meeting в попапе START (live\portal.html).
+     ЧТО ВЗЯТО С ЛАЙВА ДОСЛОВНО: заголовок «Tell us your gifting
+     needs, we do the rest:» и три обещания. Тон: тексты страницы
+     не меняем. Тексты внутри организма наши и живут по нашим
+     правилам (sentence case, без em dashes).
 
-     ХЕДЕР ВЕДЁТ СЮДА. Кнопка Book a Meeting была мёртвой
-     заглушкой с рождения прототипа; в этой же волне у
-     <gb-site-header> появился meeting-href, и все потребители его
-     прописали. Здесь он показывает на саму страницу — так кнопка в
-     шапке ведёт себя честно и на ней самой.
+     ПОЧЕМУ ЗДЕСЬ ЕСТЬ ЛОКАЛЬНЫЙ CSS. Каркас этой живой страницы
+     не совпадает ни с одним нашим организмом: у неё нет хедера,
+     нет футера, а логотип-полоса, серифный h1 36/48/52 и список
+     обещаний с чёрточкой существуют ровно в одном месте сайта.
+     Двойников системных компонентов не заводим (Тон-6), поэтому
+     каркас воспроизведён локально, класс за классом, и КАЖДОЕ
+     число, снятое прибором, помечено LIVE 25.08. Всё, чему в
+     системе есть токен или роль (Inter, Noto Serif, zinc-900,
+     лестница .gb-container, Blue 600 внутри организма), взято
+     токеном, а не литералом.
+
+     БЕЗ ВЕРТИКАЛЬНОГО СКРОЛЛА. Живая страница живёт на
+     min-h-[100dvh] и спокойно уезжает вниз: на 1280x720 её
+     содержимое — 1000px. Здесь страница стала колонкой во всю
+     высоту окна: логотип сверху, герой забирает остаток и
+     центрирует содержимое по вертикали, а вертикальные отступы
+     живой лестницы сжимаются на низких окнах (@media max-height
+     ниже). Сам организм на этой странице стоит в компактной
+     раскладке — layout="compact", модификатор описан в
+     system\components\booking.css; публичный дефолт организма не
+     тронут.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,49 +60,248 @@
 
 <link rel="stylesheet" href="../system/assets/tokens.css">
 <link rel="stylesheet" href="../system/components/shell.css">
-<link rel="stylesheet" href="../system/components/header.css">
 <!-- Поля и кнопки флоу — организм авторизации, поэтому его CSS и JS
      стоят рядом с booking.* как зависимость, а не как украшение. -->
 <link rel="stylesheet" href="../system/components/auth.css">
 <link rel="stylesheet" href="../system/components/booking.css">
-<link rel="stylesheet" href="../system/components/footer.css">
 <link rel="stylesheet" href="../system/components/studio-panel.css">
 
 <!-- Гейт студии, как на live\index.html: страница за замком, дорога
      домой на уровень выше. -->
 <script src="../system/components/studio.js" data-home="../index.html"></script>
+
+<style>
+/* ============================================================
+   КАРКАС ЖИВОЙ СТРАНИЦЫ contact-us-219            .gbmp-*
+   ------------------------------------------------------------
+   Источник всех чисел: studio\harvest\public-book-a-meeting
+   (25.08, ширины 360 / 640 / 1024 / 1280 / 1920 / 2258 / 2560).
+   Пометка LIVE 25.08 стоит там, где значение снято прибором и
+   токена под него в системе нет. Пороги живой страницы — те же,
+   что у системы (768 / 1024 / 1280), с одной оговоркой: живой
+   2xl лежит между 1921 и 2258, и здесь он взят нашим 2000
+   (tokens.css: «кастомный 2xl клиента, НЕ 1536»).
+   ============================================================ */
+
+/* Грунт. Живая страница белая (rgb 255 255 255), а не --live-body
+   #fcfdfd, на котором стоят остальные demo-страницы: shell.css
+   красит html/body своим грунтом, и переопределить его нужно с
+   той же силой (0-1-1 против 0-1-1, побеждает порядок — этот
+   <style> стоит после shell.css). LIVE 25.08. */
+html.gb-demo,
+body.gb-demo { background: var(--white); }
+
+/* div.contactUs: bg-white py-8 min-h-[100dvh].
+   Колонка во всю высоту окна — это наша добавка к живому
+   min-height ради «без вертикального скролла»: логотип сверху,
+   герой забирает остаток. */
+.gbmp-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 32px 0;            /* LIVE 25.08: py-8 на всех ширинах */
+  /* Отрицательные поля ряда колонок (-mx-10/-12/-16) выступают за
+     контейнер на 24px с каждой стороны — это ЖИВОЕ поведение
+     (прибор 25.08: scrollWidth 1304 при clientWidth 1280), лайв
+     живёт с горизонтальным вылетом. Нам он стоил бы полосы
+     прокрутки внизу, а полоса съедает 15px высоты окна и рождает
+     ровно тот вертикальный скролл, который запрещён. clip, а не
+     hidden: clip уживается с visible по второй оси и не делает
+     страницу контейнером прокрутки. */
+  overflow-x: clip;
+}
+
+/* Полоса логотипа: div.container > div.flex, pt-8 / xl:pt-10 /
+   2xl:pt-12. Сам контейнер — системный .gb-container. */
+.gbmp-logobar { padding-top: 32px; }              /* LIVE 25.08 */
+@media (min-width: 1280px) { .gbmp-logobar { padding-top: 40px; } }  /* LIVE 25.08 */
+@media (min-width: 2000px) { .gbmp-logobar { padding-top: 48px; } }  /* LIVE 25.08 */
+/* Логотип-ссылка на главную. Живая: a[href="/"] с инлайновым SVG
+   168x56; наш файл — тот же логотип той же интринсики. */
+.gbmp-logo { display: block; width: 168px; height: 56px; }  /* LIVE 25.08 */
+.gbmp-logo img { display: block; width: 168px; height: 56px; }
+
+/* section.defaultStyle: w-full pt-16 xl:pt-24.
+   Герой забирает остаток высоты, но содержимое держит ВЕРХНЮЮ
+   кромку живой раскладки, а не центр: на 1280x1000 и 1920x1000
+   заголовок встаёт в живые y=224, и вся лестница совпадает с
+   источником число в число. Центрировать было бы вольнее и
+   ровно настолько же «без скролла», но живая страница кладёт
+   содержимое сверху, а Тон переделывать вид запретил. */
+.gbmp-hero {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 64px;          /* LIVE 25.08: pt-16 */
+}
+@media (min-width: 1280px) { .gbmp-hero { padding-top: 96px; } }  /* LIVE 25.08: xl:pt-24 */
+.gbmp-hero > .gb-container { width: 100%; }
+
+/* Ряд двух колонок: -mx-10 xl:-mx-12 2xl:-mx-16, wrap, items-start;
+   колонки px-10 / xl:px-12 / 2xl:px-16, w-full lg:w-[50%]. */
+.gbmp-cols {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin: 0 -40px;            /* LIVE 25.08 */
+}
+@media (min-width: 1280px) { .gbmp-cols { margin: 0 -48px; } }  /* LIVE 25.08 */
+@media (min-width: 2000px) { .gbmp-cols { margin: 0 -64px; } }  /* LIVE 25.08 */
+.gbmp-col { width: 100%; padding: 0 40px; }       /* LIVE 25.08 */
+@media (min-width: 1024px) { .gbmp-col { width: 50%; } }         /* LIVE 25.08: lg:w-[50%] */
+@media (min-width: 1280px) { .gbmp-col { padding: 0 48px; } }    /* LIVE 25.08 */
+@media (min-width: 2000px) { .gbmp-col { padding: 0 64px; } }    /* LIVE 25.08 */
+/* pb-8 xl:pb-0 у левой, space-y-8 lg:space-y-0 у ряда (живое
+   space-y даёт правой колонке mt-8 ниже lg). */
+.gbmp-col--copy { padding-bottom: 32px; }         /* LIVE 25.08 */
+@media (min-width: 1280px) { .gbmp-col--copy { padding-bottom: 0; } }
+.gbmp-col--form { margin-top: 32px; }             /* LIVE 25.08 */
+@media (min-width: 1024px) { .gbmp-col--form { margin-top: 0; } }
+
+/* h1: Noto Serif 400, 36 / 48 / 52, leading 150%, tracking-wide
+   (0.9 / 1.2 / 1.3 px = 0.025em на каждой ступени).
+   Цвет живого текста rgb(25,25,25) приведён к --zinc-900 #18181b:
+   разница неразличима, а своей серой шкалы на live не заводим
+   (Тон-9, единственная шкала — Zinc). */
+.gbmp-h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 36px;            /* LIVE 25.08 */
+  font-weight: 400;
+  line-height: 1.5;           /* LIVE 25.08: 54/36 = 72/48 = 78/52 */
+  letter-spacing: 0.025em;    /* LIVE 25.08: tracking-wide */
+  color: var(--zinc-900);
+  overflow-wrap: break-word;
+}
+@media (min-width: 1280px) { .gbmp-h1 { font-size: 48px; } }  /* LIVE 25.08 */
+@media (min-width: 2000px) { .gbmp-h1 { font-size: 52px; } }  /* LIVE 25.08 */
+
+/* Блок обещаний: pt-12 / lg:pt-16 / xl:pt-20 / 2xl:pt-24,
+   Inter 300, 14 / md:16 / xl:20, leading 150%, tracking 0.2px. */
+.gbmp-promises {
+  padding-top: 48px;          /* LIVE 25.08 */
+  font-weight: 300;
+  font-size: 14px;            /* LIVE 25.08 */
+  line-height: 1.5;
+  letter-spacing: 0.2px;      /* LIVE 25.08 */
+  color: var(--zinc-900);
+}
+@media (min-width: 1024px) { .gbmp-promises { padding-top: 64px; font-size: 16px; } }  /* LIVE 25.08 */
+@media (min-width: 1280px) { .gbmp-promises { padding-top: 80px; font-size: 20px; } }  /* LIVE 25.08 */
+@media (min-width: 2000px) { .gbmp-promises { padding-top: 96px; } }                   /* LIVE 25.08 */
+.gbmp-list { margin: 0; padding: 0; list-style: none; }
+.gbmp-item { display: flex; align-items: center; }
+.gbmp-item + .gbmp-item { margin-top: 16px; }     /* LIVE 25.08: space-y-4 */
+/* Чёрточка перед обещанием. У лайва это глиф icon-minus из
+   иконошрифта Nucleo в квадрате 1em; иконошрифтов у нас нет и не
+   будет, поэтому та же чёрточка нарисована волоском в таком же
+   1em-боксе (Тон-9: входящее приводится к системе). */
+.gbmp-dash {
+  position: relative;
+  flex: 0 0 auto;
+  width: 1em;
+  height: 1em;                /* LIVE 25.08: 14/16/20 квадрат */
+}
+.gbmp-dash::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px solid currentColor;
+}
+/* space-x-4 / xl:space-x-6 / 2xl:space-x-8 живут на li как
+   margin-left текстового span. */
+.gbmp-text { margin-left: 16px; }                 /* LIVE 25.08 */
+@media (min-width: 1280px) { .gbmp-text { margin-left: 24px; } }  /* LIVE 25.08 */
+@media (min-width: 2000px) { .gbmp-text { margin-left: 32px; } }  /* LIVE 25.08 */
+
+/* ---------------- НИЗКОЕ ОКНО ----------------
+   Единственное место, где страница отступает от живой лестницы, и
+   отступает осознанно: требование Тона «чтобы не было
+   вертикального скролла» сильнее, чем 96px воздуха над героем.
+   Живые числа продолжают действовать на 1920x1080 и выше, где
+   всё и так помещается. Порог 900 включает 1440x900, порог 780 —
+   1280x720. */
+@media (max-height: 900px) {
+  .gbmp-hero { padding-top: 48px; }
+  .gbmp-promises { padding-top: 40px; }
+}
+@media (max-height: 780px) {
+  .gbmp-page { padding: 20px 0; }
+  .gbmp-logobar { padding-top: 12px; }
+  .gbmp-hero { padding-top: 20px; }
+  .gbmp-promises { padding-top: 28px; }
+}
+</style>
 </head>
 <body>
 
-  <gb-site-header
-    logo-src="../system/assets/gildedbox-logo.svg"
-    catalog-href="catalog/index.html"
-    portal-href="portal.html"
-    meeting-href="book-a-meeting.html"></gb-site-header>
+  <div class="gbmp-page">
 
-  <main class="gbb-page">
     <div class="gb-container">
-      <header class="gbb-pagehead">
-        <h1 class="gbb-h1">Book a meeting</h1>
-        <p class="gbb-lede">15 minutes with a gifting specialist. Tell us what you need, pick a time, and the invitation lands in your inbox.</p>
-      </header>
-
-      <!-- Режим гостя: публичная страница не знает, кто пришёл, и
-           начинает с формы. Режим своего (start="slot", два шага)
-           живёт в том же компоненте и ждёт портал; здесь он
-           включается ТОЛЬКО проверочной ссылкой ?known=1 — см.
-           скрипт перед подключением booking.js. -->
-      <gb-booking-flow site-href="index.html"></gb-booking-flow>
+      <div class="gbmp-logobar">
+        <a class="gbmp-logo" href="index.html" aria-label="GildedBox, back to the home page">
+          <img src="../system/assets/gildedbox-logo.svg" width="168" height="56" alt="GildedBox">
+        </a>
+      </div>
     </div>
-  </main>
 
-  <gb-site-footer></gb-site-footer>
+    <section class="gbmp-hero">
+      <div class="gb-container">
+        <div class="gbmp-cols">
+
+          <!-- Левая колонка. Заголовок и три обещания — ДОСЛОВНО с
+               живой страницы, включая двоеточие в конце заголовка
+               и амперсанд в третьем обещании (Тон: тексты
+               страницы не меняем). -->
+          <div class="gbmp-col gbmp-col--copy">
+            <h1 class="gbmp-h1">Tell us your gifting needs, we do the rest:</h1>
+            <div class="gbmp-promises">
+              <ul class="gbmp-list">
+                <li class="gbmp-item">
+                  <span class="gbmp-dash" aria-hidden="true"></span>
+                  <span class="gbmp-text">We design gifts to guarantee you always look your best</span>
+                </li>
+                <li class="gbmp-item">
+                  <span class="gbmp-dash" aria-hidden="true"></span>
+                  <span class="gbmp-text">We set up gifting campaigns for your clients, prospects &amp; VIPs</span>
+                </li>
+                <li class="gbmp-item">
+                  <span class="gbmp-dash" aria-hidden="true"></span>
+                  <span class="gbmp-text">We ship individually to each recipient or to one location</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Правая колонка. У живой страницы здесь серая карточка
+               bg-surface-100 с лид-формой из пяти полей и кнопкой
+               CONTINUE, за которой открывался чужой iframe
+               meetings-na2.hubspot.com. Здесь на том же месте, в
+               той же геометрии колонки, стоит наш организм: он
+               приносит свою карточку (.gbb-panel), поэтому второй
+               рамки вокруг него не рисуется.
+
+               Режим гостя: публичная страница не знает, кто пришёл,
+               и начинает с формы. Режим своего (start="slot", два
+               шага) живёт в том же компоненте и ждёт портал; здесь
+               он включается ТОЛЬКО проверочной ссылкой ?known=1 —
+               см. скрипт перед подключением booking.js. -->
+          <div class="gbmp-col gbmp-col--form">
+            <gb-booking-flow layout="compact" site-href="index.html"></gb-booking-flow>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
 
   <gb-studio-panel data-root="../"></gb-studio-panel>
 
   <script src="../system/components/shell.js"></script>
   <script src="../system/components/studio-panel.js"></script>
-  <script src="../system/components/header.js"></script>
   <script src="../system/components/auth.js"></script>
   <!-- ПРОВЕРОЧНЫЙ КРЮЧОК ?known=1, и ничего кроме.
        Режим своего принадлежит порталу, а портал этой волной не
@@ -111,7 +326,6 @@
   </script>
 
   <script src="../system/components/booking.js"></script>
-  <script src="../system/components/footer.js"></script>
 
 </body>
 </html>
