@@ -558,6 +558,9 @@ body.gb-demo a.gbb-quiet:hover {
    Что делает:
      хост      снимает свою колоночную ширину (640/720): в
                компактном режиме ширину задаёт колонка страницы.
+     карточка  организм отдаёт свою поверхность хозяину: фон,
+               радиус и поля держит карточка страницы, а тихие
+               ховеры переворачиваются в белое.
      шаг 1     поля становятся в две дорожки от 1024 (email/phone,
                имя/компания), textarea остаётся во всю ширину.
      шаг 2     календарь и слоты РЯДОМ от 1024; колонка слотов
@@ -590,12 +593,34 @@ gb-booking-flow[layout="compact"] .gbb-day {
   height: var(--gbb-day);
 }
 
+/* ---- Хозяйская поверхность ----
+   Компактный режим существует ровно для случая «организм стоит
+   внутри карточки, которую держит страница»: на
+   liveook-a-meeting.html это серая карточка живой
+   contact-us-219 (bg-surface-100 и мягкая тень, снято прибором
+   25.08). Второй рамки организм там не рисует — карточка в
+   карточке это россыпь вместо цельной формы (Рассел, «цельные
+   формы»). Поверхность, радиус и поля отдаются хозяину, шаги
+   и содержимое остаются на своих местах. */
+gb-booking-flow[layout="compact"] .gbb-panel {
+  background: transparent;
+  border-width: 0;
+  border-radius: 0;
+  padding: 0;
+}
+/* Тихие ховеры рассчитаны на белое: на серой карточке zinc-100
+   ховера дня и стрелки месяца не видно вовсе, а zinc-50 у чипа
+   слота темнее самого чипа. На хозяйской поверхности они
+   переворачиваются в белое. */
+gb-booking-flow[layout="compact"] .gbb-day:hover:not(:disabled):not(.sel),
+gb-booking-flow[layout="compact"] .gbb-cal-arrow:hover:not(:disabled) { background: var(--white); }
+gb-booking-flow[layout="compact"] .gbb-slot:hover:not(.sel) {
+  background: var(--white);
+  border-color: var(--zinc-400);
+}
+
 /* ---- Вертикальный ритм ---- */
 gb-booking-flow[layout="compact"] .gbb-steps { margin-bottom: 16px; }
-gb-booking-flow[layout="compact"] .gbb-panel { padding: 20px; }
-@media (min-width: 1024px) {
-  gb-booking-flow[layout="compact"] .gbb-panel { padding: 24px; }
-}
 gb-booking-flow[layout="compact"] .gbb-head { margin-bottom: 16px; }
 /* Подпись над слотами встаёт в один ряд с шапкой календаря, поэтому
    её верхний отступ (22px в колоночной раскладке) снимается, а
@@ -676,7 +701,6 @@ gb-booking-flow[layout="compact"] .gba-textarea { min-height: 64px; }
    помещалась: замер 1280x720 давал 746 при 720. */
 @media (max-height: 780px) {
   gb-booking-flow[layout="compact"] .gbb-steps { margin-bottom: 8px; }
-  gb-booking-flow[layout="compact"] .gbb-panel { padding: 16px 20px; }
   gb-booking-flow[layout="compact"] .gbb-head { margin-bottom: 8px; }
   gb-booking-flow[layout="compact"] .gbb-cal-head { margin-bottom: 12px; }
   gb-booking-flow[layout="compact"] .gbb-slot-label { margin-bottom: 12px; }

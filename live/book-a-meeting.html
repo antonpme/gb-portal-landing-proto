@@ -216,6 +216,23 @@ body.gb-demo { background: var(--white); }
 @media (min-width: 1280px) { .gbmp-text { margin-left: 24px; } }  /* LIVE 25.08 */
 @media (min-width: 2000px) { .gbmp-text { margin-left: 32px; } }  /* LIVE 25.08 */
 
+/* Карточка формы: div.bg-surface-100, единственная поверхность на
+   живой странице. Заливка — Zinc 100 (живое bg-surface-100 в
+   палитре PrimeVue и есть наш --zinc-100), тень и лестница полей
+   сняты прибором. Радиус живой 4px (rounded-md) приведён к
+   единственному радиусу системы --radius 5px: своей второй
+   ступени радиуса у нас нет и заводить её ради одного пикселя
+   незачем (Тон-9). Внутри стоит организм БЕЗ своей рамки:
+   layout="compact" отдаёт поверхность хозяину. */
+.gbmp-card {
+  background: var(--zinc-100);                 /* LIVE 25.08: bg-surface-100 */
+  border-radius: var(--radius);
+  box-shadow: 0 0 10px 5px rgb(0 0 0 / 5%);    /* LIVE 25.08 */
+  padding: 48px 32px;                          /* LIVE 25.08: py-12 px-8 */
+}
+@media (min-width: 1280px) { .gbmp-card { padding: 64px 48px; } }  /* LIVE 25.08 */
+@media (min-width: 2000px) { .gbmp-card { padding: 80px 64px; } }  /* LIVE 25.08 */
+
 /* ---------------- НИЗКОЕ ОКНО ----------------
    Единственное место, где страница отступает от живой лестницы, и
    отступает осознанно: требование Тона «чтобы не было
@@ -226,12 +243,14 @@ body.gb-demo { background: var(--white); }
 @media (max-height: 900px) {
   .gbmp-hero { padding-top: 48px; }
   .gbmp-promises { padding-top: 40px; }
+  .gbmp-card { padding-top: 32px; padding-bottom: 32px; }
 }
 @media (max-height: 780px) {
   .gbmp-page { padding: 20px 0; }
   .gbmp-logobar { padding-top: 12px; }
   .gbmp-hero { padding-top: 20px; }
   .gbmp-promises { padding-top: 28px; }
+  .gbmp-card { padding: 16px 20px; }
 }
 </style>
 </head>
@@ -275,13 +294,13 @@ body.gb-demo { background: var(--white); }
             </div>
           </div>
 
-          <!-- Правая колонка. У живой страницы здесь серая карточка
-               bg-surface-100 с лид-формой из пяти полей и кнопкой
-               CONTINUE, за которой открывался чужой iframe
-               meetings-na2.hubspot.com. Здесь на том же месте, в
-               той же геометрии колонки, стоит наш организм: он
-               приносит свою карточку (.gbb-panel), поэтому второй
-               рамки вокруг него не рисуется.
+          <!-- Правая колонка. Серая карточка — живая, она и есть
+               «как страница выглядит»; менялось только её
+               содержимое: у лайва внутри лид-форма из пяти полей
+               и кнопка CONTINUE, за которой открывался чужой
+               iframe meetings-na2.hubspot.com, здесь — наш
+               организм. Своей второй рамки он внутри не рисует
+               (layout="compact" отдаёт поверхность хозяину).
 
                Режим гостя: публичная страница не знает, кто пришёл,
                и начинает с формы. Режим своего (start="slot", два
@@ -289,7 +308,9 @@ body.gb-demo { background: var(--white); }
                он включается ТОЛЬКО проверочной ссылкой ?known=1 —
                см. скрипт перед подключением booking.js. -->
           <div class="gbmp-col gbmp-col--form">
-            <gb-booking-flow layout="compact" site-href="index.html"></gb-booking-flow>
+            <div class="gbmp-card">
+              <gb-booking-flow layout="compact" site-href="index.html"></gb-booking-flow>
+            </div>
           </div>
 
         </div>
