@@ -70,6 +70,17 @@
       live: 'live/checkout.html',
       variants: [
         {
+          /* Ton 25.08: «а где Checkout версии 1 в Sandbox?» — both
+             versions are still candidates in front of the team, so
+             V1 stands here as a room of its own, not only as Live. */
+          id: 'v1',
+          label: 'V1 · Quick fix',
+          desc: 'The production layout with the quick fixes from the DD-141 review: one address or different addresses, sentence-case steps, Bulk personalize and Edit selected.',
+          status: 'in-progress',
+          href: 'live/checkout.html?v=1',
+          ready: true
+        },
+        {
           id: 'v2',
           label: 'V2 · Pool',
           desc: 'Gifts unpersonalized by default, quantity as a pool on the gift, personalization behind a two-door fork.',
