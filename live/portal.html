@@ -36,12 +36,27 @@
                     the source of, and the PORTAL BAR variant block
                     written there for this page.
 
+       auth.css     the FIELD organism (.gba-inputwrap / .gba-input).
+                    Added 2026-08-25 for the concierge composer: Ton
+                    closed the open question the first wave left at the
+                    foot of this file — "всё системным должно быть,
+                    конечно; если там 44, сделай просто на 48". The
+                    reason it was skipped last time (bare .container /
+                    .hidden / .invalid) no longer holds: every selector
+                    in the file is namespaced .gba-* / .gbg-* or scoped
+                    to the custom elements gb-auth-flow / gb-guest-header
+                    (swept selector by selector before linking). The one
+                    thing the sheet DOES expect and this page cannot give
+                    it is the demo pages' zeroed-border ground; the
+                    antidote is one line in the composer block below, the
+                    same line index.html keeps for the gate.
+
      NOT linked, on purpose: footer.css (the live PUBLIC footer, a
      different organism from this page's portal footer, and its
      selectors are bare .footer / .row / .col / .hidden — they would
-     land on markup that never asked for them), auth.css and
-     catalog.css (same reason: bare .container / .hidden / .invalid,
-     and this page borrows no organism from either).
+     land on markup that never asked for them) and catalog.css (same
+     reason: bare .container / .hidden, and this page borrows no
+     organism from it).
 
      The <style> block below still comes AFTER these links, so every
      rule this page keeps of its own outranks the system at equal
@@ -50,6 +65,7 @@
 <link rel="stylesheet" href="../system/assets/tokens.css">
 <link rel="stylesheet" href="../system/components/shell.css">
 <link rel="stylesheet" href="../system/components/header.css">
+<link rel="stylesheet" href="../system/components/auth.css">
 <style>
   /* ============ TOKENS ============
      GONE, AND THAT IS THE POINT (2026-08-25). This block used to be a
@@ -2710,33 +2726,54 @@
   }
   .concierge-composer__suggestions button:active { transform: translateY(1px); }
   .concierge-composer__suggestions button:disabled { cursor: wait; opacity: 0.45; }
+  /* ---- The composer's control row IS the system's field -----------
+     gbppl-portal-system-2, 2026-08-25. The first wave left this as an
+     open question at the foot of the file: the composer's own input was
+     44px fixed, pad-x 4, a --gh ink and a 15/16px clamp, against the
+     auth organism's 48/56/64 ladder, pad-x 12/16, Zinc inks and 14/16/18
+     at weight 300. Ton answered it in one line — «всё системным должно
+     быть, конечно. Если там 44, сделай просто на 48» — so the input now
+     wears .gba-inputwrap / .gba-input (system/components/auth.css) and
+     the twenty-odd numbers that used to sit here are gone. What stays
+     local is LAYOUT only, which is the part the organism does not own:
+     the two-column row, the gap, and the square send button beside it.
+
+     The row's second track and the button follow the SAME ladder as the
+     field so the two controls stay square and level at every width; one
+     local name carries the step so the ladder is written once.
+     --icon-button-size (44) was the other candidate and it is the wrong
+     one here: this button is not header chrome standing alone, it is the
+     right-hand half of a form control, and a 44 button beside a 48 field
+     is exactly the drift the wave was sent to remove. */
   .concierge-composer__field {
+    --composer-ctl-h: var(--form-ctl-h);          /* 48, base */
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-columns: minmax(0, 1fr) var(--composer-ctl-h);
     align-items: center;
     gap: 12px;
   }
-  .concierge-composer__field input {
-    width: 100%;
-    min-width: 0;
-    height: 44px;
-    padding: 0 4px;
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--gh-muted);
-    border-radius: 0;
-    outline: 0;
-    color: var(--gh-ink);
-    font-family: var(--font-sans);
-    font-size: clamp(15px, 0.675vw, 16px);
-    transition: border-color var(--mo-micro) var(--mo-move);
-  }
-  .concierge-composer__field input::placeholder { color: var(--gh-muted); }
-  .concierge-composer__field input:focus { border-bottom-color: var(--gh-ink); }
-  .concierge-composer__field input:disabled { color: var(--gh-muted); cursor: wait; }
+  @media (min-width: 1280px) { .concierge-composer__field { --composer-ctl-h: var(--form-ctl-h-xl); } }   /* 56 */
+  @media (min-width: 2000px) { .concierge-composer__field { --composer-ctl-h: var(--form-ctl-h-2xl); } }  /* 64 */
+  /* auth.css expects the demo pages' zeroed-border ground (it only sets
+     border-color and the bottom width); this page has no such reset, so
+     the UA's full input frame must be zeroed here once. Same antidote,
+     same wording, as index.html keeps for the gate. */
+  .concierge-composer__field .gba-input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
+  /* The one state the organism has no opinion about: the field is dead
+     while the specialist is typing back. Zinc 400 is the organism's own
+     quiet ink (its placeholder), not a fourth grey. */
+  .concierge-composer__field .gba-input:disabled { color: var(--zinc-400); cursor: wait; }
+  /* DEVIATION, deliberate and measured. The organism hides the
+     placeholder on focus (live auth behaviour) because every field in
+     that form stands under a .gba-label — the name survives the focus.
+     Here there is no label: the placeholder IS the field's only name,
+     and the chat door focuses the input the instant it opens. Taking
+     the rule as written left the composer as a bare rule with an arrow
+     next to it. So this one line, and nothing else, stays behind. */
+  .concierge-composer__field .gba-input:focus::placeholder { opacity: 1; }
   .concierge-composer__field > button {
-    width: 44px;
-    height: 44px;
+    width: var(--composer-ctl-h);
+    height: var(--composer-ctl-h);
     display: grid;
     place-items: center;
     padding: 0;
@@ -4240,8 +4277,14 @@
               <button type="button">I have an existing order</button>
               <button type="button">I&rsquo;d like a custom proposal</button>
             </div>
+            <!-- The field wears the auth organism's OWN classes
+                 (system/components/auth.css), not a local copy of its
+                 numbers. .gba-inputwrap is the organism's positioning
+                 shell and it is what sits in the grid track. -->
             <div class="concierge-composer__field">
-              <input id="gbChatInput" type="text" placeholder="Message a gifting specialist&hellip;" aria-label="Message a gifting specialist">
+              <div class="gba-inputwrap">
+                <input class="gba-input" id="gbChatInput" type="text" placeholder="Message a gifting specialist&hellip;" aria-label="Message a gifting specialist">
+              </div>
               <button id="gbChatSend" type="submit" aria-label="Send message" disabled>
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
               </button>
