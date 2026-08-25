@@ -385,11 +385,29 @@
   }
   .demo-panel a.demo-door:hover { color: var(--white); border-color: var(--zinc-500); }
   /* Active state inverts to near-white: unmistakable on the dark ground */
-  .demo-panel button.variant-active {
+  .demo-panel button.variant-active,
+  .demo-panel a.demo-door.variant-active {
     color: var(--zinc-950);
     background: var(--zinc-50);
     border-color: var(--zinc-50);
   }
+  /* A sandbox the page cannot open yet (ready:false in
+     system\sandbox-registry.js): it is listed, because the point of
+     the list is to say what is in development, but it is not a link
+     and it does not light up. gbppl-registry-1. */
+  .demo-panel span.demo-door {
+    display: block;
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--zinc-500);
+    background: var(--zinc-900);
+    border: 1px solid var(--zinc-800);
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .demo-panel span.demo-door em { font-style: normal; color: var(--zinc-600); }
   /* The one sentence the old bar carried per scenario. It is a note, not
      a control: it wraps (the only thing in the panel that does), sits a
      step below the buttons and stays on the quiet Zinc 500 ink. */
@@ -1664,6 +1682,14 @@
       <span class="demo-label">Studio</span>
       <a class="demo-door" href="../index.html">Design Studio</a>
     </div>
+    <!-- Sandbox: the same registry the system panel reads
+         (system\sandbox-registry.js), spoken in this panel's own
+         service voice. Ton 25.08: every page says whether anything
+         is being built for it. Two panels of two languages side by
+         side would be a duplicate affordance, so the checkout gets
+         the section, not a second tab. Rows are painted by the
+         script at the foot of the page. -->
+    <div class="demo-group" id="demoSandbox"></div>
     <!-- Version is the outer axis: each of the three scenarios below runs in
          either flow, so the panel asks which flow first (gbppl-checkout-5). -->
     <div class="demo-group">
@@ -1688,6 +1714,38 @@
     </div>
   </div>
 </div>
+
+<script src="../system/sandbox-registry.js"></script>
+<script>
+/* ---- Sandbox rows of the PROTO panel (gbppl-registry-1). The data
+   is the studio's one registry; the markup is this panel's own
+   .demo-door shape, so nothing of the system's visual language
+   crosses into a console that is deliberately service-grade. ---- */
+(function () {
+  'use strict';
+  var box = document.getElementById('demoSandbox');
+  var reg = window.GB_SANDBOXES;
+  if (!box || !reg) return;
+  var slice = reg.forPage('checkout', '../');
+  if (!slice) return;
+
+  var html = '<span class="demo-label">Sandbox</span>';
+  html += door(slice.live.label, slice.live.href, slice.live.current, true, '');
+  slice.variants.forEach(function (v) {
+    html += door(v.label, v.href, v.current, v.ready, String(v.status).replace(/-/g, ' '));
+  });
+  if (!slice.variants.length) html += '<p class="demo-note">None yet</p>';
+  box.innerHTML = html;
+
+  function door(label, href, current, ready, note) {
+    if (!ready) {
+      return '<span class="demo-door">' + label + ' <em>· ' + note + '</em></span>';
+    }
+    return '<a class="demo-door' + (current ? ' variant-active' : '') +
+           '" href="' + href + '">' + label + '</a>';
+  }
+})();
+</script>
 
 <script>
 /* ---- PROTO panel collapse, the transfer of portal.html's own handler.
