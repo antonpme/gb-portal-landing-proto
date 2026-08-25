@@ -565,3 +565,248 @@
                                     (bg-[#F6F6F6] лайва), вне цинковой
                                     шкалы */
 }
+
+/* ============================================================
+   BUTTON ORGANISM (gbppl-button-1, 2026-08-25)
+   ------------------------------------------------------------
+   Ton's button spec of 25.08: three types (filled, outline,
+   ghost), two colours (primary blue, secondary black) plus the
+   white inversion for dark grounds, three size ladders, five
+   states, an optional icon on either side, and type and padding
+   that scale with BOTH the size of the button and the width of
+   the screen.
+
+   This block is the whole numeric map of that organism, in one
+   place. Every line does exactly one of three things:
+
+     ALIAS     points at a token that already exists, so the
+               organism spends the system's numbers rather than
+               copying them. The provenance of the aliased token
+               travels with it.
+     LIVE      a number measured on the product by instrument;
+               the source and the date are named.
+     DECLARED  a number nothing on the product has ever shown.
+               Named as such, so a later measurement can replace
+               it without an archaeology dig.
+
+   WHERE LIVE AND THE FORMULA DISAGREE, LIVE WINS. Ren's
+   proportion formula of 17.08 (pad-y = 0.24H, pad-x = 0.5H,
+   gap = pad-y) was written before the L and XL ladders had live
+   numbers. It still holds at the small end (36 gives pad-y 8.6,
+   which is the live 8) and it produced the whole interpolated L
+   ladder, but the live auth submit and the live product Continue
+   both keep pad-y at a flat 8 and run their gaps far wider than
+   pad-y. The formula stays as the tie-breaker for sizes live has
+   never shown; it no longer overrides a measurement.
+
+   SECOND LOCAL-AHEAD BLOCK. The DEMO-LOCAL block above carries
+   the rule "keep me last so the next sync is safe". That rule
+   generalises rather than breaks: local-ahead blocks live at the
+   TAIL of the file, in the order they were created, and the sync
+   moves them into studio\system\tokens.css together. Nothing
+   above this line is edited.
+
+   NOT CHANGED ON PURPOSE: --btn-l-pad-x-xl (28px, FORMULA). The
+   portal hero CTAs are wearing it right now and repainting a
+   consumer is phase 2 work. The organism reaches for its own
+   --gb-btn-l-pad-x-xl (32px, LIVE) instead, and the two sit side
+   by side until that migration happens.
+   ============================================================ */
+:root {
+
+  /* ---- The one colour the paint map needs and the scale did
+     not have. Blue 800 of the Tailwind ladder the system already
+     rides (600 and 700 are in the palette above); the pressed
+     step of the primary button. DECLARED: no live button has
+     ever been caught mid-press. */
+  --blue-800: #1e40af;
+
+  /* ============ SIZE S, the header ladder ============
+     Live off the public header (harvest public-home 2026-08-17,
+     re-read 24.08). The smallest of the three: chrome buttons,
+     bars, anything standing inside an 80px header. */
+  --gb-btn-s-h:            var(--btn-min-h);            /* ALIAS 36 */
+  --gb-btn-s-h-xl:         var(--btn-min-h-xl);         /* ALIAS 42, >=1280 */
+  --gb-btn-s-h-2xl:        var(--btn-min-h-2xl);        /* ALIAS 48, >=2000 */
+  --gb-btn-s-pad-y:        var(--btn-pad-y);            /* ALIAS 8 */
+  --gb-btn-s-pad-x:        var(--btn-pad-x);            /* ALIAS 16 */
+  --gb-btn-s-pad-x-xl:     var(--btn-pad-x-xl);         /* ALIAS 20, >=1280 */
+  --gb-btn-s-gap:          12px;                        /* LIVE header 24.08 */
+  --gb-btn-s-gap-xl:       20px;                        /* LIVE header 24.08, >=1280 */
+  --gb-btn-s-font-size:    var(--btn-font-size);        /* ALIAS 14 */
+  --gb-btn-s-font-size-xl: var(--btn-font-size-xl);     /* ALIAS 16, >=1280 */
+  --gb-btn-s-font-weight:  var(--btn-font-weight);      /* ALIAS 400 */
+  --gb-btn-s-line-height:  var(--btn-line-height);      /* ALIAS 1.1 */
+  --gb-btn-s-tracking:     var(--btn-letter-spacing);   /* ALIAS -0.35 */
+  --gb-btn-s-tracking-xl:  var(--btn-letter-spacing-xl);/* ALIAS -0.4, >=1280 */
+  --gb-btn-s-label:        var(--btn-label-font-size);      /* ALIAS 11 */
+  --gb-btn-s-label-2xl:    var(--btn-label-font-size-2xl);  /* ALIAS 12, >=2000 */
+  --gb-btn-s-icon:         16px;                        /* DECLARED: the live
+                                header carries no icon inside a button. 16 is
+                                the first step of the L icon ladder and the
+                                largest glyph a 36px box holds without
+                                crowding its 8px padding. Flat down the
+                                ladder: a glyph that grew to 20 would
+                                out-shout an 11px label. */
+
+  /* ============ SIZE L, the form ladder ============
+     48/56/64. Interpolated on 17.08 and made LIVE by the guest
+     sign-in submit (harvest public-login 17.08 plus the live
+     states of 18.08), which measures the whole family: height,
+     padding, gap, label ladder and icon ladder. The workhorse
+     size, and the organism's DEFAULT. */
+  --gb-btn-l-h:            var(--btn-l-min-h);          /* ALIAS 48 */
+  --gb-btn-l-h-xl:         var(--btn-l-min-h-xl);       /* ALIAS 56, >=1280 */
+  --gb-btn-l-h-2xl:        var(--btn-l-min-h-2xl);      /* ALIAS 64, >=2000 */
+  --gb-btn-l-pad-y:        var(--btn-l-pad-y);          /* ALIAS 8 */
+  --gb-btn-l-pad-x:        var(--btn-l-pad-x);          /* ALIAS 24 */
+  --gb-btn-l-pad-x-xl:     32px;                        /* LIVE auth 18.08,
+                                >=1280. The interpolated --btn-l-pad-x-xl
+                                says 28 and stays untouched (see the block
+                                head): live measured 32 and live wins. */
+  --gb-btn-l-gap:          20px;                        /* LIVE auth 18.08 */
+  --gb-btn-l-gap-xl:       24px;                        /* LIVE auth 18.08, >=1280 */
+  --gb-btn-l-font-size:    var(--btn-font-size);        /* ALIAS 14 */
+  --gb-btn-l-font-size-xl: var(--btn-font-size-xl);     /* ALIAS 16, >=1280 */
+  --gb-btn-l-font-weight:  600;                         /* LIVE auth 18.08: the
+                                form submit is heavier than the header's 400 */
+  --gb-btn-l-line-height:  normal;                      /* LIVE auth 18.08 */
+  --gb-btn-l-tracking:     var(--btn-letter-spacing);   /* ALIAS -0.35 */
+  --gb-btn-l-tracking-xl:  var(--btn-letter-spacing-xl);/* ALIAS -0.4, >=1280 */
+  --gb-btn-l-label:        14px;                        /* LIVE auth 18.08 */
+  --gb-btn-l-label-sm:     15px;                        /* LIVE auth 18.08, >=640 */
+  --gb-btn-l-label-2xl:    16px;                        /* LIVE auth 18.08, >=2000 */
+  --gb-btn-l-icon:         16px;                        /* LIVE auth 18.08 */
+  --gb-btn-l-icon-xl:      20px;                        /* LIVE auth 18.08, >=1280 */
+  --gb-btn-l-icon-2xl:     24px;                        /* LIVE auth 18.08, >=2000 */
+
+  /* ============ SIZE XL, the committing ladder ============
+     56/64/72, live off the product page Continue (harvest
+     public-product 17.08), the single primary action of its
+     template. Worn on the prototype by Place Order.
+
+     THE LABEL IS THE LIVE ONE, 14/15/16, not the 11/12 of the
+     header ladder. live\checkout.html currently puts the small
+     header label on this large button, which is the exact defect
+     Ton named on the hub shelf 24.08 (a button with, in his
+     words, an unsystematic font): XL geometry wearing S
+     typography. The organism carries the live pair; fixing the
+     consumer is phase 2. The live threshold for the 15px step is
+     768 and for the 16px step 2258; the second is normalised to
+     the system's own 2000, the off-Tailwind threshold every other
+     ladder here flips at. */
+  --gb-btn-xl-h:            var(--btn-xl-min-h);        /* ALIAS 56 */
+  --gb-btn-xl-h-xl:         var(--btn-xl-min-h-xl);     /* ALIAS 64, >=1280 */
+  --gb-btn-xl-h-2xl:        var(--btn-xl-min-h-2xl);    /* ALIAS 72, >=2000 */
+  --gb-btn-xl-pad-y:        var(--btn-xl-pad-y);        /* ALIAS 8 */
+  --gb-btn-xl-pad-x:        var(--btn-xl-pad-x);        /* ALIAS 24 */
+  --gb-btn-xl-pad-x-xl:     var(--btn-xl-pad-x-xl);     /* ALIAS 32, >=1280 */
+  --gb-btn-xl-gap:          24px;                       /* DECLARED: one L step
+                                up, the same +4 rhythm the icon ladder keeps */
+  --gb-btn-xl-gap-xl:       28px;                       /* DECLARED, >=1280 */
+  --gb-btn-xl-font-size:    20px;                       /* LIVE product 17.08 */
+  --gb-btn-xl-font-size-xl: 24px;                       /* LIVE product 17.08, >=1280 */
+  --gb-btn-xl-font-weight:  600;                        /* LIVE product 17.08 */
+  --gb-btn-xl-line-height:  normal;                     /* LIVE product 17.08 */
+  --gb-btn-xl-tracking:     -0.5px;                     /* LIVE product 17.08 */
+  --gb-btn-xl-tracking-xl:  -0.6px;                     /* LIVE product 17.08, >=1280 */
+  --gb-btn-xl-label:        14px;                       /* LIVE product 17.08 */
+  --gb-btn-xl-label-md:     15px;                       /* LIVE product 17.08, >=768 */
+  --gb-btn-xl-label-2xl:    16px;                       /* LIVE product 17.08 at
+                                2258, threshold normalised to 2000 */
+  --gb-btn-xl-icon:         20px;                       /* DECLARED, one L step up */
+  --gb-btn-xl-icon-xl:      24px;                       /* DECLARED, >=1280 */
+  --gb-btn-xl-icon-2xl:     28px;                       /* DECLARED, >=2000 */
+
+  /* ============ THE LABEL, shared by all three ============
+     Only the SIZE changes down the ladders; weight, tracking,
+     line-height and case are one value everywhere, and all three
+     live sources agree on them (header label span, auth submit
+     label, product Continue label: 600, +1px, normal, caps). */
+  --gb-btn-label-weight:    var(--btn-label-font-weight);   /* ALIAS 600 */
+  --gb-btn-label-tracking:  var(--btn-label-letter-spacing);/* ALIAS 1px */
+  --gb-btn-label-line-height: var(--btn-label-line-height); /* ALIAS normal */
+
+  /* ============ PAINT ============
+     PRIMARY is blue, the accent, and blue is STATE (Ton-5): the
+     one action the screen is asking for. SECONDARY is black,
+     furniture: the actions that are simply always there.
+     INVERSE is the white cut of secondary, for dark grounds.
+
+     Instrument run 25.08 (gildedbox.com home and catalog, 1440,
+     every a and button on the page): the live product carries NO
+     opaque dark fill and NO opaque white fill on any button. Its
+     only filled button is Blue 600. So every primary number below
+     is LIVE and every secondary and inverse FILL is DECLARED. The
+     outlines, however, are live on both grounds and were
+     re-measured in that same run. */
+
+  /* Primary, all live */
+  --gb-btn-fill-primary:          var(--blue-600);  /* LIVE 24-25.08 */
+  --gb-btn-fill-primary-hover:    var(--blue-700);  /* LIVE 24-25.08, DARKENS */
+  --gb-btn-fill-primary-active:   var(--blue-800);  /* DECLARED, next rung down */
+  --gb-btn-ink-on-primary:        var(--zinc-50);   /* LIVE 24.08 #fafafa, not pure white */
+  --gb-btn-ink-primary:           var(--blue-600);  /* outline and ghost ink, and the hairline */
+  --gb-btn-ink-primary-hover:     var(--blue-700);
+  --gb-btn-ink-primary-active:    var(--blue-800);
+
+  /* Secondary. The fills are DECLARED: Zinc 900 is the system's
+     black (Ton-5 furniture), and hover DARKENS one rung, which is
+     the direction the live blue button proved and Ton stated
+     outright on 24.08, catching a button of ours that lightened
+     instead. Zinc 950 and then pure black for the press are the
+     last rungs the scale has. */
+  --gb-btn-fill-secondary:        var(--zinc-900);  /* DECLARED */
+  --gb-btn-fill-secondary-hover:  var(--zinc-950);  /* DECLARED, darkens */
+  --gb-btn-fill-secondary-active: var(--black);     /* DECLARED */
+  --gb-btn-ink-on-secondary:      var(--zinc-50);   /* matches the primary ink */
+  --gb-btn-ink-secondary:         var(--zinc-900);  /* LIVE 25.08: the outline
+                                     keeps Zinc 900 ink AND hairline on hover */
+  --gb-btn-ink-secondary-hover:   var(--zinc-900);  /* LIVE 25.08, unchanged */
+  --gb-btn-ink-secondary-active:  var(--zinc-950);  /* DECLARED */
+
+  /* Inverse, for dark grounds. The outline pair is LIVE: it is
+     the transparent header over the hero video, re-measured 25.08
+     (Start Gifting reads white ink, white hairline, hover ground
+     rgba(255,255,255,.2)). The fill is DECLARED. */
+  --gb-btn-fill-inverse:          var(--white);     /* DECLARED */
+  --gb-btn-fill-inverse-hover:    var(--zinc-200);  /* DECLARED, darkens */
+  --gb-btn-fill-inverse-active:   var(--zinc-300);  /* DECLARED */
+  --gb-btn-ink-on-inverse:        var(--zinc-900);  /* DECLARED */
+  --gb-btn-ink-inverse:           var(--white);     /* LIVE 24-25.08 */
+  --gb-btn-ink-inverse-hover:     var(--white);     /* LIVE 24-25.08 */
+  --gb-btn-ink-inverse-active:    var(--white);     /* LIVE 24-25.08 */
+
+  /* The wash an outline or a ghost lays down under itself. Both
+     hovers are live and both were re-measured on 25.08 on the
+     same button standing on two different grounds. The press
+     washes are those colours carried further; DECLARED. */
+  --gb-btn-wash-accent-hover:     var(--blue-50);            /* DECLARED */
+  --gb-btn-wash-accent-active:    var(--blue-200);           /* DECLARED */
+  --gb-btn-wash-ink-hover:        rgba(212, 212, 216, 0.2);  /* LIVE 24-25.08, Zinc 300 at 20% */
+  --gb-btn-wash-ink-active:       rgba(212, 212, 216, 0.35); /* DECLARED */
+  --gb-btn-wash-inverse-hover:    rgba(255, 255, 255, 0.2);  /* LIVE 24-25.08 */
+  --gb-btn-wash-inverse-active:   rgba(255, 255, 255, 0.35); /* DECLARED */
+
+  /* ============ FORM AND BEHAVIOUR ============ */
+  --gb-btn-radius:           var(--radius);     /* ALIAS 5, the one brand radius */
+  --gb-btn-border-width:     1px;               /* LIVE 24.08, the outline hairline */
+  --gb-btn-disabled-opacity: 0.6;               /* LIVE auth 18.08 (.gba-btn:disabled) */
+  --gb-btn-duration:         200ms;             /* LIVE 24-25.08 on colour, background
+                                and border. Not the 160ms of --mo-micro: the live
+                                button is slower than our hover clock. */
+  --gb-btn-easing:           var(--mo-move);    /* ALIAS cubic-bezier(.4,0,.2,1),
+                                which is the curve the live button uses */
+
+  /* The focus ring. DECLARED, and put to Ton as a decision: the
+     system has no ring of its own yet, and the only precedent in
+     the house is the Colors page swatch row (2px Blue 600). Blue,
+     because focus is a STATE and state speaks in the accent
+     (Ton-5). Offset 2px so the ring never touches the 5px corner
+     and stays readable around a filled blue button; on dark
+     grounds it turns white, the same swap the inverse ink makes. */
+  --gb-btn-focus-ring:          var(--blue-600);
+  --gb-btn-focus-ring-inverse:  var(--white);
+  --gb-btn-focus-ring-width:    2px;
+  --gb-btn-focus-ring-offset:   2px;
+}

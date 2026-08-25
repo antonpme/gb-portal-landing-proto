@@ -1,0 +1,446 @@
+/* ============================================================
+   gbppl-button-1 — THE BUTTON ORGANISM
+   ------------------------------------------------------------
+   Ton's spec, 25.08, in one class: three TYPES (filled, outline,
+   ghost), two COLOURS (primary blue, secondary black) plus the
+   white INVERSE for dark grounds, three SIZE ladders (S, L, XL),
+   five STATES (rest, hover, focus, active, disabled) and an icon
+   that can stand on either side of the label, or on both, or on
+   neither.
+
+       <button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary">
+         <span class="gb-btn__icon">...svg...</span>
+         <span class="gb-btn__label">Book a meeting</span>
+       </button>
+
+   Everything is a default except the base class:
+     type   filled     (--outline, --ghost)
+     colour primary    (--secondary, --inverse)
+     size   L          (--s, --xl)
+   so a bare <button class="gb-btn"> is a filled primary L, which
+   is the button the product asks for most often. --filled,
+   --primary and --l exist as explicit spellings for people who
+   would rather write the whole sentence.
+
+   NOT ONE LITERAL LIVES HERE. Every number, colour and curve is
+   spent out of the BUTTON ORGANISM block of assets\tokens.css,
+   which carries the provenance of each one (ALIAS / LIVE /
+   DECLARED). The only bare numbers below are the three media
+   thresholds — 640, 768, 1280 and 2000 — because CSS cannot read
+   a custom property inside a media query, a limitation tokens.css
+   already documents at its breakpoint block.
+
+   HOW THE THREE LADDERS FIT IN ONE CLASS. The base rule defines
+   ALL THREE ladders as private variables on the element, and the
+   size modifier only chooses which ladder the geometry slots
+   point at. So every media query in this file touches exactly one
+   selector (.gb-btn) and moves all three ladders one step at
+   once, and no size modifier can ever lose a specificity race to
+   the default. The private slots are prefixed --gbb-; nothing
+   outside this file should set them.
+
+   PHASE 1: THIS FILE HAS NO CONSUMERS YET. .gbh-cta, .gba-btn,
+   .btn-xl and .gsp-btn stay exactly as they are until Ton has
+   seen the organism (the showcase is oro\components.html).
+   Migrating them is phase 2, and the map of which class becomes
+   which cell lives on that page.
+   ============================================================ */
+
+/* ============================================================
+   THE ORGANISM
+   ============================================================ */
+.gb-btn {
+
+  /* ---- the three ladders, all present, all at their base step ---- */
+  --gbb-s-h:            var(--gb-btn-s-h);
+  --gbb-s-pad-y:        var(--gb-btn-s-pad-y);
+  --gbb-s-pad-x:        var(--gb-btn-s-pad-x);
+  --gbb-s-gap:          var(--gb-btn-s-gap);
+  --gbb-s-font-size:    var(--gb-btn-s-font-size);
+  --gbb-s-font-weight:  var(--gb-btn-s-font-weight);
+  --gbb-s-line-height:  var(--gb-btn-s-line-height);
+  --gbb-s-tracking:     var(--gb-btn-s-tracking);
+  --gbb-s-label:        var(--gb-btn-s-label);
+  --gbb-s-icon:         var(--gb-btn-s-icon);
+
+  --gbb-l-h:            var(--gb-btn-l-h);
+  --gbb-l-pad-y:        var(--gb-btn-l-pad-y);
+  --gbb-l-pad-x:        var(--gb-btn-l-pad-x);
+  --gbb-l-gap:          var(--gb-btn-l-gap);
+  --gbb-l-font-size:    var(--gb-btn-l-font-size);
+  --gbb-l-font-weight:  var(--gb-btn-l-font-weight);
+  --gbb-l-line-height:  var(--gb-btn-l-line-height);
+  --gbb-l-tracking:     var(--gb-btn-l-tracking);
+  --gbb-l-label:        var(--gb-btn-l-label);
+  --gbb-l-icon:         var(--gb-btn-l-icon);
+
+  --gbb-xl-h:           var(--gb-btn-xl-h);
+  --gbb-xl-pad-y:       var(--gb-btn-xl-pad-y);
+  --gbb-xl-pad-x:       var(--gb-btn-xl-pad-x);
+  --gbb-xl-gap:         var(--gb-btn-xl-gap);
+  --gbb-xl-font-size:   var(--gb-btn-xl-font-size);
+  --gbb-xl-font-weight: var(--gb-btn-xl-font-weight);
+  --gbb-xl-line-height: var(--gb-btn-xl-line-height);
+  --gbb-xl-tracking:    var(--gb-btn-xl-tracking);
+  --gbb-xl-label:       var(--gb-btn-xl-label);
+  --gbb-xl-icon:        var(--gb-btn-xl-icon);
+
+  /* ---- geometry slots, pointed at L: the default size ---- */
+  --gbb-h:           var(--gbb-l-h);
+  --gbb-pad-y:       var(--gbb-l-pad-y);
+  --gbb-pad-x:       var(--gbb-l-pad-x);
+  --gbb-gap:         var(--gbb-l-gap);
+  --gbb-font-size:   var(--gbb-l-font-size);
+  --gbb-font-weight: var(--gbb-l-font-weight);
+  --gbb-line-height: var(--gbb-l-line-height);
+  --gbb-tracking:    var(--gbb-l-tracking);
+  --gbb-label:       var(--gbb-l-label);
+  --gbb-icon:        var(--gbb-l-icon);
+
+  /* ---- palette slots, pointed at primary: the default colour ---- */
+  --gbb-fill:          var(--gb-btn-fill-primary);
+  --gbb-fill-hover:    var(--gb-btn-fill-primary-hover);
+  --gbb-fill-active:   var(--gb-btn-fill-primary-active);
+  --gbb-on-fill:       var(--gb-btn-ink-on-primary);
+  --gbb-accent:        var(--gb-btn-ink-primary);
+  --gbb-accent-hover:  var(--gb-btn-ink-primary-hover);
+  --gbb-accent-active: var(--gb-btn-ink-primary-active);
+  --gbb-wash-hover:    var(--gb-btn-wash-accent-hover);
+  --gbb-wash-active:   var(--gb-btn-wash-accent-active);
+  --gbb-ring:          var(--gb-btn-focus-ring);
+
+  /* ---- paint slots, pointed at filled: the default type ----
+     A filled button has border-width 0 and an outline 1px, which
+     is what live does (the live filled CTA declares no border at
+     all). With border-box that 1px eats into the padding box, so
+     a filled and an outlined button with the same label differ by
+     2px of width — the live pair differs by the same 2px, and the
+     organism reproduces it rather than inventing a correction. */
+  --gbb-bg:           var(--gbb-fill);
+  --gbb-bg-hover:     var(--gbb-fill-hover);
+  --gbb-bg-active:    var(--gbb-fill-active);
+  --gbb-ink:          var(--gbb-on-fill);
+  --gbb-ink-hover:    var(--gbb-on-fill);
+  --gbb-ink-active:   var(--gbb-on-fill);
+  --gbb-line-w:       0;
+  --gbb-line-style:   none;
+  --gbb-line:         transparent;
+  --gbb-line-hover:   transparent;
+  --gbb-line-active:  transparent;
+
+  /* ---- the box ---- */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gbb-gap);
+  min-height: var(--gbb-h);
+  padding: var(--gbb-pad-y) var(--gbb-pad-x);
+  border: var(--gbb-line-w) var(--gbb-line-style) var(--gbb-line);
+  border-radius: var(--gb-btn-radius);
+  background: var(--gbb-bg);
+  color: var(--gbb-ink);
+
+  /* ---- the voice ----
+     The outer element carries its ladder's own type, and the
+     label span carries the label type on top of it. Both are
+     live; keeping the outer honest means a button with no label
+     span still speaks in the right size. */
+  font-family: var(--font-sans);
+  font-size: var(--gbb-font-size);
+  font-weight: var(--gbb-font-weight);
+  line-height: var(--gbb-line-height);
+  letter-spacing: var(--gbb-tracking);
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;   /* live buttons never wrap */
+
+  cursor: pointer;
+  user-select: none;
+  /* LIVE: 200ms cubic-bezier(.4,0,.2,1) over colour, background
+     and border. Opacity rides along for the disabled step. */
+  transition:
+    color var(--gb-btn-duration) var(--gb-btn-easing),
+    background-color var(--gb-btn-duration) var(--gb-btn-easing),
+    border-color var(--gb-btn-duration) var(--gb-btn-easing),
+    opacity var(--gb-btn-duration) var(--gb-btn-easing);
+}
+
+/* The full-strength antidote the header and auth buttons already
+   carry: shell.css declares body.gb-demo a { color: inherit } at
+   0-1-2, which outweighs a bare .gb-btn and would paint a link
+   wearing the organism in the page's ink. Colour is read out of
+   the slot, so this pair inherits every state change for free —
+   the state rules below rewrite the SLOT, never the property. */
+a.gb-btn,
+body.gb-demo a.gb-btn { color: var(--gbb-ink); }
+
+/* ============================================================
+   SLOTS: LABEL AND ICON
+   ============================================================ */
+
+/* The label is the live span[data-pc-section="label"] of the
+   product, given a name of our own. Size steps with the ladder;
+   weight, tracking, line-height and case are one value at every
+   size, because all three live sources agree on them. */
+.gb-btn__label {
+  font-size: var(--gbb-label);
+  font-weight: var(--gb-btn-label-weight);
+  letter-spacing: var(--gb-btn-label-tracking);
+  line-height: var(--gb-btn-label-line-height);
+  text-transform: uppercase;
+}
+
+/* The icon is a square box in the current ink. Before the label
+   or after it is DOM order and nothing else: no --icon-left /
+   --icon-right modifier exists, because the flex row already
+   answers that question and a modifier would be a second way to
+   say the same thing. Two icons is two spans. */
+.gb-btn__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--gbb-icon);
+  height: var(--gbb-icon);
+  color: currentColor;
+}
+.gb-btn__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   SIZE: which ladder the geometry slots point at
+   ============================================================ */
+.gb-btn--s {
+  --gbb-h:           var(--gbb-s-h);
+  --gbb-pad-y:       var(--gbb-s-pad-y);
+  --gbb-pad-x:       var(--gbb-s-pad-x);
+  --gbb-gap:         var(--gbb-s-gap);
+  --gbb-font-size:   var(--gbb-s-font-size);
+  --gbb-font-weight: var(--gbb-s-font-weight);
+  --gbb-line-height: var(--gbb-s-line-height);
+  --gbb-tracking:    var(--gbb-s-tracking);
+  --gbb-label:       var(--gbb-s-label);
+  --gbb-icon:        var(--gbb-s-icon);
+}
+.gb-btn--l {
+  --gbb-h:           var(--gbb-l-h);
+  --gbb-pad-y:       var(--gbb-l-pad-y);
+  --gbb-pad-x:       var(--gbb-l-pad-x);
+  --gbb-gap:         var(--gbb-l-gap);
+  --gbb-font-size:   var(--gbb-l-font-size);
+  --gbb-font-weight: var(--gbb-l-font-weight);
+  --gbb-line-height: var(--gbb-l-line-height);
+  --gbb-tracking:    var(--gbb-l-tracking);
+  --gbb-label:       var(--gbb-l-label);
+  --gbb-icon:        var(--gbb-l-icon);
+}
+.gb-btn--xl {
+  --gbb-h:           var(--gbb-xl-h);
+  --gbb-pad-y:       var(--gbb-xl-pad-y);
+  --gbb-pad-x:       var(--gbb-xl-pad-x);
+  --gbb-gap:         var(--gbb-xl-gap);
+  --gbb-font-size:   var(--gbb-xl-font-size);
+  --gbb-font-weight: var(--gbb-xl-font-weight);
+  --gbb-line-height: var(--gbb-xl-line-height);
+  --gbb-tracking:    var(--gbb-xl-tracking);
+  --gbb-label:       var(--gbb-xl-label);
+  --gbb-icon:        var(--gbb-xl-icon);
+}
+
+/* ============================================================
+   THE LADDERS CLIMB
+   ------------------------------------------------------------
+   One rule per threshold, all three ladders moved together. 640
+   and 768 are label-only steps that live measured on the form
+   submit and the product CTA respectively; 1280 is the wide step
+   of every ladder; 2000 is the system's off-Tailwind top step
+   (live sweep 17.08: 1999 = 42, 2000 = 48).
+   ============================================================ */
+@media (min-width: 640px) {
+  .gb-btn { --gbb-l-label: var(--gb-btn-l-label-sm); }
+}
+@media (min-width: 768px) {
+  .gb-btn { --gbb-xl-label: var(--gb-btn-xl-label-md); }
+}
+@media (min-width: 1280px) {
+  .gb-btn {
+    --gbb-s-h:          var(--gb-btn-s-h-xl);
+    --gbb-s-pad-x:      var(--gb-btn-s-pad-x-xl);
+    --gbb-s-gap:        var(--gb-btn-s-gap-xl);
+    --gbb-s-font-size:  var(--gb-btn-s-font-size-xl);
+    --gbb-s-tracking:   var(--gb-btn-s-tracking-xl);
+
+    --gbb-l-h:          var(--gb-btn-l-h-xl);
+    --gbb-l-pad-x:      var(--gb-btn-l-pad-x-xl);
+    --gbb-l-gap:        var(--gb-btn-l-gap-xl);
+    --gbb-l-font-size:  var(--gb-btn-l-font-size-xl);
+    --gbb-l-tracking:   var(--gb-btn-l-tracking-xl);
+    --gbb-l-icon:       var(--gb-btn-l-icon-xl);
+
+    --gbb-xl-h:         var(--gb-btn-xl-h-xl);
+    --gbb-xl-pad-x:     var(--gb-btn-xl-pad-x-xl);
+    --gbb-xl-gap:       var(--gb-btn-xl-gap-xl);
+    --gbb-xl-font-size: var(--gb-btn-xl-font-size-xl);
+    --gbb-xl-tracking:  var(--gb-btn-xl-tracking-xl);
+    --gbb-xl-icon:      var(--gb-btn-xl-icon-xl);
+  }
+}
+@media (min-width: 2000px) {
+  .gb-btn {
+    --gbb-s-h:      var(--gb-btn-s-h-2xl);
+    --gbb-s-label:  var(--gb-btn-s-label-2xl);
+
+    --gbb-l-h:      var(--gb-btn-l-h-2xl);
+    --gbb-l-label:  var(--gb-btn-l-label-2xl);
+    --gbb-l-icon:   var(--gb-btn-l-icon-2xl);
+
+    --gbb-xl-h:     var(--gb-btn-xl-h-2xl);
+    --gbb-xl-label: var(--gb-btn-xl-label-2xl);
+    --gbb-xl-icon:  var(--gb-btn-xl-icon-2xl);
+  }
+}
+
+/* ============================================================
+   COLOUR: which palette the paint slots point at
+   ------------------------------------------------------------
+   Ton-5 in two words: blue is STATE, black is FURNITURE. Primary
+   is the action the screen is asking for; secondary is the action
+   that is simply always there; inverse is secondary standing on a
+   dark ground, which is the only place a white button belongs.
+   ============================================================ */
+.gb-btn--primary {
+  --gbb-fill:          var(--gb-btn-fill-primary);
+  --gbb-fill-hover:    var(--gb-btn-fill-primary-hover);
+  --gbb-fill-active:   var(--gb-btn-fill-primary-active);
+  --gbb-on-fill:       var(--gb-btn-ink-on-primary);
+  --gbb-accent:        var(--gb-btn-ink-primary);
+  --gbb-accent-hover:  var(--gb-btn-ink-primary-hover);
+  --gbb-accent-active: var(--gb-btn-ink-primary-active);
+  --gbb-wash-hover:    var(--gb-btn-wash-accent-hover);
+  --gbb-wash-active:   var(--gb-btn-wash-accent-active);
+  --gbb-ring:          var(--gb-btn-focus-ring);
+}
+.gb-btn--secondary {
+  --gbb-fill:          var(--gb-btn-fill-secondary);
+  --gbb-fill-hover:    var(--gb-btn-fill-secondary-hover);
+  --gbb-fill-active:   var(--gb-btn-fill-secondary-active);
+  --gbb-on-fill:       var(--gb-btn-ink-on-secondary);
+  --gbb-accent:        var(--gb-btn-ink-secondary);
+  --gbb-accent-hover:  var(--gb-btn-ink-secondary-hover);
+  --gbb-accent-active: var(--gb-btn-ink-secondary-active);
+  --gbb-wash-hover:    var(--gb-btn-wash-ink-hover);
+  --gbb-wash-active:   var(--gb-btn-wash-ink-active);
+  --gbb-ring:          var(--gb-btn-focus-ring);
+}
+.gb-btn--inverse {
+  --gbb-fill:          var(--gb-btn-fill-inverse);
+  --gbb-fill-hover:    var(--gb-btn-fill-inverse-hover);
+  --gbb-fill-active:   var(--gb-btn-fill-inverse-active);
+  --gbb-on-fill:       var(--gb-btn-ink-on-inverse);
+  --gbb-accent:        var(--gb-btn-ink-inverse);
+  --gbb-accent-hover:  var(--gb-btn-ink-inverse-hover);
+  --gbb-accent-active: var(--gb-btn-ink-inverse-active);
+  --gbb-wash-hover:    var(--gb-btn-wash-inverse-hover);
+  --gbb-wash-active:   var(--gb-btn-wash-inverse-active);
+  --gbb-ring:          var(--gb-btn-focus-ring-inverse);
+}
+
+/* ============================================================
+   TYPE: how the paint slots read the palette
+   ------------------------------------------------------------
+   Filled spends the fill; outline and ghost spend the accent and
+   lay a wash under themselves on hover. Ghost is outline minus
+   the hairline and nothing else — same ink, same wash, no second
+   value invented for it.
+   ============================================================ */
+.gb-btn--filled {
+  --gbb-bg:          var(--gbb-fill);
+  --gbb-bg-hover:    var(--gbb-fill-hover);
+  --gbb-bg-active:   var(--gbb-fill-active);
+  --gbb-ink:         var(--gbb-on-fill);
+  --gbb-ink-hover:   var(--gbb-on-fill);
+  --gbb-ink-active:  var(--gbb-on-fill);
+  --gbb-line-w:      0;
+  --gbb-line-style:  none;
+  --gbb-line:        transparent;
+  --gbb-line-hover:  transparent;
+  --gbb-line-active: transparent;
+}
+.gb-btn--outline {
+  --gbb-bg:          transparent;
+  --gbb-bg-hover:    var(--gbb-wash-hover);
+  --gbb-bg-active:   var(--gbb-wash-active);
+  --gbb-ink:         var(--gbb-accent);
+  --gbb-ink-hover:   var(--gbb-accent-hover);
+  --gbb-ink-active:  var(--gbb-accent-active);
+  --gbb-line-w:      var(--gb-btn-border-width);
+  --gbb-line-style:  solid;
+  --gbb-line:        var(--gbb-accent);
+  --gbb-line-hover:  var(--gbb-accent-hover);
+  --gbb-line-active: var(--gbb-accent-active);
+}
+.gb-btn--ghost {
+  --gbb-bg:          transparent;
+  --gbb-bg-hover:    var(--gbb-wash-hover);
+  --gbb-bg-active:   var(--gbb-wash-active);
+  --gbb-ink:         var(--gbb-accent);
+  --gbb-ink-hover:   var(--gbb-accent-hover);
+  --gbb-ink-active:  var(--gbb-accent-active);
+  --gbb-line-w:      0;
+  --gbb-line-style:  none;
+  --gbb-line:        transparent;
+  --gbb-line-hover:  transparent;
+  --gbb-line-active: transparent;
+}
+
+/* ============================================================
+   STATES
+   ------------------------------------------------------------
+   Every state rewrites SLOTS, never properties. That is what
+   lets one rule serve nine type-and-colour combinations, and it
+   is also what keeps the a.gb-btn antidote above correct: the
+   winning colour declaration reads the slot, so when hover moves
+   the slot the link moves with it.
+
+   .is-hover / .is-focus / .is-active are DEMO-ONLY. They exist so
+   the showcase can stand all five states side by side on one
+   screen; no product page may wear them.
+   ============================================================ */
+.gb-btn:hover,
+.gb-btn.is-hover {
+  --gbb-bg:   var(--gbb-bg-hover);
+  --gbb-ink:  var(--gbb-ink-hover);
+  --gbb-line: var(--gbb-line-hover);
+}
+.gb-btn:active,
+.gb-btn.is-active {
+  --gbb-bg:   var(--gbb-bg-active);
+  --gbb-ink:  var(--gbb-ink-active);
+  --gbb-line: var(--gbb-line-active);
+}
+
+/* Keyboard focus only. A ring around every mouse click is noise;
+   a ring for the person who arrived by Tab is the only way they
+   can see where they are. */
+.gb-btn:focus-visible,
+.gb-btn.is-focus {
+  outline: var(--gb-btn-focus-ring-width) solid var(--gbb-ring);
+  outline-offset: var(--gb-btn-focus-ring-offset);
+}
+
+/* Disabled. One value for all nine combinations, live off the
+   auth submit: the button fades and stops answering. It keeps its
+   colour rather than turning grey, so the person can still see
+   WHICH action is waiting on them. pointer-events also disarms an
+   <a aria-disabled>, which has no disabled attribute to honour. */
+.gb-btn:disabled,
+.gb-btn[aria-disabled="true"],
+.gb-btn.is-disabled {
+  opacity: var(--gb-btn-disabled-opacity);
+  pointer-events: none;
+  cursor: default;
+}
