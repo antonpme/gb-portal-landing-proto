@@ -6,7 +6,7 @@
 <title>Sandboxes · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
-     gbppl-sandboxes-1 — THE SANDBOXES PAGE
+     gbppl-sandboxes-2 — THE SANDBOXES PAGE
      ------------------------------------------------------------
      The second room of the studio (hub-9, Ton 24.08: the nav must
      TAKE you to these pages, not scroll to these sections).
@@ -15,6 +15,19 @@
      into live\ with a query on them rather than files of their own;
      the day one becomes a file it moves to sandbox\ and only its
      href changes here. See sandbox\README.md.
+
+     THE DOORS ARE NOT WRITTEN HERE ANY MORE (gbppl-sandboxes-2,
+     Ton 25.08). They are painted from system\sandbox-registry.js,
+     the one place a sandbox is registered — the same file the studio
+     panel reads on every page and the PROTO panel reads on checkout.
+     Three surfaces, three voices, one list; a room added to the
+     registry appears on all of them at once, and this page never
+     drifts out of step with what the panels promise. The markup the
+     script emits is the markup that stood here before it, class for
+     class, so nothing about the page changed except who writes it.
+     Rooms are grouped by the page they belong to, because that is
+     the question the visitor arrives with: what is being tried on
+     checkout, what on the portal.
 
      Same borrowed chrome as the hub and nothing of its own: the
      bar is header.css (--studio), the ground is shell.css
@@ -66,45 +79,7 @@
           <h2 class="gbs-h2">Sandboxes</h2>
           <p class="gbs-lede">Parallel rooms, one open question each. They move; the walk on the Live Prototype page does not.</p>
 
-          <div class="gbs-grid">
-
-            <a class="gbs-door gbs-door--box" href="live/checkout.html?v=2">
-              <span class="gbs-chip">In progress</span>
-              <h3 class="gbs-door-title">Checkout · V2 Pool</h3>
-              <p class="gbs-door-desc">Gifts unpersonalized by default, quantity as a pool on the gift, personalization behind a two-door fork.</p>
-              <span class="gbs-door-foot">
-                <span class="gbs-door-path">live/checkout.html?v=2</span>
-                <span class="gbs-arrow" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </span>
-            </a>
-
-            <a class="gbs-door gbs-door--box" href="live/portal.html?pth=1">
-              <span class="gbs-chip">In progress</span>
-              <h3 class="gbs-door-title">Portal header</h3>
-              <p class="gbs-door-desc">The portal's own bar instead of the website's: the GildedBox | Portal lock, and the utilities ordered out to the edge.</p>
-              <span class="gbs-door-foot">
-                <span class="gbs-door-path">live/portal.html?pth=1</span>
-                <span class="gbs-arrow" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </span>
-            </a>
-
-            <a class="gbs-door gbs-door--box" href="live/portal.html?hero=start">
-              <span class="gbs-chip">In progress</span>
-              <h3 class="gbs-door-title">Start Gifting layouts</h3>
-              <p class="gbs-door-desc">The hero of the portal landing rebuilt around the Start Gifting entry, with the greeting kept out of its way.</p>
-              <span class="gbs-door-foot">
-                <span class="gbs-door-path">live/portal.html?hero=start</span>
-                <span class="gbs-arrow" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </span>
-            </a>
-
-          </div>
+          <div class="gbs-rooms" id="gbsRooms"></div>
         </section>
 
       </div>
@@ -118,6 +93,62 @@
   </footer>
 
 </div>
+
+<script src="system/sandbox-registry.js"></script>
+<script>
+/* ---- The doors, painted from the registry (gbppl-sandboxes-2).
+   Same elements and same classes the page carried by hand until
+   25.08: .gbs-door--box with a chip, a title, a line of description
+   and the path in the foot. What is new is the grouping (an eyebrow
+   per page) and the room that is decided but not yet built, which
+   comes out grey and unclickable rather than promising a link that
+   would quietly open today's page. ---- */
+(function () {
+  'use strict';
+  var mount = document.getElementById('gbsRooms');
+  var reg = window.GB_SANDBOXES;
+  if (!mount || !reg) return;
+
+  var ARROW =
+    '<span class="gbs-arrow" aria-hidden="true">' +
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+
+  function esc(v) {
+    return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* The path under the door is the address without the root prefix:
+     it is a label that says where the room lives in the repo, not a
+     link, so it reads the same from every depth. */
+  function bare(href) { return href.replace(/^(\.\.\/)+/, ''); }
+
+  function door(v) {
+    var chip  = '<span class="gbs-chip">' + esc(String(v.status).replace(/-/g, ' ')) + '</span>';
+    var title = '<h3 class="gbs-door-title">' + esc(v.label) + '</h3>';
+    var desc  = '<p class="gbs-door-desc">' + esc(v.desc) + '</p>';
+    /* The room that is not open yet keeps the same foot, with the
+       arrow's place taken by the reason there is no arrow. */
+    var end   = v.ready ? ARROW : '<span class="gbs-door-note">Not open yet</span>';
+    var foot  = '<span class="gbs-door-foot"><span class="gbs-door-path">' +
+                esc(bare(v.href)) + '</span>' + end + '</span>';
+    var body  = chip + title + desc + foot;
+    if (!v.ready) return '<div class="gbs-door gbs-door--box gbs-door--coming">' + body + '</div>';
+    return '<a class="gbs-door gbs-door--box" href="' + esc(v.href) + '">' + body + '</a>';
+  }
+
+  var html = reg.rooms('').map(function (page) {
+    return '<div class="gbs-room">' +
+             '<span class="gb-eyebrow">' + esc(page.label) + '</span>' +
+             '<div class="gbs-grid">' + page.variants.map(door).join('') + '</div>' +
+           '</div>';
+  }).join('');
+
+  mount.innerHTML = html || '<p class="gbs-lede">None yet.</p>';
+})();
+</script>
 
 </body>
 </html>
