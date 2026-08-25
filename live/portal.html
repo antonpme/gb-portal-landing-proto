@@ -116,30 +116,31 @@
   button { font-family: inherit; cursor: pointer; }
 
   /* ============ SHARED WRAPPER ============
-     Live .container ladder (diff measure our Pages vs the live portal
-     at the same 2258 viewport, 2026-08-12; replaces the v1 min()
-     formula): base width 100% + padding 0 24px; max-width 1600 from
-     1600; max-width 1920 + padding 0 48px from 1920; padding 0 16px
-     at <=768 (SYSTEM.md site chrome wrapper cascade). Header, layout
-     AND footer ride one ladder: SYSTEM.md's footer spec records the
-     same container (px 24), the old v1 1600 cap was a transfer the
-     spec never confirmed. */
-  .wrapper,
-  .footer-wrap {
-    width: 100%;
-    padding-left: 24px;
-    padding-right: 24px;
-    margin: 0 auto;
-  }
-  @media (min-width: 1600px) {
-    .wrapper, .footer-wrap { max-width: 1600px; }
-  }
-  @media (min-width: 1920px) {
-    .wrapper, .footer-wrap { max-width: 1920px; padding-left: 48px; padding-right: 48px; }
-  }
-  @media (max-width: 768px) {
-    .wrapper, .footer-wrap { padding-left: 16px; padding-right: 16px; }
-  }
+     GONE, AND THAT IS THE POINT (gbppl-portal-system-2, 2026-08-25).
+     This page carried its own .wrapper / .footer-wrap ladder: width
+     100% + pad 24, dropping to 16 under 768, capped at 1600 from 1600
+     and 1920 + pad 48 from 1920. shell.css's .gb-container carries the
+     same ladder from the other end: pad 16 until 1280, 24 above, the
+     same two clamps, the same 48. Between 769 and 1279 the two
+     disagreed by 8px a side, and the first wave wrote that down as a
+     question rather than pick a winner.
+
+     Ton picked: «все контейнеры тоже приведи к системным, ничего
+     хардкодного». So the three markup sites (portal bar row, site bar,
+     the layout) and the three footer rows now wear .gb-container, the
+     same composition every other page in the tree uses
+     (index.html / sandboxes.html / oro: class="gb-container gbh-bar").
+     The 769..1279 band is 8px narrower a side than it was, and that is
+     the whole geometric change of this step. Both ladders read 24 at
+     1280 and 48 at 1920, so the two reference widths show nothing at
+     all; the band was measured separately at 1024, before and after,
+     and moves exactly the 8px a side and nothing else.
+
+     Two footer rows override the side padding away with a shorthand
+     (.footer__main padding: 51px 0 40px, .footer__legal 10px 0) and
+     did so before this change too — the container gives them the
+     clamps, they keep their own horizontal edge. Left exactly as it
+     measured; that is a footer question, not a container one. */
 
   /* ============ LAYOUT ============ */
   .layout {
@@ -1111,8 +1112,8 @@
      transfer (#b8b8bd / #8e8e94 on #0a0a0c, hairline #2b2b2f, serif
      column titles); strip bg #151518 and the wider column spread are
      felt values from the screen, no exact numbers given. Inner width
-     rides the shared 1620px .wrapper: at 1920 the logo stands ~182px
-     from the screen edge, matching the ~190px/2000px proportion of the
+     rides the shared container: at 1920 the logo stands ~182px from
+     the screen edge, matching the ~190px/2000px proportion of the
      live screen. */
   /* Footer precision pass (SYSTEM.md "Site chrome: footer", live
      2026-08-12, exact computed numbers): pure #000000 ground,
@@ -1133,9 +1134,10 @@
     border-top: 1px solid var(--footer-hairline);
     border-bottom: 1px solid var(--footer-hairline);
   }
-  /* Footer inner width rides the shared live .container ladder, see
-     the SHARED WRAPPER block (diff measure 2026-08-12; the v1 1600
-     formula is lifted, the spec's footer container is px 24). */
+  /* Footer inner width rides the system container, .gb-container in
+     shell.css — the same ladder the header and the layout ride
+     (gbppl-portal-system-2; the v1 1600 formula was lifted 2026-08-12,
+     the local copy of the ladder 2026-08-25). */
   .footer__crumbs-inner {
     min-height: 44px;
     display: flex;
@@ -3711,7 +3713,7 @@
        meeting is the state of the moment -- and last, hard against the
        edge, the door back to the website. -->
   <header class="gbh-pbar">
-    <div class="wrapper gbh-pbar__row">
+    <div class="gb-container gbh-pbar__row">
       <!-- Inert like every link in this prototype; the real target of
            the lock is the portal home. -->
       <a class="gbh-lock" href="#" aria-label="GildedBox Portal, home">
@@ -3779,7 +3781,7 @@
        nav=ton, the masthead stands in. Beta chip = legacy gold of the live
        site, carried as is. -->
   <header class="gb-header gb-header--sticky">
-    <div class="wrapper gbh-bar">
+    <div class="gb-container gbh-bar">
       <a href="#" class="gbh-brand" aria-label="GildedBox home"><img src="../system/icons/gildedbox-logo.svg" alt="GildedBox"></a>
       <nav class="gbh-nav" aria-label="Primary navigation">
         <button class="gbh-link" type="button">Gifts</button>
@@ -3813,7 +3815,7 @@
   </header>
 
   <!-- ============ LAYOUT ============ -->
-  <div class="layout wrapper">
+  <div class="layout gb-container">
 
     <!-- Sidebar (Figma nodes 3550-26803 / 3561-3633; content order per live portal) -->
     <aside class="sidebar">
@@ -4109,11 +4111,11 @@
        a transfer of the live reality, the rename question is deferred. -->
   <footer class="footer">
     <div class="footer__crumbs">
-      <div class="footer-wrap footer__crumbs-inner">
+      <div class="gb-container footer__crumbs-inner">
         <span>Home</span><span class="crumb-sep" aria-hidden="true">&rsaquo;</span><span>Customer</span><span class="crumb-sep" aria-hidden="true">&rsaquo;</span><span class="crumb-current">My Gifts</span>
       </div>
     </div>
-    <div class="footer-wrap footer__main">
+    <div class="gb-container footer__main">
       <div>
         <img src="../system/icons/gildedbox-logo.svg" alt="GildedBox">
         <p class="footer__address">1360 Abbott Ct. Buffalo Grove, IL 60089</p>
@@ -4126,7 +4128,7 @@
       <div><h3>Support</h3><a href="#">Client Advisor</a><a href="#">Client Service</a><a href="#">Shipping Information</a><a href="#">Terms and Conditions</a><a href="#">Warranty</a><a href="#">FAQ</a></div>
       <div><h3>Follow</h3><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">Linkedin</a><a href="#">Youtube</a></div>
     </div>
-    <div class="footer-wrap footer__legal">
+    <div class="gb-container footer__legal">
       <span>&copy; 2026 The GildedBox Company.</span>
       <span>IPMedia Holdings, Inc.</span>
       <span>Privacy Policy</span>
