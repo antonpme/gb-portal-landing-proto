@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GildedBox · Book a meeting</title>
+<link rel="icon" href="data:,">
+<!-- ============================================================
+     gbppl-booking-1 — НАШ BOOK A MEETING ВМЕСТО ЧУЖОГО ВИДЖЕТА.
+
+     Тон, 25.08: «Заменить виджет на наш Book a Meeting флоу и
+     дизайн, который мы сделали на странице портала (будет работать
+     через API, не iframe). Перед этим идёт форма: несколько полей,
+     потом резервация слота, потом подтверждение».
+
+     ЧТО БЫЛО НА ЛАЙВЕ (harvest\public-book-a-meeting, 25.08,
+     https://www.gildedbox.com/page/contact-us-219): страница без
+     хедера и без футера, один логотип сверху; слева заголовок и три
+     обещания, справа серая карточка с лид-формой из пяти полей; за
+     кнопкой CONTINUE карточка отдавалась iframe'у
+     meetings-na2.hubspot.com — чужому календарю с чужим синим,
+     чужим шрифтом и встречей на 15 минут. Отсюда взяты ДАННЫЕ
+     (поля, обязательности, правила календаря, ротация
+     плейсхолдера) и ничего из вида (Тон-9).
+
+     ЧТО ЗДЕСЬ. Страница — чистый потребитель системы (Тон-8): она
+     не рисует ничего своего. Хедер и футер — те же gb-site-header /
+     gb-site-footer, что на index и checkout; сам флоу —
+     <gb-booking-flow> из system\components\booking.js, и его три
+     шага собраны из уже существующего: поля и кнопки от организма
+     авторизации, календарь и рисующаяся синяя галка — от двери
+     Book a Meeting в попапе START (live\portal.html).
+
+     ХЕДЕР ВЕДЁТ СЮДА. Кнопка Book a Meeting была мёртвой
+     заглушкой с рождения прототипа; в этой же волне у
+     <gb-site-header> появился meeting-href, и все потребители его
+     прописали. Здесь он показывает на саму страницу — так кнопка в
+     шапке ведёт себя честно и на ней самой.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../system/assets/tokens.css">
+<link rel="stylesheet" href="../system/components/shell.css">
+<link rel="stylesheet" href="../system/components/header.css">
+<!-- Поля и кнопки флоу — организм авторизации, поэтому его CSS и JS
+     стоят рядом с booking.* как зависимость, а не как украшение. -->
+<link rel="stylesheet" href="../system/components/auth.css">
+<link rel="stylesheet" href="../system/components/booking.css">
+<link rel="stylesheet" href="../system/components/footer.css">
+<link rel="stylesheet" href="../system/components/studio-panel.css">
+
+<!-- Гейт студии, как на live\index.html: страница за замком, дорога
+     домой на уровень выше. -->
+<script src="../system/components/studio.js" data-home="../index.html"></script>
+</head>
+<body>
+
+  <gb-site-header
+    logo-src="../system/assets/gildedbox-logo.svg"
+    catalog-href="catalog/index.html"
+    portal-href="portal.html"
+    meeting-href="book-a-meeting.html"></gb-site-header>
+
+  <main class="gbb-page">
+    <div class="gb-container">
+      <header class="gbb-pagehead">
+        <h1 class="gbb-h1">Book a meeting</h1>
+        <p class="gbb-lede">15 minutes with a gifting specialist. Tell us what you need, pick a time, and the invitation lands in your inbox.</p>
+      </header>
+
+      <!-- Режим гостя: публичная страница не знает, кто пришёл, и
+           начинает с формы. Режим своего (start="slot", два шага)
+           живёт в том же компоненте и ждёт портал; здесь он
+           включается ТОЛЬКО проверочной ссылкой ?known=1 — см.
+           скрипт перед подключением booking.js. -->
+      <gb-booking-flow site-href="index.html"></gb-booking-flow>
+    </div>
+  </main>
+
+  <gb-site-footer></gb-site-footer>
+
+  <gb-studio-panel data-root="../"></gb-studio-panel>
+
+  <script src="../system/components/shell.js"></script>
+  <script src="../system/components/studio-panel.js"></script>
+  <script src="../system/components/header.js"></script>
+  <script src="../system/components/auth.js"></script>
+  <!-- ПРОВЕРОЧНЫЙ КРЮЧОК ?known=1, и ничего кроме.
+       Режим своего принадлежит порталу, а портал этой волной не
+       трогается (его правит соседняя волна), поэтому увидеть два
+       шага пока негде. Ссылка ?known=1 ставит на компоненте те же
+       атрибуты, что поставит портал, и открывает страницу сразу с
+       календаря; без параметра ни одна строка ниже не выполняется
+       и страница байт в байт та же. Манера — прототипный
+       переключатель за query-параметром, тот же, на котором стоит
+       live\checkout.html (?v=1 / ?v=2).
+       Имя и почта здесь — очевидная выдумка для проверки; портал
+       подставит настоящий профиль. -->
+  <script>
+    (function () {
+      if (new URLSearchParams(location.search).get('known') !== '1') return;
+      var flow = document.querySelector('gb-booking-flow');
+      flow.setAttribute('guest-name', 'Jordan Ellis');
+      flow.setAttribute('guest-email', 'jordan@northgate.com');
+      flow.setAttribute('guest-company', 'Northgate Partners');
+      flow.setAttribute('start', 'slot');
+    })();
+  </script>
+
+  <script src="../system/components/booking.js"></script>
+  <script src="../system/components/footer.js"></script>
+
+</body>
+</html>
