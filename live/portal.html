@@ -4194,22 +4194,20 @@
              in its summary instead of asking.
 
              NO layout="compact", and that was a measurement, not a
-             preference. The modifier the live Book a Meeting page wears
-             puts the calendar beside its slots -- which is what a 528px
-             window wants -- but it switches on a VIEWPORT query
-             (min-width 1024), and the popup is 528 wide at every
-             viewport there is. Measured inside it at 1280 and at 1920:
-             the calendar column takes its fixed 7 x 44 + 12 = 320 and
-             leaves the slots 65px, narrower than one 84px chip. The fix
-             belongs to booking.css (the modifier has to read the
-             CONTAINER, not the window) and this wave does not own that
-             file, so the flow stands in its default column, which the
-             popup fits: 455px across, the slots in four tracks. The
-             cost is honest and visible: 32 quarter-hour chips are a lot
-             more than the stand-in's eight, so the body of the popup
-             scrolls on this step. It is a scroller by construction and
-             the window keeps its 748 either way. See the wave note at
-             the foot of this file.
+             preference. That modifier also hands the surface to the
+             host -- the live Book a Meeting page has a grey card of its
+             own to hand it to, and this popup has none: the flow's
+             white .gbb-panel IS the card of this step. So the flow
+             stands in its default column, 455px across.
+
+             What the popup was missing is now the organism's own
+             (gbppl-booking-3, 2026-08-25): the slot list stops
+             stretching whoever called it. Where the host is narrower
+             than 520px -- in ANY layout, this one included -- the 32
+             quarter-hour chips live in their own scrolling zone
+             instead of pushing the body down. Measured here: the body
+             of the popup grew to 1147 against its 674, and now it does
+             not. The window keeps its 748 either way.
 
              With the default column the organism brings its own white
              card (.gbb-panel: white, #dedee2 hairline, 5px radius) --
@@ -4222,12 +4220,20 @@
              longer the popup's is everything between: the month, the
              slots, the rules, the confirmation and its drawn check. -->
         <div class="gsp-view" data-view="meeting">
+          <!-- exit-label, added 2026-08-25 (gbppl-booking-3): the flow's
+               last quiet exit reads "Back to site" on the page it was
+               built for, and inside a window that was a small lie --
+               nobody leaves the site from a popup. The owner made the
+               label the host's business, so this one says "Back to
+               portal", and the click is answered below with the popup's
+               own way out. -->
           <gb-booking-flow id="gbStartBooking"
                            start="slot"
                            guest-name="Anton Parkhomenko"
                            guest-email="iam@antonp.me"
                            guest-company="GildedBox"
-                           site-href="portal.html"></gb-booking-flow>
+                           site-href="portal.html"
+                           exit-label="Back to portal"></gb-booking-flow>
         </div>
 
         <!-- STEP 2c: call us (gbppl-start-popup-2). The "leave your number
@@ -5206,40 +5212,41 @@
 
      ONE: the flow keeps its state, the popup does not. A guest who has
      booked and comes back through the door a minute later should meet a
-     calendar, not the confirmation they already read. The organism has
-     no reset -- its own page is left by navigating away -- so the host
-     does the one thing a host may: it stands a NEW element with the
-     same attributes in place of the spent one, and the custom element
-     renders its first step on insertion. Only a FINISHED flow is
-     replaced; a guest who picked a day and stepped back to the doors
-     finds the pick where they left it, exactly as the stand-in behaved.
+     calendar, not the confirmation they already read. This host used to
+     do it by hand -- it stood a NEW element with the same attributes in
+     place of the spent one, because the organism had no way back to its
+     first step. It has one now (gbppl-booking-3): el.restart() returns
+     the flow to its start, drops the pick and asks the adapter for a
+     fresh window of slots, and it keeps what the host told it about the
+     guest, which is exactly what the node swap was copying attribute by
+     attribute. Only a FINISHED flow is restarted; a guest who picked a
+     day and stepped back to the doors finds the pick where they left
+     it, exactly as the stand-in behaved.
 
      TWO: "Back to site" is the organism's last quiet exit, and on the
      page it was built for it means leave. Inside a popup the same move
-     is close the window, so the click is answered with the popup's own
-     way out -- which collapses the card back into the button it was
-     born from, the whole point of the choreography. */
+     is close the window. This host used to catch the click on the
+     organism's own class name, which is reaching into someone else's
+     file; the owner gave it a door instead (gbppl-booking-3): the
+     cancelable gbb:exit. The default is stopped and the popup answers
+     with its own way out -- which collapses the card back into the
+     button it was born from, the whole point of the choreography. The
+     label is the host's too, and it is set on the element above. */
   var bookingHost  = document.getElementById('gbStartBooking');
   var bookingSpent = false;   /* the flow reached its confirmation */
 
   startDialog.addEventListener('gbb:booked', function () { bookingSpent = true; });
 
   function freshBooking() {
-    if (!bookingSpent || !bookingHost || !bookingHost.parentNode) return;
-    var next = document.createElement('gb-booking-flow');
-    var attrs = bookingHost.attributes;
-    for (var i = 0; i < attrs.length; i++) next.setAttribute(attrs[i].name, attrs[i].value);
-    bookingHost.parentNode.replaceChild(next, bookingHost);
-    bookingHost = next;
+    if (!bookingSpent || !bookingHost) return;
+    bookingHost.restart();
     bookingSpent = false;
   }
 
   var meetingDoor = startDialog.querySelector('.gsp-door[data-door="meeting"]');
   if (meetingDoor) meetingDoor.addEventListener('click', freshBooking);
 
-  startDialog.addEventListener('click', function (e) {
-    var exit = e.target.closest ? e.target.closest('a.gbb-quiet') : null;
-    if (!exit) return;
+  startDialog.addEventListener('gbb:exit', function (e) {
     e.preventDefault();
     closeStartPanel();
   });
