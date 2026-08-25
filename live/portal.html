@@ -8,111 +8,74 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+     THE PORTAL BECOMES A CONSUMER OF THE SYSTEM — 2026-08-25.
+     ------------------------------------------------------------
+     Until today this was the ONE live page that linked no system
+     stylesheet: it kept a private :root holding the token file's own
+     values and re-wrote the header component by hand under the
+     component's own class names. The 24.08 audit wrote that down
+     (TODO, "на суде Тона"), and Ton-8 calls it what it is: "на лайве
+     никакого хардкода". The three sheets below are the ones every
+     other page in the tree links (live/checkout.html, live/index.html,
+     system/pages/*.html, system/oro/*.html), in the same order:
+
+       tokens.css   the :root this page used to carry itself. Every
+                    name it declared was already in there, letter for
+                    letter (checked one by one; the wave note at the
+                    foot of this file lists the sweep).
+       shell.css    the base box model. NOT the gb-demo ground: this
+                    page keeps its own html/body/a/button rules, and
+                    body.gb-demo a { color: inherit } weighs 0-1-2,
+                    enough to outrank several of this page's own
+                    0-1-0 link colours. So no gb-demo class on <body>
+                    — decided by measurement, see the wave note.
+       header.css   the owner of .gb-header / .gbh-*, including the
+                    lock atom (.gbh-lock) this page's portal bar was
+                    the source of, and the PORTAL BAR variant block
+                    written there for this page.
+
+     NOT linked, on purpose: footer.css (the live PUBLIC footer, a
+     different organism from this page's portal footer, and its
+     selectors are bare .footer / .row / .col / .hidden — they would
+     land on markup that never asked for them), auth.css and
+     catalog.css (same reason: bare .container / .hidden / .invalid,
+     and this page borrows no organism from either).
+
+     The <style> block below still comes AFTER these links, so every
+     rule this page keeps of its own outranks the system at equal
+     specificity. That is what let the migration go component by
+     component, each step measured against the reference. -->
+<link rel="stylesheet" href="../system/assets/tokens.css">
+<link rel="stylesheet" href="../system/components/shell.css">
+<link rel="stylesheet" href="../system/components/header.css">
 <style>
   /* ============ TOKENS ============
-     Local design-system foundation (Ton's requirement 2026-08-12):
-     every color below this block resolves through a variable, no hex
-     lives in the rules themselves. Zinc and Blue = the Tailwind scale
-     (SYSTEM.md tokens). The off-scale values are exact live
-     measurements (SYSTEM.md site chrome + portal chrome sections,
-     live 2026-08-12) that sit on no scale and are fixed as is. */
-  :root {
-    --white: #ffffff;
-    --black: #000000;
-    --zinc-50:  #fafafa;
-    --zinc-100: #f4f4f5;
-    --zinc-200: #e4e4e7;
-    --zinc-300: #d4d4d8;
-    --zinc-400: #a1a1aa;
-    --zinc-500: #71717a;
-    --zinc-600: #52525b;
-    --zinc-700: #3f3f46;
-    --zinc-800: #27272a;
-    --zinc-900: #18181b;
-    --zinc-950: #09090b;
-    --blue-600: #2563eb;
-    --blue-700: #1d4ed8;
-    --blue-50:  #eff6ff;
-    --blue-200: #bfdbfe;
-    /* Off-scale live values (SYSTEM.md, live 2026-08-12) */
-    --live-body: #fcfdfd;      /* portal body, near-white off the scale */
-    --gold-beta: #bea042;      /* live legacy gold; BRAND.md documents
-                                  #c2a545, the live site measures #bea042 */
-    --header-shadow: rgba(102, 102, 102, 0.05); /* portal header constant shadow color */
-    --header-glass: rgba(255, 255, 255, 0.9);   /* header bg on lg+, pairs with blur 6px */
-    --footer-hairline: #3d3d3d;  /* live footer border, off the zinc scale */
-    --footer-link-hover: #fffc;  /* live footer link hover, white at 80% */
-    /* v1 chrome inks carried by the catalog overlay head (v1 styles.css) */
-    --v1-ink: #242426;
-    --v1-border: #dedee2;
-    --v1-ink-hover: rgb(36 36 38 / 5%);
-    /* Footer crumb strip: felt values from Ton's portal screen
-       2026-08-12; the strip exists only on the portal and its numbers
-       were never measured live */
-    --crumb-strip-bg: #151518;
-    --crumb-strip-ink: #b8b8bd;
-    --crumb-strip-sep: #6b6b71;
-    --radius: 5px;
-    /* Families, root size and the two shadows this page paints.
-       Copied name for name out of system\assets\tokens.css (audit
-       24.08): the rules below stated the same stacks and the same
-       two shadow strings by hand, so no value changed — only its
-       address did. That this page keeps a :root of its own instead
-       of linking the token file is the bigger debt; it is written
-       down in the hub-9 report and not settled here. */
-    --font-sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
-    --font-serif: 'Noto Serif', Georgia, serif;
-    --font-size-root: 16px;
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    --shadow-bar: 0 -4px 16px rgba(24, 24, 27, 0.06);
+     GONE, AND THAT IS THE POINT (2026-08-25). This block used to be a
+     private :root of 45 names -- the Zinc and Blue scales, the
+     off-scale live values (--live-body, --gold-beta, --header-*,
+     --footer-*, --v1-*, --crumb-strip-*), the radius, the two font
+     stacks, the two shadows and the whole --mo-* motion family. Every
+     one of the 45 was compared name by name and value by value
+     against system/assets/tokens.css before deletion: 45 identical,
+     0 different, 0 absent. The file is linked in the head now, so the
+     same numbers arrive from the one place that owns them.
 
-    /* ---- gbppl-motion-pass: ONE FAMILY OF RAILS ---------------------
-       Every overlay, popup and micro-state on this page moved by its own
-       hand-picked number until now: 150ms ease here, 160ms there, three
-       curves that were nearly the same curve. Ton's brief, 2026-08-19:
-       the popup has to open "as if straight out of the button", faster
-       than the side panel but less jerky -- "proper smooth rails". A rail
-       is only a rail if everything rides it, so the whole page's motion
-       is spelled out here and nowhere else, and the sizes are named by
-       the JOURNEY, not by the component:
+     Nothing on this page went looking for a token the page did not
+     declare, so linking the (larger) system file could not light up a
+     rule that was dark before -- checked by sweeping every var() call
+     in this file against both declaration sets. The one name with no
+     declaration anywhere is --snav-icon-url, which the ren-skin sets
+     inline per item; that is by design.
 
-         large   the catalog door crossing 1216px  (--tf-travel's twin)
-         medium  a popup growing out of its button, corner to centre
-         small   a step changing inside a window that stays put
-         micro   a hover, a chip, a disc taking a wash
-
-       THE CURVES. Four, and each has one job:
-         --mo-enter   the long journey. Holds the MIDDLE of the path (28%
-                      of the way at a quarter of the time, 65% at 40%,
-                      measured) so travel reads as travel, and still lands
-                      soft. This is the catalog door's own curve, promoted
-                      from --tf-curve, where it was chosen the hard way
-                      (see gbppl-tiffany-overlay-2 for what it replaced).
-         --mo-arrive  short arrivals. A pure decelerate: the thing is
-                      already moving when you first see it. The Chat with
-                      us source's own panel curve, kept literal.
-         --mo-exit    anything leaving. Accelerates away, never lands.
-         --mo-move    in-place travel -- a sideways step, a chevron, a
-                      shell finding a new height. Symmetric, unhurried.
-
-       The catalog overlay's --tf-* stay written out in full where they
-       are: that choreography is approved and frozen to the frame, and a
-       variable it does not own must never be able to move it. They are
-       the same three values as --mo-enter / --mo-exit / --mo-large, and
-       the block down there says so. Everything ELSE on the page reads
-       from here, including the Start popup's transferred --gh-* aliases,
-       which are re-pointed at these rather than restated. */
-    --mo-enter:  cubic-bezier(0.37, 0, 0.18, 1);
-    --mo-arrive: cubic-bezier(0, 0, 0.2, 1);
-    --mo-exit:   cubic-bezier(0.4, 0, 1, 1);
-    --mo-move:   cubic-bezier(0.4, 0, 0.2, 1);
-    --mo-large:      1200ms;  /* the catalog door's journey */
-    --mo-medium:      500ms;  /* the popup out of its button */
-    --mo-medium-out:  350ms;  /* ...and back into it, always quicker */
-    --mo-small:       280ms;  /* a step arriving inside the popup */
-    --mo-small-out:    90ms;  /* the step it replaces, letting go first */
-    --mo-micro:       160ms;  /* hover, focus, a chip, a selected day */
-  }
+     The motion rails keep their long rationale where the tokens live
+     (tokens.css, MOTION block): sizes are named by the JOURNEY --
+     large the catalog door, medium a popup out of its button, small a
+     step inside a window that stays put, micro a hover. The catalog
+     overlay's --tf-* stay written out in full further down this file
+     on purpose: that choreography is approved and frozen to the frame,
+     and a variable it does not own must never be able to move it. */
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1040,297 +1003,76 @@
   }
 
   /* ============ SITE HEADER ============
-     Source: LIVE PORTAL header, Ton's screens 2026-08-12 (the earlier
-     transfer used v1's header = the old PUBLIC site's; that mistake is
-     lifted). Composition per the screens: wordmark, then GIFTS /
-     CUSTOMIZE (gold Beta chip = the live site's legacy accent, carried
-     as is, marked legacy) / PORTAL / EXPLORE, then a black filled
-     BOOK A MEETING, an outlined MY PORTAL, a cart glyph with a round
-     count badge, and search. Nav items carry NO underline: on the
-     portal the active state is not highlighted, the header here is an
-     inert visual. Bar geometry and type kept from the earlier take
-     (96px bar, 18px/500/0.028em uppercase links, 230px brand column,
-     ink #242426, hover rgb(36 36 38 / 5%), 160ms), which came from the
-     shared v1/portal frame. Rides the shared .wrapper (v1 width
-     formula). v1's menus and mobile breakpoints not carried; minimal
-     small-screen fallback of our own. Shown on nav=live and
-     nav=russell; nav=ton replaces it with the sidebar masthead. This
-     addition is the ONLY sanctioned break of the nav=live pixel freeze
-     (Ton 2026-08-12); sidebar and content stay frozen. */
-  /* Portal header measurements (SYSTEM.md "Portal chrome", live via
-     Ton's Chrome 2026-08-12): bar exactly 80px, base bg #fcfdfd, on
-     lg+ white at 90% + backdrop-blur 6px; the shadow is CONSTANT (not
-     scroll-gated): 0 4px 8px rgba(102,102,102,0.05), no bottom border.
-     DEVIATION: live is position:fixed with content running under it;
-     sticky keeps the prototype's simple flow. */
-  .gb-header {
-    position: sticky;
-    top: 0;
-    z-index: 31;
-    background: var(--live-body);
-    box-shadow: 0 4px 8px var(--header-shadow);
-  }
-  @media (min-width: 1024px) {
-    .gb-header {
-      background: var(--header-glass);
-      backdrop-filter: blur(6px);
-    }
-  }
-  [data-nav="ton"] .gb-header { display: none; }
-  /* Bar height 80px per the live portal (SYSTEM.md, live 2026-08-12;
-     the earlier 96px came from the shared v1/portal frame and is
-     lifted). 80 holds at EVERY width: harvest public-home 2026-08-17
-     reads the live header wrapper at 80 on all thirteen sweep widths
-     incl. 360 and 768; our old 72 mobile fallback is lifted. */
-  .gbh-bar {
-    height: 80px;
-    display: grid;
-    grid-template-columns: 230px 1fr auto;
-    align-items: center;
-    gap: 48px;
-  }
-  .gbh-brand { display: inline-flex; width: 168px; height: 56px; align-items: center; }
-  .gbh-brand img { width: 100%; height: auto; }
-  /* Live nav rhythm: li margin 0 16px + link padding 16px (SYSTEM.md
-     site chrome, live 2026-08-12), 64px between adjacent labels */
-  .gbh-nav { display: flex; align-items: center; }
-  /* Nav items per the portal (SYSTEM.md portal chrome, live
-     2026-08-12): Inter 500, UPPERCASE, ls 0.5px, lh 150%, Zinc 900;
-     hover = live's opacity 0.8. Size steps = the live Tailwind
-     cascade (diff measure 2026-08-12): 14px base (lg), 16px from
-     1280 (xl). */
-  .gbh-link {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 16px;
-    padding: 16px;
-    background: transparent;
-    border: 0;
-    color: var(--zinc-900);
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    line-height: 1.5;
-    text-transform: uppercase;
-    transition: opacity 160ms;
-  }
-  @media (min-width: 1280px) {
-    .gbh-link { font-size: 16px; }
-  }
-  .gbh-link:hover { opacity: 0.8; }
-  /* Gold Beta chip on CUSTOMIZE: live legacy accent, measured #bea042
-     (SYSTEM.md site chrome, live 2026-08-12; BRAND.md's #c2a545 was
-     the doc value, the live site differs). Marked LEGACY: no new gold
-     elements (BRAND.md). Anatomy per live: radius 5, pad 3px 6px,
-     Inter 500 12px, ls 0.5px, white, normal case. */
-  .gbh-beta {
-    border-radius: var(--radius);
-    padding: 3px 6px;
-    background: var(--gold-beta);
-    color: var(--white);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    line-height: 1.5;
-    text-transform: none;
-  }
-  .gbh-actions { display: flex; align-items: center; gap: 12px; }
-  /* Portal button theme (SYSTEM.md portal chrome, live 2026-08-12):
-     Inter 400 UPPERCASE, radius 5. NOTE: this is the PORTAL
-     button theme, computed weight 400 + tracking-tight, deliberately
-     NOT the Oro DS 600/tracking scale from SYSTEM.md's button table;
-     the live portal renders the lighter theme. Size steps = the live
-     cascade (harvest public-home 2026-08-17): base font 14 /
-     min-h 36 / pad-x 16 / ls -0.35 / gap 12; from 1280 font 16 /
-     min-h 42 / pad-x 20 / ls -0.4 / gap 20; from 2000 min-h 48
-     (threshold read off the live sweep: 1999 still 42, 2000 = 48;
-     the earlier 1536 step and the flat ls -0.4 / gap 12 are
-     lifted). BOOK A MEETING has NO border and NO icon: the live
-     button is text-only (158.5px wide vs our earlier 198 with the
-     calendar glyph).
+     THE HAND-WRITTEN COPY IS GONE (2026-08-25). What stood here was
+     222 lines re-stating system/components/header.css under that
+     file's own class names -- .gb-header, .gbh-bar, .gbh-brand,
+     .gbh-nav, .gbh-link, .gbh-beta, .gbh-actions, .gbh-cta and its
+     outline variant, the label span, .gbh-count, .gbh-icon-button --
+     plus the same small-screen fallback the owner already carries.
+     A transfer that drifts is a fork, and this one had begun to
+     drift: the owner was re-synced with live on 24.08 and this copy
+     was not. The page links header.css now and the classes stay
+     exactly where they were in the markup.
 
-     COLOURS RESYNCED 2026-08-24 with the owner of this component,
-     system\components\header.css, after the live sweep of that day
-     (JSON: scratchpad hub\header\live-header-measure.json). This page
-     is autonomous — it links no external stylesheet — so it carries a
-     TRANSFER of the component's rules, and a transfer that drifts is
-     a fork. What changed: fill Zinc 800 -> Blue 600, hover Zinc 700 ->
-     Blue 700 (the live pair; the old pair got LIGHTER on hover, which
-     Ton caught), label Zinc 50, outline hover Zinc 300/20 instead of
-     a solid Zinc 100, transition 200ms cubic-bezier(.4,0,.2,1).
-     The local .pth-cta repaint further down now says the same thing
-     as the base rule and is left standing, harmless. */
-  .gbh-cta {
-    min-height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 8px 16px;
-    background: var(--blue-600);   /* LIVE 24.08 #2563eb */
-    color: var(--zinc-50);         /* LIVE 24.08 #fafafa */
-    border: none;
-    border-radius: var(--radius);
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: -0.35px;
-    line-height: 1.1;
-    text-transform: uppercase;
-    white-space: nowrap; /* live buttons never wrap */
-    transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-                background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-                border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);  /* LIVE 24.08 */
-  }
-  @media (min-width: 1280px) {
-    .gbh-cta { min-height: 42px; padding-left: 20px; padding-right: 20px; font-size: 16px; gap: 20px; letter-spacing: -0.4px; }
-  }
-  /* 48 step at exactly 2000 (harvest public-home 2026-08-17 sweep:
-     1999 = 42, 2000 = 48; our earlier 1536 fired 464px early) */
-  @media (min-width: 2000px) {
-    .gbh-cta { min-height: 48px; }
-  }
-  .gbh-cta:hover { background: var(--blue-700); }   /* LIVE 24.08 #1d4ed8, darker */
-  /* Outlined MY PORTAL per live: transparent fill, Zinc 900 text and
-     1px border (spec-confirmed, stays), same portal typography
-     (SYSTEM.md, live 2026-08-12); hover = the live Zinc 300/20 wash */
-  .gbh-cta--outline {
-    background: transparent;
-    color: var(--zinc-900);
-    border: 1px solid var(--zinc-900);
-  }
-  .gbh-cta--outline:hover { background: rgba(212, 212, 216, 0.2); }  /* LIVE 24.08 */
-  /* Label typography per the live public-home label span (harvest
-     2026-08-17, public-home-sweep targets cta-primary-label and
-     cta-secondary-label): Inter 11px / 600 / ls 1px / line-height
-     normal, 12px from 2000 (the same threshold as the 48 step);
-     uppercase and color are inherited from the button, nothing else
-     is set. Applied by T's decision 2026-08-17 (screenshot comparison
-     vs live) AHEAD of the portal measurement behind the login; the
-     portal read stays wanted as confirmation. Button heights
-     (36/42/48), paddings and gap stay on the container scale above. */
-  .gbh-cta span[data-pc-section="label"] {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    line-height: normal;
-  }
-  @media (min-width: 2000px) {
-    .gbh-cta span[data-pc-section="label"] { font-size: 12px; }
-  }
-  /* Cart count badge per live (SYSTEM.md site chrome, live
-     2026-08-12): 16x16, font 10px, Blue 600 fill (their primary),
-     1px white ring. DEVIATION: live anchors it at top -13px right 5px
-     off their 20px icon box; adapted to our 44px round icon button.
-     gbppl-badge-one: this rule IS the system's COUNT BADGE atom, now
-     written down once in studio/system/tokens.css under that heading
-     (Ton 2026-08-19, "то, что сейчас на корзине — идеальный бейдж").
-     Anything that says HOW MANY on an icon wears these numbers: the
-     cart of both headers here, and the filters and favorites triggers
-     inside the embedded v1 catalog, which copy them literally in
-     catalog/oro-ui-override.css because tokens do not cross an iframe.
-     Values stay literal in this file, as every other atom's do. */
-  .gbh-count {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    min-width: 16px;
-    height: 16px;
-    display: grid;
-    place-items: center;
-    padding: 0 4px;
-    background: var(--blue-600);
-    border: 1px solid var(--white);
-    border-radius: 999px;
-    color: var(--white);
-    font-size: 10px;
-  }
-  .gbh-icon-button { position: relative; }
-  .gbh-icon-button {
-    width: 44px;
-    height: 44px;
-    display: grid;
-    place-items: center;
-    flex: 0 0 auto;
-    padding: 0;
-    background: transparent;
-    border: 0;
-    border-radius: 50%;
-    color: var(--zinc-900);
-    transition: background 160ms;
-  }
-  .gbh-icon-button:hover { background: var(--v1-ink-hover); }
+     TWO DELIBERATE DELTAS came with the swap, both of them the
+     owner's live-measured values arriving where this copy still held
+     the pre-resync number, and both invisible in a still frame:
+       .gbh-link        hover fade 160ms linear -> 300ms
+                        cubic-bezier(.4,0,.2,1) on colour AND opacity
+                        (LIVE 24.08: transition-all duration-300).
+       .gbh-icon-button 160ms on background -> 300ms
+                        cubic-bezier(.4,0,.2,1) on background and
+                        colour (LIVE 24.08: color .3s ease-in-out).
+     Ton, 24.08: "компонент выверяется один раз у владельца,
+     потребители носят классы чисто". Keeping 160ms here would have
+     been exactly the local override he calls брак.
+
+     Placement stays the page's business, as header.css says: bars
+     assembled from classes rather than from <gb-site-header> carry
+     their own position, so this bar wears .gb-header--sticky.
+     Composition, provenance and every number: header.css. */
+  /* nav=ton replaces the site bar with the sidebar masthead. A page
+     switch, not a component state -- it stays here. */
+  [data-nav="ton"] .gb-header { display: none; }
 
   /* ============ PORTAL HEADER (?pth=1) ============
-     gbppl-portal-header. Decision of the T + Mark meeting 2026-08-19:
-     the portal is a SEPARATE APPLICATION with its own identity, so it
-     stops borrowing the public site's chrome. Two duties follow from
-     that decision and this bar exists to discharge them: the user must
-     always see WHERE he is (the GildedBox | Portal lock on the left)
-     and must always have a door back to the site (Go to website on the
-     right -- a door into another building, NOT a logout; the logout
-     stays at the foot of the sidebar where it already lives).
+     THE BAR MOVED HOME (2026-08-25). Its anatomy -- the white ground
+     with the constant shadow, the 80px flex row, the identity lock,
+     the quiet Go to website door, the glyph cluster's order and inks,
+     the compact step at 900 -- now lives in the file that owns
+     .gbh-*: system/components/header.css, block "ВАРИАНТ: PORTAL
+     BAR". header.css had asked for exactly this, in writing: its
+     .gbh-lock atom was cut FROM this bar for the studio bar and
+     its comment said "portal.html пока держит свою копию этих
+     правил... её нужно свести на эти классы, когда тот бар тронут
+     снова". Touched, and swept. Not one number changed in the move
+     (before/after instrument sweep, 2 013 058 properties).
 
-     OFF BY DEFAULT. Nothing here renders without ?pth=1: the header
-     markup sits in the DOM but is display:none until JS puts
-     data-pth on the body, so the approved default view and every
-     existing ?v= / ?nav= / ?hero= combination stay bit for bit.
-     Composes freely with ?hero=start and nav=ton / nav=ren.
+     What the markup wears now: .gbh-pbar / .gbh-pbar__row /
+     .gbh-pbar__actions / .gbh-lock (+__mark, __rule, __word, and
+     --stack for the second sub-variant) / .gbh-away /
+     .gbh-pbar__icon / .gbh-pbar__burger, and, unchanged since 19.08,
+     .gbh-cta + .gbh-icon-button + .gbh-count straight off the system.
+     The one thing that did NOT survive: .pth-cta, which repainted the
+     borrowed CTA blue. The owner is blue since the 24.08 live re-sync,
+     so the repaint had become a no-op saying the same thing twice.
 
-     PHYSICS, carried verbatim from the live portal header measurement
-     (SYSTEM.md "Portal chrome", live via Ton's Chrome 2026-08-12; the
-     same numbers the .gb-header block above wears): bar exactly 80px
-     at EVERY width, constant shadow 0 4px 8px rgba(102,102,102,0.05)
-     (--shadow-header), no bottom border, sticky at the top of the
-     flow so the content below simply begins 80px lower -- no padding
-     compensation anywhere, a sticky element keeps its box in flow.
-     DEVIATION from .gb-header: the lg+ glass (white 90% + blur 6) is
-     dropped. This bar is SOLID white (Ton 2026-08-19, "залитый белый,
-     лёгкая тень снизу"): of the pair of live headers, the filled one
-     is the one that carries the shadow, and a portal that claims its
-     own identity should not show the page sliding under it.
-
-     ATOMS ARE BORROWED, NOT RE-CUT (PRINCIPLES Ton-6). The two glyph
-     buttons wear .gbh-icon-button (44px circle, 22.8 glyph, hover
-     rgb(36 36 38 / 5%)) and BOOK A MEETING wears .gbh-cta, so the
-     live M ladder (min-h 36 / 42 from 1280 / 48 from 2000, pad-x
-     16 / 20, ls -0.35 / -0.4) and the live label span (Inter 11/600/
-     1px, 12px from 2000) arrive with the class, unrepeated. Exactly
-     one thing is repainted: in the PORTAL header the CTA is BLUE, not
-     black (Ton's correction 2026-08-19). Blue is the state and the
-     CTA of the moment (PRINCIPLES Ton-5) and inside the portal the
-     meeting is the moment; the black fill stays the public site's.
-
-     GLYPHS: transplanted from assets/nucleo-full by the family recipe
-     (viewBox 48, 22.8 box, stroke-width 1.684, square caps, miter) --
-     48-magnifier, 48-circle-question, 48-arrow-up-right, 48-menu.
-     DEVIATION from icons/*.svg: the stroke is currentColor instead of
-     the literal #71717A, because these glyphs live in buttons that
-     have hover states; the color is set to var(--zinc-500) on the
-     button, so the resting pixels are the family's #71717A exactly. */
-
-  /* Hidden until ?pth=1. The gate is one attribute, so the default
-     page renders identically to HEAD before this wave. */
-  .pth { display: none; }
-  body[data-pth] .pth { display: block; }
-
-  .pth {
-    position: sticky;
-    top: 0;
-    /* 31 = .gb-header's rank: top chrome, under the catalog overlay
-       (40) and the start dialog (42), over the PROTO panel (30) */
-    z-index: 31;
-    background: var(--white);
-    box-shadow: 0 4px 8px var(--header-shadow);
-  }
+     What stays here, because it is a PROTOTYPE SWITCH and not part of
+     the component: the ?pth=1 gate and the two pth-rules. Nothing
+     renders without ?pth=1 -- the markup sits in the DOM but is
+     display:none until JS puts data-pth on the body -- so the
+     approved default view and every existing ?v= / ?nav= / ?hero=
+     combination stay bit for bit. Composes freely with ?hero=start
+     and nav=ton / nav=ren. */
+  .gbh-pbar { display: none; }
+  body[data-pth] .gbh-pbar { display: block; }
 
   /* pth-rule: one chrome at a time. With the portal header up, the
-     transferred SITE header steps aside in every nav variant -- two
-     bars stacked would say the portal is a page of the website, which
-     is the reading the 08-19 decision retires. In nav=ton / nav=ren
-     the site header is already hidden by its own rule; this line
-     covers live and russell. */
+     SITE header steps aside in every nav variant -- two bars stacked
+     would say the portal is a page of the website, which is the
+     reading the 08-19 decision retires. In nav=ton / nav=ren the site
+     header is already hidden by its own rule; this line covers live
+     and russell. */
   body[data-pth] .gb-header { display: none; }
 
   /* pth-rule: the sidebar masthead and the header lock are the SAME
@@ -1339,161 +1081,6 @@
      for -- navigation. The block stays in the DOM and comes back the
      moment ?pth is dropped. */
   body[data-pth] .masthead { display: none; }
-
-  .pth-bar {
-    /* 80 at every width, live's own answer: harvest public-home
-       2026-08-17 reads 80 on all thirteen sweep widths, 360 included */
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-  }
-
-  /* ---- The identity lock: GildedBox | PORTAL ----
-     Two subvariants behind &lock=, for Ton to pick:
-       divider (default)  mark + vertical hairline + PORTAL, one line
-       stack              PORTAL smaller, UNDER the mark, left edges
-                          lined up on the mark's own left axis
-     The handwritten mark is the canonical brand SVG already vendored
-     for the sidebar masthead and the site header (icons/gildedbox-logo
-     .svg, 168x56); it is not re-drawn here, only sized. */
-  .pth-lock {
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
-    flex: 0 0 auto;
-    text-decoration: none;
-  }
-  .pth-mark { display: block; width: 168px; height: 56px; }
-  /* The hairline stands under the mark, not across the bar, so it
-     reads as a caption rule and not a column divider. Zinc 300 rather
-     than 200 -- on solid white the 200 step nearly vanishes and the
-     lock falls apart into two loose objects (felt value; 200 is the
-     alternative if Ton wants it quieter).
-     gbppl-portal-header-2 (Ton 2026-08-19, second pass, "волосок ниже"):
-     the first pass took 40 of the mark's 56 box and the rule stood up
-     as a column divider BETWEEN two objects instead of binding them.
-     It drops to 30 -- measured off the word it separates rather than
-     off the mark, roughly twice PORTAL's own 14px cap -- and the lock
-     closes into one thing. Falls to 24 in the compact bar, the same
-     proportion against the smaller mark. */
-  .pth-rule {
-    width: 1px;
-    height: 30px;
-    background: var(--zinc-300);
-    flex: 0 0 auto;
-  }
-  /* PORTAL in the file's ONE eyebrow voice (gbppl-eyebrow-one:
-     600 / 0.12em / uppercase / Zinc 500) but a size up from the
-     eyebrow's 12: this word names the application, it is not a
-     section label. Zinc 500 keeps it a step quieter than the near
-     black mark and measures 4.83:1 on white. */
-  .pth-word {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    line-height: 1;
-    text-transform: uppercase;
-    color: var(--zinc-500);
-  }
-  /* stack: the mark steps down to the 126x42 pair the header already
-     uses on small screens (Ton-6, no new size invented) so mark + word
-     still breathe inside 80px: 42 + 2 + 12 = 56, 12px of air each
-     side. The word drops to the eyebrow's own 12px, and the hairline
-     has nothing left to divide.
-     gbppl-portal-header-2 (Ton 2026-08-19, second pass): the word
-     hangs off the RIGHT edge of the mark, not the left. The
-     handwritten mark rises from a thin ascender on the left and ends
-     in the heavy tail of "box" on the right, so a word set flush left
-     lines up against nothing while flush right lands under a real
-     edge -- and PORTAL then reads as the mark's signature line rather
-     than a second column starting over. */
-  body[data-pth-lock="stack"] .pth-lock {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-  }
-  body[data-pth-lock="stack"] .pth-mark { width: 126px; height: 42px; }
-  body[data-pth-lock="stack"] .pth-rule { display: none; }
-  body[data-pth-lock="stack"] .pth-word { font-size: 12px; }
-
-  /* ---- The right cluster ----
-     ORDER, gbppl-portal-header-3 (Ton 2026-08-19, third pass):
-       Go to website -> BOOK A MEETING -> search -> help -> cart
-     Ton's reading: the utilities hug the bar's edge, the button next,
-     and the quiet door out of the building stands NEAREST THE MIDDLE,
-     first thing past the page. The CART closes the row at the very
-     corner: the strongest position in the bar for the one control
-     that leads to checkout, and the farthest its Blue 600 badge can
-     stand from the Blue 600 button (two blues at two sizes side by
-     side read as an accident, not a system). */
-  .pth-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px; /* the .gbh-actions rhythm */
-  }
-  /* Go to website: the quietest thing in the bar, on purpose. It is a
-     door out of the application, so it must be findable and must never
-     compete with the meeting. Sentence case, not the shouty uppercase
-     of the buttons -- it is a sentence, and the case difference is
-     what tells a link from a control here. First in the cluster since
-     the third pass (nearest the middle), breathing room on its right. */
-  .pth-away {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-right: 4px;
-    padding: 8px 4px;
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: -0.1px;
-    line-height: 1;
-    color: var(--zinc-500);
-    text-decoration: none;
-    transition: color var(--mo-micro) var(--mo-move);
-  }
-  .pth-away:hover { color: var(--zinc-900); }
-  .pth-away svg { display: block; flex: 0 0 auto; }
-  /* The glyph buttons rest at the icon family's own ink (#71717A =
-     Zinc 500) and darken on hover; the 44px circle and the wash come
-     from .gbh-icon-button. */
-  .pth-icon {
-    color: var(--zinc-500);
-    transition: background var(--mo-micro) var(--mo-move),
-                color var(--mo-micro) var(--mo-move);
-  }
-  .pth-icon:hover { color: var(--zinc-700); }
-  /* The cart's count badge is the transferred header's own .gbh-count,
-     worn unmodified (gbppl-portal-header-2): 16x16 minimum, Blue 600
-     fill, 1px white ring, 10px white numeral, anchored top 2 / right 2
-     of the 44px circle. Blue because a count is a STATE (Ton-5), and
-     the same Blue 600 the meeting button wears -- one accent family,
-     two ranks of loudness. No rule of its own is needed here; this
-     comment records that the reuse is deliberate. */
-  /* The one repaint of the borrowed .gbh-cta: Blue 600 fill, Blue 700
-     hover (the live CTA hover pair). Everything else -- heights,
-     paddings, tracking, the label span -- is the .gbh-cta ladder. */
-  .pth-cta { background: var(--blue-600); }
-  .pth-cta:hover { background: var(--blue-700); }
-  /* The burger is a VIEW, not a menu (Ton's brief 2026-08-19: no
-     mobile navigation is built in this wave); it appears only in the
-     compact bar. */
-  .pth-burger { display: none; color: var(--zinc-900); }
-
-  /* Compact bar at <=900: lock + burger, nothing else. The CTA needs
-     no rule of its own -- it wears .gbh-cta, which the SMALL SCREENS
-     block already folds away at this width. */
-  @media (max-width: 900px) {
-    .pth-away,
-    .pth-icon { display: none; }
-    .pth-burger { display: grid; }
-    .pth-mark { width: 126px; height: 42px; }
-    .pth-rule { height: 24px; }
-    .pth-word { font-size: 12px; }
-    body[data-pth-lock="stack"] .pth-mark { width: 108px; height: 36px; }
-    body[data-pth-lock="stack"] .pth-word { font-size: 11px; }
-  }
 
   /* ============ FOOTER ============
      Source: LIVE PORTAL footer, Ton's screen 2026-08-12, checked line
@@ -1718,6 +1305,19 @@
     flex-direction: column;
   }
   .hero-half + .hero-half { border-left: 1px solid var(--zinc-200); }
+  /* The "or" between the two halves. gbppl-eyebrow-one (Ton
+     2026-08-19) says the file has ONE caps voice and no other caps
+     labels get invented; this one was named after it and never made
+     to BE it -- 13px / Zinc 400 against the role's 12 / Zinc 500.
+     2026-08-25 it spends the role: the word wears .gb-eyebrow
+     (shell.css, values from tokens.css) and this rule keeps only what
+     is genuinely about PLACEMENT -- the badge sits on the hairline
+     between the halves and has to paint the line out behind itself.
+     THE ONE DELIBERATE VISUAL CHANGE of the system migration, and it
+     is two properties, not one: 13px -> 12px and Zinc 400 -> Zinc 500.
+     Half a role is the bug the eyebrow pass was called to fix, so the
+     colour comes along; if Ton wants the "or" quieter than a section
+     label, that is a decision about the ROLE, taken in tokens.css. */
   .or-badge {
     position: absolute;
     left: 50%;
@@ -1725,11 +1325,6 @@
     transform: translate(-50%, -50%);
     background: var(--white);
     padding: 12px 4px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--zinc-400);
     line-height: 1;
   }
   .hero-half h2 {
@@ -1776,14 +1371,19 @@
      -0.4 from 1280): the label question waits for the portal
      measurement. The sticky-bar buttons (.btn-bar) stay on the
      compact base ladder, the ask was the two hero-block CTAs only. */
+  /* 2026-08-25: the numbers stop being written out here. Every one of
+     them was already a token in system/assets/tokens.css -- the L
+     ladder under BUTTON L and the shared type steps under LIVE BUTTON
+     LADDER -- and this rule was restating them by hand. Same values,
+     one address. */
   .btn-cta {
-    min-height: 48px; /* BUTTON L base, interpolated per Ren's proportion formula (Ton 2026-08-17) */
+    min-height: var(--btn-l-min-h);      /* 48, BUTTON L base */
     width: 100%;
-    padding: 8px 24px; /* L pad, pad-x = 0.5H, interpolated per Ren's proportion formula */
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.35px;
+    padding: var(--btn-l-pad-y) var(--btn-l-pad-x);   /* 8 / 24, pad-x = 0.5H */
+    font-size: var(--btn-font-size);
+    font-weight: var(--btn-font-weight);
+    line-height: var(--btn-line-height);
+    letter-spacing: var(--btn-letter-spacing);
     text-transform: uppercase;
     border: none;
     border-radius: var(--radius);
@@ -2024,16 +1624,16 @@
     flex-wrap: wrap;
   }
   .btn-start {
-    min-height: 48px;   /* BUTTON L base */
-    min-width: 220px;   /* felt floor, see above */
-    padding: 8px 24px;  /* pad-x = 0.5H */
+    min-height: var(--btn-l-min-h);      /* 48, BUTTON L base */
+    min-width: 220px;                    /* felt floor, see above; NO TOKEN */
+    padding: var(--btn-l-pad-y) var(--btn-l-pad-x);   /* 8 / 24, pad-x = 0.5H */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.35px;
+    font-size: var(--btn-font-size);
+    font-weight: var(--btn-font-weight);
+    line-height: var(--btn-line-height);
+    letter-spacing: var(--btn-letter-spacing);
     text-transform: uppercase;
     border: 1px solid transparent;
     border-radius: var(--radius);
@@ -2666,15 +2266,15 @@
   /* The source's .icon-button verbatim: a 44px circle, ink glyph, a 5%
      ink wash on hover. */
   .gsp-icon-btn {
-    width: 44px;
-    height: 44px;
+    width: var(--icon-button-size);      /* 44, the same atom .gbh-icon-button wears */
+    height: var(--icon-button-size);
     display: grid;
     flex: 0 0 auto;
     place-items: center;
     padding: 0;
     background: transparent;
     border: 0;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     color: var(--gh-ink);
     cursor: pointer;
     transition: background-color var(--mo-micro) var(--mo-move);
@@ -2887,17 +2487,19 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 48px;
-    padding: 8px 24px;
+    min-height: var(--btn-l-min-h);      /* 48, BUTTON L base */
+    padding: var(--btn-l-pad-y) var(--btn-l-pad-x);
     background: var(--blue-600);
     color: var(--white);
     border: 1px solid var(--blue-600);
     border-radius: var(--radius);
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.35px;
+    font-size: var(--btn-font-size);
+    font-weight: var(--btn-font-weight);
+    line-height: var(--btn-line-height);
+    letter-spacing: var(--btn-letter-spacing);
     text-transform: uppercase;
+    /* FLAT on purpose: the popup keeps one width, so the button has
+       no >=1280 / >=2000 steps. The base numbers are the ladder's. */
     text-decoration: none;   /* Call now wears the button as an <a> */
     cursor: pointer;
     transition: background-color var(--mo-micro) var(--mo-move),
@@ -3654,12 +3256,17 @@
      same ladder and typography as every prototype button, shared
      steps in LIVE BUTTON LADDER. */
   .btn-bar {
-    min-height: 36px;
-    padding: 8px 20px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.35px;
+    min-height: var(--btn-min-h);        /* 36, M base */
+    /* pad-x 20 is the M ladder's >=1280 step spent at BASE width. It
+       has been that way since the bar was cut and it is not a
+       measurement of anything; recorded here rather than quietly
+       token-swapped, because --btn-pad-x is 16 and using the xl name
+       at base would hide the anomaly instead of showing it. */
+    padding: var(--btn-pad-y) 20px;
+    font-size: var(--btn-font-size);
+    font-weight: var(--btn-font-weight);
+    line-height: var(--btn-line-height);
+    letter-spacing: var(--btn-letter-spacing);
     text-transform: uppercase;
     border-radius: var(--radius);
     white-space: nowrap;
@@ -3685,10 +3292,21 @@
      -0.4 from 1280, min-h 36 / 42 from 1280 / 48 from 2000, labels
      14 -> 16px from 1280, radius 5, no shadows. The 48 step turns on
      at exactly 2000 on live (sweep: 1999 = 42, 2000 = 48); our
-     earlier 1536 threshold is lifted. Header buttons (.gbh-cta)
-     carry their own identical steps in the header block; GET HELP
-     and SEND THIS GIFT were converted in the precision wave; the
-     PROTO panel is service chrome and stays out. */
+     earlier 1536 threshold is lifted. Header buttons (.gbh-cta) get
+     the same steps from their owner, system/components/header.css;
+     GET HELP and SEND THIS GIFT were converted in the precision
+     wave; the PROTO panel is service chrome and stays out.
+
+     2026-08-25: the three ladders that live on THIS page -- .btn-cta
+     and .btn-start (BUTTON L) and .btn-bar (M), plus the popup's flat
+     .gsp-btn -- stopped writing the numbers out and now read the
+     ladder tokens (--btn-l-* / --btn-* in tokens.css). Not one value
+     moved; they were the same numbers all along. Worth saying plainly
+     for whoever comes next: the system owns the ladder as TOKENS and
+     has no button CLASS to hand out, which is why four rules still
+     restate the same eight declarations under four names. A .gb-btn
+     organism with size and tone modifiers is the thing that would
+     retire them, and that is a decision for Ton, not a cleanup. */
   /* .btn-explore left the ladder with the masthead button (feedback R
      2026-08-17, fallback DECISIONS-BANK item 3.5) */
   /* .btn-cta left the shared size steps, first for BUTTON XL
@@ -3698,12 +3316,12 @@
      shared TYPOGRAPHY steps below. .btn-bar stays compact: the ask
      covered the two hero-block CTAs only. */
   @media (min-width: 1280px) {
-    .btn-cta { min-height: 56px; padding-left: 28px; padding-right: 28px; font-size: 16px; letter-spacing: -0.4px; } /* L >=1280, interpolated: pad-x = 0.5H */
-    .btn-bar { min-height: 42px; font-size: 16px; letter-spacing: -0.4px; }
+    .btn-cta { min-height: var(--btn-l-min-h-xl); padding-left: var(--btn-l-pad-x-xl); padding-right: var(--btn-l-pad-x-xl); font-size: var(--btn-font-size-xl); letter-spacing: var(--btn-letter-spacing-xl); } /* L >=1280 */
+    .btn-bar { min-height: var(--btn-min-h-xl); font-size: var(--btn-font-size-xl); letter-spacing: var(--btn-letter-spacing-xl); }
     /* gbppl-hero-start: the Start / Explore Gifts pair rides the same
        BUTTON L ladder as .btn-cta; min-width is the felt floor for the
        one-word START label, see the block's provenance */
-    .btn-start { min-height: 56px; min-width: 248px; padding-left: 28px; padding-right: 28px; font-size: 16px; letter-spacing: -0.4px; }
+    .btn-start { min-height: var(--btn-l-min-h-xl); min-width: 248px; padding-left: var(--btn-l-pad-x-xl); padding-right: var(--btn-l-pad-x-xl); font-size: var(--btn-font-size-xl); letter-spacing: var(--btn-letter-spacing-xl); }
     .hs-actions { gap: 24px; }
     .hs-title { font-size: 36px; margin-bottom: 36px; } /* the live section-h2 size lands from 1280; 36 down against 72 up, gbppl-hero-start-3 */
     .hs-grid { column-gap: 96px; row-gap: 56px; margin-bottom: 44px; }
@@ -3717,9 +3335,9 @@
     [data-layout="band"] .hs-grid { column-gap: 0; row-gap: 0; }
   }
   @media (min-width: 2000px) {
-    .btn-cta { min-height: 64px; padding-left: 32px; padding-right: 32px; } /* L >=2000, interpolated per Ren's proportion formula; threshold 2000 mirrors the live ladders */
-    .btn-bar { min-height: 48px; }
-    .btn-start { min-height: 64px; min-width: 272px; padding-left: 32px; padding-right: 32px; } /* gbppl-hero-start, L >=2000 */
+    .btn-cta { min-height: var(--btn-l-min-h-2xl); padding-left: var(--btn-l-pad-x-2xl); padding-right: var(--btn-l-pad-x-2xl); } /* L >=2000; the threshold mirrors the live ladders */
+    .btn-bar { min-height: var(--btn-min-h-2xl); }
+    .btn-start { min-height: var(--btn-l-min-h-2xl); min-width: 272px; padding-left: var(--btn-l-pad-x-2xl); padding-right: var(--btn-l-pad-x-2xl); } /* gbppl-hero-start, L >=2000 */
   }
 
   /* Collapsed state: bar stays fixed to the viewport bottom for as long as gifts exist,
@@ -3922,9 +3540,9 @@
      hairline becomes a horizontal one with OR at its middle, CTAs are
      already full-width, type roles scale by clamp (same roles in A and
      B, only texts differ). Layout stacks so the content has room; the
-     transferred header and footer get a minimal fallback of our own
-     (v1's real mobile breakpoints were not carried, see header
-     provenance). */
+     header and footer get a minimal fallback of our own (v1's real
+     mobile breakpoints were not carried; the header's fallback now
+     comes from header.css with the rest of the component). */
   @media (max-width: 900px) {
     .layout { flex-direction: column; }
     .layout .sidebar { order: 2; width: 100%; }
@@ -3965,12 +3583,11 @@
     /* Demo chrome: the PROTO panel keeps its right-edge anchor on
        phones; the edge tab folds it away when it covers content
        (Ton's feedback 2026-08-12) */
-    /* Bar keeps the 80px height here: live is 80 at every width
-       (harvest public-home 2026-08-17); the old 72px override is lifted */
-    .gbh-bar { grid-template-columns: auto 1fr auto; gap: 16px; }
-    .gbh-nav { display: none; }
-    .gbh-brand { width: 126px; height: 42px; }
-    .gbh-cta { display: none; }
+    /* The site bar's compact step (grid loses its fixed brand column,
+       nav and CTA fold away, mark shrinks to 126x42, height stays 80)
+       is header.css's own @media (max-width: 900px) -- the same four
+       rules stood here word for word and left with the rest of the
+       hand-written copy on 2026-08-25. */
     .footer__main { grid-template-columns: 1fr 1fr; padding: 40px 0; }
     .footer__legal { flex-wrap: wrap; gap: 12px; padding: 16px 0; }
     /* gbppl-hero-start on phones: the 2x2 folds to one column, the
@@ -4044,6 +3661,7 @@
 <!-- wave-2026-08-18e marker: gbppl-start-panel -->
 <!-- wave-2026-08-19a marker: gbppl-portal-header -->
 <!-- wave-2026-08-19b marker: gbppl-portal-header-2 -->
+<!-- wave-2026-08-25 marker: gbppl-portal-system -->
 
   <!-- ============ PORTAL HEADER (?pth=1) ============
        gbppl-portal-header. The portal's own bar, off unless ?pth=1
@@ -4055,16 +3673,16 @@
        loud thing in the bar, and blue because in the portal the
        meeting is the state of the moment -- and last, hard against the
        edge, the door back to the website. -->
-  <header class="pth">
-    <div class="wrapper pth-bar">
+  <header class="gbh-pbar">
+    <div class="wrapper gbh-pbar__row">
       <!-- Inert like every link in this prototype; the real target of
            the lock is the portal home. -->
-      <a class="pth-lock" href="#" aria-label="GildedBox Portal, home">
-        <img class="pth-mark" src="../system/icons/gildedbox-logo.svg" alt="GildedBox">
-        <span class="pth-rule" aria-hidden="true"></span>
-        <span class="pth-word">Portal</span>
+      <a class="gbh-lock" href="#" aria-label="GildedBox Portal, home">
+        <img class="gbh-lock__mark" src="../system/icons/gildedbox-logo.svg" alt="GildedBox">
+        <span class="gbh-lock__rule" aria-hidden="true"></span>
+        <span class="gbh-lock__word">Portal</span>
       </a>
-      <div class="pth-actions">
+      <div class="gbh-pbar__actions">
         <!-- gbppl-portal-header-3 (T 19.08, evening): the cluster reads
              link -> button -> icons, the quiet door nearest the middle,
              the utilities at the bar's edge. The cart moved to the very
@@ -4075,23 +3693,24 @@
              48-arrow-up-right, family geometry at 13px so it sits on
              the text, currentColor so it dims and darkens with the
              sentence it belongs to. -->
-        <a class="pth-away" href="#">
+        <a class="gbh-away" href="#">
           Go to website
           <svg width="13" height="13" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M7.00002 41L41 7L40.801 7.19902" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M25 7H41V23" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
         </a>
         <!-- Wears .gbh-cta for the whole live M ladder and the live
-             label span; .pth-cta repaints it blue and nothing else. -->
-        <a class="gbh-cta pth-cta" href="#"><span data-pc-section="label">Book a Meeting</span></a>
+             label span. Nothing repaints it: the system CTA has been
+             Blue 600 since the 24.08 live re-sync. -->
+        <a class="gbh-cta" href="#"><span data-pc-section="label">Book a Meeting</span></a>
         <!-- Placeholder: no overlay is built in this wave. The title
              carries both the scope (your portal, not the catalog) and
              the shortcut we intend to honour. Glyph = nucleo
              48-magnifier, transplanted whole. -->
-        <button class="gbh-icon-button pth-icon" type="button" aria-label="Search your portal" title="Search your portal (⌘K)">
+        <button class="gbh-icon-button gbh-pbar__icon" type="button" aria-label="Search your portal" title="Search your portal (⌘K)">
           <svg width="22.8" height="22.8" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M18 31C25.1797 31 31 25.1797 31 18C31 10.8203 25.1797 5 18 5C10.8203 5 5 10.8203 5 18C5 25.1797 10.8203 31 18 31Z" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M27.192 27.1919L30.732 30.7319" stroke="currentColor" stroke-width="1.684" fill="none" stroke-linecap="butt"></path><path d="M34.2674 30.7322C33.2911 29.7559 31.7082 29.7559 30.7319 30.7322C29.7556 31.7085 29.7556 33.2915 30.7319 34.2678L38.7321 42.268C39.7084 43.2443 41.2913 43.2443 42.2676 42.268C43.2439 41.2917 43.2439 39.7088 42.2676 38.7324L34.2674 30.7322Z" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
         </button>
         <!-- Glyph = nucleo 48-circle-question, transplanted whole; the
              dot keeps its fill, as circle-info.svg does in icons/. -->
-        <button class="gbh-icon-button pth-icon" type="button" aria-label="Help" title="Help and guides">
+        <button class="gbh-icon-button gbh-pbar__icon" type="button" aria-label="Help" title="Help and guides">
           <svg width="22.8" height="22.8" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M24 45C35.598 45 45 35.598 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 35.598 12.402 45 24 45Z" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M24 36C24.5523 36 25 35.5523 25 35C25 34.4477 24.5523 34 24 34C23.4477 34 23 34.4477 23 35C23 35.5523 23.4477 36 24 36Z" fill="currentColor" stroke="currentColor" stroke-width="1.684"></path><path d="M18 17.3704C18.9237 13.7262 21.7932 11.8392 25.0058 12.0107C28.1782 12.1792 31.1313 13.9874 30.9955 18.1802C30.8015 24.1411 24.685 23.3328 24.0016 29" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
         </button>
         <!-- Cart at the very corner (gbppl-portal-header-3): the
@@ -4103,14 +3722,14 @@
              non-zero so the badge can be judged. Glyph = nucleo
              48-cart, basket, handle and wheels verbatim; the three
              3-unit content ticks dropped (1.4px at this box reads as
-             lint). Badge = the transferred header's own .gbh-count. -->
-        <button class="gbh-icon-button pth-icon" type="button" aria-label="Cart, 3 items" title="Your cart" data-gbppl-cart>
+             lint). Badge = the system's own .gbh-count, unmodified. -->
+        <button class="gbh-icon-button gbh-pbar__icon" type="button" aria-label="Cart, 3 items" title="Your cart" data-gbppl-cart>
           <svg width="22.8" height="22.8" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M8.49994 10H41L37.569 21.4367C36.9345 23.5517 34.9879 25 32.7798 25H10.4999" stroke="currentColor" stroke-width="1.684" fill="none" stroke-linecap="butt"></path><path d="M11 45C13.2091 45 15 43.2091 15 41C15 38.7909 13.2091 37 11 37C8.79086 37 7 38.7909 7 41C7 43.2091 8.79086 45 11 45Z" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M37 45C39.2091 45 41 43.2091 41 41C41 38.7909 39.2091 37 37 37C34.7909 37 33 38.7909 33 41C33 43.2091 34.7909 45 37 45Z" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M41 32H9.46174C7.17727 32 6.08953 29.1885 7.77914 27.651L10.6923 25L7.81067 5.14103C7.63231 3.91188 6.57863 3.00005 5.33661 3.00003L3 3" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
           <span class="gbh-count" aria-hidden="true">3</span>
         </button>
         <!-- View only: the compact bar shows a burger, no menu opens.
              Glyph = nucleo 48-menu, transplanted whole. -->
-        <button class="gbh-icon-button pth-burger" type="button" aria-label="Menu">
+        <button class="gbh-icon-button gbh-pbar__burger" type="button" aria-label="Menu">
           <svg width="22.8" height="22.8" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M3 24H45" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M3 11H45" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M3 37H45" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
         </button>
       </div>
@@ -4122,7 +3741,7 @@
        the earlier v1/public composition is lifted). Inert visual; hidden in
        nav=ton, the masthead stands in. Beta chip = legacy gold of the live
        site, carried as is. -->
-  <header class="gb-header">
+  <header class="gb-header gb-header--sticky">
     <div class="wrapper gbh-bar">
       <a href="#" class="gbh-brand" aria-label="GildedBox home"><img src="../system/icons/gildedbox-logo.svg" alt="GildedBox"></a>
       <nav class="gbh-nav" aria-label="Primary navigation">
@@ -4327,7 +3946,7 @@
                 </ul>
                 <button class="btn-cta btn-cta-black">Explore Gifts</button>
               </div>
-              <span class="or-badge" aria-hidden="true">or</span>
+              <span class="or-badge gb-eyebrow" aria-hidden="true">or</span>
             </div>
           </div>
         </div>
@@ -4356,7 +3975,7 @@
                 </ul>
                 <button class="btn-cta btn-cta-black">Explore Gifts</button>
               </div>
-              <span class="or-badge" aria-hidden="true">or</span>
+              <span class="or-badge gb-eyebrow" aria-hidden="true">or</span>
             </div>
           </div>
         </div>
@@ -5087,7 +4706,14 @@
   var btnPthOff     = document.getElementById('btnPthOff');
   var btnPthDivider = document.getElementById('btnPthDivider');
   var btnPthStack   = document.getElementById('btnPthStack');
+  /* The lock's stack sub-variant is a MODIFIER on the system atom
+     (.gbh-lock--stack, header.css) since 2026-08-25, not a body
+     attribute the page styles through: the atom's owner owns both of
+     its shapes. data-pth-lock stays on the body all the same -- the
+     PROTO panel and the shared link read it back, and it is what tells
+     the two switches apart. */
   function setPth(lock) {
+    var portalLock = document.querySelector('.gbh-pbar .gbh-lock');
     if (lock === 'divider' || lock === 'stack') {
       document.body.setAttribute('data-pth', '1');
       document.body.setAttribute('data-pth-lock', lock);
@@ -5095,6 +4721,7 @@
       document.body.removeAttribute('data-pth');
       document.body.removeAttribute('data-pth-lock');
     }
+    if (portalLock) portalLock.classList.toggle('gbh-lock--stack', lock === 'stack');
     btnPthOff.classList.toggle('variant-active', lock !== 'divider' && lock !== 'stack');
     btnPthDivider.classList.toggle('variant-active', lock === 'divider');
     btnPthStack.classList.toggle('variant-active', lock === 'stack');
@@ -5880,5 +5507,90 @@
 })();
 </script>
 
+<!-- ============================================================
+     gbppl-portal-system — THE PORTAL BECOMES A CONSUMER OF THE
+     SYSTEM, 2026-08-25. The wave note; the head of this file says
+     what is linked and why.
+
+     WHY. This was the last live page still holding the system in its
+     own hands: a private :root of the token file's own 45 values, and
+     222 lines re-writing system/components/header.css under that
+     file's class names. The 24.08 audit put it on the list ("на суде
+     Тона"); Ton-8 had already named it — на лайве никакого хардкода —
+     and Ton, 24.08, had named the disease: "компонент выверяется один
+     раз у владельца, потребители носят классы чисто, локальные
+     переопределения = брак". The copy had begun to drift: the owner
+     was re-synced with live on 24.08, this page was not.
+
+     METHOD. A reference was taken first: every element of the page in
+     15 views (default, ?pth=1, &lock=stack, ?hero=start, the three
+     nav skins, the three &layout= arrangements, ?v=loaded, the START
+     popup at all three of its steps, the PROTO panel open) at 1280 and
+     1920 — rect plus 120 computed properties per element, plus hover
+     probes on thirteen controls. 2 013 058 properties. Every step was
+     re-measured against it and diffed.
+
+     RESULT: 1 634 properties different out of 2 013 058, and all of
+     them fall in three named buckets. Nothing else on the page moved
+     by a hundredth of a pixel.
+       552  box-sizing on ::before / ::after (hero, hs-grid, li,
+            snav-icon). This page's own * rule never covered pseudos;
+            shell.css's reset does. No geometry changed with it —
+            those pseudos are hairlines and flex spacers with no
+            padding or border to re-measure.
+       306  the two hover clocks named in the SITE HEADER block:
+            .gbh-link and .gbh-icon-button take the owner's
+            live-measured 300ms cubic-bezier(.4,0,.2,1) where this
+            copy still held the pre-resync 160ms.
+       776  the "or" badge, the one deliberate visual change, in the
+            eight views that show the two-half hero. 13px -> 12px and
+            Zinc 400 -> Zinc 500: it spends the eyebrow role now
+            instead of being named after it. See the .or-badge rule.
+     Full-page screenshots agree: the only pixels that move are the
+     20x36 box the word "or" stands in. (Five frames carry animation
+     noise — the PROTO panel mid-open, the chat typing dots, the panel
+     edge tab; the same noise appears between two runs of identical
+     code, and the property sweep is the instrument of record.)
+
+     WHAT THIS WAVE DID NOT TOUCH, and why — the audit's remaining
+     items, written down rather than quietly closed:
+       · .concierge-composer__field input is NOT swapped for the
+         system's .gba-input. They are not the same control: 44px
+         fixed against the auth ladder's 48/56/64, pad-x 4 against
+         12/16, Zinc/gh inks that differ, 15-16px clamp against
+         14/16/18 at weight 300. Wearing .gba-input would have been a
+         visible redesign of the concierge composer, and this wave was
+         allowed exactly one visible change. It is a question for Ton:
+         does the portal's composer become the system's field, or is
+         the composer's input its own atom?
+       · .wrapper is NOT swapped for .gb-container. Their ladders
+         genuinely differ: .wrapper is 24px from zero and drops to 16
+         only under 768; .gb-container is 16 until 1280 and 24 above.
+         Between 769 and 1279 the two disagree by 8px a side. Which
+         one is right is a live measurement nobody has taken.
+       · the --gh-* block stays local. It is the v1 catalog's own
+         palette, carried in with the START popup, and the four values
+         marked NO TOKEN (paper, ink-soft, muted, the green) have no
+         system counterpart. Promoting them would be inventing system
+         colour, not recording it.
+       · the button ladders still live as four rules under four names
+         because the system owns the ladder as TOKENS and has no
+         button class to hand out. They read the tokens now. See the
+         LIVE BUTTON LADDER block.
+
+     WHAT MOVED INTO THE SYSTEM:
+       header.css  block "ВАРИАНТ: PORTAL BAR" — the whole portal bar
+                   (.gbh-pbar and its row, actions, away link, icon
+                   ink, burger), .gbh-lock--stack, and the shared
+                   .gb-header--sticky for bars assembled from classes.
+                   header.css had asked for the lock sweep in writing;
+                   it is done.
+       shell.css   .gb-eyebrow — the caps role had tokens since 19.08
+                   but no class anywhere in system/components/, so
+                   oro.css and checkout.html each wrote their own.
+                   Now it has a home and they are harmless duplicates.
+     tokens.css was not edited: everything this page needed was
+     already in it.
+     ============================================================ -->
 </body>
 </html>
