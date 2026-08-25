@@ -1,0 +1,533 @@
+/* ============================================================
+   SYSTEM COMPONENT: BOOKING FLOW                gbppl-booking-1
+   ------------------------------------------------------------
+   Тон, 25.08: «Заменить виджет на наш Book a Meeting флоу и
+   дизайн, который мы сделали на странице портала (будет работать
+   через API, не iframe). Перед этим идёт форма: несколько полей,
+   потом резервация слота, потом подтверждение».
+
+   Что было на лайве (harvest public-book-a-meeting, 25.08,
+   https://www.gildedbox.com/page/contact-us-219): лид-форма из
+   пяти полей, а за кнопкой CONTINUE — чужой iframe
+   meetings-na2.hubspot.com со своим синим, своей типографикой и
+   своей встречей на 15 минут. Здесь от лайва остаются ТОЛЬКО
+   данные (поля, правила, тексты ошибок, ротация плейсхолдера);
+   всё, что видно, — наше (Тон-9: входящее трансформируется под
+   систему, а не вплетается as is).
+
+   ЧТО ЗДЕСЬ НЕ РИСУЕТСЯ ЗАНОВО (Тон-6, переиспользование прежде
+   рисования):
+     поля       организм авторизации целиком — <gb-field> из
+                auth.js и .gba-field/.gba-label/.gba-inputwrap/
+                .gba-input/.gba-error из auth.css. Никаких своих
+                инпутов, лейблов и сообщений об ошибке в этом
+                файле НЕТ.
+     кнопки     .gba-btn (лестница 48/56/64, лейбл 14/15/16) —
+                Continue шага 1 и Confirm шага 2 носят её.
+     календарь  перенос двери Book a Meeting из попапа START
+                (live\portal.html, .gsp-cal / .gsp-day / .gsp-slot,
+                gbppl-cal-circle 19.08): круглая ячейка дня, синий
+                выбранный день (Тон-5: синий = состояние), чипы
+                слотов с той же геометрией.
+     галка      рисующаяся синяя галка конфирмации оттуда же
+                (.gsp-booked-*, gbppl-start-booked 19.08): кольцо
+                разматывается из двенадцати часов, тик идёт следом,
+                560ms end to end на --mo-move. Ton-7: вежливой
+                ветки prefers-reduced-motion у подписи НЕТ.
+
+   ЧТО РОДИЛОСЬ ЗДЕСЬ И ПОЧЕМУ (только то, чего в системе не было):
+     .gbb-steps  индикатор трёх шагов. Голоса своего не заводит:
+                 подписи носят роль EYEBROW (.gb-eyebrow, shell.css
+                 25.08 — «других капс-подписей не заводим», Тон
+                 19.08), здесь только геометрия ряда. Текущий шаг
+                 синий — состояние, не мебель.
+     .gbb-phone  строка «код страны + номер»: у живого поля стоит
+                 vue-tel-input с флагами, у нас флагов нет (правило
+                 иконошрифта/растровых глифов), остаются код и имя
+                 страны в списке.
+     .gbb-panel  белая карточка шага на грунте страницы: та же
+                 пара «белое на бумаге + волосок #dedee2», что у
+                 .gsp-card портала.
+     .gbb-sum    сводка встречи на шаге 3: строки «ярлык / факт».
+
+   Разметку даёт booking.js (<gb-booking-flow>), рядом обязаны
+   стоять tokens.css, shell.css, auth.css и auth.js.
+   ============================================================ */
+
+/* ---------------- БАЗА ОРГАНИЗМА ----------------
+   Тот же грунт и тот же preflight, в котором живут поля
+   авторизации (auth.css «БАЗА ЗОНЫ»): .gba-input даёт ширину
+   только нижнему бордеру и рассчитывает, что остальные три
+   обнулены. Скоуп — сам элемент, наружу ничего не течёт. */
+gb-booking-flow {
+  display: block;
+  color: var(--catalog-ink);
+  line-height: 1.5;
+}
+gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
+  border-width: 0;
+  border-style: solid;
+  border-color: var(--preflight-border);
+}
+
+/* ---------------- ШАПКА СТРАНИЦЫ ЗАПИСИ ----------------
+   Заголовок и лид живут ЗДЕСЬ, а не в разметке страницы: лайв —
+   чистый потребитель системы, и рисовать у себя даже одну пару
+   «серифный h1 + 16px» ему нельзя (Тон-8; прецедент 23.08 с
+   самодельным лейблом кнопки Enter). Пара стоит над организмом и
+   ходит с ним в комплекте.
+   Регистр — sentence case, как у живой страницы («Tell us your
+   gifting needs, we do the rest:») и как договорились 24.08. */
+.gbb-page { padding: 40px 0 64px; }
+@media (min-width: 768px)  { .gbb-page { padding: 56px 0 80px; } }
+@media (min-width: 1280px) { .gbb-page { padding: 72px 0 96px; } }
+.gbb-pagehead {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 24px;
+  text-align: center;
+}
+@media (min-width: 768px)  { .gbb-pagehead { margin-bottom: 32px; } }
+@media (min-width: 1280px) { .gbb-pagehead { max-width: 720px; margin-bottom: 40px; } }
+.gbb-h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.6px;
+  color: var(--zinc-900);
+}
+@media (min-width: 768px)  { .gbb-h1 { font-size: 40px; } }
+@media (min-width: 1280px) { .gbb-h1 { font-size: 48px; } }
+.gbb-lede {
+  margin: 12px 0 0;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--zinc-500);
+}
+
+/* Колонка организма. Уже, чем контейнер страницы: форма и
+   календарь — вертикальный разговор, а не полотно. */
+.gbb-flow {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+@media (min-width: 1280px) {
+  .gbb-flow { max-width: 720px; }
+}
+
+/* ---------------- ИНДИКАТОР ШАГА ----------------
+   Три засечки в ряд, каждая — номер в кружке и слово. Пройденный
+   шаг гаснет в zinc-400, текущий синий (Тон-5), будущий держит
+   голос лейбла. Линия между засечками тянется, чтобы ряд читался
+   дорогой, а не тремя чипами. */
+.gbb-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+@media (min-width: 768px) {
+  .gbb-steps { gap: 12px; margin-bottom: 28px; }
+}
+.gbb-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.gbb-step-dot {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--zinc-300);
+  border-radius: var(--radius-circle);
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--zinc-500);
+  transition: background-color var(--mo-micro) var(--mo-move),
+              border-color var(--mo-micro) var(--mo-move),
+              color var(--mo-micro) var(--mo-move);
+}
+/* Голос — роль EYEBROW (.gb-eyebrow из shell.css, 25.08): у
+   системы одна капс-подпись, и своей второй здесь не заводится
+   (Тон, 19.08). Класс носит разметка, тут только геометрия и
+   состояния. */
+.gbb-step-name {
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Ниточка между засечками. Съедает остаток строки, поэтому ряд
+   раскладывается сам на любой ширине. */
+.gbb-step-rail {
+  flex: 1 1 auto;
+  min-width: 12px;
+  height: 1px;
+  background: var(--zinc-200);
+}
+.gbb-step.is-now .gbb-step-dot {
+  background: var(--blue-600);
+  border-color: var(--blue-600);
+  color: var(--white);
+}
+.gbb-step.is-now .gbb-step-name { color: var(--blue-600); }
+.gbb-step.is-done .gbb-step-dot {
+  border-color: var(--zinc-200);
+  color: var(--zinc-400);
+}
+.gbb-step.is-done .gbb-step-name { color: var(--zinc-400); }
+/* На телефоне имена шагов уходят: три слова caps в 358 доступных
+   пикселей встают лесенкой и перестают быть тихими. Остаются
+   номера и дорога между ними, а имя текущего шага и так стоит
+   заголовком карточки под ними. */
+@media (max-width: 639px) {
+  .gbb-step-name { display: none; }
+  .gbb-step.is-now .gbb-step-name { display: block; }
+}
+
+/* ---------------- КАРТОЧКА ШАГА ----------------
+   Белое на бумаге и волосок --v1-border: та же пара, что несёт
+   .gsp-card в попапе START. */
+.gbb-panel {
+  background: var(--white);
+  border: 1px solid var(--v1-border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+}
+@media (min-width: 768px)  { .gbb-panel { padding: 28px 24px; } }
+@media (min-width: 1280px) { .gbb-panel { padding: 36px 32px; } }
+
+.gbb-head { margin-bottom: 20px; }
+@media (min-width: 768px) { .gbb-head { margin-bottom: 28px; } }
+.gbb-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.4px;
+  color: var(--zinc-900);
+}
+@media (min-width: 768px)  { .gbb-title { font-size: 26px; } }
+@media (min-width: 1280px) { .gbb-title { font-size: 28px; } }
+/* 16px базовый текст — на всех ширинах, без «мелкого блеклого». */
+.gbb-sub {
+  margin: 8px 0 0;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+
+/* ---------------- ТЕЛЕФОН: КОД СТРАНЫ + НОМЕР ----------------
+   Живое поле — vue-tel-input: флаг, каретка, за ними номер, всё
+   на одной подчёркнутой строке. Флаги мы не рисуем, поэтому
+   триггер несёт код (+1), а список — имя страны и код. Строка
+   собрана из ДВУХ частей, чтобы .gba-input остался собой: слева
+   кнопка, справа обычный инпут организма авторизации. */
+.gbb-phone { position: relative; display: flex; align-items: stretch; }
+.gbb-phone .gba-input { flex: 1 1 auto; min-width: 0; }
+.gbb-phone-trigger {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--form-ctl-h);
+  padding: 0 12px;
+  background: transparent;
+  border-color: var(--zinc-400);
+  border-bottom-width: 1px;
+  border-radius: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.2px;
+  color: var(--zinc-800);
+  transition: border-color var(--mo-micro) var(--mo-move);
+}
+.gbb-phone-trigger:hover { border-color: var(--blue-600); }
+.gbb-phone-trigger svg { width: 12px; height: 12px; color: var(--zinc-500); }
+@media (min-width: 1280px) {
+  .gbb-phone-trigger { min-height: var(--form-ctl-h-xl); font-size: 16px; }
+}
+@media (min-width: 2000px) {
+  .gbb-phone-trigger { min-height: var(--form-ctl-h-2xl); font-size: 18px; padding: 0 16px; }
+}
+/* Поле в ошибке красит ОБЕ половины строки, иначе подчёркивание
+   рвётся пополам (правило .gba-input.invalid перекрывает hover
+   там, здесь тем же способом). */
+.gbb-phone.invalid .gbb-phone-trigger,
+.gbb-phone.invalid .gbb-phone-trigger:hover { border-color: var(--red-500); }
+
+.gbb-phone-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  width: 260px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+  background: var(--white);
+  border: 1px solid var(--v1-border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+}
+.gbb-phone-menu[hidden] { display: none; }
+.gbb-phone-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--zinc-800);
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+.gbb-phone-option:hover { background: var(--zinc-100); }
+.gbb-phone-option[aria-selected="true"] { color: var(--blue-600); }
+.gbb-phone-option span:last-child { color: var(--zinc-500); }
+
+/* ---------------- КАЛЕНДАРЬ ----------------
+   Перенос из live\portal.html (.gsp-cal*, дверь Book a Meeting в
+   попапе START). Числа те же; изменилось одно: круг дня 44 -> 40
+   ниже 768, потому что здесь семь дорожек делят ширину телефона,
+   а не ширину попапа. Стрелки месяца тут ЖИВЫЕ (в попапе они
+   стояли заглушками), поэтому у них курсор и hover. */
+.gbb-cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.gbb-cal-month {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--zinc-900);
+}
+.gbb-cal-arrows { display: flex; gap: 2px; }
+.gbb-cal-arrow {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--zinc-600);
+  transition: background-color var(--mo-micro) var(--mo-move),
+              color var(--mo-micro) var(--mo-move);
+}
+.gbb-cal-arrow:hover:not(:disabled) { background: var(--zinc-100); }
+.gbb-cal-arrow:disabled { color: var(--zinc-300); cursor: default; }
+
+.gbb-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+/* Шапка недели и подпись над слотами — та же одна капс-роль
+   .gb-eyebrow; у попапа портала они стояли на своих 11/0.08em,
+   и это как раз тот случай, когда входящее приводится к системе. */
+.gbb-dow {
+  text-align: center;
+  padding-bottom: 8px;
+}
+/* gbppl-cal-circle (Тон, 19.08): выбранный день — КРУГ, конвенция
+   календарей, независимо от --radius кнопок. Квадрат фиксированного
+   размера по центру 1fr-дорожки держит hover и выбор одной формой. */
+.gbb-day {
+  width: 40px;
+  height: 40px;
+  justify-self: center;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--zinc-900);
+  transition: background-color var(--mo-micro) var(--mo-move),
+              color var(--mo-micro) var(--mo-move);
+}
+@media (min-width: 768px) { .gbb-day { width: 44px; height: 44px; } }
+.gbb-day:hover:not(:disabled):not(.sel) { background: var(--zinc-100); }
+.gbb-day:disabled { color: var(--zinc-300); cursor: default; }
+.gbb-day.sel { background: var(--blue-600); color: var(--white); }
+
+/* ---------------- СЛОТЫ ---------------- */
+.gbb-slot-label { margin: 22px 0 10px; }
+/* Встреча 15-минутная, поэтому рабочий день даёт 32 чипа, а не
+   восемь: ряд из flex-wrap превращался в рваную лесенку, и слоты
+   встают сеткой равных дорожек. Геометрия чипа — из попапа. */
+.gbb-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+.gbb-slot {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--v1-border);
+  border-radius: var(--radius);
+  background: var(--white);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--zinc-700);
+  transition: background-color var(--mo-micro) var(--mo-move),
+              border-color var(--mo-micro) var(--mo-move),
+              color var(--mo-micro) var(--mo-move);
+}
+.gbb-slot:hover:not(.sel) { background: var(--zinc-50); border-color: var(--zinc-300); }
+.gbb-slot.sel {
+  background: var(--blue-600);
+  border-color: var(--blue-600);
+  color: var(--white);
+}
+/* Пустой день (всё занято или день ещё не выбран) говорит словами,
+   а не пустотой. */
+.gbb-slots-empty {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+/* Две таймзоны: чья встреча в Чикаго и сколько это по часам гостя.
+   16px, потому что это текст, а не подпись. */
+.gbb-tz {
+  margin: 14px 0 0;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+.gbb-tz strong { font-weight: 500; color: var(--zinc-900); }
+
+/* ---------------- КОНФИРМАЦИЯ ----------------
+   Перенос gbppl-start-booked (Тон, 19.08: конфирмация — состояние
+   со своей типографикой, «no banner, no green, no confetti»).
+   Единственная новая метка — синяя галка, и она рисуется. */
+.gbb-booked { text-align: center; }
+.gbb-booked-check { width: 56px; height: 56px; color: var(--blue-600); }
+/* Обе фигуры — штрихованные пути, рисование это их собственный
+   dash, который расходится: в DOM ничего не добавляется и ничто
+   не прыгает. 560ms end to end на --mo-move, кривой, которой в
+   этой системе ходят панели. */
+.gbb-booked-ring {
+  stroke-dasharray: 164;     /* 2*pi*26, длина окружности */
+  stroke-dashoffset: 164;
+  animation: gbb-draw 520ms var(--mo-move) forwards;
+}
+.gbb-booked-tick {
+  stroke-dasharray: 32;      /* две ноги галки, замер */
+  stroke-dashoffset: 32;
+  animation: gbb-draw 300ms var(--mo-move) 260ms forwards;
+}
+@keyframes gbb-draw { to { stroke-dashoffset: 0; } }
+.gbb-booked-title {
+  margin: 20px 0 0;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.4px;
+  color: var(--zinc-900);
+}
+@media (min-width: 768px) { .gbb-booked-title { font-size: 30px; } }
+/* Факт, за которым пришёл гость: второй после титула и вплотную
+   к нему, чтобы два читались одним предложением. */
+.gbb-booked-when {
+  margin: 10px 0 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  color: var(--zinc-900);
+}
+@media (min-width: 768px) { .gbb-booked-when { font-size: 20px; } }
+
+/* Сводка: ярлык слева, факт справа, волосок между строками. */
+.gbb-sum {
+  margin: 24px 0 0;
+  border: 1px solid var(--v1-border);
+  border-radius: var(--radius);
+  text-align: left;
+}
+.gbb-sum-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+}
+.gbb-sum-row + .gbb-sum-row { border-top-width: 1px; border-top-color: var(--v1-border); }
+.gbb-sum-key { flex: 0 0 auto; }
+.gbb-sum-val {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: right;
+  color: var(--zinc-900);
+}
+.gbb-sum-val span { display: block; font-weight: 300; color: var(--zinc-500); }
+
+/* Два тихих выхода в подвале карточки: ссылки, не кнопки — этот
+   шаг уже ничего не просит. */
+.gbb-exits {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+.gbb-quiet {
+  background: transparent;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--zinc-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--zinc-300);
+  transition: color var(--mo-micro) var(--mo-move),
+              text-decoration-color var(--mo-micro) var(--mo-move);
+}
+.gbb-quiet:hover { color: var(--blue-600); text-decoration-color: var(--blue-600); }
+/* Тот же скоуп-фикс, что у a.gba-btn в auth.css: body.gb-demo a
+   { color: inherit; text-decoration: none } из shell.css весит
+   0-1-2 и перебивает .gbb-quiet (0-1-0) — «Back to site» рендерился
+   без подчёркивания и не синел под курсором. Антидоту нужна полная
+   сила 0-2-1. */
+a.gbb-quiet,
+body.gb-demo a.gbb-quiet {
+  color: var(--zinc-600);
+  text-decoration: underline;
+  text-decoration-color: var(--zinc-300);
+}
+a.gbb-quiet:hover,
+body.gb-demo a.gbb-quiet:hover {
+  color: var(--blue-600);
+  text-decoration-color: var(--blue-600);
+}
+.gbb-exit-dot { color: var(--zinc-300); }
+
+/* Прототип говорит вслух, что за ним нет бэкенда — та же нота,
+   что .gsp-note в попапе START. */
+.gbb-note {
+  margin: 14px 0 0;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--zinc-500);
+}
