@@ -6,6 +6,51 @@
 <title>GildedBox · Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-hub-12 — THE HUB STARTS LOOKING LIKE GILDEDBOX, AND IT
+     LETS YOU OUT WHERE YOU WANT TO GO.
+
+     Ton, 2026-08-25, verbatim: «Мелковатые шрифты, и она выглядит
+     немного непохожей на дизайн-систему GildedBox. Структурно она
+     ок, но общее ощущение не то. Плюс оттуда у меня нет возможности
+     перейти на нужную мне страницу (может, это и не надо).»
+
+     Three answers, and the structure he called ok is untouched: the
+     gate, the hash, the timer, the studio bar and the three doors
+     are where they were.
+
+     1. THE TYPE IS THE SITE'S TYPE NOW. Not «a couple of pixels
+        bigger» — the roles were measured off live\index.html at 1280
+        and 1920 with headed Chrome and worn whole (weight, leading
+        and tracking included, trap 11 of the skill):
+
+          Design Studio        = live home hero h1   36 → 48 @1280
+          the three door titles= live home section h2 28 → 40 @1280
+                                 («Curated Gifts For:»)
+          descriptions         = live body base + one step, 16 → 18
+          the page subtitle    = 18 → 20
+          the stops            = live body base, 16
+
+        Nothing on this page is under 14 any more, and the eyebrow
+        over each door («Live» over «Live Prototype») is gone: it
+        said the title twice, and the known is not shouted (Russell).
+        The map of roles and their provenance lives in the header of
+        system\components\studio.css.
+
+     2. EVERY DOOR SHOWS THE ROOM BEHIND IT. A studio of nothing but
+        words does not look like GildedBox. Each door now carries a
+        screenshot of the real page it opens — the home page, the
+        checkout V2 sandbox, the Oro button matrix — shot with the
+        instrument at 1440×900 and kept at 960×600 in
+        system\assets\studio\. They are studio furniture, so
+        studio.css owns them.
+
+     3. THE DOORS LET YOU OUT MID-WAY. Under each description is a
+        quiet row of stops: the pages of the walk, the pages that
+        have a sandbox open (read out of the registry, not typed
+        here), the pages of the showcase. That row is what turned
+        the door from one <a> into a div — see the note over the
+        markup below, and the card anatomy in studio.css.
+
      gbppl-hub-11 — LIVE OPENS THE SITE, NOT A PAGE ABOUT IT.
 
      Ton, 2026-08-24: «Live должен открывать сразу сайт — главную
@@ -25,6 +70,10 @@
      The door keeps its footer line «Portal · Catalog · Checkout». It
      was never a set of links — it is a description of what lies
      behind the door, and all three are still in there.
+     (Overtaken by hub-12: it IS a set of links now, plus Book a
+     meeting. Ton asked to be able to leave the hub for the page he
+     actually wants, and a line that names three rooms and opens
+     none of them was the wrong half of the answer.)
 
      gbppl-hub-10 — THE HUB COMES BACK. The gate opens onto an
      OVERVIEW of the three rooms, not into one of them.
@@ -231,32 +280,38 @@
    (126x42, the pth bar's small step). No new size invented. */
 .gate-mark { display: block; width: 126px; height: 42px; margin: 0 auto; }
 
-/* The serif title. This is exactly the auth organism's verify-step
-   title (.gba-vh1): Noto Serif 500, 22 / 28 from 1280, leading
-   tight, tracking -0.025em — the one serif that route allows. */
+/* The serif title, on the SAME role the doors behind the gate wear
+   since hub-12: the live home page's section heading («Curated
+   Gifts For:»), Noto Serif 400, 28 / 40 from 1280, lh 1.25,
+   tracking normal. It used to be the auth organism's verify-step
+   title (22/28, weight 500, tracking -0.025em) — the smaller of the
+   two serif voices, and Ton read the whole studio as «мелковатые
+   шрифты» (25.08). The hero role the hub's own h1 wears (36/48)
+   would not clear the 480 card, so the gate takes the step below
+   it; the two screens of this file are one ladder apart and that
+   is the intended reading — the gate is a window, the hub is a
+   page. */
 .gate-h1 {
   margin: 24px 0 0;
   font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 400;
   line-height: 1.25;
-  letter-spacing: -0.025em;
+  letter-spacing: normal;
   color: var(--zinc-900);
 }
-/* 15 / 16, not 13 / 14: «На GildedBox вообще нет таких мелких
-   шрифтов. Стандартный размер 16 пикселей» (Ton, 24.08). The card
-   is 440 wide, so the base step stays one under the standard and
-   reaches 16 on the wide card. */
+/* 16 / 18: the live body base, plus the one step the studio's lead
+   takes at 1280 (studio.css, LIVE-STEP). Was 15 / 16. */
 .gate-sub {
   margin: 12px 0 0;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.625;
   letter-spacing: 0.2px;
   color: var(--zinc-500);
 }
 @media (min-width: 1280px) {
-  .gate-h1 { font-size: 28px; }
-  .gate-sub { font-size: 16px; }
+  .gate-h1 { font-size: 40px; }
+  .gate-sub { font-size: 18px; }
 }
 
 .gate-form { margin-top: 32px; text-align: left; }
@@ -391,43 +446,70 @@ html.is-open #hub {
           <p class="gbs-hub-sub">Three ways in: the walk that is approved, the questions that are still open, and the system they are both built out of.</p>
         </div>
 
+        <!-- Each door is a DIV, not a link, since hub-12: the row of
+             stops inside it is made of links, and a link inside a link
+             is markup the browser tears apart. The whole card is still
+             one click — the title carries an <a> whose ::after is
+             stretched over the card (studio.css, block ТРИ ДВЕРИ
+             ХАБА), and the stops sit above that layer. -->
         <div class="gbs-entries">
 
-          <a class="gbs-door gbs-door--entry" href="live/index.html">
-            <span class="gbs-eyebrow">Live</span>
-            <h2 class="gbs-door-title">Live Prototype</h2>
-            <p class="gbs-door-desc">One connected walk, assembled out of everything that has been approved. It opens on the GildedBox home page: the site opens the catalog, the catalog opens a gift, the gift lands in checkout.</p>
-            <span class="gbs-door-foot">
-              <span class="gbs-entry-inside">Portal · Catalog · Checkout</span>
+          <div class="gbs-door gbs-door--entry">
+            <span class="gbs-door-shot">
+              <img src="system/assets/studio/preview-live.jpg" width="960" height="600" loading="lazy"
+                   alt="The GildedBox home page in the live prototype: the video hero behind the site header, the title Impressive Gifts, Your Brand, and the Discover Gifts link.">
+            </span>
+            <h2 class="gbs-door-title">
+              <a class="gbs-door-link" href="live/index.html">Live Prototype</a>
               <span class="gbs-arrow" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </span>
-            </span>
-          </a>
+            </h2>
+            <p class="gbs-door-desc">One connected walk, out of everything that has been approved. It opens on the GildedBox home page, the site opens the catalog, the catalog opens a gift, and the gift lands in checkout.</p>
+            <nav class="gbs-stops" aria-label="Pages in the live prototype">
+              <a class="gbs-stop" href="live/portal.html">Portal</a>
+              <a class="gbs-stop" href="live/catalog/index.html">Catalog</a>
+              <a class="gbs-stop" href="live/checkout.html">Checkout</a>
+              <a class="gbs-stop" href="live/book-a-meeting.html">Book a meeting</a>
+            </nav>
+          </div>
 
-          <a class="gbs-door gbs-door--entry" href="sandboxes.html">
-            <span class="gbs-eyebrow">Sandbox</span>
-            <h2 class="gbs-door-title">Sandboxes</h2>
-            <p class="gbs-door-desc">Parallel rooms, one open question each. A decision that is still being made is made here first, and only then moves into the walk.</p>
-            <span class="gbs-door-foot">
-              <span class="gbs-entry-inside" data-gbs-rooms>Three rooms open</span>
+          <div class="gbs-door gbs-door--entry">
+            <span class="gbs-door-shot">
+              <img src="system/assets/studio/preview-checkout.jpg" width="960" height="600" loading="lazy"
+                   alt="The checkout V2 sandbox: the gift with its quantity pool, the delivery step, and the three shipping methods.">
+            </span>
+            <h2 class="gbs-door-title">
+              <a class="gbs-door-link" href="sandboxes.html">Sandboxes</a>
               <span class="gbs-arrow" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </span>
-            </span>
-          </a>
+            </h2>
+            <p class="gbs-door-desc">Parallel rooms, one open question each. A decision that is still being made is tried here first, and only then moves into the walk.</p>
+            <!-- Painted from system\sandbox-registry.js at the foot of
+                 this file: the door must not name a room the registry
+                 has never heard of. -->
+            <nav class="gbs-stops" aria-label="Pages with a sandbox open" data-gbs-rooms></nav>
+          </div>
 
-          <a class="gbs-door gbs-door--entry" href="system/oro/index.html">
-            <span class="gbs-eyebrow">System</span>
-            <h2 class="gbs-door-title">Design System</h2>
+          <div class="gbs-door gbs-door--entry">
+            <span class="gbs-door-shot">
+              <img src="system/assets/studio/preview-oro.jpg" width="960" height="600" loading="lazy"
+                   alt="The Oro showcase: the button matrix, five types of button crossed with the three size ladders.">
+            </span>
+            <h2 class="gbs-door-title">
+              <a class="gbs-door-link" href="system/oro/index.html">Design System</a>
+              <span class="gbs-arrow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </h2>
             <p class="gbs-door-desc">Oro: the tokens, the components and the rules every prototype here is built from. The showcase reads the real files, not copies of them.</p>
-            <span class="gbs-door-foot">
-              <span class="gbs-entry-inside">About · Colors · more soon</span>
-              <span class="gbs-arrow" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </span>
-            </span>
-          </a>
+            <nav class="gbs-stops" aria-label="Pages of the design system">
+              <a class="gbs-stop" href="system/oro/index.html">About</a>
+              <a class="gbs-stop" href="system/oro/colors.html">Colors</a>
+              <a class="gbs-stop" href="system/oro/components.html">Components</a>
+            </nav>
+          </div>
 
         </div>
 
@@ -603,7 +685,8 @@ html.is-open #hub {
       setTimeout(cross, 700);
     }).catch(function () {
       submit.disabled = false;
-      showError('Could not check the code — reload the page');
+      /* Copy-lint, hub-12: no em dashes in anything a visitor reads. */
+      showError('Could not check the code, reload the page');
     });
   });
 
@@ -611,11 +694,19 @@ html.is-open #hub {
 })();
 </script>
 
-<!-- The one number on this page that is not written by hand: how many
-     rooms the Sandboxes door leads to. It is counted from
-     system\sandbox-registry.js, the same registry that paints
-     sandboxes.html and every studio panel, so the hub cannot promise a
-     count the next room silently breaks (gbppl-registry-1). -->
+<!-- The one row on this page that is not written by hand: the stops of
+     the Sandboxes door. They come out of system\sandbox-registry.js,
+     the same registry that paints sandboxes.html and every studio
+     panel, so the hub cannot promise a room the next commit silently
+     removes (gbppl-registry-1).
+
+     Until hub-12 this script wrote a COUNT here («Four rooms open»).
+     The count said how much there was and took you nowhere; Ton, 25.08:
+     «оттуда у меня нет возможности перейти на нужную мне страницу».
+     So the same data now comes out as links, one per page that has a
+     sandbox, pointing at that page's first room. The page label is the
+     name a visitor arrives with («what is being tried on checkout»),
+     and it is the label the registry slice already carries. -->
 <script src="system/sandbox-registry.js"></script>
 <script>
 (function () {
@@ -623,10 +714,24 @@ html.is-open #hub {
   var slot = document.querySelector('[data-gbs-rooms]');
   var reg  = window.GB_SANDBOXES;
   if (!slot || !reg) return;
-  var words = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven',
-               'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
-  var n = reg.count();
-  slot.textContent = (words[n] || n) + (n === 1 ? ' room open' : ' rooms open');
+
+  function esc(v) {
+    return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var parts = reg.rooms('').map(function (page) {
+    /* A page whose rooms are all decided but not built yet has no
+       address to send anyone to; it leads to the Sandboxes page,
+       where the room is drawn grey and explains itself. */
+    var open = page.variants.filter(function (v) { return v.ready; })[0];
+    var href = open ? open.href : 'sandboxes.html';
+    return '<a class="gbs-stop" href="' + esc(href) + '">' + esc(page.label) + '</a>';
+  });
+
+  slot.innerHTML = parts.length
+    ? parts.join('')
+    : '<span class="gbs-stop">None yet</span>';
 })();
 </script>
 

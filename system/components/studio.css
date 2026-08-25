@@ -1,6 +1,57 @@
 /* ============================================================
    STUDIO CHROME — хаб, полки, двери, подвал студийных страниц
-   (gbppl-hub-10, Тон 2026-08-24)
+   (gbppl-hub-12, Тон 2026-08-25)
+   ------------------------------------------------------------
+   ТИПОГРАФИКА СТУДИИ ПЕРЕЕХАЛА НА РОЛИ САЙТА (hub-12, Тон 25.08):
+   «Мелковатые шрифты, и она выглядит немного непохожей на
+   дизайн-систему GildedBox. Структурно она ок, но общее ощущение
+   не то.» Лечится не «сделать на пару пикселей больше», а взять
+   роли ЖИВОЙ ГЛАВНОЙ и надеть их сюда целиком (ловушка 11: роль
+   берётся вместе с весом, трекингом и высотой строки).
+
+   Замер прибором 25.08, headed Chrome, live\index.html на 1280 и
+   1920 (значения на обеих ширинах одинаковые — обе выше порога
+   1280; в скобках базовая ступень компонента):
+
+     РОЛЬ ГЕРОЯ      .gbhm-heroTitle    Noto Serif 400,
+                     36 → 48 @1280 → 52 @2000, lh 1.5, ls 0.025em
+     РОЛЬ СЕКЦИИ     .gbhm-headingTitle Noto Serif 400,
+                     («Curated Gifts For:», «The Unboxing»)
+                     28 → 40 @1280, lh 1.25, ls normal, Zinc 900
+     РОЛЬ КОЛОНКИ    footer .subMenu__title  Noto Serif 400, 18 →
+                     22 @768, lh 1.45, ls 0.2 (TYPE-SCALE,
+                     verified-live 17.08)
+     БАЗОВЫЙ ТЕКСТ   Inter 400 / 16 / normal (TYPE-SCALE)
+
+   Кто что носит теперь:
+     .gbs-h1          заголовок страницы  = РОЛЬ ГЕРОЯ, чернилами
+                      Zinc 900 (на сайте роль лежит на видео и
+                      потому белая; единственное отклонение, оно
+                      же то, что делает роль читаемой на Zinc 50)
+     .gbs-door-title  заголовок двери     = РОЛЬ СЕКЦИИ
+     .gbs-h2          титул полки         = РОЛЬ СЕКЦИИ
+     .gbs-door--box   заголовок малой     = РОЛЬ КОЛОНКИ (22)
+     .gbs-door-desc   описание            = БАЗОВЫЙ + ступень 18
+                      с 1280                          ← LIVE-STEP
+     .gbs-hub-sub     сабтайтл страницы   = 18 → 20 @1280
+                                                      ← LIVE-STEP
+     .gbs-stop        остановки           = БАЗОВЫЙ ТЕКСТ (16)
+
+   LIVE-STEP и почему это не выдумка: у лайва РОЛИ ЛИДА на Inter
+   нет вовсе. Единственный лид сайта — .gbhm-convSub, и он сериф
+   18 → 22 @1280; единственная Inter-роль тела — базовые 16. Фигма
+   даёт Body/Lead 22/2px, но это figma-only и в колонке 411px не
+   живёт. Поэтому лид студии = базовая роль, поднятая на одну
+   ступень (16 → 18, сабтайтл 18 → 20): размер честно помечен
+   LIVE-STEP, а семейство, вес, трекинг и цвет остались базовой
+   роли. NO TOKEN: токенов размера у типографики нет ни у одной из
+   этих ролей, шкала живёт в компонентах.
+
+   Ничего мельче 14 на студийных страницах не осталось. Eyebrow
+   (12) с дверей хаба СНЯТ: он повторял заголовок слово в слово
+   («Live» над «Live Prototype»), а известное не выпячивают
+   (Рассел, П2). На песочницах eyebrow остаётся — там он называет
+   группу, а не карточку.
    ------------------------------------------------------------
    ХАБ ВЕРНУЛСЯ (hub-10, Тон 24.08, второй заход): «У нас нет
    какой-то одной страницы входа. Наша страница входа — это хаб из
@@ -61,24 +112,30 @@
 .gbs-shelf + .gbs-shelf { margin-top: 56px; }
 @media (min-width: 1280px) { .gbs-shelf + .gbs-shelf { margin-top: 72px; } }
 
+/* Титул полки = РОЛЬ СЕКЦИИ лайва (.gbhm-headingTitle, «Curated
+   Gifts For:»): Noto Serif 400, 28 → 40 @1280, lh 1.25, ls normal.
+   Было своё 24/30/500/-0.025em — своя типографика там, где у сайта
+   есть роль ровно на это место (hub-12). */
 .gbs-h2 {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 400;
   line-height: 1.25;
-  letter-spacing: -0.025em;
+  letter-spacing: normal;
   color: var(--zinc-900);
 }
-@media (min-width: 1280px) { .gbs-h2 { font-size: 30px; } }
-/* Лид полки — основной текст, значит 16 (Тон 24.08). Было 14. */
+@media (min-width: 1280px) { .gbs-h2 { font-size: 40px; } }
+/* Лид полки — базовая роль, поднятая на ступень с 1280 (LIVE-STEP,
+   см. шапку). 16 → 18. */
 .gbs-lede {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   font-size: 16px;
   line-height: 1.625;
   letter-spacing: 0.2px;
   color: var(--zinc-500);
 }
+@media (min-width: 1280px) { .gbs-lede { font-size: 18px; } }
 
 /* Eyebrow, один голос на все студийные страницы
    (12 / 600 / 0.12em / uppercase / Zinc 500). */
@@ -112,32 +169,18 @@
 }
 .gbs-door:hover .gbs-arrow { transform: translateX(4px); }
 
-/* Большая дверь. Две колонки с 1024: слева питч потока, справа
-   три остановки списком — настоящий индекс по прогулке, он же
-   то, что не даёт карточке 1080 стоять полупустой. Ниже этой
-   ширины список складывается под питч, отделённый волоском. */
-.gbs-door--live { margin-top: 24px; padding: 32px 24px; }
-@media (min-width: 768px)  { .gbs-door--live { padding: 40px 32px; } }
-@media (min-width: 1024px) {
-  .gbs-door--live {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 240px;
-    gap: 48px;
-  }
-}
-@media (min-width: 1280px) { .gbs-door--live { padding: 48px 40px; gap: 56px; } }
-
+/* Заголовок двери = РОЛЬ СЕКЦИИ лайва, целиком (hub-12). */
 .gbs-door-title {
   margin: 12px 0 0;
   font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.3;
-  letter-spacing: -0.025em;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: normal;
   color: var(--zinc-900);
 }
-@media (min-width: 1280px) { .gbs-door-title { font-size: 28px; } }
-/* Описание двери — основной текст: 16 (Тон 24.08). Было 14. */
+@media (min-width: 1280px) { .gbs-door-title { font-size: 40px; } }
+/* Описание двери — базовая роль + ступень с 1280 (LIVE-STEP). */
 .gbs-door-desc {
   margin: 12px 0 0;
   max-width: 60ch;
@@ -146,66 +189,59 @@
   letter-spacing: 0.2px;
   color: var(--zinc-500);
 }
+@media (min-width: 1280px) { .gbs-door-desc { font-size: 18px; } }
 
-/* Главное действие большой двери — кнопка ФОРМЫ авторизации в
-   inline-версии (auth.css, .gba-btn + .gba-btn--inline). Своей
-   кнопки у студии нет и не будет: до 24.08 здесь стоял двойник
-   .door-cta с геометрией BUTTON L и лейблом мелкой хедерной
-   лестницы (11px) — Тон поймал его как «несистемную кнопку с
-   непонятным шрифтом». Страница назначает кнопке только её
-   место в потоке. */
-.gbs-door--live .gba-btn { margin-top: 28px; }
+/* ---- Остановки: тихий ряд ссылок в подвале двери ----
+   (gbppl-hub-12, Тон 25.08: «оттуда у меня нет возможности перейти
+   на нужную мне страницу».) Дверь ведёт в раздел целиком, а
+   остановки — короткий путь внутрь него: страницы Live, комнаты
+   реестра, страницы витрины Oro.
 
-/* Три остановки прогулки, под кнопкой: в поток можно войти
-   посередине, когда это нужно. */
+   Голос: БАЗОВЫЙ ТЕКСТ (16), Zinc 500 в покое, Zinc 900 на
+   ховере. Не синий: синий у нас — отметка состояния, а не «здесь
+   можно кликнуть» (Тон-5). Разделитель «·» — тот же символ, что
+   держит тайтлы вкладок и подвал студии.
+
+   Ряд лежит ПОВЕРХ растянутой ссылки заголовка (z-index): ссылка
+   в ссылке недопустима, поэтому карточка — div, а не <a>, см.
+   блок ТРИ ДВЕРИ ХАБА ниже. Имена .gbs-stops/.gbs-stop прежние:
+   до hub-12 они одевали такой же список остановок у большой двери
+   .gbs-door--live, которая умерла вместе со страницей live.html.
+   Понятие то же — реализация одна. */
 .gbs-stops {
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 1px solid var(--zinc-200);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0 16px;
-}
-.gbs-stops-title { display: none; }
-.gbs-stop {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 0;
-  font-size: 15px;
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  line-height: 1.75;
   letter-spacing: 0.2px;
-  color: var(--zinc-600);
+}
+/* nowrap: имя страницы не ломается пополам. «Book a meeting»
+   уезжает на вторую строку целиком, а не хвостом. */
+.gbs-stop {
+  display: inline-block;
+  white-space: nowrap;
   transition: color var(--mo-micro) var(--mo-move);
 }
-.gbs-stop:hover { color: var(--blue-600); }
-.gbs-stop-dot {
-  width: 5px; height: 5px;
-  border-radius: var(--radius-circle);
-  background: var(--zinc-300);
-  flex: 0 0 auto;
-  transition: background-color var(--mo-micro) var(--mo-move);
-}
-.gbs-stop:hover .gbs-stop-dot { background: var(--blue-600); }
-.gbs-stops-sep { color: var(--zinc-300); font-size: 15px; }
+/* Ловушка 1: body.gb-demo a { color: inherit } весит 0-1-2 и
+   перебивает одиночный класс. Цвет покоя и ховера объявляются
+   парой, иначе остановки наследуют чернила карточки. */
+a.gbs-stop,
+body.gb-demo a.gbs-stop { color: var(--zinc-500); }
+a.gbs-stop:hover,
+body.gb-demo a.gbs-stop:hover { color: var(--zinc-900); }
 
-/* С 1024 ряд становится правым индексом: волосок из линии под
-   списком превращается в левый край колонки, слэши уходят
-   (списку они не нужны), eyebrow называет группу. */
-@media (min-width: 1024px) {
-  .gbs-stops {
-    margin-top: 0;
-    padding: 0 0 0 32px;
-    border-top: 0;
-    border-left: 1px solid var(--zinc-200);
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-  }
-  .gbs-stops-title { display: block; margin-bottom: 14px; }
-  .gbs-stops-sep { display: none; }
-  .gbs-stop { padding: 8px 0; }
+/* Разделитель — не отдельный элемент, а голова следующей
+   остановки. Ряд переносится (четыре страницы Live в колонку 360
+   не встают), и висящая «·» в конце строки — мусор; уехав вместе
+   со своей ссылкой, точка всегда стоит МЕЖДУ именами. Цвет
+   прибит и на ховере: подсвечивается слово, не пунктуация. */
+.gbs-stop + .gbs-stop { margin-left: 8px; }
+.gbs-stop + .gbs-stop::before {
+  content: "·";
+  margin-right: 8px;
+  color: var(--zinc-300);
 }
+a.gbs-stop:hover::before { color: var(--zinc-300); }
 
 /* ---- Сетка малых дверей ---- */
 .gbs-grid {
@@ -223,10 +259,19 @@
   padding: 24px 20px;
 }
 @media (min-width: 1280px) { .gbs-door--box { padding: 28px 24px; } }
-.gbs-door--box .gbs-door-title { font-size: 20px; margin-top: 14px; }
-/* 16 и здесь: описание малой двери — тот же основной текст, просто
-   в узкой колонке (было 13, Тон 24.08). */
-.gbs-door--box .gbs-door-desc { margin-top: 10px; font-size: 16px; flex: 1 0 auto; }
+/* Малая дверь стоит в трёхколоночной сетке ~336px, роль секции
+   (40) туда не встаёт. Её заголовок носит РОЛЬ КОЛОНКИ подвала
+   лайва целиком: Noto Serif 400 / 22 / lh 1.45 / ls 0.2
+   (TYPE-SCALE, verified-live 17.08, ступень @768). Было 20/500. */
+.gbs-door--box .gbs-door-title {
+  margin-top: 14px;
+  font-size: 22px;
+  line-height: 1.45;
+  letter-spacing: 0.2px;
+}
+@media (min-width: 1280px) { .gbs-door--box .gbs-door-title { font-size: 22px; } }
+/* Описание малой двери идёт по общей лестнице (16 → 18 @1280). */
+.gbs-door--box .gbs-door-desc { margin-top: 10px; flex: 1 0 auto; }
 .gbs-door-foot {
   margin-top: 20px;
   display: flex;
@@ -305,22 +350,55 @@
 }
 
 /* ============================================================
-   ТРИ ДВЕРИ ХАБА (gbppl-hub-10, Тон 2026-08-24)
+   ТРИ ДВЕРИ ХАБА (gbppl-hub-12, Тон 2026-08-25)
    ------------------------------------------------------------
    Точка входа студии: за гейтом index.html показывает ОБЗОР трёх
-   разделов, которые дублируются в баре. Тон про прошлую попытку:
-   «Саму точку входа нужно было передизайнить, а ты сделал
-   некрасиво. Выглядит как непонятная бледная колбаса» — широкие
-   бледные плашки во всю колонку 1080. Лекарство ровно от этого:
-   не полосы поперёк страницы, а ТРИ РАВНЫЕ ВЕРТИКАЛЬНЫЕ карточки
-   в ряд, у каждой своя высота содержимого и общий низ.
+   разделов, которые дублируются в баре (hub-10, Тон 24.08).
+   Композиция та же, изменилось три вещи, все три — по фидбеку
+   Тона 25.08.
+
+   1. ТИПОГРАФИКА РОЛЯМИ САЙТА. «Мелковатые шрифты, и она выглядит
+      немного непохожей на дизайн-систему GildedBox.» Соответствие
+      ролей и их провенанс — в шапке файла. Коротко:
+        .gbs-h1          = live home hero h1 @1280  (Noto Serif
+                           400, 36 → 48, lh 1.5, ls 0.025em)
+        .gbs-door-title  = live home section h2 @1280 («Curated
+                           Gifts For:», Noto Serif 400, 28 → 40,
+                           lh 1.25, ls normal)
+        .gbs-door-desc   = live body base + LIVE-STEP (16 → 18)
+        .gbs-hub-sub     = live body base + LIVE-STEP (18 → 20)
+        .gbs-stops       = live body base (16)
+      Eyebrow с дверей снят: он повторял заголовок.
+
+   2. ЖИВОЕ ПРЕВЬЮ. «Она выглядит немного непохожей на дизайн-
+      систему GildedBox» — хаб был страницей из одних слов, а
+      GildedBox это страница с картинками. Каждая дверь показывает
+      СНИМОК настоящей страницы за ней (system\assets\studio\,
+      снято прибором 1440×900 → 960×600). Рамка Zinc 200, радиус 5,
+      cover, соотношение 16:10 — то же, что у снимка.
+
+   3. ПЕРЕХОДЫ ВНУТРЬ. «Оттуда у меня нет возможности перейти на
+      нужную мне страницу.» Под описанием — ряд .gbs-stops.
+
+   КАРТОЧКА С ВЛОЖЕННЫМИ ССЫЛКАМИ. Из-за ряда остановок дверь
+   больше не может быть одним <a>: <a> внутри <a> невалиден и
+   браузер молча разрывает разметку. Поэтому:
+     обёртка   div.gbs-door (position: relative)
+     главная   a.gbs-door-link внутри заголовка; её ::after
+     ссылка    растянут inset 0 на всю карточку — кликается вся
+               площадь, включая превью, а в дереве доступности
+               ссылка ровно одна и её имя — заголовок двери
+     поверх    .gbs-stops с position: relative и z-index 1: они
+               лежат НАД растянутым слоем и ловят клик первыми
+   Ховер и фокус карточки живут на самой .gbs-door через :hover и
+   :focus-within, поэтому клавиатура видит то же, что мышь.
 
    Ничего нового не нарисовано (Тон-6): карточка — та же .gbs-door
    (белое поле, Zinc 200, радиус 5, ховер «Zinc 900 + тень
-   карточки», стрелка +4px), ярлык роли — тот же .gbs-eyebrow,
-   низ — тот же .gbs-door-foot со стрелкой. Модификатор задаёт
-   только рост: крупнее заголовок, описание 16, ряд «что внутри»
-   прижат к низу волоском.
+   карточки», стрелка +4px). Ховер-пара сверена с карточкой
+   каталога лайва (a.gbcCard:hover → box-shadow --shadow-card +
+   смена цвета рамки, catalog.css): подъёма-трансформа у лайва
+   нет, и здесь его нет тоже.
 
    Грунт хаба — Zinc 50 вместо near-white лайва: три белые
    карточки обязаны читаться как предметы на поверхности, а на
@@ -336,27 +414,36 @@
 .gbs-page--hub .gbs-body { display: flex; align-items: center; }
 .gbs-page--hub .gbs-body > .gb-container { width: 100%; }
 
-/* Шапка хаба: заголовок страницы (роль H1, на ступень выше
-   полочного .gbs-h2) и одна строка под ним. Никаких вводных. */
+/* Колонка хаба шире полочной 1080: заголовок двери теперь роль
+   секции (40), а превью хочет ширины. 1280 — цифра компоновки, не
+   токен; при трёх колонках и зазоре 24 это 411px на карточку. */
+@media (min-width: 1280px) {
+  .gbs-page--hub .gbs-wrap { max-width: 1280px; }
+}
+
+/* Шапка хаба: заголовок страницы (РОЛЬ ГЕРОЯ) и одна строка под
+   ним. Никаких вводных. */
 .gbs-hubhead { max-width: 1080px; }
 .gbs-h1 {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 30px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
   color: var(--zinc-900);
 }
-@media (min-width: 1280px) { .gbs-h1 { font-size: 38px; } }
+@media (min-width: 1280px) { .gbs-h1 { font-size: 48px; } }
+@media (min-width: 2000px) { .gbs-h1 { font-size: 52px; } }
 .gbs-hub-sub {
-  margin: 12px 0 0;
+  margin: 8px 0 0;
   max-width: 60ch;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.625;
   letter-spacing: 0.2px;
   color: var(--zinc-500);
 }
+@media (min-width: 1280px) { .gbs-hub-sub { font-size: 20px; } }
 
 /* Ряд дверей. Три — число неделимое: либо все три в ряд, либо
    стек. Двух-колоночной ступени нет намеренно, иначе третья
@@ -373,28 +460,66 @@
 .gbs-door--entry {
   display: flex;
   flex-direction: column;
-  padding: 28px 24px;
+  padding: 20px;
 }
-@media (min-width: 1280px) { .gbs-door--entry { padding: 36px 32px; } }
+@media (min-width: 1280px) { .gbs-door--entry { padding: 24px; } }
 
-.gbs-door--entry .gbs-door-title { margin-top: 14px; font-size: 26px; }
-@media (min-width: 1280px) { .gbs-door--entry .gbs-door-title { font-size: 30px; } }
+/* Клавиатура должна видеть то же, что мышь: фокус на любой ссылке
+   внутри поднимает карточку так же, как ховер. */
+.gbs-door--entry:focus-within { border-color: var(--zinc-900); box-shadow: var(--shadow-card); }
+.gbs-door--entry:focus-within .gbs-arrow { transform: translateX(4px); }
+
+/* ---- Превью: снимок страницы за дверью ----
+   Рамка и радиус — системная пара карточки; соотношение 16:10
+   держит ряд ровным независимо от веса картинки, cover обрезает
+   лишнее. Никакой трансформы на ховере: у карточки каталога лайва
+   её нет (см. шапку блока). */
+.gbs-door-shot {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  background: var(--zinc-100);
+  aspect-ratio: 16 / 10;
+}
+.gbs-door-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Заголовок двери и стрелка стоят одной строкой: стрелка — знак
+   того, что заголовок ведёт наружу, и ей место рядом с ним, а не
+   в подвале под остановками. */
+.gbs-door--entry .gbs-door-title {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+@media (min-width: 1280px) { .gbs-door--entry .gbs-door-title { margin-top: 24px; } }
+.gbs-door--entry .gbs-arrow { flex: 0 0 auto; }
+
+/* Растянутая главная ссылка. Цвет объявлен парой — ловушка 1. */
+a.gbs-door-link,
+body.gb-demo a.gbs-door-link { color: var(--zinc-900); }
+.gbs-door-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
 
 /* flex: 1 держит низы трёх карточек на одной линии при разной
    длине описаний; max-width снят — колонка сама узкая. */
 .gbs-door--entry .gbs-door-desc { max-width: none; flex: 1 0 auto; }
 
-.gbs-door--entry .gbs-door-foot {
-  margin-top: 28px;
-  padding-top: 18px;
+/* Подвал двери — ряд остановок под волоском. */
+.gbs-door--entry .gbs-stops {
+  margin-top: 24px;
+  padding-top: 16px;
   border-top: 1px solid var(--zinc-200);
-}
-
-/* «Что внутри» — тихая опись раздела, не ссылки: вся карточка и
-   так одна ссылка. Голос пути малой двери, шаг в 14. */
-.gbs-entry-inside {
-  font-size: 14px;
-  line-height: 1.5;
-  letter-spacing: 0.2px;
-  color: var(--zinc-400);
 }
