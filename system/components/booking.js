@@ -31,9 +31,9 @@
    рисует ДВЕ засечки, а не три с погашенной первой: шага, которого
    не будет, в дороге нет.
 
-   Публичная live\book-a-meeting.html стоит в режиме гостя. Портал
-   (попап START) — будущий потребитель режима start="slot"; сам
-   попап эта волна не трогает.
+   Публичная live\book-a-meeting.html стоит в режиме гостя. Попап
+   START портала носит режим своего с 25.08
+   (gbppl-portal-booking-1).
 
    ЧТО ВЗЯТО И ОТКУДА
    ------------------------------------------------------------
@@ -77,6 +77,45 @@
    появится настоящий календарь (Тон, 25.08: «будет работать через
    API, не iframe»), меняется только тело этих трёх методов —
    шаги, разметка и валидация их не видят.
+   ============================================================ */
+
+/* ============================================================
+   gbppl-booking-3 — ОРГАНИЗМ УЧИТСЯ НАЧИНАТЬ СНАЧАЛА И УХОДИТЬ
+   ТУДА, КУДА СКАЖЕТ ХОЗЯИН. 2026-08-25.
+
+   Оба хвоста нашёл попап START портала — первый хост, который не
+   является страницей. Страницу покидают навигацией, и организм
+   этого хватало; окно закрывают и открывают снова, и хозяину
+   приходилось выкручиваться руками. Что он делал (portal.html,
+   gbppl-portal-booking-1) и что теперь делает организм:
+
+     БЫЛО  хост ставил НОВЫЙ <gb-booking-flow> с теми же
+           атрибутами на место отработавшего, потому что сбросить
+           старый было нечем.
+     СТАЛО el.restart(). Флоу возвращается на свой стартовый шаг
+           (с учётом start="slot"), забывает выбранный день, слот
+           и всё, что было напечатано в форме, и спрашивает у
+           адаптера свежее окно слотов: за минуту в попапе время
+           могло уйти вперёд. Что переживает сброс — то, что
+           хозяин сообщил О ГОСТЕ: атрибуты guest-* и последний
+           prefill(). Следом летит gbb:reset.
+
+     БЫЛО  хост ловил клик по ссылке «Back to site» в делегате на
+           диалоге, гасил его и закрывал окно. Копия имени класса
+           организма в чужом файле и надпись, которая в попапе
+           врала: из попапа никуда не уходят.
+     СТАЛО атрибут exit-label (дефолт «Back to site») и
+           ОТМЕНЯЕМОЕ событие gbb:exit. Хост слушает, зовёт
+           preventDefault и закрывает окно; никто не гасил —
+           организм уходит по site-href, как на своей странице.
+
+   Полный публичный API организма после этой волны:
+     атрибуты  start="slot", layout="compact", guest-name/email/
+               company/phone, site-href, exit-label
+     методы    el.prefill(data), el.restart()
+     события   gbb:booked {slot, lead}, gbb:reset,
+               gbb:exit {href} (cancelable)
+     свойство  el.adapter (submitLead / fetchSlots / book)
    ============================================================ */
 (function () {
   'use strict';
@@ -416,7 +455,12 @@
 
   /* ---------------- ШАГ 3: КОНФИРМАЦИЯ ---------------- */
 
-  var STEP3_TEMPLATE = function (view, siteHref) {
+  /* Лейбл тихого выхода задаёт ХОЗЯИН (exit-label, gbppl-booking-3):
+     на своей странице это «Back to site», в попапе портала «Back to
+     portal», и врать про уход с сайта из окна больше не нужно. */
+  var EXIT_LABEL = 'Back to site';
+
+  var STEP3_TEMPLATE = function (view, siteHref, exitLabel) {
     return (
       '<div class="gbb-panel gbb-booked">' +
         ICON_CHECK +
@@ -444,7 +488,8 @@
           /* Заглушка: настоящий .ics придёт вместе с API. */
           '<button class="gbb-quiet" type="button" data-role="ics">Add to calendar</button>' +
           '<span class="gbb-exit-dot" aria-hidden="true">·</span>' +
-          '<a class="gbb-quiet" href="' + esc(siteHref) + '">Back to site</a>' +
+          '<a class="gbb-quiet" data-role="exit" href="' + esc(siteHref) + '">' +
+            esc(exitLabel) + '</a>' +
         '</div>' +
         '<p class="gbb-note">Prototype: the invitation is not sent and nothing is scheduled.</p>' +
       '</div>'
@@ -478,6 +523,9 @@
       this.__lead.email = this.getAttribute('guest-email') || '';
       this.__lead.company = this.getAttribute('guest-company') || '';
       this.__lead.phone = this.getAttribute('guest-phone') || '';
+      /* Зерно: то, что хозяин знает О ГОСТЕ. Печатанное гостем в него
+         не входит и сброс его не переживает (gbppl-booking-3). */
+      this.__seed = Object.assign({}, this.__lead);
 
       if (this.__known) this.renderStep2(); else this.renderStep1();
     }
@@ -487,7 +535,35 @@
        HTML. Вызванный на шаге 1, перерисовывает его с данными. */
     prefill(data) {
       Object.assign(this.__lead, data || {});
+      this.__seed = Object.assign({}, this.__seed, data || {});
       if (!this.__known && this.querySelector('#gbb_email')) this.renderStep1();
+    }
+
+    /* НАЧАТЬ СНАЧАЛА (gbppl-booking-3). Хост, который держит флоу в
+       окне, а не на странице, не может увести гостя навигацией:
+       окно закрывается и открывается снова, и второй заход обязан
+       встретить чистый календарь, а не конфирмацию, прочитанную
+       минуту назад. Раньше хозяину оставалось поставить новый
+       элемент на место отработавшего; теперь он просит организм.
+       Сбрасывается ВЫБОР и ввод; остаётся то, что хозяин сообщил о
+       госте (guest-* и prefill). Кэш слотов гасится нарочно: за
+       время, пока окно было закрыто, ближайшие слоты могли уйти в
+       прошлое, и renderStep2 спрашивает окно заново.
+       __painted сбрасывается вместе со всем: первая отрисовка
+       после сброса не должна тащить страницу скроллом — на неё
+       только что вернулись, как на первую. */
+    restart() {
+      if (!this.__rendered) return;   /* ещё не в документе, сбрасывать нечего */
+      clearInterval(this.__phTimer);
+      this.__lead = Object.assign({}, this.__seed);
+      this.__country = 0;
+      this.__submitted = false;
+      this.__slots = null;
+      this.__pickedDay = null;
+      this.__pickedSlot = null;
+      this.__painted = false;
+      if (this.__known) this.renderStep2(); else this.renderStep1();
+      this.dispatchEvent(new CustomEvent('gbb:reset', { bubbles: true }));
     }
 
     /* Адаптер вынесен наружу: страница или тест может подменить его
@@ -824,12 +900,29 @@
         name: this.__lead.name || 'You',
         email: this.__lead.email
       };
-      this.paint(this.__known ? 1 : 2, STEP3_TEMPLATE(view, this.getAttribute('site-href') || '#'));
+      var href = this.getAttribute('site-href') || '#';
+      this.paint(this.__known ? 1 : 2,
+        STEP3_TEMPLATE(view, href, this.getAttribute('exit-label') || EXIT_LABEL));
 
       /* Заглушка «Add to calendar»: .ics соберётся вместе с API,
          сейчас ссылка честно ничего не делает. */
       var ics = this.role('ics');
       if (ics) ics.addEventListener('click', function () { /* здесь .ics из ответа book() */ });
+
+      /* ВЫХОД ПОСЛЕДНЕГО ШАГА (gbppl-booking-3). На своей странице
+         это ссылка и ничего больше: гость уходит по site-href. В
+         чужом окне тот же жест значит «закрой окно», и хозяину
+         нужно место, где это сказать, — отменяемое событие. Гасит
+         дефолт: навигации нет, дальше распоряжается хозяин. Не
+         гасит (или хозяина нет): ссылка ведёт себя как ссылка. */
+      var self = this;
+      var exit = this.role('exit');
+      if (exit) exit.addEventListener('click', function (e) {
+        var go = self.dispatchEvent(new CustomEvent('gbb:exit', {
+          bubbles: true, cancelable: true, detail: { href: href }
+        }));
+        if (!go) e.preventDefault();
+      });
 
       this.dispatchEvent(new CustomEvent('gbb:booked', {
         bubbles: true,
