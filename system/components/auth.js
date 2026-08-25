@@ -134,20 +134,42 @@
   /* Живая анатомия Materialize + PrimeVue: div.input-field(col
      staticLabel required) > label + div.relative > input. Ошибка =
      span[role=alert].text-red-600 ПОСЛЕ div.relative (классов
-     helper-text/errorMessage у лайва нет — absence-пробник). */
+     helper-text/errorMessage у лайва нет — absence-пробник).
+
+     ДВА РАСШИРЕНИЯ, gbppl-booking-1 (25.08). Лид-форма Book a
+     Meeting — первая форма системы, где поля не все обязательные и
+     не все однострочные, поэтому поле учится ровно двум вещам
+     (Тон-6, шаг 2: адаптируем существующее, а не рисуем новое):
+
+       optional      снимает класс required с обёртки, и золотая
+                     звёздочка не печатается. До сих пор у гостевой
+                     авторизации обязательными были все поля, и
+                     класс стоял литералом; Company и «What are you
+                     looking for?» на лайве без звёздочки.
+       type=textarea вместо <input> печатает <textarea>, несущий
+                     .gba-input + версию .gba-textarea (auth.css).
+                     Атрибуты те же, плейсхолдер тот же, ошибка та
+                     же — снаружи это по-прежнему <gb-field>. */
   function fieldHTML(opts) {
     var eye = opts.eye
       ? '<button class="gba-eye" type="button" aria-label="Show password" data-eye>' + ICON_EYE + '</button>'
       : '';
+    var common =
+      ' name="' + esc(opts.name) + '" id="' + esc(opts.id) + '"' +
+      ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' +
+      ' placeholder="' + esc(opts.placeholder) + '"';
+    var control = opts.type === 'textarea'
+      ? '<textarea' + common + ' rows="3" class="valid browser-default gba-input gba-textarea">' +
+          esc(opts.value) + '</textarea>'
+      : '<input type="' + esc(opts.type) + '"' + common +
+          (opts.value ? ' value="' + esc(opts.value) + '"' : '') +
+          ' class="valid browser-default gba-input">';
     return (
-      '<div class="input-field col active s12 m12 l12 staticLabel required gba-field ' + (opts.wrapMod || '') + '">' +
+      '<div class="input-field col active s12 m12 l12 staticLabel ' +
+          (opts.optional ? '' : 'required ') + 'gba-field ' + (opts.wrapMod || '') + '">' +
         '<label for="' + esc(opts.id) + '" class="active gba-label">' + esc(opts.label) + '</label>' +
         '<div class="relative gba-inputwrap">' +
-          '<input type="' + esc(opts.type) + '" name="' + esc(opts.name) + '" id="' + esc(opts.id) + '"' +
-            ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' +
-            ' placeholder="' + esc(opts.placeholder) + '"' +
-            (opts.value ? ' value="' + esc(opts.value) + '"' : '') +
-            ' class="valid browser-default gba-input">' +
+          control +
           eye +
         '</div>' +
       '</div>'
@@ -168,6 +190,7 @@
         value: this.getAttribute('value') || '',
         wrapMod: this.getAttribute('wrap-mod') || '',
         eye: this.hasAttribute('eye'),
+        optional: this.hasAttribute('optional'),
       });
       var eyeBtn = this.querySelector('[data-eye]');
       if (eyeBtn) {
@@ -177,7 +200,9 @@
         });
       }
     }
-    get input() { return this.querySelector('input'); }
+    /* Контрол поля, чем бы он ни был: у type=textarea это
+       <textarea>, у всех остальных <input> (gbppl-booking-1). */
+    get input() { return this.querySelector('input, textarea'); }
     setError(message) {
       this.clearError();
       this.input.classList.remove('valid');

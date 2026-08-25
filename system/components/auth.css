@@ -382,6 +382,38 @@ gb-field { display: block; width: 100%; }
   .gba-input { min-height: var(--form-ctl-h-2xl); font-size: 18px; padding: 0 16px; }
 }
 
+/* ---------------- ВЕРСИЯ ПОЛЯ: .gba-textarea ----------------
+   gbppl-booking-1, 25.08. Лид-форме Book a Meeting нужен ответ на
+   вопрос «What are you looking for?» — многострочный. Тон-6, шаг
+   2: не новое поле, а версия существующего. Всё, что делает
+   инпут полем (подчёркивание, Inter 300 14/16/18, ls 0.2, цвет,
+   pad-x, ошибка, hover-синий), остаётся от .gba-input; версия
+   меняет ровно три вещи, которых у однострочника быть не может:
+
+     высота    min-height живого textarea = 80 (!min-h-[80px],
+               harvest public-book-a-meeting, цель textarea-comment),
+               а не семья контролов 48/56/64: строк здесь несколько
+               по определению;
+     набор     line-height 1.6 вместо leading-none — междустрочие
+               существует только у многострочного (живое 160%), и
+               вертикальные поля 12 вместо центровки одной строки;
+     ресайз    только вертикальный: горизонтальная ручка ломает
+               колонку формы.
+
+   Лестница шрифта у живого textarea своя (13/14/16), и версия её
+   НЕ берёт: поле стоит в одной форме с остальными и идёт с ними в
+   ногу по 14/16/18 (Тон-9 — входящее приводится к системе). */
+.gba-textarea {
+  min-height: 80px;
+  height: auto;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  line-height: 1.6;
+  resize: vertical;
+  overflow: auto;
+}
+@media (min-width: 2000px) { .gba-textarea { min-height: 96px; } }
+
 /* Ошибка (по сабмиту, live 18.08: пустой и невалидный e-mail дают
    одно состояние): бордер red-500 (перекрывает hover), сообщение
    red-600 11px справа. Классов helper-text/errorMessage у лайва
