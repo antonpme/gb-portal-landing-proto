@@ -51,6 +51,19 @@
                     antidote is one line in the composer block below, the
                     same line index.html keeps for the gate.
 
+       booking.css  the BOOKING organism (<gb-booking-flow>, .gbb-*).
+                    Added 2026-08-25 (gbppl-portal-booking-1): the Book
+                    a Meeting door of the START popup stopped keeping a
+                    calendar of its own and now stands the organism that
+                    grew out of that very door. Ton: «календарь должен
+                    жить в одном месте, не в двух». The sheet is
+                    namespaced .gbb-* or scoped to the custom element,
+                    and it carries its own zeroed-border preflight
+                    inside that scope, so unlike auth.css it asks this
+                    page for no antidote. auth.css above is its declared
+                    neighbour: every field and every button inside the
+                    flow belongs to the auth organism.
+
      NOT linked, on purpose: footer.css (the live PUBLIC footer, a
      different organism from this page's portal footer, and its
      selectors are bare .footer / .row / .col / .hidden — they would
@@ -66,6 +79,7 @@
 <link rel="stylesheet" href="../system/components/shell.css">
 <link rel="stylesheet" href="../system/components/header.css">
 <link rel="stylesheet" href="../system/components/auth.css">
+<link rel="stylesheet" href="../system/components/booking.css">
 <style>
   /* ============ TOKENS ============
      GONE, AND THAT IS THE POINT (2026-08-25). This block used to be a
@@ -2049,7 +2063,6 @@
      calendar, and a window that shrank the moment the meeting was made
      would take the ceremony back. */
   .start-panel[data-view="chat"],
-  .start-panel[data-view="booked"],
   .start-panel[data-view="meeting"] { height: min(var(--gsp-step-h), 100%); }
   .start-panel:focus { outline: none; }
 
@@ -2341,17 +2354,7 @@
   .start-panel[data-view="doors"]   .gsp-view[data-view="doors"],
   .start-panel[data-view="chat"]    .gsp-view[data-view="chat"],
   .start-panel[data-view="meeting"] .gsp-view[data-view="meeting"],
-  .start-panel[data-view="booked"]  .gsp-view[data-view="booked"],
   .start-panel[data-view="call"]    .gsp-view[data-view="call"] { display: block; }
-  /* The confirmation is a two-row step: the card takes all the height
-     the step has, the prototype note sits under it (gbppl-start-booked).
-     Same shape the chat step uses, one row shorter. */
-  .start-panel[data-view="booked"] .gsp-body { display: grid; }
-  .start-panel[data-view="booked"] .gsp-view[data-view="booked"] {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
-    min-height: 0;
-  }
   /* On the chat step the body stops being the scroller and becomes a
      frame, so the transferred organism can keep its own two rows: the
      scrolling thread and the composer pinned under it, exactly as the
@@ -2500,6 +2503,12 @@
     border: 1px solid var(--gh-line);
     border-radius: var(--radius);
   }
+  /* NOTHING here styles the BOOKING ORGANISM (gbppl-portal-booking-1).
+     In its default column <gb-booking-flow> draws its own .gbb-panel --
+     white on the popup's paper, a #dedee2 hairline, the 5px radius --
+     which is .gsp-card's pair exactly, so the step needs no card of
+     this page's making and gets none. Every number inside the flow
+     belongs to booking.css and this file does not reach in. */
   .gsp-btn {
     display: inline-flex;
     align-items: center;
@@ -2525,20 +2534,11 @@
                 color var(--mo-micro) var(--mo-move);
   }
   .gsp-btn:hover:not(:disabled) { background: var(--blue-700); border-color: var(--blue-700); }
-  .gsp-btn:disabled {
-    background: var(--zinc-200);
-    border-color: var(--zinc-200);
-    color: var(--zinc-400);
-    cursor: not-allowed;
-  }
-  /* The prototype says so out loud rather than pretending */
-  .gsp-note {
-    margin-top: 14px;
-    font-size: 12px;
-    font-weight: 300;
-    line-height: 1.5;
-    color: var(--gh-muted);
-  }
+  /* GONE with the stand-in calendar (gbppl-portal-booking-1): the
+     disabled ground was Confirm meeting's alone -- Copy number and Call
+     now never go inert -- and the prototype note .gsp-note belonged to
+     the two steps the organism replaced. It says the same thing in its
+     own voice on its own last step (.gbb-note, booking.css). */
 
   /* ---- Door 1: live chat, TRANSFERRED FROM v1 ---------------------
      gbppl-start-popup-3 (Ton, 2026-08-19: "Live Chat is already designed
@@ -2805,91 +2805,6 @@
     .concierge-panel__body { scroll-behavior: auto; }
   }
 
-  /* ---- Door 2: book a meeting, a stand-in calendar ---------------- */
-  .gsp-cal { padding: 22px; }   /* 20 -> 22, gbppl-start-roomier */
-  .gsp-cal-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .gsp-cal-month { font-size: 15px; font-weight: 600; color: var(--gh-ink); }
-  .gsp-cal-arrows { display: flex; gap: 2px; }
-  .gsp-cal-arrow {
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    border-radius: var(--radius);
-    background: transparent;
-    color: var(--zinc-300);
-    cursor: default;   /* inert in the prototype, and it shows */
-  }
-  .gsp-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-  .gsp-dow {
-    text-align: center;
-    padding-bottom: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--gh-muted);
-  }
-  .gsp-day {
-    height: 44px;
-    /* gbppl-cal-circle: a picked day is a circle, the calendar convention
-       everywhere, regardless of the button radius token (T 2026-08-19:
-       the stretched pill read as a wrong rectangle). A fixed square
-       centered in the 1fr track keeps hover and selection the same round
-       shape. 40 -> 44 in gbppl-start-roomier: the wider card gives each
-       of the seven tracks about 62px, so the circle can take the step
-       with the rest of the popup and still sit in air. */
-    width: 44px;
-    justify-self: center;
-    border: 0;
-    border-radius: var(--radius-pill);
-    background: transparent;
-    font-size: 15px;
-    font-weight: 400;
-    color: var(--gh-ink);
-    transition: background-color var(--mo-micro) var(--mo-move),
-                color var(--mo-micro) var(--mo-move);
-  }
-  .gsp-day:hover:not(:disabled):not(.sel) { background: var(--gh-canvas); }
-  .gsp-day:disabled { color: var(--zinc-300); cursor: default; }
-  .gsp-day.sel { background: var(--blue-600); color: var(--white); }
-  .gsp-slot-label {
-    margin: 22px 0 10px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--gh-muted);
-  }
-  .gsp-slots { display: flex; flex-wrap: wrap; gap: 8px; }
-  .gsp-slot {
-    height: 36px;    /* 32 -> 36, gbppl-start-roomier */
-    padding: 0 14px;
-    border: 1px solid var(--gh-line);
-    border-radius: var(--radius);
-    background: var(--gh-white);
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--gh-ink-soft);
-    transition: background-color var(--mo-micro) var(--mo-move),
-                border-color var(--mo-micro) var(--mo-move),
-                color var(--mo-micro) var(--mo-move);
-  }
-  .gsp-slot:hover:not(.sel) { background: var(--gh-paper); border-color: var(--zinc-300); }
-  .gsp-slot.sel {
-    background: var(--blue-600);
-    border-color: var(--blue-600);
-    color: var(--white);
-  }
-  .gsp-confirm { margin-top: 24px; }
-
   /* ---- Door 3: call us, the number itself ------------------------
      gbppl-start-popup-2. The underline form is retired with the
      "leave your number" idea it served. What is left is the number, set
@@ -2942,77 +2857,6 @@
     transition: opacity var(--mo-micro) var(--mo-arrive);
   }
   .gsp-call-copied.shown { opacity: 1; }
-  /* ---- Door 2, answered: You are booked (gbppl-start-booked) -------
-     Ton 2026-08-19: the confirmation was one grey line under a vanished
-     calendar; it should be a state of its own and it should celebrate
-     with typography. So it does, and with nothing else: no banner, no
-     green, no confetti, no border art. A drawn blue check, a serif
-     title, the fact itself set large right under it, one quiet line of
-     what happens next, and two calm ways out at the foot of the card.
-     Reused whole: .gsp-card, .gsp-btn and its --quiet sibling, the
-     source's Noto Serif, the popup's own step machinery. */
-  .gsp-bookedcard {
-    display: flex;
-    flex-direction: column;
-    padding: 32px 24px 24px;
-    text-align: center;
-  }
-  /* The good news floats in the middle of whatever the exits leave */
-  .gsp-booked-hero { margin: auto 0; }
-  .gsp-booked-check { width: 56px; height: 56px; color: var(--blue-600); }
-  /* The check draws itself: the ring unwinds from twelve o'clock, the
-     tick follows it in. Both are stroked paths, so the drawing is only
-     their own dash coming undone -- nothing is added to the DOM and
-     nothing jumps. 560ms end to end, on the source's own --gh-move, the
-     curve its panels already travel by; the sharper entry curve drew
-     seven eighths of the ring in the first fifth of the time, which is
-     a flourish, not a hand. */
-  .gsp-booked-ring {
-    stroke-dasharray: 164;      /* 2*pi*26, the circumference */
-    stroke-dashoffset: 164;
-    animation: gsp-draw 520ms var(--gh-move) forwards;
-  }
-  .gsp-booked-tick {
-    stroke-dasharray: 32;       /* the two legs, measured */
-    stroke-dashoffset: 32;
-    animation: gsp-draw 300ms var(--gh-move) 260ms forwards;
-  }
-  @keyframes gsp-draw { to { stroke-dashoffset: 0; } }
-  .gsp-booked-title {
-    margin: 20px 0 0;
-    font-family: var(--font-serif);
-    font-size: clamp(26px, 2.2vw, 30px);
-    font-weight: 400;
-    line-height: 1.15;
-    letter-spacing: -0.4px;
-    color: var(--gh-ink);
-  }
-  /* The fact the guest came for, second only to the title and touching
-     it, so the two read as one sentence */
-  .gsp-booked-when {
-    margin: 10px 0 0;
-    font-size: clamp(18px, 1.55vw, 20px);
-    font-weight: 500;
-    line-height: 1.3;
-    letter-spacing: -0.2px;
-    color: var(--gh-ink);
-  }
-  .gsp-booked-line {
-    max-width: 44ch;
-    text-wrap: balance;   /* two sentences, two even lines */
-    margin: 14px auto 0;
-    font-size: 13px;
-    font-weight: 300;
-    line-height: 1.55;
-    color: var(--gh-muted);
-  }
-  .gsp-booked-actions { display: flex; flex-direction: column; gap: 10px; }
-  @media (prefers-reduced-motion: reduce) {
-    /* The check is simply there */
-    .gsp-booked-ring,
-    .gsp-booked-tick { animation: none; stroke-dashoffset: 0; }
-  }
-
   /* Below the source's 900 layout switch its root eases on down to
      11.5px at 390 -- 88.5% of desktop, so a title that fits a monitor
      never renders bigger on a phone. Same line, same numbers. */
@@ -3043,7 +2887,6 @@
     /* Fullscreen already gives every step all the height there is, so
        the shared 696 ceiling steps aside (gbppl-start-popup-3). */
     .start-panel[data-view="chat"],
-    .start-panel[data-view="booked"],
     .start-panel[data-view="meeting"] { height: 100dvh; }
     .start-panel[data-view="chat"] .gsp-body { padding: 0; }
     /* The source's own <=640 chat overrides, styles.css 6191-6220 */
@@ -3533,11 +3376,44 @@
     transition: color 120ms ease, border-color 120ms ease;
   }
   .demo-panel a.demo-door:hover { color: var(--white); border-color: var(--zinc-500); }
-  /* Active state inverts to near-white: unmistakable on the dark ground */
-  .demo-panel button.variant-active {
+  /* Active state inverts to near-white: unmistakable on the dark ground.
+     The door joins the button here (gbppl-portal-booking-1): the Sandbox
+     rows below are links, and the row for the variant the page is
+     currently showing has to light up the same way a pressed control
+     does. Same three lines, one more selector. */
+  .demo-panel button.variant-active,
+  .demo-panel a.demo-door.variant-active {
     color: var(--zinc-950);
     background: var(--zinc-50);
     border-color: var(--zinc-50);
+  }
+  /* A sandbox this page cannot open yet (ready:false in
+     system\sandbox-registry.js): it is listed, because the point of the
+     list is to say what is in development, but it is not a link and it
+     does not light up. Transferred from live\checkout.html, which was
+     the first PROTO panel to read the registry (gbppl-registry-1). */
+  .demo-panel span.demo-door {
+    display: block;
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--zinc-500);
+    background: var(--zinc-900);
+    border: 1px solid var(--zinc-800);
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .demo-panel span.demo-door em { font-style: normal; color: var(--zinc-600); }
+  /* The one line the panel is allowed to wrap. Here it carries the
+     registry's empty answer, "None yet"; on the checkout it also carries
+     a sentence per scenario. Same numbers, same quiet ink. */
+  .demo-note {
+    font-size: 9px;
+    line-height: 1.45;
+    letter-spacing: 0.2px;
+    color: var(--zinc-500);
+    margin-top: 2px;
   }
 
   /* Mid widths: slimmer horizontal card padding so every bullet holds one line at 19px */
@@ -3700,7 +3576,8 @@
 <!-- wave-2026-08-18e marker: gbppl-start-panel -->
 <!-- wave-2026-08-19a marker: gbppl-portal-header -->
 <!-- wave-2026-08-19b marker: gbppl-portal-header-2 -->
-<!-- wave-2026-08-25 marker: gbppl-portal-system -->
+<!-- wave-2026-08-25 marker: gbppl-portal-system gbppl-portal-system-2 -->
+<!-- wave-2026-08-25b marker: gbppl-portal-booking-1 -->
 
   <!-- ============ PORTAL HEADER (?pth=1) ============
        gbppl-portal-header. The portal's own bar, off unless ?pth=1
@@ -4295,62 +4172,62 @@
           </form>
         </div>
 
-        <!-- STEP 2b: book a meeting, a stand-in calendar. The day cells
-             are generated in JS from one small config so the markup
-             stays readable; the slots are written out. -->
-        <div class="gsp-view" data-view="meeting">
-          <div class="gsp-card">
-            <div class="gsp-cal">
-              <div class="gsp-cal-head">
-                <span class="gsp-cal-month">August 2026</span>
-                <span class="gsp-cal-arrows">
-                  <button class="gsp-cal-arrow" type="button" tabindex="-1" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2.5 4 6l3.5 3.5"/></svg></button>
-                  <button class="gsp-cal-arrow" type="button" tabindex="-1" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></button>
-                </span>
-              </div>
-              <div class="gsp-cal-grid" id="gbStartCal"></div>
-              <p class="gsp-slot-label">Time, Central</p>
-              <div class="gsp-slots" id="gbStartSlots">
-                <button class="gsp-slot" type="button">9:00 AM</button>
-                <button class="gsp-slot" type="button">9:30 AM</button>
-                <button class="gsp-slot" type="button">10:00 AM</button>
-                <button class="gsp-slot" type="button">11:00 AM</button>
-                <button class="gsp-slot" type="button">1:00 PM</button>
-                <button class="gsp-slot" type="button">2:00 PM</button>
-                <button class="gsp-slot" type="button">3:30 PM</button>
-                <button class="gsp-slot" type="button">4:00 PM</button>
-              </div>
-              <button class="gsp-btn gsp-confirm" id="gbStartConfirm" type="button" disabled>Confirm meeting</button>
-            </div>
-          </div>
-          <p class="gsp-note">Prototype: the month is fixed and nothing is scheduled.</p>
-        </div>
+        <!-- STEP 2b: book a meeting, THE ORGANISM (gbppl-portal-booking-1,
+             Ton 2026-08-25). What stood here was a stand-in: a fixed
+             August 2026, a written-out list of eight slots, arrows that
+             did nothing, and a confirmation step of its own next door.
+             That stand-in is the thing <gb-booking-flow> was BUILT from
+             (booking.css says so line by line: the round day cell, the
+             blue picked day, the drawn check), and having grown into a
+             system organism it came back for its parent. Ton, in two
+             sentences a week apart: «календарь должен жить в одном
+             месте, не в двух», and «когда ты уже внутри портала, мы не
+             показываем форму, а сразу показываем слот, потому что уже
+             знаем, кто ты».
 
-        <!-- STEP 2b answered: the booking confirmed (gbppl-start-booked,
-             Ton 2026-08-19). A step of its own rather than a swap inside
-             the calendar card, so it takes the same 696 the two tall
-             steps already share and the window holds still under the
-             good news. Everything here is the popup's own language: the
-             card, the serif of its titles, the two button roles. The one
-             new mark is the blue check -- state colour, Ton-5 -- and it
-             draws itself rather than landing. -->
-        <div class="gsp-view" data-view="booked">
-          <div class="gsp-card gsp-bookedcard">
-            <div class="gsp-booked-hero">
-              <svg class="gsp-booked-check" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle class="gsp-booked-ring" cx="28" cy="28" r="26" stroke-width="1.25" transform="rotate(-90 28 28)"/>
-                <path class="gsp-booked-tick" d="M17.5 28.5 24.5 35.5 38.5 20.5" stroke-width="1.75"/>
-              </svg>
-              <h2 class="gsp-booked-title">You are booked</h2>
-              <p class="gsp-booked-when" id="gbStartBookedWhen">August 20 &middot; 10:00 AM</p>
-              <p class="gsp-booked-line">The invitation is on its way to your inbox. Thirty minutes, Central time.</p>
-            </div>
-            <div class="gsp-booked-actions">
-              <button class="gsp-btn" id="gbStartDone" type="button">Done</button>
-              <button class="gsp-btn gsp-btn--quiet" id="gbStartRebook" type="button">Book another time</button>
-            </div>
-          </div>
-          <p class="gsp-note">Prototype: nothing is actually scheduled.</p>
+             Hence start="slot": the flow drops its lead form and opens
+             on the calendar, and its indicator draws TWO notches rather
+             than three with the first greyed out. The guest-* three are
+             the person this prototype is signed in as, the same one the
+             sidebar shows (Anton Parkhomenko / iam@antonp.me, company
+             GildedBox from the Company section); step 3 reads them back
+             in its summary instead of asking.
+
+             NO layout="compact", and that was a measurement, not a
+             preference. The modifier the live Book a Meeting page wears
+             puts the calendar beside its slots -- which is what a 528px
+             window wants -- but it switches on a VIEWPORT query
+             (min-width 1024), and the popup is 528 wide at every
+             viewport there is. Measured inside it at 1280 and at 1920:
+             the calendar column takes its fixed 7 x 44 + 12 = 320 and
+             leaves the slots 65px, narrower than one 84px chip. The fix
+             belongs to booking.css (the modifier has to read the
+             CONTAINER, not the window) and this wave does not own that
+             file, so the flow stands in its default column, which the
+             popup fits: 455px across, the slots in four tracks. The
+             cost is honest and visible: 32 quarter-hour chips are a lot
+             more than the stand-in's eight, so the body of the popup
+             scrolls on this step. It is a scroller by construction and
+             the window keeps its 748 either way. See the wave note at
+             the foot of this file.
+
+             With the default column the organism brings its own white
+             card (.gbb-panel: white, #dedee2 hairline, 5px radius) --
+             the same pair .gsp-card draws -- so there is no wrapper
+             here. One card, drawn by whoever owns the thing inside it.
+
+             The choreography around it stays the popup's: the window is
+             born out of the button, the band carries the step name and
+             the Back arrow, Esc and the backdrop close. What is no
+             longer the popup's is everything between: the month, the
+             slots, the rules, the confirmation and its drawn check. -->
+        <div class="gsp-view" data-view="meeting">
+          <gb-booking-flow id="gbStartBooking"
+                           start="slot"
+                           guest-name="Anton Parkhomenko"
+                           guest-email="iam@antonp.me"
+                           guest-company="GildedBox"
+                           site-href="portal.html"></gb-booking-flow>
         </div>
 
         <!-- STEP 2c: call us (gbppl-start-popup-2). The "leave your number
@@ -4397,6 +4274,17 @@
         <span class="demo-label">Studio</span>
         <a class="demo-door" href="../index.html">Design Studio</a>
       </div>
+      <!-- Sandbox (gbppl-portal-booking-1): the same one registry the
+           system panel reads (system\sandbox-registry.js), spoken in
+           this panel's own service voice. Ton 25.08: every page says
+           whether anything is being built for it, and it says it the
+           same way everywhere. Where a PROTO panel already exists the
+           registry gets a SECTION in it, not a second tab beside it --
+           two consoles in two languages side by side would be a
+           duplicate affordance. The Design Studio door above is the way
+           home and stays where it is; these rows are the page's own
+           variants, Live first. Painted by the script at the foot. -->
+      <div class="demo-group" id="demoSandbox"></div>
       <!-- HERO group (A/B toggle) removed per Ton 2026-08-12: all
            development rides variant A, which stays the default. The
            ?v=b URL param still works in code; only the UI control is
@@ -4439,6 +4327,60 @@
       </div>
     </div>
   </div>
+
+<!-- ---- Sandbox rows of the PROTO panel (gbppl-portal-booking-1) ----
+     The data is the studio's one registry; the markup is this panel's
+     own .demo-door shape, so nothing of the system's visual language
+     crosses into a console that is deliberately service-grade. The
+     painter is live\checkout.html's, transferred whole -- the same
+     forPage(id, root) slice, the same Live-first order, the same two
+     row shapes -- with 'portal' for the page and '../' for the root,
+     which is this file's distance from the studio. Which row lights up
+     is the registry's answer, not this page's: a variant is current
+     when its query is a subset of the address, so ?pth=1 lights Portal
+     header, ?hero=start lights Start Gifting layouts, both together
+     light both, and a bare address lights Live. -->
+<script src="../system/sandbox-registry.js"></script>
+<script>
+(function () {
+  'use strict';
+  var box = document.getElementById('demoSandbox');
+  var reg = window.GB_SANDBOXES;
+  if (!box || !reg) return;
+  var slice = reg.forPage('portal', '../');
+  if (!slice) return;
+
+  var html = '<span class="demo-label">Sandbox</span>';
+  html += door(slice.live.label, slice.live.href, slice.live.current, true, '');
+  slice.variants.forEach(function (v) {
+    html += door(v.label, v.href, v.current, v.ready, String(v.status).replace(/-/g, ' '));
+  });
+  if (!slice.variants.length) html += '<p class="demo-note">None yet</p>';
+  box.innerHTML = html;
+
+  function door(label, href, current, ready, note) {
+    if (!ready) {
+      return '<span class="demo-door">' + label + ' <em>· ' + note + '</em></span>';
+    }
+    return '<a class="demo-door' + (current ? ' variant-active' : '') +
+           '" href="' + href + '">' + label + '</a>';
+  }
+})();
+</script>
+
+<!-- The two system scripts this page runs (gbppl-portal-booking-1). They
+     define custom elements and nothing else -- no listeners on the
+     document, no styles, no state -- so they are safe above the page's
+     own controller and they upgrade <gb-booking-flow> the moment they
+     land. auth.js comes first because booking.js names it as its
+     neighbour: every field the flow can draw is <gb-field>. The flow
+     runs in start="slot" mode here and never reaches the step that
+     draws them, but the component's contract is the component's, not
+     this page's guess about which half of it will be used.
+     Plain scripts, not modules: this page is opened from file:// as
+     often as from a server, and ES modules meet CORS there. -->
+<script src="../system/components/auth.js"></script>
+<script src="../system/components/booking.js"></script>
 
 <script>
 (function () {
@@ -5056,12 +4998,16 @@
                meta: '<span class="assistance-panel__status">' +
                      '<i class="availability-dot" aria-hidden="true"></i>' +
                      'Online now · A real person</span>' },
-    meeting: { title: 'Book a meeting', meta: 'Thirty minutes, at a time that suits you.' },
-    /* The confirmation keeps the calendar's own name in the band -- the
-       band says which step you are on, the step says what happened -- and
-       drops the invitation line, which the card now answers in full
-       (gbppl-start-booked). */
-    booked:  { title: 'Book a meeting', meta: '' },
+    /* The band's line is EMPTY here, and that is the change of
+       gbppl-portal-booking-1. It used to read "Thirty minutes, at a
+       time that suits you" -- a number the stand-in invented, against
+       the live meeting's actual 15. The organism says what the meeting
+       is in its own head ("15 minutes with a gifting specialist, on
+       Zoom") and it says it from the one place that knows, so a second
+       voice above it would only be a chance to disagree. The band keeps
+       the door's name; the step says the rest. The confirmation is the
+       organism's own step now and rides under the same name. */
+    meeting: { title: 'Book a meeting', meta: '' },
     call:    { title: 'Call us',        meta: 'Weekdays, 9 to 5 Central.' }
   };
 
@@ -5244,81 +5190,60 @@
     });
   }
 
-  /* Calendar stand-in: August 2026 laid out Sunday first (the 1st falls
-     on a Saturday), everything before today and every weekend inert,
-     so the guest can only pick a day a human would actually offer.
-     Built here rather than in markup: 42 cells of hand-written HTML
-     would bury the panel's structure. */
-  var CAL_MONTH   = 'August 2026';
-  var CAL_LEAD    = 6;    // blanks before the 1st
-  var CAL_DAYS    = 31;
-  var CAL_OPEN    = [19, 20, 21, 24, 25, 26, 27, 28, 31];
-  var calGrid     = document.getElementById('gbStartCal');
-  var slotsWrap   = document.getElementById('gbStartSlots');
-  var confirmBtn  = document.getElementById('gbStartConfirm');
-  var bookedWhen  = document.getElementById('gbStartBookedWhen');
-  var bookedDone  = document.getElementById('gbStartDone');
-  var bookedAgain = document.getElementById('gbStartRebook');
-  var pickedDay   = null;
-  var pickedSlot  = null;
+  /* ---- The Book a Meeting door IS the organism (gbppl-portal-booking-1)
+     Seventy-odd lines stood here: August 2026 built cell by cell with a
+     hand-written list of open days, eight slots written out in markup,
+     the two selection handlers, the Confirm that turned the page, and
+     the Done / Book another time of the confirmation step. All of it
+     lives in system/components/booking.js now -- which was written FROM
+     it -- and it comes back with real rules instead of a stand-in: a
+     live month with working arrows, Monday to Friday 09:00-17:00
+     Chicago three weeks out, 15-minute slots, the guest's own timezone
+     spelled out, and the same drawn check at the end.
 
-  (function buildCalendar() {
-    var dows = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-    var html = '';
-    for (var d = 0; d < 7; d++) html += '<span class="gsp-dow">' + dows[d] + '</span>';
-    for (var b = 0; b < CAL_LEAD; b++) html += '<span></span>';
-    for (var n = 1; n <= CAL_DAYS; n++) {
-      var open = CAL_OPEN.indexOf(n) !== -1;
-      html += '<button class="gsp-day" type="button" data-day="' + n + '"' +
-              (open ? '' : ' disabled') + '>' + n + '</button>';
-    }
-    calGrid.innerHTML = html;
-  })();
+     Two things stay here, because they are the HOST's business and the
+     component cannot know them.
 
-  function syncConfirm() {
-    confirmBtn.disabled = !(pickedDay && pickedSlot);
+     ONE: the flow keeps its state, the popup does not. A guest who has
+     booked and comes back through the door a minute later should meet a
+     calendar, not the confirmation they already read. The organism has
+     no reset -- its own page is left by navigating away -- so the host
+     does the one thing a host may: it stands a NEW element with the
+     same attributes in place of the spent one, and the custom element
+     renders its first step on insertion. Only a FINISHED flow is
+     replaced; a guest who picked a day and stepped back to the doors
+     finds the pick where they left it, exactly as the stand-in behaved.
+
+     TWO: "Back to site" is the organism's last quiet exit, and on the
+     page it was built for it means leave. Inside a popup the same move
+     is close the window, so the click is answered with the popup's own
+     way out -- which collapses the card back into the button it was
+     born from, the whole point of the choreography. */
+  var bookingHost  = document.getElementById('gbStartBooking');
+  var bookingSpent = false;   /* the flow reached its confirmation */
+
+  startDialog.addEventListener('gbb:booked', function () { bookingSpent = true; });
+
+  function freshBooking() {
+    if (!bookingSpent || !bookingHost || !bookingHost.parentNode) return;
+    var next = document.createElement('gb-booking-flow');
+    var attrs = bookingHost.attributes;
+    for (var i = 0; i < attrs.length; i++) next.setAttribute(attrs[i].name, attrs[i].value);
+    bookingHost.parentNode.replaceChild(next, bookingHost);
+    bookingHost = next;
+    bookingSpent = false;
   }
-  calGrid.addEventListener('click', function (e) {
-    var day = e.target.closest ? e.target.closest('.gsp-day') : null;
-    if (!day || day.disabled) return;
-    var all = calGrid.querySelectorAll('.gsp-day');
-    for (var i = 0; i < all.length; i++) all[i].classList.remove('sel');
-    day.classList.add('sel');
-    pickedDay = day.getAttribute('data-day');
-    syncConfirm();
+
+  var meetingDoor = startDialog.querySelector('.gsp-door[data-door="meeting"]');
+  if (meetingDoor) meetingDoor.addEventListener('click', freshBooking);
+
+  startDialog.addEventListener('click', function (e) {
+    var exit = e.target.closest ? e.target.closest('a.gbb-quiet') : null;
+    if (!exit) return;
+    e.preventDefault();
+    closeStartPanel();
   });
-  slotsWrap.addEventListener('click', function (e) {
-    var slot = e.target.closest ? e.target.closest('.gsp-slot') : null;
-    if (!slot) return;
-    var all = slotsWrap.querySelectorAll('.gsp-slot');
-    for (var i = 0; i < all.length; i++) all[i].classList.remove('sel');
-    slot.classList.add('sel');
-    pickedSlot = slot.textContent.trim();
-    syncConfirm();
-  });
-  /* Confirm turns the page rather than editing it (gbppl-start-booked):
-     the calendar hands over to a step of its own, which carries the fact
-     it just made. The picks are cleared on the way out, so the calendar
-     the guest can come back to -- by Book another time, by Back, or by
-     the Book a Meeting door a week from now -- is always a clean one. */
-  function resetBooking() {
-    var picked = startDialog.querySelectorAll('.gsp-day.sel, .gsp-slot.sel');
-    for (var p = 0; p < picked.length; p++) picked[p].classList.remove('sel');
-    pickedDay = null;
-    pickedSlot = null;
-    syncConfirm();
-  }
-  confirmBtn.addEventListener('click', function () {
-    if (confirmBtn.disabled) return;
-    bookedWhen.textContent = CAL_MONTH.split(' ')[0] + ' ' + pickedDay +
-      ' · ' + pickedSlot;
-    resetBooking();
-    setStartView('booked', 'forward', function () { bookedDone.focus(); });
-  });
-  bookedDone.addEventListener('click', function () { closeStartPanel(); });
-  bookedAgain.addEventListener('click', function () {
-    setStartView('meeting', 'back', function () { startBack.focus(); });
-  });
+
 
   /* ---- Live chat: LiveSpecialistPanel's behaviour, transferred ----
      gbppl-start-popup-3. React's sendMessage / isReplying / the reply
@@ -5725,6 +5650,122 @@
      WHAT MOVED INTO THE SYSTEM: nothing. Neither auth.css nor
      shell.css nor tokens.css was edited — everything this page needed
      was already there, and this time the page went to it.
+     ============================================================ -->
+<!-- ============================================================
+     gbppl-portal-booking-1 — ONE CALENDAR, NOT TWO, AND THE PANEL
+     LEARNS TO SAY WHAT IS IN THE WORKS HERE. 2026-08-25.
+
+     THE ITEM THIS CLOSES. Since 19.08 the Book a Meeting door of the
+     START popup carried a calendar of its own: a fixed August 2026
+     with a hand-written list of open days, eight slots typed into the
+     markup, month arrows that were drawings of arrows, and a
+     confirmation step next door with a drawn blue check. It was a good
+     stand-in — good enough that when the system needed a booking flow
+     for the public page, that flow was built FROM this one, line by
+     line (booking.css says so in its own head: the round day cell, the
+     blue picked day, the 520/300ms check on --mo-move). Which left the
+     studio with the same calendar in two places, and Ton closed it:
+     «календарь должен жить в одном месте, не в двух». The organism
+     comes back for its parent.
+
+     AND THE SHAPE IT COMES BACK IN. Ton, the same day: «когда ты уже
+     внутри портала, мы не показываем форму (шаг 1), а сразу показываем
+     слот, потому что уже знаем, кто ты». That is the flow's
+     start="slot" mode, and it is why the indicator in this popup draws
+     TWO notches and not three with the first one greyed: a step that
+     will not happen is not part of the road. The guest-* attributes are
+     the person this prototype is signed in as, taken from the page's
+     own sidebar — Anton Parkhomenko, iam@antonp.me, and the company
+     name GildedBox from the Company section — and step 3 reads them
+     back in its summary instead of asking for them.
+
+     WHAT WAS DELETED, which is the whole point of the wave:
+       markup   the calendar card (.gsp-cal, its head, its arrows, its
+                grid, its eight slots) and the entire confirmation step
+                .gsp-view[data-view="booked"] — 53 lines;
+       CSS      the calendar and slot block (.gsp-cal*, .gsp-dow,
+                .gsp-day*, .gsp-slot*, .gsp-confirm) 85 lines; the
+                confirmation block (.gsp-bookedcard, .gsp-booked-*,
+                @keyframes gsp-draw and its reduced-motion branch) 71
+                lines; .gsp-note and .gsp-btn:disabled, which belonged
+                to the steps that are gone; and the four places where
+                "booked" was named as a view of the shell;
+       JS       the month config, buildCalendar, the two selection
+                handlers, syncConfirm, resetBooking, the Confirm that
+                wrote the fact and turned the page, and the Done /
+                Book another time listeners — 75 lines.
+     156 lines of CSS, 75 of JS and 53 of markup, replaced by one
+     custom element and two host-side wirings, both argued for in place
+     at the JS block: a spent flow is stood fresh on re-entry, and
+     "Back to site" is answered with the popup's own way out.
+
+     THE COPY that went with them: the band's line under the meeting
+     title read "Thirty minutes, at a time that suits you". The live
+     meeting is fifteen, and the organism says so from the one place
+     that knows. The band keeps the door's name and says nothing else.
+
+     COMPACT OR COLUMN — a measurement, not a preference. The live Book
+     a Meeting page wears layout="compact", which stands the calendar
+     beside its slots and scrolls the slot column inside itself; that is
+     exactly the shape a 528px window wants. But the modifier switches
+     on a VIEWPORT query (min-width 1024) and this popup is 528 wide at
+     every viewport there is. Measured inside it at 1280 and at 1920:
+     the calendar column takes its fixed 7 x 44 + 12 = 320px, the gap
+     24, and the slots are left 65px — narrower than one 84px chip. So
+     the flow stands in its DEFAULT COLUMN, 455px across, slots in four
+     tracks, and it brings its own white card (.gbb-panel), which is
+     .gsp-card's pair, so the step needs no wrapper of this page's
+     making. The cost is visible and honest: 32 quarter-hour chips
+     against the stand-in's eight, so the popup body scrolls on this
+     step (1147 against 674). The window keeps its 748 and the chat
+     keeps sharing it. FOR THE OWNER OF booking.css, not for this page
+     to patch: the compact modifier wants to read the CONTAINER and not
+     the window — a container query, or a second modifier for a narrow
+     host. The report of this wave carries the same note.
+
+     THE PANEL. The PROTO panel gets the Sandbox section every page in
+     the studio now carries (Ton 25.08: «постоянство: открыть любую
+     страницу и сразу увидеть, есть ли для неё что-то в разработке»).
+     Data from the one registry, system\sandbox-registry.js, through
+     forPage with this page's id and its distance from the studio;
+     markup transferred from live\checkout.html, the first panel to read
+     the registry, so the two consoles stay one console. Live first,
+     then Portal header and Start Gifting layouts, and the row that
+     matches the address lights up: ?pth=1 lights the first,
+     ?hero=start the second, both together both, a bare address lights
+     Live. The Design Studio door above it is the way home and is not
+     duplicated. The panel's CSS gained the three rules the checkout
+     already had: the active state for a link, the grey non-link row for
+     ready:false, and .demo-note.
+
+     MEASURED with the portal instrument (7 views x 2 widths, rect plus
+     120 computed properties per element): 782 440 properties compared,
+     542 different, and every one of them inside the START popup or the
+     PROTO panel. Nothing else on the page moved by a hundredth of a
+     pixel, and the document height is unchanged in all fourteen files.
+       126  the popup. Ten are the meeting step itself: the band's meta
+            gone, the title group re-centred on one line, the step's own
+            box. The other 116 are the instrument's path identity, not a
+            change: with the booked step deleted, Call us moved up one
+            index, so the tool compares .gsp-bookedcard's box against
+            .gsp-callcard's. Checked element by element; the call step
+            is untouched, and so are the doors and the chat.
+       416  the PROTO panel, the same artefact for the same reason: the
+            Sandbox group is inserted second, so every group below it
+            shifts one index. Compared by ID instead of by path, the
+            panel's fifty controls show ZERO changed properties and one
+            rigid move — the open panel is 137.47px taller and
+            re-centres, so every existing control sits 68.73px lower.
+            Collapsed, which is the default view, nothing moves at all.
+     Hover probes on all thirteen controls: identical.
+
+     WALKED, headed, from file:// at 1280 and 1920 in four addresses
+     (default, ?pth=1, ?hero=start, both): START opens, Book a Meeting
+     shows the calendar at once with two notches, a day and a slot pick,
+     the timezone line names both zones, Confirm draws the check and the
+     summary carries the persona's name and email, Back returns to the
+     doors, a second visit finds a clean calendar, the cross and Esc
+     close. Console clean in every run.
      ============================================================ -->
 </body>
 </html>
