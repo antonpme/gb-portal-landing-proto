@@ -531,3 +531,155 @@ body.gb-demo a.gbb-quiet:hover {
   text-align: center;
   color: var(--zinc-500);
 }
+
+/* ============================================================
+   МОДИФИКАТОР: layout="compact"                  gbppl-booking-2
+   ------------------------------------------------------------
+   Тон, 25.08 (дословно): «Страница Book a Meeting сейчас выглядит
+   вот так. Пока мы не переделываем то, как она выглядит, мы
+   переделываем только форму внутри неё. Инкорпорируй новую форму
+   в эту страницу и сделай так, чтобы не было вертикального
+   скролла.»
+
+   Организм родился колонкой на всю страницу: три шага один под
+   другим, поле под полем, календарь над слотами. На живой
+   странице contact-us-219 ему отведена ПОЛОВИНА ширины и ВСЯ
+   высота окна сразу — и на 1280x720 вертикальная раскладка не
+   помещается ни одним шагом. Компактная раскладка не меняет ни
+   одного элемента, ни одной подписи и ни одного правила
+   поведения: она только перекладывает то же самое из колонки в
+   две колонки и подбирает вертикальный ритм.
+
+   Включается атрибутом на потребителе:
+     <gb-booking-flow layout="compact">
+   Атрибут читает ТОЛЬКО CSS (селектор по хосту), booking.js о нём
+   не знает — публичный дефолт организма не тронут ни строчкой.
+
+   Что делает:
+     хост      снимает свою колоночную ширину (640/720): в
+               компактном режиме ширину задаёт колонка страницы.
+     шаг 1     поля становятся в две дорожки от 1024 (email/phone,
+               имя/компания), textarea остаётся во всю ширину.
+     шаг 2     календарь и слоты РЯДОМ от 1024; колонка слотов
+               прокручивается внутри себя на высоту календаря,
+               поэтому длинный день не удлиняет карточку. Confirm
+               стоит под слотами, «Back to your details» — под
+               календарём: обе кнопки в одной последней строке.
+     ритм      отступы карточки, шапки и полей ужимаются; на окне
+               ниже 780 ужимаются ещё раз вместе с кругом дня
+               (44 -> 38), потому что именно там живёт 1280x720.
+   Ничего из этого не касается страниц без атрибута.
+   ============================================================ */
+
+/* Ширину в компактном режиме диктует колонка потребителя. */
+gb-booking-flow[layout="compact"] {
+  max-width: none;
+  /* Круг дня и, следом, ширина календарной колонки шага 2. Одна
+     переменная на оба, чтобы колонка не разъезжалась с сеткой:
+     7 кругов + 6 зазоров по 2. */
+  --gbb-day: 44px;
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  gb-booking-flow[layout="compact"] { --gbb-day: 38px; }
+}
+@media (max-height: 780px) {
+  gb-booking-flow[layout="compact"] { --gbb-day: 38px; }
+}
+gb-booking-flow[layout="compact"] .gbb-day {
+  width: var(--gbb-day);
+  height: var(--gbb-day);
+}
+
+/* ---- Вертикальный ритм ---- */
+gb-booking-flow[layout="compact"] .gbb-steps { margin-bottom: 16px; }
+gb-booking-flow[layout="compact"] .gbb-panel { padding: 20px; }
+@media (min-width: 1024px) {
+  gb-booking-flow[layout="compact"] .gbb-panel { padding: 24px; }
+}
+gb-booking-flow[layout="compact"] .gbb-head { margin-bottom: 16px; }
+/* Подпись над слотами встаёт в один ряд с шапкой календаря, поэтому
+   её верхний отступ (22px в колоночной раскладке) снимается, а
+   нижний равняется на шапку. */
+gb-booking-flow[layout="compact"] .gbb-slot-label { margin: 0 0 16px; }
+gb-booking-flow[layout="compact"] .gbb-title { font-size: 22px; }
+@media (min-width: 1280px) {
+  gb-booking-flow[layout="compact"] .gbb-title { font-size: 24px; }
+}
+/* Поля стоят теснее, но роль лейбла и высота контрола не
+   трогаются: это лестница организма авторизации, она общая. */
+gb-booking-flow[layout="compact"] .gba-field { margin-bottom: 12px; }
+gb-booking-flow[layout="compact"] .gba-btn { margin-top: 12px; }
+gb-booking-flow[layout="compact"] .gba-textarea { min-height: 64px; }
+/* ---- Шаг 1: поля в две дорожки ----
+   .gba-form уже flex-wrap с полями во всю ширину (auth.css,
+   живая сетка Materialize с mx -8 / px 8); две дорожки — это
+   ровно width 50% у ячейки, ничего больше. Последняя ячейка
+   (textarea «What are you looking for?») остаётся широкой. */
+@media (min-width: 1024px) {
+  gb-booking-flow[layout="compact"] .gba-form > gb-field,
+  gb-booking-flow[layout="compact"] .gba-form > [data-role="phone-field"] { width: 50%; }
+  gb-booking-flow[layout="compact"] .gba-form > gb-field:last-child { width: 100%; }
+}
+
+/* ---- Шаг 2: календарь и слоты рядом ----
+   Разметку шага booking.js отдаёт одним плоским списком детей
+   карточки, поэтому две колонки собраны сеткой с именованными
+   областями: порядок в DOM остаётся прежним, меняется только
+   место. Шаг опознаётся по наличию календарной сетки — карточки
+   шагов 1 и 3 этим правилом не задеваются. */
+@media (min-width: 1024px) {
+  gb-booking-flow[layout="compact"] .gbb-panel:has(.gbb-cal-grid) {
+    display: grid;
+    grid-template-columns: calc(var(--gbb-day) * 7 + 12px) minmax(0, 1fr);
+    column-gap: 24px;
+    grid-template-areas:
+      "head    head"
+      "calhead slotlab"
+      "cal     slots"
+      "tz      tz"
+      "exits   cta";
+  }
+  gb-booking-flow[layout="compact"] .gbb-panel:has(.gbb-cal-grid) > .gbb-head { grid-area: head; }
+  gb-booking-flow[layout="compact"] .gbb-cal-head  { grid-area: calhead; }
+  gb-booking-flow[layout="compact"] .gbb-cal-grid  { grid-area: cal; }
+  gb-booking-flow[layout="compact"] .gbb-slot-label { grid-area: slotlab; margin-top: 0; }
+  gb-booking-flow[layout="compact"] .gbb-panel:has(.gbb-cal-grid) > [data-role="slots"] {
+    grid-area: slots;
+    /* Прокрутка внутри колонки: у 15-минутной встречи рабочий день
+       даёт 32 чипа, и без потолка карточка тянулась бы вниз на
+       весь список.
+       Потолок — РОВНО высота календаря, посчитанная из той же
+       переменной: шапка недели 12px + её pb 8 = 26, шесть рядов по
+       кругу дня и шесть зазоров по 2, итого 6d + 38. Он же держит
+       дорожку сетки: max-height ограничивает вклад ячейки в размер
+       ряда, иначе ряд «auto» вырос бы под полный список слотов
+       (замер 1280x720: ряд тянулся на 48px и карточка не влезала).
+       min-height 0 обязателен — иначе автоминимум grid-ячейки
+       равен содержимому и прокрутки не случается. */
+    min-height: 0;
+    max-height: calc(var(--gbb-day) * 6 + 38px);
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  gb-booking-flow[layout="compact"] .gbb-tz { grid-area: tz; }
+  gb-booking-flow[layout="compact"] .gbb-panel:has(.gbb-cal-grid) > .gba-btn { grid-area: cta; }
+  gb-booking-flow[layout="compact"] .gbb-panel:has(.gbb-cal-grid) > .gbb-exits {
+    grid-area: exits;
+    align-self: center;
+    justify-content: flex-start;
+    margin-top: 16px;
+  }
+}
+
+/* Окно ниже 780 — это 1280x720, и там ритм ужимается второй раз.
+   Каждое число тут стоит потому, что без него карточка шага 2 не
+   помещалась: замер 1280x720 давал 746 при 720. */
+@media (max-height: 780px) {
+  gb-booking-flow[layout="compact"] .gbb-steps { margin-bottom: 8px; }
+  gb-booking-flow[layout="compact"] .gbb-panel { padding: 16px 20px; }
+  gb-booking-flow[layout="compact"] .gbb-head { margin-bottom: 8px; }
+  gb-booking-flow[layout="compact"] .gbb-cal-head { margin-bottom: 12px; }
+  gb-booking-flow[layout="compact"] .gbb-slot-label { margin-bottom: 12px; }
+  gb-booking-flow[layout="compact"] .gbb-tz { margin-top: 10px; }
+  gb-booking-flow[layout="compact"] .gba-btn { margin-top: 8px; }
+}
