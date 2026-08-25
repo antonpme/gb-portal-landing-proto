@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Components — Oro, GildedBox Design System</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-button-1 — THE SHOWCASE, COMPONENTS
+     ------------------------------------------------------------
+     The first organism to get a page of its own: the button.
+
+     EVERY BUTTON ON THIS PAGE IS A REAL BUTTON. Nothing is a
+     screenshot and nothing is hand-drawn: the matrix, the states
+     and the anatomy all run on .gb-btn out of
+     ..\components\button.css. If a token changes, this page
+     changes with it, and if the organism breaks, it breaks here
+     first. That is the same rule the Colors page keeps.
+
+     THE NUMBERS ARE READ BACK OUT OF THE PAGE. The anatomy table
+     is not typed. Three hidden probe buttons, one per size, are
+     measured with getComputedStyle at the CURRENT viewport width
+     and the table is filled from what the browser actually
+     rendered. Resize the window and the table moves with the
+     ladders, which is the only honest way to show a scale that
+     depends on screen width.
+
+     .is-hover / .is-focus / .is-active are DEMO-ONLY classes,
+     declared in button.css and said out loud in the states
+     section below. They exist so five states can stand side by
+     side on one screen. No product page may wear them.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../components/shell.css">
+<link rel="stylesheet" href="../components/header.css">
+<link rel="stylesheet" href="../components/button.css">
+<link rel="stylesheet" href="oro.css">
+
+<!-- data-guard="off": the showcase documents the system and is not
+     kept behind the session flag; the script is here for the LOCK. -->
+<script src="../components/studio.js" data-home="../../index.html" data-guard="off"></script>
+
+<style>
+/* ============================================================
+   COMPONENTS — page-local composition
+   ------------------------------------------------------------
+   Layout only. Not one button property is set here: everything
+   the buttons wear comes from button.css, and a page that
+   restyled the thing it documents would be documenting a lie.
+   ============================================================ */
+
+/* ---- The matrix ----
+   One block with internal hairlines, not a scatter of cards
+   (Russell 08-11, "цельные формы"): a matrix is a single object.
+   Four columns: the row name, then S, L and XL. */
+.mx {
+  margin: 22px 0 0;
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+}
+.mx-grid {
+  display: grid;
+  grid-template-columns: 148px repeat(3, minmax(0, 1fr));
+  align-items: center;
+}
+.mx-grid > * { padding: 14px 16px; border-top: 1px solid var(--zinc-200); }
+.mx-grid > :nth-child(-n + 4) { border-top: 0; }
+.mx-col {
+  font-size: 12px;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+  background: var(--zinc-50);
+}
+.mx-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--zinc-900);
+}
+.mx-name small {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--zinc-500);
+}
+.mx-cell { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.mx-size { display: none; }
+
+/* The dark plaque. Inverse only makes sense on a dark ground, so
+   the page gives it one rather than showing a white button on
+   white and asking the reader to imagine it. */
+.mx--dark { background: var(--zinc-950); border-color: var(--zinc-950); }
+.mx--dark .mx-grid > * { border-top-color: var(--zinc-800); }
+.mx--dark .mx-col { background: var(--zinc-900); color: var(--zinc-400); }
+.mx--dark .mx-name { color: var(--zinc-100); }
+.mx--dark .mx-name small { color: var(--zinc-400); }
+
+@media (max-width: 900px) {
+  .mx-grid { grid-template-columns: 1fr; }
+  .mx-grid > * { padding: 12px 14px; }
+  .mx-grid > :nth-child(-n + 4) { border-top: 1px solid var(--zinc-200); }
+  .mx--dark .mx-grid > :nth-child(-n + 4) { border-top-color: var(--zinc-800); }
+  .mx-col { display: none; }
+  .mx-name { border-top-width: 2px; padding-bottom: 4px; }
+  /* Below 900 the columns stack, so each cell says which ladder it
+     is showing. The marker stands in the row, not over it: a
+     stacked column of buttons reads faster with one narrow gutter
+     of sizes down its left edge. */
+  .mx-size {
+    display: block;
+    flex: 0 0 22px;
+    font-size: 10px;
+    font-weight: var(--eyebrow-weight);
+    letter-spacing: var(--eyebrow-tracking);
+    text-transform: uppercase;
+    color: var(--zinc-400);
+  }
+  .mx-cell { border-top: 0; padding-top: 6px; }
+}
+
+/* ---- The plain shelf: icons, states ---- */
+.shelf {
+  margin: 22px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 20px 28px;
+  padding: 22px;
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.shelf--dark { background: var(--zinc-950); border-color: var(--zinc-950); }
+.slot { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.slot-cap {
+  font-size: 10px;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.shelf--dark .slot-cap { color: var(--zinc-400); }
+
+/* ---- The reading table: anatomy and the migration map ---- */
+.tbl {
+  width: 100%;
+  margin: 22px 0 0;
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background: var(--white);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--zinc-700);
+}
+.tbl th, .tbl td { padding: 11px 14px; text-align: left; vertical-align: top; border-top: 1px solid var(--zinc-200); }
+.tbl thead th {
+  border-top: 0;
+  background: var(--zinc-50);
+  font-size: 12px;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.tbl td:first-child, .tbl th:first-child { font-weight: 600; color: var(--zinc-900); }
+.tbl td b { font-weight: 600; color: var(--zinc-900); }
+.tbl code {
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  font-size: 13px;
+  color: var(--zinc-900);
+}
+.tbl-wrap { overflow-x: auto; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---- The provenance plaque, the same one the Colors page uses.
+   Zinc, never colour: a provenance is a fact about the value, not
+   a state of the interface. ---- */
+.st {
+  display: inline-block;
+  padding: 3px 7px;
+  background: var(--zinc-100);
+  border-radius: var(--radius);
+  font-size: 10px;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--zinc-600);
+  white-space: nowrap;
+}
+.st--declared { background: var(--zinc-900); color: var(--zinc-100); }
+
+/* The live width readout above the anatomy table. */
+.probe-note {
+  margin: 18px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--zinc-500);
+}
+.probe-note b { color: var(--zinc-900); font-variant-numeric: tabular-nums; }
+
+/* The probes themselves. Off screen, never seen, measured every
+   resize. Not display:none: a hidden element has no computed
+   padding to read. */
+.probes { position: absolute; left: -9999px; top: 0; visibility: hidden; }
+</style>
+</head>
+<body>
+
+<!-- The studio bar (hub-9). Same markup as every studio page; the
+     classes are system\components\header.css, variant --studio. -->
+<header class="gb-header gb-header--studio">
+  <div class="gb-container gbh-bar gbh-bar--studio">
+    <a class="gbh-lock" href="../../index.html" aria-label="GildedBox Design Studio, home">
+      <img class="gbh-lock__mark" src="../assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+      <span class="gbh-lock__rule" aria-hidden="true"></span>
+      <span class="gbh-lock__word">Design Studio</span>
+    </a>
+    <nav class="gbh-nav" aria-label="Studio">
+      <a class="gbh-link" href="../../live/index.html">Live Prototype</a>
+      <a class="gbh-link" href="../../sandboxes.html">Sandboxes</a>
+      <a class="gbh-link is-active" href="index.html" aria-current="page">Design System</a>
+    </nav>
+    <div class="gbh-actions">
+      <button class="gbh-cta gbh-cta--outline" type="button" data-studio-lock>
+        <span data-pc-section="label">Lock</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="oro">
+
+  <!-- ============================================================
+       THE RAIL
+       ============================================================ -->
+  <nav class="oro-rail" aria-label="Design system sections">
+    <a class="oro-lock" href="index.html">
+      <span class="oro-lock-name">Oro</span>
+      <span class="oro-lock-sub gb-eyebrow">Design system</span>
+    </a>
+
+    <div class="oro-nav">
+      <a class="oro-link" href="index.html">About</a>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Branding <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Tone of Voice <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Typography <span class="oro-soon">Soon</span></span>
+      <a class="oro-link" href="colors.html">Colors</a>
+      <a class="oro-link" href="components.html" aria-current="page">Components</a>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Tokens <span class="oro-soon">Soon</span></span>
+    </div>
+
+  </nav>
+
+  <!-- ============================================================
+       THE COLUMN
+       ============================================================ -->
+  <main class="oro-main">
+    <div class="oro-col">
+
+      <header class="oro-head">
+        <span class="gb-eyebrow">Components</span>
+        <h1 class="oro-h1">Buttons</h1>
+        <p class="oro-lede">One class, three types, three colours, three size ladders and five states. Every button on this page is live: it runs on the same stylesheet the product will, and the numbers in the anatomy table are read back out of the rendered page at your current window width.</p>
+        <p class="probe-note">Window width right now: <b id="wnow">measuring</b>. The ladders step at 640, 768, 1280 and 2000.</p>
+      </header>
+
+      <!-- ---- THE MATRIX ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">01 · The matrix</span>
+        <h2 class="oro-h2">Type, colour and size</h2>
+        <p class="oro-p">Rows are a type crossed with a colour, columns are the three size ladders. Blue is the action the screen is asking for, black is the action that is simply always there. That split is not decoration: it is the rule that keeps the accent meaning something.</p>
+
+        <div class="mx">
+          <div class="mx-grid">
+            <span class="mx-col">Type and colour</span>
+            <span class="mx-col">S · header</span>
+            <span class="mx-col">L · form</span>
+            <span class="mx-col">XL · committing</span>
+
+            <div class="mx-name">Filled primary<small>The one action of the screen</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Book a meeting</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Book a meeting</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Book a meeting</span></button></div>
+
+            <div class="mx-name">Filled secondary<small>Furniture that still needs weight</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--filled gb-btn--secondary" type="button"><span class="gb-btn__label">Explore gifts</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary" type="button"><span class="gb-btn__label">Explore gifts</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--secondary" type="button"><span class="gb-btn__label">Explore gifts</span></button></div>
+
+            <div class="mx-name">Outline primary<small>A second action beside a filled one</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--outline gb-btn--primary" type="button"><span class="gb-btn__label">Add a gift</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--primary" type="button"><span class="gb-btn__label">Add a gift</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--outline gb-btn--primary" type="button"><span class="gb-btn__label">Add a gift</span></button></div>
+
+            <div class="mx-name">Outline secondary<small>The live header pair, My portal</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
+
+            <div class="mx-name">Ghost primary<small>Outline minus the hairline</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--ghost gb-btn--primary" type="button"><span class="gb-btn__label">See details</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--primary" type="button"><span class="gb-btn__label">See details</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--ghost gb-btn--primary" type="button"><span class="gb-btn__label">See details</span></button></div>
+
+            <div class="mx-name">Ghost secondary<small>The quietest thing that is still a button</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button></div>
+          </div>
+        </div>
+
+        <p class="oro-p">Inverse is the same three types cut in white, and it belongs on a dark ground and nowhere else. It is what the header wears over the hero video.</p>
+
+        <div class="mx mx--dark">
+          <div class="mx-grid">
+            <span class="mx-col">Inverse</span>
+            <span class="mx-col">S · header</span>
+            <span class="mx-col">L · form</span>
+            <span class="mx-col">XL · committing</span>
+
+            <div class="mx-name">Filled inverse<small>White on the dark ground</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--filled gb-btn--inverse" type="button"><span class="gb-btn__label">Start gifting</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--inverse" type="button"><span class="gb-btn__label">Start gifting</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--inverse" type="button"><span class="gb-btn__label">Start gifting</span></button></div>
+
+            <div class="mx-name">Outline inverse<small>Live on the transparent header</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--outline gb-btn--inverse" type="button"><span class="gb-btn__label">All gifts</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse" type="button"><span class="gb-btn__label">All gifts</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--outline gb-btn--inverse" type="button"><span class="gb-btn__label">All gifts</span></button></div>
+
+            <div class="mx-name">Ghost inverse<small>For a dark panel that is already busy</small></div>
+            <div class="mx-cell"><span class="mx-size">S</span><button class="gb-btn gb-btn--s gb-btn--ghost gb-btn--inverse" type="button"><span class="gb-btn__label">Not now</span></button></div>
+            <div class="mx-cell"><span class="mx-size">L</span><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--inverse" type="button"><span class="gb-btn__label">Not now</span></button></div>
+            <div class="mx-cell"><span class="mx-size">XL</span><button class="gb-btn gb-btn--xl gb-btn--ghost gb-btn--inverse" type="button"><span class="gb-btn__label">Not now</span></button></div>
+          </div>
+        </div>
+
+        <p class="oro-note">Nine cells, three sizes each, and one stylesheet behind all twenty seven. The markup of a cell is the base class plus three words: <code>gb-btn gb-btn--l gb-btn--outline gb-btn--secondary</code>. Filled, primary and L are the defaults, so a bare <code>gb-btn</code> is the top left cell of the L column.</p>
+      </section>
+
+      <!-- ---- THE ICON ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">02 · The icon</span>
+        <h2 class="oro-h2">On either side, or on both, or on neither</h2>
+        <p class="oro-p">An icon is a span with one glyph in it, and which side it stands on is DOM order and nothing else. There is no left modifier and no right modifier, because the row already answers that question and a second way to say it would be a second thing to keep in step. The glyph takes the current ink, so it changes colour with every state for free.</p>
+
+        <div class="shelf">
+          <div class="slot">
+            <span class="slot-cap">No icon</span>
+            <button class="gb-btn gb-btn--l" type="button"><span class="gb-btn__label">Continue</span></button>
+          </div>
+          <div class="slot">
+            <span class="slot-cap">Icon before</span>
+            <button class="gb-btn gb-btn--l" type="button">
+              <span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 8.5h17v12h-17zM3.5 8.5l2-4h13l2 4M12 4.5v16"/></svg></span>
+              <span class="gb-btn__label">Continue</span>
+            </button>
+          </div>
+          <div class="slot">
+            <span class="slot-cap">Icon after</span>
+            <button class="gb-btn gb-btn--l" type="button">
+              <span class="gb-btn__label">Continue</span>
+              <span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span>
+            </button>
+          </div>
+          <div class="slot">
+            <span class="slot-cap">Both</span>
+            <button class="gb-btn gb-btn--l" type="button">
+              <span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 8.5h17v12h-17zM3.5 8.5l2-4h13l2 4M12 4.5v16"/></svg></span>
+              <span class="gb-btn__label">Continue</span>
+              <span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="shelf">
+          <div class="slot">
+            <span class="slot-cap">S · glyph 16</span>
+            <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">Download</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3.5v13M6.5 11l5.5 5.5L17.5 11M4 20.5h16"/></svg></span></button>
+          </div>
+          <div class="slot">
+            <span class="slot-cap">L · glyph 16 to 24</span>
+            <button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">Download</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3.5v13M6.5 11l5.5 5.5L17.5 11M4 20.5h16"/></svg></span></button>
+          </div>
+          <div class="slot">
+            <span class="slot-cap">XL · glyph 20 to 28</span>
+            <button class="gb-btn gb-btn--xl gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">Download</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3.5v13M6.5 11l5.5 5.5L17.5 11M4 20.5h16"/></svg></span></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- THE STATES ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">03 · States</span>
+        <h2 class="oro-h2">Rest, hover, focus, active and disabled</h2>
+        <p class="oro-p">Hover always darkens. That is a rule and not a preference: a button that lightens under the pointer reads as switched off, and it is the one thing about our buttons the live product has already corrected us on. Focus is a ring rather than a colour change, so it can sit on top of any of the five other states without arguing with them, and it appears for the keyboard only.</p>
+
+        <div class="shelf">
+          <div class="slot"><span class="slot-cap">Rest</span><button class="gb-btn gb-btn--l" type="button"><span class="gb-btn__label">Place order</span></button></div>
+          <div class="slot"><span class="slot-cap">Hover</span><button class="gb-btn gb-btn--l is-hover" type="button"><span class="gb-btn__label">Place order</span></button></div>
+          <div class="slot"><span class="slot-cap">Focus</span><button class="gb-btn gb-btn--l is-focus" type="button"><span class="gb-btn__label">Place order</span></button></div>
+          <div class="slot"><span class="slot-cap">Active</span><button class="gb-btn gb-btn--l is-active" type="button"><span class="gb-btn__label">Place order</span></button></div>
+          <div class="slot"><span class="slot-cap">Disabled</span><button class="gb-btn gb-btn--l" type="button" disabled><span class="gb-btn__label">Place order</span></button></div>
+        </div>
+
+        <div class="shelf">
+          <div class="slot"><span class="slot-cap">Rest</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
+          <div class="slot"><span class="slot-cap">Hover</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary is-hover" type="button"><span class="gb-btn__label">My portal</span></button></div>
+          <div class="slot"><span class="slot-cap">Focus</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary is-focus" type="button"><span class="gb-btn__label">My portal</span></button></div>
+          <div class="slot"><span class="slot-cap">Active</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary is-active" type="button"><span class="gb-btn__label">My portal</span></button></div>
+          <div class="slot"><span class="slot-cap">Disabled</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button" disabled><span class="gb-btn__label">My portal</span></button></div>
+        </div>
+
+        <div class="shelf shelf--dark">
+          <div class="slot"><span class="slot-cap">Rest</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse" type="button"><span class="gb-btn__label">All gifts</span></button></div>
+          <div class="slot"><span class="slot-cap">Hover</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse is-hover" type="button"><span class="gb-btn__label">All gifts</span></button></div>
+          <div class="slot"><span class="slot-cap">Focus</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse is-focus" type="button"><span class="gb-btn__label">All gifts</span></button></div>
+          <div class="slot"><span class="slot-cap">Active</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse is-active" type="button"><span class="gb-btn__label">All gifts</span></button></div>
+          <div class="slot"><span class="slot-cap">Disabled</span><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse" type="button" disabled><span class="gb-btn__label">All gifts</span></button></div>
+        </div>
+
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr><th>State</th><th>What changes</th><th>Value</th><th>Provenance</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Hover</td><td>The fill darkens one rung, or an outline and a ghost lay a wash under themselves</td><td>Blue 600 to Blue 700, Zinc 900 to Zinc 950, wash Zinc 300 at 20 per cent</td><td><span class="st">Live</span></td></tr>
+            <tr><td>Focus</td><td>A 2px ring at 2px offset, keyboard only</td><td>Blue 600, and white on a dark ground</td><td><span class="st st--declared">Declared</span></td></tr>
+            <tr><td>Active</td><td>One rung further than hover</td><td>Blue 800, black, wash at 35 per cent</td><td><span class="st st--declared">Declared</span></td></tr>
+            <tr><td>Disabled</td><td>The whole button fades and stops answering the pointer</td><td>Opacity 0.6</td><td><span class="st">Live</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">The hover, focus and active buttons above are held in state by <code>.is-hover</code>, <code>.is-focus</code> and <code>.is-active</code>. Those three classes are demo only. They exist so this page can stand five states side by side, and no product page may wear them.</p>
+      </section>
+
+      <!-- ---- ANATOMY ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">04 · Anatomy</span>
+        <h2 class="oro-h2">What each ladder measures right now</h2>
+        <p class="oro-p">Three ladders, and each one moves with the width of the screen as well as the size of the button. The table is measured, not typed: three hidden buttons are read with getComputedStyle every time the window changes size, so what you see below is what this browser is rendering at this moment.</p>
+        <p class="probe-note">Measured at <b id="wnow2">measuring</b> wide.</p>
+
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr><th>Measure</th><th>S · header</th><th>L · form</th><th>XL · committing</th><th>Provenance</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Height</td><td class="num" data-m="h" data-s="s"></td><td class="num" data-m="h" data-s="l"></td><td class="num" data-m="h" data-s="xl"></td><td><span class="st">Live</span></td></tr>
+            <tr><td>Padding, vertical</td><td class="num" data-m="py" data-s="s"></td><td class="num" data-m="py" data-s="l"></td><td class="num" data-m="py" data-s="xl"></td><td><span class="st">Live</span></td></tr>
+            <tr><td>Padding, horizontal</td><td class="num" data-m="px" data-s="s"></td><td class="num" data-m="px" data-s="l"></td><td class="num" data-m="px" data-s="xl"></td><td><span class="st">Live</span></td></tr>
+            <tr><td>Gap</td><td class="num" data-m="gap" data-s="s"></td><td class="num" data-m="gap" data-s="l"></td><td class="num" data-m="gap" data-s="xl"></td><td><span class="st">Live</span> S and L, <span class="st st--declared">Declared</span> XL</td></tr>
+            <tr><td>Label</td><td class="num" data-m="label" data-s="s"></td><td class="num" data-m="label" data-s="l"></td><td class="num" data-m="label" data-s="xl"></td><td><span class="st">Live</span></td></tr>
+            <tr><td>Icon</td><td class="num" data-m="icon" data-s="s"></td><td class="num" data-m="icon" data-s="l"></td><td class="num" data-m="icon" data-s="xl"></td><td><span class="st st--declared">Declared</span> S and XL, <span class="st">Live</span> L</td></tr>
+            <tr><td>Outer type</td><td class="num" data-m="font" data-s="s"></td><td class="num" data-m="font" data-s="l"></td><td class="num" data-m="font" data-s="xl"></td><td><span class="st">Live</span></td></tr>
+            <tr><td>Radius</td><td class="num" data-m="r" data-s="s"></td><td class="num" data-m="r" data-s="l"></td><td class="num" data-m="r" data-s="xl"></td><td><span class="st">Live</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-p">The full ladders, with their thresholds: S is 36, 42 from 1280 and 48 from 2000, off the public header. L is 48, 56 and 64 on the same thresholds, off the guest sign in submit, with a label that also steps at 640. XL is 56, 64 and 72, off the product page Continue, with a label that steps at 768. Vertical padding is a flat 8 on all three, which is what live measures at every width and every size.</p>
+
+        <p class="oro-note">A note on the proportion formula of 17.08, pad-y = 0.24H and pad-x = 0.5H with the gap equal to pad-y. It still describes the small end well: 36 gives 8.6, which rounds to the live 8. Above that, live and the formula part company. The live form submit and the live product CTA both hold pad-y at 8 and run their gaps two or three times wider than that. Where live has measured a number, live wins and the formula is the tie breaker for the sizes live has never shown. Both readings are kept in tokens.css so the decision stays visible.</p>
+      </section>
+
+      <!-- ---- WHERE IT LIVES ---- -->
+      <section class="oro-section">
+        <span class="gb-eyebrow">05 · Where it lives</span>
+        <h2 class="oro-h2">The classes this organism replaces</h2>
+        <p class="oro-p">Four button classes are in use across the prototypes today, each written for the screen it was needed on. The organism was calibrated against all four by instrument at 1280, 1920 and 2258. Nothing has been migrated yet: this is the map for phase two, once the organism has been approved.</p>
+
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr><th>Class today</th><th>Where it lives</th><th>Becomes</th><th>What changes for it</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>.gbh-cta</code></td>
+              <td>Header, Book a meeting</td>
+              <td><code>--s --filled --primary</code></td>
+              <td>Nothing. The two match to the pixel at all three widths, label included.</td>
+            </tr>
+            <tr>
+              <td><code>.gbh-cta--outline</code></td>
+              <td>Header, My portal</td>
+              <td><code>--s --outline --secondary</code></td>
+              <td>Nothing. Geometry, ink, hairline and hover wash all match.</td>
+            </tr>
+            <tr>
+              <td><code>.gbh-cta--inverted</code></td>
+              <td>The dark mobile panel and the transparent header</td>
+              <td><code>--s --outline --inverse</code></td>
+              <td>Nothing. The inverse colour was built out of these live values.</td>
+            </tr>
+            <tr>
+              <td><code>.gba-btn</code></td>
+              <td>The guest sign in form and the hub shelf</td>
+              <td><code>--l --filled --primary</code></td>
+              <td>It loses the browser default border it never asked for. Full width and the top margin are page layout and stay with the page.</td>
+            </tr>
+            <tr>
+              <td><code>.btn-xl</code></td>
+              <td>Checkout, Place order</td>
+              <td><code>--xl --filled --primary</code></td>
+              <td>Its label grows from 11 to the live 14 to 16. Today it wears the small header label on the largest button in the system, which is the mismatch we were already caught on once.</td>
+            </tr>
+            <tr>
+              <td><code>.gsp-btn</code></td>
+              <td>The portal side panel</td>
+              <td><code>--l --filled --primary</code></td>
+              <td>It gains the label span it has never had, and its grey disabled step gives way to the system fade.</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Phase two is a separate pass and needs its own approval: every consumer above is a page people are looking at right now, and two of them are prototypes in front of the client. The organism does not touch them until then.</p>
+      </section>
+
+      <footer class="oro-foot">
+        Source: <a href="../components/button.css">system/components/button.css</a> and the button organism block of <a href="../assets/tokens.css">system/assets/tokens.css</a> · every button on this page is rendered by those two files.
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- The probes. Three real buttons, one per size, each with a
+     label and an icon, parked off screen so the anatomy table has
+     something to measure. -->
+<div class="probes" aria-hidden="true">
+  <button class="gb-btn gb-btn--s" id="probe-s" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24"></svg></span><span class="gb-btn__label">Probe</span></button>
+  <button class="gb-btn gb-btn--l" id="probe-l" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24"></svg></span><span class="gb-btn__label">Probe</span></button>
+  <button class="gb-btn gb-btn--xl" id="probe-xl" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24"></svg></span><span class="gb-btn__label">Probe</span></button>
+</div>
+
+<script>
+/* ============================================================
+   gbppl-button-1 — THE READOUT
+   ------------------------------------------------------------
+   The anatomy table is filled from the rendered page, never from
+   the markup. Three probe buttons stand off screen wearing the
+   three sizes; getComputedStyle reports what the browser made of
+   them at the current width, and the table is written from that.
+
+   So the page cannot print a number the system does not hold. If
+   a token is renamed the cell empties and says so; if a ladder
+   moves, the table moves with it on the next resize.
+   ============================================================ */
+(function () {
+  var sizes = { s: 'probe-s', l: 'probe-l', xl: 'probe-xl' };
+  var cells = document.querySelectorAll('[data-m][data-s]');
+  var wnow = document.getElementById('wnow');
+  var wnow2 = document.getElementById('wnow2');
+
+  function px(v) { return Math.round(parseFloat(v) * 100) / 100 + 'px'; }
+
+  function read(el) {
+    var cs = getComputedStyle(el);
+    var label = getComputedStyle(el.querySelector('.gb-btn__label'));
+    var icon = getComputedStyle(el.querySelector('.gb-btn__icon'));
+    return {
+      h: px(cs.minHeight),
+      py: px(cs.paddingTop),
+      px: px(cs.paddingLeft),
+      gap: px(cs.columnGap),
+      label: px(label.fontSize) + ' / ' + label.fontWeight,
+      icon: px(icon.width),
+      font: px(cs.fontSize) + ' / ' + cs.fontWeight,
+      r: px(cs.borderRadius)
+    };
+  }
+
+  function paint() {
+    var data = {};
+    for (var k in sizes) {
+      var el = document.getElementById(sizes[k]);
+      data[k] = el ? read(el) : null;
+    }
+    cells.forEach(function (cell) {
+      var d = data[cell.getAttribute('data-s')];
+      var m = cell.getAttribute('data-m');
+      cell.textContent = d && d[m] ? d[m] : 'no value';
+    });
+    var w = window.innerWidth + 'px';
+    if (wnow) wnow.textContent = w;
+    if (wnow2) wnow2.textContent = w;
+  }
+
+  paint();
+  var t;
+  window.addEventListener('resize', function () {
+    clearTimeout(t);
+    t = setTimeout(paint, 120);
+  });
+})();
+</script>
+
+</body>
+</html>
