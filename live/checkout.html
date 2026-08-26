@@ -22,6 +22,10 @@
      The local `top: 112px` nudge of checkout-11 goes too — the panel
      stands where the system stands it, one position on every page.
 
+     gbppl-checkout-12 — the phone stops scrolling sideways (card in one
+     column, recipient table in its own scroll box) and the last four
+     Tailwind-typed labels join the organism or read the S ladder token.
+
      gbppl-checkout-11 — Place Order ends somewhere (Russell audit 26.08:
      the biggest button did nothing) and the PROTO panel moves up off the
      order totals.
@@ -312,22 +316,20 @@
     <!-- 5px on every corner is the house rule (Ton, 21.08). No overflow-hidden here:
          the step-2 menus hang out of this box and must not be clipped. -->
     <article class="bg-white border border-zinc-200 rounded-[5px]">
-      <div class="grid grid-cols-[360px_1fr]">
+      <div class="grid grid-cols-1 md:grid-cols-[360px_1fr]">   <!-- gbppl-checkout-12: one column below 768, the 360px rail overflowed a phone -->
 
         <!-- ===== LEFT: product image ===== -->
-        <div class="border-r border-zinc-200 px-10 py-14 flex flex-col items-center justify-center">
+        <div class="md:border-r border-b md:border-b-0 border-zinc-200 px-10 py-14 flex flex-col items-center justify-center">
           <img :src="product.image" :alt="product.name" class="w-full object-contain">
-          <button @click="removeProduct(pIdx)" class="mt-10 inline-flex items-center gap-1.5 text-[11px] font-semibold text-zinc-400 hover:text-red-600 transition-colors uppercase tracking-[1px]">
-            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
-            Remove gift
-          </button>
+          <button @click="removeProduct(pIdx)" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary mt-10 hover:text-red-600">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg><span class="gb-btn__label">Remove gift</span></button>
         </div>
 
         <!-- ===== RIGHT: product header + shipments ===== -->
         <div class="p-8 space-y-5">
 
           <!-- ===== Product header ===== -->
-          <div class="flex items-start justify-between pb-1">
+          <div class="flex flex-wrap items-start justify-between pb-1">
             <div>
               <h2 class="font-serif text-3xl" x-text="product.name"></h2>
               <!-- V1: the count is read-only here, because quantity lives per row in the table. -->
@@ -393,10 +395,10 @@
                 <div class="inline-flex gap-1 bg-white border border-zinc-300 rounded-[5px] p-1">
                   <button @click="shipment.addressMode='same'"
                           :class="shipment.addressMode==='same' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50'"
-                          class="px-4 py-2 text-[11px] font-semibold uppercase tracking-[1px] rounded-[5px] transition-colors">One address</button>
+                          class="px-4 py-2 font-semibold uppercase rounded-[5px] transition-colors" style="font-size:var(--gb-btn-s-label);letter-spacing:var(--gb-btn-label-tracking)">One address</button>
                   <button @click="shipment.addressMode='different'"
                           :class="shipment.addressMode==='different' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50'"
-                          class="px-4 py-2 text-[11px] font-semibold uppercase tracking-[1px] rounded-[5px] transition-colors">Different addresses</button>
+                          class="px-4 py-2 font-semibold uppercase rounded-[5px] transition-colors" style="font-size:var(--gb-btn-s-label);letter-spacing:var(--gb-btn-label-tracking)">Different addresses</button>
                 </div>
                 <button x-show="product.shipments.length > 1" @click="removeShipment(product.id, shipment.id)" class="ml-auto flex items-center gap-1.5 px-2 py-1.5 text-xs text-zinc-500 hover:text-red-600 hover:bg-red-50 rounded-[5px]">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -531,7 +533,7 @@
                    that personalization is optional (DD-141 #3, approved copy
                    set 21.08).
                    ============================================================ -->
-              <div class="bg-zinc-100/70 border-y border-zinc-200 px-6 py-4 flex items-start justify-between gap-6" x-show="shipment.detailsMode === 'now'">
+              <div class="bg-zinc-100/70 border-y border-zinc-200 px-6 py-4 flex flex-wrap items-start justify-between gap-6" x-show="shipment.detailsMode === 'now'">
                 <div class="min-w-0" x-show="uiVersion === 'v1'">
                   <h3 class="font-serif text-2xl leading-tight">2. Who is this gift for?</h3>
                   <p class="text-zinc-500 text-xs mt-1" x-show="selectedCount(shipment) === 0">Tell us who this gift is for, then add personalization if desired.</p>
@@ -563,7 +565,7 @@
                      ============================================================ -->
                 <!-- In V2 the two menus only exist behind door A: there is no table to
                      bulk-edit or upload into until the per-gift list is open. -->
-                <div class="flex items-center gap-2 flex-shrink-0" x-show="uiVersion === 'v1' || shipment.persoMode === 'each'">
+                <div class="flex flex-wrap items-center gap-2" x-show="uiVersion === 'v1' || shipment.persoMode === 'each'">
 
                   <!-- ===== Bulk Personalize ===== -->
                   <div class="relative">
@@ -729,7 +731,7 @@
                     <!-- Same fields as the drawer, same rows the gift actually has — only
                          inline, and written to the shipment once instead of to every row. -->
                     <template x-for="(it, idx) in productItems(product)" :key="'uni-item-'+shipment.id+'-'+idx">
-                      <div class="grid grid-cols-[72px_1fr_212px] gap-5 items-center">
+                      <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-5 items-center">
                         <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
                         <div>
                           <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
@@ -739,7 +741,7 @@
                         <div>
                           <template x-if="it.kind === 'initials'">
                             <div>
-                              <div class="flex gap-2.5">
+                              <div class="flex flex-wrap gap-2.5">
                                 <template x-for="i in 3" :key="'uslot-'+shipment.id+'-'+idx+'-'+i">
                                   <input
                                     type="text"
@@ -796,7 +798,8 @@
 
               <!-- ===== RECIPIENT TABLE ===== -->
               <div x-show="shipment.detailsMode === 'now' && (uiVersion === 'v1' || shipment.persoMode === 'each')" class="px-6">
-                <table class="w-full table-fixed">
+                <div class="overflow-x-auto">   <!-- gbppl-checkout-12: the recipient table scrolls inside its own box, the page never does -->
+                <table class="w-full table-fixed min-w-[640px]">
                   <thead class="border-b border-zinc-200">
                     <tr class="text-[13px] text-zinc-800">
                       <!-- text-left, or the browser's own `th { text-align: center }` parks the
@@ -911,6 +914,7 @@
                     </template>
                   </tbody>
                 </table>
+                </div>
 
                 <!-- Empty state: the add button stands centered as a tertiary (outlined)
                      button — Ton, 21.08: a bare text row read as a caption, not a control,
@@ -938,7 +942,7 @@
                   <div class="min-w-0">
                     <!-- Base blue-600, hover blue-700 — the system pair (tokens.css: "Blue 700
                          is the live CTA hover"), not an invented 700→800 step. -->
-                    <button @click="addRecipient(product.id, shipment.id)" class="flex items-center gap-2 px-2 py-1.5 rounded-[5px] text-[11px] font-semibold uppercase tracking-[1px] text-blue-600 hover:text-blue-700 transition-colors">
+                    <button @click="addRecipient(product.id, shipment.id)" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--primary">
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                       Add a gift for someone else
                     </button>
@@ -1156,7 +1160,7 @@
       <!-- One row per part this gift can carry — the list comes from the product,
            so the drawer never asks for an engraving the gift does not have. -->
       <template x-for="(it, idx) in productItems(currentProduct())" :key="'master-item-'+idx">
-        <div class="grid grid-cols-[72px_1fr_212px] gap-5 items-center">
+        <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-5 items-center">
           <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
           <div>
             <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
@@ -1166,7 +1170,7 @@
           <div>
             <template x-if="it.kind === 'initials'">
               <div>
-                <div class="flex gap-2.5">
+                <div class="flex flex-wrap gap-2.5">
                   <template x-for="i in 3" :key="'mslot-'+idx+'-'+i">
                     <input
                       type="text"
@@ -1260,7 +1264,7 @@
           <!-- One row per part of THIS gift (product.items). The Yeti duo has two;
                the travel set has three. Nothing invents a field the gift can't carry. -->
           <template x-for="(it, idx) in productItems(currentProduct())" :key="'rec-item-'+idx">
-            <div class="grid grid-cols-[72px_1fr_212px] gap-5 items-center">
+            <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-5 items-center">
               <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
               <div>
                 <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
@@ -1270,7 +1274,7 @@
               <div>
                 <template x-if="it.kind === 'initials'">
                   <div>
-                    <div class="flex gap-2.5">
+                    <div class="flex flex-wrap gap-2.5">
                       <template x-for="i in 3" :key="'rslot-'+idx+'-'+i">
                         <input
                           type="text"
