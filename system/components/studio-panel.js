@@ -95,6 +95,30 @@
    апгрейда элемента метода на нём ещё нет. Панель к этому моменту
    уже нарисована, группа просто дописывается в конец.
 
+   СЕКЦИЯ MODE (gbppl-panel-6, заказ Тона 26.08: «переключать
+   режимы View / Inspect... наводишь, и оверлей поверх показывает
+   отступы»). Первая секция панели, ВЫШЕ дверей: двери отвечают
+   «куда пойти», Sandbox «что тут есть», This page «что покрутить»,
+   а Mode отвечает «как сейчас работает страница» — и это надо
+   видеть раньше всего остального. Порядок секций теперь один на
+   всех: Mode → двери → Sandbox → This page.
+
+   Панель ВЛАДЕЕТ видом и местом тумблера, а не его поведением:
+   что делают View и Inspect, знает system\components\inspect.js,
+   он и объявляет группу:
+
+     panel.addSegments({
+       title: 'Mode',
+       value: 'view',
+       options: [{ label: 'View', value: 'view', note: '...' },
+                 { label: 'Inspect', value: 'inspect', note: '...' }],
+       onChange: function (v) { ... }
+     });                       // -> { setActive(value), element }
+
+   Страница без инспектора просто не зовёт addSegments, и секции у
+   неё нет: панель не рисует переключателя, за которым ничего не
+   стоит.
+
    Свёрнута по умолчанию, как PROTO: страница-прототип открывается
    собой, а не нашей консолью. Состояние не запоминается — это
    оболочка, ей нечего помнить.
@@ -296,11 +320,90 @@
     };
   }
 
+  /* ============================================================
+     СЕКЦИЯ MODE (gbppl-panel-6)
+     ------------------------------------------------------------
+     Единственное место панели, где выбор стоит СЕГМЕНТАМИ, а не
+     строками списка. Причина простая и геометрическая: у режима
+     ровно два значения, они взаимоисключающие и читаются как один
+     переключатель; двумя строками списка это была бы навигация из
+     двух пунктов, а не тумблер. Голос тот же, что у контролов
+     витрины (.gbdoc-seg, docs.css: «контролы не кнопки»), только
+     на тёмном: 14/500, выбранный Blue 400 с подчёркиванием.
+     ============================================================ */
+  function modeSection(host) {
+    var sec = host.querySelector('.gbsp-sec--mode');
+    if (sec) return sec;
+    sec = document.createElement('div');
+    sec.className = 'gbsp-sec gbsp-sec--mode';
+    var panel = host.querySelector('.gbsp-panel');
+    /* Первой секцией: сразу под титулом, над дверями. */
+    panel.insertBefore(sec, panel.querySelector('.gbsp-list'));
+    return sec;
+  }
+
+  function makeSegments(host, spec) {
+    spec = spec || {};
+    var options = spec.options || [];
+    var sec = modeSection(host);
+
+    var wrap = document.createElement('div');
+    wrap.className = 'gbsp-seggroup';
+    var html = '<span class="gbsp-eyebrow">' + esc(spec.title || 'Mode') + '</span>' +
+               '<div class="gbsp-segs" role="group" aria-label="' + esc(spec.title || 'Mode') + '">';
+    options.forEach(function (o, i) {
+      html += '<button class="gbsp-seg" type="button" data-seg="' + i + '"' +
+              ' aria-pressed="false">' + esc(o.label) + '</button>';
+    });
+    html += '</div><p class="gbsp-note"></p>';
+    wrap.innerHTML = html;
+
+    var segEls = wrap.querySelectorAll('[data-seg]');
+    var noteEl = wrap.querySelector('.gbsp-note');
+    var current = spec.value;
+
+    function paint() {
+      var line = spec.note || '';
+      for (var i = 0; i < segEls.length; i++) {
+        var on = options[i].value === current;
+        segEls[i].classList.toggle('is-on', on);
+        segEls[i].setAttribute('aria-pressed', String(on));
+        if (on && options[i].note) line = options[i].note;
+      }
+      noteEl.textContent = line;
+      noteEl.hidden = !line;
+    }
+
+    wrap.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-seg]') : null;
+      if (!btn || !wrap.contains(btn)) return;
+      var o = options[+btn.getAttribute('data-seg')];
+      if (!o || o.value === current) return;
+      current = o.value;
+      paint();
+      if (typeof spec.onChange === 'function') spec.onChange(o.value, o);
+    });
+
+    sec.appendChild(wrap);
+    paint();
+
+    return {
+      element: wrap,
+      setActive: function (value) { current = value; paint(); }
+    };
+  }
+
   class GbStudioPanel extends HTMLElement {
     /* Публичный API страницы: см. шапку файла. */
     addGroup(spec) {
       if (!this.__rendered) this.connectedCallback();
       return makeGroup(this, spec);
+    }
+
+    /* Тумблер режима: сегменты первой секцией (gbppl-panel-6). */
+    addSegments(spec) {
+      if (!this.__rendered) this.connectedCallback();
+      return makeSegments(this, spec);
     }
 
     connectedCallback() {
