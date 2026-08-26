@@ -105,6 +105,7 @@
 <link rel="stylesheet" href="../system/assets/tokens.css">
 <link rel="stylesheet" href="../system/components/shell.css">
 <link rel="stylesheet" href="../system/components/header.css">
+<link rel="stylesheet" href="../system/components/button.css">
 <link rel="stylesheet" href="../system/components/footer.css">
 <style>
   /* ============================================================
@@ -229,34 +230,21 @@
   gb-site-header i, gb-site-footer i { font-style: revert; }
 
   /* ============================================================
-     BUTTON XL — the live ladder from demo/assets/tokens.css (56/64/72,
-     measured off the product page Continue, the single primary action
-     of its template). Place Order is this page's single committing
-     action, so it wears the largest class (Ton, 21.08: the small
-     Place Order "не использовал нормальный компонент").
+     BUTTON XL LEFT THIS FILE (gbppl-button-2, 26.08)
+     ------------------------------------------------------------
+     .btn-xl was the live 56/64/72 ladder copied here so Place Order,
+     this page's single committing action, could stop being small
+     (Ton, 21.08: the old Place Order "не использовал нормальный
+     компонент"). It is .gb-btn --xl --filled --primary --block now.
+
+     THE ONE DELIBERATE CHANGE ON THIS PAGE, and it is the defect Ton
+     named on the hub shelf 24.08 read back to us: .btn-xl put the
+     SMALL header label (11px, 12 from 2000) on the LARGEST button in
+     the system. XL geometry wearing S typography. The organism
+     carries the live XL label instead -- 14 / 15 from 768 / 16 from
+     2000 -- so the words on Place Order grow from 11 to 15 at 1280.
+     That is the fix, not a regression.
      ============================================================ */
-  .btn-xl {
-    min-height: var(--btn-xl-min-h, 56px);
-    padding: var(--btn-xl-pad-y, 8px) var(--btn-xl-pad-x, 24px);
-    font-size: var(--btn-label-font-size, 11px);
-    font-weight: var(--btn-label-font-weight, 600);
-    letter-spacing: var(--btn-label-letter-spacing, 1px);
-    border-radius: 5px;
-    text-transform: uppercase;
-  }
-  @media (min-width: 1280px) {
-    .btn-xl {
-      min-height: var(--btn-xl-min-h-xl, 64px);
-      padding-left: var(--btn-xl-pad-x-xl, 32px);
-      padding-right: var(--btn-xl-pad-x-xl, 32px);
-    }
-  }
-  @media (min-width: 2000px) {
-    .btn-xl {
-      min-height: var(--btn-xl-min-h-2xl, 72px);
-      font-size: var(--btn-label-font-size-2xl, 12px);
-    }
-  }
 
   /* ============================================================
      DEMO CONTROLS (PROTO PANEL) — gbppl-checkout-2.
@@ -1072,12 +1060,12 @@
                 <div x-show="rows(shipment).length === 0" class="py-12 text-center border-b border-zinc-100">
                   <p class="text-sm text-zinc-500">No gift receivers yet.</p>
                   <!-- Outlined = the system's tertiary. Its hover is the Zinc 100 wash both
-                       outlined buttons of portal.html wear (.gbh-cta--outline, .btn-start-outline),
+                       outlined buttons of portal.html wear (.gb-btn --outline --secondary),
                        not an inversion to a solid Zinc 900 fill: the prototype has one outlined
                        hover and this button spends it. -->
-                  <button @click="addRecipient(product.id, shipment.id)" class="mt-4 inline-flex items-center gap-2 px-6 min-h-[42px] border border-zinc-900 rounded-[5px] text-[11px] font-semibold uppercase tracking-[1px] text-zinc-900 hover:bg-zinc-100 transition-colors">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                    Add a gift
+                  <button @click="addRecipient(product.id, shipment.id)" type="button" class="mt-4 gb-btn gb-btn--s gb-btn--outline gb-btn--secondary">
+                    <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>
+                    <span class="gb-btn__label">Add a gift</span>
                   </button>
                   <p class="text-xs text-zinc-400 mt-3">Or take the template round trip under <span class="font-medium">Bulk Personalize</span> above.</p>
                 </div>
@@ -1140,9 +1128,9 @@
                 <div class="border-t border-zinc-200 pt-5">
                   <!-- One plain button, not the two-item menu: this branch never shows the table,
                        so there is nothing to upload a filled template back into. -->
-                  <button @click="downloadTemplate()" class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border border-zinc-300 hover:bg-zinc-50 bg-white rounded-[5px]">
-                    <svg class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-                    Download blank template
+                  <button @click="downloadTemplate()" type="button" class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary">
+                    <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg></span>
+                    <span class="gb-btn__label">Download blank template</span>
                   </button>
                   <p class="text-xs text-zinc-400 mt-2 leading-snug">Optional. Pre-fill recipient details offline, then upload via the link.</p>
                 </div>
@@ -1190,8 +1178,12 @@
         <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
       </div>
       <!-- Primary action = system blue (Ton, 21.08: black Place Order was the old
-           prototype's mistake), in the BUTTON XL size class (see .btn-xl above). -->
-      <button class="btn-xl w-full mt-6 bg-blue-600 text-white hover:bg-blue-700 transition-colors">Place Order</button>
+           prototype's mistake), at the organism's largest size. The Tailwind
+           paint utilities went with the class: bg-blue-600 / text-white /
+           hover:bg-blue-700 were saying what --filled --primary says, and one
+           of them was saying it slightly wrong (live ink is Zinc 50, not pure
+           white). mt-6 stays, it is this column's spacing. -->
+      <button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button"><span class="gb-btn__label">Place Order</span></button>
       <p class="text-xs text-zinc-500 mt-3 text-center" x-show="anyDefer()">Some recipient details will be completed later via link</p>
     </div>
   </section>
@@ -1249,10 +1241,10 @@
          third, until gbppl-checkout-2 sent it to the PROTO panel).
          ============================================================ -->
     <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
-      <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-zinc-900">Cancel</button>
+      <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
       <div class="flex items-center gap-2">
         <button x-show="drawer.master" @click="saveMasterGreeting(true)" class="px-4 py-2 text-sm border border-red-300 text-red-700 rounded-md hover:bg-red-50">Overwrite all</button>
-        <button @click="saveGreeting()" class="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium" x-text="drawer.master ? 'Apply to all' : 'Save'"></button>
+        <button @click="saveGreeting()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
       </div>
     </div>
   </aside>
@@ -1313,8 +1305,8 @@
 
     </div>
     <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
-      <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-zinc-900">Cancel</button>
-      <button @click="saveItem()" class="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium" x-text="drawer.master ? 'Apply to all' : 'Save'"></button>
+      <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+      <button @click="saveItem()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
     </div>
   </aside>
 </div>
@@ -1457,8 +1449,8 @@
     </div>
 
     <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-6 py-4 flex items-center justify-between">
-      <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-zinc-900">Cancel</button>
-      <button @click="saveRecipient()" class="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">Save</button>
+      <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+      <button @click="saveRecipient()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Save</span></button>
     </div>
   </aside>
 </div>
@@ -1578,8 +1570,8 @@
       </div>
     </div>
     <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
-      <button @click="closeDrawer()" class="text-sm text-zinc-600 hover:text-zinc-900">Cancel</button>
-      <button @click="saveAddress()" class="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium" x-text="drawer.addressBookMode ? 'Save & use for this shipment' : 'Save address & shipping'"></button>
+      <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+      <button @click="saveAddress()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.addressBookMode ? 'Save & use for this shipment' : 'Save address & shipping'"></span></button>
     </div>
   </aside>
 </div>
@@ -1654,8 +1646,8 @@
     </div>
 
     <div class="px-6 py-4 border-t border-zinc-200 flex items-center justify-between">
-      <button @click="csv.open = false" class="text-sm text-zinc-600 hover:text-zinc-900" x-text="csv.step === 3 ? 'Done' : 'Cancel'"></button>
-      <button x-show="csv.step === 2" @click="confirmCSVImport()" class="px-5 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">Import all <span x-text="csv.preview.total"></span> rows</button>
+      <button @click="csv.open = false" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label" x-text="csv.step === 3 ? 'Done' : 'Cancel'"></span></button>
+      <button x-show="csv.step === 2" @click="confirmCSVImport()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Import all <span x-text="csv.preview.total"></span> rows</span></button>
     </div>
   </div>
 </div>
