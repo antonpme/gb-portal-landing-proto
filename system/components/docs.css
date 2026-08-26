@@ -197,6 +197,10 @@
 }
 .gbdoc-axis { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); }
 .gbdoc-axis + .gbdoc-axis { margin-top: var(--space-8); }
+/* An axis standing on the page itself rather than on the grey band
+   of a frame: it switches between two VIEWS of a section instead of
+   driving one stage. (gbppl-oro-typography-2) */
+.gbdoc-axis--bare { margin-top: var(--space-24); }
 .gbdoc-axis__name {
   flex: 0 0 72px;
   font-size: var(--eyebrow-size);
@@ -447,3 +451,207 @@
 /* ---- The probes: off screen, never seen, measured on resize.
    Not display:none — a hidden element has no computed padding. ---- */
 .gbdoc-probes { position: absolute; left: -9999px; top: 0; visibility: hidden; }
+
+/* ============================================================
+   gbppl-oro-typography-2 — SPECIMEN FIRST
+   ------------------------------------------------------------
+   Ton, 26.08: «по шрифтам ужасающее визуальное оформление, вообще
+   ничего не понятно. Нужно сделать research и понять, как
+   показывать шрифты людям, которые будут с этим работать, причём
+   это и дизайнеры, и девелоперы.»
+
+   The research (studio\docs\SHOWCASE-PATTERN.md, «Typography
+   pages») says the same thing in every mature system: a type page
+   is a COLUMN OF LIVE SPECIMENS, largest first, each with a quiet
+   line of numbers beside it. The table of figures is the second
+   view, never the first. Material, Carbon, Primer, Atlassian,
+   Apple and Google Fonts all put the type itself in the reading
+   column and the metadata in the margin.
+
+   So the atoms below are three:
+     .gbdoc-face   the family specimen: one big line, the
+                   character set, the weights, the size row.
+     .gbdoc-type   the role ladder: one row per role, live sample
+                   on the left, quiet meta on the right.
+     .gbdoc-pair   a do and an avoid, side by side, as real
+                   layout rather than as a sentence.
+
+   THE FURNITURE MUST NOT COMPETE WITH THE SPECIMEN. Every caption
+   here is 14px Zinc 500 or the Eyebrow role; the only large type
+   in these blocks is the type being documented. Numbers sit in
+   the monospace of the documentation, tabular, so a column of
+   sizes reads as a column.
+   ============================================================ */
+
+/* ---- THE FAMILY SPECIMEN ---- */
+.gbdoc-face {
+  margin-top: var(--space-16);
+  padding: var(--space-24);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.gbdoc-face__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-8) var(--space-16); }
+/* The family names itself IN ITSELF. Size and family are set by the
+   page from the record; nothing about a face is decided here. */
+.gbdoc-face__name { line-height: 1.2; color: var(--zinc-950); }
+.gbdoc-face__role { font-size: 14px; line-height: 1.5; color: var(--zinc-500); }
+.gbdoc-face__big {
+  margin: var(--space-24) 0 0;
+  line-height: 1.1;
+  color: var(--zinc-950);
+  overflow-wrap: break-word;
+}
+.gbdoc-face__set {
+  margin: var(--space-24) 0 0;
+  line-height: 1.6;
+  color: var(--zinc-700);
+  overflow-wrap: break-word;
+}
+.gbdoc-face__set span { display: block; }
+.gbdoc-face__band { margin-top: var(--space-24); padding-top: var(--space-16); border-top: 1px solid var(--zinc-100); }
+.gbdoc-face__cap {
+  display: block;
+  margin-bottom: var(--space-16);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-400);
+}
+.gbdoc-face__row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-16) var(--space-24); }
+.gbdoc-face__item { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.gbdoc-face__glyph { line-height: 1; color: var(--zinc-900); }
+.gbdoc-face__tag {
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--zinc-500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- THE ROLE LADDER, AS SPECIMENS ---- */
+.gbdoc-type {
+  margin-top: var(--space-16);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.gbdoc-type__group { padding: var(--space-24); }
+.gbdoc-type__group + .gbdoc-type__group { border-top: 1px solid var(--zinc-200); }
+.gbdoc-type__gname {
+  display: block;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.gbdoc-type__gline { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: var(--zinc-500); }
+
+.gbdoc-type__row { display: grid; gap: var(--space-8); padding: var(--space-24) 0 0; }
+.gbdoc-type__row + .gbdoc-type__row { margin-top: var(--space-24); border-top: 1px solid var(--zinc-100); }
+/* LAYOUT MEASURE: 300px is the narrowest column that holds
+   «Inter 600 · 14/normal · 1px · caps» on one monospace line. */
+@media (min-width: 1024px) {
+  .gbdoc-type__row { grid-template-columns: minmax(0, 1fr) 300px; gap: var(--space-24); align-items: start; }
+}
+/* The live half. Overflow is hidden rather than scrolled: a 52px
+   title on a 390px screen shortens, it does not push the page
+   sideways. */
+.gbdoc-type__live { min-width: 0; overflow: hidden; }
+.gbdoc-type__meta { position: relative; display: flex; flex-direction: column; gap: 4px; padding-right: var(--space-32); }
+.gbdoc-type__name { font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--zinc-900); }
+.gbdoc-type__name .gbdoc-flag { margin-left: var(--space-8); vertical-align: 1px; }
+.gbdoc-type__num {
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
+}
+.gbdoc-type__num--dim { color: var(--zinc-400); }
+
+/* ---- The copy button of a meta line. An instrument, not a
+   button: no fill, no frame (Ton 26.08, same rule as the segment). */
+.gbdoc-copybtn {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius);
+  color: var(--zinc-400);
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.gbdoc-copybtn svg { width: 16px; height: 16px; }
+.gbdoc-copybtn:hover { color: var(--zinc-900); }
+.gbdoc-copybtn.is-done { color: var(--blue-600); }
+.gbdoc-copybtn:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }
+
+/* ---- DO AND AVOID, AS LAYOUT ----
+   Carbon and Polaris both show the rule twice: once as a sentence
+   and once as two compositions standing next to each other. The
+   words alone do not teach a step in hierarchy. */
+.gbdoc-pair { margin-top: var(--space-16); display: grid; gap: var(--space-16); }
+@media (min-width: 900px) { .gbdoc-pair { grid-template-columns: 1fr 1fr; gap: var(--space-24); } }
+.gbdoc-pair__cell {
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  background: var(--white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.gbdoc-pair__cap {
+  padding: var(--space-8) var(--space-16);
+  background: var(--zinc-50);
+  border-bottom: 1px solid var(--zinc-200);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.gbdoc-pair__body { flex: 1 1 auto; padding: var(--space-24); }
+/* The avoid side stands on the grey ground the system uses for
+   «not the surface you ship on». No red: a rule of the system is a
+   fact, and colour here belongs to state (Ton-5). */
+.gbdoc-pair__cell--no .gbdoc-pair__body { background: var(--zinc-50); }
+.gbdoc-pair__why {
+  margin: 0;
+  padding: var(--space-16);
+  border-top: 1px solid var(--zinc-200);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--zinc-500);
+}
+/* A composed sample inside a pair carries no type of its own: the
+   page sets every line from the record it is demonstrating. */
+.gbdoc-pair__body > * { margin: 0; }
+.gbdoc-pair__body > * + * { margin-top: var(--space-8); }
+
+/* ---- The inspect region reaches the type row too ---- */
+[data-inspect] .gbdoc-type__live { position: relative; cursor: pointer; border-radius: var(--radius); }
+[data-inspect] .gbdoc-type__live::after {
+  content: 'properties';
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-size: var(--eyebrow-size);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--blue-600);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--mo-micro) var(--mo-move);
+}
+[data-inspect] .gbdoc-type__live:hover::after { opacity: 1; }

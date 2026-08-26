@@ -419,8 +419,13 @@
   var drawer = document.querySelector('gb-drawer');
   if (!drawer) return;
 
+  /* gbppl-oro-typography-2 adds .gbdoc-type__live: the type page no
+     longer stacks its roles on a shelf of slots but gives each role
+     a row, and the clickable half of that row is the live specimen,
+     never the metadata beside it (the copy button lives there). */
   function slotOf(target) {
-    return target.closest('[data-inspect] .gbdoc-slot, [data-inspect] .gbdoc-cell, [data-inspect] .gbdoc-hold');
+    return target.closest('[data-inspect] .gbdoc-slot, [data-inspect] .gbdoc-cell, ' +
+                          '[data-inspect] .gbdoc-hold, [data-inspect] .gbdoc-type__live');
   }
 
   document.addEventListener('click', function (e) {
