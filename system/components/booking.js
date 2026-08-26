@@ -326,18 +326,20 @@
   };
 
   /* ---------------- КНОПКА ФОРМЫ ----------------
-     .gba-btn из auth.css, разметка живой анатомии PrimeVue (лейбл в
-     своём span, стрелка в своём) — потребитель носит классы, своих
-     правил не заводит. */
+     Организм .gb-btn (лестница L, полная ширина), плюс .gba-submit —
+     отступ формы от поля до сабмита, которым владеет auth.css.
+     gbppl-button-2, 26.08: раньше это была .gba-btn той же auth,
+     те же цифры под старым именем. Потребитель носит классы и
+     своих правил не заводит. */
   function btnHTML(label, opts) {
     opts = opts || {};
     return (
       '<button type="' + (opts.type || 'button') + '" aria-label="' + esc(label) + '"' +
         (opts.disabled ? ' disabled' : '') +
         (opts.id ? ' data-role="' + opts.id + '"' : '') +
-        ' class="gba-btn">' +
-        '<span class="gba-btn-icon">' + ICON_ARROW + '</span>' +
-        '<span class="gba-btn-label">' + esc(label) + '</span>' +
+        ' class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary gb-btn--block gba-submit">' +
+        '<span class="gb-btn__icon">' + ICON_ARROW + '</span>' +
+        '<span class="gb-btn__label">' + esc(label) + '</span>' +
       '</button>'
     );
   }

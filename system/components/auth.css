@@ -26,10 +26,16 @@
                            live 18.08: пустой и невалидный сабмит)
      лейбл                 11/12 caps 600, ls 0.5, zinc-500, lh 1.5;
                            золотая звёздочка required #bd9f58
-     сабмит                bg blue-600, radius 5, py 8, px 24/32,
-                           uppercase 600, fs 14/16, ls -.35/-.4;
-                           лейбл-span 14/15(640)/16(2000), ls 1px;
-                           стрелка absolute right 24/32, 16/20/24
+     сабмит                УЕХАЛ В ОРГАНИЗМ (gbppl-button-2, 26.08):
+                           .gb-btn --l --filled --primary --block.
+                           Замер, что его описывал (bg blue-600,
+                           radius 5, py 8, px 24/32, uppercase 600,
+                           fs 14/16, ls -.35/-.4, лейбл-span
+                           14/15(640)/16(2000) ls 1px, стрелка
+                           absolute right 24/32 при 16/20/24) —
+                           это и есть лестница L организма, снятая
+                           отсюда. Здесь остался только отступ
+                           .gba-submit
      карточка              max-w 600, mx auto, min-h calc(100vh-80),
                            py 0/96/128, вертикаль по центру;
                            стек 32/48/64, внутренний 24/32
@@ -127,7 +133,7 @@ gb-guest-header .container {
 
 /* Скоуп-фикса цвета кнопок здесь БОЛЬШЕ НЕТ (24.08). Он стоял тут
    заплаткой на чужой баг: body.gb-demo a { color: inherit }
-   (shell.css) перебивал цвет .gbh-cta, и лейбл Book a Meeting
+   (shell.css) перебивал цвет кнопки шапки, и лейбл Book a Meeting
    рендерился тёмным по тёмному. Владелец компонента — header.css —
    починен антидотом полной силы, и локальная копия превратилась бы
    ровно в тот дубль, который система запрещает (Тон-6). Гостевой
@@ -138,10 +144,10 @@ gb-guest-header .container {
    lg:hidden); ниже — бургер + знак + поиск, как на живом 360. */
 .gbg-nav { display: none; }
 .gbg-actions { display: flex; align-items: center; gap: 12px; }
-.gbg-actions .gbh-cta { display: none; }
+.gbg-actions .gb-btn { display: none; }
 @media (min-width: 1024px) {
   .gbg-nav { display: flex; align-items: center; }
-  .gbg-actions .gbh-cta { display: inline-flex; }
+  .gbg-actions .gb-btn { display: inline-flex; }
 }
 
 /* Бургер: живой бокс 30x40 mr-16, три линии; глиф felt (иконошрифт
@@ -375,6 +381,13 @@ gb-field { display: block; width: 100%; }
 }
 .gba-input:hover { border-color: var(--blue-600); }
 .gba-input:focus::placeholder { opacity: 0; }
+/* DEMO-ONLY, gbppl-button-2. Витрине нужно поставить пять состояний
+   поля в один ряд, а :hover и :focus в ряд не ставятся. Те же два
+   имени, что объявил кнопочный организм, и то же правило: ни одна
+   продуктовая страница их не носит. Ничего своего они не говорят —
+   каждое повторяет живое правило строкой выше. */
+.gba-input.is-hover { border-color: var(--blue-600); }
+.gba-input.is-focus::placeholder { opacity: 0; }
 @media (min-width: 1280px) {
   .gba-input { min-height: var(--form-ctl-h-xl); font-size: 16px; }
 }
@@ -447,120 +460,36 @@ gb-field { display: block; width: 100%; }
 @media (min-width: 1280px) { .gba-eye { bottom: 20px; } }
 .gba-eye svg { width: 18px; height: 18px; }
 
-/* ---------------- КНОПКА ФОРМЫ ---------------- */
+/* ---------------- САБМИТ ФОРМЫ ----------------
+   gbppl-button-2, 26.08. СЕМЬИ .gba-btn БОЛЬШЕ НЕТ: сабмит носит
+   организм из componentsutton.css, и auth.css перестал быть
+   владельцем кнопки — он остался владельцем ПОЛЕЙ.
 
-/* Сабмит-семья 48/56/64: bg blue-600, radius 5, py 8 px 24/32,
-   uppercase 600, fs 14/16, ls -0.35/-0.4, текст zinc-50 (#fafafa,
-   живой primary-contrast). Лейбл-span: 14/15(640)/16(2000), ls 1px,
-   собственные px 24/32 — стрелка стоит absolute right 24/32,
-   1em-бокс 16/20/24. Hover blue-700; disabled opacity .6. */
-.gba-btn {
-  position: relative;
-  width: 100%;
-  min-height: var(--form-ctl-h);
-  margin-top: 16px;
-  padding: 8px 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  background: var(--blue-600);
-  border-radius: var(--radius);
-  color: var(--zinc-50);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: normal;
-  letter-spacing: -0.35px;
-  text-transform: uppercase;
-  overflow: hidden;
-  user-select: none;
-  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.gba-btn:hover { background: var(--blue-700); }
-.gba-btn:disabled { opacity: 0.6; pointer-events: none; cursor: default; }
-/* Тот же скоуп-фикс, что у хедерных кнопок выше: body.gb-demo a
-   { color: inherit } из shell.css весит 0-1-2 (класс + ДВА
-   элемента) и перебивает не только .gba-btn (0-1-0), но и
-   a.gba-btn (0-1-1) — ссылка в шкуре кнопки рендерилась тёмной
-   по синему (Тон видел бы это на студийных страницах). Кнопка-форма это
-   не задевало (она <button>), inline-версия стоит в потоке как
-   <a>, поэтому антидоту нужна полная сила 0-2-1. */
-a.gba-btn,
-body.gb-demo a.gba-btn { color: var(--zinc-50); }
-.gba-btn-label {
-  padding: 0 24px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  line-height: normal;
-  text-transform: uppercase;
-}
-.gba-btn-icon {
-  position: absolute;
-  top: 50%;
-  right: 24px;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.gba-btn-icon svg { width: 16px; height: 16px; }
-@media (min-width: 640px) {
-  .gba-btn-label { font-size: 15px; }
-}
-@media (min-width: 1280px) {
-  .gba-btn {
-    min-height: var(--form-ctl-h-xl);
-    padding-left: 32px;
-    padding-right: 32px;
-    gap: 24px;
-    font-size: 16px;
-    letter-spacing: -0.4px;
-  }
-  .gba-btn-label { padding: 0 32px; }
-  .gba-btn-icon { right: 32px; }
-  .gba-btn-icon svg { width: 20px; height: 20px; }
-}
-@media (min-width: 2000px) {
-  .gba-btn { min-height: var(--form-ctl-h-2xl); }
-  .gba-btn-label { font-size: 16px; }
-  .gba-btn-icon svg { width: 24px; height: 24px; }
-}
+     .gba-btn         -> .gb-btn --l --filled --primary --block
+     .gba-btn-label   -> .gb-btn__label
+     .gba-btn-icon    -> .gb-btn__icon
+     .gba-btn--inline -> .gb-btn --l, то есть ровно дефолт
+                         организма. Модификатор удалён: у него не
+                         осталось ни одного потребителя (полка хаба
+                         давно живёт на .gbs-door-link).
 
-/* ---------------- МОДИФИКАТОР: .gba-btn--inline ----------------
-   gbppl-hub-9, Тон 24.08: «несистемная кнопка с непонятным
-   шрифтом. На форме авторизации её пофиксили, а здесь нет».
+   ПОЧЕМУ СОВПАЛО ДО ПИКСЕЛЯ. Лестница L организма СНЯТА с этого
+   самого сабмита 18.08: 48/56/64, пад 8/24 -> 8/32 с 1280, gap
+   20 -> 24, внешний тип 14/600 -> 16, лейбл 14 / 15 с 640 / 16 с
+   2000 при ls 1px, глиф 16/20/24, ховер Blue 700, disabled
+   opacity .6. А его особая анатомия — ширина во всю строку,
+   стрелка у правого края паддинга, лейбл с собственными полями
+   pad-x, чтобы центрированный текст не налез на стрелку — стала
+   модификатором .gb-btn--block, и там она объявлена один раз для
+   всех размеров. Прибор до и после на 1280/1920/2258: расхождений
+   ноль.
 
-   Речь про кнопку полки хаба (Open the prototype): она носила
-   геометрию BUTTON L, но лейбл взяла из лестницы МЕЛКИХ кнопок
-   шапки (--btn-label-* = 11/12px) — тот же разрыв, что 23.08
-   поймали на Enter гейта. Лечится не локальным хаком на странице
-   (Тон-8: расширение живёт в системе), а версией этой кнопки.
+   ЧТО ОСТАЛОСЬ ЗДЕСЬ. Один отступ. Он никогда не принадлежал
+   кнопке: это расстояние ОТ ПОЛЯ до сабмита, и назначает его
+   форма, а не кнопка. Имя ему нужно своё, потому что кнопка
+   теперь общая, а отступ местный. */
+.gba-submit { margin-top: 16px; }
 
-   Что меняет модификатор и почему ровно это:
-     ширина      форма отдаёт кнопке всю строку (width 100%), а
-                 полка ставит её в поток текста — auto;
-     margin-top  16px — отступ ОТ ПОЛЯ формы, вне формы он лишний,
-                 расстояние назначает страница;
-     лейбл       свои px 24/32 нужны были, чтобы центрированный
-                 текст не налез на absolute-стрелку; у inline-версии
-                 стрелка стоит в потоке, разделяет их gap 20/24
-                 самой кнопки — та же цифра, объявленная выше;
-     стрелка     static: absolute right 24/32 у auto-ширины съел бы
-                 правый паддинг и прижал глиф к тексту.
-   Высота (48/56/64), фон, радиус, регистр и ЛЕСТНИЦА ЛЕЙБЛА
-   14/15/16 остаются семейными — их этот блок не трогает. */
-.gba-btn--inline {
-  width: auto;
-  margin-top: 0;
-}
-.gba-btn--inline .gba-btn-label { padding: 0; }
-.gba-btn--inline .gba-btn-icon {
-  position: static;
-  transform: none;
-  flex: 0 0 auto;
-}
 
 /* ---------------- ШАГ ВЕРИФИКАЦИИ ----------------
    Состояние за сабмитом e-mail (live 18.08, снято на 1280; лестницы

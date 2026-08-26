@@ -107,8 +107,8 @@
               '</nav>' +
             '</div>' +
             '<div class="gbg-actions">' +
-              '<a class="gbh-cta" href="#"><span data-pc-section="label">Book a Meeting</span></a>' +
-              '<a class="gbh-cta gbh-cta--outline" href="#"><span data-pc-section="label">Start Gifting</span></a>' +
+              '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="#"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
+              '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label" data-pc-section="label">Start Gifting</span></a>' +
               '<button class="gbh-icon-button" type="button" aria-label="Search gifts">' + ICON_SEARCH + '</button>' +
             '</div>' +
           '</div>' +
@@ -226,18 +226,25 @@
     customElements.define('gb-field', GbField);
   }
 
-  /* ---------------- КНОПКА ФОРМЫ ---------------- */
+  /* ---------------- САБМИТ ФОРМЫ ----------------
+     gbppl-button-2, 26.08: кнопка = организм .gb-btn, лестница L,
+     полная ширина (--block). Своих правил у auth.css больше нет,
+     кроме отступа .gba-submit (расстояние от поля до сабмита).
 
-  /* Семья 48/56/64. Живые классы-данные bg-primary-600 и
-     tracking-[1px] сохранены для селекторов конфига. */
+     ЖИВЫЕ ИМЕНА ОСТАЮТСЯ В РАЗМЕТКЕ КАК ДАННЫЕ. bg-primary-600,
+     rounded, uppercase, tracking-[1px], font-semibold, data-p,
+     data-pc-name и data-pc-section — это анатомия живого PrimeVue,
+     по которой мерят харвест-конфиги; ни одно из них ничего не
+     красит и ни одно не удалено. */
   function formButtonHTML(label, opts) {
     opts = opts || {};
     return (
       '<button data-p="large" type="' + (opts.type || 'submit') + '" aria-label="' + esc(label) + '"' +
         (opts.disabled ? ' disabled' : '') +
-        ' data-pc-name="button" class="gba-btn bg-primary-600 rounded uppercase' + (opts.cls ? ' ' + opts.cls : '') + '">' +
-        '<span class="icon icon-arrow-right gba-btn-icon" data-p="right large" data-pc-section="icon">' + ICON_ARROW + '</span>' +
-        '<span class="uppercase tracking-[1px] font-semibold gba-btn-label" data-pc-section="label" data-p="large">' + esc(label) + '</span>' +
+        ' data-pc-name="button" class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary gb-btn--block gba-submit' +
+        ' bg-primary-600 rounded uppercase' + (opts.cls ? ' ' + opts.cls : '') + '">' +
+        '<span class="gb-btn__icon icon icon-arrow-right" data-p="right large" data-pc-section="icon">' + ICON_ARROW + '</span>' +
+        '<span class="gb-btn__label uppercase tracking-[1px] font-semibold" data-pc-section="label" data-p="large">' + esc(label) + '</span>' +
       '</button>'
     );
   }
