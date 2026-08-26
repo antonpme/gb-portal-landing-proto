@@ -227,9 +227,11 @@
          контейнера: на лайве это лайв, в сэндбоксе тот сэндбокс, который активен».
          Home keeps the sandbox context: the query keys the registry treats as a
          room ride along on the wordmark, so leaving a sandbox page does not drop
-         you onto bare Live. Keys mirror the portal set the catalog carries. */
+         you onto bare Live. Keys mirror the portal set the catalog carries.
+         gbppl-prefooter-light-1 (26.08): prefooter joins them, so the light
+         pre-footer room of the catalog is not dropped by the wordmark. */
       if (homeHref !== '#') {
-        var KEEP = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock'];
+        var KEEP = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock', 'prefooter'];
         var have = new URLSearchParams(location.search), carry = new URLSearchParams();
         KEEP.forEach(function (k) { if (have.has(k)) carry.set(k, have.get(k)); });
         var q = carry.toString();

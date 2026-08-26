@@ -16,7 +16,9 @@
                                <gb-testimonial author>текст</...>
      <gb-banner-video>         чёрная лента The Unboxing; фоновое
                                видео живого CDN, постер наш
-     <gb-banner-conversation>  финальный CTA на градиенте
+     <gb-banner-conversation>  финальный CTA на ровной тёмной ленте;
+                               tone="light" и density="compact" дают
+                               светлую и сжатую версию (gbppl-prefooter-light-1)
 
    Все шесть — СТАМПЫ (паттерн gb-listing-card): элемент замещает
    себя живой секцией, чтобы div.page > section... и селекторы
@@ -386,6 +388,26 @@
 
   /* ---------------- 6. CONVERSATION BANNER ---------------- */
 
+  /* gbppl-prefooter-light-1 (2026-08-26): два НЕЗАВИСИМЫХ модификатора
+     закрывающих лент, объявленных в home.css (секция 6b + 7b там же
+     несёт заказ Тона и разбор).
+
+       tone="light"       цветовая инверсия. Читает её только баннер:
+                          лента преимуществ светлая по умолчанию, и
+                          инвертировать в ней нечего
+       density="compact"  сжатый ритм. Читают обе
+
+     Атрибута нет — класса нет — секция байт-в-байт прежняя. Живые
+     имена классов лайва (bannersConversation, bg-black) остаются в
+     разметке и в светлом варианте: они данные для прибора, красят
+     только хуки .gbhm*. */
+  function mods(el, base) {
+    var out = '';
+    if (el.getAttribute('tone') === 'light') out += ' ' + base + '--light';
+    if (el.getAttribute('density') === 'compact') out += ' ' + base + '--compact';
+    return out;
+  }
+
   class GbBannerConversation extends HTMLElement {
     connectedCallback() {
       var pill = this.getAttribute('pill') || 'Impressive Gifts';
@@ -393,7 +415,7 @@
       var sub = this.getAttribute('subtitle') || '';
       var cta = this.getAttribute('cta') || 'Discover Gifts';
       stamp(this,
-        '<section class="gbhm gbhm-conv bannersConversation bg-black defaultStyle">' +
+        '<section class="gbhm gbhm-conv' + mods(this, 'gbhm-conv') + ' bannersConversation bg-black defaultStyle">' +
           '<div class="gbhm-convContent bannersConversation__content">' +
             '<div class="container">' +
               '<div class="gbhm-convHolder infoHolder">' +
@@ -429,8 +451,11 @@
           text: a.textContent.trim()
         };
       });
+      /* Читается только density: tone здесь нечего инвертировать,
+         см. комментарий у баннера. */
+      var density = this.getAttribute('density') === 'compact' ? ' gbhm-adv--compact' : '';
       stamp(this,
-        '<section class="gbhm gbhm-adv singleWithIconSimple defaultStyle">' +
+        '<section class="gbhm gbhm-adv' + density + ' singleWithIconSimple defaultStyle">' +
           '<div class="container">' +
             '<div class="inner-section col">' +
               '<div class="gbhm-advRow">' + cols.map(advCol).join('') + '</div>' +

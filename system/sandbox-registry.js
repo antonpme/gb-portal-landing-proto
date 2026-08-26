@@ -65,7 +65,21 @@
     catalog: {
       label: 'Catalog',
       live: 'live/catalog/index.html',
-      variants: []
+      variants: [
+        {
+          /* Ton 26.08, after Julia and Russell on the live category page:
+             «попробовать сделать инверсию этих компонентов (цветовую,
+             светлыми)... сделать варианты с инверсией, чтобы они были
+             светлые». The two modifiers live in home.css; the page reads
+             ?prefooter= and names them. */
+          id: 'prefooter-light',
+          label: 'Light pre-footer',
+          desc: 'The closing banner and the advantages in light ink, tighter, no gradient.',
+          status: 'proposal',
+          href: 'live/catalog/index.html?prefooter=light',
+          ready: true
+        }
+      ]
     },
 
     checkout: {

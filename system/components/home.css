@@ -685,3 +685,126 @@
 @media (min-width: 768px)  { .gbhm-advText { font-size: 14px; } }
 @media (min-width: 1280px) { .gbhm-advText { font-size: 16px; } }
 @media (min-width: 2000px) { .gbhm-advText { font-size: 20px; } }
+
+/* ============ 6b + 7b. LIGHT AND COMPACT PRE-FOOTER ============
+   gbppl-prefooter-light-1 (2026-08-26). DECLARED: инверсия и сжатие
+   заказаны Тоном, живого замера у них нет.
+
+   Откуда заказ. Джулия о низе живой /catalog/products: «we should
+   change bottom part of the page (before footer), it doesn't look
+   good»; Рассел: «yes, that looks bad», «we need to reduce the white
+   space» → Джулия: «black» → Рассел: «sure, blackspace». Тон
+   передал заказом: «попробовать сделать инверсию этих компонентов
+   (цветовую, светлыми). Убрать градиент: сплошной цвет (сделано).
+   Сделать варианты с инверсией, чтобы они были светлые».
+
+   ДВЕ ОСИ, ДВА МОДИФИКАТОРА, НЕ ОДИН. В жалобе клиента две разные
+   вещи: полоса ТЁМНАЯ и полоса ВЫСОКАЯ. Это независимые решения, и
+   принять их могут порознь (светлая, но прежней высоты; тёмная, но
+   сжатая). Поэтому tone и density объявлены отдельно, а песочница
+   включает оба сразу. Склеить их в одно имя значило бы протащить
+   вторую правку под видом первой — ровно то, что Тон-1 называет
+   снимком решения, потерявшим развилку.
+
+     tone="light"        только цвет: земля, чернила, пилюля, CTA
+     density="compact"   только ритм: вертикали и отступы
+
+   ЧТО ИМЕННО ИНВЕРТИРУЕТСЯ (Тон-5: синий = состояние, чёрный =
+   вечная мебель). Земля --live-body, чернила --zinc-900. Пилюля
+   переворачивается целиком: она была белой плашкой на тёмном, стала
+   ТЁМНОЙ плашкой Zinc 900 с белым словом — то же самое ударение,
+   тот же чёрный «мебельный» вес, только на светлой земле.
+   Подчёркивание CTA и его ховер-обводка идут в чернила; тень текста
+   снимается (она нужна была тексту на видео, на светлой земле она
+   грязь). Ховер-мытьё берётся Zinc 100 вместо rgba(0,0,0,.3): на
+   светлом затемнение читается как заливка, а не как касание.
+   Контраст на 1440 (посчитан по WCAG, статичная плашка, ловушка 11):
+   чернила на земле 17.4:1, белое слово на пилюле 17.7:1.
+   Земля НЕ #f6f6f6 ленты преимуществ, а --live-body: две светлые
+   ленты подряд одного тона слиплись бы в одну плиту, а разница в
+   полтона оставляет их двумя лентами.
+
+   ЧТО ИМЕННО СЖИМАЕТСЯ. Обе ленты стоят на min-height 428 → 528, и
+   у баннера контент вдобавок absolute по центру, то есть высоту
+   держит ТОЛЬКО min-height. Поэтому compact у баннера возвращает
+   контент в поток (position static) и высоту начинает держать он
+   сам с паддингами; у ленты преимуществ контент и так в потоке, там
+   достаточно снять min-height. Все новые вертикали со шкалы
+   --space-* (48 базовые, 64 от 1280), прежние 64/96 были литералами
+   лайва. Замер до и после — в отчёте волны.
+
+   Дефолт (без атрибутов) не меняется ни на один байт: все правила
+   ниже висят на модификаторах и стоят последними в файле, поэтому
+   спор одинаковых весов с базовыми правилами решается порядком. */
+
+/* ---- tone="light" ---- */
+.gbhm-conv--light { background: var(--live-body); color: var(--zinc-900); }
+.gbhm-conv--light .gbhm-convContent { color: var(--zinc-900); }
+.gbhm-conv--light .gbhm-convTitle { color: var(--zinc-900); }
+.gbhm-conv--light .gbhm-convPill { background: var(--zinc-900); color: var(--white); }
+.gbhm-conv--light .gbhm-underline.btn-underline {
+  border-bottom-color: var(--zinc-900);
+  color: var(--zinc-900);
+  text-shadow: none;
+}
+/* Та же ховер-обводка из пяти градиентов, что у тёмной ленты, в
+   чернилах. Правило переписывается целиком: background у неё один
+   слот, частичной подмены цвета в нём не бывает. */
+.gbhm-conv--light .gbhm-underline.btn-underline::before {
+  background:
+    linear-gradient(90deg, var(--zinc-900) 0, var(--zinc-900)) 50% 100% / 100% 1px no-repeat,
+    linear-gradient(0deg, var(--zinc-900) 50%, rgba(0, 0, 0, 0) 0) 0 0 / 1px 200% no-repeat,
+    linear-gradient(0deg, var(--zinc-900) 50%, rgba(0, 0, 0, 0) 0) 100% 0 / 1px 200%,
+    linear-gradient(90deg, var(--zinc-900) 0, var(--zinc-900)) 100% 0 / 0 1px,
+    linear-gradient(270deg, var(--zinc-900) 0, var(--zinc-900)) 0 0 / 0 1px;
+}
+.gbhm-conv--light .gbhm-underline.btn-underline:hover {
+  border-color: var(--zinc-900);
+  color: var(--zinc-900);
+  background-color: var(--zinc-100);
+}
+
+/* ---- density="compact" ---- */
+.gbhm-conv--compact {
+  min-height: 0;
+  padding-top: var(--space-48);
+  padding-bottom: var(--space-48);
+}
+@media (max-width: 991px) { .gbhm-conv--compact { height: auto; } }
+@media (min-width: 1280px) {
+  .gbhm-conv--compact {
+    min-height: 0;
+    padding-top: var(--space-64);
+    padding-bottom: var(--space-64);
+  }
+}
+/* Контент возвращается в поток: пока он absolute, высоту секции
+   держит одна только min-height, и снять её нечем. */
+.gbhm-conv--compact .gbhm-convContent { position: static; transform: none; }
+.gbhm-conv--compact .gbhm-convTitle { margin-bottom: var(--space-24); }
+.gbhm-conv--compact .gbhm-convSub { margin-bottom: var(--space-24); }
+
+.gbhm-adv--compact {
+  min-height: 0;
+  padding-top: var(--space-48);
+  padding-bottom: var(--space-48);
+}
+@media (min-width: 1280px) {
+  .gbhm-adv--compact {
+    min-height: 0;
+    padding-top: var(--space-64);
+    padding-bottom: var(--space-64);
+  }
+}
+.gbhm-adv--compact .gbhm-advRow { margin: -16px -16px; }
+@media (min-width: 1024px) { .gbhm-adv--compact .gbhm-advRow { margin: -24px -32px; } }
+@media (min-width: 1280px) { .gbhm-adv--compact .gbhm-advRow { margin: -24px -40px; } }
+@media (min-width: 2000px) { .gbhm-adv--compact .gbhm-advRow { margin: -24px -48px; } }
+.gbhm-adv--compact .gbhm-advCol { padding: var(--space-16); }
+@media (min-width: 1024px) { .gbhm-adv--compact .gbhm-advCol { padding: var(--space-24) var(--space-32); } }
+@media (min-width: 1280px) { .gbhm-adv--compact .gbhm-advCol { padding: var(--space-24) var(--space-48); } }
+@media (min-width: 2000px) { .gbhm-adv--compact .gbhm-advCol { padding: var(--space-24) var(--space-64); } }
+.gbhm-adv--compact .gbhm-advIcon { margin-bottom: var(--space-16); }
+@media (min-width: 1280px) { .gbhm-adv--compact .gbhm-advIcon { margin-bottom: var(--space-24); } }
+.gbhm-adv--compact .gbhm-advTitle { margin-bottom: var(--space-8); }
+@media (min-width: 1280px) { .gbhm-adv--compact .gbhm-advTitle { margin-bottom: var(--space-16); } }
