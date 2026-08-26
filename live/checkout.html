@@ -9,6 +9,10 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-11 — Place Order ends somewhere (Russell audit 26.08:
+     the biggest button did nothing) and the PROTO panel moves up off the
+     order totals.
+
      gbppl-checkout-10 — capitalization walks one line: section
      headings are sentence case, all of them. Julia caught step 2
      wearing Title Case next to step 1's sentence (24.08), Shannon
@@ -266,8 +270,8 @@
   .demo-controls {
     position: fixed;
     right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 112px;                 /* gbppl-checkout-11: was centred, and the open panel covered the order totals */
+    transform: none;
     z-index: 30;
     display: flex;
     align-items: center;
@@ -429,7 +433,7 @@
 <gb-site-header logo-src="../system/assets/gildedbox-logo.svg" catalog-href="catalog/index.html" portal-href="portal.html" meeting-href="book-a-meeting.html"></gb-site-header>
 
 <!-- ========== BREADCRUMBS + PAGE TITLE (site frame) ========== -->
-<div class="gb-container pt-7">
+<div class="gb-container pt-7" x-show="!placed">
   <nav class="flex items-center gap-2.5 text-[13px] text-zinc-400">
     <!-- href is filled in at the foot of the page so the query string rides along -->
     <a href="portal.html" data-gbppl-home class="hover:text-zinc-700 transition-colors">Home</a>
@@ -445,7 +449,7 @@
 </div>
 
 <!-- ========== MAIN CONTAINER ========== -->
-<main class="gb-container pb-24 space-y-6">
+<main x-show="!placed" class="gb-container pb-24 space-y-6">
 
   <!-- ========== PRODUCT CARDS — one card per gift in the cart, stacked (live does the same) ========== -->
   <template x-for="(product, pIdx) in products" :key="product.id">
@@ -1183,12 +1187,39 @@
            hover:bg-blue-700 were saying what --filled --primary says, and one
            of them was saying it slightly wrong (live ink is Zinc 50, not pure
            white). mt-6 stays, it is this column's spacing. -->
-      <button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button"><span class="gb-btn__label">Place Order</span></button>
+      <button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button" @click="placeOrder()"><span class="gb-btn__label">Place Order</span></button>
       <p class="text-xs text-zinc-500 mt-3 text-center" x-show="anyDefer()">Some recipient details will be completed later via link</p>
     </div>
   </section>
 
 </main>
+
+<!-- gbppl-checkout-11: the order confirmation. Same anatomy as the booking
+     organism's «You're booked» (drawn check, serif title, quiet summary,
+     two exits), so the two ends of the prototype speak one voice. -->
+<section x-show="placed" x-cloak class="bg-zinc-50 min-h-screen">
+  <div class="gb-container">
+    <div class="max-w-[640px] mx-auto py-16 lg:py-24 text-center">
+      <svg class="mx-auto mb-6" width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
+        <circle cx="28" cy="28" r="26" stroke="#2563eb" stroke-width="1.5"/>
+        <path d="M17 29l8 8 14-16" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1 class="font-serif text-4xl lg:text-5xl mb-3">Your order is placed</h1>
+      <p class="text-zinc-500 text-base mb-10">A confirmation is on its way to your inbox. Recipients who still need details will get their link.</p>
+      <div class="bg-white border border-zinc-200 rounded-[5px] p-8 text-left text-base">
+        <div class="flex justify-between py-2 border-b border-zinc-100"><span class="gb-eyebrow">Order</span><span class="font-medium">#GB-<span x-text="String(Date.now()).slice(-6)"></span></span></div>
+        <div class="flex justify-between py-2 border-b border-zinc-100"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() !== 1">s</span></span></div>
+        <div class="flex justify-between py-2"><span class="gb-eyebrow">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
+      </div>
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <a class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" href="portal.html"><span class="gb-btn__label">Back to portal</span></a>
+        <button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button" @click="placeAnother()"><span class="gb-btn__label">Place another order</span></button>
+      </div>
+      <p class="text-sm text-zinc-500 mt-8">Prototype: nothing is charged and nothing is shipped.</p>
+    </div>
+  </div>
+</section>
+
 
 <!-- ========== SITE FOOTER — the measured <gb-site-footer> component, same
      provenance as the header (site-chrome\footer.*). The page ends where
@@ -1781,6 +1812,13 @@ function checkoutApp() {
     // setScenario deliberately leaves it alone, so every scenario can be walked
     // in both. The two flows share the markup and the money, never the rows.
     uiVersion: 'v1',
+
+    // gbppl-checkout-11 (Russell audit, 26.08): Place Order used to do nothing.
+    // A prototype the owner walks must end somewhere: `placed` swaps the page
+    // for a confirmation in the voice of the booking organism's third step.
+    placed: false,
+    placeOrder() { this.placed = true; window.scrollTo(0, 0); },
+    placeAnother() { this.placed = false; window.scrollTo(0, 0); },
 
     // Everything V2 keeps on a shipment, in one place. V1 reads none of it, which
     // is why adding these fields to the scenarios below changes nothing for V1.
