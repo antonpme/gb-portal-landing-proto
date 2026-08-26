@@ -78,6 +78,7 @@
 <link rel="stylesheet" href="../system/assets/tokens.css">
 <link rel="stylesheet" href="../system/components/shell.css">
 <link rel="stylesheet" href="../system/components/header.css">
+<link rel="stylesheet" href="../system/components/button.css">
 <link rel="stylesheet" href="../system/components/auth.css">
 <link rel="stylesheet" href="../system/components/booking.css">
 <style>
@@ -1389,43 +1390,30 @@
     border-radius: var(--radius-circle);
     background: var(--zinc-400);
   }
-  /* Landing CTAs step down from BUTTON XL to BUTTON L (Ton's
-     requirement "на размер меньше" 2026-08-17). L has NO live
-     measurement: the class is interpolated per Ren's proportion
-     formula (system tokens.css, BUTTON PROPORTION FORMULA block):
-     min-h 48 / 56 from 1280 / 64 from 2000, pad-y 8 constant,
-     pad-x = 0.5H: 24 / 28 from 1280 / 32 from 2000, radius 5 =
-     --radius. Media thresholds = the live ladders' own (1280 and
-     the off-Tailwind 2000, harvest public-product-sweep 2026-08-17).
-     XL (56/64/72, live product Continue) stays in the system; these
-     two buttons just no longer wear it. TYPOGRAPHY stays on the LIVE
-     BUTTON LADDER steps (Inter 400, 14 -> 16 from 1280, ls -0.35 ->
-     -0.4 from 1280): the label question waits for the portal
-     measurement. The sticky-bar buttons (.btn-bar) stay on the
-     compact base ladder, the ask was the two hero-block CTAs only. */
-  /* 2026-08-25: the numbers stop being written out here. Every one of
-     them was already a token in system/assets/tokens.css -- the L
-     ladder under BUTTON L and the shared type steps under LIVE BUTTON
-     LADDER -- and this rule was restating them by hand. Same values,
-     one address. */
-  .btn-cta {
-    min-height: var(--btn-l-min-h);      /* 48, BUTTON L base */
-    width: 100%;
-    padding: var(--btn-l-pad-y) var(--btn-l-pad-x);   /* 8 / 24, pad-x = 0.5H */
-    font-size: var(--btn-font-size);
-    font-weight: var(--btn-font-weight);
-    line-height: var(--btn-line-height);
-    letter-spacing: var(--btn-letter-spacing);
-    text-transform: uppercase;
-    border: none;
-    border-radius: var(--radius);
-    color: var(--white);
-    transition: background 150ms ease;
-  }
-  .btn-cta-blue { background: var(--blue-600); }
-  .btn-cta-blue:hover { background: var(--blue-700); }
-  .btn-cta-black { background: var(--zinc-900); }
-  .btn-cta-black:hover { background: var(--black); }
+  /* THE TWO LANDING CTAs ARE THE ORGANISM (gbppl-button-2, 26.08).
+     .btn-cta / -blue / -black are gone: they were BUTTON L and
+     full width, which is .gb-btn --l --filled --primary | --secondary
+     with --block, and that whole sentence now comes with the class.
+     Only the place they stand in is still this page's business, and
+     the hero half already gives them that.
+
+     THREE THINGS MOVED, all of them on purpose and all of them
+     towards the system:
+       pad-x at 1280   28 -> 32. The 28 was the interpolated
+                       --btn-l-pad-x-xl; the organism spends the LIVE
+                       32 measured on the sign-in submit, and live
+                       wins over the formula.
+       label           the text moved into .gb-btn__label and took
+                       the live L label with it: 14 / 15 from 640 /
+                       16 from 2000 at weight 600 and +1px, instead
+                       of the outer 14/16 at 400 and -0.35. The
+                       "label question waits for the portal
+                       measurement" note that stood here is answered:
+                       the answer came off the live form submit.
+       ink             white -> Zinc 50 (#fafafa), which is what the
+                       live filled button actually uses.
+     Everything else -- 48/56/64, pad-y 8, radius, hover Blue 700 and
+     Zinc 950 -- is the same number under a new address. */
 
   /* Variant containers */
   .hero-variant[hidden] { display: none; }
@@ -1655,42 +1643,15 @@
     gap: 16px;
     flex-wrap: wrap;
   }
-  .btn-start {
-    min-height: var(--btn-l-min-h);      /* 48, BUTTON L base */
-    min-width: 220px;                    /* felt floor, see above; NO TOKEN */
-    padding: var(--btn-l-pad-y) var(--btn-l-pad-x);   /* 8 / 24, pad-x = 0.5H */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--btn-font-size);
-    font-weight: var(--btn-font-weight);
-    line-height: var(--btn-line-height);
-    letter-spacing: var(--btn-letter-spacing);
-    text-transform: uppercase;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    /* Named properties only, and on the family's own micro rail
-       (gbppl-motion-pass): this button is the one the popup is born out
-       of, so its hover must not be able to twitch anything it is about
-       to hand a rect to. */
-    transition: background-color var(--mo-micro) var(--mo-move),
-                border-color var(--mo-micro) var(--mo-move);
-  }
-  .btn-start-primary {
-    background: var(--blue-600);
-    border-color: var(--blue-600);
-    color: var(--white);
-  }
-  .btn-start-primary:hover {
-    background: var(--blue-700);
-    border-color: var(--blue-700);
-  }
-  .btn-start-outline {
-    background: transparent;
-    border-color: var(--zinc-900);
-    color: var(--zinc-900);
-  }
-  .btn-start-outline:hover { background: var(--zinc-100); }
+  /* .hs-cta = the organism at L, plus the ONE thing this block owns:
+     a felt floor under the width, so the one-word START does not
+     shrink to a chip beside Explore Gifts. Paint, height, padding,
+     type and hover all come from .gb-btn (gbppl-button-2, 26.08;
+     .btn-start / -primary / -outline deleted, not aliased).
+     The pair reads --filled --primary and --outline --secondary,
+     which is the same blue fill and the same Zinc 900 hairline it
+     had, with the live L label in place of the outer type. */
+  .hs-cta { min-width: 220px; }   /* felt floor, NO TOKEN */
 
   /* ============ START GIFTING: THREE ARRANGEMENTS (&layout=) ============
      gbppl-hero-start-3. The client asked to see the block in two or
@@ -2509,36 +2470,16 @@
      which is .gsp-card's pair exactly, so the step needs no card of
      this page's making and gets none. Every number inside the flow
      belongs to booking.css and this file does not reach in. */
-  .gsp-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: var(--btn-l-min-h);      /* 48, BUTTON L base */
-    padding: var(--btn-l-pad-y) var(--btn-l-pad-x);
-    background: var(--blue-600);
-    color: var(--white);
-    border: 1px solid var(--blue-600);
-    border-radius: var(--radius);
-    font-size: var(--btn-font-size);
-    font-weight: var(--btn-font-weight);
-    line-height: var(--btn-line-height);
-    letter-spacing: var(--btn-letter-spacing);
-    text-transform: uppercase;
-    /* FLAT on purpose: the popup keeps one width, so the button has
-       no >=1280 / >=2000 steps. The base numbers are the ladder's. */
-    text-decoration: none;   /* Call now wears the button as an <a> */
-    cursor: pointer;
-    transition: background-color var(--mo-micro) var(--mo-move),
-                border-color var(--mo-micro) var(--mo-move),
-                color var(--mo-micro) var(--mo-move);
-  }
-  .gsp-btn:hover:not(:disabled) { background: var(--blue-700); border-color: var(--blue-700); }
-  /* GONE with the stand-in calendar (gbppl-portal-booking-1): the
-     disabled ground was Confirm meeting's alone -- Copy number and Call
-     now never go inert -- and the prototype note .gsp-note belonged to
-     the two steps the organism replaced. It says the same thing in its
-     own voice on its own last step (.gbb-note, booking.css). */
+  /* THE POPUP'S TWO BUTTONS ARE THE ORGANISM (gbppl-button-2).
+     .gsp-btn was BUTTON L spent flat -- 48, pad 8/24, Blue 600 with
+     a matching hairline -- because the popup keeps one width. It is
+     .gb-btn --l now, and the ladder climbs with the WINDOW rather
+     than with the panel: 48 / 56 from 1280 / 64 from 2000. The
+     panel is 528 wide and the pair sits in a flex row, so there is
+     room; the taller button on a wide screen is the system speaking
+     with one voice, which is the whole point of the migration.
+     .gsp-btn--quiet becomes --outline --secondary: the same quiet
+     white-and-hairline it was, said in the system's words. */
 
   /* ---- Door 1: live chat, TRANSFERRED FROM v1 ---------------------
      gbppl-start-popup-3 (Ton, 2026-08-19: "Live Chat is already designed
@@ -2837,16 +2778,8 @@
     gap: 10px;
     margin-top: 24px;
   }
-  .gsp-call-actions .gsp-btn { flex: 1; }
-  .gsp-btn--quiet {
-    background: var(--gh-white);
-    border-color: var(--gh-line);
-    color: var(--gh-ink);
-  }
-  .gsp-btn--quiet:hover:not(:disabled) {
-    background: var(--gh-canvas);
-    border-color: var(--zinc-300);
-  }
+  /* Layout only: the pair shares the row equally. */
+  .gsp-call-actions .gb-btn { flex: 1; }
   .gsp-call-copied {
     min-height: 18px;
     margin-top: 12px;
@@ -3095,21 +3028,16 @@
     text-align: center;
     margin-bottom: 24px; /* live pt-6 above the button, kept as a floor */
   }
-  .btn-send {
-    height: 48px;
-    width: 100%;
-    font-size: 16px;
-    font-weight: 400;
-    letter-spacing: -0.4px;
-    text-transform: uppercase;
-    background: var(--zinc-800);
-    color: var(--white);
-    border: none;
-    border-radius: var(--radius);
-    margin-top: auto;
-  }
-  /* Hover = the live Zinc 800 button hover from the public header spec */
-  .btn-send:hover { background: var(--zinc-700); }
+  /* THE CARD'S SEND BUTTON IS THE ORGANISM (gbppl-button-2).
+     .btn-send was a hand-cut 48px Zinc 800 full-width button with
+     the outer type at 16/400. It is .gb-btn --l --filled
+     --secondary --block now, which moves three things: the fill
+     Zinc 800 -> Zinc 900 (the system's black, Ton-5 furniture), the
+     hover Zinc 700 -> Zinc 950 (hover DARKENS, Ton 24.08 -- the old
+     one lightened, which is the exact defect he named), and the
+     text into the live L label. margin-top:auto stays: it is how
+     the card pushes the button to its floor, and that is layout. */
+  .gift-send { margin-top: auto; }
 
   /* ============ COLLAPSED BAR ============ */
   .cta-bar {
@@ -3134,76 +3062,46 @@
     gap: 12px;
     flex-shrink: 0;
   }
-  /* Bar buttons join the LIVE portal button theme (Ton 2026-08-12):
-     same ladder and typography as every prototype button, shared
-     steps in LIVE BUTTON LADDER. */
-  .btn-bar {
-    min-height: var(--btn-min-h);        /* 36, M base */
-    /* pad-x 20 is the M ladder's >=1280 step spent at BASE width. It
-       has been that way since the bar was cut and it is not a
-       measurement of anything; recorded here rather than quietly
-       token-swapped, because --btn-pad-x is 16 and using the xl name
-       at base would hide the anomaly instead of showing it. */
-    padding: var(--btn-pad-y) 20px;
-    font-size: var(--btn-font-size);
-    font-weight: var(--btn-font-weight);
-    line-height: var(--btn-line-height);
-    letter-spacing: var(--btn-letter-spacing);
-    text-transform: uppercase;
-    border-radius: var(--radius);
-    white-space: nowrap;
-  }
-  .btn-bar-blue {
-    background: var(--blue-600);
-    color: var(--white);
-    border: 1px solid var(--blue-600);
-  }
-  .btn-bar-blue:hover { background: var(--blue-700); border-color: var(--blue-700); }
-  .btn-bar-ghost {
-    background: transparent;
-    color: var(--zinc-900);
-    border: 1px solid var(--zinc-200);
-  }
-  .btn-bar-ghost:hover { border-color: var(--zinc-400); }
+  /* THE BAR'S PAIR IS THE ORGANISM AT SIZE S (gbppl-button-2).
+     .btn-bar was the compact ladder: 36 / 42 from 1280 / 48 from
+     2000, which is exactly --s. One number moves, and it is the one
+     this file already flagged as an anomaly: pad-x at BASE width was
+     20, the S ladder's >=1280 step spent early, "not a measurement
+     of anything". The organism gives it the live 16 at base and the
+     live 20 from 1280. The blue button keeps Blue 600 with a
+     matching hairline as --filled --primary (the organism's filled
+     has no border at all, so the pair is 2px narrower than it was),
+     and the ghost becomes --outline --secondary: a Zinc 900
+     hairline in place of the Zinc 200 one, and the live hover wash
+     in place of a border-colour flicker. */
 
-  /* ============ LIVE BUTTON LADDER ============
-     Shared size steps of the live portal button theme (Ton
-     2026-08-12: every prototype button leaves the Figma Oro scale).
-     Steps re-read off the live site by instrument (harvest
-     public-home 2026-08-17): Inter 400, UPPERCASE, ls -0.35 base ->
-     -0.4 from 1280, min-h 36 / 42 from 1280 / 48 from 2000, labels
-     14 -> 16px from 1280, radius 5, no shadows. The 48 step turns on
-     at exactly 2000 on live (sweep: 1999 = 42, 2000 = 48); our
-     earlier 1536 threshold is lifted. Header buttons (.gbh-cta) get
-     the same steps from their owner, system/components/header.css;
-     GET HELP and SEND THIS GIFT were converted in the precision
-     wave; the PROTO panel is service chrome and stays out.
+  /* ============ THE BUTTON LADDER LEFT THIS FILE ============
+     It stood here since 2026-08-12, when Ton took every prototype
+     button off the Figma Oro scale and onto the live one: Inter 400
+     uppercase, ls -0.35 -> -0.4 from 1280, min-h 36 / 42 from 1280
+     / 48 from 2000, labels 14 -> 16, radius 5, no shadow. The block
+     ended with a note saying what it was waiting for: "the system
+     owns the ladder as TOKENS and has no button CLASS to hand out,
+     which is why four rules still restate the same eight
+     declarations under four names. A .gb-btn organism with size and
+     tone modifiers is the thing that would retire them, and that is
+     a decision for Ton, not a cleanup."
 
-     2026-08-25: the three ladders that live on THIS page -- .btn-cta
-     and .btn-start (BUTTON L) and .btn-bar (M), plus the popup's flat
-     .gsp-btn -- stopped writing the numbers out and now read the
-     ladder tokens (--btn-l-* / --btn-* in tokens.css). Not one value
-     moved; they were the same numbers all along. Worth saying plainly
-     for whoever comes next: the system owns the ladder as TOKENS and
-     has no button CLASS to hand out, which is why four rules still
-     restate the same eight declarations under four names. A .gb-btn
-     organism with size and tone modifiers is the thing that would
-     retire them, and that is a decision for Ton, not a cleanup. */
-  /* .btn-explore left the ladder with the masthead button (feedback R
-     2026-08-17, fallback DECISIONS-BANK item 3.5) */
-  /* .btn-cta left the shared size steps, first for BUTTON XL
-     (feedback R via T 2026-08-17), now for BUTTON L, interpolated per
-     Ren's proportion formula (Ton's requirement "на размер меньше"
-     2026-08-17, no live measurement for L exists). It keeps the
-     shared TYPOGRAPHY steps below. .btn-bar stays compact: the ask
-     covered the two hero-block CTAs only. */
+     Ton decided on 26.08 ("даю добро на миграцию"), the organism
+     exists, and the four rules are retired. Every button on this
+     page now wears .gb-btn and its ladders climb inside
+     system/components/button.css. What each one became, and the
+     three or four values that moved with it, is written over the
+     place each rule used to sit.
+     ============================================================ */
+
+  /* NO BUTTON STEPS HERE ANY MORE (gbppl-button-2). Every ladder
+     this page used to restate at 1280 and 2000 now climbs inside
+     button.css, in one place, for every page at once. What is left
+     of the buttons in these media blocks is the felt min-width of
+     the START pair, which is a composition number and belongs here. */
   @media (min-width: 1280px) {
-    .btn-cta { min-height: var(--btn-l-min-h-xl); padding-left: var(--btn-l-pad-x-xl); padding-right: var(--btn-l-pad-x-xl); font-size: var(--btn-font-size-xl); letter-spacing: var(--btn-letter-spacing-xl); } /* L >=1280 */
-    .btn-bar { min-height: var(--btn-min-h-xl); font-size: var(--btn-font-size-xl); letter-spacing: var(--btn-letter-spacing-xl); }
-    /* gbppl-hero-start: the Start / Explore Gifts pair rides the same
-       BUTTON L ladder as .btn-cta; min-width is the felt floor for the
-       one-word START label, see the block's provenance */
-    .btn-start { min-height: var(--btn-l-min-h-xl); min-width: 248px; padding-left: var(--btn-l-pad-x-xl); padding-right: var(--btn-l-pad-x-xl); font-size: var(--btn-font-size-xl); letter-spacing: var(--btn-letter-spacing-xl); }
+    .hs-cta { min-width: 248px; }
     .hs-actions { gap: 24px; }
     .hs-title { font-size: 36px; margin-bottom: 36px; } /* the live section-h2 size lands from 1280; 36 down against 72 up, gbppl-hero-start-3 */
     .hs-grid { column-gap: 96px; row-gap: 56px; margin-bottom: 44px; }
@@ -3217,9 +3115,7 @@
     [data-layout="band"] .hs-grid { column-gap: 0; row-gap: 0; }
   }
   @media (min-width: 2000px) {
-    .btn-cta { min-height: var(--btn-l-min-h-2xl); padding-left: var(--btn-l-pad-x-2xl); padding-right: var(--btn-l-pad-x-2xl); } /* L >=2000; the threshold mirrors the live ladders */
-    .btn-bar { min-height: var(--btn-min-h-2xl); }
-    .btn-start { min-height: var(--btn-l-min-h-2xl); min-width: 272px; padding-left: var(--btn-l-pad-x-2xl); padding-right: var(--btn-l-pad-x-2xl); } /* gbppl-hero-start, L >=2000 */
+    .hs-cta { min-width: 272px; }   /* gbppl-hero-start, felt floor */
   }
 
   /* Collapsed state: bar stays fixed to the viewport bottom for as long as gifts exist,
@@ -3520,7 +3416,7 @@
     [data-grid="serif"] .hs-cell-title { font-size: clamp(18px, 5vw, 20px); }
     .hs-cell-line { font-size: clamp(16px, 4.2vw, 18px); }
     .hs-actions { flex-direction: column; align-items: stretch; gap: 12px; }
-    .btn-start { width: 100%; min-width: 0; }
+    .hs-cta { width: 100%; min-width: 0; }
     /* Both alternative arrangements fold back into the one column the
        2x2 already folds into (gbppl-hero-start-3). These rules only
        exist because the layout selectors outweigh the phone rules
@@ -3613,10 +3509,11 @@
           Go to website
           <svg width="13" height="13" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M7.00002 41L41 7L40.801 7.19902" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M25 7H41V23" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
         </a>
-        <!-- Wears .gbh-cta for the whole live M ladder and the live
-             label span. Nothing repaints it: the system CTA has been
-             Blue 600 since the 24.08 live re-sync. -->
-        <a class="gbh-cta" href="#"><span data-pc-section="label">Book a Meeting</span></a>
+        <!-- Wears the button organism, size S: the whole live ladder
+             and the live label span come with the class. Nothing
+             repaints it (gbppl-button-2, 26.08; it was .gbh-cta with
+             these very numbers until the migration). -->
+        <a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="#"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>
         <!-- Placeholder: no overlay is built in this wave. The title
              carries both the scope (your portal, not the catalog) and
              the shortcut we intend to honour. Glyph = nucleo
@@ -3672,11 +3569,10 @@
              the icon). Label lives in its own span per live's PrimeVue
              anatomy, span[data-pc-section="label"] (harvest public-home
              2026-08-17: present on all 13 sweep widths). The label
-             now carries the live label type scale (11/600/1px, 12px
-             from 2000), applied by T's decision 2026-08-17 before the
-             portal measurement; see the .gbh-cta label rule. -->
-        <a class="gbh-cta" href="#"><span data-pc-section="label">Book a Meeting</span></a>
-        <a class="gbh-cta gbh-cta--outline" href="#"><span data-pc-section="label">My Portal</span></a>
+             carries the live label type scale (11/600/1px, 12px from
+             2000), which is the S ladder of the button organism. -->
+        <a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="#"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>
+        <a class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label" data-pc-section="label">My Portal</span></a>
         <!-- The site header's cart is the same door as the portal bar's
              (gbppl-checkout-1): both go to checkout.html with the query
              string attached. -->
@@ -3851,7 +3747,7 @@
                   <li>Design your gifts</li>
                   <li>Personalize to recipients</li>
                 </ul>
-                <button class="btn-cta btn-cta-blue">Gift With an Expert</button>
+                <button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary gb-btn--block hero-cta" type="button"><span class="gb-btn__label">Gift With an Expert</span></button>
               </div>
               <div class="hero-half">
                 <h2>Gift on Your Own</h2>
@@ -3860,7 +3756,7 @@
                   <li>Design yourself or designed for you</li>
                   <li>No minimums</li>
                 </ul>
-                <button class="btn-cta btn-cta-black">Explore Gifts</button>
+                <button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary gb-btn--block hero-cta" type="button"><span class="gb-btn__label">Explore Gifts</span></button>
               </div>
               <span class="or-badge gb-eyebrow" aria-hidden="true">or</span>
             </div>
@@ -3880,7 +3776,7 @@
                   <li>Get a curated gift proposal from our team</li>
                   <li>We design, personalize, and ship, end to end</li>
                 </ul>
-                <button class="btn-cta btn-cta-blue">Gift With an Expert</button>
+                <button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary gb-btn--block hero-cta" type="button"><span class="gb-btn__label">Gift With an Expert</span></button>
               </div>
               <div class="hero-half">
                 <h2>Start on Your Own</h2>
@@ -3889,7 +3785,7 @@
                   <li>Customize with your brand, or have us design it</li>
                   <li>No minimums, send one gift or a thousand</li>
                 </ul>
-                <button class="btn-cta btn-cta-black">Explore Gifts</button>
+                <button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary gb-btn--block hero-cta" type="button"><span class="gb-btn__label">Explore Gifts</span></button>
               </div>
               <span class="or-badge gb-eyebrow" aria-hidden="true">or</span>
             </div>
@@ -3939,8 +3835,8 @@
             </div>
           </div>
           <div class="hs-actions">
-            <button class="btn-start btn-start-primary" type="button">Start</button>
-            <button class="btn-start btn-start-outline" type="button">Explore Gifts</button>
+            <button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary hs-cta" type="button"><span class="gb-btn__label">Start</span></button>
+            <button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary hs-cta" type="button"><span class="gb-btn__label">Explore Gifts</span></button>
           </div>
         </div>
 
@@ -3973,8 +3869,8 @@
       <div class="cta-bar" id="ctaBar">
         <span class="bar-text" id="barText">Planning an event or a campaign?</span>
         <div class="bar-actions">
-          <button class="btn-bar btn-bar-blue">Gift With an Expert</button>
-          <button class="btn-bar btn-bar-ghost">Explore Gifts</button>
+          <button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Gift With an Expert</span></button>
+          <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">Explore Gifts</span></button>
         </div>
       </div>
 
@@ -4248,8 +4144,8 @@
             <p class="gsp-call-label">Gifting desk</p>
             <a class="gsp-call-number" href="tel:+18478010345">847.801.0345</a>
             <div class="gsp-call-actions">
-              <button class="gsp-btn gsp-btn--quiet" id="gbCallCopy" type="button">Copy number</button>
-              <a class="gsp-btn" href="tel:+18478010345">Call now</a>
+              <button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" id="gbCallCopy" type="button"><span class="gb-btn__label">Copy number</span></button>
+              <a class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" href="tel:+18478010345"><span class="gb-btn__label">Call now</span></a>
             </div>
             <p class="gsp-call-copied" id="gbCallCopied" role="status" aria-live="polite"></p>
           </div>
@@ -4453,7 +4349,7 @@
         // Price line under the name, per the live card (SYSTEM.md
         // portal chrome, live 2026-08-12)
         '<div class="gift-price">' + gift.price + '</div>' +
-        '<button class="btn-send">Send This Gift</button>' +
+        '<button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary gb-btn--block gift-send" type="button"><span class="gb-btn__label">Send This Gift</span></button>' +
       '</div>';
     return card;
   }
@@ -4853,7 +4749,7 @@
      choreography, it is the same openCatalog); live and russell keep
      the inert button. The Start Gifting block's outlined EXPLORE GIFTS
      (?hero=start) joins the same wiring, gbppl-hero-start. */
-  var heroExplore = document.querySelectorAll('.hero-half .btn-cta-black, .hero-start .btn-start-outline');
+  var heroExplore = document.querySelectorAll('.hero-half .gb-btn--secondary, .hero-start .hs-cta.gb-btn--outline');
   for (var he = 0; he < heroExplore.length; he++) {
     heroExplore[he].addEventListener('click', function () {
       if (document.body.getAttribute('data-nav') === 'ton') openCatalog();
@@ -5166,7 +5062,7 @@
      than a captured one. The day a variant grows a second START, the
      choreography already knows which one to grow out of and which one to
      collapse back into. */
-  var startCtas = document.querySelectorAll('.hero-start .btn-start-primary');
+  var startCtas = document.querySelectorAll('.hero-start .hs-cta.gb-btn--filled');
   for (var sc = 0; sc < startCtas.length; sc++) {
     startCtas[sc].addEventListener('click', function () { openStartPanel(this); });
   }
