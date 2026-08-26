@@ -91,3 +91,105 @@ html.is-embed .icon-button--count > span {
   font-size: 10px;
   font-weight: 400;
 }
+
+/* ===========================================================================
+ * gbppl-catalog-header-1 — THE BUNDLE'S HEADER STANDS DOWN, THE SITE'S STANDS
+ * ---------------------------------------------------------------------------
+ * Ton, 2026-08-26: «когда мы заходим на Gifts, у нас версия Live висит с
+ * хедером от версии Sandbox: ненастоящий хедер. Кнопка Book a Meeting другая,
+ * меню и дропдаун вообще другие. Большая проблема».
+ *
+ * Ton-8 says live is a pure consumer of the system, and the system owns the
+ * site bar. So <gb-site-header> now stands in front of #root (see index.html)
+ * and the build's own header is hidden here. The build is minified output and
+ * is never hand-edited: every correction to it rides on top, in this file.
+ * Fixing it INSIDE means rebuilding in the ai-consierge repo, and when that
+ * day comes the right fix is one more mode flag next to embedMode — the bar
+ * simply not rendered — after which the two rules below can go.
+ *
+ * WHAT IS HIDDEN. Exactly one element, the build's root header:
+ *
+ *     #root header.site-header      the whole bar and its mega menu
+ *
+ * and nothing else. NOT .category-nav (the sticky category row), NOT the
+ * floating Chat with us, NOT the drawers. The bar is position:relative and
+ * IN FLOW -- 97px at desktop, 81 at mobile, no placeholder anywhere -- so
+ * display:none takes its height out with it and leaves no second gap above
+ * the hero. Our own bar is 80 and sticky, which is where the page's first
+ * 80px now come from.
+ * =========================================================================== */
+
+#root header.site-header { display: none; }
+
+/* The one number the build derived from its own bar. It sets the height of
+ * the hidden bar (dead) and the resting top of the expanded Chat with us
+ * panel (alive), which has to clear OUR bar now: 96 -> --header-h 80. */
+:root { --site-header-height: 80px; }
+
+/* The sticky category row keeps sticking, one bar lower. Its z-index is 30
+ * against our bar's 31, so it passes underneath rather than through; the
+ * drawers (60), the studio tab (60) and the toast (70) stay above both. */
+.category-nav { top: var(--header-h); }
+
+/* Anchors and the skip link land under the bar, not behind it. The build
+ * cleared its own 96; we clear ours. */
+html { scroll-padding-top: var(--header-h); }
+
+/* THE MEASURE. The build's bar took the page's own --content-width, so its
+ * wordmark stood on the same vertical line as the first card. .gb-container
+ * would put ours on a different one between 1280 and 1919 (24px gutters
+ * against the page's 48), and a header that does not line up with the page
+ * under it is the first thing the eye finds. The bar keeps the component's
+ * geometry and borrows only the page's measure, from the page's own token. */
+gb-site-header .gbh-bar {
+  width: var(--content-width);
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* The site footer replaces the build's, one floor down, same argument. */
+#root footer.footer { display: none; }
+
+/* One Back to Top, and it is the build's. The footer component ends with a
+ * quiet "Back to Top" link in its right corner, which is exactly where this
+ * page keeps two fixed things of its own: the Chat with us pill and the
+ * build's own floating arrow, which works anywhere on the page and not only
+ * at the bottom of it. The component's link lands under the pill and reads as
+ * a mistake, so on this page it stands down. Nowhere else. */
+gb-site-footer .backToTop { display: none; }
+
+/* ---------------------------------------------------------------------------
+ * gbppl-catalog-header-1, part two: THE THREE NAMES tokens.css TAKES OFF THE
+ * BUNDLE. Not a header matter, found while ordering this head and repaired
+ * here because this is the only stylesheet that loads after tokens.css.
+ *
+ * Both files declare a spacing scale on :root under the same three names, and
+ * they are different scales -- ours is the value in pixels, the build's is a
+ * 4px step index:
+ *
+ *     --space-8    ours 8px     build 32px    53 uses in the build
+ *     --space-16   ours 16px    build 64px    10 uses
+ *     --space-24   ours 24px    build 96px     4 uses
+ *
+ * tokens.css arrived on this page for the studio tab and, loading later, was
+ * winning all three: every one of those 67 places has been a quarter of the
+ * size it was built at, --drawer-gutter among them (32 declared, 8 served).
+ * Restated below, after tokens.css, so the build gets its own numbers back.
+ * Nothing of ours on this page reads them: header, footer, button and shell
+ * use literals and named tokens of their own.
+ *
+ * --shadow-panel is the fourth collision and the only one that cannot be
+ * settled on :root, because both sides really do use it -- the build under
+ * four floating panels, the studio tab under itself. It is handed back to the
+ * build on #root, which every React node of it stands inside (the app uses no
+ * portal) and the studio tab stands outside.
+ *
+ * The clean end of all four is a rename on one side or the other. Ton's call;
+ * until then the two blocks below are the seam. */
+:root {
+  --space-8: 32px;
+  --space-16: 64px;
+  --space-24: 96px;
+}
+#root { --shadow-panel: 0 24px 70px rgb(21 21 24 / 18%); }

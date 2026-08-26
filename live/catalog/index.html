@@ -12,13 +12,15 @@
       content="Interactive GildedBox category and AI Gift Concierge prototype"
     />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="GildedBox — Gift Concierge" />
+    <meta property="og:title" content="GildedBox · Gift Concierge" />
     <meta
       property="og:description"
       content="Interactive concept for a faster, more personal way to find the right corporate gift."
     />
     <link rel="icon" href="./assets/brand/gildedbox-logo.svg" type="image/svg+xml" />
-    <title>GildedBox — Gift Concierge Prototype</title>
+    <!-- gbppl-catalog-header-1: copy-lint on the way past. Both titles carried
+         an em dash, which the prototype does not use anywhere (separator "·"). -->
+    <title>GildedBox · Gift Concierge Prototype</title>
     <script type="module" crossorigin src="./assets/index-CosrF-zM.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-B68sqkur.css">
     <!--
@@ -40,8 +42,12 @@
       styles.css, so these rules restate a bundle that already agrees with
       them and are kept only as the record of where the numbers came from.
       Read the file's own header before changing either side.
+
+      gbppl-catalog-header-1: the link to that file moved to the FOOT of this
+      head. It now also carries the rules that hide the bundle's own header
+      and repair the token names tokens.css takes off the bundle, and both
+      jobs need it to be the last stylesheet in.
     -->
-    <link rel="stylesheet" href="./oro-ui-override.css">
     <!--
       gbppl-catalog-exit — the vendored catalog was the one room of the
       studio with no door back: its own header offers Gifts, Solutions and
@@ -56,9 +62,68 @@
     -->
     <link rel="stylesheet" href="../../system/assets/tokens.css">
     <link rel="stylesheet" href="../../system/components/studio-panel.css">
+    <!--
+      gbppl-catalog-header-1 — THE CHROME OF THIS PAGE IS THE SITE'S CHROME.
+
+      Ton, 2026-08-26: «когда мы заходим на Gifts, у нас версия Live висит с
+      хедером от версии Sandbox: ненастоящий хедер. Кнопка Book a Meeting
+      другая, меню и дропдаун вообще другие. Большая проблема».
+
+      He is right, and the fix is Ton-6 and Ton-8 in one line: live wears the
+      system's components, and the system already owns this bar. The bundle
+      below draws a header of its own (Gifts / Solutions / Our Story, a black
+      Book a Meeting with a calendar glyph, its own mega menu). It is hidden
+      by the overlay at the foot of this head, and <gb-site-header> stands in
+      front of #root in the body instead — the same element, with the same
+      four addresses written out, that live/index.html and live/checkout.html
+      carry.
+
+      Four stylesheets, and each one is needed by that element, not by the
+      catalogue: shell for .gb-container, button for the .gb-btn family the
+      bar's right pocket wears, header for the bar itself, footer for the
+      site footer that replaces the bundle's (same argument, one floor down).
+      They come AFTER the build's css on purpose — where a bare-element rule
+      of the bundle (a, button, *) meets one of ours at equal weight, ours
+      has to win — and they are scoped to .gb-*, gb-site-header and
+      gb-site-footer, so nothing in them reaches the catalogue.
+
+      What the page does NOT take is body.gb-demo. That class carries the
+      demo body's ground, font and link colour, and the bundle brings its
+      own; the header needs none of it.
+    -->
+    <link rel="stylesheet" href="../../system/components/shell.css">
+    <link rel="stylesheet" href="../../system/components/button.css">
+    <link rel="stylesheet" href="../../system/components/header.css">
+    <link rel="stylesheet" href="../../system/components/footer.css">
+    <!-- Last stylesheet in: it overrides the build AND repairs the three
+         --space-* names tokens.css takes off it. See the file's own head. -->
+    <link rel="stylesheet" href="./oro-ui-override.css">
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to gifts</a>
+    <!--
+      gbppl-catalog-header-1 — the site bar, in front of the bundle.
+
+      Every address is written out. The component's defaults are page
+      relative and this page stands two folders down, so nothing may be left
+      to them (ORO-SKILL trap 2). catalog-href points at this page itself:
+      the Gifts link and every item of its menu land on the category page,
+      which is where the visitor already is, and the menu has no per-category
+      key to offer the bundle yet.
+
+      IT STANDS OUTSIDE #root, AND IT HAS TO. Two tries were measured today.
+      Inside #root the bar would have been in React's earshot (the bridge
+      below needs that), but createRoot() EMPTIES its container on the first
+      render and the bar vanished with everything else that was in it. So it
+      stands in front, where the build cannot reach it, and the bridge pays
+      for that in the one way it can. See oro-header-bridge.js.
+    -->
+    <gb-site-header
+      logo-src="../../system/assets/gildedbox-logo.svg"
+      catalog-href="index.html"
+      portal-href="../portal.html"
+      meeting-href="../book-a-meeting.html"
+    ></gb-site-header>
     <!--
       gbppl-portal-door — the vendored catalog stands one folder below the
       studio's real portal page, so "Open Portal" leaves for it instead of
@@ -87,11 +152,27 @@
       data-portal-href="../portal.html"
       data-meeting-href="../book-a-meeting.html"
     ></div>
+    <!--
+      gbppl-catalog-header-1 — and the site floor, behind it. The bundle
+      draws a dark three column footer of its own; the site's footer is a
+      component we already own and every other live page wears it. Same
+      argument as the bar above, and the swap is as clean: the bundle renders
+      its footer once, at the end of #top and outside every view switch, so
+      hiding it takes nothing else with it. footer.css is scoped under
+      gb-site-footer, so it cannot reach the bundle's .footer* classes on the
+      way past.
+    -->
+    <gb-site-footer></gb-site-footer>
     <!-- The way back to the studio, same tab and same four doors as every
          other page. page="catalog" is what draws the "Sandbox · this page"
          section out of the registry (none registered yet, and the panel says
          so out loud). -->
     <gb-studio-panel data-root="../../" page="catalog"></gb-studio-panel>
+    <script src="../../system/components/header.js"></script>
+    <script src="../../system/components/footer.js"></script>
+    <!-- The two glyphs the bundle's header owned and nothing else offers:
+         account and search. Wrapper concern, temporary, see the file. -->
+    <script src="./oro-header-bridge.js"></script>
     <script src="../../system/sandbox-registry.js"></script>
     <script src="../../system/components/studio-panel.js"></script>
   </body>
