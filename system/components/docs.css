@@ -344,15 +344,36 @@
 [data-inspect] .gbdoc-slot,
 [data-inspect] .gbdoc-cell,
 [data-inspect] .gbdoc-hold {
+  position: relative;
   cursor: pointer;
   border-radius: var(--radius);
-  transition: box-shadow var(--mo-micro) var(--mo-move);
 }
-[data-inspect] .gbdoc-slot:hover,
-[data-inspect] .gbdoc-cell:hover,
-[data-inspect] .gbdoc-hold:hover { box-shadow: 0 0 0 1px var(--blue-600); }
-.gbdoc-stage--dark [data-inspect] .gbdoc-slot:hover,
-[data-inspect] .gbdoc-stage--dark .gbdoc-slot:hover { box-shadow: 0 0 0 1px var(--blue-400); }
+/* Ton 26.08: the 1px ring around the whole block on hover read as a
+   stray outline. The affordance is now a small caption in the corner,
+   the way inspect panels in mature systems do it: it names the action
+   and touches nothing of the specimen. */
+[data-inspect] .gbdoc-slot::after,
+[data-inspect] .gbdoc-cell::after,
+[data-inspect] .gbdoc-hold::after {
+  content: 'properties';
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--blue-600);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--mo-micro) var(--mo-move);
+}
+[data-inspect] .gbdoc-slot:hover::after,
+[data-inspect] .gbdoc-cell:hover::after,
+[data-inspect] .gbdoc-hold:hover::after { opacity: 1; }
+.gbdoc-stage--dark [data-inspect] .gbdoc-slot::after,
+[data-inspect] .gbdoc-stage--dark .gbdoc-slot::after,
+[data-inspect] .gbdoc-stage--dark .gbdoc-cell::after { color: var(--blue-400); }
 .gbdoc-hold { display: flex; justify-content: center; max-width: 100%; }
 .gbdoc-hold--block { width: 100%; max-width: 420px; }
 
