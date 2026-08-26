@@ -1,11 +1,22 @@
 /* ============================================================
-   SYSTEM COMPONENT: STUDIO PANEL, JS-шаблон (gbppl-panel-2,
-   Тон 2026-08-24, секция Sandbox 2026-08-25)
+   SYSTEM COMPONENT: STUDIO PANEL, JS-шаблон (gbppl-panel-4,
+   Тон 2026-08-24, секция Sandbox 2026-08-25, секция This page
+   2026-08-26)
    ------------------------------------------------------------
+   ОДИН ПУЛЬТ. Тон 26.08, дословно: «обязательно свести язык к
+   Studio, одной волной», и следом «нужно просто унифицировать всё
+   под одну логику... везде всё приводится к этой единой логике».
+   До этого дня прототипом управляли ДВА пульта: этот и PROTO
+   (моноширинный, радиус 6, свои группы переключателей) на
+   live\portal.html и live\checkout.html. Решение 12.08 «PROTO не
+   должен читаться как дизайн» ЭТИМ СНЯТО: пульт один, говорит
+   голосом студии, и страничные переключатели переехали в него —
+   секция «This page» ниже. Второго языка у консоли больше нет.
+
    Регистрирует <gb-studio-panel>: плавающий язычок у правого края,
-   раскрывающийся в маленькую панель с дорогой домой и списком
-   песочниц ЭТОЙ страницы. Провенанс, голос и слой описаны в
-   studio-panel.css.
+   раскрывающийся в маленькую панель с дорогой домой, списком
+   песочниц ЭТОЙ страницы и её собственными переключателями.
+   Провенанс, голос и слой описаны в studio-panel.css.
 
    Как подключать:
 
@@ -44,6 +55,45 @@
    один в один из студийного бара (index.html: Live Prototype /
    Sandboxes / Design System), чтобы у одного и того же места не
    было двух имён.
+
+   СЕКЦИЯ «THIS PAGE» (gbppl-panel-4). Переключатели, которые
+   принадлежат ОДНОЙ странице и никому больше: сценарий чекаута,
+   шапка портала, раскладка стартового блока. Панель не знает о них
+   ничего заранее — страница объявляет группы сама, через API:
+
+     var panel = document.querySelector('gb-studio-panel');
+     var g = panel.addGroup({
+       title:   'Scenario',            // подпись группы
+       note:    'Одна строка подсказки',   // необязательно
+       value:   'portalEmpty',         // что выбрано сейчас
+       options: [
+         { label: 'Empty cart',  value: 'portalEmpty', note: '...' },
+         { label: 'Loaded cart', value: 'portalLoaded' }
+       ],
+       onChange: function (value) { app.setScenario(value); },
+       actions: [                      // необязательно: команды, не выбор
+         { label: 'Reset the demo', onClick: function () { app.resetDemo(); } }
+       ]
+     });
+     g.setActive('portalLoaded');   // отметить снаружи, без onChange
+     g.setNote('The cart is empty.');
+
+   Правила секции:
+   · подписи ЧЕЛОВЕЧЕСКИЕ. Не v1/v2/pth/hero/ren — «Portal header»,
+     «From the customizer», «Ren». Внутренние значения остаются
+     внутренними: value уходит в onChange, на экран не попадает.
+   · опции — тихие строки того же .gbsp-link, что двери и песочницы
+     (Тон-6: второго языка для списка заводить незачем; docs.css,
+     26.08: «контролы не кнопки, инструмент не должен выглядеть как
+     предмет»). Выбранная синяя, Blue 400 на Zinc 950 (Тон-5).
+   · подсказка — ОДНА строка под группой. Строка группы стоит всегда,
+     строка опции показывается, когда опция выбрана.
+   · порядок секций один на всех страницах: двери → Sandbox →
+     This page.
+
+   ПОРЯДОК ПОДКЛЮЧЕНИЯ. addGroup зовётся ПОСЛЕ studio-panel.js: до
+   апгрейда элемента метода на нём ещё нет. Панель к этому моменту
+   уже нарисована, группа просто дописывается в конец.
 
    Свёрнута по умолчанию, как PROTO: страница-прототип открывается
    собой, а не нашей консолью. Состояние не запоминается — это
@@ -151,7 +201,108 @@
     );
   };
 
+  /* ============================================================
+     СЕКЦИЯ «THIS PAGE» (gbppl-panel-4)
+     ------------------------------------------------------------
+     Секции нет в шаблоне: она рождается по первому addGroup и не
+     появляется вовсе там, где странице нечего переключать. Место
+     у неё одно и то же на всех страницах — под Sandbox, последней,
+     потому что двери и песочницы отвечают «куда пойти», а эта
+     секция — «что здесь покрутить», и вопрос она задаёт уже про
+     то место, где стоишь.
+     ============================================================ */
+  function pageSection(host) {
+    var sec = host.querySelector('.gbsp-sec--page');
+    if (sec) return sec;
+    sec = document.createElement('div');
+    sec.className = 'gbsp-sec gbsp-sec--page';
+    sec.innerHTML = '<span class="gbsp-eyebrow">This page</span>';
+    host.querySelector('.gbsp-panel').appendChild(sec);
+    return sec;
+  }
+
+  /* Одна группа: подпись, строки выбора, строки-команды, подсказка.
+     Возвращает ручку — страница держит её и отмечает выбранное
+     снаружи, когда состояние сменилось не кликом по панели (адрес
+     в строке браузера, Alpine, свой код). */
+  function makeGroup(host, spec) {
+    spec = spec || {};
+    var options = spec.options || [];
+    var actions = spec.actions || [];
+
+    var group = document.createElement('div');
+    group.className = 'gbsp-group';
+
+    var html = '';
+    if (spec.title) {
+      html += '<span class="gbsp-group__title">' + esc(spec.title) + '</span>';
+    }
+    if (options.length || actions.length) {
+      html += '<ul class="gbsp-list">';
+      options.forEach(function (o, i) {
+        html += '<li><button class="gbsp-link" type="button" data-opt="' + i + '"' +
+                ' aria-pressed="false">' + esc(o.label) + '</button></li>';
+      });
+      actions.forEach(function (a, i) {
+        html += '<li><button class="gbsp-link" type="button" data-act="' + i + '">' +
+                esc(a.label) + '</button></li>';
+      });
+      html += '</ul>';
+    }
+    html += '<p class="gbsp-note"></p>';
+    group.innerHTML = html;
+
+    var optEls = group.querySelectorAll('[data-opt]');
+    var noteEl = group.querySelector('.gbsp-note');
+    var forced = null;   /* setNote перебивает подсказки опций */
+    var current = spec.value;
+
+    function paint() {
+      var line = forced;
+      for (var i = 0; i < optEls.length; i++) {
+        var on = options[i].value === current;
+        optEls[i].classList.toggle('is-active', on);
+        optEls[i].setAttribute('aria-pressed', String(on));
+        if (on && forced === null && options[i].note) line = options[i].note;
+      }
+      if (line === null || line === undefined) line = spec.note || '';
+      noteEl.textContent = line;
+      noteEl.hidden = !line;
+    }
+
+    group.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-opt],[data-act]') : null;
+      if (!btn || !group.contains(btn)) return;
+      var oi = btn.getAttribute('data-opt');
+      if (oi !== null) {
+        var opt = options[+oi];
+        current = opt.value;
+        forced = null;
+        paint();
+        if (typeof spec.onChange === 'function') spec.onChange(opt.value, opt);
+        return;
+      }
+      var ai = btn.getAttribute('data-act');
+      if (ai !== null && typeof actions[+ai].onClick === 'function') actions[+ai].onClick();
+    });
+
+    pageSection(host).appendChild(group);
+    paint();
+
+    return {
+      element: group,
+      setActive: function (value) { current = value; forced = null; paint(); },
+      setNote: function (text) { forced = (text === null || text === undefined) ? null : String(text); paint(); }
+    };
+  }
+
   class GbStudioPanel extends HTMLElement {
+    /* Публичный API страницы: см. шапку файла. */
+    addGroup(spec) {
+      if (!this.__rendered) this.connectedCallback();
+      return makeGroup(this, spec);
+    }
+
     connectedCallback() {
       if (this.__rendered) return;
       this.__rendered = true;

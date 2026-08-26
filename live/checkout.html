@@ -9,6 +9,19 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-12 — ONE CONSOLE. PROTO, the service panel this
+     page wore since gbppl-checkout-2, leaves the file: markup, CSS and
+     collapse handler. <gb-studio-panel> stands in its place, the same
+     component every other page in the studio carries, and this page's
+     own switches are declared into its "This page" section through
+     panel.addGroup(). Ton 26.08: «обязательно свести язык к Studio,
+     одной волной»; «нужно просто унифицировать всё под одну логику».
+     The Version group goes with it, as a duplicate of the Sandbox
+     section (the note beside the panel says why). Behaviour is
+     untouched: setScenario, resetDemo, ?v=1 / ?v=2 all as they were.
+     The local `top: 112px` nudge of checkout-11 goes too — the panel
+     stands where the system stands it, one position on every page.
+
      gbppl-checkout-11 — Place Order ends somewhere (Russell audit 26.08:
      the biggest button did nothing) and the PROTO panel moves up off the
      order totals.
@@ -111,6 +124,7 @@
 <link rel="stylesheet" href="../system/components/header.css">
 <link rel="stylesheet" href="../system/components/button.css">
 <link rel="stylesheet" href="../system/components/footer.css">
+<link rel="stylesheet" href="../system/components/studio-panel.css">
 <style>
   /* ============================================================
      MOTION — the Oro motion language, literal copies of the
@@ -250,167 +264,6 @@
      That is the fix, not a regression.
      ============================================================ */
 
-  /* ============================================================
-     DEMO CONTROLS (PROTO PANEL) — gbppl-checkout-2.
-     Literal transfer of the panel portal.html has worn since Ton's
-     feedback of 2026-08-12: a vertical dark panel fixed to the RIGHT
-     screen edge, centered in the viewport, deliberately service-grade
-     (Zinc 950 ground, mono caps labels) so it can never be read as
-     part of the design again — which is exactly what the black bar
-     across the top of this page was starting to be. Collapsed by
-     default (gbppl-mark-triple: these links go to people who did not
-     ask for a control room); the edge tab is the whole affordance.
-     z-index 30 keeps it UNDER the drawers (40) and the modal (50),
-     the same order the catalog overlay holds in portal.html.
-     Colours ride the shared --zinc-* scale out of demo/assets/tokens.css,
-     the same one the panel uses at home. The class selectors outrank
-     Tailwind's preflight element rules, so the CDN sheet injected
-     after this block leaves the panel alone.
-     ============================================================ */
-  .demo-controls {
-    position: fixed;
-    right: 0;
-    top: 112px;                 /* gbppl-checkout-11: was centred, and the open panel covered the order totals */
-    transform: none;
-    z-index: 30;
-    display: flex;
-    align-items: center;
-    font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace;
-  }
-  /* Edge tab: collapse/expand handle, survives alone when collapsed */
-  .demo-tab {
-    width: 22px;
-    padding: 10px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    background: var(--zinc-950);
-    border: 1px solid var(--zinc-700);
-    border-right: none;
-    border-radius: 6px 0 0 6px;
-    color: var(--zinc-400);
-    font-family: inherit;
-  }
-  .demo-tab:hover { color: var(--white); }
-  .demo-tab svg { display: block; width: 12px; height: 12px; }
-  /* Chevron points where the panel will go: right = hide, left = show */
-  .demo-controls.collapsed .demo-tab svg { transform: rotate(180deg); }
-  .demo-tab-text {
-    writing-mode: vertical-rl;
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-  .demo-panel {
-    width: 168px;
-    background: var(--zinc-950);
-    border: 1px solid var(--zinc-700);
-    border-right: none;
-    border-radius: 8px 0 0 8px;
-    padding: 14px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .demo-controls.collapsed .demo-panel { display: none; }
-  .demo-brand {
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--zinc-50);
-  }
-  .demo-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .demo-group + .demo-group,
-  .demo-brand + .demo-group {
-    border-top: 1px solid var(--zinc-800);
-    padding-top: 10px;
-  }
-  .demo-label {
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--zinc-400);
-  }
-  .demo-panel button {
-    width: 100%;
-    padding: 7px 10px;
-    text-align: left;
-    font-family: inherit;
-    font-size: 11px;
-    line-height: 1.2;
-    color: var(--zinc-300);
-    background: var(--zinc-900);
-    border: 1px solid var(--zinc-700);
-    border-radius: 4px;
-    white-space: nowrap;
-    transition: color 120ms ease, border-color 120ms ease;
-  }
-  .demo-panel button:hover {
-    color: var(--white);
-    border-color: var(--zinc-500);
-  }
-  /* The way home (gbppl-panel-1, Ton 2026-08-24: «we cannot get back
-     to the hub»). Live pages wear the SITE chrome, so the studio lock
-     is not on this page and this line is the only door back. It rides
-     the panel's own button shape rather than bringing a second visual
-     language into a panel that is deliberately service-grade; the
-     pages that have no PROTO panel of their own get the system
-     component instead (system\components\studio-panel.css). */
-  .demo-panel a.demo-door {
-    display: block;
-    width: 100%;
-    padding: 7px 10px;
-    font-size: 11px;
-    line-height: 1.2;
-    color: var(--zinc-300);
-    background: var(--zinc-900);
-    border: 1px solid var(--zinc-700);
-    border-radius: 4px;
-    white-space: nowrap;
-    text-decoration: none;
-    transition: color 120ms ease, border-color 120ms ease;
-  }
-  .demo-panel a.demo-door:hover { color: var(--white); border-color: var(--zinc-500); }
-  /* Active state inverts to near-white: unmistakable on the dark ground */
-  .demo-panel button.variant-active,
-  .demo-panel a.demo-door.variant-active {
-    color: var(--zinc-950);
-    background: var(--zinc-50);
-    border-color: var(--zinc-50);
-  }
-  /* A sandbox the page cannot open yet (ready:false in
-     system\sandbox-registry.js): it is listed, because the point of
-     the list is to say what is in development, but it is not a link
-     and it does not light up. gbppl-registry-1. */
-  .demo-panel span.demo-door {
-    display: block;
-    width: 100%;
-    padding: 7px 10px;
-    font-size: 11px;
-    line-height: 1.2;
-    color: var(--zinc-500);
-    background: var(--zinc-900);
-    border: 1px solid var(--zinc-800);
-    border-radius: 4px;
-    white-space: nowrap;
-  }
-  .demo-panel span.demo-door em { font-style: normal; color: var(--zinc-600); }
-  /* The one sentence the old bar carried per scenario. It is a note, not
-     a control: it wraps (the only thing in the panel that does), sits a
-     step below the buttons and stays on the quiet Zinc 500 ink. */
-  .demo-note {
-    font-size: 9px;
-    line-height: 1.45;
-    letter-spacing: 0.2px;
-    color: var(--zinc-500);
-    margin-top: 2px;
-  }
-
   [x-cloak] { display: none !important; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -421,8 +274,9 @@
 <body class="bg-zinc-50 min-h-screen" x-data="checkoutApp()" x-cloak>
 
 <!-- The scenario switcher used to stand here, a black bar above the site
-     chrome. It went to the PROTO panel at the foot of this file
-     (gbppl-checkout-2), and the page now opens on the site header —
+     chrome. It went to the console at the foot of this file
+     (gbppl-checkout-2; the studio panel since checkout-12), and the page
+     now opens on the site header —
      everything from here down is the page as gildedbox.com renders it. -->
 
 <!-- ========== SITE HEADER — the real thing: the measured <gb-site-header>
@@ -1269,7 +1123,7 @@
          its red outline, and the ghost buttons in the step-2 band stay ghosts.
          The only black left on the page is furniture: the active toggle
          segment and the site header and footer (the demo bar was the
-         third, until gbppl-checkout-2 sent it to the PROTO panel).
+         third, until gbppl-checkout-2 sent it to the console).
          ============================================================ -->
     <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
       <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
@@ -1683,105 +1537,78 @@
   </div>
 </div>
 
-<!-- ========== DEMO CONTROLS: the PROTO panel, gbppl-checkout-2.
-     The prototype's one piece of service chrome, worn here exactly as
-     portal.html wears it: same shell, same tab, same collapsed start.
-     The controls inside are this page's own — the three entry points
-     ride the untouched setScenario, Reset demo the untouched resetDemo
-     — and they are Alpine, because the page already is: the panel sits
-     inside the body's x-data, so `scenario` lights the active button
-     with no wiring of its own. Only the collapse is vanilla, the same
-     class toggle as at home; the shell should not need a framework to
-     open. ========== -->
-<div class="demo-controls collapsed" id="demoControls">
-  <button class="demo-tab" id="demoTab" type="button" aria-expanded="false" aria-label="Expand prototype controls">
-    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg>
-    <span class="demo-tab-text">Proto</span>
-  </button>
-  <div class="demo-panel">
-    <span class="demo-brand">Proto</span>
-    <!-- First line of the panel: the way back to the studio -->
-    <div class="demo-group">
-      <span class="demo-label">Studio</span>
-      <a class="demo-door" href="../index.html">Design Studio</a>
-    </div>
-    <!-- Sandbox: the same registry the system panel reads
-         (system\sandbox-registry.js), spoken in this panel's own
-         service voice. Ton 25.08: every page says whether anything
-         is being built for it. Two panels of two languages side by
-         side would be a duplicate affordance, so the checkout gets
-         the section, not a second tab. Rows are painted by the
-         script at the foot of the page. -->
-    <div class="demo-group" id="demoSandbox"></div>
-    <!-- Version is the outer axis: each of the three scenarios below runs in
-         either flow, so the panel asks which flow first (gbppl-checkout-5). -->
-    <div class="demo-group">
-      <span class="demo-label">Version</span>
-      <button type="button" @click="uiVersion = 'v1'" :class="uiVersion === 'v1' ? 'variant-active' : ''">V1 · Quick fix</button>
-      <button type="button" @click="uiVersion = 'v2'" :class="uiVersion === 'v2' ? 'variant-active' : ''">V2 · Pool</button>
-      <p class="demo-note" x-show="uiVersion === 'v1'">The agreed quick fixes on top of today's flow: renamed step 2, one row per personalization, quantity inside the row.</p>
-      <p class="demo-note" x-show="uiVersion === 'v2'">Gifts are not personalized by default. Quantity is a pool on the gift; personalization is an add-on behind a two-door fork: per gift, or one for all.</p>
-    </div>
-    <div class="demo-group">
-      <span class="demo-label">Scenario</span>
-      <button type="button" @click="setScenario('customizer')" :class="scenario === 'customizer' ? 'variant-active' : ''">From Customizer</button>
-      <button type="button" @click="setScenario('portalEmpty')" :class="scenario === 'portalEmpty' ? 'variant-active' : ''">Portal · Empty</button>
-      <button type="button" @click="setScenario('portalLoaded')" :class="scenario === 'portalLoaded' ? 'variant-active' : ''">Portal · Loaded</button>
-      <!-- The line the old bar printed beside the buttons, verbatim -->
-      <p class="demo-note" x-show="scenario === 'customizer'">Customer arrived from the 3D Customizer. One recipient already has personalization, but address and shipping aren't set yet.</p>
-      <p class="demo-note" x-show="scenario === 'portalEmpty'">Fresh checkout from the portal. No gift receivers yet, so they are added from scratch or uploaded as a personalization file.</p>
-      <p class="demo-note" x-show="scenario === 'portalLoaded'">Jorge's mixed cart (19.08): a customized Executive Travel Set going to five people, plus nine Yeti duos to one office address with no personalization at all: the row that used to demand a full name.</p>
-    </div>
-    <div class="demo-group">
-      <button type="button" @click="resetDemo()">Reset demo</button>
-    </div>
-  </div>
-</div>
+<!-- ========== THE ONE CONSOLE — gbppl-checkout-12.
+     This corner held PROTO, the prototype's service console, in a
+     language of its own: monospace, 9-11px caps, radius 6, made
+     unlike the design on purpose (2026-08-12) so that it could never
+     be read as design. Since 24.08 the studio panel stood on every
+     other page in the same corner saying the same kind of thing in
+     the system's voice, and the studio had two control rooms.
 
+     Ton, 26.08: «обязательно свести язык к Studio, одной волной», and
+     then «нужно просто унифицировать всё под одну логику... везде всё
+     приводится к этой единой логике». THE 12.08 DECISION IS WITHDRAWN.
+     PROTO leaves this file whole: markup, 161 lines of CSS and the
+     collapse handler. What it carried moves as follows.
+
+       Design Studio door  → dropped. The panel's own doors are the way
+                             home, and they name four places, not one.
+       Sandbox             → the panel's own Sandbox section, painted
+                             from the same registry by the component.
+       Version V1 / V2     → dropped as a duplicate. The Sandbox section
+                             already lists V1 · Quick fix and V2 · Pool
+                             and lights the one the address is showing;
+                             a second switch for the same choice is the
+                             kind of divergence Ton asked to end.
+                             ?v=1 / ?v=2 keep working, init() reads them.
+       Scenario            → the panel's "This page" section below.
+       Reset demo          → the same section, as an action.
+     ========== -->
+<gb-studio-panel data-root="../" page="checkout"></gb-studio-panel>
+
+<!-- Registry BEFORE the panel: the panel reads it while it renders. -->
 <script src="../system/sandbox-registry.js"></script>
+<script src="../system/components/studio-panel.js"></script>
 <script>
-/* ---- Sandbox rows of the PROTO panel (gbppl-registry-1). The data
-   is the studio's one registry; the markup is this panel's own
-   .demo-door shape, so nothing of the system's visual language
-   crosses into a console that is deliberately service-grade. ---- */
+/* ---- This page's switches, declared to the panel (gbppl-checkout-12).
+   The panel is plain DOM and the page is Alpine, so the two are joined
+   at the one moment both exist: alpine:initialized. From there the
+   group calls the UNTOUCHED setScenario and resetDemo, and an Alpine
+   effect keeps the lit row honest when the scenario changes from
+   anywhere else (init() sets it once on load). Labels are human;
+   the internal keys stay in the values. ---- */
 (function () {
   'use strict';
-  var box = document.getElementById('demoSandbox');
-  var reg = window.GB_SANDBOXES;
-  if (!box || !reg) return;
-  var slice = reg.forPage('checkout', '../');
-  if (!slice) return;
+  document.addEventListener('alpine:initialized', function () {
+    var panel = document.querySelector('gb-studio-panel');
+    var A = window.Alpine;
+    if (!panel || typeof panel.addGroup !== 'function' || !A || !A.$data) return;
+    var app = A.$data(document.body);
+    if (!app) return;
 
-  var html = '<span class="demo-label">Sandbox</span>';
-  html += door(slice.live.label, slice.live.href, slice.live.current, true, '');
-  slice.variants.forEach(function (v) {
-    html += door(v.label, v.href, v.current, v.ready, String(v.status).replace(/-/g, ' '));
-  });
-  if (!slice.variants.length) html += '<p class="demo-note">None yet</p>';
-  box.innerHTML = html;
-
-  function door(label, href, current, ready, note) {
-    if (!ready) {
-      return '<span class="demo-door">' + label + ' <em>· ' + note + '</em></span>';
+    var scenario = panel.addGroup({
+      title: 'Scenario',
+      value: app.scenario,
+      options: [
+        { label: 'Empty cart', value: 'portalEmpty',
+          note: 'A fresh checkout from the portal. No gift receivers yet, so they are added by hand or uploaded as a personalization file.' },
+        { label: 'Loaded cart', value: 'portalLoaded',
+          note: 'A mixed cart: a customized Executive Travel Set going to five people, plus nine Yeti duos to one office address with no personalization at all.' },
+        { label: 'From the customizer', value: 'customizer',
+          note: 'The customer arrived from the 3D Customizer. One recipient is personalized already, but the address and the shipping are not set yet.' }
+      ],
+      onChange: function (value) { app.setScenario(value); }
+    });
+    if (typeof A.effect === 'function') {
+      A.effect(function () { scenario.setActive(app.scenario); });
     }
-    return '<a class="demo-door' + (current ? ' variant-active' : '') +
-           '" href="' + href + '">' + label + '</a>';
-  }
-})();
-</script>
 
-<script>
-/* ---- PROTO panel collapse, the transfer of portal.html's own handler.
-   Shell-only state: a class on the container, no persistence. ---- */
-(function () {
-  'use strict';
-  var demoControls = document.getElementById('demoControls');
-  var demoTab      = document.getElementById('demoTab');
-  demoTab.addEventListener('click', function () {
-    var collapsed = demoControls.classList.toggle('collapsed');
-    demoTab.setAttribute('aria-expanded', String(!collapsed));
-    demoTab.setAttribute('aria-label',
-      collapsed ? 'Expand prototype controls' : 'Collapse prototype controls');
+    panel.addGroup({
+      title: 'Demo data',
+      actions: [
+        { label: 'Start over', onClick: function () { app.resetDemo(); } }
+      ]
+    });
   });
 })();
 </script>
@@ -1808,7 +1635,8 @@ function checkoutApp() {
     // ===== VERSION STATE (gbppl-checkout-5) =====
     // 'v1' is the page as checkout-4 left it — the agreed quick fixes on today's
     // flow. 'v2' is the pool flow: gifts unpersonalized by default, quantity on
-    // the gift, personalization behind the fork. Switched from the PROTO panel;
+    // the gift, personalization behind the fork. Switched from the Sandbox
+    // section of the studio panel (checkout-12 dropped the Version group);
     // setScenario deliberately leaves it alone, so every scenario can be walked
     // in both. The two flows share the markup and the money, never the rows.
     uiVersion: 'v1',
@@ -2011,9 +1839,9 @@ function checkoutApp() {
 
       // gbppl-checkout-8: the version is reachable from the URL, so the hub
       // can hand the V2 sandbox straight to whoever opens that card instead of
-      // asking them to find the PROTO panel first. ?v=2 opens the pool flow,
+      // asking them to find the console first. ?v=2 opens the pool flow,
       // ?v=1 says V1 out loud; anything else leaves the default alone. The
-      // PROTO panel still switches freely afterwards — the query is a starting
+      // Sandbox section still switches freely afterwards — the query is a starting
       // position, not a lock.
       const v = new URLSearchParams(location.search).get('v');
       if (v === '2') this.uiVersion = 'v2';

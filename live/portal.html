@@ -10,6 +10,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
 <!-- ============================================================
+     ONE CONSOLE — gbppl-portal-console-1, 2026-08-26.
+     ------------------------------------------------------------
+     This page carried PROTO, the prototype's service console, from
+     2026-08-12: a dark panel at the right edge in a language of its
+     own (monospace, 9-11px caps, radius 6). It was made unlike the
+     design ON PURPOSE, so that nobody would read it as design again
+     after Valerie took the old top-right pill for part of the page.
+     Since 24.08 a SECOND console existed, the studio panel, in the
+     system's own voice, and the studio was being driven by two
+     control rooms that did not agree on a single word.
+
+     Ton, 26.08: «обязательно свести язык к Studio, одной волной»,
+     and then «нужно просто унифицировать всё под одну логику... Как
+     должна работать навигация по прототипу, уже описано; везде всё
+     приводится к этой единой логике». THE 12.08 DECISION IS
+     WITHDRAWN. PROTO is gone from this file, markup, CSS and
+     collapse handler alike; the switches it held are declared to
+     <gb-studio-panel> through panel.addGroup(), and the panel draws
+     them in the studio's language under the eyebrow "This page".
+     Nothing they DO changed: the same setNav / setBlock / setPth,
+     the same body attributes, the same ?nav= ?hero= ?layout= ?pth=
+     ?lock= parameters, so every link ever shared still opens the
+     view it opened. What changed is the wording: no more v1/pth/ren
+     on screen. Labels are for people; keys stay in the query string.
+     ------------------------------------------------------------
      THE PORTAL BECOMES A CONSUMER OF THE SYSTEM — 2026-08-25.
      ------------------------------------------------------------
      Until today this was the ONE live page that linked no system
@@ -81,6 +106,7 @@
 <link rel="stylesheet" href="../system/components/button.css">
 <link rel="stylesheet" href="../system/components/auth.css">
 <link rel="stylesheet" href="../system/components/booking.css">
+<link rel="stylesheet" href="../system/components/studio-panel.css">
 <style>
   /* ============ TOKENS ============
      GONE, AND THAT IS THE POINT (2026-08-25). This block used to be a
@@ -2082,7 +2108,7 @@
               being taken back rather than dropped
        90-350 it fades as it goes
        0-280  the backdrop gives the page back
-     A guest with no pointer -- keyboard, the PROTO panel, a synthetic
+     A guest with no pointer -- keyboard, the studio panel, a synthetic
      click -- still gets a pose: the JS falls back to the old centre pop
      (0.88 and 24px down), written into the same three properties. */
   .start-panel {
@@ -3137,181 +3163,6 @@
   /* Reserve room so the fixed bar never covers the last card row */
   .content.has-fixed-bar { padding-bottom: 104px; }
 
-  /* ============ DEMO CONTROLS (PROTO PANEL) ============
-     Provenance: Ton's feedback 2026-08-12: the old top-right pill lay
-     over the page metablock and blocked reading it, and Valerie
-     (frontend) took it for part of the design. Redesign: a vertical
-     dark panel fixed to the RIGHT screen edge, centered in the
-     viewport. Deliberately service-grade styling (Zinc 950 ground,
-     mono caps labels), NOT the prototype's design language, so it
-     cannot be read as design again. Same controls, same IDs, same JS
-     wiring; only the shell changed. The edge tab collapses the panel
-     to a sliver (JS class, no persistence). z-index 30 keeps it under
-     the catalog overlay (z 40), which covers it while open.
-     Colors ride the shared token scale (the dark Zinc end that the
-     page design itself never touches), so the panel stays visually
-     alien to the prototype while obeying the no-hex-in-rules law. */
-  .demo-controls {
-    position: fixed;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 30;
-    display: flex;
-    align-items: center;
-    font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace;
-  }
-  /* Edge tab: collapse/expand handle, survives alone when collapsed */
-  .demo-tab {
-    width: 22px;
-    padding: 10px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    background: var(--zinc-950);
-    border: 1px solid var(--zinc-700);
-    border-right: none;
-    border-radius: 6px 0 0 6px;
-    color: var(--zinc-400);
-    font-family: inherit;
-  }
-  .demo-tab:hover { color: var(--white); }
-  .demo-tab svg { display: block; width: 12px; height: 12px; }
-  /* Chevron points where the panel will go: right = hide, left = show */
-  .demo-controls.collapsed .demo-tab svg { transform: rotate(180deg); }
-  .demo-tab-text {
-    writing-mode: vertical-rl;
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-  .demo-panel {
-    width: 150px;
-    background: var(--zinc-950);
-    border: 1px solid var(--zinc-700);
-    border-right: none;
-    border-radius: 8px 0 0 8px;
-    padding: 14px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .demo-controls.collapsed .demo-panel { display: none; }
-  .demo-brand {
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--zinc-50);
-  }
-  .demo-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .demo-group + .demo-group,
-  .demo-brand + .demo-group {
-    border-top: 1px solid var(--zinc-800);
-    padding-top: 10px;
-  }
-  .demo-group-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .demo-label {
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--zinc-400);
-  }
-  .demo-state {
-    font-size: 9px;
-    letter-spacing: 0.5px;
-    color: var(--zinc-500);
-    white-space: nowrap;
-  }
-  .demo-panel button {
-    width: 100%;
-    padding: 7px 10px;
-    text-align: left;
-    font-family: inherit;
-    font-size: 11px;
-    line-height: 1.2;
-    color: var(--zinc-300);
-    background: var(--zinc-900);
-    border: 1px solid var(--zinc-700);
-    border-radius: 4px;
-    white-space: nowrap;
-    transition: color 120ms ease, border-color 120ms ease;
-  }
-  .demo-panel button:hover {
-    color: var(--white);
-    border-color: var(--zinc-500);
-  }
-  /* The way home (gbppl-panel-1, Ton 2026-08-24: «we cannot get back
-     to the hub»). Live pages wear the SITE chrome, so the studio lock
-     is not on this page and this line is the only door back. It rides
-     the panel's own button shape rather than bringing a second visual
-     language into a panel that is deliberately service-grade; the
-     pages that have no PROTO panel of their own get the system
-     component instead (system\components\studio-panel.css). */
-  .demo-panel a.demo-door {
-    display: block;
-    width: 100%;
-    padding: 7px 10px;
-    font-size: 11px;
-    line-height: 1.2;
-    color: var(--zinc-300);
-    background: var(--zinc-900);
-    border: 1px solid var(--zinc-700);
-    border-radius: 4px;
-    white-space: nowrap;
-    text-decoration: none;
-    transition: color 120ms ease, border-color 120ms ease;
-  }
-  .demo-panel a.demo-door:hover { color: var(--white); border-color: var(--zinc-500); }
-  /* Active state inverts to near-white: unmistakable on the dark ground.
-     The door joins the button here (gbppl-portal-booking-1): the Sandbox
-     rows below are links, and the row for the variant the page is
-     currently showing has to light up the same way a pressed control
-     does. Same three lines, one more selector. */
-  .demo-panel button.variant-active,
-  .demo-panel a.demo-door.variant-active {
-    color: var(--zinc-950);
-    background: var(--zinc-50);
-    border-color: var(--zinc-50);
-  }
-  /* A sandbox this page cannot open yet (ready:false in
-     system\sandbox-registry.js): it is listed, because the point of the
-     list is to say what is in development, but it is not a link and it
-     does not light up. Transferred from live\checkout.html, which was
-     the first PROTO panel to read the registry (gbppl-registry-1). */
-  .demo-panel span.demo-door {
-    display: block;
-    width: 100%;
-    padding: 7px 10px;
-    font-size: 11px;
-    line-height: 1.2;
-    color: var(--zinc-500);
-    background: var(--zinc-900);
-    border: 1px solid var(--zinc-800);
-    border-radius: 4px;
-    white-space: nowrap;
-  }
-  .demo-panel span.demo-door em { font-style: normal; color: var(--zinc-600); }
-  /* The one line the panel is allowed to wrap. Here it carries the
-     registry's empty answer, "None yet"; on the checkout it also carries
-     a sentence per scenario. Same numbers, same quiet ink. */
-  .demo-note {
-    font-size: 9px;
-    line-height: 1.45;
-    letter-spacing: 0.2px;
-    color: var(--zinc-500);
-    margin-top: 2px;
-  }
-
   /* Mid widths: slimmer horizontal card padding so every bullet holds one line at 19px */
   @media (max-width: 1520px) {
     .hero-half { padding: 48px 24px; }
@@ -3391,9 +3242,6 @@
     .or-badge::after { content: ""; flex: 1; height: 1px; background: var(--zinc-200); }
     /* Phone gutters come from the shared ladder's <=768 step (16px);
        the old width override is gone with the min() formula */
-    /* Demo chrome: the PROTO panel keeps its right-edge anchor on
-       phones; the edge tab folds it away when it covers content
-       (Ton's feedback 2026-08-12) */
     /* The site bar's compact step (grid loses its fixed brand column,
        nav and CTA fold away, mark shrinks to 126x42, height stays 80)
        is header.css's own @media (max-width: 900px) -- the same four
@@ -4155,120 +4003,26 @@
     </div>
   </div>
 
-  <!-- DEMO CONTROLS: PROTO panel, service chrome outside the design
-       language (Ton's feedback 2026-08-12, see CSS provenance). Same
-       control IDs as the old pill, the switching JS is untouched. -->
-  <!-- gbppl-mark-triple (feedback M via T 2026-08-19): the panel STARTS
-       collapsed. These links go to people who did not ask for a control
-       room, and a black service panel over the design is the first thing
-       they were reading. The tab stays where it was; one click and the
-       panel is back, exactly as before. This is the only deliberate change
-       to the default view. -->
-  <div class="demo-controls collapsed" id="demoControls">
-    <button class="demo-tab" id="demoTab" type="button" aria-expanded="false" aria-label="Expand prototype controls">
-      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg>
-      <span class="demo-tab-text">Proto</span>
-    </button>
-    <div class="demo-panel">
-      <span class="demo-brand">Proto</span>
-      <!-- First line of the panel: the way back to the studio -->
-      <div class="demo-group">
-        <span class="demo-label">Studio</span>
-        <a class="demo-door" href="../index.html">Design Studio</a>
-      </div>
-      <!-- Sandbox (gbppl-portal-booking-1): the same one registry the
-           system panel reads (system\sandbox-registry.js), spoken in
-           this panel's own service voice. Ton 25.08: every page says
-           whether anything is being built for it, and it says it the
-           same way everywhere. Where a PROTO panel already exists the
-           registry gets a SECTION in it, not a second tab beside it --
-           two consoles in two languages side by side would be a
-           duplicate affordance. The Design Studio door above is the way
-           home and stays where it is; these rows are the page's own
-           variants, Live first. Painted by the script at the foot. -->
-      <div class="demo-group" id="demoSandbox"></div>
-      <!-- HERO group (A/B toggle) removed per Ton 2026-08-12: all
-           development rides variant A, which stays the default. The
-           ?v=b URL param still works in code; only the UI control is
-           gone. -->
-      <!-- Sidebar nav variant toggle (Russell 2026-08-12); also via ?nav=russell -->
-      <div class="demo-group">
-        <span class="demo-label">Nav</span>
-        <button id="btnNavLive" type="button">Live</button>
-        <button id="btnNavRussell" type="button">Russell</button>
-        <!-- Visible label "Anton" per Ton 2026-08-12; internal values stay nav=ton so shared links keep working -->
-        <button id="btnNavTon" type="button">Anton</button>
-        <!-- Ren = ton structure + editorial skin (Ton 2026-08-17); also via ?nav=ren -->
-        <button id="btnNavRen" type="button">Ren</button>
-      </div>
-      <!-- Center block variants (Russell call 2026-08-18, gbppl-hero-start-panel);
-           also via ?hero=start&layout=grid|split|band. Classic = approved two-CTA zone. -->
-      <div class="demo-group">
-        <span class="demo-label">Block</span>
-        <button id="btnBlockClassic" type="button">Classic</button>
-        <button id="btnBlockGrid" type="button">Grid</button>
-        <button id="btnBlockSplit" type="button">Split</button>
-        <button id="btnBlockBand" type="button">Band</button>
-      </div>
-      <!-- Portal header (gbppl-mark-triple, feedback M via T 2026-08-19);
-           the same two attributes ?pth=1&lock=divider|stack set. Off strips
-           both, which is the approved default view with the site header up. -->
-      <div class="demo-group">
-        <span class="demo-label">Header</span>
-        <button id="btnPthOff" type="button">Off</button>
-        <button id="btnPthDivider" type="button">Divider</button>
-        <button id="btnPthStack" type="button">Stack</button>
-      </div>
-      <div class="demo-group">
-        <div class="demo-group-head">
-          <span class="demo-label">Gifts</span>
-          <span class="demo-state" id="demoState">empty</span>
-        </div>
-        <button id="btnAdd" type="button">+ Add gift</button>
-        <button id="btnReset" type="button">Reset</button>
-      </div>
-    </div>
-  </div>
+  <!-- ============================================================
+       THE ONE CONSOLE — gbppl-portal-console-1.
+       Until today this corner held PROTO: a second control panel in a
+       second language (monospace, 9-11px caps, radius 6), deliberately
+       "unstyled" since 2026-08-12 so nobody would read it as design.
+       Ton, 26.08: «обязательно свести язык к Studio, одной волной»,
+       and «нужно просто унифицировать всё под одну логику... везде всё
+       приводится к этой единой логике». So PROTO is gone from this
+       page, markup and CSS both, and the studio panel stands here
+       instead — the same element live\index.html and every other page
+       in the studio already wear, with this page's own switches added
+       to its "This page" section from the controller below.
+       The Design Studio door is not repeated: the panel's own doors
+       are the way home.
+       ============================================================ -->
+  <gb-studio-panel data-root="../" page="portal"></gb-studio-panel>
 
-<!-- ---- Sandbox rows of the PROTO panel (gbppl-portal-booking-1) ----
-     The data is the studio's one registry; the markup is this panel's
-     own .demo-door shape, so nothing of the system's visual language
-     crosses into a console that is deliberately service-grade. The
-     painter is live\checkout.html's, transferred whole -- the same
-     forPage(id, root) slice, the same Live-first order, the same two
-     row shapes -- with 'portal' for the page and '../' for the root,
-     which is this file's distance from the studio. Which row lights up
-     is the registry's answer, not this page's: a variant is current
-     when its query is a subset of the address, so ?pth=1 lights Portal
-     header, ?hero=start lights Start Gifting layouts, both together
-     light both, and a bare address lights Live. -->
+<!-- Registry BEFORE the panel: the panel reads it while it renders. -->
 <script src="../system/sandbox-registry.js"></script>
-<script>
-(function () {
-  'use strict';
-  var box = document.getElementById('demoSandbox');
-  var reg = window.GB_SANDBOXES;
-  if (!box || !reg) return;
-  var slice = reg.forPage('portal', '../');
-  if (!slice) return;
-
-  var html = '<span class="demo-label">Sandbox</span>';
-  html += door(slice.live.label, slice.live.href, slice.live.current, true, '');
-  slice.variants.forEach(function (v) {
-    html += door(v.label, v.href, v.current, v.ready, String(v.status).replace(/-/g, ' '));
-  });
-  if (!slice.variants.length) html += '<p class="demo-note">None yet</p>';
-  box.innerHTML = html;
-
-  function door(label, href, current, ready, note) {
-    if (!ready) {
-      return '<span class="demo-door">' + label + ' <em>· ' + note + '</em></span>';
-    }
-    return '<a class="demo-door' + (current ? ' variant-active' : '') +
-           '" href="' + href + '">' + label + '</a>';
-  }
-})();
-</script>
+<script src="../system/components/studio-panel.js"></script>
 
 <!-- The two system scripts this page runs (gbppl-portal-booking-1). They
      define custom elements and nothing else -- no listeners on the
@@ -4293,9 +4047,20 @@
   var bar       = document.getElementById('ctaBar');
   var barText   = document.getElementById('barText');
   var content   = document.getElementById('content');
-  var stateEl   = document.getElementById('demoState');
-  var btnAdd    = document.getElementById('btnAdd');
-  var btnReset  = document.getElementById('btnReset');
+
+  /* ---- The console (gbppl-portal-console-1) ----
+     Four groups of switches used to be written out as markup inside
+     the PROTO panel and found again by id. They are now DECLARED to
+     the studio panel, which draws them in the studio's own language
+     and hands back a handle per group. Nothing about what they DO
+     changed: the same setNav / setBlock / setPth / render run below,
+     the same URL parameters mean the same things, and the handles
+     only replace the classList.toggle('variant-active') lines.
+     Labels are human now (Ton 26.08). The values behind them are the
+     old internal keys, so every link that was ever shared still
+     opens the view it always opened. */
+  var panel     = document.querySelector('gb-studio-panel');
+  var navGroup, blockGroup, pthGroup, cartGroup;
 
   var BAR_TEXT = {
     a: 'Start Gifting: Gift Campaigns, Events, Onboardings, Milestones',
@@ -4303,7 +4068,7 @@
   };
   var variant = 'a';
 
-  /* Hero A/B switch: UI toggle removed from the PROTO panel per Ton
+  /* Hero A/B switch: UI toggle removed from the console per Ton
      2026-08-12 (variant A is the base of all development and stays
      the default); ?v=b keeps working through this function. */
   function setVariant(v) {
@@ -4406,24 +4171,30 @@
     // --- page meta rides with the gifts, nav=ton only (fork correction) ---
     updatePageMeta();
 
-    // --- demo label ---
-    stateEl.textContent = count === 0 ? 'empty' : 'bar sticky';
+    /* --- the readout the console prints back. The PROTO panel said
+       "empty" / "bar sticky" beside the group label; the same fact,
+       said in words, is the group's note line now. --- */
+    if (cartGroup) {
+      cartGroup.setNote(count === 0
+        ? 'The dashboard is empty.'
+        : 'The Start Gifting bar is sticky.');
+    }
   }
 
-  btnAdd.addEventListener('click', function () {
+  function addGift() {
     var gift = gifts[count % gifts.length];
     grid.appendChild(makeCard(gift));
     count++;
     render();
-  });
+  }
 
-  btnReset.addEventListener('click', function () {
+  function clearGifts() {
     grid.innerHTML = '';
     count = 0;
     companyLogoUploaded = false;
     renderCompanyLogo();
     render();
-  });
+  }
 
   /* ---- Demo logo upload (Ton's brainstorm 2026-08-12; ton-only after
      the fork correction: the CSS is ton-scoped and the click is gated,
@@ -4448,10 +4219,6 @@
      restores the exact original DOM: texts revert from data-label-russell,
      both menus re-append their captured initial child order, CSS un-hides
      live-only nodes. */
-  var btnNavLive    = document.getElementById('btnNavLive');
-  var btnNavRussell = document.getElementById('btnNavRussell');
-  var btnNavTon     = document.getElementById('btnNavTon');
-  var btnNavRen     = document.getElementById('btnNavRen');
   var accountMenu   = document.getElementById('accountMenu');
   var adminMenu     = document.getElementById('adminMenu');
   // Any element carrying a variant label swaps its text: data-label-russell
@@ -4541,30 +4308,18 @@
     // live restores verbatim
     applyOrder(accountMenu, s === 'ton' ? accTon : (s === 'russell' ? accRussell : accLive));
     applyOrder(adminMenu, s === 'ton' ? admTon : (s === 'russell' ? admRussell : admLive));
-    btnNavLive.classList.toggle('variant-active', n === 'live');
-    btnNavRussell.classList.toggle('variant-active', n === 'russell');
-    btnNavTon.classList.toggle('variant-active', n === 'ton');
-    btnNavRen.classList.toggle('variant-active', n === 'ren');
+    if (navGroup) navGroup.setActive(n);
     // The catalog overlay and the page metablock belong to nav=ton only
     if (s !== 'ton') closeCatalog();
     updatePageMeta();
   }
 
-  btnNavLive.addEventListener('click', function () { setNav('live'); });
-  btnNavRussell.addEventListener('click', function () { setNav('russell'); });
-  btnNavTon.addEventListener('click', function () { setNav('ton'); });
-  btnNavRen.addEventListener('click', function () { setNav('ren'); });
-
-  /* ---- Center block toggle (PROTO panel, Ton 2026-08-18,
-     gbppl-hero-start-panel) ----
+  /* ---- Center block toggle (Ton 2026-08-18, gbppl-hero-start-panel;
+     moved into the studio panel by gbppl-portal-console-1) ----
      The panel drives the same data-hero/data-layout attributes the URL
      params set, so buttons and shared links are two doors to one
      switch. Classic strips the attributes entirely: the approved
      two-CTA zone returns with its exact DOM. */
-  var btnBlockClassic = document.getElementById('btnBlockClassic');
-  var btnBlockGrid    = document.getElementById('btnBlockGrid');
-  var btnBlockSplit   = document.getElementById('btnBlockSplit');
-  var btnBlockBand    = document.getElementById('btnBlockBand');
   function setBlock(mode) {
     if (mode === 'classic') {
       document.body.removeAttribute('data-hero');
@@ -4575,31 +4330,21 @@
       if (!document.body.getAttribute('data-grid')) document.body.setAttribute('data-grid', 'weight');
       document.body.setAttribute('data-layout', mode);
     }
-    btnBlockClassic.classList.toggle('variant-active', mode === 'classic');
-    btnBlockGrid.classList.toggle('variant-active', mode === 'grid');
-    btnBlockSplit.classList.toggle('variant-active', mode === 'split');
-    btnBlockBand.classList.toggle('variant-active', mode === 'band');
+    if (blockGroup) blockGroup.setActive(mode);
   }
-  btnBlockClassic.addEventListener('click', function () { setBlock('classic'); });
-  btnBlockGrid.addEventListener('click', function () { setBlock('grid'); });
-  btnBlockSplit.addEventListener('click', function () { setBlock('split'); });
-  btnBlockBand.addEventListener('click', function () { setBlock('band'); });
 
-  /* ---- Portal header toggle (PROTO panel, gbppl-mark-triple,
-     feedback M via T 2026-08-19) ----
+  /* ---- Portal header toggle (gbppl-mark-triple, feedback M via T
+     2026-08-19; moved into the studio panel by gbppl-portal-console-1) ----
      Built the way setBlock is: one function owns the attributes, the URL
      initialiser calls it too, so the panel button and the shared link are
      two doors to one switch. Off REMOVES both attributes rather than
      writing a falsy value, so the approved default view keeps its exact
      DOM -- the same contract ?pth= has honoured since it was added. */
-  var btnPthOff     = document.getElementById('btnPthOff');
-  var btnPthDivider = document.getElementById('btnPthDivider');
-  var btnPthStack   = document.getElementById('btnPthStack');
   /* The lock's stack sub-variant is a MODIFIER on the system atom
      (.gbh-lock--stack, header.css) since 2026-08-25, not a body
      attribute the page styles through: the atom's owner owns both of
      its shapes. data-pth-lock stays on the body all the same -- the
-     PROTO panel and the shared link read it back, and it is what tells
+     the console and the shared link read it back, and it is what tells
      the two switches apart. */
   function setPth(lock) {
     var portalLock = document.querySelector('.gbh-pbar .gbh-lock');
@@ -4611,13 +4356,65 @@
       document.body.removeAttribute('data-pth-lock');
     }
     if (portalLock) portalLock.classList.toggle('gbh-lock--stack', lock === 'stack');
-    btnPthOff.classList.toggle('variant-active', lock !== 'divider' && lock !== 'stack');
-    btnPthDivider.classList.toggle('variant-active', lock === 'divider');
-    btnPthStack.classList.toggle('variant-active', lock === 'stack');
+    if (pthGroup) {
+      pthGroup.setActive(lock === 'divider' || lock === 'stack' ? lock : 'off');
+    }
   }
-  btnPthOff.addEventListener('click', function () { setPth('off'); });
-  btnPthDivider.addEventListener('click', function () { setPth('divider'); });
-  btnPthStack.addEventListener('click', function () { setPth('stack'); });
+
+  /* ---- THE GROUPS THEMSELVES (gbppl-portal-console-1) ----
+     Declared once, here, after every function they call is defined
+     and before the URL initialiser at the foot runs any of them, so
+     the first setNav / setBlock / setPth of the page already finds a
+     group to light up. Human labels, internal values (Ton 26.08: the
+     panel is read by people, not by the query string). */
+  if (panel && typeof panel.addGroup === 'function') {
+    navGroup = panel.addGroup({
+      title: 'Sidebar labels',
+      value: 'live',
+      options: [
+        { label: 'Live',    value: 'live',
+          note: 'The sidebar as the portal ships it today.' },
+        { label: 'Russell', value: 'russell',
+          note: "Russell's naming and his two sections." },
+        { label: 'Anton',   value: 'ton',
+          note: 'The validated order: the gift lifecycle first, the account after it.' },
+        { label: 'Ren',     value: 'ren',
+          note: "Anton's order in the editorial skin." }
+      ],
+      onChange: setNav
+    });
+
+    blockGroup = panel.addGroup({
+      title: 'Start block',
+      value: 'classic',
+      options: [
+        { label: 'Classic', value: 'classic', note: 'The approved two button zone.' },
+        { label: 'Grid',    value: 'grid',    note: 'Four cells behind a hairline cross.' },
+        { label: 'Split',   value: 'split',   note: 'Two halves, buttons beside the cells.' },
+        { label: 'Band',    value: 'band',    note: 'One ribbon, the arrangement Russell picked.' }
+      ],
+      onChange: setBlock
+    });
+
+    pthGroup = panel.addGroup({
+      title: 'Header',
+      value: 'off',
+      options: [
+        { label: 'Website',          value: 'off',     note: "The site header, as gildedbox.com renders it." },
+        { label: 'Portal',           value: 'divider', note: 'The portal bar, name and section on one line.' },
+        { label: 'Portal, stacked',  value: 'stack',   note: 'The portal bar, section under the name.' }
+      ],
+      onChange: setPth
+    });
+
+    cartGroup = panel.addGroup({
+      title: 'Gifts on the dashboard',
+      actions: [
+        { label: 'Add a gift',  onClick: addGift },
+        { label: 'Clear the dashboard', onClick: clearGifts }
+      ]
+    });
+  }
 
   /* ---- Catalog overlay (Ton's brainstorm 2026-08-12) ----
      Frames the real v1 catalog (./catalog/index.html?embed=1, vendored
@@ -4715,7 +4512,7 @@
       overlay.classList.add('settled');
     }, tf('--tf-travel'));
     /* A guest who reached the button without a pointer (keyboard, touch,
-       the PROTO panel) can still arrive cold. Then the fetch waits for
+       the studio panel) can still arrive cold. Then the fetch waits for
        the next frame, so it lands after the browser has painted the
        panel's first step and the journey never pays for the app. */
     if (cold) requestAnimationFrame(primeCatalog);
@@ -5297,17 +5094,8 @@
     }
   });
 
-  /* ---- PROTO panel collapse (Ton's feedback 2026-08-12) ----
-     Shell-only state: a class on the container, no persistence.
-     The controls inside keep their wiring untouched. */
-  var demoControls = document.getElementById('demoControls');
-  var demoTab      = document.getElementById('demoTab');
-  demoTab.addEventListener('click', function () {
-    var collapsed = demoControls.classList.toggle('collapsed');
-    demoTab.setAttribute('aria-expanded', String(!collapsed));
-    demoTab.setAttribute('aria-label',
-      collapsed ? 'Expand prototype controls' : 'Collapse prototype controls');
-  });
+  /* The panel's own tab opens and closes it (studio-panel.js); this
+     page no longer owns that handler (gbppl-portal-console-1). */
 
   // ?v=a / ?v=b (hero) and ?nav=live / ?nav=russell / ?nav=ton /
   // ?nav=ren (sidebar) combine; defaults: A + live
