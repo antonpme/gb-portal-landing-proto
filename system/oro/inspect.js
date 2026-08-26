@@ -26,6 +26,15 @@
    how to find the specimen inside a clicked slot, what to call
    it, which rows to print, and what markup to offer. The core
    below is component-agnostic.
+
+   gbppl-oro-typography-1 adds the third kind, TYPE, and with it
+   three small widenings of that core, all of them generic:
+   find() is handed the clicked element as well as the slot (a
+   type specimen block holds six roles in one slot); name and
+   owner may be read off the specimen instead of being fixed
+   strings (every role has its own name); and knownRow() lets a
+   kind supply a token the value comparison cannot find, which is
+   the case for anything declared in em and rendered in px.
    ============================================================ */
 (function () {
   'use strict';
@@ -95,6 +104,19 @@
       token: t,
       note: note || (candidates && !t ? 'no token' : '')
     };
+  }
+
+  /* gbppl-oro-typography-1. The same row, plus a token we already
+     know for certain. Needed because two type properties cannot be
+     resolved by comparing values: tracking is declared in em and
+     rendered in px, and a colour token that points at another token
+     comes back unresolved. Where the value CAN be compared the
+     lookup still runs first, so a token that has drifted is caught
+     rather than asserted. */
+  function knownRow(label, value, candidates, known, note) {
+    var r = row(label, value, candidates, note);
+    if (!r.token && known) { r.token = known; r.note = ''; }
+    return r;
   }
 
   /* Two columns, not three: the drawer is 520 wide and a third
@@ -220,6 +242,130 @@
       }
     },
 
+    /* ---------- gbppl-oro-typography-1: a type role ----------
+       The third kind, and the first one that is not a component.
+       A specimen here is a line of text, and the seven things worth
+       knowing about a line of text are its family, size, weight,
+       line height, tracking, case and ink.
+
+       Two shapes of specimen arrive. One WEARS A CLASS: an eyebrow,
+       a button label, a badge. The instrument reads a stylesheet and
+       names the token behind each value. The other has NO CLASS,
+       because the system has not given that role one yet; the page
+       draws it from the recorded ladder and the drawer says so out
+       loud instead of offering markup nobody can copy.
+
+       The role, its provenance and its ladder come from the page
+       through window.GbTypeRoles, so the record lives in exactly
+       one place. */
+    type: {
+      eyebrow: 'Type role',
+      name: function (el, d) { return d.role ? d.role.name : 'Type role'; },
+      owner: function (el, d) {
+        if (!d.role || !d.role.cls) return 'studio/system/TYPE-SCALE.md, the recorded ladder';
+        if (d.role.cls === '.gb-eyebrow') return 'system/components/shell.css, tokens --eyebrow-*';
+        if (d.role.cls === '.gbh-count') return 'system/components/header.css, tokens --count-badge-*';
+        return 'system/components/button.css, the label and type slots of tokens.css';
+      },
+      /* The clicked line wins over the first line in the slot: a
+         specimen block holds six roles inside one slot. */
+      find: function (slot, target) {
+        var t = target && target.closest ? target.closest('[data-role], [data-spec]') : null;
+        return t || slot.querySelector('[data-role], [data-spec]');
+      },
+
+      describe: function (el) {
+        var api = window.GbTypeRoles || {};
+        return { role: api.roleOf ? api.roleOf(el) : null, api: api };
+      },
+
+      title: function (el, d) {
+        if (!d.role) return 'measured on this specimen';
+        var p = (d.api.prov || {})[d.role.prov];
+        return (p ? p.word.toLowerCase() : 'recorded') + ', ' +
+               (d.role.cls ? d.role.cls : 'role without a class yet');
+      },
+
+      body: function (el, d) {
+        var cs = getComputedStyle(el);
+        var role = d.role;
+        var first = String(cs.fontFamily).split(',')[0].replace(/["']/g, '').trim();
+        var famToken = /noto serif/i.test(first) ? '--font-serif'
+                     : /inter/i.test(first) ? '--font-sans' : null;
+        var cls = role && role.cls ? role.cls : '';
+        var btn = /gb-btn--(s|m|l|xl)/.exec(cls);
+        var sizeTokens = null, weightTokens = null, trackKnown = null;
+
+        if (cls === '.gb-eyebrow') {
+          sizeTokens = ['--eyebrow-size'];
+          weightTokens = ['--eyebrow-weight'];
+          trackKnown = '--eyebrow-tracking';
+        } else if (cls === '.gbh-count') {
+          sizeTokens = ['--count-badge-font-size'];
+          weightTokens = ['--count-badge-font-weight'];
+        } else if (btn && /__label/.test(cls)) {
+          var p = '--gb-btn-' + btn[1] + '-label';
+          sizeTokens = [p, p + '-sm', p + '-md', p + '-xl', p + '-2xl'];
+          weightTokens = ['--gb-btn-label-weight'];
+          trackKnown = '--gb-btn-label-tracking';
+        } else if (btn) {
+          sizeTokens = rungs('--gb-btn-' + btn[1] + '-font-size');
+          weightTokens = ['--gb-btn-' + btn[1] + '-font-weight'];
+        }
+
+        var inks = ['--zinc-950', '--zinc-900', '--zinc-800', '--zinc-700',
+                    '--zinc-600', '--zinc-500', '--zinc-400', '--blue-600',
+                    '--blue-700', '--white'];
+
+        var rowsList = [
+          knownRow('Family', first, null, famToken),
+          row('Size', px(cs.fontSize), sizeTokens, sizeTokens ? '' : 'recorded, not tokenised'),
+          row('Weight', cs.fontWeight, weightTokens, weightTokens ? '' : 'recorded, not tokenised'),
+          row('Line height', cs.lineHeight === 'normal' ? 'normal' : px(cs.lineHeight), null,
+              cs.lineHeight === 'normal' ? 'never recorded for this role' : 'recorded, not tokenised'),
+          knownRow('Tracking', cs.letterSpacing === 'normal' ? 'normal' : px(cs.letterSpacing),
+                   null, trackKnown, 'recorded, not tokenised'),
+          row('Case', cs.textTransform, null, 'a property of the role'),
+          row('Ink', cs.color, inks, 'inherited from the surface unless the role records one')
+        ];
+
+        var out = block('Properties, measured on this specimen', table(rowsList));
+
+        if (role) {
+          var pw = (d.api.prov || {})[role.prov];
+          out += block('Role', chips([
+            role.name,
+            pw ? pw.word : role.prov,
+            role.cls || 'no class yet'
+          ]));
+          if (d.api.ladderText) {
+            out += block('Size ladder, as recorded', '<p class="gbdoc-readout"><b>' +
+              esc(d.api.ladderText(role)) + '</b></p>');
+          }
+          if (role.note) {
+            out += block('Note', '<p class="gbdoc-readout">' + esc(role.note) + '</p>');
+          }
+        }
+
+        if (role && role.cls) {
+          out += block('Markup', snippet(
+            cls === '.gb-eyebrow' ? '<span class="gb-eyebrow">Section label</span>'
+            : cls === '.gbh-count' ? '<span class="gbh-count">3</span>'
+            : btn && /__label/.test(cls)
+              ? '<button class="gb-btn gb-btn--' + btn[1] + '" type="button">\n' +
+                '  <span class="gb-btn__label">Continue</span>\n</button>'
+              : '<button class="gb-btn gb-btn--' + btn[1] + '" type="button">\n' +
+                '  <span class="gb-btn__label">Continue</span>\n</button>'
+          ));
+        } else {
+          out += block('Markup', '<p class="gbdoc-readout">There is none yet. This role has no class in the ' +
+            'system, so the specimen above is drawn from the recorded ladder rather than from a stylesheet. ' +
+            'A class for it is a decision, not a cleanup.</p>');
+        }
+        return out;
+      }
+    },
+
     field: {
       eyebrow: 'Component',
       name: 'Field',
@@ -286,17 +432,24 @@
     var region = slot.closest('[data-inspect]');
     var kind = KINDS[region.getAttribute('data-inspect')];
     if (!kind) return;
-    var el = kind.find(slot);
+    /* The clicked element is handed to find as well as the slot:
+       a component slot holds one specimen, but a type specimen
+       block holds six roles in one slot and the reader means the
+       line under the pointer. Kinds that do not care ignore it. */
+    var el = kind.find(slot, e.target);
     if (!el) return;
 
     e.preventDefault();
     var d = kind.describe(el);
+    /* name and owner may be a string or a reading of the specimen. */
+    var name = typeof kind.name === 'function' ? kind.name(el, d) : kind.name;
+    var owner = typeof kind.owner === 'function' ? kind.owner(el, d) : kind.owner;
     drawer.open({
       eyebrow: kind.eyebrow,
-      title: kind.name,
+      title: name,
       sub: kind.title(el, d) + ' &middot; measured at ' + window.innerWidth + 'px wide',
       html: kind.body(el, d),
-      foot: 'Owner: <code>' + kind.owner + '</code>. Every number above was read off this specimen with ' +
+      foot: 'Owner: <code>' + owner + '</code>. Every number above was read off this specimen with ' +
             'getComputedStyle at the current window width.'
     });
   });
