@@ -174,11 +174,11 @@
     );
   };
 
-  var TEMPLATE = function (logoSrc, catalogHref, portalHref, meetingHref) {
+  var TEMPLATE = function (logoSrc, catalogHref, portalHref, meetingHref, homeHref) {
     return (
       '<header class="gb-header">' +
         '<div class="gb-container gbh-bar">' +
-          '<a href="#" class="gbh-brand" aria-label="GildedBox home">' +
+          '<a href="' + homeHref + '" class="gbh-brand" aria-label="GildedBox home">' +
             '<img src="' + logoSrc + '" alt="GildedBox">' +
           '</a>' +
           '<nav class="gbh-nav" aria-label="Primary navigation">' +
@@ -220,7 +220,10 @@
       var catalogHref = this.getAttribute('catalog-href') || 'catalog/index.html';
       var portalHref = this.getAttribute('portal-href') || '#';
       var meetingHref = this.getAttribute('meeting-href') || '#';
-      this.innerHTML = TEMPLATE(logoSrc, catalogHref, portalHref, meetingHref);
+      /* gbppl-header-home (Ton 26.08: «с каталога не могу на главную по лого»): the wordmark
+         goes home; every consumer states its own path, like the other hrefs. */
+      var homeHref = this.getAttribute('home-href') || '#';
+      this.innerHTML = TEMPLATE(logoSrc, catalogHref, portalHref, meetingHref, homeHref);
       this.__wireMenu();
       if (this.getAttribute('variant') === 'transparent-dark') this.__wireTransparent();
     }
