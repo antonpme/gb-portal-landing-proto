@@ -266,7 +266,9 @@
 <script>
 (function () {
   try {
-    if (sessionStorage.getItem('gbppl-hub-open') === '1') {
+    /* gbppl-gate-2: the key is a localStorage stamp, good for 30 days. */
+    var u = parseInt(localStorage.getItem('gbppl-hub-open') || '0', 10);
+    if (u && Date.now() < u) {
       document.documentElement.className += ' is-open';
     }
   } catch (e) {}
@@ -721,14 +723,14 @@ html.is-open #hub {
         return;
       }
       clearError();
-      try { sessionStorage.setItem(FLAG, '1'); } catch (e) {}
+      try { localStorage.setItem(FLAG, String(Date.now() + 30 * 24 * 60 * 60 * 1000)); } catch (e) {}
       /* The guard on a locked page leaves a note saying where the
          visitor was headed (studio.js): a shared direct link must
          open itself after the code, not the hub. Read once, burn. */
       var returnTo = null;
       try {
-        returnTo = sessionStorage.getItem('gbppl-return');
-        sessionStorage.removeItem('gbppl-return');
+        returnTo = localStorage.getItem('gbppl-return');
+        localStorage.removeItem('gbppl-return');
       } catch (e) {}
       gate.classList.add('is-leaving');
       /* animationend is the cue, but never the only key: if the animation

@@ -30,16 +30,27 @@
 (function () {
   'use strict';
 
-  /* Сессия, не локалстор: закрыл вкладку — дверь снова заперта
-     (тот же ключ, что ставит гейт в index.html). */
+  /* localStorage со штампом срока (gbppl-gate-2): закрыл вкладку — дверь
+     открыта ещё месяц. Тот же ключ и тот же срок ставит гейт в index.html. */
   var FLAG = 'gbppl-hub-open';
 
   var self  = document.currentScript;
   var home  = (self && self.getAttribute('data-home')) || 'index.html';
   var guard = !(self && self.getAttribute('data-guard') === 'off');
 
+  /* gbppl-gate-2 (Ton 26.08): «пароль везде одинаковый; человек должен
+     оставаться залогиненным надолго и попадать на ту страницу, куда шёл».
+     The key moved from sessionStorage to localStorage with a 30-day stamp:
+     one code, one month, every page of the studio. */
+  var TTL_MS = 30 * 24 * 60 * 60 * 1000;
   function held() {
-    try { return sessionStorage.getItem(FLAG) === '1'; } catch (e) { return false; }
+    try {
+      var raw = localStorage.getItem(FLAG);
+      if (!raw) return false;
+      var until = parseInt(raw, 10);
+      if (!until || Date.now() > until) { localStorage.removeItem(FLAG); return false; }
+      return true;
+    } catch (e) { return false; }
   }
 
   /* replace, не assign: страница за замком не должна оставаться в
@@ -50,7 +61,7 @@
      ссылку на конкретную страницу, правильно?»). Гейт читает и
      сжигает записку в openHub (index.html). */
   if (guard && !held()) {
-    try { sessionStorage.setItem('gbppl-return', location.pathname + location.search + location.hash); } catch (e) {}
+    try { localStorage.setItem('gbppl-return', location.pathname + location.search + location.hash); } catch (e) {}
     location.replace(home);
     return;
   }
@@ -59,7 +70,7 @@
     var locks = document.querySelectorAll('[data-studio-lock]');
     Array.prototype.forEach.call(locks, function (el) {
       el.addEventListener('click', function () {
-        try { sessionStorage.removeItem(FLAG); } catch (e) {}
+        try { localStorage.removeItem(FLAG); } catch (e) {}
         location.replace(home);
       });
     });
