@@ -1,0 +1,162 @@
+/* ============================================================
+   gbppl-inspect-1 — INSPECT MODE, THE OVERLAY
+   ------------------------------------------------------------
+   Ton, 26.08: «переключать режимы View / Inspect, наводить на
+   любые секции, блоки, что угодно, и видеть их properties. Или
+   как в Figma: наводишь, и оверлей поверх показывает отступы. Не
+   overkill, но если можем лучше — сделать». The first piece of
+   team feedback behind it: the front end lead wants properties in
+   the prototypes themselves.
+
+   WHAT THIS FILE DRAWS. One layer over the page, and nothing in
+   the page. The element under the pointer gets a hairline round
+   its box, a plate above it naming what it is and how big it is,
+   its padding filled from the inside and its margin hatched from
+   the outside, with the number printed beside any side that has
+   4px or more to show. The DOM of the page is never touched: no
+   class is added to the thing being inspected, no style is
+   written on it, so what the instrument measures is what the page
+   renders when nobody is looking at it.
+
+   THE LAYER. z-index 55: over the whole prototype stack (header
+   31, page drawers 40, modal 50) and under the console (60) and
+   the properties drawer (80/81), because the two things you must
+   always be able to reach are the switch that turns this off and
+   the panel it opens. It is pointer-events: none from root to
+   leaf, so the pointer keeps finding the page.
+
+   THE TWO SERVICE COLOURS ARE NOT SYSTEM COLOURS, and that is on
+   purpose. Padding green and margin orange belong to the
+   instrument, the way a ruler is yellow: they say "this is a
+   measurement, not a design". They are declared on .gbi-layer
+   below and used nowhere else in the system; do not promote them
+   to tokens.css and do not reach for them in a component. Every
+   other value here IS a token: the hairline and the live state
+   are Blue 600, the plate is Zinc 950, the type is Inter at 12.
+   ============================================================ */
+
+.gbi-layer {
+  /* NO TOKEN, and never will be: the instrument's own two hues.
+     See the note above before touching them. */
+  --gbi-pad-fill: rgba(16, 150, 105, 0.22);
+  --gbi-pad-ink: #0f7a56;
+  --gbi-mar-fill: rgba(234, 120, 20, 0.18);
+  --gbi-mar-ink: #a75708;
+
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  /* Clipped, so a margin band that runs off the top of the window
+     can never add a scrollbar to the page it is measuring. */
+  overflow: hidden;
+  pointer-events: none;
+  font-family: var(--font-sans);
+}
+.gbi-layer * { pointer-events: none; }
+.gbi-layer[hidden] { display: none; }
+
+/* ---- The box: one hairline, Blue 600, drawn with an outline so
+   it never adds a pixel to the geometry it is describing. ---- */
+.gbi-box {
+  position: absolute;
+  outline: 1px solid var(--blue-600);
+  outline-offset: 0;
+}
+
+/* ---- Padding, filled from the inside ---- */
+.gbi-pad {
+  position: absolute;
+  background: var(--gbi-pad-fill);
+}
+
+/* ---- Margin, hatched from the outside. Hatching rather than a
+   flat fill because margin is space the element is claiming, not
+   space it is holding, and the two must not read alike. ---- */
+.gbi-mar {
+  position: absolute;
+  background: var(--gbi-mar-fill);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(234, 120, 20, 0.32) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+/* ---- The gap between two children of a flex or grid parent.
+   Inner space, so it speaks the padding colour. ---- */
+.gbi-gap {
+  position: absolute;
+  background: var(--gbi-pad-fill);
+}
+
+/* ---- The numbers. 12, the floor of the system, never smaller:
+   a measurement that cannot be read is not a measurement. ---- */
+.gbi-num {
+  position: absolute;
+  display: block;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-shadow: 0 0 3px var(--white), 0 0 3px var(--white), 0 0 3px var(--white);
+}
+.gbi-num--pad { color: var(--gbi-pad-ink); }
+.gbi-num--mar { color: var(--gbi-mar-ink); }
+
+/* ---- The plate. Zinc 950, the voice of the console, so the
+   instrument reads as one thing wherever it appears. ---- */
+.gbi-badge {
+  position: absolute;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  max-width: calc(100vw - 16px);
+  padding: 5px 8px;
+  border-radius: var(--radius);
+  background: var(--zinc-950);
+  box-shadow: var(--shadow-panel);
+  color: var(--white);
+  font-size: 12px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gbi-badge b { font-weight: 600; }
+.gbi-badge i { font-style: normal; color: var(--zinc-400); }
+.gbi-badge em {
+  font-style: normal;
+  color: var(--blue-400);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- The way from a measurement into the showcase card ----
+   It stands in the drawer foot, which is a page that may be
+   wearing body.gb-demo and its a { color: inherit }. The antidote
+   comes in a pair, as it always must (ловушка 1 of the skill). */
+a.gbi-oro,
+body.gb-demo a.gbi-oro {
+  color: var(--blue-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+a.gbi-oro:hover,
+body.gb-demo a.gbi-oro:hover { color: var(--blue-700); }
+
+/* ---- The page while it is being inspected ----
+   The crosshair is the whole announcement: no tint over the page,
+   no frame round the window. The mode is legible from the console
+   and from the pointer, and the page underneath keeps looking
+   exactly like itself, which is the point of inspecting it.
+
+   The console and the drawer keep their own pointer: they are the
+   two things you must still be able to operate, and a crosshair
+   over a close button would say otherwise. */
+html.gbi-on,
+html.gbi-on * { cursor: crosshair !important; }
+html.gbi-on :is(.gbsp, .gbd-panel, .gbd-scrim),
+html.gbi-on :is(.gbsp, .gbd-panel, .gbd-scrim) * { cursor: default !important; }
+html.gbi-on :is(.gbsp, .gbd-panel) :is(a, button) { cursor: pointer !important; }
+html.gbi-on ::selection { background: transparent; }
