@@ -160,12 +160,14 @@
       '<div class="gbh-menu" id="gbh-gifts-menu">' +
         '<div class="gbh-menu__cols">' +
           cols +
-          /* Четвёртая колонка — та же кнопочная семья шапки
-             (.gbh-cta, лестница 36/42/48), инвертированная под
-             тёмную панель: лайв берёт ровно те же classes. */
+          /* Четвёртая колонка — тот же кнопочный организм, что и в
+             правом кармане бара (лестница S, 36/42/48), в белой
+             инверсии под тёмную панель: лайв берёт ровно те же
+             classes. data-pc-section="label" остаётся живой
+             анатомией и адресом харвест-конфигов. */
           '<div class="gbh-menu__actions">' +
-            '<a class="gbh-cta gbh-cta--inverted" href="' + catalogHref + '" aria-label="All Gifts"><span data-pc-section="label">All Gifts</span></a>' +
-            '<a class="gbh-cta gbh-cta--inverted" href="' + catalogHref + '" aria-label="Customize"><span data-pc-section="label">Customize</span></a>' +
+            '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--inverse" href="' + catalogHref + '" aria-label="All Gifts"><span class="gb-btn__label" data-pc-section="label">All Gifts</span></a>' +
+            '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--inverse" href="' + catalogHref + '" aria-label="Customize"><span class="gb-btn__label" data-pc-section="label">Customize</span></a>' +
           '</div>' +
         '</div>' +
       '</div>'
@@ -195,8 +197,8 @@
           '<div class="gbh-actions">' +
             /* Text-only per live: без глифа календаря (diff measure
                2026-08-12); лейбл в своём span per живой анатомии. */
-            '<a class="gbh-cta" href="' + meetingHref + '"><span data-pc-section="label">Book a Meeting</span></a>' +
-            '<a class="gbh-cta gbh-cta--outline" href="' + portalHref + '"><span data-pc-section="label">My Portal</span></a>' +
+            '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="' + meetingHref + '"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
+            '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" href="' + portalHref + '" data-gbh-outline><span class="gb-btn__label" data-pc-section="label">My Portal</span></a>' +
             '<button class="gbh-icon-button" type="button" aria-label="Cart, 3 items">' +
               '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>' +
               '<span class="gbh-count" aria-hidden="true">3</span>' +
@@ -233,6 +235,15 @@
       var THRESHOLD = 50;   /* LIVE 24.08 */
       var overSel = this.getAttribute('over');
       var ticking = false;
+      /* Контурная кнопка бара. Над видео она белая, на белом стекле
+         чёрная — и с gbppl-button-2 это не перекраска, а СМЕНА
+         ЦВЕТОВОГО МОДИФИКАТОРА организма: --inverse наверху,
+         --secondary внизу. Оба состояния объявлены в button.css по
+         одному разу, вариант хедера больше не держит их копию.
+         Пара всегда переключается целиком: два модификатора весят
+         поровну, и оставленный лишний класс решал бы спор порядком
+         строк в чужом файле. */
+      var outline = bar.querySelector('[data-gbh-outline]');
 
       var apply = function () {
         ticking = false;
@@ -241,12 +252,18 @@
            апгрейдятся своим чередом, и на первом кадре её может
            ещё не быть. */
         var over = overSel ? document.querySelector(overSel) : null;
-        if (!over) { bar.classList.remove('is-past-hero'); return; }
-        /* Буквально «планка коснулась следующей секции»: нижний
-           край бара догнал нижний край героя. Оба края в
-           координатах окна, никакой скролл-арифметики. */
-        bar.classList.toggle('is-past-hero',
-          over.getBoundingClientRect().bottom <= bar.getBoundingClientRect().bottom);
+        var past = false;
+        if (over) {
+          /* Буквально «планка коснулась следующей секции»: нижний
+             край бара догнал нижний край героя. Оба края в
+             координатах окна, никакой скролл-арифметики. */
+          past = over.getBoundingClientRect().bottom <= bar.getBoundingClientRect().bottom;
+        }
+        bar.classList.toggle('is-past-hero', past);
+        if (outline) {
+          outline.classList.toggle('gb-btn--inverse', !past);
+          outline.classList.toggle('gb-btn--secondary', past);
+        }
       };
 
       apply();

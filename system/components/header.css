@@ -119,7 +119,7 @@ gb-site-header {
      ФОН CTA      РАСХОЖДЕНИЕ. Живая Book a Meeting — Blue 600
                   #2563eb, а не Zinc 800. Мы носили тёмную с
                   18.08; live\portal.html уже перекрашивал
-                  заимствованную .gbh-cta локальным .pth-cta
+                  заимствованную кнопку локальным .pth-cta
                   («the one repaint... Blue 600 fill, Blue 700
                   hover»), то есть владелец отставал от лайва, а
                   потребитель чинил у себя — та же болезнь, что и
@@ -150,86 +150,34 @@ gb-site-header {
    harvest public-home 2026-08-17). Ступень 48 включается ровно
    с 2000px — кастомный порог вне Tailwind-сетки.
    ============================================================ */
-.gbh-cta {
-  min-height: var(--btn-min-h);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: var(--btn-pad-y) var(--btn-pad-x);
-  background: var(--blue-600);   /* LIVE 24.08 #2563eb — токен один в один */
-  color: var(--zinc-50);         /* LIVE 24.08 #fafafa — токен один в один */
-  border: none;
-  border-radius: var(--radius);
-  font-size: var(--btn-font-size);
-  font-weight: var(--btn-font-weight);
-  letter-spacing: var(--btn-letter-spacing);
-  line-height: var(--btn-line-height);
-  text-transform: uppercase;
-  white-space: nowrap; /* живые кнопки никогда не переносятся */
-  /* LIVE 24.08: 200ms cubic-bezier(.4,0,.2,1) по цвету/фону/бордеру */
-  transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-              background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-@media (min-width: 1280px) {
-  .gbh-cta {
-    min-height: var(--btn-min-h-xl);
-    padding-left: var(--btn-pad-x-xl);
-    padding-right: var(--btn-pad-x-xl);
-    font-size: var(--btn-font-size-xl);
-    gap: 20px;
-    letter-spacing: var(--btn-letter-spacing-xl);
-  }
-}
-/* Ступень 48 ровно с 2000 (свип 17.08: 1999 = 42, 2000 = 48) */
-@media (min-width: 2000px) {
-  .gbh-cta { min-height: var(--btn-min-h-2xl); }
-}
-/* ТЕМНЕЕТ, а не светлеет: Blue 600 -> Blue 700 (LIVE 24.08). */
-.gbh-cta:hover { background: var(--blue-700); }
+/* КНОПКИ ШАПКИ ТЕПЕРЬ .gb-btn (gbppl-button-2, 26.08). Тон дал
+   добро на миграцию, и вся семья .gbh-cta уехала в организм
+   componentsutton.css одной строкой каждая:
 
-/* Контурный MY PORTAL per live: прозрачный, Zinc 900 текст и
-   1px бордер; ховер — живая полупрозрачная подложка Zinc 300/20
-   (LIVE 24.08 rgba(212,212,216,.2)), а не плотный Zinc 100. */
-.gbh-cta--outline {
-  background: transparent;
-  color: var(--zinc-900);
-  border: 1px solid var(--zinc-900);
-}
-.gbh-cta--outline:hover { background: rgba(212, 212, 216, 0.2); }  /* LIVE 24.08 */
+     .gbh-cta            -> .gb-btn --s --filled --primary
+     .gbh-cta--outline   -> .gb-btn --s --outline --secondary
+     .gbh-cta--inverted  -> .gb-btn --s --outline --inverse
 
-/* АНТИДОТ ПОЛНОЙ СИЛЫ (24.08). shell.css несёт
-   body.gb-demo a { color: inherit } весом 0-1-2, а прежний фикс
-   a.gbh-cta весил 0-1-1 и ПРОИГРЫВАЛ ему: на каждой странице с
-   body.gb-demo лейбл Book a Meeting наследовал Zinc 900 и вставал
-   тёмным по тёмному (Тон, 24.08: «на белом кнопка не того цвета,
-   да ещё и с чёрным текстом»). Прежний комментарий считал вес
-   shell-правила как 0-1-1 — арифметическая ошибка, из-за неё баг
-   и пережил фикс 18.08. Теперь пара селекторов: голый для страниц
-   без грунта и 0-2-2 для страниц с ним. auth.css чинил то же
-   скоупом gb-guest-header; его строки остаются безвредным дублем.
-   Правило распространено и на .gbh-link: ссылка-нав держится на
-   inherit только по счастливой случайности (body несёт Zinc 900),
-   и в прозрачном варианте эта случайность ломается. */
-a.gbh-cta,
-body.gb-demo a.gbh-cta { color: var(--zinc-50); }
-a.gbh-cta--outline,
-body.gb-demo a.gbh-cta--outline { color: var(--zinc-900); }
+   Ни одной цифры при этом не тронуто: лестница S организма И ЕСТЬ
+   эта лестница (36 / 42 с 1280 / 48 с 2000, пад 8/16 -> 8/20, gap
+   12 -> 20, радиус 5, лейбл 11/600/ls 1 -> 12 с 2000, ховер
+   Blue 600 -> 700, контурный ховер rgba(212,212,216,.2), переход
+   200ms cubic-bezier(.4,0,.2,1)) — она была снята с этого самого
+   хедера 24.08 и перенесена в токены под именами --gb-btn-s-*.
+   Прибор до и после: 1280/1920/2258 на восьми страницах с шапкой,
+   расхождений ноль.
 
-/* Типографика лейбла = живой span[data-pc-section="label"]
-   (harvest public-home-sweep 2026-08-17): 11 / 600 / ls 1px /
-   lh normal, 12px c 2000 — тот же внесеточный порог, что и
-   ступень 48. Uppercase и цвет наследуются от кнопки. */
-.gbh-cta span[data-pc-section="label"] {
-  font-size: var(--btn-label-font-size);
-  font-weight: var(--btn-label-font-weight);
-  letter-spacing: var(--btn-label-letter-spacing);
-  line-height: var(--btn-label-line-height);
-}
-@media (min-width: 2000px) {
-  .gbh-cta span[data-pc-section="label"] { font-size: var(--btn-label-font-size-2xl); }
-}
+   ЧТО ОСТАЛОСЬ ЗДЕСЬ. Только размещение: кто где стоит и кто на
+   какой ширине исчезает. Селектор перестал быть именем кнопки и
+   стал адресом — «кнопка, стоящая в правом кармане шапки»:
+
+     .gbh-actions .gb-btn        правая пара бара
+     .gbh-menu__actions .gb-btn  колонка кнопок тёмной панели Gifts
+
+   Антидот a.gbh-cta против body.gb-demo a { color: inherit } тоже
+   уехал: button.css несёт свою пару a.gb-btn / body.gb-demo a.gb-btn
+   и читает цвет из слота, поэтому она держит и ховер. Здесь он
+   больше не нужен и удалён, а не продублирован. */
 
 /* Бейдж корзины per live (SYSTEM.md site chrome, live 2026-08-12):
    16x16, шрифт 10, Blue 600, белое кольцо 1px. DEVIATION: у лайва
@@ -280,7 +228,14 @@ body.gb-demo a.gbh-cta--outline { color: var(--zinc-900); }
   .gbh-bar { grid-template-columns: auto 1fr auto; gap: 16px; }
   .gbh-nav { display: none; }
   .gbh-brand { width: 126px; height: 42px; }
-  .gbh-cta { display: none; }
+  /* Адрес, а не имя: кнопки обеих планок уходят, глифы остаются.
+     Два селектора, потому что планок две и правый карман есть не
+     у обеих: у сайтового бара кнопки лежат в .gbh-actions, у
+     портального (.gbh-pbar) — прямо в баре. Старое правило
+     .gbh-cta{display:none} накрывало обе одним именем; адрес
+     обязан накрыть ровно те же. */
+  .gbh-bar .gb-btn,
+  .gbh-pbar .gb-btn { display: none; }
 }
 
 /* ============================================================
@@ -293,7 +248,7 @@ body.gb-demo a.gbh-cta--outline { color: var(--zinc-900); }
    Хаб (site\index.html) носил самодельную планку: 64px вместо 80,
    нав 13px Zinc 500 sentence-case вместо живых 14/16 Inter 500
    UPPERCASE ls 0.5. Теперь он носит ЭТОТ файл — .gb-header,
-   .gbh-bar, .gbh-nav, .gbh-link, .gbh-actions, .gbh-cta--outline
+   .gbh-bar, .gbh-nav, .gbh-link, .gbh-actions и контурную .gb-btn
    без единой перемеренной цифры. Компонент <gb-site-header> взять
    целиком нельзя: его шаблон (header.js) жёстко несёт меню лайва
    Gifts/Customize/Portal/Explore и правую пару Book a Meeting /
@@ -386,8 +341,8 @@ body.gb-demo a.gbh-cta--outline { color: var(--zinc-900); }
   /* У живого бара на этой ширине кнопки складываются в бургер;
      у studio-бара бургера нет, а LOCK — единственная дверь назад
      к замку, поэтому он остаётся. Селектор 0-2-0 бьёт
-     .gbh-cta { display: none } той же медиа. */
-  .gbh-bar--studio .gbh-cta { display: inline-flex; }
+     .gbh-bar .gb-btn { display: none } той же медиа. */
+  .gbh-bar--studio .gbh-actions .gb-btn { display: inline-flex; }
 }
 
 /* ============================================================
@@ -417,7 +372,7 @@ body.gb-demo a.gbh-cta--outline { color: var(--zinc-900); }
                  в список переходов не попадает и щёлкает мгновенно.
                  Золото здесь не новый акцент, а снятое живое
                  значение (BRAND.md про новые золотые элементы).
-     кнопки      та же лестница .gbh-cta (36/42/48, пад 8/20, лейбл
+     кнопки      та же лестница .gb-btn --s (36/42/48, пад 8/20, лейбл
                  11/600/ls 1) — лайв берёт ровно те же классы;
                  своё здесь только инвертирование под тёмную панель
                  и зазор 12 между кнопками.
@@ -445,7 +400,7 @@ body.gb-demo a.gbh-cta--outline { color: var(--zinc-900); }
 .gbh-navitem > .gbh-link { margin: 0; }
 
 /* Gifts стал ссылкой, а не кнопкой. Тот же антидот, что держит
-   .gbh-cta (см. блок выше): shell.css несёт
+   a.gb-btn в button.css: shell.css несёт
    body.gb-demo a { color: inherit } весом 0-1-2, поэтому голого
    a.gbh-link (0-1-1) мало — рядом стоит 0-2-2. Подчёркивание живой
    нав-пункт не носит. */
@@ -535,21 +490,12 @@ body.gb-demo a.gbh-menu__item {
 }
 
 .gbh-menu__actions { display: flex; flex-direction: column; align-items: flex-start; }
-.gbh-menu__actions .gbh-cta + .gbh-cta { margin-top: 12px; }  /* LIVE 24.08 */
+.gbh-menu__actions .gb-btn + .gb-btn { margin-top: 12px; }  /* LIVE 24.08 */
 
-/* Контурная кнопка на тёмной панели. Геометрия целиком от .gbh-cta
-   (лестница шапки), своё — только белый контур и белый ховер.
-   Третий селектор — тот же антидот 0-2-2 против
-   body.gb-demo a { color: inherit }: без него All Gifts и Customize
-   в тёмной панели наследовали Zinc 900 и тонули (24.08). */
-.gbh-cta--inverted,
-a.gbh-cta--inverted,
-body.gb-demo a.gbh-cta--inverted {
-  background: transparent;
-  color: var(--white);
-  border: 1px solid var(--white);   /* LIVE 24.08 */
-}
-.gbh-cta--inverted:hover { background: rgba(255, 255, 255, 0.2); }  /* LIVE 24.08 */
+/* Контурная кнопка тёмной панели — это .gb-btn --s --outline
+   --inverse организма (белые чернила, белый волосок, ховер
+   rgba(255,255,255,.2), всё LIVE 24.08). Своего правила ей больше
+   не нужно: имена уехали в разметку header.js. */
 
 /* ============================================================
    ВАРИАНТ: ХЕДЕР НАД ВИДЕО (variant="transparent-dark", Тон 24.08)
@@ -663,13 +609,18 @@ body.gb-demo .gb-header--transparent a.gbh-link { color: var(--white); }
    инвертированная кнопка панели: на тёмном грунте Zinc-подмес
    прототипа не читается, а нового значения заводить незачем. */
 .gb-header--transparent .gbh-icon-button:hover { background: rgba(255, 255, 255, 0.2); }
-.gb-header--transparent .gbh-cta--outline,
-.gb-header--transparent a.gbh-cta--outline,
-body.gb-demo .gb-header--transparent a.gbh-cta--outline {
-  color: var(--white);
-  border-color: var(--white);   /* LIVE 24.08 */
-}
-.gb-header--transparent .gbh-cta--outline:hover { background: rgba(255, 255, 255, 0.2); }  /* LIVE 24.08 */
+/* КОНТУРНАЯ КНОПКА В ПРОЗРАЧНОМ БАРЕ НЕ ПЕРЕКРАШИВАЕТСЯ ЗДЕСЬ
+   (gbppl-button-2). Раньше вариант дважды переписывал ей цвет и
+   бордер — белым над видео и обратно Zinc 900 у низа героя, — и
+   это была третья копия одних и тех же живых значений.
+
+   Теперь она просто МЕНЯЕТ ЦВЕТОВОЙ МОДИФИКАТОР: --inverse над
+   тёмным, --secondary на белом стекле. Переключает header.js там
+   же, где ведёт .is-past-hero (одна строка в apply()), а значения
+   обоих состояний живут в организме по одному разу. Значения те
+   же самые: белые чернила, белый волосок, ховер
+   rgba(255,255,255,.2) наверху и rgba(212,212,216,.2) внизу —
+   всё LIVE 24.08, просто теперь сказано в button.css. */
 
 /* Ступень 3, ink. Белые правила выше весят до 0-3-2, поэтому
    возвращение к стандартным чернилам идёт на ступень выше (0-4-2).
@@ -686,14 +637,6 @@ body.gb-demo .gb-header--transparent a.gbh-cta--outline {
 body.gb-demo .gb-header--transparent.is-past-hero a.gbh-link { color: var(--zinc-900); }
 .gb-header--transparent.is-past-hero .gbh-icon-button { color: var(--zinc-900); }
 .gb-header--transparent.is-past-hero .gbh-icon-button:hover { background: var(--v1-ink-hover); }
-.gb-header--transparent.is-past-hero .gbh-cta--outline,
-.gb-header--transparent.is-past-hero a.gbh-cta--outline,
-body.gb-demo .gb-header--transparent.is-past-hero a.gbh-cta--outline {
-  color: var(--zinc-900);
-  border-color: var(--zinc-900);
-}
-.gb-header--transparent.is-past-hero .gbh-cta--outline:hover { background: rgba(212, 212, 216, 0.2); }
-
 /* ============================================================
    ВАРИАНТ: PORTAL BAR (gbppl-portal-system, 2026-08-25)
    ------------------------------------------------------------
@@ -719,11 +662,11 @@ body.gb-demo .gb-header--transparent.is-past-hero a.gbh-cta--outline {
         и просил свести портал на эти классы (задача записана в
         блоке STUDIO BAR). Сведено. Портальная подварианта stack
         добавлена сюда же как .gbh-lock--stack.
-     .gbh-cta          кнопка BOOK A MEETING: вся лестница M и
-        лейбл-спан приходят с классом. Синяя заливка теперь у
-        владельца (ресинк 24.08), поэтому портальная перекраска
-        .pth-cta удалена как безвредный дубль — она говорила ровно
-        то же самое.
+     .gb-btn --s       кнопка BOOK A MEETING: вся лестница S и
+        лейбл-спан приходят с классом организма (до 26.08 это была
+        .gbh-cta, те же цифры под старым именем). Синяя заливка у
+        владельца, поэтому портальная перекраска .pth-cta удалена
+        как безвредный дубль — она говорила ровно то же самое.
      .gbh-icon-button  круг 44px, глиф 22.8, ховер-подложка.
      .gbh-count        бейдж корзины, без единой поправки.
 
@@ -820,7 +763,7 @@ body.gb-demo .gb-header--transparent.is-past-hero a.gbh-cta--outline {
   text-decoration: none;
   transition: color var(--mo-micro) var(--mo-move);
 }
-/* Тот же антидот 0-2-2, что держат .gbh-cta и .gbh-link выше:
+/* Тот же антидот 0-2-2, что держат .gb-btn и .gbh-link выше:
    shell.css несёт body.gb-demo a { color: inherit } весом 0-1-2. */
 a.gbh-away,
 body.gb-demo a.gbh-away { color: var(--zinc-500); }
@@ -838,8 +781,8 @@ body.gb-demo a.gbh-away:hover { color: var(--zinc-900); }
 .gbh-pbar__burger { display: none; color: var(--zinc-900); }
 
 /* Компактный бар <=900: замок и бургер, больше ничего. Кнопке
-   правило не нужно — она носит .gbh-cta, который на этой ширине
-   складывается сам (фолбэк в начале файла). */
+   правило не нужно — она носит .gb-btn, а фолбэк в начале файла
+   складывает .gbh-pbar .gb-btn на этой ширине. */
 @media (max-width: 900px) {
   .gbh-away,
   .gbh-pbar__icon { display: none; }
