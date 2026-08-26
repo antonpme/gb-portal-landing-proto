@@ -7,47 +7,70 @@
 <link rel="icon" href="data:," />
 
 <!-- ============================================================
-     gbppl-button-2 — THE SHOWCASE, COMPONENTS
+     gbppl-oro-components-3 — THE COMPONENT CATALOGUE
      ------------------------------------------------------------
-     Ton, 26.08: «используй лучшие практики оформления: правильно
-     группируй и отображай. Понятная сетка или матрица состояний,
-     возможно динамические фильтры. Главное, чтобы компоненты не
-     были хаотично выплеснуты на страницу.»
+     Three verdicts from Ton on 26.08 built this version.
 
-     So the page stopped being one long scroll about buttons and
-     became a catalogue with one shape per component. Every card
-     answers the same six questions in the same order, which is
-     what makes it a catalogue rather than a pile:
+     1. On the first catalogue: «На тёмном вообще выглядит странно.
+        В матрице я вообще не вижу иконок. Все кнопки одного
+        размера, их размер вообще не разнится, как будто все самые
+        большие. Надо ещё раз причесать.»
 
-       WHAT      the name and one line of purpose
-       WHERE     the file that owns it and the pages that wear it
-       PLAY      a live sample you can reconfigure (buttons only,
-                 so far: it is the only component with enough axes
-                 to be worth a control panel)
-       STATES    a matrix, rows are variants and columns are
-                 rest / hover / focus / active / disabled
-       ANATOMY   a table of numbers READ BACK out of the rendered
-                 page, not typed
-       USAGE     when to reach for which variant
-       CODE      the markup, copied by one click
+     2. On how a matrix should behave: «Матрица должна быть гибче и
+        показывать не всё сразу. Часто матрица показывает что-то
+        одно или разбита на секции. Посмотри, как это сделано у
+        других... а не придумывай велосипед.» So we read how the
+        grown systems do it before touching this file: Material 3,
+        Atlassian, Polaris, Primer, Carbon and Storybook autodocs.
+        Notes in studio scratch, REFERENCES.md. What they agree on:
+          one block per variant, never a wall of every variant
+          against every state (not one system draws that);
+          states as a TOKEN TABLE beside a live specimen;
+          sizes twice, as specimens and as numbers;
+          icons in their own subsection;
+          dark as a switch on the example frame, not a second copy
+          of the page;
+          props consolidated in one table, code beside its
+          specimen;
+          and above all: THE SAME SECTION ORDER ON EVERY COMPONENT
+          PAGE, so a reader who has learned Button can find things
+          on Field blindfold.
 
-     EVERY COMPONENT ON THIS PAGE IS THE REAL COMPONENT. Nothing is
-     a screenshot and nothing is hand-drawn: the buttons run on
-     ..\components\button.css, the fields on ..\components\auth.css.
-     If a token changes, this page changes with it, and if an
-     organism breaks, it breaks here first.
+     3. On what a showcase is for: «Properties компонента показывать
+        в дровере по клику на компонент. Всё должно быть потом
+        интерактивным.» Hence the inspector: click any specimen on
+        this page and <gb-drawer> opens with the properties measured
+        off that element, the token beside each value, the
+        modifiers it wears and its markup. It is the first brick of
+        the dev mode Ton asked for on 25.08.
 
-     THE FILTERS ARE MADE OF THE THING THEY FILTER. The chips over
-     the playground are .gb-btn at size S, selected = filled
-     primary, unselected = outline secondary. Ton-6 asks for reuse
-     before drawing, and a selectable chip is a small button; Ton-5
-     says blue is state, so the chosen chip is the blue one. No new
-     atom was invented to control a page about not inventing atoms.
+     And Ton-10, the principle that decides where the page's own
+     furniture lives: «дизайн-система показывается только системно:
+     витрина должна быть образцом системности». This page is a
+     CONSUMER, exactly like live/. Its card, tables, matrix, code
+     blocks, plaques, chips and stages are the atoms of
+     ..\components\docs.css; its drawer is ..\components\drawer.css;
+     its buttons and fields are their own organisms. What is left
+     in the <style> block below is layout and two documented
+     antidotes, and nothing else.
+
+     THE CARD TEMPLATE, in this order, for every component:
+       Overview      what it is, status, which file owns it
+       Playground    build one and read it back (where it earns it)
+       Variants      one at a time on a switchable stage
+       States        a token table, measured
+       Sizes         the height grid and its provenance
+       With icon     the glyph subsection
+       Anatomy       the measured numbers at this window width
+       Properties    the modifier table, and the inspect drawer
+       Usage         when to reach for which, and when not to
+       Accessibility what the organism does for the keyboard
+       Code          the markup to copy
+       Changelog     what changed and what it used to be called
+       Related       where to go next
 
      .is-hover / .is-focus / .is-active are DEMO-ONLY classes,
-     declared in button.css and auth.css and said out loud in both
-     state matrices below. They exist so five states can stand side
-     by side on one screen. No product page may wear them.
+     declared in button.css and auth.css and said out loud below.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,6 +82,8 @@
 <link rel="stylesheet" href="../components/header.css">
 <link rel="stylesheet" href="../components/button.css">
 <link rel="stylesheet" href="../components/auth.css">
+<link rel="stylesheet" href="../components/drawer.css">
+<link rel="stylesheet" href="../components/docs.css">
 <link rel="stylesheet" href="oro.css">
 
 <!-- data-guard="off": the showcase documents the system and is not
@@ -67,269 +92,35 @@
 
 <style>
 /* ============================================================
-   COMPONENTS — page-local composition
+   COMPONENTS — LAYOUT ONLY (Ton-10)
    ------------------------------------------------------------
-   Layout only. Not one property of a button or a field is set
-   here: everything they wear comes from their own stylesheets,
-   and a page that restyled the thing it documents would be
-   documenting a lie.
+   Not one property of a button, a field, a table or a card is set
+   here. Everything this page is built from lives in the system:
+   the documentation atoms in ..\components\docs.css, the drawer in
+   ..\components\drawer.css, the components in their own files.
+   What remains below is the width of the reading column and two
+   antidotes that are documented where they stand.
    ============================================================ */
 
-/* ---- The page contents, under the rail nav ---- */
-.toc { margin-top: 28px; }
-.toc-title {
-  display: block;
-  margin-bottom: 10px;
-  font-size: var(--eyebrow-size);
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: uppercase;
-  color: var(--zinc-400);
-}
-.toc-list { display: flex; flex-direction: column; gap: 1px; }
-.toc-link {
-  display: block;
-  padding: 6px 10px;
-  border-radius: var(--radius);
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--zinc-600);
-  text-decoration: none;
-}
-.toc-link:hover { background: var(--zinc-100); color: var(--zinc-900); }
-.toc-link.is-here { color: var(--blue-600); font-weight: 600; }
-.toc-soon { color: var(--zinc-400); }
-@media (max-width: 1023px) {
-  .toc-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
-}
-
-/* ---- Wide blocks, narrow prose ----
-   The catalogue is mostly tables and matrices, and a matrix five
-   states wide needs more room than a paragraph should ever have.
-   So the column opens up and the READING elements keep the 860
-   measure they had. Standard practice for documentation, and the
-   only page-local change to the oro shell. */
+/* Wide blocks, narrow prose. A matrix five columns wide needs more
+   room than a paragraph should ever have, so the column opens up
+   and the READING elements keep their measure. LAYOUT MEASURE:
+   1180 and 860 are column widths, not tokens. */
 .oro-col { max-width: 1180px; }
-.oro-lede, .oro-p, .oro-note, .cmp-line { max-width: 860px; }
+.oro-lede, .oro-p, .oro-note, .gbdoc-card__line { max-width: 860px; }
 
-/* ---- The component card: one shape, repeated ---- */
-.cmp { padding: 48px 0 0; }
-@media (min-width: 1280px) { .cmp { padding-top: 64px; } }
-.cmp-head { padding-bottom: 4px; }
-.cmp-line {
-  margin: 8px 0 0;
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--zinc-600);
-}
-.cmp-sub {
-  display: block;
-  margin: 32px 0 0;
-  font-size: var(--eyebrow-size);
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: uppercase;
-  color: var(--zinc-400);
-}
-
-/* ---- The reading table: where it lives, anatomy, usage ---- */
-.tbl {
-  width: 100%;
-  border: 1px solid var(--zinc-200);
-  border-radius: var(--radius);
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
-  background: var(--white);
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--zinc-700);
-}
-.tbl th, .tbl td { padding: 11px 14px; text-align: left; vertical-align: top; border-top: 1px solid var(--zinc-200); }
-.tbl thead th {
-  border-top: 0;
-  background: var(--zinc-50);
-  font-size: 12px;
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: uppercase;
-  color: var(--zinc-500);
-}
-.tbl td:first-child, .tbl th:first-child { font-weight: 600; color: var(--zinc-900); }
-.tbl td b { font-weight: 600; color: var(--zinc-900); }
-.tbl code, .code code {
-  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
-  font-size: 13px;
-  color: var(--zinc-900);
-}
-.tbl-wrap { overflow-x: auto; margin-top: 14px; }
-.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
-
-/* ---- The provenance plaque, the same one the Colors page uses.
-   Zinc, never colour: a provenance is a fact about the value, not
-   a state of the interface. ---- */
-.st {
-  display: inline-block;
-  padding: 3px 7px;
-  background: var(--zinc-100);
-  border-radius: var(--radius);
-  font-size: 10px;
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  line-height: 1.2;
-  text-transform: uppercase;
-  color: var(--zinc-600);
-  white-space: nowrap;
-}
-.st--declared { background: var(--zinc-900); color: var(--zinc-100); }
-
-/* ---- The playground ----
-   One block with internal hairlines (Russell 08-11, цельные
-   формы): controls on top, stage under them, code under that. */
-.pg {
-  margin-top: 14px;
-  border: 1px solid var(--zinc-200);
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: var(--white);
-}
-.pg-controls { padding: 16px; background: var(--zinc-50); border-bottom: 1px solid var(--zinc-200); }
-.pg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.pg-row + .pg-row { margin-top: 10px; }
-.pg-axis {
-  flex: 0 0 64px;
-  font-size: 10px;
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: uppercase;
-  color: var(--zinc-500);
-}
-.pg-stage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 176px;
-  padding: 32px;
-  background: var(--white);
-  transition: background-color var(--mo-small) var(--mo-move);
-}
-.pg-stage--dark { background: var(--zinc-950); }
-/* --block asks for the whole row, so the stage gives it one. */
-.pg-hold { display: flex; justify-content: center; max-width: 100%; }
-.pg-hold--block { width: 100%; max-width: 420px; }
-
-/* ---- The code block, copied on click ---- */
-.code {
-  position: relative;
-  margin-top: 14px;
-  border: 1px solid var(--zinc-950);
-  border-radius: var(--radius);
-  background: var(--zinc-950);
-  overflow: hidden;
-}
-.code pre {
-  margin: 0;
-  padding: 16px 96px 16px 16px;
-  overflow-x: auto;
-  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--zinc-100);
-  white-space: pre;
-}
-.code pre code { color: inherit; font-size: inherit; }
-.code-copy {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 5px 10px;
-  background: var(--zinc-800);
-  border: 1px solid var(--zinc-700);
-  border-radius: var(--radius);
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: uppercase;
-  color: var(--zinc-300);
-  cursor: pointer;
-  transition: color var(--mo-micro) var(--mo-move), background-color var(--mo-micro) var(--mo-move);
-}
-.code-copy:hover { background: var(--zinc-700); color: var(--white); }
-
-/* ---- The state matrix ----
-   Rows are variants, columns are states. One block with internal
-   hairlines, not a scatter of cards. */
-.mx { margin-top: 14px; border: 1px solid var(--zinc-200); border-radius: var(--radius); overflow: hidden; background: var(--white); }
-.mx-scroll { overflow-x: auto; }
-.mx-grid { display: grid; align-items: center; }
-.mx-grid--states { grid-template-columns: 176px repeat(5, minmax(190px, 1fr)); min-width: 1126px; }
-.mx-grid--sizes { grid-template-columns: 176px repeat(4, minmax(210px, 1fr)); min-width: 1016px; }
-.mx-grid > * { padding: 14px 16px; border-top: 1px solid var(--zinc-200); }
-.mx-grid--states > :nth-child(-n + 6) { border-top: 0; }
-.mx-grid--sizes > :nth-child(-n + 5) { border-top: 0; }
-.mx-col {
-  font-size: 10px;
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: uppercase;
-  color: var(--zinc-500);
-  background: var(--zinc-50);
-}
-.mx-name { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--zinc-900); }
-.mx-name small { display: block; margin-top: 3px; font-size: 12px; font-weight: 400; color: var(--zinc-500); }
-.mx-cell { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-/* Inverse only makes sense on a dark ground, so the page gives its
-   rows one rather than showing a white button on white and asking
-   the reader to imagine it. */
-.mx-cell--dark, .mx-name--dark { background: var(--zinc-950); border-top-color: var(--zinc-800); }
-.mx-name--dark { color: var(--zinc-100); }
-.mx-name--dark small { color: var(--zinc-400); }
-
-/* ---- The plain shelf: fields, single specimens ---- */
-.shelf {
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 24px 28px;
-  padding: 22px;
-  border: 1px solid var(--zinc-200);
-  border-radius: var(--radius);
-  background: var(--white);
-}
-.shelf--cols { align-items: stretch; }
-.slot { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-.slot--grow { flex: 1 1 240px; min-width: 220px; }
-.slot--grow > .gba-field { width: 100%; }
-.slot-cap {
-  font-size: 10px;
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: uppercase;
-  color: var(--zinc-500);
-}
-
-/* The live width readout. */
-.probe-note { margin: 14px 0 0; font-size: 15px; line-height: 1.7; color: var(--zinc-500); }
-.probe-note b { color: var(--zinc-900); font-variant-numeric: tabular-nums; }
-
-/* The probes. Off screen, never seen, measured on every resize.
-   Not display:none: a hidden element has no computed padding. */
-.probes { position: absolute; left: -9999px; top: 0; visibility: hidden; }
-
-/* Trap 3 of the skill, and the only antidote on this page: auth.css
-   reproduces the live preflight (border 0 solid on every element)
-   only INSIDE gb-guest-header and gb-auth-flow, because that is the
-   scope the computed comparison with public-login is made in. The
-   showcase stands its field specimens outside both, so the browser
-   frame comes back and the underline reads as a box. Zeroed here
-   once, exactly as index.html does it for the gate. Nothing else
-   about the field is touched. */
+/* ANTIDOTE 1, trap 3 of the skill. auth.css reproduces the live
+   preflight (border 0 solid on everything) only INSIDE
+   gb-guest-header and gb-auth-flow, because that is the scope the
+   computed comparison with public-login was made in. The showcase
+   stands its field specimens outside both, so the browser frame
+   comes back and the underline reads as a box. Zeroed here once,
+   exactly as index.html does it for the gate. */
 .gba-input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
 
-/* The count badge needs an anchor to sit on, the way it has one in
-   the bar: there the anchor is the 44px glyph button. */
+/* ANTIDOTE 2, composition. The count badge needs an anchor to sit
+   on, the way it has one in the bar: there the anchor is the 44px
+   glyph button, and here nothing else would give it one. */
 .badge-host { position: relative; width: 44px; height: 44px; display: grid; place-items: center; color: var(--zinc-900); }
 </style>
 </head>
@@ -379,14 +170,20 @@
       <span class="oro-link oro-link--soon" aria-disabled="true">Tokens <span class="oro-soon">Soon</span></span>
     </div>
 
-    <div class="toc">
-      <span class="toc-title">On this page</span>
-      <div class="toc-list">
-        <a class="toc-link" href="#buttons">Buttons</a>
-        <a class="toc-link" href="#fields">Fields</a>
-        <a class="toc-link" href="#eyebrow">Eyebrow</a>
-        <a class="toc-link" href="#badge">Count badge</a>
-        <a class="toc-link toc-soon" href="#soon">Documented soon</a>
+    <div class="oro-toc">
+      <span class="oro-toc-title">On this page</span>
+      <div class="oro-toc-list">
+        <a class="oro-toc-link" href="#buttons">Buttons</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#variants">Variants</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#states">States</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#sizes">Sizes</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#icons">With icon</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#properties">Properties</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#usage">Usage</a>
+        <a class="oro-toc-link" href="#fields">Fields</a>
+        <a class="oro-toc-link" href="#eyebrow">Eyebrow</a>
+        <a class="oro-toc-link" href="#badge">Count badge</a>
+        <a class="oro-toc-link oro-toc-link--soon" href="#soon">Documented soon</a>
       </div>
     </div>
   </nav>
@@ -400,72 +197,74 @@
       <header class="oro-head">
         <span class="gb-eyebrow">Design system</span>
         <h1 class="oro-h1">Components</h1>
-        <p class="oro-lede">One card per component, and every card answers the same questions in the same order: what it is, which file owns it, how it behaves in every state, what it measures, when to reach for which variant, and the markup to copy. Everything here is the live component running on the live stylesheet, and the numbers are read back out of the rendered page at your current window width.</p>
-        <p class="probe-note">Window width right now: <b id="wnow">measuring</b>. The button ladders step at 640, 768, 1280 and 2000.</p>
+        <p class="oro-lede">One card per component, and every card answers the same questions in the same order: what it is, how it behaves, what it measures, when to reach for it and the markup to copy. Everything here is the live component running on the live stylesheet, every number is read back out of the rendered page at your current window width, and clicking any specimen opens its properties.</p>
+        <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The button ladders step at 640, 768, 1280 and 2000.</p>
       </header>
 
       <!-- ============================================================
            BUTTONS
            ============================================================ -->
-      <section class="cmp" id="buttons">
-        <header class="cmp-head">
+      <section class="gbdoc-card" id="buttons">
+        <header class="gbdoc-card__head">
           <span class="gb-eyebrow">Component</span>
-          <h2 class="oro-h2">Buttons</h2>
-          <p class="cmp-line">The one class every action in the product wears: four sizes, three types, three colours, five states and an optional glyph on either side.</p>
+          <h2 class="oro-h2">Buttons <span class="gbdoc-flag gbdoc-status">Stable</span></h2>
+          <p class="gbdoc-card__line">The one class every action in the product wears: four sizes, three types, three colours, five states and an optional glyph on either side.</p>
         </header>
 
-        <span class="cmp-sub">Where it lives</span>
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <!-- ---- OVERVIEW ---- -->
+        <span class="gbdoc-sub">Overview</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <tbody>
             <tr><td>Owner</td><td><code>system/components/button.css</code>, and the button organism block of <code>system/assets/tokens.css</code> for every number in it</td></tr>
             <tr><td>Class</td><td><code>.gb-btn</code>, with <code>.gb-btn__label</code> and <code>.gb-btn__icon</code> inside it</td></tr>
             <tr><td>Worn by</td><td>Site header and portal bar, guest sign in, the booking flow, checkout, the portal landing and its start popup, the studio bar and the gate</td></tr>
             <tr><td>Defaults</td><td>A bare <code>gb-btn</code> is filled, primary and size L, which is the button the product asks for most often</td></tr>
+            <tr><td>Status</td><td>Stable since 26 August, when every consumer was migrated onto it and the four local button ladders were deleted</td></tr>
           </tbody>
         </table>
         </div>
 
         <!-- ---- PLAYGROUND ---- -->
-        <span class="cmp-sub">Playground</span>
+        <span class="gbdoc-sub">Playground</span>
         <h3 class="oro-h3">Build a button and read it back</h3>
         <p class="oro-p">Pick a cell and the sample, the markup and the measurements all move together. The chips are themselves buttons at size S: the chosen one is filled primary, because blue is how this system says chosen.</p>
 
-        <div class="pg">
-          <div class="pg-controls" id="pgControls">
-            <div class="pg-row" data-axis="size">
-              <span class="pg-axis">Size</span>
+        <div class="gbdoc-frame">
+          <div class="gbdoc-controls" id="pgControls">
+            <div class="gbdoc-axis" data-axis="size">
+              <span class="gbdoc-axis__name">Size</span>
               <button class="gb-btn gb-btn--s" type="button" data-val="s"><span class="gb-btn__label">S</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="m"><span class="gb-btn__label">M</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="l"><span class="gb-btn__label">L</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="xl"><span class="gb-btn__label">XL</span></button>
             </div>
-            <div class="pg-row" data-axis="type">
-              <span class="pg-axis">Type</span>
+            <div class="gbdoc-axis" data-axis="type">
+              <span class="gbdoc-axis__name">Type</span>
               <button class="gb-btn gb-btn--s" type="button" data-val="filled"><span class="gb-btn__label">Filled</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="outline"><span class="gb-btn__label">Outline</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="ghost"><span class="gb-btn__label">Ghost</span></button>
             </div>
-            <div class="pg-row" data-axis="colour">
-              <span class="pg-axis">Colour</span>
+            <div class="gbdoc-axis" data-axis="colour">
+              <span class="gbdoc-axis__name">Colour</span>
               <button class="gb-btn gb-btn--s" type="button" data-val="primary"><span class="gb-btn__label">Primary</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="secondary"><span class="gb-btn__label">Secondary</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="inverse"><span class="gb-btn__label">Inverse</span></button>
             </div>
-            <div class="pg-row" data-axis="icon">
-              <span class="pg-axis">Icon</span>
+            <div class="gbdoc-axis" data-axis="icon">
+              <span class="gbdoc-axis__name">Icon</span>
               <button class="gb-btn gb-btn--s" type="button" data-val="none"><span class="gb-btn__label">None</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="before"><span class="gb-btn__label">Before</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="after"><span class="gb-btn__label">After</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="both"><span class="gb-btn__label">Both</span></button>
             </div>
-            <div class="pg-row" data-axis="width">
-              <span class="pg-axis">Width</span>
+            <div class="gbdoc-axis" data-axis="width">
+              <span class="gbdoc-axis__name">Width</span>
               <button class="gb-btn gb-btn--s" type="button" data-val="auto"><span class="gb-btn__label">Auto</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="block"><span class="gb-btn__label">Block</span></button>
             </div>
-            <div class="pg-row" data-axis="state">
-              <span class="pg-axis">State</span>
+            <div class="gbdoc-axis" data-axis="state">
+              <span class="gbdoc-axis__name">State</span>
               <button class="gb-btn gb-btn--s" type="button" data-val="rest"><span class="gb-btn__label">Rest</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="hover"><span class="gb-btn__label">Hover</span></button>
               <button class="gb-btn gb-btn--s" type="button" data-val="focus"><span class="gb-btn__label">Focus</span></button>
@@ -473,214 +272,221 @@
               <button class="gb-btn gb-btn--s" type="button" data-val="disabled"><span class="gb-btn__label">Disabled</span></button>
             </div>
           </div>
-          <div class="pg-stage" id="pgStage">
-            <div class="pg-hold" id="pgHold"></div>
+          <div class="gbdoc-stage gbdoc-stage--center" id="pgStage" data-inspect="button">
+            <div class="gbdoc-hold" id="pgHold"></div>
           </div>
         </div>
 
-        <div class="code">
-          <button class="code-copy" type="button" data-copy="#pgCode">Copy</button>
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
           <pre><code id="pgCode"></code></pre>
         </div>
 
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead><tr><th>Measured on the sample</th><th>Value</th><th>Measured on the sample</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>Height</td><td class="num" id="pgH"></td><td>Label</td><td class="num" id="pgLabel"></td></tr>
-            <tr><td>Padding</td><td class="num" id="pgPad"></td><td>Icon</td><td class="num" id="pgIcon"></td></tr>
-            <tr><td>Gap</td><td class="num" id="pgGap"></td><td>Outer type</td><td class="num" id="pgFont"></td></tr>
-            <tr><td>Ground</td><td class="num" id="pgBg"></td><td>Ink</td><td class="num" id="pgInk"></td></tr>
+            <tr><td>Height</td><td class="gbdoc-num" id="pgH"></td><td>Label</td><td class="gbdoc-num" id="pgLabel"></td></tr>
+            <tr><td>Padding</td><td class="gbdoc-num" id="pgPad"></td><td>Icon</td><td class="gbdoc-num" id="pgIcon"></td></tr>
+            <tr><td>Gap</td><td class="gbdoc-num" id="pgGap"></td><td>Outer type</td><td class="gbdoc-num" id="pgFont"></td></tr>
+            <tr><td>Ground</td><td class="gbdoc-num" id="pgBg"></td><td>Ink</td><td class="gbdoc-num" id="pgInk"></td></tr>
           </tbody>
         </table>
         </div>
 
-        <!-- ---- STATE MATRIX ---- -->
-        <span class="cmp-sub">States</span>
-        <h3 class="oro-h3">Nine variants across five states</h3>
-        <p class="oro-p">Rows are a type crossed with a colour, columns are the five states, and every cell is a real button. Hover always darkens. That is a rule and not a preference: a button that lightens under the pointer reads as switched off, and it is the one thing about our buttons the live product has already corrected us on. Focus is a ring rather than a colour change, so it can sit on top of any other state without arguing with it, and it appears for the keyboard only.</p>
+        <!-- ---- VARIANTS ---- -->
+        <span class="gbdoc-sub" id="variants">Variants</span>
+        <h3 class="oro-h3">One variant at a time, in four sizes and five states</h3>
+        <p class="oro-p">Three types crossed with two colours make the six buttons of a light screen, and inverse makes the ones that stand on a dark one. The table names them all; the stage under it shows one. Pick a variant and the top band walks it up the four size ladders, with the height and the label size read off each specimen, while the band below shows the same variant in five states. Click any specimen to open its properties.</p>
 
-        <div class="mx">
-          <div class="mx-scroll">
-          <div class="mx-grid mx-grid--states">
-            <span class="mx-col">Variant, size L</span>
-            <span class="mx-col">Rest</span>
-            <span class="mx-col">Hover</span>
-            <span class="mx-col">Focus</span>
-            <span class="mx-col">Active</span>
-            <span class="mx-col">Disabled</span>
-
-            <div class="mx-name">Filled primary<small>The one action of the screen</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Order</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary is-hover" type="button"><span class="gb-btn__label">Order</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary is-focus" type="button"><span class="gb-btn__label">Order</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary is-active" type="button"><span class="gb-btn__label">Order</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" type="button" disabled><span class="gb-btn__label">Order</span></button></div>
-
-            <div class="mx-name">Filled secondary<small>Furniture that still needs weight</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary" type="button"><span class="gb-btn__label">Explore</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary is-hover" type="button"><span class="gb-btn__label">Explore</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary is-focus" type="button"><span class="gb-btn__label">Explore</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary is-active" type="button"><span class="gb-btn__label">Explore</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--secondary" type="button" disabled><span class="gb-btn__label">Explore</span></button></div>
-
-            <div class="mx-name">Outline primary<small>A second action beside a filled one</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--primary" type="button"><span class="gb-btn__label">Add gift</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--primary is-hover" type="button"><span class="gb-btn__label">Add gift</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--primary is-focus" type="button"><span class="gb-btn__label">Add gift</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--primary is-active" type="button"><span class="gb-btn__label">Add gift</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--primary" type="button" disabled><span class="gb-btn__label">Add gift</span></button></div>
-
-            <div class="mx-name">Outline secondary<small>The live header pair, My portal</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary is-hover" type="button"><span class="gb-btn__label">My portal</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary is-focus" type="button"><span class="gb-btn__label">My portal</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary is-active" type="button"><span class="gb-btn__label">My portal</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button" disabled><span class="gb-btn__label">My portal</span></button></div>
-
-            <div class="mx-name">Ghost primary<small>Outline minus the hairline</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--primary" type="button"><span class="gb-btn__label">Details</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--primary is-hover" type="button"><span class="gb-btn__label">Details</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--primary is-focus" type="button"><span class="gb-btn__label">Details</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--primary is-active" type="button"><span class="gb-btn__label">Details</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--primary" type="button" disabled><span class="gb-btn__label">Details</span></button></div>
-
-            <div class="mx-name">Ghost secondary<small>The quietest thing that is still a button</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--secondary is-hover" type="button"><span class="gb-btn__label">Cancel</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--secondary is-focus" type="button"><span class="gb-btn__label">Cancel</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--secondary is-active" type="button"><span class="gb-btn__label">Cancel</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--secondary" type="button" disabled><span class="gb-btn__label">Cancel</span></button></div>
-
-            <div class="mx-name mx-name--dark">Filled inverse<small>White on the dark ground</small></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--inverse" type="button"><span class="gb-btn__label">Start</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--inverse is-hover" type="button"><span class="gb-btn__label">Start</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--inverse is-focus" type="button"><span class="gb-btn__label">Start</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--inverse is-active" type="button"><span class="gb-btn__label">Start</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--inverse" type="button" disabled><span class="gb-btn__label">Start</span></button></div>
-
-            <div class="mx-name mx-name--dark">Outline inverse<small>Live on the transparent header</small></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse" type="button"><span class="gb-btn__label">Gifts</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse is-hover" type="button"><span class="gb-btn__label">Gifts</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse is-focus" type="button"><span class="gb-btn__label">Gifts</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse is-active" type="button"><span class="gb-btn__label">Gifts</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--inverse" type="button" disabled><span class="gb-btn__label">Gifts</span></button></div>
-
-            <div class="mx-name mx-name--dark">Ghost inverse<small>For a dark panel that is already busy</small></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--inverse" type="button"><span class="gb-btn__label">Not now</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--inverse is-hover" type="button"><span class="gb-btn__label">Not now</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--inverse is-focus" type="button"><span class="gb-btn__label">Not now</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--inverse is-active" type="button"><span class="gb-btn__label">Not now</span></button></div>
-            <div class="mx-cell mx-cell--dark"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--inverse" type="button" disabled><span class="gb-btn__label">Not now</span></button></div>
-          </div>
-          </div>
-        </div>
-
-        <div class="tbl-wrap">
-        <table class="tbl">
-          <thead><tr><th>State</th><th>What changes</th><th>Value</th><th>Provenance</th></tr></thead>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Variant</th><th>What it is for</th><th>Where it stands today</th></tr></thead>
           <tbody>
-            <tr><td>Hover</td><td>The fill darkens one rung, or an outline and a ghost lay a wash under themselves</td><td>Blue 600 to Blue 700, Zinc 900 to Zinc 950, wash Zinc 300 at 20 per cent</td><td><span class="st">Live</span></td></tr>
-            <tr><td>Focus</td><td>A 2px ring at 2px offset, keyboard only</td><td>Blue 600, and white on a dark ground</td><td><span class="st st--declared">Declared</span></td></tr>
-            <tr><td>Active</td><td>One rung further than hover</td><td>Blue 800, black, wash at 35 per cent</td><td><span class="st st--declared">Declared</span></td></tr>
-            <tr><td>Disabled</td><td>The whole button fades and stops answering the pointer</td><td>Opacity 0.6</td><td><span class="st">Live</span></td></tr>
+            <tr><td>Filled primary</td><td>The single action the screen is asking for</td><td>Book a meeting, Place order, Continue, every form submit</td></tr>
+            <tr><td>Filled secondary</td><td>Furniture that still has to carry weight, where no blue action competes</td><td>Send a gift card on the portal</td></tr>
+            <tr><td>Outline primary</td><td>A second action of the same rank beside a filled one</td><td>Nothing on live yet. Declared and ready</td></tr>
+            <tr><td>Outline secondary</td><td>Permanent chrome: the action that is simply always there</td><td>My portal, Lock, Copy number, Change choice</td></tr>
+            <tr><td>Ghost primary</td><td>A quiet action that still belongs to the blue family</td><td>Nothing on live yet. Declared and ready</td></tr>
+            <tr><td>Ghost secondary</td><td>The quiet exit: Cancel, Not now</td><td>The checkout drawers</td></tr>
+            <tr><td>Outline inverse</td><td>Chrome on a dark ground</td><td>My portal over the hero video, the dark Gifts panel</td></tr>
+            <tr><td>Ghost inverse</td><td>The quiet one on a dark panel that is already busy</td><td>Nothing on live yet. Declared and ready</td></tr>
+            <tr><td>Filled inverse</td><td>Nothing. A solid white button appears on no live screen, so the workbench does not offer one and the showcase does not teach one</td><td>Waiting on a decision from Ton</td></tr>
           </tbody>
         </table>
         </div>
 
-        <p class="oro-note">The hover, focus and active buttons above are held in state by <code>.is-hover</code>, <code>.is-focus</code> and <code>.is-active</code>. Those three classes are demo only. They exist so this page can stand five states side by side, and no product page may wear them.</p>
+        <div class="gbdoc-frame">
+          <div class="gbdoc-controls" id="wbControls">
+            <div class="gbdoc-axis" data-axis="type">
+              <span class="gbdoc-axis__name">Type</span>
+              <button class="gb-btn gb-btn--s" type="button" data-val="filled"><span class="gb-btn__label">Filled</span></button>
+              <button class="gb-btn gb-btn--s" type="button" data-val="outline"><span class="gb-btn__label">Outline</span></button>
+              <button class="gb-btn gb-btn--s" type="button" data-val="ghost"><span class="gb-btn__label">Ghost</span></button>
+            </div>
+            <div class="gbdoc-axis" data-axis="colour">
+              <span class="gbdoc-axis__name">Colour</span>
+              <button class="gb-btn gb-btn--s" type="button" data-val="primary"><span class="gb-btn__label">Primary</span></button>
+              <button class="gb-btn gb-btn--s" type="button" data-val="secondary"><span class="gb-btn__label">Secondary</span></button>
+              <button class="gb-btn gb-btn--s" type="button" data-val="inverse"><span class="gb-btn__label">Inverse</span></button>
+            </div>
+            <div class="gbdoc-axis" data-axis="ground">
+              <span class="gbdoc-axis__name">Ground</span>
+              <button class="gb-btn gb-btn--s" type="button" data-val="light"><span class="gb-btn__label">Light</span></button>
+              <button class="gb-btn gb-btn--s" type="button" data-val="dark"><span class="gb-btn__label">Dark</span></button>
+            </div>
+          </div>
+          <div class="gbdoc-stage" id="wbStage" data-inspect="button">
+            <div class="gbdoc-band">
+              <span class="gbdoc-band__cap" id="wbSizesCap">Sizes</span>
+              <div class="gbdoc-row" id="wbSizes"></div>
+            </div>
+            <div class="gbdoc-band">
+              <span class="gbdoc-band__cap" id="wbStatesCap">States</span>
+              <div class="gbdoc-row" id="wbStates"></div>
+            </div>
+          </div>
+          <p class="gbdoc-foot" id="wbFoot"></p>
+        </div>
 
-        <!-- ---- SIZE OVERVIEW ---- -->
-        <span class="cmp-sub">Sizes</span>
+        <p class="oro-note">The dark ground is a switch on the stage rather than a second copy of the page, which is how Storybook, Atlassian and Primer all handle a theme. It offers only what the live site puts on a dark ground: over the hero video the transparent header carries My portal, a white hairline with a white label, and Book a meeting, which stays exactly as blue on the dark ground as it is on the white one. Contrast measured off the rendered page: white label on Zinc 950 <b id="ctInv">measuring</b> to 1, the blue ground against the plate <b id="ctBlue">measuring</b> to 1, which clears the 3 to 1 a control needs, and the white label on that blue <b id="ctBlueInk">measuring</b> to 1.</p>
+
+        <!-- ---- STATES ---- -->
+        <span class="gbdoc-sub" id="states">States</span>
+        <h3 class="oro-h3">What changes, and to what</h3>
+        <p class="oro-p">The table follows the workbench: it is filled by measuring the five specimens standing above it, so it always describes the variant on the stage and never a general case. Hover always darkens. That is a rule and not a preference: a button that lightens under the pointer reads as switched off, and it is the one thing about our buttons the live product has already corrected us on. Focus is a ring rather than a colour change, so it can sit on top of any other state without arguing with it, and it appears for the keyboard only.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>State</th><th>Ground</th><th>Ink</th><th>Hairline</th><th>Token</th></tr></thead>
+          <tbody id="stBody"></tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">The rest specimen on the stage is a real button: hover it, tab to it, hold the pointer down on it. The other four are held still by <code>.is-hover</code>, <code>.is-focus</code> and <code>.is-active</code>, plus a real <code>disabled</code>. Those three classes are demo only. They exist so five states can stand side by side on one screen, and no product page may wear them.</p>
+
+        <!-- ---- SIZES ---- -->
+        <span class="gbdoc-sub" id="sizes">Sizes</span>
         <h3 class="oro-h3">Four ladders on one grid of heights</h3>
-        <p class="oro-p">Ton set the grid on 26 August: 72 at the top for screens of 2K and above, then 64, then 56, then 48 and on down by eight. Four ladders walk it, and each one climbs a step at 1280 and again at 2000. In the matrix under the grid, rows are the variant and columns are the ladder.</p>
+        <p class="oro-p">Ton set the grid on 26 August: 72 at the top for screens of 2K and above, then 64, then 56, then 48 and on down by eight. Four ladders walk it, and each one climbs a step at 1280 and again at 2000, which is why the captions on the stage carry the height this browser is rendering right now rather than a number typed into the page.</p>
 
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead><tr><th>Height</th><th>Who stands on it</th><th>Where it came from</th><th>Provenance</th></tr></thead>
           <tbody>
-            <tr><td class="num">72</td><td>XL from 2000</td><td>The live product page Continue, and the size Ton named for 2K and above</td><td><span class="st">Live</span></td></tr>
-            <tr><td class="num">64</td><td>XL from 1280, L from 2000</td><td>Live product Continue and the live sign in submit</td><td><span class="st">Live</span></td></tr>
-            <tr><td class="num">56</td><td>XL base, L from 1280, M from 2000</td><td>Live product Continue and the live sign in submit</td><td><span class="st">Live</span></td></tr>
-            <tr><td class="num">48</td><td>L base, M from 1280, S from 2000</td><td>The live sign in submit and the live public header</td><td><span class="st">Live</span></td></tr>
-            <tr><td class="num">42</td><td>S from 1280</td><td>The live public header, and the one step off the grid of eight. Live wins over the formula, so it stays recorded rather than rounded away</td><td><span class="st">Live</span></td></tr>
-            <tr><td class="num">40</td><td>M base</td><td>The size that was missing. Nothing stood on this rung and no ladder started between the header and the form, so M was cut to fill it</td><td><span class="st st--declared">Declared</span></td></tr>
-            <tr><td class="num">36</td><td>S base</td><td>The live public header</td><td><span class="st">Live</span></td></tr>
+            <tr><td class="gbdoc-num">72</td><td>XL from 2000</td><td>The live product page Continue, and the size Ton named for 2K and above</td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td class="gbdoc-num">64</td><td>XL from 1280, L from 2000</td><td>Live product Continue and the live sign in submit</td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td class="gbdoc-num">56</td><td>XL base, L from 1280, M from 2000</td><td>Live product Continue and the live sign in submit</td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td class="gbdoc-num">48</td><td>L base, M from 1280, S from 2000</td><td>The live sign in submit and the live public header</td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td class="gbdoc-num">42</td><td>S from 1280</td><td>The live public header, and the one step off the grid of eight. Live wins over the formula, so it stays recorded rather than rounded away</td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td class="gbdoc-num">40</td><td>M base</td><td>The size that was missing. Nothing stood on this rung and no ladder started between the header and the form, so M was cut to fill it</td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span></td></tr>
+            <tr><td class="gbdoc-num">36</td><td>S base</td><td>The live public header</td><td><span class="gbdoc-flag">Live</span></td></tr>
           </tbody>
         </table>
         </div>
 
-        <div class="mx">
-          <div class="mx-scroll">
-          <div class="mx-grid mx-grid--sizes">
-            <span class="mx-col">Variant</span>
-            <span class="mx-col">S · chrome</span>
-            <span class="mx-col">M · panels</span>
-            <span class="mx-col">L · forms</span>
-            <span class="mx-col">XL · committing</span>
+        <!-- ---- WITH ICON ---- -->
+        <span class="gbdoc-sub" id="icons">With icon</span>
+        <h3 class="oro-h3">The glyph climbs the same ladder</h3>
+        <p class="oro-p">The arrow is the live one, the glyph Book a meeting and the product Continue both carry. It is drawn in <code>currentColor</code>, so it is always exactly the ink of the label beside it, and its box steps with the size. Which side it stands on is DOM order and nothing else: there is no left modifier and no right modifier, and both at once is two spans.</p>
 
-            <div class="mx-name">Filled primary<small>36, 40, 48 and 56 at base width</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Book a meeting</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--m gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Book a meeting</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Book a meeting</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Book a meeting</span></button></div>
+        <div class="gbdoc-matrix">
+          <div class="gbdoc-scroll">
+          <div class="gbdoc-grid gbdoc-grid--icons" data-inspect="button">
+            <span class="gbdoc-colhead">Size</span>
+            <span class="gbdoc-colhead">Icon before</span>
+            <span class="gbdoc-colhead">Icon after</span>
+            <span class="gbdoc-colhead">Both</span>
 
-            <div class="mx-name">Outline secondary<small>The same four heights, cut open</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--m gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--xl gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">My portal</span></button></div>
+            <div class="gbdoc-rowhead">S · chrome<small>glyph <b data-mi="s">measuring</b>, label <b data-ml="s">measuring</b></small></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span><span class="gb-btn__label">Continue</span></button></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Continue</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span><span class="gb-btn__label">Continue</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div>
 
-            <div class="mx-name">Ghost secondary<small>Glyph ladder 16 to 24, and 28 at XL</small></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Download</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3.5v13M6.5 11l5.5 5.5L17.5 11M4 20.5h16"/></svg></span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--m gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Download</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3.5v13M6.5 11l5.5 5.5L17.5 11M4 20.5h16"/></svg></span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--l gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Download</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3.5v13M6.5 11l5.5 5.5L17.5 11M4 20.5h16"/></svg></span></button></div>
-            <div class="mx-cell"><button class="gb-btn gb-btn--xl gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Download</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3.5v13M6.5 11l5.5 5.5L17.5 11M4 20.5h16"/></svg></span></button></div>
+            <div class="gbdoc-rowhead">M · panels<small>glyph <b data-mi="m">measuring</b>, label <b data-ml="m">measuring</b></small></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--m gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span><span class="gb-btn__label">Continue</span></button></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--m gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Continue</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--m gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span><span class="gb-btn__label">Continue</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div>
+
+            <div class="gbdoc-rowhead">L · forms<small>glyph <b data-mi="l">measuring</b>, label <b data-ml="l">measuring</b></small></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span><span class="gb-btn__label">Continue</span></button></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Continue</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span><span class="gb-btn__label">Continue</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div>
+
+            <div class="gbdoc-rowhead">XL · committing<small>glyph <b data-mi="xl">measuring</b>, label <b data-ml="xl">measuring</b></small></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span><span class="gb-btn__label">Continue</span></button></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Continue</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div>
+            <div class="gbdoc-cell"><button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span><span class="gb-btn__label">Continue</span><span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div>
           </div>
           </div>
         </div>
 
+        <p class="oro-note">One glyph scale is shared by two ladders on purpose: M reads the L rungs, 16 then 20 then 24, because the two sit one step apart in height and a separate scale for the gap between them would be a number nothing ever measured. XL is the only ladder with a rung of its own, 28 from 2000. In a <code>--block</code> button the glyph leaves the row and parks against the padding edge, which is what the width axis of the playground shows. An icon only button does not exist yet: the systems that have one make a tooltip compulsory with it, so it is a decision and not an omission.</p>
+
         <!-- ---- ANATOMY ---- -->
-        <span class="cmp-sub">Anatomy</span>
+        <span class="gbdoc-sub">Anatomy</span>
         <h3 class="oro-h3">What each ladder measures right now</h3>
         <p class="oro-p">The table is measured, not typed: four hidden buttons wearing the four sizes are read with getComputedStyle every time the window changes size, so what you see is what this browser is rendering at this moment. Resize the window and the table moves with the ladders, which is the only honest way to show a scale that depends on screen width.</p>
-        <p class="probe-note">Measured at <b id="wnow2">measuring</b> wide.</p>
+        <p class="gbdoc-readout">Measured at <b id="wnow2">measuring</b> wide.</p>
 
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead>
             <tr><th>Measure</th><th>S · chrome</th><th>M · panels</th><th>L · forms</th><th>XL · committing</th><th>Provenance</th></tr>
           </thead>
           <tbody>
-            <tr><td>Height</td><td class="num" data-m="h" data-s="s"></td><td class="num" data-m="h" data-s="m"></td><td class="num" data-m="h" data-s="l"></td><td class="num" data-m="h" data-s="xl"></td><td><span class="st">Live</span> S, L, XL · <span class="st st--declared">Declared</span> M</td></tr>
-            <tr><td>Padding, vertical</td><td class="num" data-m="py" data-s="s"></td><td class="num" data-m="py" data-s="m"></td><td class="num" data-m="py" data-s="l"></td><td class="num" data-m="py" data-s="xl"></td><td><span class="st">Live</span>, a flat 8 everywhere</td></tr>
-            <tr><td>Padding, horizontal</td><td class="num" data-m="px" data-s="s"></td><td class="num" data-m="px" data-s="m"></td><td class="num" data-m="px" data-s="l"></td><td class="num" data-m="px" data-s="xl"></td><td><span class="st">Live</span> S, L, XL · <span class="st st--declared">Declared</span> M</td></tr>
-            <tr><td>Gap</td><td class="num" data-m="gap" data-s="s"></td><td class="num" data-m="gap" data-s="m"></td><td class="num" data-m="gap" data-s="l"></td><td class="num" data-m="gap" data-s="xl"></td><td><span class="st">Live</span> S and L · <span class="st st--declared">Declared</span> M and XL</td></tr>
-            <tr><td>Label</td><td class="num" data-m="label" data-s="s"></td><td class="num" data-m="label" data-s="m"></td><td class="num" data-m="label" data-s="l"></td><td class="num" data-m="label" data-s="xl"></td><td><span class="st">Live</span> S, L, XL · <span class="st st--declared">Declared</span> M</td></tr>
-            <tr><td>Icon</td><td class="num" data-m="icon" data-s="s"></td><td class="num" data-m="icon" data-s="m"></td><td class="num" data-m="icon" data-s="l"></td><td class="num" data-m="icon" data-s="xl"></td><td><span class="st">Live</span> L and M · <span class="st st--declared">Declared</span> S and XL</td></tr>
-            <tr><td>Outer type</td><td class="num" data-m="font" data-s="s"></td><td class="num" data-m="font" data-s="m"></td><td class="num" data-m="font" data-s="l"></td><td class="num" data-m="font" data-s="xl"></td><td><span class="st">Live</span> S, L, XL · <span class="st st--declared">Declared</span> M</td></tr>
-            <tr><td>Radius</td><td class="num" data-m="r" data-s="s"></td><td class="num" data-m="r" data-s="m"></td><td class="num" data-m="r" data-s="l"></td><td class="num" data-m="r" data-s="xl"></td><td><span class="st">Live</span>, the one brand radius</td></tr>
+            <tr><td>Height</td><td class="gbdoc-num" data-m="h" data-s="s"></td><td class="gbdoc-num" data-m="h" data-s="m"></td><td class="gbdoc-num" data-m="h" data-s="l"></td><td class="gbdoc-num" data-m="h" data-s="xl"></td><td><span class="gbdoc-flag">Live</span> S, L, XL · <span class="gbdoc-flag gbdoc-flag--declared">Declared</span> M</td></tr>
+            <tr><td>Padding, vertical</td><td class="gbdoc-num" data-m="py" data-s="s"></td><td class="gbdoc-num" data-m="py" data-s="m"></td><td class="gbdoc-num" data-m="py" data-s="l"></td><td class="gbdoc-num" data-m="py" data-s="xl"></td><td><span class="gbdoc-flag">Live</span>, a flat 8 everywhere</td></tr>
+            <tr><td>Padding, horizontal</td><td class="gbdoc-num" data-m="px" data-s="s"></td><td class="gbdoc-num" data-m="px" data-s="m"></td><td class="gbdoc-num" data-m="px" data-s="l"></td><td class="gbdoc-num" data-m="px" data-s="xl"></td><td><span class="gbdoc-flag">Live</span> S, L, XL · <span class="gbdoc-flag gbdoc-flag--declared">Declared</span> M</td></tr>
+            <tr><td>Gap</td><td class="gbdoc-num" data-m="gap" data-s="s"></td><td class="gbdoc-num" data-m="gap" data-s="m"></td><td class="gbdoc-num" data-m="gap" data-s="l"></td><td class="gbdoc-num" data-m="gap" data-s="xl"></td><td><span class="gbdoc-flag">Live</span> S and L · <span class="gbdoc-flag gbdoc-flag--declared">Declared</span> M and XL</td></tr>
+            <tr><td>Label</td><td class="gbdoc-num" data-m="label" data-s="s"></td><td class="gbdoc-num" data-m="label" data-s="m"></td><td class="gbdoc-num" data-m="label" data-s="l"></td><td class="gbdoc-num" data-m="label" data-s="xl"></td><td><span class="gbdoc-flag">Live</span> S, L, XL · <span class="gbdoc-flag gbdoc-flag--declared">Declared</span> M</td></tr>
+            <tr><td>Icon</td><td class="gbdoc-num" data-m="icon" data-s="s"></td><td class="gbdoc-num" data-m="icon" data-s="m"></td><td class="gbdoc-num" data-m="icon" data-s="l"></td><td class="gbdoc-num" data-m="icon" data-s="xl"></td><td><span class="gbdoc-flag">Live</span> L and M · <span class="gbdoc-flag gbdoc-flag--declared">Declared</span> S and XL</td></tr>
+            <tr><td>Outer type</td><td class="gbdoc-num" data-m="font" data-s="s"></td><td class="gbdoc-num" data-m="font" data-s="m"></td><td class="gbdoc-num" data-m="font" data-s="l"></td><td class="gbdoc-num" data-m="font" data-s="xl"></td><td><span class="gbdoc-flag">Live</span> S, L, XL · <span class="gbdoc-flag gbdoc-flag--declared">Declared</span> M</td></tr>
+            <tr><td>Radius</td><td class="gbdoc-num" data-m="r" data-s="s"></td><td class="gbdoc-num" data-m="r" data-s="m"></td><td class="gbdoc-num" data-m="r" data-s="l"></td><td class="gbdoc-num" data-m="r" data-s="xl"></td><td><span class="gbdoc-flag">Live</span>, the one brand radius</td></tr>
           </tbody>
         </table>
         </div>
 
-        <p class="oro-note">A note on the proportion formula of 17 August, pad-y = 0.24H and pad-x = 0.5H with the gap equal to pad-y. It still describes the small end well: 36 gives 8.6, which rounds to the live 8. Above that, live and the formula part company. The live form submit and the live product CTA both hold pad-y at 8 and run their gaps two or three times wider than that. Where live has measured a number, live wins, and the formula is the tie breaker for the sizes live has never shown, which is why every number of the new M ladder is marked declared.</p>
+        <p class="oro-note">A note on the proportion formula of 17 August, pad-y = 0.24H and pad-x = 0.5H with the gap equal to pad-y. It still describes the small end well: 36 gives 8.6, which rounds to the live 8. Above that, live and the formula part company. The live form submit and the live product CTA both hold pad-y at 8 and run their gaps two or three times wider than that. Where live has measured a number, live wins, and the formula is the tie breaker for the sizes live has never shown, which is why every number of the M ladder is marked declared.</p>
+
+        <!-- ---- PROPERTIES ---- -->
+        <span class="gbdoc-sub" id="properties">Properties</span>
+        <h3 class="oro-h3">The modifiers, and the drawer that reads a specimen</h3>
+        <p class="oro-p">Two layers, the way the mature systems keep them. The table is the whole surface of the component, readable and linkable in one piece. The drawer answers a different question, about one specimen: click any button on this page and it opens with the geometry, the type, the colours and the transition measured off that element, with the token that produced each value beside it. It is the first brick of the dev mode Ton asked for, and it means a developer never has to open a stylesheet to learn what a component measures.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Modifier</th><th>Axis</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>--s --m --l --xl</code></td><td>Size</td><td><code>--l</code></td><td>Chooses which of the four ladders the geometry slots point at. All four are declared on the element, so a size modifier can never lose a specificity race</td></tr>
+            <tr><td><code>--filled --outline --ghost</code></td><td>Type</td><td><code>--filled</code></td><td>How the paint slots read the palette: filled spends the fill, outline and ghost spend the accent and lay a wash under themselves on hover</td></tr>
+            <tr><td><code>--primary --secondary --inverse</code></td><td>Colour</td><td><code>--primary</code></td><td>Which palette the paint slots point at. Blue is state, black is furniture, white is for a dark ground</td></tr>
+            <tr><td><code>--block</code></td><td>Width</td><td>off</td><td>The button takes the whole row: 100 per cent wide, the glyph parked against the padding edge and the label centred in the full width</td></tr>
+            <tr><td><code>.gb-btn__label</code></td><td>Slot</td><td>required</td><td>The label span. Carries the label type on top of the ladder type, so the two never drift apart</td></tr>
+            <tr><td><code>.gb-btn__icon</code></td><td>Slot</td><td>optional</td><td>A square box in the current ink. Before or after the label is DOM order; two glyphs is two spans</td></tr>
+            <tr><td><code>disabled</code></td><td>State</td><td>off</td><td>The native attribute. On a link use <code>aria-disabled="true"</code>, which the organism honours the same way</td></tr>
+            <tr><td><code>.is-hover .is-focus .is-active</code></td><td>Demo</td><td>off</td><td>Hold a state still for a screenshot. This page only, never a product page</td></tr>
+          </tbody>
+        </table>
+        </div>
 
         <!-- ---- USAGE ---- -->
-        <span class="cmp-sub">Usage</span>
+        <span class="gbdoc-sub" id="usage">Usage</span>
         <h3 class="oro-h3">Which cell, and when</h3>
         <p class="oro-p">Blue is state, black is furniture. That split is not decoration: it is the rule that keeps the accent meaning something, and it decides the colour before anything else does.</p>
 
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead><tr><th>Reach for</th><th>When</th><th>Not when</th></tr></thead>
           <tbody>
             <tr><td>Filled primary</td><td>The single action the screen is asking for: Place order, Continue, Book a meeting</td><td>Never twice in one view. Two blue buttons side by side means neither of them is the answer</td></tr>
             <tr><td>Filled secondary</td><td>Furniture that still has to carry weight, standing where no blue action competes with it</td><td>Beside a filled primary. Use an outline there instead</td></tr>
             <tr><td>Outline primary</td><td>A second action of the same rank, beside a filled one</td><td>Alone on a screen. If it is the only action, it is the primary and should be filled</td></tr>
             <tr><td>Outline secondary</td><td>Permanent chrome: My portal, Lock, Add a gift. The action that is simply always there</td><td>For the thing you actually want the visitor to do</td></tr>
-            <tr><td>Ghost</td><td>The quiet exit: Cancel, Not now, Change choice. Present, never loud</td><td>Where the person has to hunt for it. A ghost with no neighbour reads as text</td></tr>
-            <tr><td>Inverse</td><td>Any of the above standing on a dark ground: the transparent header over the hero, the dark Gifts panel</td><td>On white, where the white cut disappears</td></tr>
+            <tr><td>Ghost</td><td>The quiet exit: Cancel, Not now, Change choice. Present, never loud</td><td>Alone in an empty area. A ghost with no neighbour reads as text, and a faint tertiary reads as disabled</td></tr>
+            <tr><td>Outline inverse</td><td>Chrome standing on a dark ground: My portal on the transparent header, the dark Gifts panel</td><td>On white, where the white cut disappears</td></tr>
+            <tr><td>Ghost inverse</td><td>The quiet action on a dark panel that is already busy</td><td>Where it is the only thing on the plate</td></tr>
+            <tr><td>Filled inverse</td><td>Nowhere yet. No live screen wears a solid white button, so the workbench does not offer one. Ask Ton before the first one ships</td><td>On a dark ground, where the blue filled primary is the live answer: it stays blue and it stays the action being asked for</td></tr>
             <tr><td>Size S</td><td>Chrome: bars, headers, drawer footers, anything inside an 80px band</td><td>For a committing action. A small Place order is the defect we were caught on</td></tr>
             <tr><td>Size M</td><td>Panels, popups and toolbars: heavier than chrome, lighter than a form submit</td><td>In the site header, which is measured at S</td></tr>
             <tr><td>Size L</td><td>Forms and hero actions. The default, and the size most screens want</td><td>In a bar, where it will not fit</td></tr>
@@ -690,12 +496,28 @@
         </table>
         </div>
 
+        <p class="oro-note">The label is copy and follows the copy rules: sentence case in the markup, since the organism sets the caps itself, a verb first, no full stop. Book a meeting, Place order, Add gift, Not now. Terminology is fixed elsewhere and does not get re-decided in a button: Receiver and Recipient are not interchangeable.</p>
+
+        <!-- ---- ACCESSIBILITY ---- -->
+        <span class="gbdoc-sub">Accessibility</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Keyboard</td><td>The focus ring is <code>:focus-visible</code>, so it appears for the person who arrived by Tab and not for a mouse click. Two pixels at two pixels offset, and white instead of blue on a dark ground</td></tr>
+            <tr><td>Disabled</td><td><code>disabled</code> on a button, <code>aria-disabled="true"</code> on a link. The organism disarms both with pointer-events, and the button keeps its colour rather than turning grey so the person can still see which action is waiting on them</td></tr>
+            <tr><td>Icons</td><td>Every glyph is <code>aria-hidden="true"</code> and rides beside a real label. A button with a glyph and no label needs a name of its own, and it needs a tooltip</td></tr>
+            <tr><td>Contrast</td><td>The label on every filled variant clears 4.5 to 1, and the hairline of an outline clears 3 to 1 against its ground. The two dark ground pairs are measured live in the variants section above</td></tr>
+            <tr><td>Target size</td><td>The smallest button in the system is 36px tall, and a bar button is 42 from 1280. Nothing in the organism goes under 36</td></tr>
+          </tbody>
+        </table>
+        </div>
+
         <!-- ---- CODE ---- -->
-        <span class="cmp-sub">Code</span>
+        <span class="gbdoc-sub">Code</span>
         <p class="oro-p">The base class plus three words. Filled, primary and L are the defaults, so a bare <code>gb-btn</code> is already the button most screens want.</p>
 
-        <div class="code">
-          <button class="code-copy" type="button" data-copy="#codeBasics">Copy</button>
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeBasics">Copy</button>
           <pre><code id="codeBasics">&lt;!-- the default: filled, primary, L --&gt;
 &lt;button class="gb-btn" type="button"&gt;
   &lt;span class="gb-btn__label"&gt;Book a meeting&lt;/span&gt;
@@ -706,22 +528,25 @@
   &lt;span class="gb-btn__label"&gt;My portal&lt;/span&gt;
 &lt;/a&gt;
 
+&lt;!-- the same button on a dark ground --&gt;
+&lt;a class="gb-btn gb-btn--s gb-btn--outline gb-btn--inverse" href="#"&gt;
+  &lt;span class="gb-btn__label"&gt;My portal&lt;/span&gt;
+&lt;/a&gt;
+
 &lt;!-- a form submit: full width, glyph at the padding edge --&gt;
 &lt;button class="gb-btn gb-btn--l gb-btn--block" type="submit"&gt;
-  &lt;span class="gb-btn__icon"&gt;&lt;svg&gt;...&lt;/svg&gt;&lt;/span&gt;
   &lt;span class="gb-btn__label"&gt;Continue&lt;/span&gt;
+  &lt;span class="gb-btn__icon"&gt;&lt;svg&gt;...&lt;/svg&gt;&lt;/span&gt;
 &lt;/button&gt;</code></pre>
         </div>
 
-        <p class="oro-note">Which side the glyph stands on is DOM order and nothing else. There is no left modifier and no right modifier, because the row already answers that question and a second way to say it would be a second thing to keep in step. Two glyphs is two spans. The one exception is <code>--block</code>, where the glyph is pinned to the padding edge and DOM order stops mattering: a full width button has one glyph and it belongs at the far edge.</p>
-
-        <!-- ---- MIGRATION ---- -->
-        <span class="cmp-sub">Migration</span>
+        <!-- ---- CHANGELOG ---- -->
+        <span class="gbdoc-sub">Changelog</span>
         <h3 class="oro-h3">What each old class became</h3>
         <p class="oro-p">Ton approved the migration on 26 August. Four local button ladders lived across the prototypes, each written for the screen it was needed on, and all four are gone. Nothing was left behind as an alias: an alias is a second name for the same thing, and a second name is the drift this organism exists to end.</p>
 
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead><tr><th>Was</th><th>Where it lived</th><th>Is now</th><th>What moved</th></tr></thead>
           <tbody>
             <tr><td><code>.gbh-cta</code></td><td>Header, Book a meeting</td><td><code>--s --filled --primary</code></td><td>Nothing. Identical to the pixel at 1280, 1920 and 2258, label included</td></tr>
@@ -740,74 +565,78 @@
         </table>
         </div>
 
-        <p class="oro-note">What the consumers kept is layout only: where the button stands, how wide its row is, what margin sits over it. The checkout drawers were migrated with the rest; their steppers, pagination and text links were not, because those are controls and not buttons of this organism. One button on that page is still outside the system, the red Overwrite all, because the organism has no danger colour yet. That is a decision for Ton, not a cleanup.</p>
+        <p class="oro-note">What the consumers kept is layout only: where the button stands, how wide its row is, what margin sits over it. One button on the checkout is still outside the system, the red Overwrite all, because the organism has no danger colour yet. That is a decision for Ton, not a cleanup.</p>
+
+        <span class="gbdoc-sub">Related</span>
+        <p class="oro-p"><a href="#fields">Fields</a>, which the button submits, and <a href="colors.html">Colors</a>, where the blue and the zinc it spends are documented.</p>
       </section>
 
       <!-- ============================================================
-           FIELDS
+           FIELDS — the same card, the same order
            ============================================================ -->
-      <section class="cmp" id="fields">
-        <header class="cmp-head">
+      <section class="gbdoc-card" id="fields">
+        <header class="gbdoc-card__head">
           <span class="gb-eyebrow">Component</span>
-          <h2 class="oro-h2">Fields</h2>
-          <p class="cmp-line">The underline input of the live sign in, with its label, its error and its multi line version.</p>
+          <h2 class="oro-h2">Fields <span class="gbdoc-flag gbdoc-status">Stable</span></h2>
+          <p class="gbdoc-card__line">The underline input of the live sign in, with its label, its error and its multi line version.</p>
         </header>
 
-        <span class="cmp-sub">Where it lives</span>
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <span class="gbdoc-sub">Overview</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <tbody>
             <tr><td>Owner</td><td><code>system/components/auth.css</code>, with the markup from <code>system/components/auth.js</code></td></tr>
             <tr><td>Element</td><td><code>&lt;gb-field&gt;</code> with <code>input-id</code>, <code>name</code>, <code>type</code>, <code>label</code>, <code>placeholder</code>, <code>optional</code></td></tr>
             <tr><td>Worn by</td><td>Guest sign in, the booking flow, the checkout drawers and the studio gate</td></tr>
             <tr><td>Ladder</td><td>48 at base, 56 from 1280, 64 from 2000, the same family the L button walks</td></tr>
+            <tr><td>Status</td><td>Stable, with one open question: the disabled state has never been measured on live</td></tr>
           </tbody>
         </table>
         </div>
 
-        <span class="cmp-sub">States</span>
+        <span class="gbdoc-sub">States</span>
         <h3 class="oro-h3">Six states, and one the system has not decided</h3>
-        <p class="oro-p">The live field has no focus ring. Focus does exactly one thing on the product: it fades the placeholder out and leaves the underline where it was. Hover is the only step that moves the line, and it moves it to blue. That is not an omission on our side, it is what the instrument read, and the showcase shows it rather than improving on it quietly.</p>
+        <p class="oro-p">The live field has no focus ring. Focus does exactly one thing on the product: it fades the placeholder out and leaves the underline where it was. Hover is the only step that moves the line, and it moves it to blue. That is not an omission on our side, it is what the instrument read, and the showcase shows it rather than improving on it quietly. Click any field to read its properties.</p>
 
-        <div class="shelf shelf--cols">
-          <div class="slot slot--grow">
-            <span class="slot-cap">Empty</span>
+        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="field">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Empty</b></span>
             <div class="gba-field">
               <label class="gba-label" for="f-empty">Work email</label>
               <div class="gba-inputwrap"><input class="gba-input" id="f-empty" type="email" placeholder="you@company.com"></div>
             </div>
           </div>
-          <div class="slot slot--grow">
-            <span class="slot-cap">Hover</span>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Hover</b></span>
             <div class="gba-field">
               <label class="gba-label" for="f-hover">Work email</label>
               <div class="gba-inputwrap"><input class="gba-input is-hover" id="f-hover" type="email" placeholder="you@company.com"></div>
             </div>
           </div>
-          <div class="slot slot--grow">
-            <span class="slot-cap">Focus</span>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Focus</b></span>
             <div class="gba-field">
               <label class="gba-label" for="f-focus">Work email</label>
               <div class="gba-inputwrap"><input class="gba-input is-focus" id="f-focus" type="email" placeholder="you@company.com"></div>
             </div>
           </div>
-          <div class="slot slot--grow">
-            <span class="slot-cap">Filled</span>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Filled</b></span>
             <div class="gba-field">
               <label class="gba-label" for="f-filled">Work email</label>
               <div class="gba-inputwrap"><input class="gba-input" id="f-filled" type="email" value="anna@gildedbox.com"></div>
             </div>
           </div>
-          <div class="slot slot--grow">
-            <span class="slot-cap">Error</span>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Error</b></span>
             <div class="gba-field">
               <label class="gba-label" for="f-error">Work email</label>
               <div class="gba-inputwrap"><input class="gba-input invalid" id="f-error" type="email" value="anna@" aria-invalid="true"></div>
               <span class="gba-error" role="alert">Enter a valid email address</span>
             </div>
           </div>
-          <div class="slot slot--grow">
-            <span class="slot-cap">Disabled</span>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Disabled</b></span>
             <div class="gba-field">
               <label class="gba-label" for="f-disabled">Work email</label>
               <div class="gba-inputwrap"><input class="gba-input" id="f-disabled" type="email" value="anna@gildedbox.com" disabled></div>
@@ -817,24 +646,24 @@
 
         <p class="oro-note">Disabled is the state the system has not decided. The field above is a plain disabled input wearing whatever the browser gives it, because no live screen has ever shown us a disabled field, and inventing one quietly is the thing this page exists to prevent. On the list for Ton.</p>
 
-        <span class="cmp-sub">Variants</span>
-        <div class="shelf shelf--cols">
-          <div class="slot slot--grow">
-            <span class="slot-cap">Required</span>
+        <span class="gbdoc-sub">Variants</span>
+        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="field">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Required</b></span>
             <div class="gba-field required">
               <label class="gba-label" for="f-req">Company name</label>
               <div class="gba-inputwrap"><input class="gba-input" id="f-req" type="text" placeholder="GildedBox"></div>
             </div>
           </div>
-          <div class="slot slot--grow">
-            <span class="slot-cap">Optional</span>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Optional</b></span>
             <div class="gba-field">
               <label class="gba-label" for="f-opt">Phone</label>
               <div class="gba-inputwrap"><input class="gba-input" id="f-opt" type="tel" placeholder="+1 847 801 0345"></div>
             </div>
           </div>
-          <div class="slot slot--grow">
-            <span class="slot-cap">Multi line</span>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Multi line</b></span>
             <div class="gba-field">
               <label class="gba-label" for="f-area">What are you looking for?</label>
               <div class="gba-inputwrap"><textarea class="gba-input gba-textarea" id="f-area" placeholder="A few words is plenty"></textarea></div>
@@ -842,25 +671,53 @@
           </div>
         </div>
 
-        <span class="cmp-sub">Anatomy</span>
-        <p class="probe-note">Measured at <b id="wnow3">measuring</b> wide.</p>
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <span class="gbdoc-sub">Anatomy</span>
+        <p class="gbdoc-readout">Measured at <b id="wnow3">measuring</b> wide.</p>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead><tr><th>Measure</th><th>Value</th><th>Provenance</th></tr></thead>
           <tbody>
-            <tr><td>Height</td><td class="num" id="fH"></td><td><span class="st">Live</span> 48 / 56 / 64</td></tr>
-            <tr><td>Padding, horizontal</td><td class="num" id="fPx"></td><td><span class="st">Live</span> 12 / 12 / 16</td></tr>
-            <tr><td>Type</td><td class="num" id="fFont"></td><td><span class="st">Live</span> Inter 300, 14 / 16 / 18</td></tr>
-            <tr><td>Underline</td><td class="num" id="fLine"></td><td><span class="st">Live</span> 1px Zinc 400, blue on hover, Red 500 on error</td></tr>
-            <tr><td>Label</td><td class="num" id="fLabel"></td><td><span class="st">Live</span> 11 / 12 caps 600, Zinc 500</td></tr>
-            <tr><td>Radius</td><td class="num" id="fR"></td><td><span class="st">Live</span> none. The field is an underline, not a box</td></tr>
+            <tr><td>Height</td><td class="gbdoc-num" id="fH"></td><td><span class="gbdoc-flag">Live</span> 48 / 56 / 64</td></tr>
+            <tr><td>Padding, horizontal</td><td class="gbdoc-num" id="fPx"></td><td><span class="gbdoc-flag">Live</span> 12 / 12 / 16</td></tr>
+            <tr><td>Type</td><td class="gbdoc-num" id="fFont"></td><td><span class="gbdoc-flag">Live</span> Inter 300, 14 / 16 / 18</td></tr>
+            <tr><td>Underline</td><td class="gbdoc-num" id="fLine"></td><td><span class="gbdoc-flag">Live</span> 1px Zinc 400, blue on hover, Red 500 on error</td></tr>
+            <tr><td>Label</td><td class="gbdoc-num" id="fLabel"></td><td><span class="gbdoc-flag">Live</span> 11 / 12 caps 600, Zinc 500</td></tr>
+            <tr><td>Radius</td><td class="gbdoc-num" id="fR"></td><td><span class="gbdoc-flag">Live</span> none. The field is an underline, not a box</td></tr>
           </tbody>
         </table>
         </div>
 
-        <span class="cmp-sub">Code</span>
-        <div class="code">
-          <button class="code-copy" type="button" data-copy="#codeField">Copy</button>
+        <span class="gbdoc-sub">Properties</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Attribute</th><th>Type</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>input-id</code></td><td>string</td><td>required</td><td>Ties the label to the input. Every field needs one, and it has to be unique on the page</td></tr>
+            <tr><td><code>name</code></td><td>string</td><td>required</td><td>The name the form submits under</td></tr>
+            <tr><td><code>type</code></td><td>string</td><td><code>text</code></td><td>Any input type, plus <code>textarea</code> for the multi line version</td></tr>
+            <tr><td><code>label</code></td><td>string</td><td>required</td><td>The caps label over the line. Sentence case in the markup</td></tr>
+            <tr><td><code>placeholder</code></td><td>string</td><td>empty</td><td>The hint inside the line. It fades out on focus, which is what live does</td></tr>
+            <tr><td><code>optional</code></td><td>boolean</td><td>off</td><td>Marks the field as not required. Required is the default, which is why the modifier names the exception</td></tr>
+            <tr><td><code>.is-hover .is-focus</code></td><td>class</td><td>off</td><td>Demo only, this page. Hold a state still for a screenshot</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub">Usage</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Do</th><th>Do not</th></tr></thead>
+          <tbody>
+            <tr><td>Label every field, in sentence case, above the line</td><td>Use the placeholder as the label. It disappears the moment someone types</td></tr>
+            <tr><td>Say what is wrong under the field, in one sentence</td><td>Colour the line red and leave the person to guess what it means</td></tr>
+            <tr><td>Mark the optional ones, since required is the default</td><td>Mark the required ones with an asterisk. There would be one on almost every field</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub">Code</span>
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeField">Copy</button>
           <pre><code id="codeField">&lt;gb-field input-id="email" name="email" type="email"
           label="Work email" placeholder="you@company.com"&gt;&lt;/gb-field&gt;
 
@@ -869,51 +726,57 @@
         </div>
 
         <p class="oro-note">The specimens above are written out as plain markup so the states can be held still. In the product a field is one custom element and the markup comes from the organism, which is what the snippet shows.</p>
+
+        <span class="gbdoc-sub">Related</span>
+        <p class="oro-p"><a href="#buttons">Buttons</a>, since a form ends in one, and the booking flow, which is the biggest thing built out of both.</p>
       </section>
 
       <!-- ============================================================
            EYEBROW
            ============================================================ -->
-      <section class="cmp" id="eyebrow">
-        <header class="cmp-head">
+      <section class="gbdoc-card" id="eyebrow">
+        <header class="gbdoc-card__head">
           <span class="gb-eyebrow">Component</span>
-          <h2 class="oro-h2">Eyebrow</h2>
-          <p class="cmp-line">The one small all caps label in the system. If a caption has to be quiet, uppercase and small, it is this, and there is no second one.</p>
+          <h2 class="oro-h2">Eyebrow <span class="gbdoc-flag gbdoc-status">Stable</span></h2>
+          <p class="gbdoc-card__line">The one small all caps label in the system. If a caption has to be quiet, uppercase and small, it is this, and there is no second one.</p>
         </header>
 
-        <div class="shelf">
-          <div class="slot"><span class="slot-cap">On its own</span><span class="gb-eyebrow" id="ebProbe">Company gifting for</span></div>
-          <div class="slot"><span class="slot-cap">Over a title</span><div><span class="gb-eyebrow">Design system</span><h3 class="oro-h3">Components</h3></div></div>
+        <span class="gbdoc-sub">Overview</span>
+        <div class="gbdoc-shelf">
+          <div class="gbdoc-slot"><span class="gbdoc-slot__cap"><b>On its own</b></span><span class="gb-eyebrow" id="ebProbe">Company gifting for</span></div>
+          <div class="gbdoc-slot"><span class="gbdoc-slot__cap"><b>Over a title</b></span><div><span class="gb-eyebrow">Design system</span><h3 class="oro-h3">Components</h3></div></div>
         </div>
 
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <span class="gbdoc-sub">Anatomy</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead><tr><th>Measure</th><th>Value</th><th>Provenance</th></tr></thead>
           <tbody>
-            <tr><td>Owner</td><td><code>system/components/shell.css</code>, tokens <code>--eyebrow-*</code></td><td><span class="st">System</span></td></tr>
-            <tr><td>Type</td><td class="num" id="ebFont"></td><td><span class="st">System</span> Inter 600, 12</td></tr>
-            <tr><td>Tracking</td><td class="num" id="ebTrack"></td><td><span class="st">System</span> 0.12em</td></tr>
-            <tr><td>Ink</td><td class="num" id="ebInk"></td><td><span class="st">System</span> Zinc 500, contrast 4.63 to 1 on Zinc 50</td></tr>
+            <tr><td>Owner</td><td><code>system/components/shell.css</code>, tokens <code>--eyebrow-*</code></td><td><span class="gbdoc-flag">System</span></td></tr>
+            <tr><td>Type</td><td class="gbdoc-num" id="ebFont"></td><td><span class="gbdoc-flag">System</span> Inter 600, 12</td></tr>
+            <tr><td>Tracking</td><td class="gbdoc-num" id="ebTrack"></td><td><span class="gbdoc-flag">System</span> 0.12em</td></tr>
+            <tr><td>Ink</td><td class="gbdoc-num" id="ebInk"></td><td><span class="gbdoc-flag">System</span> Zinc 500, contrast 4.63 to 1 on Zinc 50</td></tr>
           </tbody>
         </table>
         </div>
 
-        <p class="oro-note">Named by Ton on 19 August, and the rule came with the name: if you need a small unsaturated all caps caption, it is Eyebrow. No other caps caption gets invented.</p>
+        <p class="oro-note">Named by Ton on 19 August, and the rule came with the name: if you need a small unsaturated all caps caption, it is Eyebrow. No other caps caption gets invented, which is why every caption on this page is one.</p>
       </section>
 
       <!-- ============================================================
            COUNT BADGE
            ============================================================ -->
-      <section class="cmp" id="badge">
-        <header class="cmp-head">
+      <section class="gbdoc-card" id="badge">
+        <header class="gbdoc-card__head">
           <span class="gb-eyebrow">Component</span>
-          <h2 class="oro-h2">Count badge</h2>
-          <p class="cmp-line">The small blue count that rides on a glyph button. Blue, because a count is a state, and a state speaks in the accent.</p>
+          <h2 class="oro-h2">Count badge <span class="gbdoc-flag gbdoc-status">Stable</span></h2>
+          <p class="gbdoc-card__line">The small blue count that rides on a glyph button. Blue, because a count is a state, and a state speaks in the accent.</p>
         </header>
 
-        <div class="shelf">
-          <div class="slot">
-            <span class="slot-cap">On the cart glyph</span>
+        <span class="gbdoc-sub">Overview</span>
+        <div class="gbdoc-shelf">
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>On the cart glyph</b></span>
             <span class="badge-host">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>
               <span class="gbh-count" id="badgeProbe" aria-hidden="true">3</span>
@@ -921,15 +784,16 @@
           </div>
         </div>
 
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <span class="gbdoc-sub">Anatomy</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead><tr><th>Measure</th><th>Value</th><th>Provenance</th></tr></thead>
           <tbody>
-            <tr><td>Owner</td><td><code>system/components/header.css</code>, class <code>.gbh-count</code></td><td><span class="st">System</span></td></tr>
-            <tr><td>Box</td><td class="num" id="bdBox"></td><td><span class="st">Live</span> 16 by 16</td></tr>
-            <tr><td>Ground</td><td class="num" id="bdBg"></td><td><span class="st">Live</span> Blue 600</td></tr>
-            <tr><td>Ring</td><td class="num" id="bdRing"></td><td><span class="st">Live</span> 1px white, so it reads over any glyph</td></tr>
-            <tr><td>Type</td><td class="num" id="bdFont"></td><td><span class="st">Live</span> 10</td></tr>
+            <tr><td>Owner</td><td><code>system/components/header.css</code>, class <code>.gbh-count</code></td><td><span class="gbdoc-flag">System</span></td></tr>
+            <tr><td>Box</td><td class="gbdoc-num" id="bdBox"></td><td><span class="gbdoc-flag">Live</span> 16 by 16</td></tr>
+            <tr><td>Ground</td><td class="gbdoc-num" id="bdBg"></td><td><span class="gbdoc-flag">Live</span> Blue 600</td></tr>
+            <tr><td>Ring</td><td class="gbdoc-num" id="bdRing"></td><td><span class="gbdoc-flag">Live</span> 1px white, so it reads over any glyph</td></tr>
+            <tr><td>Type</td><td class="gbdoc-num" id="bdFont"></td><td><span class="gbdoc-flag">Live</span> 10</td></tr>
           </tbody>
         </table>
         </div>
@@ -940,17 +804,18 @@
       <!-- ============================================================
            DOCUMENTED SOON
            ============================================================ -->
-      <section class="cmp" id="soon">
-        <header class="cmp-head">
+      <section class="gbdoc-card" id="soon">
+        <header class="gbdoc-card__head">
           <span class="gb-eyebrow">Catalogue</span>
           <h2 class="oro-h2">Documented soon</h2>
-          <p class="cmp-line">These components exist and are in use. What they do not have yet is a card on this page, with a state matrix and a measured anatomy. They are listed so the catalogue tells the truth about its own coverage.</p>
+          <p class="gbdoc-card__line">These components exist and are in use. What they do not have yet is a card on this page. They are listed so the catalogue tells the truth about its own coverage.</p>
         </header>
 
-        <div class="tbl-wrap">
-        <table class="tbl">
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
           <thead><tr><th>Component</th><th>Owner</th><th>What it is</th></tr></thead>
           <tbody>
+            <tr><td>Drawer</td><td><code>components/drawer.css</code></td><td>New on 26 August. The panel this page opens on a specimen: 800ms in on the brand curve, 350 out, Esc and the scrim close it</td></tr>
             <tr><td>Header</td><td><code>components/header.css</code></td><td>The 80px site bar, the Gifts submenu, and four variants: studio, transparent over video, sticky and portal</td></tr>
             <tr><td>Footer</td><td><code>components/footer.css</code></td><td>A pixel copy of the live footer, with the accordion below 641</td></tr>
             <tr><td>Home sections</td><td><code>components/home.css</code></td><td>Hero, brand tabs, testimonials, two banners and the advantages band</td></tr>
@@ -965,7 +830,7 @@
       </section>
 
       <footer class="oro-foot">
-        Sources: <a href="../components/button.css">system/components/button.css</a>, <a href="../components/auth.css">system/components/auth.css</a> and the token blocks of <a href="../assets/tokens.css">system/assets/tokens.css</a> · every component on this page is rendered by those files.
+        Sources: <a href="../components/button.css">button.css</a>, <a href="../components/auth.css">auth.css</a>, <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
       </footer>
 
     </div>
@@ -973,44 +838,61 @@
 
 </div>
 
+<!-- The properties drawer. One per page; the inspector fills it. -->
+<gb-drawer id="propsDrawer"></gb-drawer>
+
 <!-- The probes. Four real buttons, one per size, each with a label
      and an icon, parked off screen so the anatomy table has
      something to measure. -->
-<div class="probes" aria-hidden="true">
+<div class="gbdoc-probes" aria-hidden="true">
   <button class="gb-btn gb-btn--s" id="probe-s" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24"></svg></span><span class="gb-btn__label">Probe</span></button>
   <button class="gb-btn gb-btn--m" id="probe-m" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24"></svg></span><span class="gb-btn__label">Probe</span></button>
   <button class="gb-btn gb-btn--l" id="probe-l" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24"></svg></span><span class="gb-btn__label">Probe</span></button>
   <button class="gb-btn gb-btn--xl" id="probe-xl" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24"></svg></span><span class="gb-btn__label">Probe</span></button>
 </div>
 
+<script src="../components/drawer.js"></script>
+<script src="inspect.js"></script>
 <script>
 /* ============================================================
-   gbppl-button-2 — THE READOUT AND THE PLAYGROUND
+   gbppl-oro-components-3 — THE READOUT, THE PLAYGROUND AND THE
+   VARIANT WORKBENCH
    ------------------------------------------------------------
-   Two jobs, one file.
+   Three jobs, one file, and one rule over all three: NOTHING ON
+   THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every measurement is
+   read back out of the rendered page with getComputedStyle, so
+   if a token moves the page moves with it, and if an organism
+   breaks it breaks here first.
 
-   THE READOUT fills every anatomy table from the RENDERED page,
-   never from the markup. Probe elements stand off screen wearing
-   the four sizes; getComputedStyle reports what the browser made
-   of them at the current width, and the tables are written from
-   that. So the page cannot print a number the system does not
-   hold: if a token is renamed the cell says so, and if a ladder
-   moves, the table moves with it on the next resize.
+   THE READOUT fills the anatomy tables from four probe buttons
+   standing off screen in the four sizes.
 
    THE PLAYGROUND is six axes of chips over one live sample. The
-   chips are .gb-btn themselves, and choosing one only changes
-   which modifier the sample wears; the sample is a real button
-   and the snippet is generated from the same state, so the code
-   can never drift from the specimen above it.
+   chips are .gb-btn themselves, and the snippet is generated from
+   the same state as the specimen, so the code cannot drift from
+   the thing above it.
+
+   THE WORKBENCH shows ONE variant: the chips choose it, the top
+   band renders it in the four sizes and the band below in the
+   five states, each specimen captioned with its own measured
+   height and label. Its state table is filled by measuring those
+   five specimens. This is the shape every mature system uses and
+   the answer to Ton's «матрица должна быть гибче и показывать не
+   всё сразу».
    ============================================================ */
 (function () {
   'use strict';
 
+  var INSPECT = window.GbInspect || {};
+
   /* ---------- shared readers ---------- */
+  /* One decimal: the second one is the reader's display scaling
+     talking, not the system (a 20px glyph comes back as 19.99 at
+     113 per cent). */
   function px(v) {
     var n = parseFloat(v);
     if (isNaN(n)) return v;
-    return Math.round(n * 100) / 100 + 'px';
+    return Math.round(n * 10) / 10 + 'px';
   }
   function txt(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
 
@@ -1026,6 +908,7 @@
       px: px(cs.paddingLeft),
       gap: px(cs.columnGap),
       label: ls ? px(ls.fontSize) + ' / ' + ls.fontWeight : 'no label',
+      labelSize: ls ? px(ls.fontSize) : 'no label',
       icon: is ? px(is.width) : 'no icon',
       font: px(cs.fontSize) + ' / ' + cs.fontWeight,
       r: px(cs.borderTopLeftRadius),
@@ -1034,9 +917,25 @@
     };
   }
 
+  /* Relative luminance and the WCAG ratio, so the dark ground
+     claims on this page are measured rather than remembered. */
+  function lum(c) {
+    var m = String(c).match(/[\d.]+/g);
+    if (!m) return 0;
+    var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(+m[0]) + 0.7152 * f(+m[1]) + 0.0722 * f(+m[2]);
+  }
+  function ratio(a, b) {
+    var x = lum(a), y = lum(b);
+    if (y > x) { var t = x; x = y; y = t; }
+    return Math.round(((x + 0.05) / (y + 0.05)) * 100) / 100;
+  }
+
   /* ---------- the anatomy readout ---------- */
   var sizes = { s: 'probe-s', m: 'probe-m', l: 'probe-l', xl: 'probe-xl' };
   var cells = document.querySelectorAll('[data-m][data-s]');
+  var iconCaps = document.querySelectorAll('[data-mi]');
+  var labelCaps = document.querySelectorAll('[data-ml]');
 
   function paintAnatomy() {
     var data = {};
@@ -1048,6 +947,14 @@
       var d = data[cell.getAttribute('data-s')];
       var m = cell.getAttribute('data-m');
       cell.textContent = d && d[m] ? d[m] : 'no value';
+    });
+    Array.prototype.forEach.call(iconCaps, function (cap) {
+      var d = data[cap.getAttribute('data-mi')];
+      cap.textContent = d ? d.icon : 'no value';
+    });
+    Array.prototype.forEach.call(labelCaps, function (cap) {
+      var d = data[cap.getAttribute('data-ml')];
+      cap.textContent = d ? d.labelSize : 'no value';
     });
 
     var fin = document.getElementById('f-empty');
@@ -1115,24 +1022,26 @@
     return '<button class="' + c.join(' ') + '" type="button"' + dis + '>' + inner + (forCode ? '\n' : '') + '</button>';
   }
 
+  function lightChips(row, chosen) {
+    Array.prototype.forEach.call(row.querySelectorAll('.gb-btn'), function (chip) {
+      var on = chip.getAttribute('data-val') === chosen;
+      chip.classList.toggle('gb-btn--filled', on);
+      chip.classList.toggle('gb-btn--primary', on);
+      chip.classList.toggle('gb-btn--outline', !on);
+      chip.classList.toggle('gb-btn--secondary', !on);
+      chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
   function paintPlayground() {
     if (!hold) return;
     hold.innerHTML = sampleHTML(false);
-    hold.classList.toggle('pg-hold--block', STATE.width === 'block');
-    stage.classList.toggle('pg-stage--dark', STATE.colour === 'inverse');
+    hold.classList.toggle('gbdoc-hold--block', STATE.width === 'block');
+    stage.classList.toggle('gbdoc-stage--dark', STATE.colour === 'inverse');
     if (codeEl) codeEl.textContent = sampleHTML(true);
 
-    /* the chips light up: chosen = filled primary, the rest outlined */
-    Array.prototype.forEach.call(controls.querySelectorAll('.pg-row'), function (row) {
-      var axis = row.getAttribute('data-axis');
-      Array.prototype.forEach.call(row.querySelectorAll('.gb-btn'), function (chip) {
-        var on = chip.getAttribute('data-val') === STATE[axis];
-        chip.classList.toggle('gb-btn--filled', on);
-        chip.classList.toggle('gb-btn--primary', on);
-        chip.classList.toggle('gb-btn--outline', !on);
-        chip.classList.toggle('gb-btn--secondary', !on);
-        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
+    Array.prototype.forEach.call(controls.querySelectorAll('.gbdoc-axis'), function (row) {
+      lightChips(row, STATE[row.getAttribute('data-axis')]);
     });
 
     var el = hold.querySelector('.gb-btn');
@@ -1153,12 +1062,192 @@
     controls.addEventListener('click', function (e) {
       var chip = e.target.closest ? e.target.closest('.gb-btn[data-val]') : null;
       if (!chip) return;
-      var row = chip.parentNode;
-      var axis = row.getAttribute('data-axis');
+      var axis = chip.parentNode.getAttribute('data-axis');
       if (!axis) return;
       STATE[axis] = chip.getAttribute('data-val');
       paintPlayground();
     });
+  }
+
+  /* ---------- the variant workbench ---------- */
+  var WB = { type: 'filled', colour: 'primary', ground: 'light' };
+  var WB_SIZES = [['s', 'S', 'chrome'], ['m', 'M', 'panels'], ['l', 'L', 'forms'], ['xl', 'XL', 'committing']];
+  var WB_STATES = [
+    ['Rest', '', ''],
+    ['Hover', ' is-hover', ''],
+    ['Focus', ' is-focus', ''],
+    ['Active', ' is-active', ''],
+    ['Disabled', '', ' disabled']
+  ];
+  /* A real label per variant, so the specimen reads as the button
+     it actually is somewhere in the product. */
+  var WB_LABEL = {
+    'filled primary': 'Book a meeting',
+    'filled secondary': 'Send gift card',
+    'outline primary': 'Add gift',
+    'outline secondary': 'My portal',
+    'ghost primary': 'Details',
+    'ghost secondary': 'Cancel',
+    'outline inverse': 'My portal',
+    'ghost inverse': 'Not now'
+  };
+
+  var wbControls = document.getElementById('wbControls');
+  var wbStage = document.getElementById('wbStage');
+  var wbSizes = document.getElementById('wbSizes');
+  var wbStates = document.getElementById('wbStates');
+  var wbFoot = document.getElementById('wbFoot');
+  var stBody = document.getElementById('stBody');
+
+  function wbLabel() { return WB_LABEL[WB.type + ' ' + WB.colour] || 'Continue'; }
+  function wbStateSize() { return WB.ground === 'dark' ? 's' : 'l'; }
+
+  /* The rules of the stage, said in one place:
+       light ground has no inverse, because a white cut on white
+       is nothing;
+       dark ground has no secondary, because black on Zinc 950 is
+       nothing either;
+       and filled inverse does not exist anywhere, because no live
+       screen wears a solid white button. */
+  function wbNormalise() {
+    if (WB.ground === 'light' && WB.colour === 'inverse') WB.colour = 'secondary';
+    if (WB.ground === 'dark' && WB.colour === 'secondary') WB.colour = 'inverse';
+    if (WB.colour === 'inverse' && WB.type === 'filled') WB.colour = 'primary';
+  }
+
+  function wbAvailable(axis, val) {
+    if (axis !== 'colour') return true;
+    if (val === 'inverse') return WB.ground === 'dark' && WB.type !== 'filled';
+    if (val === 'secondary') return WB.ground === 'light';
+    return true;
+  }
+
+  function btnHTML(size, extra, attr, label) {
+    return '<button class="gb-btn gb-btn--' + size + ' gb-btn--' + WB.type + ' gb-btn--' + WB.colour + extra +
+      '" type="button"' + attr + '><span class="gb-btn__label">' + label + '</span></button>';
+  }
+
+  function paintWorkbench() {
+    if (!wbStage) return;
+    wbNormalise();
+    var label = wbLabel();
+    var dark = WB.ground === 'dark';
+    wbStage.classList.toggle('gbdoc-stage--dark', dark);
+
+    /* sizes band */
+    var html = '';
+    WB_SIZES.forEach(function (s) {
+      html += '<div class="gbdoc-slot">' + btnHTML(s[0], '', '', label) +
+        '<span class="gbdoc-slot__cap"><b>' + s[1] + ' &middot; ' + s[2] + '</b>' +
+        '<span data-cap="' + s[0] + '">measuring</span></span></div>';
+    });
+    wbSizes.innerHTML = html;
+
+    /* states band */
+    var ssize = wbStateSize();
+    html = '';
+    WB_STATES.forEach(function (st) {
+      html += '<div class="gbdoc-slot">' + btnHTML(ssize, st[1], st[2], label) +
+        '<span class="gbdoc-slot__cap"><b>' + st[0] + '</b></span></div>';
+    });
+    wbStates.innerHTML = html;
+
+    document.getElementById('wbSizesCap').textContent = 'Sizes, at rest';
+    document.getElementById('wbStatesCap').textContent =
+      'States, size ' + ssize.toUpperCase() + (dark ? ': the ladder chrome walks' : '');
+
+    /* the captions are measured off the specimens beside them */
+    Array.prototype.forEach.call(wbSizes.querySelectorAll('.gbdoc-slot'), function (slot) {
+      var b = slot.querySelector('.gb-btn');
+      var cap = slot.querySelector('[data-cap]');
+      var d = readBtn(b);
+      cap.textContent = d.h + ' tall, label ' + d.labelSize;
+    });
+
+    /* chips */
+    Array.prototype.forEach.call(wbControls.querySelectorAll('.gbdoc-axis'), function (row) {
+      var axis = row.getAttribute('data-axis');
+      lightChips(row, WB[axis]);
+      Array.prototype.forEach.call(row.querySelectorAll('.gb-btn'), function (chip) {
+        var ok = wbAvailable(axis, chip.getAttribute('data-val'));
+        chip.classList.toggle('is-unavailable', !ok);
+        chip.setAttribute('aria-disabled', ok ? 'false' : 'true');
+      });
+    });
+
+    /* the foot says what is on the stage and why a chip is out */
+    var cls = 'gb-btn gb-btn--' + wbStateSize() + ' gb-btn--' + WB.type + ' gb-btn--' + WB.colour;
+    var why = dark
+      ? 'Secondary is out on a dark ground: black on Zinc 950 is nothing. Filled inverse is out everywhere: no live screen wears a solid white button.'
+      : 'Inverse is out on a light ground: a white cut on white is nothing.';
+    wbFoot.innerHTML = 'On the stage: <code>' + cls + '</code>. ' + why;
+
+    paintStateTable();
+  }
+
+  /* The state table is filled by measuring the five specimens
+     standing above it, and the token beside each value is found
+     by the same lookup the properties drawer uses. */
+  function paintStateTable() {
+    if (!stBody) return;
+    var slots = wbStates.querySelectorAll('.gbdoc-slot');
+    var fam = WB.colour === 'primary' ? 'accent' : WB.colour === 'secondary' ? 'ink' : 'inverse';
+    var candidates = [
+      '--gb-btn-fill-' + WB.colour, '--gb-btn-fill-' + WB.colour + '-hover', '--gb-btn-fill-' + WB.colour + '-active',
+      '--gb-btn-wash-' + fam + '-hover', '--gb-btn-wash-' + fam + '-active',
+      '--gb-btn-ink-' + WB.colour, '--gb-btn-ink-on-' + WB.colour,
+      '--gb-btn-ink-' + WB.colour + '-hover', '--gb-btn-ink-' + WB.colour + '-active'
+    ];
+    var html = '';
+    Array.prototype.forEach.call(slots, function (slot, i) {
+      var b = slot.querySelector('.gb-btn');
+      var cs = getComputedStyle(b);
+      var name = WB_STATES[i][0];
+      var line = parseFloat(cs.borderTopWidth)
+        ? px(cs.borderTopWidth) + ' ' + cs.borderTopColor
+        : 'none';
+      var tok = INSPECT.tokenFor ? (INSPECT.tokenFor(cs.backgroundColor, candidates) || INSPECT.tokenFor(cs.color, candidates)) : null;
+      if (name === 'Focus') tok = '--gb-btn-focus-ring' + (WB.colour === 'inverse' ? '-inverse' : '');
+      if (name === 'Disabled') tok = '--gb-btn-disabled-opacity';
+      html += '<tr><td>' + name + '</td><td class="gbdoc-num">' + cs.backgroundColor + '</td><td class="gbdoc-num">' +
+        cs.color + '</td><td class="gbdoc-num">' + line + '</td><td>' +
+        (tok ? '<code>' + tok + '</code>' : '<span class="gbdoc-flag gbdoc-flag--none">In the organism</span>') +
+        '</td></tr>';
+    });
+    stBody.innerHTML = html;
+    /* The contrast figures are NOT recomputed here. The stage
+       transitions its background over 280ms, and a reading taken
+       during the switch measures a colour that exists for a
+       quarter of a second and is on no screen. They are measured
+       once, off a static plate, in paintContrastOnce below. */
+  }
+
+  if (wbControls) {
+    wbControls.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('.gb-btn[data-val]') : null;
+      if (!chip || chip.classList.contains('is-unavailable')) return;
+      var axis = chip.parentNode.getAttribute('data-axis');
+      if (!axis) return;
+      WB[axis] = chip.getAttribute('data-val');
+      paintWorkbench();
+    });
+  }
+
+  /* The contrast figures belong to the dark ground, so they are
+     measured once at load on a throwaway dark plate even while the
+     stage is light. */
+  function paintContrastOnce() {
+    var plate = document.createElement('div');
+    plate.style.cssText = 'position:absolute;left:-9999px;top:0;background:var(--zinc-950);';
+    document.body.appendChild(plate);
+    var ground = getComputedStyle(plate).backgroundColor;
+    var white = 'rgb(255, 255, 255)';
+    var blue = INSPECT.tokenValue ? INSPECT.tokenValue('--gb-btn-fill-primary') : '#2563eb';
+    var blueRgb = INSPECT.norm ? INSPECT.norm(blue) : blue;
+    txt('ctInv', String(ratio(white, ground)));
+    txt('ctBlue', String(ratio(blueRgb, ground)));
+    txt('ctBlueInk', String(ratio(white, blueRgb)));
+    document.body.removeChild(plate);
   }
 
   /* ---------- copy a snippet ---------- */
@@ -1173,7 +1262,7 @@
     try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
     document.body.removeChild(ta);
   }
-  Array.prototype.forEach.call(document.querySelectorAll('.code-copy'), function (btn) {
+  Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-copy[data-copy]'), function (btn) {
     btn.addEventListener('click', function () {
       var target = document.querySelector(btn.getAttribute('data-copy'));
       if (!target) return;
@@ -1191,7 +1280,7 @@
   });
 
   /* ---------- the contents follow the reader ---------- */
-  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
   var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
   var spyTimer;
   function spy() {
@@ -1204,12 +1293,14 @@
 
   paintAnatomy();
   paintPlayground();
+  paintWorkbench();
+  paintContrastOnce();
   spy();
 
   var resizeTimer;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () { paintAnatomy(); paintPlayground(); }, 120);
+    resizeTimer = setTimeout(function () { paintAnatomy(); paintPlayground(); paintWorkbench(); }, 120);
   });
   window.addEventListener('scroll', function () {
     clearTimeout(spyTimer);

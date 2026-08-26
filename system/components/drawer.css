@@ -1,0 +1,156 @@
+/* ============================================================
+   gbppl-drawer-1 — THE DRAWER ORGANISM
+   ------------------------------------------------------------
+   A panel that comes in from the right edge, over a backdrop,
+   and gives back the screen when it leaves. It is the first
+   brick of DEV MODE, the thing Ton asked for on 25.08: a way for
+   a front end developer to click a component and read its real
+   properties. The showcase opens one on every specimen; nothing
+   about the drawer knows that, and any page can fill it with
+   anything.
+
+       <gb-drawer id="props"></gb-drawer>
+       document.getElementById('props').open({
+         title: 'Button',
+         sub:   'filled primary, size L',
+         html:  '<table>...</table>'
+       });
+
+   WHY A NEW ORGANISM AND NOT A REUSE. Ton-6 asks the three
+   questions first. (1) Is there a drawer already? Yes, three of
+   them: the v1 catalog drawer inside the vendored iframe, and the
+   checkout drawers. (2) Can either be used as is? No. The catalog
+   one lives inside a React bundle we do not own, and the checkout
+   ones are Alpine markup written into the page in Tailwind
+   utilities, per drawer, with no element to call. (3) So the
+   drawer becomes an organism, and it is built out of what those
+   two already agreed on rather than out of a new idea: the
+   geometry and the choreography below are the checkout drawer's,
+   promoted from a page into the system. The checkout keeps its
+   own until a wave moves it; when it does, it deletes markup, not
+   values.
+
+   THE CHOREOGRAPHY (MOTION.md, хореография 4, «дровер это малая
+   дверь»). The panel is DENSE FROM THE FIRST PIXEL and travels
+   the full width of itself in 800ms on the entrance curve; the
+   backdrop dims under it in 280ms, so the light goes down before
+   the panel arrives. Leaving accelerates and is shorter: 350ms,
+   the same clock the checkout overlay leaves on.
+
+   Ton-7: this is the brand signature, so there is NO
+   prefers-reduced-motion branch. The drawer plays for everyone.
+
+   NOT ONE COLOUR OR CURVE IS INVENTED HERE. The two layout
+   measures that are not tokens — the 520px panel and the 40 per
+   cent backdrop — are marked NO TOKEN below, because the system
+   has no panel-width scale and no scrim colour yet.
+   ============================================================ */
+
+gb-drawer { display: contents; }
+
+/* ---- The scrim ----
+   NO TOKEN: rgba(9,9,11,.4) is the checkout backdrop (zinc-900/40
+   in its utilities). The system has no scrim token; when it gets
+   one this literal is the value it should carry. */
+.gbd-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(9, 9, 11, 0.4);
+  opacity: 0;
+  transition: opacity var(--mo-small) var(--mo-arrive);
+}
+
+/* ---- The panel ----
+   NO TOKEN: 520px is a layout measure, the width that holds a
+   two column property table without wrapping a value. Below 640
+   the panel takes the screen, because a 520 panel on a 390 phone
+   is a modal pretending to be a drawer. */
+.gbd-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 81;
+  display: flex;
+  flex-direction: column;
+  width: min(520px, 100%);
+  background: var(--white);
+  box-shadow: var(--shadow-panel);
+  transform: translateX(100%);
+  transition: transform var(--mo-drawer-in) var(--mo-enter);
+}
+
+/* Open. The scrim and the panel are given their own clocks on
+   purpose: the light goes down in 280 and the door takes 800. */
+.gbd-scrim.is-open { opacity: 1; }
+.gbd-panel.is-open { transform: translateX(0); }
+
+/* Leaving accelerates: one clock for both, 350ms. */
+.gbd-scrim.is-out,
+.gbd-panel.is-out { transition-duration: var(--mo-medium-out); transition-timing-function: var(--mo-exit); }
+
+/* ---- Head ---- */
+.gbd-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  border-bottom: 1px solid var(--zinc-200);
+}
+.gbd-titles { flex: 1 1 auto; min-width: 0; }
+.gbd-eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--eyebrow-color);
+}
+.gbd-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--zinc-900);
+}
+.gbd-sub {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+/* The close control is the button organism, size S, ghost: a
+   drawer does not get a hand drawn X of its own (Ton-6). */
+.gbd-close { flex: 0 0 auto; }
+.gbd-close .gb-btn__icon svg { stroke-width: 1.6; }
+
+/* ---- Body ---- */
+.gbd-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--space-24);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--zinc-700);
+}
+
+/* ---- Foot, optional ---- */
+.gbd-foot {
+  flex: 0 0 auto;
+  padding: var(--space-16) var(--space-24);
+  border-top: 1px solid var(--zinc-200);
+  background: var(--zinc-50);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--zinc-600);
+}
+.gbd-foot:empty { display: none; }
+
+@media (max-width: 639px) {
+  .gbd-head, .gbd-body { padding: var(--space-16); }
+  .gbd-title { font-size: 20px; }
+}

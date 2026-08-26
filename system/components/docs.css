@@ -1,0 +1,362 @@
+/* ============================================================
+   gbppl-docs-1 — THE DOCUMENTATION ATOMS
+   ------------------------------------------------------------
+   Ton-10, 26.08: «дизайн-система показывается только системно:
+   витрина должна быть образцом системности». The showcase is a
+   CONSUMER of the system exactly like live/ is, so the furniture
+   it is built from — the component card, the specimen shelf, the
+   matrix, the reading table, the provenance plaque, the code
+   block, the property table inside the drawer — cannot live as
+   page-local CSS in components.html. It lives here, it is spent
+   out of tokens, and any showcase page can wear it.
+
+   WHAT WENT WHERE
+     oro.css      the page shell: rail, column, contents, the
+                  document type roles.
+     docs.css     THIS FILE. The atoms a documentation page is
+                  assembled from.
+     components.html   markup and composition only. What is still
+                  local there is two documented antidotes and
+                  nothing else.
+
+   NOT ONE LITERAL COLOUR, RADIUS OR CURVE. Spacing comes off the
+   --space-8..64 scale (25.08), type off TYPE-SCALE roles: body
+   16, small 14, and Eyebrow (12 / 600 / 0.12em) for every caps
+   caption. The old page-local furniture had 10px and 11px caps
+   labels and a 17px lede; both are gone. Russell, 08-10:
+   «мелкий блеклый текст = я не важен».
+
+   The one number here that is not a token is the 1180px reading
+   column of a documentation page and the min-widths that keep a
+   matrix from crushing its cells. Both are layout measures, and
+   they are marked below.
+   ============================================================ */
+
+/* ============================================================
+   THE CARD: one shape, repeated per component
+   ============================================================ */
+.gbdoc-card { padding: var(--space-48) 0 0; }
+@media (min-width: 1280px) { .gbdoc-card { padding-top: var(--space-64); } }
+
+.gbdoc-card__head { padding-bottom: var(--space-8); }
+.gbdoc-card__line {
+  margin: var(--space-8) 0 0;
+  font-size: var(--font-size-root);
+  line-height: 1.6;
+  color: var(--zinc-600);
+}
+/* The section label inside a card. Eyebrow role, one size for
+   every caption on the page. */
+.gbdoc-sub {
+  display: block;
+  margin: var(--space-32) 0 0;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--zinc-400);
+}
+
+/* ---- The plaque: provenance, status, a flag on a value.
+   Zinc, never colour: a provenance is a fact about the value, not
+   a state of the interface (Ton-5). ---- */
+.gbdoc-flag {
+  display: inline-block;
+  padding: 3px 7px;
+  background: var(--zinc-100);
+  border-radius: var(--radius);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--zinc-600);
+  white-space: nowrap;
+}
+.gbdoc-flag--declared { background: var(--zinc-900); color: var(--zinc-100); }
+.gbdoc-flag--none { background: transparent; border: 1px solid var(--zinc-200); color: var(--zinc-400); }
+.gbdoc-status { margin-left: var(--space-8); vertical-align: middle; }
+
+/* ============================================================
+   THE READING TABLE
+   ============================================================ */
+.gbdoc-tablewrap { overflow-x: auto; margin-top: var(--space-16); }
+.gbdoc-table {
+  width: 100%;
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background: var(--white);
+  font-size: 14px;          /* TYPE-SCALE: Small 14 */
+  line-height: 1.6;
+  color: var(--zinc-700);
+}
+.gbdoc-table th,
+.gbdoc-table td {
+  padding: var(--space-8) var(--space-16);
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid var(--zinc-200);
+}
+.gbdoc-table thead th {
+  border-top: 0;
+  background: var(--zinc-50);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.gbdoc-table td:first-child,
+.gbdoc-table th:first-child { font-weight: 600; color: var(--zinc-900); }
+.gbdoc-table td b { font-weight: 600; color: var(--zinc-900); }
+.gbdoc-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Monospace is the one family outside BRAND.md, and it is here
+   for the same reason the browser has one: code is not prose. */
+.gbdoc-table code,
+.gbdoc-code code,
+.gbdoc-chip {
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  font-size: 14px;
+  color: var(--zinc-900);
+}
+
+/* ============================================================
+   THE CODE BLOCK
+   ============================================================ */
+.gbdoc-code {
+  position: relative;
+  margin-top: var(--space-16);
+  border: 1px solid var(--zinc-950);
+  border-radius: var(--radius);
+  background: var(--zinc-950);
+  overflow: hidden;
+}
+.gbdoc-code pre {
+  margin: 0;
+  padding: var(--space-16) var(--space-64) var(--space-16) var(--space-16);
+  overflow-x: auto;
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--zinc-100);
+  white-space: pre;
+}
+.gbdoc-code pre code { color: inherit; font-size: inherit; }
+.gbdoc-copy {
+  position: absolute;
+  top: var(--space-8);
+  right: var(--space-8);
+  padding: 5px 10px;
+  background: var(--zinc-800);
+  border: 1px solid var(--zinc-700);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-300);
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move), background-color var(--mo-micro) var(--mo-move);
+}
+.gbdoc-copy:hover { background: var(--zinc-700); color: var(--white); }
+
+/* ============================================================
+   THE FRAME: controls over a stage
+   ------------------------------------------------------------
+   One anatomy serves both interactive blocks on a component
+   card: the playground, where the chips build a specimen, and
+   the variant workbench, where the chips choose which variant
+   the stage is showing. Storybook does the same thing with one
+   canvas and one controls panel, and so does Carbon.
+   ============================================================ */
+.gbdoc-frame {
+  margin-top: var(--space-16);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+}
+.gbdoc-controls {
+  padding: var(--space-16);
+  background: var(--zinc-50);
+  border-bottom: 1px solid var(--zinc-200);
+}
+.gbdoc-axis { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); }
+.gbdoc-axis + .gbdoc-axis { margin-top: var(--space-8); }
+.gbdoc-axis__name {
+  flex: 0 0 72px;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+/* A chip for a combination the system does not hold. Shown, not
+   hidden: a rule nobody can see is a rule nobody learns. */
+.gbdoc-axis .is-unavailable { opacity: 0.4; pointer-events: none; }
+
+.gbdoc-stage {
+  padding: var(--space-24);
+  background: var(--white);
+  transition: background-color var(--mo-small) var(--mo-move);
+}
+.gbdoc-stage--center { display: flex; align-items: center; justify-content: center; min-height: 176px; padding: var(--space-32); }
+.gbdoc-stage--dark { background: var(--zinc-950); }
+.gbdoc-foot {
+  margin: 0;
+  padding: var(--space-16);
+  background: var(--zinc-50);
+  border-top: 1px solid var(--zinc-200);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--zinc-600);
+}
+
+/* ---- A band inside a stage: sizes, then states ---- */
+.gbdoc-band + .gbdoc-band {
+  margin-top: var(--space-24);
+  padding-top: var(--space-24);
+  border-top: 1px solid var(--zinc-200);
+}
+.gbdoc-stage--dark .gbdoc-band + .gbdoc-band { border-top-color: var(--zinc-800); }
+.gbdoc-band__cap {
+  display: block;
+  margin-bottom: var(--space-16);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.gbdoc-stage--dark .gbdoc-band__cap { color: var(--zinc-400); }
+
+/* ---- The specimen row and its slots ---- */
+.gbdoc-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-24); }
+.gbdoc-slot { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-8); }
+.gbdoc-slot--grow { flex: 1 1 240px; min-width: 220px; }
+.gbdoc-slot__cap { font-size: 14px; line-height: 1.5; color: var(--zinc-500); font-variant-numeric: tabular-nums; }
+.gbdoc-slot__cap b {
+  display: block;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-900);
+}
+.gbdoc-stage--dark .gbdoc-slot__cap { color: var(--zinc-400); }
+.gbdoc-stage--dark .gbdoc-slot__cap b { color: var(--zinc-100); }
+
+/* ---- The plain shelf: single specimens on a white card ---- */
+.gbdoc-shelf {
+  margin-top: var(--space-16);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-24);
+  padding: var(--space-24);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.gbdoc-shelf--cols { align-items: stretch; }
+
+/* ============================================================
+   THE MATRIX
+   ------------------------------------------------------------
+   Rows are one axis, columns another, and every cell is a real
+   component. Used for ONE question at a time — the icon slots
+   against the size ladder — never for every variant against
+   every state: that wall is the thing Ton sent back, and none of
+   the mature systems draws one either.
+   ============================================================ */
+.gbdoc-matrix {
+  margin-top: var(--space-16);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+}
+.gbdoc-scroll { overflow-x: auto; }
+.gbdoc-grid { display: grid; align-items: center; }
+/* LAYOUT MEASURE: the min widths below are the narrowest a cell
+   can be before a button starts wrapping its own label. */
+.gbdoc-grid--icons { grid-template-columns: 190px repeat(3, minmax(230px, 1fr)); min-width: 880px; }
+.gbdoc-grid > * { padding: var(--space-16); border-top: 1px solid var(--zinc-200); }
+.gbdoc-grid--icons > :nth-child(-n + 4) { border-top: 0; }
+.gbdoc-colhead {
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+  background: var(--zinc-50);
+}
+.gbdoc-rowhead { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--zinc-900); }
+.gbdoc-rowhead small { display: block; margin-top: 3px; font-size: 14px; font-weight: 400; color: var(--zinc-500); }
+.gbdoc-cell { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-16); }
+
+/* ============================================================
+   INSPECT: the specimen answers a click
+   ------------------------------------------------------------
+   Any slot inside a [data-inspect] region opens the properties
+   drawer. The affordance has to be visible or nobody discovers
+   it, and it has to be quiet or it competes with the specimen.
+   ============================================================ */
+[data-inspect] .gbdoc-slot,
+[data-inspect] .gbdoc-cell,
+[data-inspect] .gbdoc-hold {
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: box-shadow var(--mo-micro) var(--mo-move);
+}
+[data-inspect] .gbdoc-slot:hover,
+[data-inspect] .gbdoc-cell:hover,
+[data-inspect] .gbdoc-hold:hover { box-shadow: 0 0 0 1px var(--blue-600); }
+.gbdoc-stage--dark [data-inspect] .gbdoc-slot:hover,
+[data-inspect] .gbdoc-stage--dark .gbdoc-slot:hover { box-shadow: 0 0 0 1px var(--blue-400); }
+.gbdoc-hold { display: flex; justify-content: center; max-width: 100%; }
+.gbdoc-hold--block { width: 100%; max-width: 420px; }
+
+/* ---- What the drawer body is made of ---- */
+.gbdoc-cap {
+  display: block;
+  margin: var(--space-24) 0 var(--space-8);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-400);
+}
+.gbdoc-cap:first-child { margin-top: 0; }
+.gbdoc-chips { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.gbdoc-chip {
+  padding: 3px 8px;
+  background: var(--zinc-100);
+  border-radius: var(--radius);
+  color: var(--zinc-800);
+}
+
+/* The token under the value it produced, in the drawer. */
+.gbdoc-tokenline {
+  display: block;
+  margin-top: 3px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--zinc-500);
+  word-break: break-all;
+}
+.gbdoc-tokenline--none { font-family: var(--font-sans); color: var(--zinc-400); }
+
+/* ---- The live readout line ---- */
+.gbdoc-readout { margin: var(--space-16) 0 0; font-size: 14px; line-height: 1.7; color: var(--zinc-500); }
+.gbdoc-readout b { color: var(--zinc-900); font-variant-numeric: tabular-nums; }
+
+/* ---- The probes: off screen, never seen, measured on resize.
+   Not display:none — a hidden element has no computed padding. ---- */
+.gbdoc-probes { position: absolute; left: -9999px; top: 0; visibility: hidden; }
