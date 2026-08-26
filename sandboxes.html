@@ -6,7 +6,7 @@
 <title>Sandboxes · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
-     gbppl-sandboxes-2 — THE SANDBOXES PAGE
+     gbppl-sandboxes-3 — THE SANDBOXES PAGE
      ------------------------------------------------------------
      The second room of the studio (hub-9, Ton 24.08: the nav must
      TAKE you to these pages, not scroll to these sections).
@@ -97,13 +97,15 @@
 
 <script src="system/sandbox-registry.js"></script>
 <script>
-/* ---- The doors, painted from the registry (gbppl-sandboxes-2).
-   Same elements and same classes the page carried by hand until
-   25.08: .gbs-door--box with a chip, a title, a line of description
-   and the path in the foot. What is new is the grouping (an eyebrow
-   per page) and the room that is decided but not yet built, which
-   comes out grey and unclickable rather than promising a link that
-   would quietly open today's page. ---- */
+/* ---- The doors, painted from the registry (gbppl-sandboxes-3).
+   .gbs-door--box with a chip, a title, a line of description and,
+   in the foot, the page the room belongs to.
+
+   THE FOOT USED TO PRINT THE FILE PATH (live/checkout.html?v=1).
+   Ton 26.08: the cards are read by people who do not have the repo
+   open, and a query string is not a place. It now carries the page's
+   name out of the registry: Checkout, Portal, Book a meeting. The
+   internal references went out of the descriptions with it. ---- */
 (function () {
   'use strict';
   var mount = document.getElementById('gbsRooms');
@@ -121,20 +123,15 @@
                     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* The path under the door is the address without the root prefix:
-     it is a label that says where the room lives in the repo, not a
-     link, so it reads the same from every depth. */
-  function bare(href) { return href.replace(/^(\.\.\/)+/, ''); }
-
-  function door(v) {
+  function door(v, page) {
     var chip  = '<span class="gbs-chip">' + esc(String(v.status).replace(/-/g, ' ')) + '</span>';
     var title = '<h3 class="gbs-door-title">' + esc(v.label) + '</h3>';
     var desc  = '<p class="gbs-door-desc">' + esc(v.desc) + '</p>';
     /* The room that is not open yet keeps the same foot, with the
        arrow's place taken by the reason there is no arrow. */
     var end   = v.ready ? ARROW : '<span class="gbs-door-note">Not open yet</span>';
-    var foot  = '<span class="gbs-door-foot"><span class="gbs-door-path">' +
-                esc(bare(v.href)) + '</span>' + end + '</span>';
+    var foot  = '<span class="gbs-door-foot"><span class="gbs-door-page">' +
+                esc(page) + '</span>' + end + '</span>';
     var body  = chip + title + desc + foot;
     if (!v.ready) return '<div class="gbs-door gbs-door--box gbs-door--coming">' + body + '</div>';
     return '<a class="gbs-door gbs-door--box" href="' + esc(v.href) + '">' + body + '</a>';
@@ -143,7 +140,9 @@
   var html = reg.rooms('').map(function (page) {
     return '<div class="gbs-room">' +
              '<span class="gb-eyebrow">' + esc(page.label) + '</span>' +
-             '<div class="gbs-grid">' + page.variants.map(door).join('') + '</div>' +
+             '<div class="gbs-grid">' + page.variants.map(function (v) {
+               return door(v, page.label);
+             }).join('') + '</div>' +
            '</div>';
   }).join('');
 

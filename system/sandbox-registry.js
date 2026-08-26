@@ -1,6 +1,6 @@
 /* ============================================================
-   SANDBOX REGISTRY — один источник песочниц (gbppl-registry-1,
-   Тон 2026-08-25)
+   SANDBOX REGISTRY — один источник песочниц (gbppl-sandboxes-3,
+   Тон 2026-08-25, копи-правка 2026-08-26)
    ------------------------------------------------------------
    КАК ЗАРЕГИСТРИРОВАТЬ НОВУЮ ПЕСОЧНИЦУ (три строки):
    1. Найди страницу по её id в PAGES (или заведи новую запись:
@@ -31,7 +31,10 @@
    variant = {
      id      стабильный ключ внутри страницы
      label   имя варианта («V2 · Pool»)
-     desc    одна строка: что этот вариант решает
+     desc    одна строка: что этот вариант решает. ЧЕЛОВЕЧЕСКИМ
+             языком, sentence case, без em dash и без внутренних
+             ссылок на тикеты (gbppl-sandboxes-3, 26.08: карточки
+             читают снаружи команды)
      status  'in-progress' | 'proposal' | 'approved'
      href    адрес ОТ КОРНЯ СТУДИИ, вместе с query
      ready   умеет ли страница этот параметр СЕГОДНЯ. false =
@@ -75,7 +78,7 @@
              V1 stands here as a room of its own, not only as Live. */
           id: 'v1',
           label: 'V1 · Quick fix',
-          desc: 'The production layout with the quick fixes from the DD-141 review: one address or different addresses, sentence-case steps, Bulk personalize and Edit selected.',
+          desc: "Today's checkout with the agreed quick fixes: one address or a different address per gift, the steps renamed, bulk personalize and edit selected.",
           status: 'in-progress',
           href: 'live/checkout.html?v=1',
           ready: true
@@ -83,7 +86,7 @@
         {
           id: 'v2',
           label: 'V2 · Pool',
-          desc: 'Gifts unpersonalized by default, quantity as a pool on the gift, personalization behind a two-door fork.',
+          desc: 'Gifts are not personalized by default. Quantity is a pool on the gift, and personalization is an add-on behind a choice of two doors.',
           status: 'in-progress',
           href: 'live/checkout.html?v=2',
           ready: true
