@@ -640,10 +640,44 @@
    above this line is edited.
 
    NOT CHANGED ON PURPOSE: --btn-l-pad-x-xl (28px, FORMULA). The
-   portal hero CTAs are wearing it right now and repainting a
-   consumer is phase 2 work. The organism reaches for its own
-   --gb-btn-l-pad-x-xl (32px, LIVE) instead, and the two sit side
-   by side until that migration happens.
+   portal hero CTAs were wearing it when this block was written.
+   PHASE 2 CLOSED THAT (gbppl-button-2, 26.08): those CTAs now
+   wear the organism and read --gb-btn-l-pad-x-xl (32px, LIVE), so
+   the 28 is no longer on any screen. The token stays declared,
+   because the interpolated ladder it belongs to is still the
+   fallback for sizes live has never shown.
+
+   ------------------------------------------------------------
+   THE HEIGHT GRID (gbppl-button-2, Ton 26.08, verbatim)
+   ------------------------------------------------------------
+   «Перепроверь все размеры кнопок: в Figma нам даже не хватает
+   одного размера. Сетка: самый большой (2K и больше) 72px,
+   следующий 64, далее 56, 48 и так далее по стандарту.»
+
+   So the button heights of the system are ONE grid of six steps,
+   eight apart, and every ladder walks it:
+
+     72   XL from 2000                      LIVE  ("2K and above")
+     64   XL from 1280, L from 2000         LIVE
+     56   XL base, L from 1280, M from 2000 LIVE
+     48   L base, M from 1280, S from 2000  LIVE
+     42   S from 1280        LIVE, OFF THE GRID (see below)
+     40   M base             DECLARED, NEW  (the missing one)
+     36   S base                            LIVE public header
+
+   THE MISSING SIZE IS 40, AND IT IS NOW M. Before this pass the
+   ladders were S 36/42/48, L 48/56/64 and XL 56/64/72: the grid
+   step of 40 had no ladder standing on it, and nothing started
+   between the header's 36 and the form's 48. M 40/48/56 fills the
+   hole, and with it every step of Ton's grid is reachable.
+
+   42 IS A LIVE DEVIATION AND IT STAYS. The public header measures
+   42 at 1280 (harvest public-home-sweep 17.08; re-read by
+   instrument 26.08 on all eight of our own header pages: min-height
+   42px at 1280 on every one). It is not on the eight-grid and it is
+   not being corrected: live wins over the formula, and bending the
+   header by 6px would repaint every page the client is looking at.
+   Recorded as an off-grid live step, not as a rounding error.
    ============================================================ */
 :root {
 
@@ -681,6 +715,52 @@
                                 crowding its 8px padding. Flat down the
                                 ladder: a glyph that grew to 20 would
                                 out-shout an 11px label. */
+
+  /* ============ SIZE M, the missing step ============
+     40/48/56 (gbppl-button-2, 26.08). THE SIZE THE SYSTEM DID NOT
+     HAVE: Ton's grid has a rung at 40 and no ladder was standing
+     on it, so nothing sat between the header's S and the form's L.
+     M is the button for a panel, a bar or a popup: heavier than
+     chrome, lighter than a form submit.
+
+     EVERY NUMBER HERE IS DECLARED OR AN ALIAS, because live has
+     never shown a 40px button. Each one is interpolated between
+     the two live ladders that surround it at the same width, and
+     where the 17.08 proportion formula (pad-x = 0.5H) agrees, it
+     is said so. Nothing is invented twice: a later measurement
+     replaces these lines and nothing else. */
+  --gb-btn-m-h:            40px;   /* DECLARED, grid step (Ton 26.08) */
+  --gb-btn-m-h-xl:         48px;   /* DECLARED, >=1280 */
+  --gb-btn-m-h-2xl:        56px;   /* DECLARED, >=2000 */
+  --gb-btn-m-pad-y:        var(--btn-pad-y);   /* ALIAS 8: flat 8 is what
+                                all three live ladders measure at every
+                                size and every width */
+  --gb-btn-m-pad-x:        20px;   /* DECLARED: between S 16 and L 24, and
+                                exactly 0.5H of 40 */
+  --gb-btn-m-pad-x-xl:     24px;   /* DECLARED, >=1280: between S 20 and
+                                L 32, and exactly 0.5H of 48. No 2000 step,
+                                because no live ladder steps pad-x at 2000 */
+  --gb-btn-m-gap:          16px;   /* DECLARED: between S 12 and L 20, on
+                                the +4 rhythm both live ladders keep */
+  --gb-btn-m-gap-xl:       20px;   /* DECLARED, >=1280: between S 20 and L 24 */
+  --gb-btn-m-font-size:    var(--btn-font-size);    /* ALIAS 14 */
+  --gb-btn-m-font-size-xl: var(--btn-font-size-xl); /* ALIAS 16, >=1280.
+                                Only XL leaves 14/16 on the outer element */
+  --gb-btn-m-font-weight:  600;    /* DECLARED: follows L and XL. The 400 of
+                                the outer element is the header's alone */
+  --gb-btn-m-line-height:  normal; /* DECLARED, follows L and XL */
+  --gb-btn-m-tracking:     var(--btn-letter-spacing);    /* ALIAS -0.35 */
+  --gb-btn-m-tracking-xl:  var(--btn-letter-spacing-xl); /* ALIAS -0.4, >=1280 */
+  --gb-btn-m-label:        12px;   /* DECLARED as a rung, but the number is
+                                live: 12 is the S label at 2000 */
+  --gb-btn-m-label-xl:     14px;   /* DECLARED, >=1280; live as the L base label */
+  --gb-btn-m-label-2xl:    15px;   /* DECLARED, >=2000; live as the L 640 label */
+  --gb-btn-m-icon:         var(--gb-btn-l-icon);      /* ALIAS 16 */
+  --gb-btn-m-icon-xl:      var(--gb-btn-l-icon-xl);   /* ALIAS 20, >=1280 */
+  --gb-btn-m-icon-2xl:     var(--gb-btn-l-icon-2xl);  /* ALIAS 24, >=2000.
+                                M borrows L's glyph ladder whole: both are
+                                content buttons. S is flat at 16 only
+                                because the live header has no icon at all */
 
   /* ============ SIZE L, the form ladder ============
      48/56/64. Interpolated on 17.08 and made LIVE by the guest

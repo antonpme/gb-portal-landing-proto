@@ -1,9 +1,9 @@
 /* ============================================================
-   gbppl-button-1 — THE BUTTON ORGANISM
+   gbppl-button-1 / -2 — THE BUTTON ORGANISM
    ------------------------------------------------------------
    Ton's spec, 25.08, in one class: three TYPES (filled, outline,
    ghost), two COLOURS (primary blue, secondary black) plus the
-   white INVERSE for dark grounds, three SIZE ladders (S, L, XL),
+   white INVERSE for dark grounds, four SIZE ladders (S, M, L, XL),
    five STATES (rest, hover, focus, active, disabled) and an icon
    that can stand on either side of the label, or on both, or on
    neither.
@@ -16,7 +16,7 @@
    Everything is a default except the base class:
      type   filled     (--outline, --ghost)
      colour primary    (--secondary, --inverse)
-     size   L          (--s, --xl)
+     size   L          (--s, --m, --xl)
    so a bare <button class="gb-btn"> is a filled primary L, which
    is the button the product asks for most often. --filled,
    --primary and --l exist as explicit spellings for people who
@@ -25,25 +25,68 @@
    NOT ONE LITERAL LIVES HERE. Every number, colour and curve is
    spent out of the BUTTON ORGANISM block of assets\tokens.css,
    which carries the provenance of each one (ALIAS / LIVE /
-   DECLARED). The only bare numbers below are the three media
+   DECLARED). The only bare numbers below are the media
    thresholds — 640, 768, 1280 and 2000 — because CSS cannot read
    a custom property inside a media query, a limitation tokens.css
    already documents at its breakpoint block.
 
-   HOW THE THREE LADDERS FIT IN ONE CLASS. The base rule defines
-   ALL THREE ladders as private variables on the element, and the
+   HOW THE FOUR LADDERS FIT IN ONE CLASS. The base rule defines
+   ALL FOUR ladders as private variables on the element, and the
    size modifier only chooses which ladder the geometry slots
    point at. So every media query in this file touches exactly one
-   selector (.gb-btn) and moves all three ladders one step at
+   selector (.gb-btn) and moves all four ladders one step at
    once, and no size modifier can ever lose a specificity race to
    the default. The private slots are prefixed --gbb-; nothing
    outside this file should set them.
 
-   PHASE 1: THIS FILE HAS NO CONSUMERS YET. .gbh-cta, .gba-btn,
-   .btn-xl and .gsp-btn stay exactly as they are until Ton has
-   seen the organism (the showcase is oro\components.html).
-   Migrating them is phase 2, and the map of which class becomes
-   which cell lives on that page.
+   ------------------------------------------------------------
+   THE HEIGHT GRID (Ton 26.08): 72 / 64 / 56 / 48 / 40 / 36
+   ------------------------------------------------------------
+   «Самый большой (2K и больше) 72px, следующий 64, далее 56, 48 и
+   так далее по стандарту.» Six steps, eight apart, and the four
+   ladders between them:
+
+     ladder   base   >=1280   >=2000   what it is for
+     S         36      42*      48     chrome: bars, headers
+     M         40      48       56     panels, popups, toolbars
+     L         48      56       64     forms, hero actions
+     XL        56      64       72     the one committing action
+
+   * 42 is the live public header at 1280 and the one step off the
+     eight-grid. Live wins over the formula; the deviation is
+     recorded in tokens.css and on the showcase and is not being
+     rounded away.
+
+   M IS THE SIZE TON SAID WAS MISSING. Its numbers are DECLARED,
+   every one interpolated between the two live ladders that stand
+   either side of it at the same width. tokens.css carries the
+   arithmetic per line.
+
+   ------------------------------------------------------------
+   PHASE 2 IS DONE (gbppl-button-2, 26.08): «даю добро на
+   миграцию». Every consumer wears this class now and the four
+   local button ladders are deleted, not aliased:
+
+     was                      is now
+     .gbh-cta                 --s --filled --primary
+     .gbh-cta--outline        --s --outline --secondary
+     .gbh-cta--inverted       --s --outline --inverse
+     .gba-btn                 --l --filled --primary --block
+     .gba-btn--inline         --l --filled --primary  (had no users)
+     .btn-xl      (checkout)  --xl --filled --primary --block
+     .btn-cta     (portal)    --l --filled --primary | --secondary, --block
+     .btn-start   (portal)    --l --filled --primary | --outline --secondary
+     .btn-bar     (portal)    --s --filled --primary | --outline --secondary
+     .gsp-btn     (portal)    --l --filled --primary --block
+     .gsp-btn--quiet          --l --outline --secondary --block
+     .btn-send    (portal)    --l --filled --secondary --block
+
+   Nothing was left behind as an alias: an alias is a second name
+   for the same thing, and a second name is the drift this organism
+   exists to end. The consumers renamed their markup and their own
+   rules went out with them. What the consumers kept is LAYOUT
+   only: where the button stands, how wide its row is, what margin
+   sits over it.
    ============================================================ */
 
 /* ============================================================
@@ -62,6 +105,17 @@
   --gbb-s-tracking:     var(--gb-btn-s-tracking);
   --gbb-s-label:        var(--gb-btn-s-label);
   --gbb-s-icon:         var(--gb-btn-s-icon);
+
+  --gbb-m-h:            var(--gb-btn-m-h);
+  --gbb-m-pad-y:        var(--gb-btn-m-pad-y);
+  --gbb-m-pad-x:        var(--gb-btn-m-pad-x);
+  --gbb-m-gap:          var(--gb-btn-m-gap);
+  --gbb-m-font-size:    var(--gb-btn-m-font-size);
+  --gbb-m-font-weight:  var(--gb-btn-m-font-weight);
+  --gbb-m-line-height:  var(--gb-btn-m-line-height);
+  --gbb-m-tracking:     var(--gb-btn-m-tracking);
+  --gbb-m-label:        var(--gb-btn-m-label);
+  --gbb-m-icon:         var(--gb-btn-m-icon);
 
   --gbb-l-h:            var(--gb-btn-l-h);
   --gbb-l-pad-y:        var(--gb-btn-l-pad-y);
@@ -226,6 +280,18 @@ body.gb-demo a.gb-btn { color: var(--gbb-ink); }
   --gbb-label:       var(--gbb-s-label);
   --gbb-icon:        var(--gbb-s-icon);
 }
+.gb-btn--m {
+  --gbb-h:           var(--gbb-m-h);
+  --gbb-pad-y:       var(--gbb-m-pad-y);
+  --gbb-pad-x:       var(--gbb-m-pad-x);
+  --gbb-gap:         var(--gbb-m-gap);
+  --gbb-font-size:   var(--gbb-m-font-size);
+  --gbb-font-weight: var(--gbb-m-font-weight);
+  --gbb-line-height: var(--gbb-m-line-height);
+  --gbb-tracking:    var(--gbb-m-tracking);
+  --gbb-label:       var(--gbb-m-label);
+  --gbb-icon:        var(--gbb-m-icon);
+}
 .gb-btn--l {
   --gbb-h:           var(--gbb-l-h);
   --gbb-pad-y:       var(--gbb-l-pad-y);
@@ -274,6 +340,14 @@ body.gb-demo a.gb-btn { color: var(--gbb-ink); }
     --gbb-s-font-size:  var(--gb-btn-s-font-size-xl);
     --gbb-s-tracking:   var(--gb-btn-s-tracking-xl);
 
+    --gbb-m-h:          var(--gb-btn-m-h-xl);
+    --gbb-m-pad-x:      var(--gb-btn-m-pad-x-xl);
+    --gbb-m-gap:        var(--gb-btn-m-gap-xl);
+    --gbb-m-font-size:  var(--gb-btn-m-font-size-xl);
+    --gbb-m-tracking:   var(--gb-btn-m-tracking-xl);
+    --gbb-m-label:      var(--gb-btn-m-label-xl);
+    --gbb-m-icon:       var(--gb-btn-m-icon-xl);
+
     --gbb-l-h:          var(--gb-btn-l-h-xl);
     --gbb-l-pad-x:      var(--gb-btn-l-pad-x-xl);
     --gbb-l-gap:        var(--gb-btn-l-gap-xl);
@@ -293,6 +367,10 @@ body.gb-demo a.gb-btn { color: var(--gbb-ink); }
   .gb-btn {
     --gbb-s-h:      var(--gb-btn-s-h-2xl);
     --gbb-s-label:  var(--gb-btn-s-label-2xl);
+
+    --gbb-m-h:      var(--gb-btn-m-h-2xl);
+    --gbb-m-label:  var(--gb-btn-m-label-2xl);
+    --gbb-m-icon:   var(--gb-btn-m-icon-2xl);
 
     --gbb-l-h:      var(--gb-btn-l-h-2xl);
     --gbb-l-label:  var(--gb-btn-l-label-2xl);
@@ -395,6 +473,49 @@ body.gb-demo a.gb-btn { color: var(--gbb-ink); }
   --gbb-line:        transparent;
   --gbb-line-hover:  transparent;
   --gbb-line-active: transparent;
+}
+
+/* ============================================================
+   WIDTH: --block, the button that takes the whole row
+   ------------------------------------------------------------
+   gbppl-button-2. A form submit does not stand in a row of
+   actions, it IS the row: the live guest sign-in submit and the
+   live checkout Place Order both run the full width of their
+   column. And when a button is that wide, live stops centring the
+   glyph next to the label and parks it against the padding edge
+   instead, with the label centred in the whole width on its own.
+   That is one anatomy, not two, so it is one modifier:
+
+     width   100%
+     icon    absolute against the right padding edge
+     label   padded by the same pad-x on both sides, so the
+             centred text can never run under the glyph
+
+   All three numbers are the ladder's own pad-x, so --block works
+   at every size and steps with the window like everything else.
+   It was .gba-btn's whole difference from the organism, measured
+   on the live submit 18.08 (icon right 24 -> 32 at 1280, label
+   padding 0 24 -> 0 32), and it is the reason the auth migration
+   is pixel-identical rather than merely close.
+
+   An icon BEFORE the label in a --block button lands in the same
+   place as one after it: absolute positioning does not read DOM
+   order. That is deliberate. A full width button has one glyph
+   and it belongs at the far edge.
+   ============================================================ */
+.gb-btn--block {
+  position: relative;
+  width: 100%;
+}
+.gb-btn--block .gb-btn__label {
+  padding-left: var(--gbb-pad-x);
+  padding-right: var(--gbb-pad-x);
+}
+.gb-btn--block .gb-btn__icon {
+  position: absolute;
+  top: 50%;
+  right: var(--gbb-pad-x);
+  transform: translateY(-50%);
 }
 
 /* ============================================================
