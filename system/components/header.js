@@ -223,6 +223,18 @@
       /* gbppl-header-home (Ton 26.08: «с каталога не могу на главную по лого»): the wordmark
          goes home; every consumer states its own path, like the other hrefs. */
       var homeHref = this.getAttribute('home-href') || '#';
+      /* gbppl-header-home-2 (Ton 26.08): «лого работает внутри своего родительского
+         контейнера: на лайве это лайв, в сэндбоксе тот сэндбокс, который активен».
+         Home keeps the sandbox context: the query keys the registry treats as a
+         room ride along on the wordmark, so leaving a sandbox page does not drop
+         you onto bare Live. Keys mirror the portal set the catalog carries. */
+      if (homeHref !== '#') {
+        var KEEP = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock'];
+        var have = new URLSearchParams(location.search), carry = new URLSearchParams();
+        KEEP.forEach(function (k) { if (have.has(k)) carry.set(k, have.get(k)); });
+        var q = carry.toString();
+        if (q) homeHref += (homeHref.indexOf('?') >= 0 ? '&' : '?') + q;
+      }
       this.innerHTML = TEMPLATE(logoSrc, catalogHref, portalHref, meetingHref, homeHref);
       this.__wireMenu();
       if (this.getAttribute('variant') === 'transparent-dark') this.__wireTransparent();
