@@ -1071,7 +1071,18 @@
           '<div class="gbsp-device">' +
             '<iframe class="gbsp-screen" title="The page at the chosen device width"></iframe>' +
           '</div>';
-        document.body.appendChild(stage);
+        /* СЦЕНА СТОИТ ВНУТРИ <gb-studio-panel>, А НЕ В BODY
+           (gbppl-studio-tokens-1, 27.08). Хозяин display: contents,
+           поэтому раскладке всё равно, где лежит fixed-элемент, а
+           каскаду не всё равно: на вендорном каталоге --space-8/16/24
+           на :root принадлежат бандлу (32/64/96 против наших 8/16/24,
+           ловушка 7б), и шкала возвращается нашим компонентам списком
+           островов, в котором есть gb-studio-panel и нет body. Стоя в
+           body, сцена читала чужие числа: поле сверху 68 вместо 44,
+           зазор и поля верхней полосы 64 вместо 16 (замер 27.08 на
+           live/catalog/?device=768). Внутри острова числа свои на
+           любой странице. */
+        (host || document.body).appendChild(stage);
         screen = stage.querySelector('.gbsp-screen');
         screen.addEventListener('load', function () {
           measure();

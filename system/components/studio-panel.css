@@ -40,6 +40,19 @@
    СЛОЙ. z-index 60 — выше всей стопки прототипа (хедер 31,
    дроверы 40, модалка 50). Дорога домой не должна оказаться под
    тем, что она открывает.
+
+   ЧИСЛА СВЕДЕНЫ К ШКАЛЕ (gbppl-studio-tokens-1, Тон 27.08:
+   «система не только в компонентах, но и в паттернах, в отступах,
+   в шрифтах, абсолютно во всём; строим систему, начиная с нашей
+   собственной студии»). Каждое число в этом файле теперь либо
+   ступень (--space-*, --radius, --header-h, --gb-btn-*, --eyebrow-*,
+   --mo-*), либо calc() из ступеней с объяснением, либо помечено
+   единым комментом NO TOKEN и вынесено в раздел 8 скилла.
+   Что изменилось в геометрии: разделитель ящика стал СИММЕТРИЧНЫМ
+   12 / 12 (было 14 сверху и 12 снизу у секций, 10 и 12 у титула:
+   один и тот же волосок жил на двух ритмах), подсказка группы и
+   зазор перед «· current» встали на ступень --space-8 (было 6).
+   Остальное байт в байт.
    ============================================================ */
 
 gb-studio-panel { display: contents; }
@@ -49,8 +62,10 @@ gb-studio-panel { display: contents; }
   right: 0;
   /* gbppl-panel-5: anchored near the top, not the vertical centre. Centred, the
      open panel landed on whatever sat mid-page, on the checkout that was the
-     order totals. One rule for every page (Ton 26.08: one console, one logic). */
-  top: 112px;
+     order totals. One rule for every page (Ton 26.08: one console, one logic).
+     112 = шапка сайта (--header-h 80) плюс одна ступень --space-32: якорь
+     стоит не «где-то сверху», а на ступень ниже хрома страницы. */
+  top: calc(var(--header-h) + var(--space-32));
   transform: none;
   z-index: 60;
   display: flex;
@@ -61,12 +76,12 @@ gb-studio-panel { display: contents; }
 /* Язычок: единственное, что видно в свёрнутом состоянии. Слово
    вертикально, как у PROTO, но системным кеглем 14. */
 .gbsp-tab {
-  width: 32px;
-  padding: 14px 0;
+  width: var(--space-32);
+  padding: 14px 0;   /* NO TOKEN: рост язычка под слово, замер; облик v2 ниже переписывает обе меры */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 10px;   /* NO TOKEN: зазор шеврона и слова внутри язычка, переписан обликом v2 */
   background: var(--zinc-950);   /* gbppl-panel-3, Ton 26.08: white tab vanished on white pages; dark like PROTO, quiet */
   border: 1px solid var(--zinc-800);
   border-right: none;
@@ -78,7 +93,7 @@ gb-studio-panel { display: contents; }
   transition: color var(--mo-micro) var(--mo-move);
 }
 .gbsp-tab:hover { color: var(--white); }
-.gbsp-tab svg { display: block; width: 14px; height: 14px; }
+.gbsp-tab svg { display: block; width: 14px; height: 14px; }   /* NO TOKEN: мера глифа, шкалы размеров иконок в системе нет (раздел 8) */
 /* Шеврон смотрит туда, куда уедет панель: вправо — спрятать,
    влево — показать. */
 .gbsp.is-collapsed .gbsp-tab svg { transform: rotate(180deg); }
@@ -98,13 +113,15 @@ gb-studio-panel { display: contents; }
      ступень --space-16: ряд помещается и со шкалой прокрутки, и без
      неё. На узких экранах панель тоже не ужимается: она лежит поверх
      страницы, лишние пиксели никому не мешают, а сломанный ряд
-     мешает. */
-  width: 232px;
-  padding: 16px;
+     мешает.
+     NO TOKEN на 216: это ЗАМЕР ряда чипов со шкалой прокрутки, а не
+     ступень; ступенью записана только прибавка. */
+  width: calc(216px + var(--space-16));
+  padding: var(--space-16);
   /* Панель с секцией This page бывает выше окна (портал: четыре
      группы). Тогда прокручивается ОНА, а не страница под ней
-     (gbppl-panel-4). 32 = поля --space-16 сверху и снизу. */
-  max-height: calc(100vh - 32px);
+     (gbppl-panel-4). Вычитаются поля --space-16 сверху и снизу. */
+  max-height: calc(100vh - var(--space-16) * 2);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -117,12 +134,40 @@ gb-studio-panel { display: contents; }
 }
 .gbsp.is-collapsed .gbsp-panel { display: none; }
 
+/* ============================================================
+   РАЗДЕЛИТЕЛЬ ЯЩИКА, ОДИН НА ВСЕ ПОЛКИ (gbppl-studio-tokens-1)
+   ------------------------------------------------------------
+   Волосок Zinc 800 между полками ящика жил на ПЯТИ копиях одной и
+   той же пары отступов и на двух разных ритмах: секции держали
+   14 сверху и 12 снизу, титул 10 до линии и 12 после. Одна и та же
+   линия обязана стоять в одном ритме, и ритм СИММЕТРИЧЕН (6a.3
+   скилла: воздух сверху равен воздуху снизу).
+
+   12 носит NO TOKEN: это половина ступени --space-24, и на шкале
+   --space-* её нет. Ступень 8 отняла бы у полок ещё 4px и прижала
+   линию к словам, 16 подняла бы ящик на 24px разом; и то и другое
+   меняет ящик, который Тон принял 27.08. Половина ступени в
+   отчёте волны, решение о --space-12 за Тоном.
+   ============================================================ */
+.gbsp-sec,
+.gbsp-group + .gbsp-group,
+.gbsp--v2 .gbsp-sec--mode,
+.gbsp--v2 .gbsp-seggroup + .gbsp-seggroup,
+.gbsp-foot {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--zinc-800);
+}
+/* Тише разделителя секций: эта линия идёт ВНУТРИ одной секции. */
+.gbsp-group + .gbsp-group { border-top-color: var(--zinc-900); }
+
 /* Заголовок в голосе замка студийного бара (.gbh-lock__word,
-   header.css): 14 / 600 / ls .12em / uppercase / Zinc 500. */
+   header.css): 14 / 600 / ls .12em / uppercase / Zinc 500. Линия
+   у него снизу, значит та же пара 12 / 12 читается зеркально. */
 .gbsp-title {
   display: block;
   margin-bottom: 12px;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--zinc-800);
   color: var(--zinc-500);
   font-size: 14px;
@@ -136,8 +181,11 @@ gb-studio-panel { display: contents; }
 .gbsp-link,
 body.gb-demo a.gbsp-link {   /* тот же антидот, что в header.css */
   display: block;
-  padding: 7px 8px;
-  margin: 0 -8px;
+  /* NO TOKEN на 7: пол ряда списка. Строка 16/1.35 = 21.6, и 7 сверху
+     и снизу дают ряд 36, нижнюю ступень сетки высот (раздел 5); со
+     ступенью --space-8 ряд стал бы 38 и мимо сетки. */
+  padding: 7px var(--space-8);
+  margin: 0 calc(var(--space-8) * -1);
   border-radius: var(--radius);
   color: var(--zinc-300);
   font-size: 16px;
@@ -166,18 +214,15 @@ body.gb-demo a.gbsp-link.is-active { color: var(--blue-400); font-weight: 500; }
    группы, а не заголовок раздела: имя «Design Studio» наверху
    остаётся единственным титулом панели.
    ============================================================ */
-.gbsp-sec {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--zinc-800);
-}
+/* Пара отступов и линия секции объявлены выше, одним разделителем
+   на все полки ящика. */
 .gbsp-eyebrow {
   display: block;
-  margin-bottom: 8px;
-  color: var(--zinc-500);
+  margin-bottom: var(--space-8);
+  color: var(--eyebrow-color);
   font-size: var(--eyebrow-size);
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
   line-height: 1.2;
   text-transform: uppercase;
 }
@@ -207,14 +252,11 @@ body.gb-demo a.gbsp-link.is-active { color: var(--blue-400); font-weight: 500; }
    копии), sentence case, и она никогда не мельче 14: мелкий блеклый
    текст говорит «я не важен» (Рассел).
    ============================================================ */
-.gbsp-group + .gbsp-group {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--zinc-900);   /* тише разделителя секций: внутри одной секции */
-}
+/* Линия между группами одной секции объявлена общим разделителем
+   ящика (выше): та же пара 12 / 12, только волосок тише. */
 .gbsp-group__title {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 4px;   /* NO TOKEN: пол ступени --space-8, подпись прижата к своему ряду */
   color: var(--zinc-400);
   font-size: 14px;
   font-weight: 500;
@@ -235,7 +277,7 @@ button.gbsp-link {
 /* Одна строка подсказки под группой: 14, Zinc 500. Единственное
    место панели, которое переносится по словам. */
 .gbsp-note {
-  margin: 6px 0 0;
+  margin: var(--space-8) 0 0;   /* было 6, ступень шкалы ближе на 2px и ничего не двигает */
   color: var(--zinc-500);
   font-size: 14px;
   line-height: 1.45;
@@ -267,6 +309,10 @@ button.gbsp-link {
   gap: var(--space-16);
 }
 .gbsp-seg {
+  /* NO TOKEN: 2 / 4 и волосок подчёркивания 2 это геометрия САМОГО
+     подчёркивания, не отступ блока. Ступень --space-8 отодвинула бы
+     линию от слова настолько, что она перестала бы читаться его
+     частью. Та же пара стоит у .gbdoc-seg в docs.css. */
   padding: 2px 0 4px;
   background: none;
   border: 0;
@@ -308,18 +354,24 @@ button.gbsp-link {
 
    Земля Zinc 950 — язык панели: сцена принадлежит прибору, а не
    странице, и должна читаться как его поверхность. Поле справа
-   шире остальных ровно на язычок консоли (32 + 16), чтобы кадр
-   стоял по центру ОСТАВШЕГОСЯ места и никогда не уезжал под
-   пульт. Кадр шире окна (XL 2258 на ноутбуке) честно прокручивает
-   сцену по горизонтали: это признак того, что экрана не хватает,
-   и прятать его нечем. */
+   шире остальных на полосу под язычок консоли, чтобы кадр стоял
+   по центру ОСТАВШЕГОСЯ места и никогда не уезжал под пульт. Кадр
+   шире окна (XL 2258 на ноутбуке) честно прокручивает сцену по
+   горизонтали: это признак того, что экрана не хватает, и прятать
+   его нечем.
+
+   Сцена стоит ВНУТРИ <gb-studio-panel> (gbppl-studio-tokens-1):
+   иначе на вендорном каталоге --space-* приходят от бандла, см.
+   коммент у appendChild в studio-panel.js. */
 .gbsp-stage {
   position: fixed;
   inset: 0;
   z-index: 58;
   display: flex;
   overflow: auto;
-  padding: 16px 56px 24px 16px;
+  /* Справа поле шире на 40: это полоса под язычок. NO TOKEN, потому
+     что 40 замер (язычок 26 плюс воздух), а не ступень. */
+  padding: var(--space-16) calc(var(--space-16) + 40px) var(--space-24) var(--space-16);
   background: var(--zinc-950);
   font-family: var(--font-sans);
 }
@@ -330,7 +382,7 @@ html.gbsp-devicing { overflow: hidden; }
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-8);
 }
 
 /* Рамка устройства и есть всё устройство: волосок Zinc 700 и
@@ -339,8 +391,12 @@ html.gbsp-devicing { overflow: hidden; }
 .gbsp-screen {
   display: block;
   width: 100%;
-  /* 88 = поля сцены 40 + подпись с зазором 28, с запасом на
-     округление: кадр ровно в окно, без второй полосы прокрутки. */
+  /* NO TOKEN: 88 это ЗАМЕР вертикального хрома сцены, не сумма
+     ступеней. Сегодня это полоса над кадром 36 плюс --space-8 над
+     ней, нижнее поле --space-24 и 20 запаса на рамку кадра и
+     округление; кадр встаёт ровно в окно, без второй полосы
+     прокрутки. Считать это calc-ом значило бы назвать точной
+     суммой то, в чём есть запас. */
   height: calc(100vh - 88px);
   background: var(--white);
   border: 1px solid var(--zinc-700);
@@ -381,16 +437,20 @@ html.gbsp-devicing { overflow: hidden; }
 
 /* ---- ЯРЛЫК: компактнее и полупрозрачный до наведения ---- */
 .gbsp--v2 .gbsp-tab {
+  /* NO TOKEN на 26 / 10 / .55: рост и прозрачность язычка это замер
+     и решение по месту, ступени под них в системе нет. 26 = ширина, в
+     которую встаёт слово 12-го кегля с полями; .55 = та тихость, на
+     которой ярлык виден и не спорит со страницей (Тон 27.08). */
   width: 26px;
   padding: 10px 0;
-  gap: 8px;
+  gap: var(--space-8);
   opacity: .55;
   transition: color var(--mo-micro) var(--mo-move),
               opacity var(--mo-micro) var(--mo-move);
 }
 .gbsp--v2 .gbsp-tab:hover,
 .gbsp--v2 .gbsp-tab:focus-visible { opacity: 1; }
-.gbsp--v2 .gbsp-tab svg { width: 12px; height: 12px; }
+.gbsp--v2 .gbsp-tab svg { width: 12px; height: 12px; }   /* NO TOKEN: мера глифа, см. раздел 8 */
 .gbsp--v2 .gbsp-tab__word { font-size: 12px; letter-spacing: 0.1em; }
 .gbsp--v2:not(.is-collapsed) .gbsp-tab { opacity: 1; }
 
@@ -408,15 +468,11 @@ html.gbsp-devicing { overflow: hidden; }
 
 /* ---- ИНСТРУМЕНТЫ ПОСЛЕ НАВИГАЦИИ ----
    Секция Mode/Device стоит не первой, значит и линия у неё сверху,
-   как у всех остальных, а не снизу. */
-.gbsp--v2 .gbsp-sec--mode {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--zinc-800);
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: 0;
-}
+   как у всех остальных, а не снизу. Пара отступов и сама линия
+   приходят от ОБЩЕГО разделителя ящика (объявлен один раз, у
+   .gbsp-title); обнуление нижней линии, стоявшее здесь от Classic,
+   снято вместе с ним: нижней линии этой секции больше никто не
+   ставит. */
 /* Абзацы Mode и Device заменены строкой состояния. Подсказки секции
    This page остаются: они говорят про сценарий страницы, а строка
    состояния про режим и экран — это разные вопросы. */
@@ -430,7 +486,7 @@ html.gbsp-devicing { overflow: hidden; }
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
-  /* NO TOKEN: 4px — не отступ, а ПОЛ отступа. Шесть чипов набирают
+  /* NO TOKEN: 4 это не отступ, а ПОЛ отступа. Шесть чипов набирают
      152px текста, поля ящика дают 184: свободного места 32 на пять
      зазоров, и раздаёт их space-between (получается ~8, ступень
      шкалы). Эта строка только не даёт им слипнуться там, где имена
@@ -439,7 +495,7 @@ html.gbsp-devicing { overflow: hidden; }
   column-gap: 4px;
 }
 .gbsp-segs--row .gbsp-seg {
-  padding: 2px 0 3px;
+  padding: 2px 0 3px;   /* NO TOKEN: подчёркивание 12-го кегля стоит на 1px ближе, чем у 14-го: та же геометрия линии, не отступ */
   font-size: 12px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -478,12 +534,8 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
 }
 .gbsp-segs--row .gbsp-seg.is-off { font-size: 12px; }
 
-/* ---- ПОДВАЛ: состояние, копия ссылки, компоновка ---- */
-.gbsp-foot {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--zinc-800);
-}
+/* ---- ПОДВАЛ: состояние, копия ссылки, компоновка ----
+   Линия и пара отступов приходят от общего разделителя ящика. */
 /* Одна строка вместо двух абзацев. 12 — пол системы, и это подпись
    состояния, а не текст для чтения. */
 .gbsp-status {
@@ -510,7 +562,7 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
    Земля и голос те же, что у консоли: Zinc 950, подписи 12 Zinc 500,
    выбранное Blue 400 с подчёркиванием.
    ============================================================ */
-.gbsp-stage--bar { padding-top: calc(36px + var(--space-8)); }
+.gbsp-stage--bar { padding-top: calc(var(--gb-btn-s-h) + var(--space-8)); }
 
 .gbsp-topbar {
   position: fixed;
@@ -518,7 +570,10 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
   left: 0;
   right: 0;
   z-index: 59;
-  height: 36px;
+  /* 36 = --gb-btn-s-h, нижняя ступень сетки высот (раздел 5): полоса
+     ровно того роста, что кнопка S, и число названо ступенью, а не
+     повторено цифрой. */
+  height: var(--gb-btn-s-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -537,7 +592,7 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
   scrollbar-width: none;
 }
 .gbsp-tb__seg {
-  padding: 2px 0 3px;
+  padding: 2px 0 3px;   /* NO TOKEN: та же геометрия подчёркивания, что у .gbsp-segs--row */
   background: none;
   border: 0;
   border-bottom: 2px solid transparent;
@@ -598,7 +653,7 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
 }
 .gbsp-tb__rot:hover { color: var(--white); border-color: var(--zinc-600); }
 .gbsp-tb__rot[hidden] { display: none; }
-.gbsp-tb__rot svg { display: block; width: 14px; height: 14px; }
+.gbsp-tb__rot svg { display: block; width: 14px; height: 14px; }   /* NO TOKEN: мера глифа, см. раздел 8 */
 
 
 /* ============================================================
@@ -649,7 +704,7 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
    Тише имени на ступень (12 против 14) и в Zinc 500, чтобы не
    спорить с ним за голос. */
 .gbsp-cur {
-  margin-left: 6px;   /* NO TOKEN: пол ступени --space-8, зазор внутри строки, не между блоками */
+  margin-left: var(--space-8);   /* было 6 (пол ступени); ступень ближе на 2px и ряд не сдвинула */
   color: var(--zinc-500);
   font-size: 12px;
   font-weight: 400;
@@ -657,14 +712,9 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
 
 /* ---- РАЗДЕЛИТЕЛЬ МЕЖДУ MODE И DEVICE ----
    Тон: «между Mode и Device нужен разделитель, такой же, как между
-   Versions of this page и Mode». Значит буквально та же линия и та
-   же пара отступов, что у .gbsp-sec: 14 сверху, 12 до содержимого,
-   волосок Zinc 800. */
-.gbsp--v2 .gbsp-seggroup + .gbsp-seggroup {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--zinc-800);
-}
+   Versions of this page и Mode». Буквально ТОТ ЖЕ разделитель: с
+   gbppl-studio-tokens-1 он объявлен один раз на все полки ящика
+   (у .gbsp-title), и эта пара селекторов стоит в его списке. */
 
 /* ---- ЭКРАНЫ ИКОНКАМИ ----
    Тон: «переключение устройств лучше сделать иконками, а не
@@ -672,9 +722,13 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
    подчёркивание, тот же Blue 400 на выбранном, только вместо слова
    глиф, а глиф красится currentColor и синеет вместе с линией. */
 .gbsp-seg--icon {
-  padding: 2px 0 4px;
+  padding: 2px 0 4px;   /* NO TOKEN: та же геометрия подчёркивания, что у соседних сегментов */
   line-height: 0;   /* глиф — блок, лишняя полоса строки под ним не нужна */
 }
+/* NO TOKEN: 20 это мера глифа. Шкалы размеров иконок в системе нет:
+   16 / 20 / 24 живут слотами внутри организма кнопки (--gb-btn-*-icon)
+   и чужому потребителю не принадлежат. Предложение --icon-s / --icon-m
+   вынесено Тону отдельным решением (раздел 8). */
 .gbsp-dico {
   display: block;
   width: 20px;
@@ -687,7 +741,7 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
    держится всегда, иначе ряд прыгал бы на каждом наведении. */
 .gbsp-cap {
   margin: var(--space-8) 0 0;
-  min-height: 17px;   /* NO TOKEN: одна строка 12/1.45 */
+  min-height: 17px;   /* NO TOKEN: рост одной строки 12/1.45, привязка к строке, а не отступ */
   color: var(--zinc-500);
   font-size: 12px;
   line-height: 1.45;
@@ -704,6 +758,6 @@ body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
   gap: var(--space-8);
 }
 .gbsp-tb__seg .gbsp-dico {
-  width: 16px;
+  width: 16px;   /* NO TOKEN: мера глифа в строке 12-кегля, см. .gbsp-dico выше */
   height: 16px;
 }
