@@ -80,6 +80,37 @@
    ADDING A COMPONENT to the recognition table is one row in
    COMPONENTS. Adding a specimen kind to the showcase is one entry
    in KINDS. The core below knows about neither.
+
+   ------------------------------------------------------------
+   gbppl-inspect-2 (27.08). The order, from the team through Ton
+   after the second showing: «Всем очень понравился Inspect, просят
+   показывать больше данных и чётче». Six things came of it, and
+   none of them changed the law that the instrument never invents.
+
+   · THE PLATE IS TWO LINES. Name on the first and heavier, size and
+     modifiers on the second. The answer is now the first word.
+   · DISTANCES TO THE NEIGHBOURS. Hold Alt, or open the drawer on an
+     element, and each side grows a hairline to the nearest sibling
+     that really overlaps it, with the number in a plate. Dashed
+     where there is no sibling and the run goes to the parent's
+     content edge. Blue 600, never red: red means an error here.
+   · WHERE IT LIVES CAME TO THE TOP. Owner file and «Open in Oro»
+     are the first line of the drawer body, above the tables; the
+     foot keeps the provenance of the numbers.
+   · PADDING NAMES ITS RUNGS. «24 = --space-24 · 8 off the scale»
+     instead of one flat «not on the space scale» for a shorthand
+     that holds two different lengths.
+   · CONTRAST. Ink against the composited ground, graded AA / AAA at
+     the WCAG threshold for the size and weight actually rendered,
+     with the ground's owner named where it is not the element's own.
+   · STATE, RIGHT NOW. What the browser answers to matches() beside
+     what the markup declares. Where the two disagree, that is the
+     finding.
+
+   The console's device frame (gbppl-panel-7) needs one wire from
+   here: setMode announces itself with a gbi:mode event, the console
+   forwards it into the frame, and the copy of this file inside the
+   frame hears it as a message. Nothing else crosses.
    ============================================================ */
 (function () {
   'use strict';
@@ -535,10 +566,115 @@
   /* A padding of 8 and 20 is the button's own ladder, not a rung of
      the space scale, and «No token» would read as a fault where
      there is none. The row says what was actually looked for. */
+  /* gbppl-inspect-2. A shorthand of 24px 16px is two rungs, not one
+     missing token, and «not on the space scale» said nothing about
+     either. The note now names the rung SIDE BY SIDE with the number
+     that produced it — 24 = --space-24 — and says plainly which of
+     them is off the scale. Zero is not reported: nobody is looking
+     for the token behind nothing. */
+  function scaleNote(shorthand) {
+    var seen = [], bits = [];
+    String(shorthand).split(/\s+/).forEach(function (v) {
+      if (seen.indexOf(v) >= 0) return;
+      seen.push(v);
+      if (!parseFloat(v)) return;
+      var t = tokenFor(v, SPACES);
+      bits.push(v.replace('px', '') + (t ? ' = ' + t : ' off the scale'));
+    });
+    return bits.length ? bits.join(' · ') : 'none';
+  }
+
   function spaceRow(label, value) {
     var r = row(label, value, SPACES);
-    if (!r.token) r.note = 'not on the space scale';
+    if (!r.token) r.note = scaleNote(value);
     return r;
+  }
+
+  /* ---------- gbppl-inspect-2: CONTRAST ----------
+     The team asked for more data; the number a designer and a
+     developer both have to answer for is this one. The ink is read
+     off the element, the ground is composited down the ancestors
+     until something opaque is found (a half-transparent scrim over a
+     dark band is not the colour anybody sees), and the grade is the
+     WCAG threshold for the size and weight actually rendered: large
+     text is judged at 3 and 4.5, everything else at 4.5 and 7. Where
+     the element paints no ground of its own the row says whose
+     ground was used, because that is a fact about the page and not
+     about this element. */
+  function rgbParts(c) {
+    var m = /rgba?\(([^)]+)\)/.exec(String(c));
+    if (!m) return null;
+    var p = m[1].split(',').map(function (s) { return parseFloat(s); });
+    if (isNaN(p[0])) return null;
+    return { r: p[0], g: p[1], b: p[2], a: p.length > 3 && !isNaN(p[3]) ? p[3] : 1 };
+  }
+  function over(fg, bg) {
+    var a = fg.a;
+    return { r: fg.r * a + bg.r * (1 - a), g: fg.g * a + bg.g * (1 - a), b: fg.b * a + bg.b * (1 - a), a: 1 };
+  }
+  function lum(c) {
+    var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+  }
+  function groundOf(el) {
+    var stack = [], n = el;
+    while (n && n.nodeType === 1) {
+      var c = rgbParts(getComputedStyle(n).backgroundColor);
+      if (c && c.a > 0) { stack.push({ c: c, el: n }); if (c.a >= 1) break; }
+      n = n.parentElement;
+    }
+    var base = { r: 255, g: 255, b: 255, a: 1 };
+    for (var i = stack.length - 1; i >= 0; i--) base = over(stack[i].c, base);
+    return { colour: base, from: stack.length ? stack[0].el : null, own: !!stack.length && stack[0].el === el };
+  }
+  function contrastRows(el) {
+    var cs = getComputedStyle(el);
+    var ink = rgbParts(cs.color);
+    if (!ink) return [];
+    var g = groundOf(el);
+    var solid = ink.a < 1 ? over(ink, g.colour) : ink;
+    var l1 = lum(solid), l2 = lum(g.colour);
+    var ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    var size = parseFloat(cs.fontSize) || 16;
+    var weight = parseInt(cs.fontWeight, 10) || 400;
+    var big = size >= 24 || (size >= 18.66 && weight >= 700);
+    var grade = ratio >= (big ? 4.5 : 7) ? 'AAA' : ratio >= (big ? 3 : 4.5) ? 'AA' : 'below AA';
+    var where = g.own ? 'its own ground'
+              : g.from ? 'the ground of ' + identify(g.from).name
+              : 'the page itself, nothing painted in between';
+    return [row('Contrast', (Math.round(ratio * 100) / 100) + ':1 · ' + grade, null,
+                'against ' + where + (big ? ', judged as large text' : ''))];
+  }
+
+  /* ---------- gbppl-inspect-2: STATE, RIGHT NOW ----------
+     Two rows, and they answer two different questions. LIVE is what
+     the browser says with matches(), so hover really means hover and
+     disabled really means the control is refusing input. DECLARED is
+     what the markup claims: the demo classes of the showcase, the
+     aria that carries the state to a screen reader, the boolean
+     attributes. Where they disagree, that IS the finding. */
+  var PSEUDO = [':hover', ':focus', ':focus-visible', ':focus-within', ':active',
+                ':disabled', ':checked', ':indeterminate', ':invalid',
+                ':placeholder-shown', ':open'];
+  var STATE_ATTRS = ['aria-pressed', 'aria-current', 'aria-expanded', 'aria-selected',
+                     'aria-disabled', 'aria-invalid', 'disabled', 'checked', 'open'];
+  function stateBlock(el) {
+    var live = [];
+    PSEUDO.forEach(function (p) {
+      try { if (el.matches(p)) live.push(p.slice(1)); } catch (e) { /* engine does not know this one */ }
+    });
+    var marked = classList(el).filter(function (c) { return /^is-/.test(c); });
+    STATE_ATTRS.forEach(function (a) {
+      if (el.hasAttribute && el.hasAttribute(a)) {
+        var v = el.getAttribute(a);
+        marked.push(v ? a + '="' + v + '"' : a);
+      }
+    });
+    return block('State, right now', table([
+      row('Live', live.length ? live.join(' · ') : 'rest', null,
+          'asked of the browser with matches(), not guessed from classes'),
+      row('Declared', marked.length ? marked.join(' · ') : 'nothing in the markup', null, 'quiet')
+    ]));
   }
 
   function geometryBlock(el) {
@@ -613,6 +749,10 @@
             : cs.transitionProperty + ' ' + cs.transitionDuration + ' ' + cs.transitionTimingFunction),
           null, 'quiet')
     ];
+    /* Contrast belongs to paint, and only where there is text to
+       judge: the ratio of a wrapper that draws no glyphs is a number
+       about nothing (gbppl-inspect-2). */
+    if (isTextLeaf(el)) rowsList = rowsList.concat(contrastRows(el));
     return block('Paint, measured on this element', table(rowsList));
   }
 
@@ -669,30 +809,49 @@
     return (d && typeof d.open === 'function') ? d : null;
   }
 
+  /* gbppl-inspect-2. WHERE IT LIVES MOVED TO THE TOP. It used to
+     stand in the foot, four screens of tables below the name, and the
+     first question a developer asks about a thing on a page is which
+     file to open. Now the drawer reads: big name, then the file that
+     owns it and the way into its card, then the measurements. The
+     foot keeps what it was always for — how the numbers were got. */
+  function ledeBlock(desc) {
+    var where = desc.owner.file
+      ? 'Lives in <code>' + esc(desc.owner.file) + '</code>' +
+        (desc.owner.own ? '.' : ', reached through the nearest ancestor that carries a class of the system.')
+      : 'Nothing in the system claims this element, so it is the page speaking for itself.';
+    var oro = desc.oro
+      ? ' <a class="gbi-oro" href="' + esc(ROOT + 'system/oro/' + desc.oro) + '">Open in Oro</a>'
+      : '';
+    return '<p class="gbi-lede">' + where + oro + '</p>';
+  }
+
   function openFor(el) {
     var d = drawerHost();
     if (!d) return;
     var desc = identify(el);
-    var body = geometryBlock(el);
+    /* The element the drawer is open on keeps its distances drawn
+       without a held key: it is the one being worked on. */
+    selected = el;
+    var body = ledeBlock(desc) + geometryBlock(el);
 
     /* A component the showcase already knows how to read is read
        the same way here: one description of Button in the system,
-       not two (Ton-6). */
+       not two (Ton-6). Its own table already names ground and ink, so
+       only the contrast is added beside it rather than a second Paint. */
     if (desc.kind && KINDS[desc.kind]) {
       body += KINDS[desc.kind].body(el, KINDS[desc.kind].describe(el));
+      var cr = contrastRows(el);
+      if (cr.length) body += block('Contrast, ink against its ground', table(cr));
     } else {
       body += typeBlock(el, desc);
       body += paintBlock(el);
     }
-    body += classesBlock(el) + cssBlock(el, desc);
+    body += stateBlock(el) + classesBlock(el) + cssBlock(el, desc);
 
-    var foot = desc.owner.file
-      ? 'Owner: <code>' + esc(desc.owner.file) + '</code>' +
-        (desc.owner.own ? '.' : ', reached through the nearest ancestor that carries a class of the system.')
-      : 'Owner: nothing in the system claims this element, so it is the page speaking for itself.';
-    if (desc.oro) {
-      foot += ' &middot; <a class="gbi-oro" href="' + esc(ROOT + 'system/oro/' + desc.oro) + '">Open in Oro</a>';
-    }
+    var foot = 'Every number above was read off this element with getComputedStyle at ' +
+               window.innerWidth + 'px wide, and the token beside it is the one whose ' +
+               'resolved value matches what the browser drew.';
 
     d.open({
       eyebrow: 'Inspect',
@@ -703,6 +862,7 @@
       html: body,
       foot: foot
     });
+    schedule();   /* the distances of the chosen element, straight away */
   }
   /* ============================================================
      THE SHOWCASE KINDS
@@ -1059,6 +1219,15 @@
      scrolling page has to be told the page moved.
      ============================================================ */
   var layer = null, hovered = null, frame = 0;
+  /* gbppl-inspect-2. selected = the element whose drawer is open; it
+     keeps its distances drawn without a held key, because that is the
+     one the reader is working on. altHeld is tracked rather than read
+     off the event, so pressing Alt without moving the pointer redraws
+     — the same key both drills into the exact element and turns the
+     distances on, and both must answer the moment it goes down.
+     lastRaw is the untouched pointer target, kept so that resolution
+     can be done again when Alt changes. */
+  var selected = null, altHeld = false, lastRaw = null;
 
   function makeLayer() {
     if (layer) return layer;
@@ -1096,6 +1265,83 @@
   }
 
   function num(v) { return parseFloat(v) || 0; }
+
+  /* ---------- gbppl-inspect-2: DISTANCES TO THE NEIGHBOURS ----------
+     The Figma gesture, in one colour. Hold Alt, or open the drawer on
+     an element, and every side of the box grows a thin Blue 600 line
+     to the nearest thing beside it with the number in a small plate
+     at the middle of the run. No red: red in this system means an
+     error, and a measurement is not one.
+
+     WHAT COUNTS AS A NEIGHBOUR. A sibling that actually overlaps on
+     the other axis. A number to something standing in a different row
+     measures nothing anybody can see, so it is not offered. Where no
+     sibling stands in that direction the line runs to the parent's
+     CONTENT edge and is drawn dashed: the two answers are different
+     questions and must never read as one. */
+  function contentBox(el) {
+    var r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+    return {
+      top: r.top + num(cs.borderTopWidth) + num(cs.paddingTop),
+      right: r.right - num(cs.borderRightWidth) - num(cs.paddingRight),
+      bottom: r.bottom - num(cs.borderBottomWidth) - num(cs.paddingBottom),
+      left: r.left + num(cs.borderLeftWidth) + num(cs.paddingLeft)
+    };
+  }
+
+  function distances(el, r) {
+    var parent = el.parentElement;
+    if (!parent || parent === document.documentElement) return;
+
+    var best = { top: null, right: null, bottom: null, left: null };
+    function keep(side, d) {
+      if (d < -0.5) return;
+      d = Math.max(d, 0);
+      if (best[side] === null || d < best[side].d) best[side] = { d: d, kin: true };
+    }
+    for (var n = parent.firstElementChild; n; n = n.nextElementSibling) {
+      if (n === el) continue;
+      var k = n.getBoundingClientRect();
+      if (!k.width || !k.height) continue;
+      var oh = Math.min(r.right, k.right) - Math.max(r.left, k.left);
+      var ov = Math.min(r.bottom, k.bottom) - Math.max(r.top, k.top);
+      if (oh > 0.5) {
+        if (k.bottom <= r.top + 0.5) keep('top', r.top - k.bottom);
+        if (k.top >= r.bottom - 0.5) keep('bottom', k.top - r.bottom);
+      }
+      if (ov > 0.5) {
+        if (k.right <= r.left + 0.5) keep('left', r.left - k.right);
+        if (k.left >= r.right - 0.5) keep('right', k.left - r.right);
+      }
+    }
+
+    var box = contentBox(parent);
+    if (best.top === null) best.top = { d: r.top - box.top, kin: false };
+    if (best.bottom === null) best.bottom = { d: box.bottom - r.bottom, kin: false };
+    if (best.left === null) best.left = { d: r.left - box.left, kin: false };
+    if (best.right === null) best.right = { d: box.right - r.right, kin: false };
+
+    var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    run('top', best.top, cx, r.top - best.top.d, 1, best.top.d, cx, r.top - best.top.d / 2);
+    run('bottom', best.bottom, cx, r.bottom, 1, best.bottom.d, cx, r.bottom + best.bottom.d / 2);
+    run('left', best.left, r.left - best.left.d, cy, best.left.d, 1, r.left - best.left.d / 2, cy);
+    run('right', best.right, r.right, cy, best.right.d, 1, r.right + best.right.d / 2, cy);
+
+    function run(side, info, l, t, w, h, nx, ny) {
+      if (!info || !(info.d > 0.5)) return;
+      /* Orientation is spelt out because the dashes have to run ALONG
+         the line: a dash pattern painted across a one-pixel bar comes
+         out solid, and a solid line here means «to a sibling». */
+      piece('gbi-dist gbi-dist--' + (w === 1 ? 'v' : 'h') +
+            (info.kin ? '' : ' gbi-dist--edge'), l, t, w, h);
+      var p = document.createElement('span');
+      p.className = 'gbi-dist__num';
+      p.textContent = Math.round(info.d * 10) / 10;
+      p.style.left = nx + 'px';
+      p.style.top = ny + 'px';
+      layer.appendChild(p);
+    }
+  }
 
   function paint(el) {
     makeLayer();
@@ -1160,13 +1406,23 @@
     number('gbi-num--mar', ml, r.left - ml / 2, r.top + r.height / 2);
     number('gbi-num--mar', mr, r.right + mr / 2, r.top + r.height / 2);
 
-    /* The plate: what it is, and how big. */
+    /* The distances, drawn over the fills and under the plate. Held
+       Alt asks for them; the element whose drawer is open keeps them
+       without a key, because that is the one being worked on. */
+    if (altHeld || (selected && el === selected)) distances(el, r);
+
+    /* The plate: TWO lines since gbppl-inspect-2 (the team, through
+       Ton, 27.08: «просят показывать больше данных и чётче»). The
+       name of the thing on the first line and heavier, because that
+       is what is being answered; the size and the modifiers below it,
+       quieter. One line held all three and the eye had to hunt for
+       the name in the middle of a sentence. */
     var d = identify(el);
     var badge = document.createElement('div');
     badge.className = 'gbi-badge';
     badge.innerHTML = '<b>' + esc(d.name) + '</b>' +
-      (d.detail ? '<i>' + esc(d.detail) + '</i>' : '') +
-      '<em>' + round1(r.width) + ' × ' + round1(r.height) + '</em>';
+      '<span class="gbi-badge__meta"><em>' + round1(r.width) + ' × ' + round1(r.height) + '</em>' +
+      (d.detail ? '<i>' + esc(d.detail) + '</i>' : '') + '</span>';
     layer.appendChild(badge);
 
     /* Where the plate goes, in order of preference: above the box,
@@ -1211,9 +1467,13 @@
   var handle = null;
   var drawerOpen = false;
 
+  /* The console, the drawer, the instrument's own layer — and, since
+     gbppl-panel-7, the device stage: the dark field a framed page
+     floats on belongs to the console, not to the page, and pointing
+     at it must not measure it. */
   function isChrome(el) {
     if (!el || !el.closest) return true;
-    return !!el.closest('gb-studio-panel, .gbsp, .gbd-panel, .gbd-scrim, .gbi-layer');
+    return !!el.closest('gb-studio-panel, .gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim, .gbi-layer');
   }
 
   /* ---------- what the pointer means ----------
@@ -1239,23 +1499,62 @@
     MODE = next;
     try { sessionStorage.setItem(KEY, next); } catch (e) { /* private window */ }
     document.documentElement.classList.toggle('gbi-on', next === 'inspect');
-    if (next !== 'inspect') { hovered = null; clearOverlay(); }
+    if (next !== 'inspect') { hovered = null; selected = null; clearOverlay(); }
     if (handle) handle.setActive(next);
+    /* gbppl-inspect-2. The instrument says out loud what it just did
+       and does not care who is listening. The console picks this up
+       and forwards it into the device frame (gbppl-panel-7); a page
+       with no frame has nobody subscribed and nothing happens. */
+    try {
+      document.dispatchEvent(new CustomEvent('gbi:mode', { detail: { mode: next } }));
+    } catch (e) { /* very old engine, nothing to forward to anyway */ }
   }
+
+  /* The other end of that wire, inside the frame: the console
+     outside posts the mode in, and this page switches. Same origin,
+     one message shape, and the sender is the frame's own parent —
+     nothing else is listened to. */
+  window.addEventListener('message', function (e) {
+    if (e.source !== window.parent || e.source === window) return;
+    var d = e.data;
+    if (!d || d.gbsp !== 'mode') return;
+    if ((d.mode === 'inspect' ? 'inspect' : 'view') !== MODE) setMode(d.mode);
+  });
 
   document.addEventListener('pointermove', function (e) {
     if (MODE !== 'inspect') return;
     var t = e.target;
-    if (isChrome(t) || t === document.documentElement) { hovered = null; schedule(); return; }
-    t = resolveTarget(t, e.altKey);
-    if (t !== hovered) { hovered = t; schedule(); }
+    /* The held key is read off the pointer as well as off the
+       keyboard: inside a device frame the keydown belongs to the
+       document that has focus, and the pointer is the only witness
+       that Alt is down (gbppl-inspect-2). A flip repaints even when
+       the pointer has not left the element. */
+    var altNow = !!e.altKey, altFlip = altNow !== altHeld;
+    altHeld = altNow;
+    if (isChrome(t) || t === document.documentElement) { hovered = null; lastRaw = null; schedule(); return; }
+    lastRaw = t;
+    t = resolveTarget(t, altHeld);
+    if (t !== hovered || altFlip) { hovered = t; schedule(); }
   }, { passive: true });
 
   document.addEventListener('pointerleave', function () {
     if (MODE !== 'inspect') return;
     hovered = null;
+    lastRaw = null;
     schedule();
   });
+
+  /* Alt is a state, not an event: hold it and the picture must
+     change under a pointer that is standing still. */
+  function altChanged(down) {
+    if (MODE !== 'inspect' || altHeld === down) return;
+    altHeld = down;
+    if (lastRaw && lastRaw.isConnected) hovered = resolveTarget(lastRaw, altHeld);
+    schedule();
+  }
+  window.addEventListener('keydown', function (e) { if (e.key === 'Alt') altChanged(true); });
+  window.addEventListener('keyup', function (e) { if (e.key === 'Alt') altChanged(false); });
+  window.addEventListener('blur', function () { altChanged(false); });
 
   window.addEventListener('scroll', function () { if (MODE === 'inspect') schedule(); }, { passive: true });
   window.addEventListener('resize', function () { if (MODE === 'inspect') schedule(); });
@@ -1281,7 +1580,11 @@
   }, true);
 
   document.addEventListener('gbd:open', function () { drawerOpen = true; });
-  document.addEventListener('gbd:close', function () { drawerOpen = false; });
+  document.addEventListener('gbd:close', function () {
+    drawerOpen = false;
+    selected = null;   /* the chosen element lets go of its distances */
+    schedule();
+  });
 
   /* i switches, Esc leaves. The Cyrillic ш is the same physical
      key and costs one comparison. */
@@ -1317,12 +1620,17 @@
       if (typeof panel.addSegments !== 'function') return;
       handle = panel.addSegments({
         title: 'Mode',
+        /* Rank, not call order: Device is declared by the console
+           itself in connectedCallback and this call waits on
+           whenDefined, so without it Mode would land second on every
+           page (gbppl-panel-7). */
+        rank: 1,
         value: MODE,
         options: [
           { label: 'View', value: 'view',
             note: 'The page behaves as it does for a visitor.' },
           { label: 'Inspect', value: 'inspect',
-            note: 'Hover for the box, click for properties. Keys: i switches, Alt drills in, Esc leaves.' }
+            note: 'Hover for the box, click for properties. Keys: i switches, Alt drills in and measures the gaps, Esc leaves.' }
         ],
         onChange: function (v) { setMode(v); }
       });

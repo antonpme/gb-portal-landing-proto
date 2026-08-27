@@ -106,12 +106,20 @@
 .gbi-num--mar { color: var(--gbi-mar-ink); }
 
 /* ---- The plate. Zinc 950, the voice of the console, so the
-   instrument reads as one thing wherever it appears. ---- */
+   instrument reads as one thing wherever it appears.
+
+   TWO LINES since gbppl-inspect-2 (the team, through Ton, 27.08:
+   «просят показывать больше данных и чётче»). The name of the thing
+   on the first line and heavier, its size and modifiers on the
+   second and quieter. On one line all three ran together and the eye
+   had to hunt for the name in the middle of a sentence; stacked, the
+   answer is the first word. ---- */
 .gbi-badge {
   position: absolute;
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
   max-width: calc(100vw - 16px);
   padding: 5px 8px;
   border-radius: var(--radius);
@@ -125,11 +133,74 @@
   text-overflow: ellipsis;
 }
 .gbi-badge b { font-weight: 600; }
+.gbi-badge__meta { display: flex; align-items: baseline; gap: 8px; }
 .gbi-badge i { font-style: normal; color: var(--zinc-400); }
 .gbi-badge em {
   font-style: normal;
   color: var(--blue-400);
   font-variant-numeric: tabular-nums;
+}
+
+/* ---- The distances to the neighbours (gbppl-inspect-2) ----
+   Held Alt, or an open drawer, and each side of the box grows a
+   hairline to the nearest thing beside it. Blue 600, the colour of
+   the box itself: this is the same measurement continued outwards,
+   not a second kind of finding. No red anywhere — red in this system
+   means an error, and a distance is not one.
+
+   Solid to a sibling, DASHED to the parent's content edge. Two
+   different questions, and they must never read as one answer. ---- */
+.gbi-dist {
+  position: absolute;
+  background: var(--blue-600);
+}
+/* The dashes run ALONG the line, so the direction is spelt out: a
+   pattern painted across a one-pixel bar comes out solid, and solid
+   here already means something else. */
+.gbi-dist--edge { background: none; }
+.gbi-dist--v.gbi-dist--edge {
+  background-image: repeating-linear-gradient(
+    to bottom, var(--blue-600) 0 3px, transparent 3px 6px);
+}
+.gbi-dist--h.gbi-dist--edge {
+  background-image: repeating-linear-gradient(
+    to right, var(--blue-600) 0 3px, transparent 3px 6px);
+}
+/* The number in a plate rather than beside a line: over a photograph
+   or a dark band a bare digit disappears, and a measurement that
+   cannot be read is not a measurement. */
+.gbi-dist__num {
+  position: absolute;
+  display: block;
+  transform: translate(-50%, -50%);
+  padding: 1px 5px;
+  border-radius: var(--radius);
+  background: var(--blue-600);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- The first line of the drawer body: where this thing lives ----
+   It used to stand in the foot, four screens of tables below the
+   name. The first question a developer asks about a thing on a page
+   is which file to open, so it comes first now (gbppl-inspect-2). ---- */
+.gbi-lede {
+  margin: 0 0 var(--space-16);
+  color: var(--zinc-600);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.gbi-lede code {
+  /* The same monospace the documentation atoms use (docs.css). There
+     is no token for it: tokens.css names the stack in a comment and
+     stops there. */
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  font-size: 13px;
+  color: var(--zinc-900);
 }
 
 /* ---- The way from a measurement into the showcase card ----
@@ -153,10 +224,15 @@ body.gb-demo a.gbi-oro:hover { color: var(--blue-700); }
 
    The console and the drawer keep their own pointer: they are the
    two things you must still be able to operate, and a crosshair
-   over a close button would say otherwise. */
+   over a close button would say otherwise.
+
+   The device stage joined the list with gbppl-panel-7: the dark
+   field a framed page floats on belongs to the console, and a
+   crosshair over it would promise a measurement that cannot be
+   taken. Inside the frame the page has an instrument of its own. */
 html.gbi-on,
 html.gbi-on * { cursor: crosshair !important; }
-html.gbi-on :is(.gbsp, .gbd-panel, .gbd-scrim),
-html.gbi-on :is(.gbsp, .gbd-panel, .gbd-scrim) * { cursor: default !important; }
+html.gbi-on :is(.gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim),
+html.gbi-on :is(.gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim) * { cursor: default !important; }
 html.gbi-on :is(.gbsp, .gbd-panel) :is(a, button) { cursor: pointer !important; }
 html.gbi-on ::selection { background: transparent; }
