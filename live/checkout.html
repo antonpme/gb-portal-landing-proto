@@ -126,6 +126,37 @@
      .gb-container clamp ladder — shell.js is NOT loaded, so nothing
      stamps `gb-demo` on the body and the demo grounding stays away.
      ============================================================ -->
+<!-- ============================================================
+     gbppl-demo-polish-1 (2026-08-27) — READY FOR RUSSELL.
+
+     Ton, morning of 27.08: «Скоро демонстрация Расселу, подтянуть
+     всё как можно лучше. Особенно: 1. Чекаут.» He reads type,
+     colour, shape and words, and he reads them without mercy.
+
+     Fixed here, each marked at its site:
+       - Edit Selected was 58px wide with its label printed out
+         through the right edge: the icon span was never closed, so
+         the whole button lived inside one 16px glyph;
+       - the recipient table printed its five column headings on top
+         of one another whenever addresses differ (table-fixed left
+         46px for a word that measures 76);
+       - the caps helper lines under the fields stop inventing 10 and
+         11px greys and spend the Eyebrow role; 13px joins the 14 floor;
+       - five radii become one (5px);
+       - amber and green, which the palette does not own, become Blue
+         (state) and Red (error);
+       - the confirmation H1 steps off the SITE hero ladder onto the
+         portal one, the same ladder the page's own title already uses;
+       - em dashes out, Receiver joins Recipient, Sub-Total becomes
+         Subtotal, and four lines stop saying "prototype" out loud;
+       - the local copies of the eleven --mo-* tokens and of
+         .gb-eyebrow are deleted: tokens.css and shell.css are linked
+         and own both (Ton-8).
+
+     STILL ON THE LIST FOR TON, not touched: the page paints from
+     Tailwind CDN utilities, so it has 91 controls that are not
+     .gb-btn and not one .gba-* field. That is a rebuild, not a pass.
+     ============================================================ -->
 <!-- gbppl-gate-2: one code on every page of the studio; the guard runs before paint. -->
 <script src="../system/components/studio.js" data-home="../index.html"></script>
 <link rel="stylesheet" href="../system/assets/tokens.css">
@@ -154,21 +185,11 @@
      This file is standalone (Tailwind CDN, no build), so the
      values are literals here and the provenance is this comment.
      ============================================================ */
-  :root {
-    --mo-enter:  cubic-bezier(0.37, 0, 0.18, 1); /* big entrances */
-    --mo-arrive: cubic-bezier(0, 0, 0.2, 1);     /* content settling into place */
-    --mo-exit:   cubic-bezier(0.4, 0, 1, 1);     /* leaving accelerates */
-    --mo-move:   cubic-bezier(0.4, 0, 0.2, 1);   /* in-place moves, height, steps */
-
-    --mo-large: 1200ms;      /* the door across the screen */
-    --mo-medium: 500ms;      /* a popup out of its button */
-    --mo-medium-out: 350ms;  /* ...and back into it */
-    --mo-small: 280ms;       /* steps, height, side moves */
-    --mo-small-out: 90ms;    /* the quiet leave before a step */
-    --mo-micro: 160ms;       /* hovers, chips, icon-buttons */
-
-    --mo-drawer-in: 800ms;   /* the side drawer, same clock as the v1 catalog door */
-  }
+  /* gbppl-demo-polish-1: the eleven --mo-* literals that stood here are
+     GONE. tokens.css is linked above and owns every one of them, including
+     --mo-drawer-in 800 (DECLARED 26.08). The comment above predates the
+     link and said the page was standalone; it is not, and a second copy of
+     a token on a live/ page is a structural bug (Ton-8). */
 
   /* ============================================================
      FAMILIES — both out of demo/assets/tokens.css, no literals.
@@ -198,13 +219,9 @@
      the role, so the values stand here as fallbacks and will start
      resolving through the tokens the moment the copy is synced.
      ============================================================ */
-  .gb-eyebrow {
-    font-size: var(--eyebrow-size, 12px);
-    font-weight: var(--eyebrow-weight, 600);
-    letter-spacing: var(--eyebrow-tracking, 0.12em);
-    text-transform: uppercase;
-    color: var(--eyebrow-color, var(--zinc-500));
-  }
+  /* gbppl-demo-polish-1: the local copy of .gb-eyebrow is GONE too. shell.css
+     owns the class and tokens.css declares --eyebrow-size/-weight/-tracking/
+     -color; both files are linked above. */
 
   /* A row arriving in the table: content settling, small journey. */
   .row-enter { animation: rowIn var(--mo-small) var(--mo-arrive); }
@@ -285,7 +302,7 @@
   [x-cloak] { display: none !important; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--zinc-300); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--zinc-300); border-radius: var(--radius); }
   ::-webkit-scrollbar-thumb:hover { background: var(--zinc-400); }
 </style>
 </head>
@@ -306,7 +323,7 @@
 
 <!-- ========== BREADCRUMBS + PAGE TITLE (site frame) ========== -->
 <div class="gb-container pt-7" x-show="!placed">
-  <nav class="flex items-center gap-2.5 text-[13px] text-zinc-400">
+  <nav class="flex items-center gap-2.5 text-sm text-zinc-500">
     <!-- href is filled in at the foot of the page so the query string rides along -->
     <a href="portal.html" data-gbppl-home class="hover:text-zinc-700 transition-colors">Home</a>
     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
@@ -335,7 +352,7 @@
         <!-- ===== LEFT: product image ===== -->
         <div class="md:border-r border-b md:border-b-0 border-zinc-200 px-10 py-14 flex flex-col items-center justify-center">
           <img :src="product.image" :alt="product.name" class="w-full object-contain">
-          <button @click="removeProduct(pIdx)" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary mt-10 hover:text-red-600">
+          <button @click="removeProduct(pIdx)" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary mt-10">
             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg><span class="gb-btn__label">Remove gift</span></button>
         </div>
 
@@ -401,7 +418,7 @@
                    Black, not blue: the toggle is furniture, not a state chip.
                    ============================================================ -->
               <!-- The band itself keeps its full width; only its two top corners follow the
-                   section's 5px so the gray does not poke past the rounded border. -->
+                   section's 5px so the gray does not poke past the rounded-[5px] border. -->
               <header class="bg-zinc-100/70 border-b border-zinc-200 rounded-t-[5px] px-6 py-4 flex items-center gap-6 min-h-[68px]">
                 <h3 class="font-serif text-2xl leading-none">1. Where should we deliver these gifts?</h3>
                 <!-- Toggle Button, the system component: a white parent with padding, the black
@@ -464,7 +481,7 @@
                           <input type="radio" :name="'ship-' + shipment.id" :value="opt.id" x-model="shipment.shipping" class="accent-blue-600 w-4 h-4 flex-shrink-0">
                           <span class="min-w-0">
                             <span class="text-sm font-medium block leading-tight truncate" x-text="opt.label"></span>
-                            <span class="text-[13px] text-zinc-500 block">$<span x-text="opt.cost"></span></span>
+                            <span class="text-sm text-zinc-500 block">$<span x-text="opt.cost"></span></span>
                           </span>
                         </span>
                       </label>
@@ -479,7 +496,7 @@
               </div>
 
               <!-- Hint: pick address first (One address without an address chosen) — Russell rule #1 -->
-              <div x-show="shipment.addressMode === 'same' && !shipment.shipToId" class="mx-6 mb-5 flex items-center gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-[5px] px-3 py-2">
+              <div x-show="shipment.addressMode === 'same' && !shipment.shipToId" class="mx-6 mb-5 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[5px] px-3 py-2">
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
                 <span>Pick where this ships in step 1 to continue.</span>
               </div>
@@ -498,14 +515,14 @@
                 <div x-show="false && !shipment.detailsMode" x-transition.opacity.duration.280ms class="space-y-3 py-5">
                   <p class="text-sm text-zinc-700">How would you like to add recipient details?</p>
                   <div class="grid grid-cols-2 gap-3">
-                    <button @click="shipment.detailsMode='now'" class="text-left p-5 border border-zinc-200 rounded-lg hover:border-blue-600 hover:shadow-sm transition-colors">
+                    <button @click="shipment.detailsMode='now'" class="text-left p-5 border border-zinc-200 rounded-[5px] hover:border-blue-600 hover:shadow-sm transition-colors">
                       <div class="flex items-center gap-2.5 mb-2">
                         <svg class="w-5 h-5 text-zinc-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg></span>
                         <h4 class="font-medium text-zinc-900">Add details now</h4>
                       </div>
                       <p class="text-xs text-zinc-500 pl-[30px]">Fill in recipient details here.</p>
                     </button>
-                    <button @click="shipment.detailsMode='later'" class="text-left p-5 border border-zinc-200 rounded-lg hover:border-blue-600 hover:shadow-sm transition-colors">
+                    <button @click="shipment.detailsMode='later'" class="text-left p-5 border border-zinc-200 rounded-[5px] hover:border-blue-600 hover:shadow-sm transition-colors">
                       <div class="flex items-center gap-2.5 mb-2">
                         <svg class="w-5 h-5 text-zinc-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
                         <h4 class="font-medium text-zinc-900">Send recipients a link</h4>
@@ -515,7 +532,7 @@
                   </div>
                 </div>
                 <!-- After selection: compact summary bar -->
-                <div x-show="false && shipment.detailsMode" x-transition.opacity.duration.280ms class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-md px-4 py-2.5 my-5">
+                <div x-show="false && shipment.detailsMode" x-transition.opacity.duration.280ms class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-[5px] px-4 py-2.5 my-5">
                   <span class="flex items-center gap-2">
                     <span class="gb-eyebrow">Details</span>
                     <span class="text-sm font-medium text-blue-700" x-text="shipment.detailsMode === 'now' ? 'Adding details now' : 'Sending recipients a link'"></span>
@@ -608,11 +625,15 @@
                   <div class="relative">
                     <button
                       :disabled="selectedCount(shipment) === 0"
-                      :class="selectedCount(shipment) === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white'"
+                      :class="selectedCount(shipment) === 0 ? 'cursor-not-allowed' : ''"
                       :title="selectedCount(shipment) === 0 ? 'Select rows first' : ''"
                       @click="bulkMenuOpen = bulkMenuOpen === shipment.id ? null : shipment.id; tplMenuOpen = null"
                       class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary">
-                      <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                      <!-- gbppl-demo-polish-1: the icon span was never closed, so the label and the
+                           chevron lived INSIDE it. The organism sized the whole button as one
+                           16px glyph (58px wide) and "Edit Selected" printed straight out of
+                           its right edge, on both shipments, at every width. One </span>. -->
+                      <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg></span>
                       <span class="gb-btn__label">Edit Selected<span x-show="selectedCount(shipment) > 0"> · <span x-text="selectedCount(shipment)"></span></span></span>
                       <svg class="w-3 h-3 ml-1 transition-transform" :class="bulkMenuOpen === shipment.id ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                     </button>
@@ -682,7 +703,7 @@
                       <div>
                         <div class="flex justify-between items-baseline mb-1">
                           <label class="gb-eyebrow">Message</label>
-                          <span class="text-[11px] text-zinc-400"><span x-text="(shipment.genericCard.message || '').length"></span> / 280</span>
+                          <span class="text-xs text-zinc-500"><span x-text="(shipment.genericCard.message || '').length"></span> / 280</span>
                         </div>
                         <textarea x-model="shipment.genericCard.message" rows="3" maxlength="280" placeholder="Write your message..." class="w-full bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-2 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 resize-none transition"></textarea>
                       </div>
@@ -746,11 +767,11 @@
                          inline, and written to the shipment once instead of to every row. -->
                     <template x-for="(it, idx) in productItems(product)" :key="'uni-item-'+shipment.id+'-'+idx">
                       <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-5 items-center">
-                        <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
+                        <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
                         <div>
                           <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
                           <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
-                          <p class="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider" x-text="it.sub"></p>
+                          <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
                         </div>
                         <div>
                           <template x-if="it.kind === 'initials'">
@@ -766,13 +787,13 @@
                                     class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
                                 </template>
                               </div>
-                              <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Initials (3 chars · A–Z, 0–9)</p>
+                              <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
                             </div>
                           </template>
                           <template x-if="it.kind !== 'initials'">
                             <div>
                               <input type="text" :value="shipment.uniform['item' + (idx+1)] || ''" @input="shipment.uniform['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
-                              <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Name (<span x-text="(shipment.uniform['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+                              <p class="gb-eyebrow mt-1.5">Name (<span x-text="(shipment.uniform['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
                             </div>
                           </template>
                         </div>
@@ -795,7 +816,7 @@
                     <div>
                       <div class="flex justify-between items-baseline mb-1">
                         <label class="gb-eyebrow">Message</label>
-                        <span class="text-[11px] text-zinc-400"><span x-text="(shipment.uniform.greeting.message || '').length"></span> / 280</span>
+                        <span class="text-xs text-zinc-500"><span x-text="(shipment.uniform.greeting.message || '').length"></span> / 280</span>
                       </div>
                       <textarea x-model="shipment.uniform.greeting.message" rows="3" maxlength="280" placeholder="Write your message..." class="w-full bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-2 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 resize-none transition"></textarea>
                     </div>
@@ -813,19 +834,26 @@
               <!-- ===== RECIPIENT TABLE ===== -->
               <div x-show="shipment.detailsMode === 'now' && (uiVersion === 'v1' || shipment.persoMode === 'each')" class="px-6">
                 <div class="overflow-x-auto">   <!-- gbppl-checkout-12: the recipient table scrolls inside its own box, the page never does -->
-                <table class="w-full table-fixed min-w-[640px]">
+                <!-- gbppl-demo-polish-1: min-width 640 -> 880, Name 220 -> 180, Address 190 -> 170.
+                     table-fixed shared what the four fixed columns left over between the three
+                     Personalize columns and Greeting Card: 46px each, while the single word
+                     "Personalize" measures 76. The five headings printed on top of one another
+                     in the different-addresses scenario at every width. The box around this
+                     table already scrolls sideways on its own (gbppl-checkout-12), so the table
+                     is allowed to ask for the width its own words need. -->
+                <table class="w-full table-fixed min-w-[880px]">
                   <thead class="border-b border-zinc-200">
-                    <tr class="text-[13px] text-zinc-800">
+                    <tr class="text-sm text-zinc-800">
                       <!-- text-left, or the browser's own `th { text-align: center }` parks the
                            select-all box 12px right of every checkbox below it in the 40px column. -->
                       <th class="w-10 py-3.5 text-left"><input type="checkbox" @change="toggleAllSelected(shipment, $event.target.checked)" :checked="allSelected(shipment)" class="accent-blue-600 w-4 h-4"></th>
                       <!-- The column no longer has to explain WHO this is: the step heading above asks
                            "Who is this gift for?", so the column can say what the field is FOR
                            (approved copy set, 21.08 — replaces "Gift Receiver Name", DD-141 #6). -->
-                      <th class="text-left py-3.5 pr-4 font-medium w-[220px]">
+                      <th class="text-left py-3.5 pr-4 font-medium w-[180px]">
                         <button class="inline-flex items-center gap-1.5 hover:text-zinc-900">Name for personalization <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg></button>
                       </th>
-                      <th class="text-left py-3.5 pr-4 font-medium w-[190px]" x-show="shipment.addressMode === 'different'">Address</th>
+                      <th class="text-left py-3.5 pr-4 font-medium w-[170px]" x-show="shipment.addressMode === 'different'">Address</th>
                       <template x-for="i in 3" :key="'th-item-'+i">
                         <th class="text-left py-3.5 pr-4 font-medium">Personalize Item <span x-text="i"></span></th>
                       </template>
@@ -855,15 +883,15 @@
                           <button @click.stop="openAddressDrawer(product.id, shipment.id, recipient.id)" class="block w-full text-left">
                             <template x-if="recipient.address">
                               <span class="block max-w-full">
-                                <span class="block truncate text-[13px] text-zinc-800" :title="recipient.address" x-text="recipient.address"></span>
-                                <span class="block text-[10px] text-zinc-500 mt-0.5 uppercase tracking-wider">
+                                <span class="block truncate text-sm text-zinc-800" :title="recipient.address" x-text="recipient.address"></span>
+                                <span class="gb-eyebrow block mt-0.5">
                                   <span x-text="shippingLabel(recipient.shipping || 'ground')"></span>
                                   · $<span x-text="shippingCost(recipient.shipping || 'ground')"></span>
                                 </span>
                               </span>
                             </template>
                             <template x-if="!recipient.address">
-                              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[1px] text-zinc-600 group-hover:text-zinc-900 transition-colors">
+                              <span class="gb-eyebrow inline-flex items-center gap-1.5 group-hover:text-zinc-900 transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                 Add
                               </span>
@@ -876,10 +904,10 @@
                         <template x-for="i in 3" :key="'cell-item-'+i">
                           <td class="py-3 pr-4">
                             <template x-if="i > productItemCount(product)">
-                              <span class="text-zinc-300 text-sm" title="Nothing to personalize on this gift">—</span>
+                              <span class="text-zinc-300 text-sm" title="Nothing to personalize on this gift">·</span>
                             </template>
                             <template x-if="i <= productItemCount(product) && recipient['item' + i]">
-                              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-700">
+                              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-100 text-zinc-700">
                                 <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                                 Filled
                               </span>
@@ -895,7 +923,7 @@
                         <!-- Greeting Card -->
                         <td class="py-3 pr-4">
                           <template x-if="recipient.greeting && recipient.greeting.message">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-700">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-100 text-zinc-700">
                               <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                               Filled
                             </span>
@@ -920,7 +948,7 @@
                           </div>
                         </td>
                         <td class="py-3" @click.stop>
-                          <button @click.stop="removeRecipient(product.id, shipment.id, recipient.id)" class="p-1 text-zinc-400 hover:text-red-600" title="Remove gift receiver">
+                          <button @click.stop="removeRecipient(product.id, shipment.id, recipient.id)" class="p-1 text-zinc-400 hover:text-red-600" title="Remove recipient">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
                           </button>
                         </td>
@@ -936,7 +964,7 @@
                      the same action moves under the last row, compact. The label is
                      contextual too: "someone else" only makes sense after the first row. -->
                 <div x-show="rows(shipment).length === 0" class="py-12 text-center border-b border-zinc-100">
-                  <p class="text-sm text-zinc-500">No gift receivers yet.</p>
+                  <p class="text-sm text-zinc-500">No recipients yet.</p>
                   <!-- Outlined = the system's tertiary. Its hover is the Zinc 100 wash both
                        outlined buttons of portal.html wear (.gb-btn --outline --secondary),
                        not an inversion to a solid Zinc 900 fill: the prototype has one outlined
@@ -945,7 +973,7 @@
                     <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>
                     <span class="gb-btn__label">Add a gift</span>
                   </button>
-                  <p class="text-xs text-zinc-400 mt-3">Or take the template round trip under <span class="font-medium">Bulk Personalize</span> above.</p>
+                  <p class="text-xs text-zinc-400 mt-3">Or download the template, fill it in, and upload it under <span class="font-medium">Bulk personalize</span> above.</p>
                 </div>
 
                 <!-- Add another gift + pagination + shipment tally.
@@ -957,8 +985,7 @@
                     <!-- Base blue-600, hover blue-700 — the system pair (tokens.css: "Blue 700
                          is the live CTA hover"), not an invented 700→800 step. -->
                     <button @click="addRecipient(product.id, shipment.id)" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--primary">
-                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                      Add a gift for someone else
+                      <svg class="gb-btn__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg><span class="gb-btn__label">Add a gift for someone else</span>
                     </button>
                     <p class="text-xs text-zinc-500 mt-1 pl-2">Add the same gift for another person and personalize it separately.</p>
                   </div>
@@ -1027,7 +1054,7 @@
   <section class="grid grid-cols-2 gap-6 pt-6">
     <div class="bg-white border border-zinc-200 rounded-[5px] p-8">
       <h3 class="font-serif text-2xl mb-1">Payment information</h3>
-      <p class="text-zinc-500 text-sm mb-6">Payment is out of scope for this prototype.</p>
+      <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
       <div class="space-y-3">
         <div>
           <p class="gb-eyebrow mb-2">Billing address <span class="text-red-500">*</span></p>
@@ -1051,7 +1078,7 @@
             </p>
           </div>
         </template>
-        <div class="flex justify-between"><span class="text-zinc-600">Sub-Total</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
+        <div class="flex justify-between"><span class="text-zinc-600">Subtotal</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
         <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() > 1">s</span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
         <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
       </div>
@@ -1062,7 +1089,7 @@
            of them was saying it slightly wrong (live ink is Zinc 50, not pure
            white). mt-6 stays, it is this column's spacing. -->
       <button class="gb-btn gb-btn--xl gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button" @click="placeOrder()"><span class="gb-btn__label">Place Order</span></button>
-      <p class="text-xs text-zinc-500 mt-3 text-center" x-show="anyDefer()">Some recipient details will be completed later via link</p>
+      <p class="text-xs text-zinc-500 mt-3 text-center" x-show="anyDefer()">Some recipient details will be completed later, by link.</p>
     </div>
   </section>
 
@@ -1074,11 +1101,14 @@
 <section x-show="placed" x-cloak class="bg-zinc-50 min-h-screen">
   <div class="gb-container">
     <div class="max-w-[640px] mx-auto py-16 lg:py-24 text-center">
-      <svg class="mx-auto mb-6" width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
-        <circle cx="28" cy="28" r="26" stroke="#2563eb" stroke-width="1.5"/>
-        <path d="M17 29l8 8 14-16" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg class="mx-auto mb-6 text-blue-600" width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
+        <circle cx="28" cy="28" r="26" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M17 29l8 8 14-16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <h1 class="font-serif text-4xl lg:text-5xl mb-3">Your order is placed</h1>
+      <!-- gbppl-demo-polish-1: was text-4xl/5xl, the SITE hero ladder, on the same
+           page whose other H1 already stands on the portal ladder (28/36/40,
+           serif 300). Two H1 sizes on one route; this one joins the other. -->
+      <h1 class="font-serif font-light text-[28px] xl:text-[36px] min-[2000px]:text-[40px] leading-tight mb-3">Your order is placed</h1>
       <p class="text-zinc-500 text-base mb-10">A confirmation is on its way to your inbox. Recipients who still need details will get their link.</p>
       <div class="bg-white border border-zinc-200 rounded-[5px] p-8 text-left text-base">
         <div class="flex justify-between py-2 border-b border-zinc-100"><span class="gb-eyebrow">Order</span><span class="font-medium">#GB-<span x-text="String(Date.now()).slice(-6)"></span></span></div>
@@ -1089,7 +1119,7 @@
         <a class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary" href="portal.html"><span class="gb-btn__label">Back to portal</span></a>
         <button class="gb-btn gb-btn--l gb-btn--outline gb-btn--secondary" type="button" @click="placeAnother()"><span class="gb-btn__label">Place another order</span></button>
       </div>
-      <p class="text-sm text-zinc-500 mt-8">Prototype: nothing is charged and nothing is shipped.</p>
+      <p class="text-sm text-zinc-500 mt-8">Nothing is charged and nothing is shipped.</p>
     </div>
   </div>
 </section>
@@ -1119,13 +1149,13 @@
       <div>
         <label class="gb-eyebrow block mb-1">To</label>
         <input type="text" x-model="drawer.data.to" placeholder="Recipient name on card" class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
-        <p class="text-[11px] text-zinc-400 mt-1.5" x-show="drawer.master">In apply-to-all mode you can use <code class="bg-zinc-100 px-1 rounded text-zinc-600">{{name}}</code> for per-row substitution.</p>
+        <p class="text-xs text-zinc-500 mt-1.5" x-show="drawer.master">Type <code class="bg-zinc-100 px-1 rounded-[5px] text-zinc-600">{{name}}</code> and every card prints that person’s name.</p>
       </div>
 
       <div>
         <div class="flex justify-between items-baseline mb-1">
           <label class="gb-eyebrow">Message</label>
-          <span class="text-[11px] text-zinc-400"><span x-text="(drawer.data.message || '').length"></span> / 280</span>
+          <span class="text-xs text-zinc-500"><span x-text="(drawer.data.message || '').length"></span> / 280</span>
         </div>
         <textarea x-model="drawer.data.message" rows="4" maxlength="280" placeholder="Write your message..." class="w-full bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-3 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 resize-none transition"></textarea>
       </div>
@@ -1148,7 +1178,7 @@
     <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
       <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
       <div class="flex items-center gap-2">
-        <button x-show="drawer.master" @click="saveMasterGreeting(true)" class="px-4 py-2 text-sm border border-red-300 text-red-700 rounded-md hover:bg-red-50">Overwrite all</button>
+        <button x-show="drawer.master" @click="saveMasterGreeting(true)" class="px-4 py-2 text-sm border border-red-300 text-red-700 rounded-[5px] hover:bg-red-50">Overwrite all</button>
         <button @click="saveGreeting()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
       </div>
     </div>
@@ -1165,7 +1195,7 @@
       <div>
         <h3 class="font-serif text-2xl" x-text="drawer.master ? 'Gift personalization · apply to all' : 'Gift personalization'"></h3>
         <p class="text-xs text-zinc-500 mt-0.5" x-show="!drawer.master && currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.master">Apply Item 1 and Item 2 to every recipient in this shipment.</p>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.master">Apply these details to every recipient in this shipment.</p>
       </div>
       <button @click="closeDrawer()" class="p-1 text-zinc-400 hover:text-zinc-900"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
     </div>
@@ -1175,11 +1205,11 @@
            so the drawer never asks for an engraving the gift does not have. -->
       <template x-for="(it, idx) in productItems(currentProduct())" :key="'master-item-'+idx">
         <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-5 items-center">
-          <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
+          <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
           <div>
             <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
             <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
-            <p class="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider" x-text="it.sub"></p>
+            <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
           </div>
           <div>
             <template x-if="it.kind === 'initials'">
@@ -1195,13 +1225,13 @@
                       class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
                   </template>
                 </div>
-                <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Initials (3 chars · A–Z, 0–9)</p>
+                <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
               </div>
             </template>
             <template x-if="it.kind !== 'initials'">
               <div>
                 <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
-                <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+                <p class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
               </div>
             </template>
           </div>
@@ -1236,13 +1266,13 @@
               :class="recipientTab === 'items' ? 'border-blue-600 text-blue-700' : 'border-transparent text-zinc-500 hover:text-zinc-700'"
               class="flex-1 px-4 py-3 text-sm font-medium border-b-2 -mb-px inline-flex items-center justify-center gap-2 transition">
         <span>Gift items</span>
-        <svg x-show="currentRecipient() && (currentRecipient().item1 || currentRecipient().item2 || currentRecipient().item3)" class="w-4 h-4 text-green-600 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+        <svg x-show="currentRecipient() && (currentRecipient().item1 || currentRecipient().item2 || currentRecipient().item3)" class="w-4 h-4 text-blue-600 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
       </button>
       <button @click="recipientTab = 'greeting'"
               :class="recipientTab === 'greeting' ? 'border-blue-600 text-blue-700' : 'border-transparent text-zinc-500 hover:text-zinc-700'"
               class="flex-1 px-4 py-3 text-sm font-medium border-b-2 -mb-px inline-flex items-center justify-center gap-2 transition">
         <span>Greeting card</span>
-        <svg x-show="currentRecipient() && currentRecipient().greeting && currentRecipient().greeting.message" class="w-4 h-4 text-green-600 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+        <svg x-show="currentRecipient() && currentRecipient().greeting && currentRecipient().greeting.message" class="w-4 h-4 text-blue-600 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
       </button>
       <button @click="recipientTab = 'video'"
               :class="recipientTab === 'video' ? 'border-blue-600 text-blue-700' : 'border-transparent text-zinc-500 hover:text-zinc-700'"
@@ -1262,7 +1292,7 @@
           <div class="flex items-center justify-between border-b border-zinc-200 pb-6">
             <div>
               <p class="gb-eyebrow">Quantity of gifts</p>
-              <p class="text-[11px] text-zinc-400 mt-1">How many gifts with this personalization</p>
+              <p class="text-xs text-zinc-500 mt-1">How many gifts with this personalization</p>
             </div>
             <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[5px] overflow-hidden">
               <button @click="drawer.data.qty > 1 && drawer.data.qty--" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900">
@@ -1279,11 +1309,11 @@
                the travel set has three. Nothing invents a field the gift can't carry. -->
           <template x-for="(it, idx) in productItems(currentProduct())" :key="'rec-item-'+idx">
             <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-5 items-center">
-              <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-[13px]" x-text="it.badge"></div>
+              <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
               <div>
                 <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
                 <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
-                <p class="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider" x-text="it.sub"></p>
+                <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
               </div>
               <div>
                 <template x-if="it.kind === 'initials'">
@@ -1299,13 +1329,13 @@
                           class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
                       </template>
                     </div>
-                    <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Initials (3 chars · A–Z, 0–9)</p>
+                    <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
                   </div>
                 </template>
                 <template x-if="it.kind !== 'initials'">
                   <div>
                     <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="w-full h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 transition">
-                    <p class="text-[10px] text-zinc-400 mt-1.5 uppercase tracking-wider">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+                    <p class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
                   </div>
                 </template>
               </div>
@@ -1327,7 +1357,7 @@
           <div>
             <div class="flex justify-between items-baseline mb-1">
               <label class="gb-eyebrow">Message</label>
-              <span class="text-[11px] text-zinc-400"><span x-text="(drawer.data.greeting.message || '').length"></span> / 280</span>
+              <span class="text-xs text-zinc-500"><span x-text="(drawer.data.greeting.message || '').length"></span> / 280</span>
             </div>
             <textarea x-model="drawer.data.greeting.message" rows="4" maxlength="280" placeholder="Write your message..." class="w-full bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 px-0 py-3 text-base text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 resize-none transition"></textarea>
           </div>
@@ -1342,12 +1372,12 @@
 
       <!-- ===== VIDEO PANEL ===== -->
       <section x-show="recipientTab === 'video'">
-        <p class="text-sm text-zinc-600 mb-5">Record once, reuse for all recipients in this shipment, or upload individual.</p>
+        <p class="text-sm text-zinc-600 mb-5">Record one video for everyone in this shipment, or upload a separate video per person.</p>
         <button class="w-full flex items-center gap-4 px-4 py-4 border border-zinc-500 hover:border-zinc-700 transition text-left">
           <svg class="w-5 h-5 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
           <div>
             <p class="text-sm text-zinc-900">Click to upload or record</p>
-            <p class="text-[11px] text-zinc-400 uppercase tracking-wider mt-0.5">MP4, MOV · up to 200MB</p>
+            <p class="gb-eyebrow mt-0.5">MP4, MOV · up to 200MB</p>
           </div>
         </button>
       </section>
@@ -1369,7 +1399,7 @@
     <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
       <div>
         <h3 class="font-serif text-2xl" x-text="drawer.addressBookMode ? 'Add new address' : 'Shipping address'"></h3>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.addressBookMode">Saved to address book, then selected as Ship To</p>
+        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.addressBookMode">Saved to your address book, and used for this shipment.</p>
         <p class="text-xs text-zinc-500 mt-0.5" x-show="!drawer.addressBookMode && currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
       </div>
       <button @click="closeDrawer()" class="p-1 text-zinc-400 hover:text-zinc-900"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
@@ -1384,7 +1414,7 @@
             <span class="text-base text-zinc-500">Choose from address book…</span>
             <svg class="w-4 h-4 text-zinc-500 transition-transform" :class="bookOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
           </button>
-          <div x-show="bookOpen" @click.outside="bookOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-2 bg-white border border-zinc-200 rounded-md shadow-lg z-30 overflow-hidden">
+          <div x-show="bookOpen" @click.outside="bookOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-2 bg-white border border-zinc-200 rounded-[5px] shadow-lg z-30 overflow-hidden">
             <template x-for="addr in addressBook" :key="'book-' + addr.id">
               <button @click="useAddressBookEntry(addr.id); bookOpen = false" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
                 <p class="text-sm font-medium text-zinc-900" x-text="addr.name"></p>
@@ -1393,7 +1423,7 @@
             </template>
           </div>
         </div>
-        <p class="text-[11px] text-zinc-400">Or fill in a new address below.</p>
+        <p class="text-xs text-zinc-500">Or fill in a new address below.</p>
       </div>
 
       <!-- Details -->
@@ -1455,12 +1485,12 @@
         <p class="gb-eyebrow">Shipping for this address</p>
         <div class="space-y-2">
           <template x-for="opt in shippingOptions" :key="'sh-'+opt.id">
-            <label class="flex items-center p-3 border rounded-md cursor-pointer transition" :class="drawer.data.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 hover:border-zinc-400'">
+            <label class="flex items-center p-3 border rounded-[5px] cursor-pointer transition" :class="drawer.data.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 hover:border-zinc-400'">
               <span class="flex items-center gap-3">
                 <input type="radio" name="drawer-shipping" :value="opt.id" x-model="drawer.data.shipping" class="accent-blue-600 w-4 h-4">
                 <span>
                   <span class="text-sm font-medium block leading-tight" x-text="opt.label"></span>
-                  <span class="block text-[13px] text-zinc-500">$<span x-text="opt.cost"></span></span>
+                  <span class="block text-sm text-zinc-500">$<span x-text="opt.cost"></span></span>
                 </span>
               </span>
             </label>
@@ -1469,7 +1499,7 @@
       </div>
 
       <!-- Estimated shipping notice (only for address book mode — shipping picked at shipment level) -->
-      <div x-show="drawer.addressBookMode" class="bg-zinc-50 rounded p-3 text-xs text-zinc-600 flex items-center gap-2">
+      <div x-show="drawer.addressBookMode" class="bg-zinc-50 rounded-[5px] p-3 text-xs text-zinc-600 flex items-center gap-2">
         <svg class="w-4 h-4 text-zinc-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <span>Shipping method will be selected at the shipment level after saving.</span>
       </div>
@@ -1486,7 +1516,7 @@
 <!-- ====================================================== -->
 <div x-show="csv.open" x-cloak x-transition:leave="modal-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-8">
   <div class="absolute inset-0 bg-zinc-900/40" @click="csv.open = false"></div>
-  <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl modal-enter">
+  <div class="relative bg-white rounded-[5px] shadow-2xl w-full max-w-2xl modal-enter">
     <div class="px-6 py-5 border-b border-zinc-200 flex items-center justify-between">
       <div>
         <h3 class="font-serif text-2xl">Upload personalization template</h3>
@@ -1502,10 +1532,10 @@
     </div>
 
     <div x-show="csv.step === 1" class="p-8">
-      <button @click="simulateUpload()" class="w-full flex flex-col items-center gap-3 py-12 border-2 border-dashed border-zinc-300 rounded-lg hover:border-zinc-900 hover:bg-zinc-50">
+      <button @click="simulateUpload()" class="w-full flex flex-col items-center gap-3 py-12 border-2 border-dashed border-zinc-300 rounded-[5px] hover:border-zinc-900 hover:bg-zinc-50">
         <svg class="w-12 h-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
         <p class="text-sm font-medium">Drop CSV here or click to select</p>
-        <p class="text-xs text-zinc-500">For demo: clicking simulates an upload with sample data</p>
+        <p class="text-xs text-zinc-500">Clicking fills the table with sample rows.</p>
       </button>
       <div class="mt-4 flex items-center gap-2 text-xs text-zinc-600">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -1515,11 +1545,11 @@
 
     <div x-show="csv.step === 2" class="p-6">
       <div class="grid grid-cols-3 gap-3 mb-4">
-        <div class="bg-zinc-50 rounded p-3 text-center"><p class="font-serif text-2xl" x-text="csv.preview.total"></p><p class="gb-eyebrow">Total rows</p></div>
-        <div class="bg-green-50 rounded p-3 text-center"><p class="font-serif text-2xl text-green-700" x-text="csv.preview.valid"></p><p class="gb-eyebrow text-green-700">Valid</p></div>
-        <div class="bg-red-50 rounded p-3 text-center"><p class="font-serif text-2xl text-red-700" x-text="csv.preview.errors"></p><p class="gb-eyebrow text-red-700">With errors</p></div>
+        <div class="bg-zinc-50 rounded-[5px] p-3 text-center"><p class="font-serif text-2xl" x-text="csv.preview.total"></p><p class="gb-eyebrow">Total rows</p></div>
+        <div class="bg-blue-50 rounded-[5px] p-3 text-center"><p class="font-serif text-2xl text-blue-700" x-text="csv.preview.valid"></p><p class="gb-eyebrow text-blue-700">Valid</p></div>
+        <div class="bg-red-50 rounded-[5px] p-3 text-center"><p class="font-serif text-2xl text-red-700" x-text="csv.preview.errors"></p><p class="gb-eyebrow text-red-700">With errors</p></div>
       </div>
-      <div class="border border-zinc-200 rounded overflow-hidden max-h-64 overflow-y-auto">
+      <div class="border border-zinc-200 rounded-[5px] overflow-hidden max-h-64 overflow-y-auto">
         <table class="w-full text-xs">
           <thead class="bg-zinc-50 sticky top-0">
             <tr><th class="p-2 text-left font-medium">Name</th><th class="p-2 text-left font-medium">Address</th><th class="p-2 text-left font-medium">ZIP</th><th class="p-2 text-left font-medium">Status</th></tr>
@@ -1529,9 +1559,9 @@
               <tr :class="row.error ? 'bg-red-50' : ''" class="border-t border-zinc-100">
                 <td class="p-2" x-text="row.name"></td>
                 <td class="p-2" x-text="row.address"></td>
-                <td class="p-2" :class="row.error ? 'text-red-700 font-medium' : ''" x-text="row.zip || '—'"></td>
+                <td class="p-2" :class="row.error ? 'text-red-700 font-medium' : ''" x-text="row.zip || '·'"></td>
                 <td class="p-2">
-                  <span x-show="!row.error" class="inline-flex items-center gap-1 text-green-700"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg> Valid</span>
+                  <span x-show="!row.error" class="inline-flex items-center gap-1 text-blue-700"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg> Valid</span>
                   <span x-show="row.error" class="inline-flex items-center gap-1 text-red-700"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> <span x-text="row.error"></span></span>
                 </td>
               </tr>
@@ -1539,13 +1569,13 @@
           </tbody>
         </table>
       </div>
-      <div class="bg-amber-50 border border-amber-200 rounded p-3 mt-3 text-xs text-amber-900" x-show="csv.preview.errors > 0">
+      <div class="bg-red-50 border border-red-500 rounded-[5px] p-3 mt-3 text-sm text-red-600" x-show="csv.preview.errors > 0">
         <strong>Heads up:</strong> rows with errors are imported and highlighted in the table so you can fix them inline.
       </div>
     </div>
 
     <div x-show="csv.step === 3" class="p-8 text-center">
-      <svg class="w-16 h-16 text-green-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <svg class="w-16 h-16 text-blue-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       <h4 class="font-serif text-2xl mt-3">Imported</h4>
       <p class="text-sm text-zinc-600 mt-1"><span x-text="csv.preview.total"></span> recipients added to your shipment</p>
     </div>
@@ -1611,7 +1641,7 @@
       value: app.scenario,
       options: [
         { label: 'Empty cart', value: 'portalEmpty',
-          note: 'A fresh checkout from the portal. No gift receivers yet, so they are added by hand or uploaded as a personalization file.' },
+          note: 'A fresh checkout from the portal. No recipients yet, so they are added by hand or uploaded as a personalization file.' },
         { label: 'Loaded cart', value: 'portalLoaded',
           note: 'A mixed cart: a customized Executive Travel Set going to five people, plus nine Yeti duos to one office address with no personalization at all.' },
         { label: 'From the customizer', value: 'customizer',
@@ -1976,8 +2006,8 @@ function checkoutApp() {
     },
     identicalLine(s) {
       const n = this.poolOf(s);
-      if (n === 1) return 'This gift is not personalized — nothing more is needed.';
-      return 'All ' + n + ' gifts are identical — no personalization needed.';
+      if (n === 1) return 'This gift is not personalized. Nothing more is needed.';
+      return 'All ' + n + ' gifts are identical. No personalization needed.';
     },
     appliedToAll(s) {
       const n = this.poolOf(s);
@@ -2042,7 +2072,7 @@ function checkoutApp() {
       if (!g) return '';
       if (g.fromMaster) return 'From master card';
       if (g.custom) return 'Custom';
-      return g.from ? '— ' + g.from : '';
+      return g.from ? 'From ' + g.from : '';
     },
 
     // How many of the three table columns this gift can actually fill.
@@ -2376,7 +2406,7 @@ function checkoutApp() {
       this.bulkMenuOpen = null;
       if (kind === 'greeting') this.openMasterDrawer(productId, shipmentId, 'greeting');
       else if (kind === 'item') this.openMasterDrawer(productId, shipmentId, 'item');
-      else if (kind === 'video') alert('Video bulk attach: opens video picker (out of scope for static prototype)');
+      else if (kind === 'video') alert('Attach a video to every selected row. The picker is not built yet.');
     },
     // "Clear personalization" left with live's menu shape: the live menu ends with
     // one red destructive, Delete selected. The old bulkClear had no button left.
@@ -2393,7 +2423,7 @@ function checkoutApp() {
     downloadTemplate() {
       this.bulkMenuOpen = null;
       this.tplMenuOpen = null;
-      const csv = 'Gift Receiver Name,Gifts,Address Line 1,City,State,ZIP,Country,Personalize Item 1,Personalize Item 2,Personalize Item 3,Greeting To,Greeting Message,Greeting From\nJane Doe,1,123 Main St,New York,NY,10001,US,JD,Jane,,Jane,"Happy birthday!","From Acme"\n';
+      const csv = 'Recipient Name,Gifts,Address Line 1,City,State,ZIP,Country,Personalize Item 1,Personalize Item 2,Personalize Item 3,Greeting To,Greeting Message,Greeting From\nJane Doe,1,123 Main St,New York,NY,10001,US,JD,Jane,,Jane,"Happy birthday!","From Acme"\n';
       const blob = new Blob([csv], { type: 'text/csv' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
