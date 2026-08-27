@@ -496,7 +496,10 @@
                    ============================================================ -->
               <!-- The band itself keeps its full width; only its two top corners follow the
                    section's 5px so the gray does not poke past the rounded-[var(--radius)] border. -->
-              <header class="bg-zinc-100/70 border-b border-zinc-200 rounded-t-[var(--radius)] px-6 py-4 flex items-center gap-6 min-h-[68px]">
+              <!-- gbppl-checkout-15: the band was flex/nowrap with gap-6, so at 360 the h3 was squeezed
+                   into a 90px column and the ONE / DIFFERENT ADDRESSES control walked off the screen.
+                   It wraps now; the wide rhythm (gap 24) is untouched from 1024 up. -->
+              <header class="bg-zinc-100/70 border-b border-zinc-200 rounded-t-[var(--radius)] px-6 py-4 flex flex-wrap items-center gap-3 lg:gap-6 min-h-[68px]">
                 <h3 class="font-serif text-2xl leading-none">1. Where should we deliver these gifts?</h3>
                 <!-- Toggle Button, the system component: a white parent with padding, the black
                      active segment floats INSIDE it with its own 5px corners (Ton, 21.08). -->
@@ -934,7 +937,14 @@
                       <th class="text-left py-3.5 pr-4 font-medium w-[180px]">
                         <button class="inline-flex items-center gap-1.5 hover:text-zinc-900">Name for personalization <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg></button>
                       </th>
-                      <th class="text-left py-3.5 pr-4 font-medium w-[170px]" x-show="shipment.addressMode === 'different'">Address</th>
+                      <!-- gbppl-checkout-15: Address was pinned at 170 on EVERY width, so the cell ellipsed the
+                           street at 2258/2560 even though the room was there. Measured table width (v1,
+                           different addresses): 880 up to 1440, 914 / 920 at 1600 / 1800, and 1101 from
+                           2000 — the container clamp is what widens it, so the step is the client's own
+                           2000, not Tailwind's 1536. At 1101 an Address of 280 leaves the four flexible
+                           columns 107 each (the word "Personalize" measures 76), so nothing overprints;
+                           below 2000 the table has no slack at all and the pin + title tooltip stay. -->
+                      <th class="text-left py-3.5 pr-4 font-medium w-[170px] min-[2000px]:w-[280px]" x-show="shipment.addressMode === 'different'">Address</th>
                       <template x-for="i in 3" :key="'th-item-'+i">
                         <th class="text-left py-3.5 pr-4 font-medium">Personalize Item <span x-text="i"></span></th>
                       </template>
@@ -1227,7 +1237,7 @@
 <!-- ====================================================== -->
 <div x-show="drawer.open && drawer.type === 'greeting'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40">
   <div class="absolute inset-0 bg-zinc-900/40" @click="closeDrawer()"></div>
-  <aside class="absolute right-0 top-0 bottom-0 w-[560px] bg-white shadow-2xl drawer-enter overflow-y-auto">
+  <aside class="absolute right-0 top-0 bottom-0 w-[min(560px,100%)] bg-white shadow-2xl drawer-enter overflow-y-auto">
     <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
       <div>
         <h3 class="font-serif text-2xl" x-text="drawer.master ? 'Greeting card · apply to all' : 'Greeting card'"></h3>
@@ -1293,7 +1303,7 @@
 <!-- ====================================================== -->
 <div x-show="drawer.open && drawer.type === 'item'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40">
   <div class="absolute inset-0 bg-zinc-900/40" @click="closeDrawer()"></div>
-  <aside class="absolute right-0 top-0 bottom-0 w-[640px] bg-white shadow-2xl drawer-enter overflow-y-auto">
+  <aside class="absolute right-0 top-0 bottom-0 w-[min(640px,100%)] bg-white shadow-2xl drawer-enter overflow-y-auto">
     <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
       <div>
         <h3 class="font-serif text-2xl" x-text="drawer.master ? 'Gift personalization · apply to all' : 'Gift personalization'"></h3>
@@ -1354,7 +1364,7 @@
 <!-- ====================================================== -->
 <div x-show="drawer.open && drawer.type === 'recipient'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40" x-data="{ recipientTab: 'items' }" x-effect="if (drawer.open && drawer.type === 'recipient') recipientTab = 'items'">
   <div class="absolute inset-0 bg-zinc-900/40" @click="closeDrawer()"></div>
-  <aside class="absolute right-0 top-0 bottom-0 w-[640px] bg-white shadow-2xl drawer-enter overflow-y-auto flex flex-col">
+  <aside class="absolute right-0 top-0 bottom-0 w-[min(640px,100%)] bg-white shadow-2xl drawer-enter overflow-y-auto flex flex-col">
     <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
       <div>
         <h3 class="font-serif text-2xl">Personalization</h3>
@@ -1498,7 +1508,7 @@
 <!-- ====================================================== -->
 <div x-show="drawer.open && drawer.type === 'address'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40" x-data="{ bookOpen: false }" x-effect="if (!drawer.open) bookOpen = false">
   <div class="absolute inset-0 bg-zinc-900/40" @click="closeDrawer()"></div>
-  <aside class="absolute right-0 top-0 bottom-0 w-[560px] bg-white shadow-2xl drawer-enter overflow-y-auto">
+  <aside class="absolute right-0 top-0 bottom-0 w-[min(560px,100%)] bg-white shadow-2xl drawer-enter overflow-y-auto">
     <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
       <div>
         <h3 class="font-serif text-2xl" x-text="drawer.addressBookMode ? 'Add new address' : 'Shipping address'"></h3>
