@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" class="gb-demo">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Live Prototype · GildedBox Design Studio</title>
+<link rel="icon" href="data:," />
+<!-- ============================================================
+     gbppl-panel-9 — THE PAGE MAP OF THE LIVE PROTOTYPE
+     ------------------------------------------------------------
+     Ton, 27.08, on the Proposed console: «Когда переключаешься на
+     Sandboxes, попадаешь на список песочниц, а при клике на Live
+     Prototype сразу открывается главная сайта... Сделать так, чтобы
+     Live Prototype начинался не сразу с сайта, а с экрана выбора
+     (как в Sandboxes): сделать красивую визуализацию дерева страниц
+     (Home и остальные), где будет видно, какие страницы уже готовы и
+     покрыты, а какие ещё ожидаются.»
+
+     So this is the third room of the studio, built in the manner of
+     the second: same gate (studio.js), same bar, same ground, same
+     console. Nothing of its own except the tree.
+
+     live\index.html DID NOT MOVE. It is still the front page of the
+     site: data-home points at it, the links inside the prototype
+     point at it, the hub door points at it. Only the Live Prototype
+     door of the PROPOSED console now opens this screen first.
+
+     WHAT THE TREE IS ALLOWED TO SAY. Names, statuses, links, and
+     where a name came from. Nothing else: a map that describes pages
+     it has not got is a map of a site nobody built.
+
+       ready      the page exists in live\ and stands on the system
+       expected   the name is promised somewhere real and we do not
+                  have the page: the queue in studio\TODO.md (both
+                  product pages) or a nav item of the live site that
+                  leads nowhere in our prototype
+
+     Two of the branches carry STATES rather than files: the portal
+     dashboard, the checkout confirmation and the three booking steps
+     all live inside their page. That is said out loud in the row
+     instead of being hidden behind a link that looks like a page.
+
+     Sandbox coverage is read from system\sandbox-registry.js, the
+     one place a room is registered. The page prints the count and
+     nothing more; the rooms themselves are one door away.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../system/assets/tokens.css">
+<link rel="stylesheet" href="../system/components/shell.css">
+<link rel="stylesheet" href="../system/components/header.css">
+<link rel="stylesheet" href="../system/components/button.css">
+<link rel="stylesheet" href="../system/components/studio.css">
+<link rel="stylesheet" href="../system/components/studio-panel.css">
+<!-- Inspect mode (gbppl-inspect-1), same three sheets as everywhere. -->
+<link rel="stylesheet" href="../system/components/drawer.css">
+<link rel="stylesheet" href="../system/components/docs.css">
+<link rel="stylesheet" href="../system/components/inspect.css">
+
+<script src="../system/components/studio.js" data-home="../index.html"></script>
+</head>
+<body class="gb-demo">
+
+<!-- Grey canvas under white cards (gbppl-panel-9, Ton 27.08), the same
+     pair the sandboxes shelf put on this morning. -->
+<div class="gbs-page gbs-page--canvas">
+
+  <header class="gb-header gb-header--studio">
+    <div class="gb-container gbh-bar gbh-bar--studio">
+      <a class="gbh-lock" href="../index.html" aria-label="GildedBox Design Studio, home">
+        <img class="gbh-lock__mark" src="../system/assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+        <span class="gbh-lock__rule" aria-hidden="true"></span>
+        <span class="gbh-lock__word">Design Studio</span>
+      </a>
+      <nav class="gbh-nav" aria-label="Studio">
+        <!-- The Live Prototype item points at this screen, because on
+             this screen it IS this screen. The bars of the other studio
+             pages still open live\index.html directly; unifying them is
+             one line each and waits on Ton's word about which console
+             layout stays. -->
+        <a class="gbh-link is-active" href="map.html" aria-current="page">Live Prototype</a>
+        <a class="gbh-link" href="../sandboxes.html">Sandboxes</a>
+        <a class="gbh-link" href="../system/oro/index.html">Design System</a>
+      </nav>
+      <div class="gbh-actions">
+        <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-studio-lock>
+          <span class="gb-btn__label" data-pc-section="label">Lock</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="gbs-body">
+    <div class="gb-container">
+      <div class="gbs-wrap">
+
+        <section class="gbs-shelf">
+          <h2 class="gbs-h2">Live Prototype</h2>
+          <p class="gbs-lede">The pages of the prototype and the way they lead into each other. Ready means the page stands and runs on the system; expected means the name is promised and the page is not built yet.</p>
+
+          <div id="gbsTree"></div>
+        </section>
+
+        <section class="gbs-shelf">
+          <h2 class="gbs-h2">Expected from the footer</h2>
+          <p class="gbs-lede">The footer of the live site leads to these pages. Our footer carries the same words and no destinations, so they stand here rather than in the tree.</p>
+
+          <div id="gbsFooter"></div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="gbs-foot">
+    <div class="gb-container">
+      <p>Internal design prototypes · not the live site.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script src="../system/sandbox-registry.js"></script>
+<script>
+/* ---- The tree, painted from one table (gbppl-panel-9).
+
+   The table is the page's content, so it lives on the page, the way
+   the doors of the hub lived on the hub before three surfaces needed
+   them. The one thing it does NOT own is sandbox coverage: that comes
+   from system\sandbox-registry.js, and the count is printed, not
+   retyped.
+
+   A node is { name, href?, page?, note?, from?, kids? }.
+     href   present  -> the page exists: status ready, the row is a link
+            absent   -> status expected, the row is not a link at all
+     page   id in the sandbox registry, for the coverage line
+     note   what the row is, when it is not a file of its own
+     from   where the name of an expected page came from
+   ---- */
+(function () {
+  'use strict';
+
+  var TREE = [
+    { name: 'Home', href: 'index.html', page: 'home', kids: [
+      { name: 'Gifts catalog', href: 'catalog/index.html', page: 'catalog', kids: [
+        { name: 'Product page, old layout', from: 'in the queue' },
+        { name: 'Product page, new layout', from: 'in the queue' }
+      ] },
+      { name: 'Customize', from: 'in the header nav' },
+      { name: 'Explore', from: 'in the header nav' }
+    ] },
+    { name: 'Portal', href: 'portal.html', page: 'portal', kids: [
+      { name: 'Dashboard', href: 'portal.html', note: 'a state of the portal page' }
+    ] },
+    { name: 'Checkout', href: 'checkout.html', page: 'checkout', kids: [
+      { name: 'Confirmation', href: 'checkout.html', note: 'a state of the checkout page' }
+    ] },
+    { name: 'Book a meeting', href: 'book-a-meeting.html', page: 'booking', kids: [
+      { name: 'Details', href: 'book-a-meeting.html', note: 'step 1' },
+      { name: 'Pick a time', href: 'book-a-meeting.html', note: 'step 2' },
+      { name: 'Confirmed', href: 'book-a-meeting.html', note: 'step 3' }
+    ] }
+  ];
+
+  /* Words taken from the footer of the live site, verbatim, live case
+     and all: this is published copy of the client, not our own
+     (rules of copy, section 3 of the skill). The Curations column is
+     not here, it filters the catalogue; the Follow column leaves the
+     site altogether. */
+  var FROM_FOOTER = [
+    'Our Work', 'Platform', 'Design', 'Integrations', 'Our Story',
+    'Client Advisor', 'Client Service', 'Shipping Information',
+    'Terms and Conditions', 'Warranty', 'FAQ'
+  ];
+
+  function esc(v) {
+    return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var reg = window.GB_SANDBOXES;
+
+  /* Coverage in the voice of the registry: how many rooms this page
+     has open today. Silent where there are none: an empty count is
+     not news. */
+  function coverage(pageId) {
+    if (!pageId || !reg || typeof reg.forPage !== 'function') return '';
+    var slice = reg.forPage(pageId, '../');
+    if (!slice) return '';
+    var n = slice.variants.length;
+    if (!n) return '';
+    return n + (n === 1 ? ' sandbox' : ' sandboxes');
+  }
+
+  var step = 0;
+
+  function node(n) {
+    var ready = !!n.href;
+    var chip = '<span class="gbs-chip ' + (ready ? 'gbs-chip--ready">ready' : 'gbs-chip--expected">expected') + '</span>';
+    var name = '<span class="gbs-node__name">' + esc(n.name) + '</span>';
+    var side = ready ? (n.note || coverage(n.page)) : (n.from || '');
+    var aside = side ? '<span class="gbs-node__aside">' + esc(side) + '</span>' : '';
+    var body = name + chip + aside;
+    var stamp = ' style="--gbs-step: ' + (step++) + '"';
+    if (!ready) return '<div class="gbs-node gbs-node--expected"' + stamp + '>' + body + '</div>';
+    return '<a class="gbs-node" href="' + esc(n.href) + '"' + stamp + '>' + body + '</a>';
+  }
+
+  function branch(n) {
+    var kids = n.kids && n.kids.length
+      ? '<ul class="gbs-tree gbs-tree--kids">' + n.kids.map(branch).join('') + '</ul>'
+      : '';
+    return '<li class="gbs-branch">' + node(n) + kids + '</li>';
+  }
+
+  var mount = document.getElementById('gbsTree');
+  if (mount) {
+    mount.innerHTML = '<ul class="gbs-tree gbs-tree--top">' +
+      TREE.map(branch).join('') + '</ul>';
+  }
+
+  var flat = document.getElementById('gbsFooter');
+  if (flat) {
+    flat.innerHTML = '<ul class="gbs-tree gbs-flat">' +
+      FROM_FOOTER.map(function (name) {
+        return '<li class="gbs-branch">' +
+               node({ name: name, from: 'in the footer nav' }) + '</li>';
+      }).join('') + '</ul>';
+  }
+})();
+</script>
+
+<!-- The console, as on every studio page. No page attribute: this is a
+     map of the pages, and a section naming the sandboxes of the map
+     would be the map twice over, exactly as on sandboxes.html. -->
+<gb-studio-panel data-root="../"></gb-studio-panel>
+<script src="../system/components/studio-panel.js"></script>
+<script src="../system/type-scale.js"></script>
+<script src="../system/components/drawer.js"></script>
+<script src="../system/components/inspect.js"></script>
+
+</body>
+</html>
