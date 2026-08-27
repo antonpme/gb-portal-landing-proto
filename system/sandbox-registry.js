@@ -63,7 +63,12 @@
     },
 
     catalog: {
-      label: 'Catalog',
+      /* gbppl-panel-10: «Gifts catalog», как в консоли (PLACES в
+         studio-panel.js) и на карте страниц. Одно имя у одной
+         страницы: имя отсюда печатают полка песочниц и карточка
+         комнаты, и «Catalog» рядом с «Gifts catalog» читалось как
+         две разные страницы. */
+      label: 'Gifts catalog',
       live: 'live/catalog/index.html',
       variants: [
         {
