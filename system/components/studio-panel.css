@@ -1,6 +1,7 @@
 /* ============================================================
    SYSTEM COMPONENT: STUDIO PANEL — дорога домой и пульт
-   (gbppl-panel-4, Тон 2026-08-24, Sandbox 25.08, This page 26.08)
+   (gbppl-panel-4, Тон 2026-08-24, Sandbox 25.08, This page 26.08,
+   Mode 26.08, Device 27.08, вторая компоновка gbppl-panel-8 27.08)
    ------------------------------------------------------------
    Тон, 24.08: «когда мы заходим с хаба, пропадает надпись Design
    Studio и мы не можем вернуться на хаб. Нужна точка возвращения:
@@ -420,3 +421,271 @@ html.gbsp-devicing { overflow: hidden; }
   border: 1px solid var(--zinc-700);
   border-radius: var(--radius);
 }
+
+
+/* ============================================================
+   ВТОРАЯ КОМПОНОВКА, Proposed (gbppl-panel-8, 27.08)
+   ------------------------------------------------------------
+   Тон: «давай попробуем собрать твой вариант и сравнить». Значит,
+   два ящика живут рядом и переключаются на любой странице сегментом
+   Layout внизу. Classic не меняется ни строкой — всё, что ниже,
+   висит на классе .gbsp--v2 и на узлах, которых в Classic нет.
+
+   ЧТО ЗДЕСЬ ДРУГОГО И ПОЧЕМУ
+   1. Ящик читается как НАВИГАЦИЯ: титул, разделы студии с подсветкой
+      текущего, версия страницы, и только потом инструменты. Classic
+      начинал с инструментов, и человек, открывший консоль, чтобы
+      уйти на хаб, каждый раз проезжал мимо двух тумблеров.
+   2. Девайсы — одна строка чипов вместо сетки 3 × 2: шесть значений
+      на одной шкале от окна до телефона, и шкала читается вдоль, а
+      не по клеткам. Полное имя пресета живёт в title и в полосе над
+      кадром, где для него есть место.
+   3. Абзацы подсказок сняты, вместо них ОДНА строка состояния внизу:
+      она отвечает «что у меня включено», а не «что делает кнопка».
+   4. Ярлык тише (opacity .55) и уступает дорогу чужим слоям.
+
+   Ни одного нового цвета, радиуса и кегля: те же токены, что у
+   Classic. Кегль 12 — пол системы (Рассел), ниже него не опускаемся.
+   ============================================================ */
+
+/* ---- ЯРЛЫК: компактнее и полупрозрачный до наведения ---- */
+.gbsp--v2 .gbsp-tab {
+  width: 26px;
+  padding: 10px 0;
+  gap: 8px;
+  opacity: .55;
+  transition: color var(--mo-micro) var(--mo-move),
+              opacity var(--mo-micro) var(--mo-move);
+}
+.gbsp--v2 .gbsp-tab:hover,
+.gbsp--v2 .gbsp-tab:focus-visible { opacity: 1; }
+.gbsp--v2 .gbsp-tab svg { width: 12px; height: 12px; }
+.gbsp--v2 .gbsp-tab__word { font-size: 12px; letter-spacing: 0.1em; }
+.gbsp--v2:not(.is-collapsed) .gbsp-tab { opacity: 1; }
+
+/* Под язычком лежит чужой ОВЕРЛЕЙ (дровер чекаута, попап портала):
+   консоль уходит совсем — гаснет и перестаёт ловить клики. Замер
+   27.08 на 360: отодвигать некуда, дровер во всю высоту, а попап по
+   центру, и середина правого края легла ровно на «Call us». Пока
+   модальный слой открыт, смотрят его; язычок возвращается сам, в тот
+   же кадр, когда слой закрылся. Порог и «своё не считается» описаны
+   в studio-panel.js у coveredBy. */
+.gbsp--v2.is-shy .gbsp-tab {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- ИНСТРУМЕНТЫ ПОСЛЕ НАВИГАЦИИ ----
+   Секция Mode/Device стоит не первой, значит и линия у неё сверху,
+   как у всех остальных, а не снизу. */
+.gbsp--v2 .gbsp-sec--mode {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--zinc-800);
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+/* Абзацы Mode и Device заменены строкой состояния. Подсказки секции
+   This page остаются: они говорят про сценарий страницы, а строка
+   состояния про режим и экран — это разные вопросы. */
+.gbsp--v2 .gbsp-sec--mode .gbsp-note { display: none; }
+
+/* ШИРИНУ ЯЩИКА ЗАДАЁТ РЯД ЧИПОВ, а не наоборот: шесть подписей
+   набирают 180px, и на 216 (поля 32 плюс полоса прокрутки 10 там, где
+   панель длиннее окна — чекаут и портал) последний чип срезало на 7px
+   (замер 27.08). 232 = 216 + одна ступень --space-16: ряд помещается
+   и со шкалой прокрутки, и без неё. На узких экранах панель тоже не
+   ужимается: она лежит поверх страницы, лишние пиксели никому не
+   мешают, а сломанный ряд мешает. */
+.gbsp--v2 .gbsp-panel { width: 232px; }
+@media (max-width: 480px) {
+  .gbsp--v2 .gbsp-panel { width: 232px; }
+}
+
+/* ---- ДЕВАЙСЫ ОДНОЙ СТРОКОЙ ----
+   Шесть чипов от окна до телефона. Число вместо слова, полное имя в
+   title: шкала читается за один взгляд, а имя нужно ровно тогда,
+   когда наводят. Табличные цифры, чтобы ряд не пританцовывал. */
+.gbsp-segs--row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  /* NO TOKEN: 4px — не отступ, а ПОЛ отступа. Шесть чипов набирают
+     152px текста, поля ящика дают 184: свободного места 32 на пять
+     зазоров, и раздаёт их space-between (получается ~8, ступень
+     шкалы). Эта строка только не даёт им слипнуться там, где имена
+     варианта окажутся длиннее. Со ступенью --space-8 как жёстким
+     зазором ряд выезжал за край на 17px (замер 27.08). */
+  column-gap: 4px;
+}
+.gbsp-segs--row .gbsp-seg {
+  padding: 2px 0 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- ВЕРСИЯ ЭТОЙ СТРАНИЦЫ СЕГМЕНТАМИ ----
+   Те же .gbsp-seg, только переносятся: имена вариантов из реестра
+   бывают в два слова. Ссылка, а не кнопка: это переход. */
+.gbsp-segs--wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8) var(--space-16);
+}
+a.gbsp-seg,
+body.gb-demo a.gbsp-seg {   /* тот же антидот, что у .gbsp-link */
+  display: inline-block;
+  color: var(--zinc-400);
+  text-decoration: none;
+}
+a.gbsp-seg:hover,
+body.gb-demo a.gbsp-seg:hover { color: var(--white); }
+a.gbsp-seg.is-on,
+body.gb-demo a.gbsp-seg.is-on { color: var(--blue-400); }
+
+/* Вариант, до которого страница не доросла, и место под Comment:
+   видно, что оно есть, и видно, что оно не работает. */
+.gbsp-seg.is-off {
+  display: inline-block;
+  padding: 2px 0 4px;
+  border-bottom: 2px solid transparent;
+  color: var(--zinc-600);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  cursor: default;
+}
+.gbsp-segs--row .gbsp-seg.is-off { font-size: 12px; }
+
+/* ---- ПОДВАЛ: состояние, копия ссылки, компоновка ---- */
+.gbsp-foot {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--zinc-800);
+}
+/* Одна строка вместо двух абзацев. 12 — пол системы, и это подпись
+   состояния, а не текст для чтения. */
+.gbsp-status {
+  margin: 0 0 var(--space-8);
+  color: var(--zinc-500);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.gbsp-copy.is-said,
+.gbsp-copy.is-said:hover { color: var(--blue-400); }
+
+/* Сегмент Layout стоит в ОБЕИХ компоновках. В Classic это обычная
+   секция за общей линией; в подвале Proposed линия тише — внутри
+   одной секции, как у соседних групп. */
+.gbsp-foot .gbsp-sec--layout {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--zinc-900);
+}
+
+/* ============================================================
+   ВЕРХНЯЯ ПОЛОСА НАД КАДРОМ (gbppl-panel-8, только Proposed)
+   ------------------------------------------------------------
+   Когда страница ушла в кадр, экран становится главным предметом на
+   столе, и его переключатель обязан быть над кадром, а не в
+   выдвижном ящике. Полоса помещается в ТЕ ЖЕ 88px, которые сцена и
+   так отдавала: 36 (нижняя ступень сетки высот кнопок, раздел 5) +
+   поле --space-8 сверху; подпись кадра переезжает в правый край
+   полосы и перестаёт занимать свою строку, поэтому высота кадра
+   calc(100vh - 88px) не тронута.
+
+   z 59 — внутри стопки сцены (58): выше кадра, ниже консоли (60).
+   Земля и голос те же, что у консоли: Zinc 950, подписи 12 Zinc 500,
+   выбранное Blue 400 с подчёркиванием.
+   ============================================================ */
+.gbsp-stage--bar { padding-top: calc(36px + var(--space-8)); }
+
+.gbsp-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 59;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: 0 var(--space-16);
+  background: var(--zinc-950);
+  border-bottom: 1px solid var(--zinc-800);
+  font-family: var(--font-sans);
+}
+.gbsp-tb__presets {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.gbsp-tb__seg {
+  padding: 2px 0 3px;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--zinc-500);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move),
+              border-color var(--mo-micro) var(--mo-move);
+}
+.gbsp-tb__seg:hover { color: var(--white); }
+.gbsp-tb__seg.is-on { color: var(--blue-400); border-bottom-color: var(--blue-400); }
+
+.gbsp-tb__meas {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+/* Число ИЗМЕРЕННОЕ: window.innerWidth изнутри кадра, не габарит
+   рамки. Тот же закон, по которому живёт Inspect. */
+.gbsp-tb__w {
+  color: var(--zinc-500);
+  font-size: 12px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.gbsp-tb__in {
+  width: var(--space-64);
+  height: var(--space-24);
+  padding: 0 var(--space-8);
+  background: var(--zinc-900);
+  border: 1px solid var(--zinc-700);
+  border-radius: var(--radius);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.gbsp-tb__in::placeholder { color: var(--zinc-600); }
+.gbsp-tb__in:focus { outline: none; border-color: var(--blue-400); }
+.gbsp-tb__rot {
+  width: var(--space-24);
+  height: var(--space-24);
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 1px solid var(--zinc-700);
+  border-radius: var(--radius);
+  color: var(--zinc-400);
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move),
+              border-color var(--mo-micro) var(--mo-move);
+}
+.gbsp-tb__rot:hover { color: var(--white); border-color: var(--zinc-600); }
+.gbsp-tb__rot[hidden] { display: none; }
+.gbsp-tb__rot svg { display: block; width: 14px; height: 14px; }
