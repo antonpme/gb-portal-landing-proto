@@ -144,19 +144,46 @@
    тратится из system\assets\tokens.css. Цифры компоновки
    (1080 колонка, отступы полок) — те же, что стояли на хабе с
    hub-3; они переехали строка в строку, ничего не перемерено.
+   ------------------------------------------------------------
+   ЧИСЛА СВЕДЕНЫ К ШКАЛЕ (gbppl-studio-tokens-1, Тон 27.08:
+   «система не только в компонентах, но и в паттернах, в отступах,
+   в шрифтах, абсолютно во всём; строим систему, начиная с нашей
+   собственной студии»).
+
+   Что сделано с каждым числом файла: ступень шкалы, записанная
+   цифрой, стала токеном (--space-8/16/24/32/48/64, --eyebrow-*,
+   --radius); сумма двух ступеней стала calc() с объяснением
+   (40 = 32+8, 56 = 32+24, 72 = 48+24, 96 = 64+32: этих ступеней на
+   шкале нет, а сумма точная); остальное носит единый коммент
+   `NO TOKEN: <почему>` и стоит в отчёте волны.
+
+   ОДИН ЗАЗОР МЕЖДУ ОДНОТИПНЫМИ ЭЛЕМЕНТАМИ (6a.3 скилла). Строки
+   внутри карточки стояли на трёх разных числах: 12 у большой
+   двери, 14 и 10 у малой. Отношение одно, «текст под текстом внутри
+   карточки», значит и число одно: 12 везде. Сдвиги 2px у двух
+   правил малой двери, оба в отчёте. 12 = половина ступени
+   --space-24, на шкале её нет; решение о --space-12 за Тоном.
    ============================================================ */
 
 /* Страница-студия: бар, тело, подвал прижат к низу. */
 .gbs-page { display: flex; flex-direction: column; min-height: 100vh; }
 
-.gbs-body { flex: 1 0 auto; padding: 48px 0 64px; }
-@media (min-width: 1280px) { .gbs-body { padding: 72px 0 96px; } }
+.gbs-body { flex: 1 0 auto; padding: var(--space-48) 0 var(--space-64); }
+/* 72 = --space-48 + --space-24, 96 = --space-64 + --space-32: выше
+   64 шкала не идёт, поэтому крупные поля страницы записаны суммой
+   ступеней, а не новой цифрой. */
+@media (min-width: 1280px) {
+  .gbs-body { padding: calc(var(--space-48) + var(--space-24)) 0 calc(var(--space-64) + var(--space-32)); }
+}
 
-/* Колонка документа. Бар шире — он спанит страницу, как на лайве. */
+/* Колонка документа. Бар шире — он спанит страницу, как на лайве.
+   NO TOKEN: 1080 это мера колонки, цифра компоновки с hub-3, шкалы
+   ширин у нас нет (есть только клэмпы контейнера 1600/1920). */
 .gbs-wrap { max-width: 1080px; margin: 0 auto; }
 
-.gbs-shelf + .gbs-shelf { margin-top: 56px; }
-@media (min-width: 1280px) { .gbs-shelf + .gbs-shelf { margin-top: 72px; } }
+/* 56 = --space-32 + --space-24, 72 = --space-48 + --space-24. */
+.gbs-shelf + .gbs-shelf { margin-top: calc(var(--space-32) + var(--space-24)); }
+@media (min-width: 1280px) { .gbs-shelf + .gbs-shelf { margin-top: calc(var(--space-48) + var(--space-24)); } }
 
 /* Титул полки = РОЛЬ СЕКЦИИ лайва (.gbhm-headingTitle, «Curated
    Gifts For:»): Noto Serif 400, 28 → 40 @1280, lh 1.25, ls normal.
@@ -175,7 +202,7 @@
 /* Лид полки — базовая роль, поднятая на ступень с 1280 (LIVE-STEP,
    см. шапку). 16 → 18. */
 .gbs-lede {
-  margin: 12px 0 0;
+  margin: 12px 0 0;   /* NO TOKEN: общий зазор «текст под текстом», половина ступени --space-24, см. шапку */
   font-size: 16px;
   line-height: 1.625;
   letter-spacing: 0.2px;
@@ -186,18 +213,20 @@
 /* Eyebrow, один голос на все студийные страницы
    (12 / 600 / 0.12em / uppercase / Zinc 500). */
 .gbs-eyebrow {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
   text-transform: uppercase;
-  color: var(--zinc-500);
+  color: var(--eyebrow-color);
 }
 
 /* ---- Двери ----
    Покой Zinc 200, на ховере бордер уходит в Zinc 900 с тенью
    карточки под ним — выбранное состояние карточки метода из
    auth-организма, потраченное здесь как ховер. Не двигается
-   ничего, кроме стрелки: 4px, шаг шевронов. */
+   ничего, кроме стрелки: 4px, шаг шевронов.
+   NO TOKEN на 4: это ход жеста, а не отступ; ступень --space-8
+   превратила бы кивок стрелки в прыжок. */
 .gbs-door {
   position: relative;
   display: block;
@@ -222,7 +251,7 @@
    живой лестницы H1 36/48), живого замера базы у H3 нет.
    Было 28 → 40 (РОЛЬ СЕКЦИИ = H2 карты), см. шапку файла, hub-13. */
 .gbs-door-title {
-  margin: 12px 0 0;
+  margin: 12px 0 0;   /* NO TOKEN: общий зазор «текст под текстом», см. шапку */
   font-family: var(--font-serif);
   font-size: 24px;
   font-weight: 400;
@@ -233,7 +262,7 @@
 @media (min-width: 1280px) { .gbs-door-title { font-size: 32px; } }
 /* Описание двери — базовая роль + ступень с 1280 (LIVE-STEP). */
 .gbs-door-desc {
-  margin: 12px 0 0;
+  margin: 12px 0 0;   /* NO TOKEN: общий зазор «текст под текстом», см. шапку */
   max-width: 60ch;
   font-size: 16px;
   line-height: 1.625;
@@ -253,39 +282,45 @@
 
 /* ---- Сетка малых дверей ---- */
 .gbs-grid {
-  margin-top: 24px;
+  margin-top: var(--space-24);
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: var(--space-16);
 }
 @media (min-width: 768px)  { .gbs-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1100px) { .gbs-grid { grid-template-columns: repeat(3, 1fr); } }
 
+/* NO TOKEN на 20 и 28: поля малой двери. 20 на 4px тише ступени
+   --space-24 в узкой колонке ~336px, 28 это её ступенька с 1280.
+   Ступени между 16 и 24 и между 24 и 32 на шкале нет, а сдвиг на
+   4px меняет высоту карточек, которые Тон принял 27.08 («высоты
+   равны»). Расхождение полей двух карточек студии (эта 24/20, дверь
+   хаба 20) вынесено Тону отдельным решением. */
 .gbs-door--box {
   display: flex;
   flex-direction: column;
-  padding: 24px 20px;
+  padding: var(--space-24) 20px;
 }
-@media (min-width: 1280px) { .gbs-door--box { padding: 28px 24px; } }
+@media (min-width: 1280px) { .gbs-door--box { padding: 28px var(--space-24); } }
 /* Малая дверь стоит в трёхколоночной сетке ~336px, роль секции
    (40) туда не встаёт. Её заголовок носит РОЛЬ КОЛОНКИ подвала
    лайва целиком: Noto Serif 400 / 22 / lh 1.45 / ls 0.2
    (TYPE-SCALE, verified-live 17.08, ступень @768). Было 20/500. */
 .gbs-door--box .gbs-door-title {
-  margin-top: 14px;
+  margin-top: 12px;   /* было 14: тот же зазор «текст под текстом», что у всех карточек студии */
   font-size: 22px;
   line-height: 1.45;
   letter-spacing: 0.2px;
 }
 @media (min-width: 1280px) { .gbs-door--box .gbs-door-title { font-size: 22px; } }
 /* Описание малой двери идёт по общей лестнице (16 → 18 @1280). */
-.gbs-door--box .gbs-door-desc { margin-top: 10px; flex: 1 0 auto; }
+.gbs-door--box .gbs-door-desc { margin-top: 12px; flex: 1 0 auto; }   /* было 10: тот же зазор, что у всех карточек */
 .gbs-door-foot {
-  margin-top: 20px;
+  margin-top: 20px;   /* NO TOKEN: подвал отбит от текста сильнее, чем строки между собой; ступени 20 на шкале нет */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 12px;   /* NO TOKEN: зазор внутри ряда, половина ступени --space-24 */
 }
 /* Подпись под дверью — имя СТРАНИЦЫ, которой принадлежит комната
    (gbppl-sandboxes-3, 26.08: раньше здесь печатался сырой путь
@@ -302,10 +337,11 @@
    вопросом на страницу и приходят («что пробуют на чекауте, что в
    портале»). Имя группы — роль Eyebrow из shell.css, ничего
    нового: это ярлык, а не заголовок, титул на полке один. */
-.gbs-rooms { margin-top: 32px; }
-.gbs-room + .gbs-room { margin-top: 40px; }
-@media (min-width: 1280px) { .gbs-room + .gbs-room { margin-top: 48px; } }
-.gbs-room .gbs-grid { margin-top: 14px; }
+.gbs-rooms { margin-top: var(--space-32); }
+/* 40 = --space-32 + --space-8: ступени 40 на шкале нет. */
+.gbs-room + .gbs-room { margin-top: calc(var(--space-32) + var(--space-8)); }
+@media (min-width: 1280px) { .gbs-room + .gbs-room { margin-top: var(--space-48); } }
+.gbs-room .gbs-grid { margin-top: var(--space-16); }   /* было 14: ступень ближе на 2px */
 
 /* Дверь, за которой ещё нет комнаты (ready:false в реестре):
    решение записано, кода нет. Не ссылка и по разметке — курсор
@@ -335,25 +371,25 @@
   display: inline-block;
   align-self: flex-start;   /* карточка — flex-колонка; без этого
                                чип растягивается в полосу */
-  padding: 4px 8px;
+  padding: 4px var(--space-8);   /* NO TOKEN на 4: пол ступени, поле чипа вокруг строки 12/1.2 */
   background: var(--zinc-100);
   border-radius: var(--radius);
   font-size: var(--eyebrow-size);   /* 12: голос eyebrow, не мельче */
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
   line-height: 1.2;
   text-transform: uppercase;
-  color: var(--zinc-500);
+  color: var(--eyebrow-color);
 }
 
 /* ---- Тихая строка внизу ---- */
 .gbs-foot {
   flex: 0 0 auto;
-  padding: 24px 0 32px;
+  padding: var(--space-24) 0 var(--space-32);
   border-top: 1px solid var(--zinc-200);
 }
 .gbs-foot p {
-  max-width: 1080px;
+  max-width: 1080px;   /* та же колонка, что у .gbs-wrap */
   margin: 0 auto;
   font-size: 14px;   /* вторичное, нижняя граница шкалы (Тон 24.08) */
   letter-spacing: 0.2px;
@@ -461,7 +497,7 @@
 @media (min-width: 1280px) { .gbs-h1 { font-size: 48px; } }
 @media (min-width: 2000px) { .gbs-h1 { font-size: 52px; } }
 .gbs-hub-sub {
-  margin: 8px 0 0;
+  margin: var(--space-8) 0 0;
   max-width: 60ch;
   font-size: 18px;
   line-height: 1.625;
@@ -474,20 +510,23 @@
    стек. Двух-колоночной ступени нет намеренно, иначе третья
    карточка стоит сиротой в половину ряда. */
 .gbs-entries {
-  margin-top: 32px;
+  margin-top: var(--space-32);
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: var(--space-16);
 }
-@media (min-width: 900px)  { .gbs-entries { margin-top: 40px; grid-template-columns: repeat(3, 1fr); gap: 20px; } }
-@media (min-width: 1280px) { .gbs-entries { margin-top: 48px; gap: 24px; } }
+/* 40 = --space-32 + --space-8. NO TOKEN на 20: средняя ступень
+   зазора между 16 и 24, которой на шкале нет; ряд из трёх карточек
+   на ней стоит с hub-12 и утверждён. */
+@media (min-width: 900px)  { .gbs-entries { margin-top: calc(var(--space-32) + var(--space-8)); grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+@media (min-width: 1280px) { .gbs-entries { margin-top: var(--space-48); gap: var(--space-24); } }
 
 .gbs-door--entry {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 20px;   /* NO TOKEN: те же поля, что у зазора ряда, см. выше */
 }
-@media (min-width: 1280px) { .gbs-door--entry { padding: 24px; } }
+@media (min-width: 1280px) { .gbs-door--entry { padding: var(--space-24); } }
 
 /* Клавиатура должна видеть то же, что мышь: фокус на любой ссылке
    внутри поднимает карточку так же, как ховер. */
@@ -519,13 +558,15 @@
    того, что заголовок ведёт наружу, и ей место рядом с ним, а не
    в подвале под остановками. */
 .gbs-door--entry .gbs-door-title {
+  /* NO TOKEN на 20: заголовок отбит от ПРЕВЬЮ, а не от текста, и
+     стоит на той же мере, что поля карточки. */
   margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-16);
 }
-@media (min-width: 1280px) { .gbs-door--entry .gbs-door-title { margin-top: 24px; } }
+@media (min-width: 1280px) { .gbs-door--entry .gbs-door-title { margin-top: var(--space-24); } }
 .gbs-door--entry .gbs-arrow { flex: 0 0 auto; }
 
 /* Растянутая главная ссылка. Цвет объявлен парой — ловушка 1. */
@@ -594,7 +635,7 @@ body.gb-demo a.gbs-door-link { color: var(--zinc-900); }
    заголовка.
    ============================================================ */
 .gbs-tree { margin: 0; padding: 0; list-style: none; }
-.gbs-tree--top { margin-top: 32px; }
+.gbs-tree--top { margin-top: var(--space-32); }
 .gbs-branch { position: relative; }
 .gbs-branch + .gbs-branch { margin-top: var(--space-16); }
 
@@ -611,9 +652,9 @@ body.gb-demo a.gbs-door-link { color: var(--zinc-900); }
   content: "";
   position: absolute;
   left: calc(var(--space-24) * -1);
-  /* 28 = половина высоты строки имени в карточке с полем 16:
-     16 паддинга + 12 полстроки. NO TOKEN: это привязка к строке,
-     а не отступ. */
+  /* NO TOKEN: 28 это привязка к СТРОКЕ, а не отступ. Поле карточки 16
+     плюс половина строки имени 12: отвод обязан прийти в имя, а не
+     в пустоту под ним, и число считается от текста. */
   top: 28px;
   width: var(--space-24);
   border-top: 1px solid var(--zinc-300);
@@ -635,7 +676,10 @@ body.gb-demo a.gbs-door-link { color: var(--zinc-900); }
   transition: border-color var(--mo-small) var(--mo-move),
               box-shadow var(--mo-small) var(--mo-move);
   animation: gbsNodeIn var(--mo-small) var(--mo-arrive) both;
-  animation-delay: calc(var(--gbs-step, 0) * 40ms);   /* NO TOKEN: шаг каскада, MOTION.md №3 */
+  /* NO TOKEN: 40ms это ШАГ каскада, а не длительность: у --mo-* названы
+     длины движения, а не расстояние между их началами. Число живое,
+     из MOTION.md №3 (тем же шагом тело шага отстаёт от заголовка). */
+  animation-delay: calc(var(--gbs-step, 0) * 40ms);
 }
 a.gbs-node,
 body.gb-demo a.gbs-node { color: var(--zinc-900); }
@@ -704,7 +748,7 @@ body.gb-demo a.gbs-node:hover { border-color: var(--zinc-900); box-shadow: var(-
 
 /* Полка ожидаемых: те же узлы, но без дерева — у страниц, которых
    нет, нет и родителя. */
-.gbs-flat { margin-top: 32px; }
+.gbs-flat { margin-top: var(--space-32); }
 .gbs-flat .gbs-branch + .gbs-branch { margin-top: var(--space-8); }
 
 
@@ -736,7 +780,7 @@ body.gb-demo a.gbs-node:hover { border-color: var(--zinc-900); box-shadow: var(-
 }
 .gbs-node--place .gbs-node__name { flex: 0 1 auto; }
 
-.gbs-cross { margin-top: 32px; }
+.gbs-cross { margin-top: var(--space-32); }
 .gbs-cross .gbs-branch + .gbs-branch { margin-top: var(--space-8); }
 
 /* Имена в строке пересечения не тянутся: тянется волосок между
