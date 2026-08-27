@@ -157,6 +157,72 @@
      Tailwind CDN utilities, so it has 91 controls that are not
      .gb-btn and not one .gba-* field. That is a rebuild, not a pass.
      ============================================================ -->
+<!-- ============================================================
+     gbppl-checkout-14 (2026-08-27) — THE CONTROLS JOIN THE SYSTEM.
+
+     Ton, 27.08: «чекаут это долг прототипа: 91 контрол мимо организма
+     кнопок, ноль системных полей». gbppl-demo-polish-1 that morning
+     fixed the copy, the radii, the colours and the Eyebrow role and
+     said out loud what it had not touched. This is that.
+
+     Measured before: 111 controls on the customizer screen, 19 of them
+     on .gb-btn, 0 on .gba-*. After: 111 controls, 52 on an organism.
+
+     MIGRATION, was -> became
+       20 underline inputs, h-16/h-14, Inter 400 16px, Zinc 500 line
+          -> .gba-input (48/56/64, Inter 300 14/16/18, Zinc 400 line)
+       4  textareas, the same hand-drawing plus resize-none
+          -> .gba-input .gba-textarea
+       2  selects, one underline and one boxed Zinc 50, disagreeing
+          with each other -> .gba-input, one select language
+       1  address-book trigger, a button drawn as a field
+          -> .gba-input, so it stands level with the fields around it
+       5  crosses (four drawers, one modal), a 4px box with a glyph
+          -> .gb-btn --s --ghost --secondary + __icon, byte for byte
+             the markup drawer.js writes for the system drawer's cross
+       1  Remove shipment, 12px ghost with a red hover
+          -> .gb-btn --s --ghost --secondary (red hover goes: the
+             organism owns no danger colour, ORO-SKILL 8)
+       2  V2 fork summary bar, 14px blue text and 14px grey text
+          -> .gb-btn --s --ghost --primary / --secondary
+       1  Change choice (dormant chooser) -> the same quiet cell
+       1  Overwrite all -> the organism, repainted Red 600 through its own
+          --gbb-accent slot (no danger cell exists to name)
+       46 rounded-[5px] -> rounded-[var(--radius)]
+       12 form gaps of 28 and 20 -> 32 and 24, the --space-* form rule
+
+     EXPECTED DIFFERENCES, all of them the organism speaking:
+       · fields lose 8px of height below 2000 (64 flat -> 48/56/64) and
+         gain the field weight (400 -> 300) and the field ink (Zinc 900
+         -> Zinc 800). That ladder is the system's, not this page's.
+       · the migrated button labels become the S label role: 11px caps
+         where they were 12-14px sentence case. Same change Place Order
+         took in gbppl-button-2, and for the same reason.
+       · the drawer crosses grow from a 20px glyph box to the S rung
+         (56x42 at 1440), the size the system drawer's cross is.
+
+     LEFT OFF THE ORGANISM ON PURPOSE, each because the system has no
+     cell for it yet (all four are in the report to Ton, ORO-SKILL 8):
+       · SELECT. There is no select component; the two selects wear the
+         field and lose their chevron. Works, but a select is not a
+         text input and the system should say so.
+       · ICON-ONLY BUTTON. The row trash, the four qty steppers' minus
+         and plus, the two pagination arrows: 12 controls with a glyph
+         and no label. The organism has no icon-only cell (and the
+         systems that do make a tooltip mandatory). On tokens.
+       · CHECKBOX and RADIO. Three checkboxes, two radio groups. No
+         component; they stand on accent-color Blue 600, which is the
+         Ton-5 rule already, and the browser draws the rest.
+       · STEPPER. The minus/number/plus trio is one control, not three,
+         and nothing in the system describes it.
+     And three by measurement, not by gap:
+       · the recipient table's inline name cell keeps a compact input.
+         The organism's 48 would take the table row from 49 to 65 and
+         a 20-row shipment from 980px to 1300. Documented at its site.
+       · the three serif initials slots are a character box, not a
+         field: one glyph, centred, 30px Noto Serif.
+       · the dormant date input inside a sentence.
+     ============================================================ -->
 <!-- gbppl-gate-2: one code on every page of the studio; the guard runs before paint. -->
 <script src="../system/components/studio.js" data-home="../index.html"></script>
 <link rel="stylesheet" href="../system/assets/tokens.css">
@@ -388,6 +454,10 @@
                 <span class="gb-eyebrow">Gifts</span>
                 <!-- The ring is the pool saying it grew on its own: a personalization row
                      asked for more gifts than the pool held, so the pool came up to meet it. -->
+                <!-- gbppl-checkout-14: the STEPPER has no cell in the system — minus, number and
+                     plus are one control, not three, and the organism has no icon-only button
+                     either. It stands on tokens (Zinc 300 line, --radius, Zinc 500 glyphs) and
+                     goes to Ton as a candidate, with the other three steppers on this page. -->
                 <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[var(--radius)] overflow-hidden transition-colors"
                      :class="product.shipments[0] && product.shipments[0].poolGrown ? 'border-blue-600 ring-2 ring-blue-200' : ''">
                   <button @click="bumpPool(product, -1)"
@@ -785,6 +855,8 @@
                         <div>
                           <template x-if="it.kind === 'initials'">
                             <div>
+                              <!-- gbppl-checkout-14: a character box, not a field. One glyph, centred, 30px Noto
+                                   Serif — .gba-input would put Inter 300 in it and pull the caret left. -->
                               <div class="flex flex-wrap gap-2.5">
                                 <template x-for="i in 3" :key="'uslot-'+shipment.id+'-'+idx+'-'+i">
                                   <input
@@ -884,6 +956,11 @@
                           <!-- The underline is always there: clients could not tell this cell was a field at all
                                (meeting 20.08 — "inputs look disabled"). The placeholder now names what may go in
                                and that none of it is required (approved copy set, 21.08). -->
+                          <!-- gbppl-checkout-14, MEASURED EXCEPTION: this one field stays hand-drawn and
+                               compact. .gba-input is 48 tall at this width; the row is 49 and the
+                               cell has a 14px error line under it, so the organism would take the
+                               row to 65 and a 20-row shipment from 980px to 1300. The table is the
+                               one place on the page where field height is a layout decision. -->
                           <input type="text" x-model="recipient.name" placeholder="Name or initials (optional)" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
                           <p x-show="recipient.hasError" class="text-red-600 text-xs mt-1" x-text="recipient.errorMsg"></p>
                         </td>
@@ -999,6 +1076,8 @@
                     <p class="text-xs text-zinc-500 mt-1 pl-2">Add the same gift for another person and personalize it separately.</p>
                   </div>
                   <div class="flex items-center gap-4 flex-shrink-0">
+                    <!-- gbppl-checkout-14: PAGINATION has no component and its two arrows are icon-only.
+                         On tokens; both go to Ton in the same list. -->
                     <div class="flex items-center gap-1" x-show="totalPages(shipment) > 1">
                       <button @click="shipment.page = Math.max(1, shipment.page - 1)" class="p-1.5 text-zinc-400 hover:text-zinc-900" :disabled="shipment.page === 1"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></button>
                       <template x-for="p in pageNumbers(shipment)" :key="p">
@@ -1067,6 +1146,10 @@
       <div class="space-y-3">
         <div>
           <p class="gb-eyebrow mb-2">Billing address <span class="text-red-500">*</span></p>
+          <!-- gbppl-checkout-14: THE SYSTEM HAS NO SELECT. This one was a boxed Zinc 50 control
+               and the country select in the address drawer was an underline: two selects on one
+               page disagreeing. Both wear the field now, which is the closest true thing the
+               system owns, and both lose the chevron a select should have. In the report to Ton. -->
           <select class="gba-input cursor-pointer"><option>Select a billing address</option></select>
         </div>
       </div>
@@ -1188,13 +1271,17 @@
       <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
       <div class="flex items-center gap-2">
         <!-- gbppl-checkout-14: the page's ONE dangerous action, and the organism owns no
-             danger colour (ORO-SKILL 8, Ton's call). It keeps its red and stops inventing
-             the rest: the S rung and the button label role come from tokens, and the two
-             reds are the two the palette owns (Red 500 line, Red 600 ink) instead of the
-             300/700 pair it had borrowed from Tailwind. -->
+             danger CELL (ORO-SKILL 8, Ton's call). So it wears the organism whole and repaints
+             one instance through the component's OWN slots: --gbb-accent is the property
+             .gb-btn--outline reads for its ink and its hairline, and Red 600 is a colour the
+             palette owns. Nothing of button.css is overridden, nothing is hand-measured, and
+             the S ladder, the label role and every breakpoint stay the organism's -- which is
+             why this button is now 42px at 1440 like the two standing beside it, where the
+             hand-drawn version was 38. The hover wash stays the secondary's zinc: a red wash
+             token does not exist, and this is not the wave that invents one. -->
         <button x-show="drawer.master" @click="saveMasterGreeting(true)" type="button"
-                class="inline-flex items-center justify-center border border-red-500 text-red-600 rounded-[var(--radius)] hover:bg-red-50 font-semibold uppercase"
-                style="min-height:var(--gb-btn-s-h);padding:var(--gb-btn-s-pad-y) var(--gb-btn-s-pad-x);font-size:var(--gb-btn-s-label);letter-spacing:var(--gb-btn-label-tracking)">Overwrite all</button>
+                class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary"
+                style="--gbb-accent: var(--red-600); --gbb-accent-hover: var(--red-600); --gbb-accent-active: var(--red-600)"><span class="gb-btn__label">Overwrite all</span></button>
         <button @click="saveGreeting()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
       </div>
     </div>
