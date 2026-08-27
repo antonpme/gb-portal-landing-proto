@@ -148,6 +148,32 @@ html { scroll-padding-top: var(--header-h); }
    768 / 48 from 1920, max 1920), so the header stands where it stands on
    every other page; the build's own page measure is the build's business. */
 
+/* gbppl-container-3 (Ton 27.08: «странно танцует отступ слева и справа:
+   там, где Gifts, и в хедере правильный отступ, а всё остальное нет»).
+   The build measures its own page with --page-gutter 48 / 24 under 1200 /
+   16 under 640 and --content-width min(100% - 2*gutter, 1920). Ours (= live)
+   is 16 / 24 from 768 / max 1600 / 1920 with 48 from 1920. So the header,
+   hero and footer stood on one measure and the category strip, section
+   titles and the grid on another: 48 vs 24 between 1280 and 1600, 48 vs 94
+   at 2026. One measure now: the build reads the system container tokens.
+   html:root outranks the build's :root without touching the bundle. */
+html:root {
+  --page-gutter: var(--container-pad-narrow);                       /* 16 */
+  --content-width: calc(100% - var(--page-gutter) * 2);
+}
+@media (min-width: 768px) {
+  html:root { --page-gutter: var(--container-pad); }                /* 24 */
+}
+@media (min-width: 1600px) {
+  html:root { --content-width: min(calc(100% - var(--page-gutter) * 2), calc(var(--container-max-lg) - var(--container-pad) * 2)); }        /* 1552 */
+}
+@media (min-width: 1920px) {
+  html:root {
+    --page-gutter: var(--container-pad-wide);                       /* 48 */
+    --content-width: min(calc(100% - var(--page-gutter) * 2), calc(var(--container-max-xl) - var(--container-pad-wide) * 2));  /* 1824 */
+  }
+}
+
 /* The site footer replaces the build's, one floor down, same argument. */
 #root footer.footer { display: none; }
 
