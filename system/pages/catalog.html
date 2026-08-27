@@ -55,22 +55,27 @@
 <link rel="stylesheet" href="../components/docs.css">
 <link rel="stylesheet" href="../components/inspect.css">
 
-<style>
-  /* Композиция страницы, не компонент: у лайва хедер fixed поверх
-     потока (плейсхолдер h-0), hero каталога начинается с y=0 под
-     баром. Demo-хедер sticky занимает 80px потока (DEVIATION
-     компонента), страница возвращает живые ординаты, затягивая
-     main под бар; фон бара непрозрачный (lg+ white/90 + blur),
-     как на лайве. */
-  main#catalog { margin-top: calc(-1 * var(--header-h)); }
-</style>
+<!-- gbppl-catalog-hero-1 (2026-08-27): страница больше не затягивает main
+     под бар. До этой волны здесь стояло
+       main#catalog { margin-top: calc(-1 * var(--header-h)); }
+     затем, что живой хедер каталога был fixed поверх потока с
+     плейсхолдером h-0, и лента героя начиналась с y=0. Замер
+     /catalog/products 27.08: <header class="h-[80px]"> читается
+     position static, занимает 80px потока, и hero стоит на y=79.99 -
+     ровно там, куда его ставит наш sticky-бар без всяких поправок.
+     Отклонение снято вместе с причиной. -->
 </head>
 <body>
 
   <gb-site-header home-href="../../live/index.html" logo-src="../assets/gildedbox-logo.svg" catalog-href="../../live/catalog/index.html" portal-href="../../live/portal.html" meeting-href="../../live/book-a-meeting.html"></gb-site-header>
 
   <main id="catalog">
-    <gb-catalog-hero heading="Gifts" image="../assets/products/hero-gifts.png"></gb-catalog-hero>
+    <!-- gbppl-catalog-hero-1: без image. Живая лента 27.08 рисует на
+         месте картинки пустой v-if, и подзаголовок занял её половину.
+         Копия дословно с лайва, перенос строки там же, где <br>. -->
+    <gb-catalog-hero heading="Gifts"
+      subtitle="Curated corporate gifts for clients,
+                teams, events, and VIP moments."></gb-catalog-hero>
 
     <gb-catalog-filters></gb-catalog-filters>
 

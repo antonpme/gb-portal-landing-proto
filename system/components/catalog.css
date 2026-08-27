@@ -66,17 +66,39 @@ gb-catalog-hero, gb-catalog-filters, gb-catalog-grid {
 }
 
 /* ------------------------------------------------------------
-   HERO: чёрная лента 354 -> 680 (md), белый serif-титул слева
-   внизу, картинка справа (harvest catalog-hero + SSR 18.08).
+   HERO: БЕЛАЯ лента 354 -> 300 (md) -> 400 (2xl), serif-титул с
+   подзаголовком слева по центру высоты, картинки нет.
+
+   gbppl-catalog-hero-1 (2026-08-27) — ПЕРЕСНЯТО С ЛАЙВА. До этой
+   волны здесь стояла чёрная лента 354/680 с картинкой справа:
+   такой каталог был на замере 17.08. Замер /catalog/products
+   27.08 на 390/640/768/1024/1280/1440/1920/2000/2258 читает
+   другую ленту, и живой замер побеждает харвест. Числа:
+
+     h секции   354 (<768) / 300 (>=768) / 400 (>=2000)
+     земля      #ffffff, чернила #191919 (--catalog-ink)
+     h1         Noto Serif 400, 36 / 48 (>=1280) / 50 (>=2000),
+                tracking-wide 0.025em, leading-normal 1.5
+     .descr     Inter 300, трекинг 2px, zinc-900, pt 16;
+                16/27.2 (<640), 18/30.6 (640..767),
+                18/28 (>=768), 20 (>=1280), 22 (>=2000)
+     колонка    видна с нуля, по центру высоты, 100% / 25%
+                (>=1024) / 40% (>=1280), центр -> лево с 1024
+
+   Ступень line-height подзаголовка ломается на 768, а кегль на
+   640: у лайва там сходятся leading-[170%] и md:text-lg, и
+   вторая приходит в каскаде позже. Не наша логика, лайвовая.
    ------------------------------------------------------------ */
 .gbcH-hero {
   position: relative;
   height: 354px;
-  background: var(--black);
-  color: var(--white);
+  background: var(--white);
 }
 @media (min-width: 768px) {
-  .gbcH-hero { height: 680px; }
+  .gbcH-hero { height: 300px; }
+}
+@media (min-width: 2000px) {
+  .gbcH-hero { height: 400px; }
 }
 
 /* md:container лайва: ниже md голый блок без полей; с md поля 24
@@ -115,19 +137,16 @@ gb-catalog-hero, gb-catalog-filters, gb-catalog-grid {
   .gbcH-inner { flex-direction: row; }
 }
 
-/* Колонка титула: скрыта до md; прижата вниз (pb 92). */
-.gbcH-titleCol { display: none; }
-@media (min-width: 768px) {
-  .gbcH-titleCol {
-    display: flex;
-    width: 100%;
-    height: auto;
-    align-items: flex-end;
-    padding-bottom: 92px;
-    text-align: center;
-    /* text-shadow-sm лайва; прибор тень не меряет, значение felt */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  }
+/* Колонка титула: видна на всех ширинах, по центру высоты
+   (27.08; до этого была скрыта до md и прижата вниз на pb 92,
+   а тени text-shadow-sm лайв больше не рисует: она была нужна
+   белому титулу на фотографии, которой нет). */
+.gbcH-titleCol {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  text-align: center;
 }
 @media (min-width: 1024px) {
   .gbcH-titleCol { height: 100%; width: 25%; text-align: left; }
@@ -136,7 +155,7 @@ gb-catalog-hero, gb-catalog-filters, gb-catalog-grid {
   .gbcH-titleCol { width: 40%; }
 }
 
-/* h1: Noto Serif 400, лестница 36/48/52, tracking-wide (0.025em,
+/* h1: Noto Serif 400, лестница 36/48/50, tracking-wide (0.025em,
    на 48px = 1.2px по замеру), leading-normal 1.5. */
 .gbcH-title {
   font-family: var(--font-serif);
@@ -151,7 +170,37 @@ gb-catalog-hero, gb-catalog-filters, gb-catalog-grid {
   .gbcH-title { font-size: 48px; }
 }
 @media (min-width: 2000px) {
-  .gbcH-title { font-size: 52px; }
+  .gbcH-title { font-size: 50px; }
+}
+
+/* Подзаголовок .descr лайва. Пикселя 16 отступа НЕ со шкалы
+   --space-16 нарочно: компонент едет на вендорную страницу
+   каталога, где бандл держит своё --space-16: 64px на :root
+   (ORO-SKILL ловушка 7), а зоне каталога острова восстановления
+   не выдано. Литерал здесь честнее, чем токен, читающийся в
+   учетверённом размере. */
+.gbcH-sub {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.7;
+  letter-spacing: 2px;
+  color: var(--zinc-900);
+  padding-top: 16px;
+  width: fit-content;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .gbcH-sub { font-size: 18px; width: 100%; }
+}
+@media (min-width: 768px) {
+  .gbcH-sub { line-height: 28px; }
+}
+@media (min-width: 1280px) {
+  .gbcH-sub { font-size: 20px; }
+}
+@media (min-width: 2000px) {
+  .gbcH-sub { font-size: 22px; }
 }
 
 .gbcH-media {

@@ -5,8 +5,9 @@
    https://www.gildedbox.com/catalog/products (SSR-DOM снят 18.08,
    числа = harvest public-catalog 17.08, правила в catalog.css):
 
-     <gb-catalog-hero>     чёрная лента 354/680 c serif-титулом и
-                           картинкой (атрибуты title, image, alt)
+     <gb-catalog-hero>     белая лента 354/300/400 c serif-титулом
+                           и подзаголовком (heading, subtitle, image,
+                           alt); ПЕРЕСНЯТ С ЛАЙВА 27.08, см. ниже
      <gb-catalog-filters>  табы категорий + кнопка Filters +
                            складной пул чипов цены + мобильный бар
      <gb-catalog-grid>     обёртка md:container + viewGrid + ряд
@@ -38,19 +39,70 @@
 
   /* ---------------- HERO ---------------- */
 
-  var HERO_TEMPLATE = function (title, image, alt) {
+  /* gbppl-catalog-hero-1 (2026-08-27) — ЛЕНТА ПЕРЕСНЯТА С ЛАЙВА.
+     Компонент отставал от источника на десять дней. Замер
+     https://www.gildedbox.com/catalog/products 27.08 на семи
+     ширинах (390/640/768/1024/1280/1440/1920/2000/2258) показал
+     другую ленту, чем харвест 17.08:
+
+       было (17.08)                  стало (27.08)
+       чёрная земля #000             белая земля #ffffff
+       белый титул                   титул #191919 (--catalog-ink)
+       354 / 680 c md                354 / 300 c md / 400 c 2xl
+       картинка справа               картинки НЕТ (v-if пустой)
+       титул прижат вниз, pb 92      колонка по центру, pb 0
+       колонка скрыта до md          колонка видна с нуля
+       h1 36/48/52                   h1 36/48/50
+       подзаголовка не было          подзаголовок .descr
+
+     Живой класс-лист секции сохранён дословно, включая мёртвую
+     ступень md:h-[680px]: её перебивает md:!h-[300px], и это
+     след той самой правки на стороне клиента. Инлайн-стиль
+     лайва (background-color:#ffffff) не воспроизводится: земля
+     объявлена в catalog.css, как у всех наших лент.
+
+     Подзаголовок переносится строкой РУКАМИ, как на лайве
+     (<br> между «clients,» и «teams,»): в 388px колонке
+     естественный перенос дал бы три строки вместо двух. Перевод
+     строки внутри атрибута subtitle = <br>, каждая строка
+     обрезается по краям, так что отступ разметки ничего не
+     весит. Никакого HTML в атрибуте не проходит: esc() стоит
+     до склейки. */
+
+  function subtitleHTML(text) {
+    return String(text).split('\n')
+      .map(function (line) { return esc(line.trim()); })
+      .filter(function (line) { return line !== ''; })
+      .join('<br>');
+  }
+
+  var HERO_TEMPLATE = function (title, subtitle, image, alt) {
+    /* Лайв рисует на месте картинки пустой v-if. Атрибут image
+       остаётся у компонента (лента его умеет и носила до 27.08),
+       но без него медиа-колонки в DOM нет, как сейчас на лайве. */
+    var media = image
+      ? '<div class="gbcH-media flex flex-1 grow justify-center items-center w-full h-full relative overflow-hidden">' +
+          '<div class="gbcH-mediaBox w-full h-full overflow-hidden">' +
+            '<picture><img alt="' + esc(alt) + '" class="object-contain lg:object-cover w-full h-full" src="' + esc(image) + '"></picture>' +
+          '</div>' +
+        '</div>'
+      : '';
+    var sub = subtitle
+      ? '<div class="gbcH-sub descr text-zinc-900 font-sans text-base md:text-lg 2xl:text-[22px] !font-light leading-[170%] tracking-[2px] pt-4 sm:text-[18px] xl:text-[20px] w-fit sm:w-full m-auto font-light">' +
+          subtitleHTML(subtitle) +
+        '</div>'
+      : '';
     return (
-      '<section class="gbcH-hero js-heroSection relative white-text h-[354px] md:h-[680px] defaultStyle">' +
+      '<section class="gbcH-hero js-heroSection relative h-[354px] md:h-[680px] defaultStyle md:!h-[300px] 2xl:!h-[400px]">' +
         '<div class="gbcH-container md:container h-full pt-[50px] lg:pt-0">' +
           '<div class="gbcH-inner flex flex-col-reverse lg:flex-row justify-between items-center h-full relative">' +
-            '<div class="gbcH-titleCol w-full h-auto lg:h-full hidden md:flex items-end pb-[92px] lg:w-[25%] xl:w-[40%] text-center lg:text-left text-shadow-sm">' +
-              '<div><h1 class="gbcH-title text-[36px] xl:text-[48px] 2xl:text-[52px] font-normal font-serif tracking-wide leading-normal my-0 flex-1">' + esc(title) + '</h1></div>' +
-            '</div>' +
-            '<div class="gbcH-media flex flex-1 grow justify-center items-center w-full h-full relative overflow-hidden">' +
-              '<div class="gbcH-mediaBox w-full h-full overflow-hidden">' +
-                '<picture><img alt="' + esc(alt) + '" class="object-contain lg:object-cover w-full h-full" src="' + esc(image) + '"></picture>' +
+            '<div class="gbcH-titleCol flex items-center w-full h-auto lg:h-full lg:w-[25%] xl:w-[40%] text-center lg:text-left">' +
+              '<div class="gbcH-titleBox">' +
+                '<h1 class="gbcH-title text-[36px] xl:text-[48px] 2xl:text-[50px] font-normal font-serif tracking-wide leading-normal my-0 flex-1">' + esc(title) + '</h1>' +
+                sub +
               '</div>' +
             '</div>' +
+            media +
           '</div>' +
         '</div>' +
       '</section>'
@@ -64,9 +116,10 @@
       /* Атрибут heading, не title: глобальный title дал бы
          браузерный тултип поверх всей ленты. */
       var title = this.getAttribute('heading') || 'Gifts';
-      var image = this.getAttribute('image') || 'assets/products/hero-gifts.png';
+      var subtitle = this.getAttribute('subtitle') || '';
+      var image = this.getAttribute('image') || '';
       var alt = this.getAttribute('alt') || title;
-      this.innerHTML = HERO_TEMPLATE(title, image, alt);
+      this.innerHTML = HERO_TEMPLATE(title, subtitle, image, alt);
     }
   }
 
