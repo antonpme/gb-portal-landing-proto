@@ -157,6 +157,37 @@
    работают одинаково в обеих компоновках: inspect.js и реестр про
    вторую компоновку не знают ничего. Меняется место секции в DOM и
    её одежда, а не договор.
+
+   РАЗБОР ТОНА ПО PROPOSED (gbppl-panel-9, 2026-08-27). Три правки, и
+   все три ТОЛЬКО в Proposed: Classic не меняется ни на пиксель, пока
+   Тон не сказал, какая компоновка остаётся.
+
+   1. «Первому блоку не хватает понятной подписи: не сразу ясно, где
+      ты сейчас находишься... Назвать блок не Hub, а Hub Homepage.
+      Показать вложенность: дать группе название, а Live Prototype и
+      остальные элементы оформить как дочерние страницы.» Отсюда
+      секция навигации: eyebrow «you are in», корневая строка Hub
+      Homepage, под ней с отступом и линией вложенности трое детей, и
+      под активным разделом мелкое имя ТЕКУЩЕЙ страницы. Список
+      дверей отвечал «куда пойти» и молчал о том, где ты; теперь он
+      отвечает на оба вопроса, а это и был вопрос Тона.
+   2. «Сделать так, чтобы Live Prototype начинался не сразу с сайта, а
+      с экрана выбора (как в Sandboxes).» Дверь Live Prototype в
+      Proposed ведёт на live\map.html — дерево страниц прототипа со
+      статусами. live\index.html остался главной сайта и никуда не
+      переехал: на него по-прежнему смотрят data-home, ссылки внутри
+      прототипа и дверь хаба.
+   3. «Versions of this page: для Live нужно явно показывать, что это
+      текущая версия»; «между Mode и Device нужен разделитель, такой
+      же, как между Versions of this page и Mode»; «переключение
+      устройств лучше сделать иконками, а не числовыми шкалами:
+      размеры понятны не всем, а тем же копирайтерам тоже нужно
+      удобно проверять, как текст смотрится на разных девайсах».
+      Отсюда суффикс «· current» на активной версии (активной бывает
+      и песочница, метка идёт за активным), линия между двумя
+      группами сегментов, и шесть иконок вместо шести чисел — имя и
+      размер живут в title, во всплывающей подписи под строкой и в
+      полосе над кадром.
    ============================================================ */
 (function () {
   'use strict';
@@ -208,6 +239,53 @@
     ['system/oro/index.html',     'Design System']
   ];
 
+  /* ============================================================
+     КАРТА СТУДИИ, Proposed (gbppl-panel-9)
+     ------------------------------------------------------------
+     Те же четыре места, но не плоским списком: хаб — корень, три
+     раздела — его дети. Третье поле у ребёнка — КЛЮЧ РАЗДЕЛА, тот
+     самый, что возвращает sectionHere: адрес двери и раздел, который
+     она открывает, с этой волны разные вещи. Live Prototype ведёт на
+     экран выбора live\map.html, а разделом остаётся всё, что лежит
+     в live\ — включая саму главную сайта.
+     ============================================================ */
+  var NAV_ROOT = ['index.html', 'Hub Homepage'];
+  var NAV_KIDS = [
+    ['live/map.html',         'Live Prototype', 'live/index.html'],
+    ['sandboxes.html',        'Sandboxes',      'sandboxes.html'],
+    ['system/oro/index.html', 'Design System',  'system/oro/index.html']
+  ];
+
+  /* ИМЯ МЕСТА, ГДЕ СТОИШЬ (gbppl-panel-9). Тон: «не сразу ясно, где
+     ты сейчас находишься». Раздел подсвечен, но раздел — это не
+     страница, и на live\catalog\ подсветка Live Prototype говорит
+     только половину.
+
+     Таблица, а не заголовок документа: <title> у страниц собран по
+     разным правилам («GildedBox · Home», но «Checkout · GildedBox»,
+     а у каталога и вовсе «Gift Concierge Prototype»), и вытаскивать
+     имя оттуда значило бы гадать. Таблица короткая, живёт рядом с
+     дверями и правится там же, где заводится страница. Ключ — путь
+     ОТ КОРНЯ СТУДИИ, как в реестре песочниц. */
+  var PLACES = {
+    'index.html':                 'Hub homepage',
+    'sandboxes.html':             'Sandboxes',
+    'live/map.html':              'Page map',
+    'live/index.html':            'Home',
+    'live/catalog/index.html':    'Gifts catalog',
+    'live/checkout.html':         'Checkout',
+    'live/portal.html':           'Portal',
+    'live/book-a-meeting.html':   'Book a meeting',
+    'system/oro/index.html':      'About Oro',
+    'system/oro/typography.html': 'Typography',
+    'system/oro/colors.html':     'Colors',
+    'system/oro/components.html': 'Components',
+    'system/pages/index.html':    'Component pages',
+    'system/pages/auth.html':     'Sign in, measured',
+    'system/pages/catalog.html':  'Gifts, measured',
+    'system/pages/home.html':     'Home, measured'
+  };
+
   var CHEVRON =
     '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" ' +
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -240,11 +318,20 @@
     return probe.pathname.replace(/[^/]*$/, '');
   }
 
-  function sectionHere(root) {
+  /* Путь страницы ОТ КОРНЯ СТУДИИ. Папка приравнена к своему
+     index.html, как в реестре: /live/catalog/ и
+     /live/catalog/index.html — одно место (gbppl-panel-9). */
+  function relHere(root) {
     var base = rootPath(root);
     var rel = location.pathname;
     rel = rel.indexOf(base) === 0 ? rel.slice(base.length) : rel;
-    if (rel === '' || rel === 'index.html') return 'index.html';
+    if (rel === '' || /\/$/.test(rel)) rel += 'index.html';
+    return rel;
+  }
+
+  function sectionHere(root) {
+    var rel = relHere(root);
+    if (rel === 'index.html') return 'index.html';
     if (rel.indexOf('live/') === 0) return 'live/index.html';
     if (rel === 'sandboxes.html') return 'sandboxes.html';
     if (rel.indexOf('system/') === 0) return 'system/oro/index.html';
@@ -304,6 +391,60 @@
     }
   }
 
+  /* ============================================================
+     СЕКЦИЯ НАВИГАЦИИ, Proposed (gbppl-panel-9)
+     ------------------------------------------------------------
+     Тон: «Первому блоку не хватает понятной подписи: не сразу ясно,
+     где ты сейчас находишься... Назвать блок не Hub, а Hub Homepage.
+     Показать вложенность: дать группе название, а Live Prototype и
+     остальные элементы оформить как дочерние страницы».
+
+     Подпись группы — та же роль Eyebrow, что у всех остальных
+     подписей ящика; слова «you are in» выбраны потому, что группа
+     отвечает на вопрос о МЕСТЕ, а не о переходе, и это единственное
+     место панели, которое говорит про здесь и сейчас.
+
+     Вложенность рисуется отступом и линией, а не вторым кеглем:
+     дети — те же .gbsp-link, что и корень, потому что это та же
+     навигация (Тон-6, второго языка списку не заводим).
+
+     Имя текущей страницы печатается ТОЛЬКО тогда, когда активная
+     строка — не сама эта страница: на хабе, на карте, на полке
+     песочниц и на About Oro строка и есть страница, и повторять её
+     под собой значит сказать одно дважды.
+     ============================================================ */
+  function navSection(root) {
+    var here = sectionHere(root);
+    var rel  = relHere(root);
+    var name = PLACES[rel] || '';
+
+    function row(path, label, section, kid) {
+      var on = here === section;
+      /* Строка активна и ведёт не на саму страницу — значит имя
+         страницы ещё не произнесено, и его говорит подпись. */
+      var say = on && name && path !== rel ? name : '';
+      return '<li>' +
+        '<a class="gbsp-link' + (on ? ' is-active' : '') + '" href="' + root + path + '"' +
+        (on ? ' aria-current="page"' : '') + '>' + label + '</a>' +
+        (say ? '<span class="gbsp-here">' + esc(say) + '</span>' : '') +
+      '</li>';
+    }
+
+    var kids = NAV_KIDS.map(function (k) {
+      return row(k[0], k[1], k[2], true);
+    }).join('');
+
+    return (
+      '<div class="gbsp-sec gbsp-sec--nav">' +
+        '<span class="gbsp-eyebrow">you are in</span>' +
+        '<ul class="gbsp-list">' +
+          row(NAV_ROOT[0], NAV_ROOT[1], 'index.html', false) +
+          '<li><ul class="gbsp-list gbsp-sub">' + kids + '</ul></li>' +
+        '</ul>' +
+      '</div>'
+    );
+  }
+
   /* ВЕРСИЯ ЭТОЙ СТРАНИЦЫ, Proposed (gbppl-panel-8). Те же данные
      реестра, что у секции Sandbox, но не списком, а сегментами: у
      страницы РОВНО ОДНА версия в силе, варианты взаимоисключающие, и
@@ -332,12 +473,20 @@
       '</div>'
     );
 
+    /* МЕТКА ТЕКУЩЕЙ ВЕРСИИ (gbppl-panel-9). Тон: «блок хороший, но
+       для Live нужно явно показывать, что это текущая версия».
+       Подчёркивание Blue 400 говорило «выбрано» тем, кто уже знает
+       язык сегментов; суффикс говорит это словом. Метка идёт за
+       АКТИВНЫМ, а не за Live: текущей бывает и песочница, и тогда
+       слово стоит у неё. Суффикс внутри ссылки, потому что он часть
+       её имени, а не сосед по ряду. */
     function seg(label, href, current, ready, note) {
       if (!ready) {
         return '<span class="gbsp-seg is-off" title="' + esc(note) + '">' + esc(label) + '</span>';
       }
       return '<a class="gbsp-seg' + (current ? ' is-on' : '') + '" href="' + esc(href) + '"' +
-             (current ? ' aria-current="page"' : '') + '>' + esc(label) + '</a>';
+             (current ? ' aria-current="page"' : '') + '>' + esc(label) +
+             (current ? '<span class="gbsp-cur">· current</span>' : '') + '</a>';
     }
   }
 
@@ -376,14 +525,16 @@
   }
 
   var TEMPLATE = function (root, pageId) {
-    var here = V2 ? sectionHere(root) : null;
     var items = DOORS.map(function (d) {
-      var active = (V2 ? here === d[0] : isHere(root + d[0])) ? ' is-active' : '';
+      var active = isHere(root + d[0]) ? ' is-active' : '';
       return '<li><a class="gbsp-link' + active + '" href="' + root + d[0] + '"' +
              (active ? ' aria-current="page"' : '') + '>' + d[1] + '</a></li>';
     }).join('');
+    /* gbppl-panel-9: в Proposed плоский список дверей заменён секцией
+       навигации с корнем и детьми, поэтому items здесь больше не
+       считаются. Classic собирается ровно как прежде. */
     var body = V2
-      ? '<ul class="gbsp-list">' + items + '</ul>' +
+      ? navSection(root) +
         versionSection(pageId, root) +
         footHtml()
       : '<ul class="gbsp-list">' + items + '</ul>' +
@@ -557,10 +708,14 @@
       /* Подпись сегмента бывает двухэтажной: слово человеку, число
          прибору («Tablet» и 768). Второй этаж необязателен — у
          режима его нет и не должно быть. В Proposed девайсы стоят
-         одной строкой чипов, полное имя уходит в title. */
-      html += '<button class="gbsp-seg" type="button" data-seg="' + i + '"' +
+         одной строкой ИКОНОК (gbppl-panel-9), и тогда имя с числом
+         живут в title и во всплывающей подписи под строкой: у кнопки
+         без слова обязано быть слово где-то ещё. */
+      html += '<button class="gbsp-seg' + (o.icon ? ' gbsp-seg--icon' : '') +
+              '" type="button" data-seg="' + i + '"' +
               (o.title ? ' title="' + esc(o.title) + '"' : '') +
-              ' aria-pressed="false">' + esc(o.label) +
+              (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
+              ' aria-pressed="false">' + (o.icon || esc(o.label)) +
               (o.sub ? '<span class="gbsp-seg__sub">' + esc(o.sub) + '</span>' : '') +
               '</button>';
     });
@@ -573,12 +728,30 @@
     if (V2 && title === 'Mode') {
       html += '<span class="gbsp-seg is-off" title="coming soon">Comment</span>';
     }
-    html += '</div><p class="gbsp-note"></p>';
+    html += '</div>';
+    /* ВСПЛЫВАЮЩАЯ ПОДПИСЬ ПОД СТРОКОЙ (gbppl-panel-9). Строка иконок
+       молчалива, и молчание лечится не только тултипом системы:
+       подпись под рядом называет то, на что смотрит курсор, а в
+       покое — то, что включено. Появляется только у групп, которые
+       её попросили; у Mode её нет и не должно быть. */
+    if (spec.caption) html += '<p class="gbsp-cap"></p>';
+    html += '<p class="gbsp-note"></p>';
     wrap.innerHTML = html;
 
     var segEls = wrap.querySelectorAll('[data-seg]');
     var noteEl = wrap.querySelector('.gbsp-note');
+    var capEl  = wrap.querySelector('.gbsp-cap');
     var current = spec.value;
+
+    /* В покое подпись ПУСТА, и это нарочно: что включено, уже сказано
+       подчёркиванием сегмента и строкой состояния внизу ящика, а
+       третий раз то же самое — шум. Тон просил имя и размер «на
+       наведении», подпись отвечает ровно на наведение. Место под
+       строку держится всегда (min-height в css), поэтому ряд под ней
+       не прыгает. */
+    function paintCap(o) {
+      if (capEl) capEl.textContent = o ? (o.title || o.label) : '';
+    }
 
     function paint() {
       var line = spec.note || '';
@@ -590,6 +763,21 @@
       }
       noteEl.textContent = line;
       noteEl.hidden = !line;
+      paintCap(null);
+    }
+
+    if (capEl) {
+      /* Мышь и клавиатура спрашивают одно и то же, поэтому отвечает
+         одна функция: наведение и фокус называют цель, уход и потеря
+         фокуса возвращают подпись к включённому. */
+      var over = function (e) {
+        var b = e.target.closest ? e.target.closest('[data-seg]') : null;
+        if (b) paintCap(options[+b.getAttribute('data-seg')]);
+      };
+      wrap.addEventListener('mouseover', over);
+      wrap.addEventListener('focusin', over);
+      wrap.addEventListener('mouseleave', function () { paintCap(null); });
+      wrap.addEventListener('focusout', function () { paintCap(null); });
     }
 
     wrap.addEventListener('click', function (e) {
@@ -685,6 +873,48 @@
     { value: '768',  label: 'Tablet', sub: '768' },
     { value: '390',  label: 'Mobile', sub: '390' }
   ];
+
+  /* ============================================================
+     ШЕСТЬ ЭКРАНОВ КАРТИНКАМИ (gbppl-panel-9, только Proposed)
+     ------------------------------------------------------------
+     Тон: «переключение устройств лучше сделать иконками, а не
+     числовыми шкалами/размерами. Размеры понятны не всем, а тем же
+     копирайтерам тоже нужно удобно проверять, как текст смотрится
+     на разных девайсах». Число остаётся, но уходит на второй план:
+     в title, во всплывающую подпись под строкой и в полосу над
+     кадром, где ему хватает места.
+
+     В system\icons\ подходящих не нашлось: там есть laptop-check
+     (ноутбук с галкой, это другой смысл) и phone (трубка со
+     звуковыми дугами, «мы вам перезвоним», не мобильный экран).
+     Поэтому шесть рисуются здесь, линейными, в манере набора:
+     чистый штрих, без заливки, квадратные концы и острые углы.
+     Сетка 20 вместо 22.8 у файлов набора — иконка стоит в строке
+     12-кегля внутри ящика 232px, и 20 это тот же размер на глаз.
+     Цвет не назначается: currentColor, поэтому выбранная синеет
+     вместе с подчёркиванием сегмента (Тон-5).
+
+     Различие XL и L — ЧЕСТНОЕ РАЗЛИЧИЕ РАЗМЕРА, а не двух разных
+     предметов: один и тот же монитор шире и уже. Оба на подставке,
+     ноутбук на своей широкой пяте, планшет и телефон вертикальные
+     плашки, Full — окно браузера с полосой заголовка.
+     ============================================================ */
+  var DICONS = {
+    'full': '<rect x="2" y="3.5" width="16" height="13" rx="1"/><path d="M2 7.5h16"/>',
+    '2258': '<rect x="1" y="3" width="18" height="11" rx="1"/><path d="M10 14v3M6.5 17h7"/>',
+    '1920': '<rect x="3" y="3.5" width="14" height="10" rx="1"/><path d="M10 13.5v3M7 16.5h6"/>',
+    '1280': '<rect x="4" y="3.5" width="12" height="9" rx="1"/><path d="M2 15.5h16"/>',
+    '768':  '<rect x="4.5" y="2" width="11" height="16" rx="1"/><path d="M8.5 15.4h3"/>',
+    '390':  '<rect x="6.5" y="2" width="7" height="16" rx="1"/><path d="M8.5 15.4h3"/>'
+  };
+
+  function deviceIcon(value) {
+    var body = DICONS[value];
+    if (!body) return '';
+    return '<svg class="gbsp-dico" viewBox="0 0 20 20" fill="none" stroke="currentColor" ' +
+           'stroke-width="1.4" stroke-linecap="square" stroke-linejoin="miter" ' +
+           'aria-hidden="true">' + body + '</svg>';
+  }
 
   /* Proposed: своя ширина и поворот (gbppl-panel-8). Пресеты отвечают
      на вопрос «как это выглядит на наших порогах»; своя ширина — на
@@ -852,10 +1082,14 @@
     '<path d="M12.5 1.5v2.5H10M3.5 14.5V12H6"/></svg>';
 
   function topbarHtml() {
+    /* gbppl-panel-9: тот же глиф, что в ящике, и рядом с ним имя с
+       размером — в полосе для них место есть, и здесь они говорят
+       вслух то, что в ящике приходится наводить. */
     var presets = DEVICES.map(function (d, i) {
       var label = d.value === 'full' ? 'Full window' : d.label + ' ' + d.sub;
       return '<button class="gbsp-tb__seg" type="button" data-tb="' + d.value + '"' +
-             ' aria-pressed="false">' + esc(label) + '</button>';
+             ' aria-pressed="false">' + deviceIcon(d.value) +
+             '<span>' + esc(label) + '</span></button>';
     }).join('');
     return (
       '<div class="gbsp-topbar">' +
@@ -882,14 +1116,18 @@
       title: 'Device',
       rank: 2,
       /* Classic: сетка 3 × 2 со словом и числом. Proposed: одна строка
-         из шести чипов, слово уходит в title — ряд читается как одна
-         шкала от окна до телефона, а не как таблица (gbppl-panel-8). */
+         ИКОНОК, имя и размер уходят в title и в подпись под строкой
+         (gbppl-panel-9, было — шесть чисел, gbppl-panel-8) — ряд
+         читается как одна шкала от окна до телефона, а не как
+         таблица чисел. */
       grid: !V2,
       row: V2,
+      caption: V2,
       value: current,
       options: DEVICES.map(function (d) {
         return {
           label: V2 ? (d.value === 'full' ? 'Full' : d.sub) : d.label,
+          icon: V2 ? deviceIcon(d.value) : null,
           value: d.value,
           sub: V2 ? null : d.sub,
           title: d.value === 'full' ? 'Full window' : d.label + ' ' + d.sub,
