@@ -3,7 +3,7 @@
    ------------------------------------------------------------
    Регистрирует <gb-booking-flow>: три шага записи на встречу.
 
-     1. Tell us about yourself   лид-форма (поля лайва)
+     1. Details                  ЖИВАЯ лид-форма contact-us-219
      2. Pick a time              наш календарь + слоты 15 минут
      3. You’re booked            конфирмация с рисующейся галкой
 
@@ -42,19 +42,27 @@
    Собственных инпутов у этого файла нет. Единственное поле,
    собранное здесь руками, — телефон: ему нужны ДВЕ части в одной
    подчёркнутой строке (код страны и номер), и обе носят те же
-   .gba-* классы, плюс .gbb-phone на строку.
+   .gba-* классы, плюс .gbb-phone на строку. Плавающий лейбл у него
+   тот же, что у <gb-field>, только сдвинутый вправо на живые 57px,
+   чтобы не сесть на код страны.
 
-   ДАННЫЕ ФОРМЫ — с живой страницы (harvest public-book-a-meeting,
-   https://www.gildedbox.com/page/contact-us-219, 25.08): пять
-   полей в том же порядке, те же обязательности (Email, Phone,
-   Full name обязательны; Company и вопрос — нет), та же ротация
-   плейсхолдера в textarea.
+   ШАГ 1 = ЖИВАЯ ФОРМА ЦЕЛИКОМ (gbppl-booking-4, 27.08). Тон:
+   «Должно быть полностью как на live... Мы должны имитировать
+   первый шаг точно так же, как на live. После первого шага (всё,
+   что идёт через iframe HubSpot) можем делать так, как ты уже
+   сделал». Раньше отсюда брались только ДАННЫЕ (поля, порядок,
+   обязательности, ротация плейсхолдера), а облик был наш; теперь
+   живыми пришли и облик, и слова: плавающие лейблы
+   (label-style="floating", auth.js), лестница поля 13/14/16 при
+   48/48/56, одна колонка с отступами 24/32/40, живые имена полей
+   («Your Name», «Company Name», вопрос комментария целиком),
+   кнопка --s --block в своём ряду и живые тексты ошибок ДОСЛОВНО,
+   включая строчную букву. Замер: harvest public-book-a-meeting
+   (25.08) плюс прибор по состояниям rest/focus/filled/error на
+   1280/1440/1920/390 (27.08).
 
-   ТЕКСТЫ ОШИБОК приведены к нашей копи-норме (Тон-9): живые
-   «Email is required» / «this is a required field» / «this must be
-   a valid email» говорят тремя разными голосами и двумя
-   регистрами; у нас sentence case и один голос — «Email is
-   required», «This field is required», «Enter a valid email».
+   Шаги 2 и 3 остаются нашими: там, где живая страница уходит в
+   чужой iframe HubSpot, начинается наш флоу.
 
    КАЛЕНДАРЬ И ГАЛКА — дверь Book a Meeting из попапа START
    (live\portal.html): круглая ячейка дня, синий выбранный день и
@@ -192,17 +200,31 @@
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-  /* gbppl-demo-polish-1: the two required fields used to answer with the
-     SAME anonymous line while the email named itself, so a submit with
-     three empty fields printed "Email is required" once and "This field
-     is required" twice. Each message names its own field now, the way
-     the email one always did. ERR_REQUIRED stays for anything the
-     organism does not know the name of. */
-  var ERR_REQUIRED = 'This field is required';
-  var ERR_EMAIL_EMPTY = 'Email is required';
-  var ERR_EMAIL_BAD = 'Enter a valid email';
-  var ERR_PHONE = 'Phone number is required';
-  var ERR_NAME = 'Full name is required';
+  /* ТЕКСТЫ ОШИБОК ЖИВОЙ ФОРМЫ, ДОСЛОВНО (прибор 27.08: пустой
+     сабмит и сабмит с «nope» в e-mail, четыре ширины).
+
+     Регистр НЕ выправляется, и это осознанно. Копи-правило системы
+     (Тон-9: входящее приводится к нашим правилам) действует на
+     тексты, которые мы ПИШЕМ. Здесь мы ничего не пишем: Live-
+     страница воспроизводит опубликованную страницу клиента, и
+     сообщение «this is a required field» со строчной буквы — часть
+     того, что на ней стоит сегодня. Тон 27.08: «Раз мы имитируем
+     live, должно быть как там». Правка регистра — отдельное решение
+     по живой странице, не по нашей копии.
+
+     РАЗОШЛОСЬ С gbppl-demo-polish-1 (та же дата, встречная волна), и
+     запись остаётся, чтобы находка не потерялась. Она дала телефону
+     и имени СВОИ сообщения («Phone number is required», «Full name
+     is required»), потому что три пустых поля отвечали одной именной
+     строкой и двумя безымянными. Наблюдение верное, но безымянная
+     строка здесь — ровно то, что печатает живая форма обоим полям, и
+     решение Тона 27.08 по шагу 1 сильнее нашей копи-нормы. Именные
+     формулировки вернутся, если Тон решит выправлять саму живую
+     страницу; на других формах системы (гостевая авторизация) свои
+     живые тексты, и их эта волна не трогала. */
+  var ERR_REQUIRED = 'this is a required field';    /* LIVE 27.08 */
+  var ERR_EMAIL_EMPTY = 'Email is required';        /* LIVE 27.08 */
+  var ERR_EMAIL_BAD = 'this must be a valid email'; /* LIVE 27.08 */
 
   /* ---------------- ПРАВИЛА ВСТРЕЧИ ---------------- */
 
@@ -339,14 +361,25 @@
      gbppl-button-2, 26.08: раньше это была .gba-btn той же auth,
      те же цифры под старым именем. Потребитель носит классы и
      своих правил не заводит. */
+  /* gbppl-booking-4: три необязательные оси. size — какая лестница
+     организма (шаги 2 и 3 остались на L, шаг 1 переехал на живую S).
+     bare — снять .gba-submit: отступ от поля к кнопке принадлежит
+     форме, а у живой лид-формы его нет, там кнопка стоит в своём
+     ряду .gbb-leadcta. icon:false — у живой кнопки CONTINUE стрелки
+     нет; у наших Confirm и Book она осталась. */
   function btnHTML(label, opts) {
     opts = opts || {};
+    var icon = opts.icon === false
+      ? ''
+      : '<span class="gb-btn__icon">' + ICON_ARROW + '</span>';
     return (
       '<button type="' + (opts.type || 'button') + '" aria-label="' + esc(label) + '"' +
         (opts.disabled ? ' disabled' : '') +
         (opts.id ? ' data-role="' + opts.id + '"' : '') +
-        ' class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary gb-btn--block gba-submit">' +
-        '<span class="gb-btn__icon">' + ICON_ARROW + '</span>' +
+        ' class="gb-btn gb-btn--' + (opts.size || 'l') +
+          ' gb-btn--filled gb-btn--primary gb-btn--block' +
+          (opts.bare ? '' : ' gba-submit') + '">' +
+        icon +
         '<span class="gb-btn__label">' + esc(label) + '</span>' +
       '</button>'
     );
@@ -388,46 +421,64 @@
           '<span>' + esc(COUNTRIES[i].code) + '</span>' +
         '</button>';
     }
+    /* Отступ между полями живой формы: mb-6 / md:mb-8 / xl:mb-10 =
+       24 / 32 / 40. У auth.css это ровно .gba-field--flow, заводить
+       второе имя незачем (LIVE 27.08). */
+    var FLOW = ' wrap-mod="gba-field--flow" label-style="floating"';
     return (
       '<div class="gbb-panel">' +
-        '<header class="gbb-head">' +
-          '<h2 class="gbb-title">Tell us about yourself</h2>' +
-          '<p class="gbb-sub">A few details, so the right person is on the call.</p>' +
-        '</header>' +
-        '<form novalidate class="gba-form" autocomplete="on" data-role="form">' +
-          '<gb-field input-id="gbb_email" name="email" type="email" label="Email"' +
-            ' placeholder="my@email.com" autocomplete="email"' +
+        /* Заголовка у живой карточки НЕТ: она открывается сразу
+           полем Email. Наш h2 «Tell us about yourself» снят вместе с
+           правилом компакта, которое его прятало (gbppl-booking-4). */
+        '<form novalidate class="gba-form gbb-lead" autocomplete="on" data-role="form">' +
+          '<gb-field input-id="gbb_email" name="email" type="email" label="Email"' + FLOW +
+            ' autocomplete="email"' +
             (values.email ? ' value="' + esc(values.email) + '"' : '') + '></gb-field>' +
 
-          /* Телефон: живое поле — одна подчёркнутая строка из двух
-             частей. Классы поля общие, .gbb-phone держит строку. */
-          '<div class="input-field col active staticLabel required gba-field" data-role="phone-field">' +
-            '<label for="gbb_phone" class="active gba-label">Phone</label>' +
+          /* Телефон: живое поле — одна подчёркнутая строка, слева код
+             страны, справа номер. Собрано разметкой, а не <gb-field>,
+             потому что внутри строки живут два контрола; классы поля
+             и плавающий лейбл те же самые, .gbb-phone держит строку.
+             Плейсхолдер в один пробел — служебный, как у <gb-field>
+             в floating: без него :placeholder-shown не работает и
+             лейбл не поднимается (gbppl-field-floating-1). */
+          '<div class="input-field col active staticLabel required gba-field' +
+              ' gba-field--floating gba-field--flow gbb-phone-field" data-role="phone-field">' +
             '<div class="relative gba-inputwrap gbb-phone" data-role="phone">' +
               '<button class="gbb-phone-trigger" type="button" data-role="phone-trigger"' +
                 ' aria-haspopup="listbox" aria-expanded="false" aria-label="Country calling code">' +
                 '<span data-role="phone-code">' + esc(COUNTRIES[0].code) + '</span>' + ICON_CARET +
               '</button>' +
+              '<input type="tel" name="phone" id="gbb_phone" autocomplete="tel"' +
+                ' placeholder=" " class="valid browser-default gba-input"' +
+                (values.phone ? ' value="' + esc(values.phone) + '"' : '') + '>' +
+              '<label for="gbb_phone" class="active gba-label">Phone</label>' +
               '<div class="gbb-phone-menu" role="listbox" aria-label="Country" data-role="phone-menu" hidden>' +
                 options +
               '</div>' +
-              '<input type="tel" name="phone" id="gbb_phone" autocomplete="tel"' +
-                ' placeholder="(555) 000-0000" class="valid browser-default gba-input"' +
-                (values.phone ? ' value="' + esc(values.phone) + '"' : '') + '>' +
             '</div>' +
           '</div>' +
 
-          '<gb-field input-id="gbb_name" name="name" type="text" label="Full name"' +
-            ' placeholder="Jordan Ellis" autocomplete="name"' +
+          /* Имена полей — живые дословно: «Your Name», «Company Name»
+             и вопрос комментария целиком (LIVE 27.08). Company без
+             звёздочки: у живой обёртки нет класса required. */
+          '<gb-field input-id="gbb_name" name="name" type="text" label="Your Name"' + FLOW +
+            ' autocomplete="name"' +
             (values.name ? ' value="' + esc(values.name) + '"' : '') + '></gb-field>' +
-          '<gb-field input-id="gbb_company" name="company" type="text" label="Company"' +
-            ' placeholder="GildedBox" autocomplete="organization" optional' +
+          '<gb-field input-id="gbb_company" name="company" type="text" label="Company Name"' + FLOW +
+            ' autocomplete="organization" optional' +
             (values.company ? ' value="' + esc(values.company) + '"' : '') + '></gb-field>' +
-          '<gb-field input-id="gbb_brief" name="brief" type="textarea"' +
-            ' label="What are you looking for?" placeholder="" autocomplete="off" optional' +
+          '<gb-field input-id="gbb_brief" name="brief" type="textarea"' + FLOW +
+            ' label="How can GildedBox help with gifting in your business?"' +
+            ' placeholder="" autocomplete="off" optional' +
             (values.brief ? ' value="' + esc(values.brief) + '"' : '') + '></gb-field>' +
         '</form>' +
-        btnHTML('Continue', { id: 'continue' }) +
+        /* Ряд кнопки: живой div.flex.items-center, кнопка flex-auto,
+           лестница S (36/42/48, лейбл 10/11/12) — LIVE 27.08. Стрелки
+           у живой кнопки нет, поэтому и у нашей её нет. */
+        '<div class="gbb-leadcta">' +
+          btnHTML('Continue', { id: 'continue', size: 's', bare: true, icon: false }) +
+        '</div>' +
       '</div>'
     );
   };
@@ -616,6 +667,20 @@
           i = (i + 1) % PLACEHOLDERS.length;
           brief.setAttribute('placeholder', PLACEHOLDERS[i]);
         }, PLACEHOLDER_MS);
+
+        /* Рост по содержимому (gbppl-booking-4). Живой textarea стоит
+           с overflow-hidden и height, переписанной скриптом: замер
+           27.08 показал height 86 / 91 с 1280 / 101 с 2000 на пустом
+           поле — это его rows=3, а не min-h 80. Считаем так же:
+           обнулить высоту, взять scrollHeight. Первый расчёт после
+           отрисовки, дальше на каждый ввод. */
+        var grow = function () {
+          brief.style.height = 'auto';
+          brief.style.height = brief.scrollHeight + 'px';
+        };
+        brief.addEventListener('input', grow);
+        grow();
+        this.__briefGrow = grow;
       }
 
       this.__wirePhoneMenu();
@@ -679,7 +744,7 @@
         var span = document.createElement('span');
         span.setAttribute('role', 'alert');
         span.className = 'gba-error';
-        span.textContent = ERR_PHONE;
+        span.textContent = ERR_REQUIRED;
         phoneWrap.appendChild(span);
         ok = false; first = first || phoneInput;
       } else {
@@ -688,7 +753,7 @@
       }
 
       var name = this.field('gbb_name');
-      if (!name.input.value.trim()) { name.setError(ERR_NAME); ok = false; first = first || name.input; }
+      if (!name.input.value.trim()) { name.setError(ERR_REQUIRED); ok = false; first = first || name.input; }
       else name.clearError();
 
       if (!ok && focusFirst && first) first.focus();

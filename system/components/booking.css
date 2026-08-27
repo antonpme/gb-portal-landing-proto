@@ -95,6 +95,41 @@
    gbb:reset / gbb:exit, атрибут exit-label. См. шапку booking.js.
    ============================================================ */
 
+/* ============================================================
+   gbppl-booking-4 — ШАГ 1 ЭТО ЖИВАЯ ЛИД-ФОРМА, ОДИН В ОДИН.
+   2026-08-27. Тон, дословно: «Должно быть полностью как на live.
+   Раз мы имитируем live, должно быть как там. Я бы даже не
+   переделывал то, как настеканы поля в форме. Мы должны имитировать
+   первый шаг точно так же, как на live. Это не sandbox, это live.
+   После первого шага (всё, что идёт через iframe HubSpot) можем
+   делать так, как ты уже сделал.»
+
+   Волна gbppl-booking-1 взяла у лайва ДАННЫЕ (поля, правила,
+   тексты ошибок, ротацию плейсхолдера) и одела их в наш облик:
+   статичные капс-лейблы, лестница гостевой авторизации, две
+   дорожки полей в компакте, сабмит L. Решение 27.08 переворачивает
+   границу: на Live-странице лайв имитируется ЦЕЛИКОМ, и наше
+   начинается там, где лайв уходит во внешний виджет (шаг 2, у них
+   iframe HubSpot).
+
+   ЧТО ИЗМЕНИЛОСЬ НА ШАГЕ 1 (всё — замер 27.08, четыре ширины):
+     лейблы     плавающие внутри поля (auth .gba-field--floating,
+                gbppl-field-floating-1), кроме комментария —
+                у него один на всю форму статичный лейбл сверху
+     лестница   поле 13 / 14 с 1280 / 16 с 2000 при высоте
+                48 / 48 / 56, а не 14/16/18 при 48/56/64
+     стек       ОДНА колонка, отступы 24 / 32 с 768 / 40 с 1280
+     порядок    Email, Phone, Your Name, Company Name, комментарий
+     кнопка     свой ряд с верхним полем 16/24/32, кнопка --s
+                --block (живые 36/42/48, лейбл 10/11/12), а не --l
+     ошибки     живые тексты дословно, включая строчную букву
+     заголовок  снят: у живой карточки его нет
+
+   ЧТО НЕ ИЗМЕНИЛОСЬ: шаги 2 и 3, модификатор layout="compact" для
+   них, попап START портала (он входит со start="slot" и шага 1 не
+   видит), гостевая авторизация портала.
+   ============================================================ */
+
 /* ---------------- БАЗА ОРГАНИЗМА ----------------
    Тот же грунт и тот же preflight, в котором живут поля
    авторизации (auth.css «БАЗА ЗОНЫ»): .gba-input даёт ширину
@@ -247,44 +282,89 @@ gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
 }
 
 /* ---------------- ТЕЛЕФОН: КОД СТРАНЫ + НОМЕР ----------------
-   Живое поле — vue-tel-input: флаг, каретка, за ними номер, всё
-   на одной подчёркнутой строке. Флаги мы не рисуем, поэтому
-   триггер несёт код (+1), а список — имя страны и код. Строка
-   собрана из ДВУХ частей, чтобы .gba-input остался собой: слева
-   кнопка, справа обычный инпут организма авторизации. */
-.gbb-phone { position: relative; display: flex; align-items: stretch; }
-.gbb-phone .gba-input { flex: 1 1 auto; min-width: 0; }
+                                                 gbppl-booking-4
+   Живое поле — vue-tel-input в варианте isUnderlined (замер 27.08).
+   Его анатомия, число в число:
+
+     строка   .vue-tel-input: flex, align-items stretch, padding
+              8/12, min-h 48 (56 с 2000), подчёркивание ОДНО на всю
+              строку, а не два куска
+     код      .vti__dropdown: флаг 20x11 + каретка, pad-right 8,
+              суммарно 46.75 на 1280
+     волосок  между кодом и номером: border-left 1px на самом
+              номере
+     номер    .vti__phone: pad 3/12, растягивается на остаток
+
+   ФЛАГА У НАС НЕТ И НЕ БУДЕТ: живой флаг — растровый спрайт
+   vue-tel-input (замер: span 20x11 с фоновой картинкой), а
+   растровые глифы и иконошрифты в систему не переносятся. Вместо
+   картинки в том же боксе стоит КОД СТРАНЫ, и бокс подогнан так,
+   чтобы суммарная ширина совпала с живой: 22 (код) + 5 (зазор) +
+   12 (каретка) + 8 (правое поле) = 47 против живых 46.75. Четверть
+   пикселя — цена отсутствующего спрайта, и от неё зависит только
+   то, насколько точно сядет живой сдвиг лейбла на 57px.
+
+   ПОДЧЁРКИВАНИЕ ЗДЕСЬ ZINC-500, А НЕ ZINC-400, И ЭТО ЖИВОЕ
+   РАСХОЖДЕНИЕ, НЕ НАШЕ. Замер 27.08 на четырёх ширинах: четыре
+   поля формы держат border-surface-400 (#a1a1aa), а телефон один
+   несёт !border-surface-500 (#71717a) — линия под ним заметно
+   темнее соседних. Тон 27.08: «Раз мы имитируем live, должно быть
+   как там», поэтому носим живое. На суд Тона (раздел 8 ORO). */
+.gbb-phone {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: var(--form-ctl-h);       /* LIVE 27.08: 48 и на 1280 */
+  padding: 8px 12px;                   /* LIVE 27.08: py-2 px-3 */
+  border-color: var(--zinc-500);       /* LIVE 27.08, см. абзац выше */
+  border-bottom-width: 1px;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (min-width: 2000px) { .gbb-phone { min-height: var(--form-ctl-h-xl); } }
+.gbb-phone:hover { border-color: var(--blue-600); }
+/* Номер: своего подчёркивания нет (его несёт строка), слева
+   волосок-разделитель, высоту берёт от строки. */
+.gbb-phone .gba-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 3px 12px;                   /* LIVE 27.08 */
+  border-bottom-width: 0;
+  border-left-width: 1px;              /* LIVE 27.08: rgb(227,231,235) */
+  border-left-color: var(--zinc-200);  /* ближайшая ступень шкалы, #e4e4e7 */
+}
+.gbb-phone .gba-input:hover { border-bottom-width: 0; }
 .gbb-phone-trigger {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: var(--form-ctl-h);
-  padding: 0 12px;
+  gap: 5px;                            /* LIVE 27.08 */
+  padding: 0 8px 0 0;                  /* LIVE 27.08: pad-right 8 */
   background: transparent;
-  border-color: var(--zinc-400);
-  border-bottom-width: 1px;
-  border-radius: 0;
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 300;
   letter-spacing: 0.2px;
   color: var(--zinc-800);
-  transition: border-color var(--mo-micro) var(--mo-move);
 }
-.gbb-phone-trigger:hover { border-color: var(--blue-600); }
+.gbb-phone-trigger > span { min-width: 22px; text-align: left; }
 .gbb-phone-trigger svg { width: 12px; height: 12px; color: var(--zinc-500); }
-@media (min-width: 1280px) {
-  .gbb-phone-trigger { min-height: var(--form-ctl-h-xl); font-size: 16px; }
+@media (min-width: 1280px) { .gbb-phone-trigger { font-size: 14px; } }
+@media (min-width: 2000px) { .gbb-phone-trigger { font-size: 16px; } }
+/* Поле в ошибке красит строку целиком: подчёркивание одно. */
+.gbb-phone.invalid,
+.gbb-phone.invalid:hover { border-color: var(--red-500); }
+/* Лейбл телефона в покое отодвинут вправо, чтобы не сесть на код
+   страны; на подъёме сдвиг снимается и он встаёт в общий левый
+   край, как у остальных полей (LIVE 27.08: translate-x-[57px] и
+   !translate-x-[0px] в активном состоянии). */
+.gbb-phone-field .gba-inputwrap > .gba-label {
+  transform: translateY(-50%) translateX(57px);   /* LIVE 27.08 */
 }
-@media (min-width: 2000px) {
-  .gbb-phone-trigger { min-height: var(--form-ctl-h-2xl); font-size: 18px; padding: 0 16px; }
+.gbb-phone-field .gba-input:focus ~ .gba-label,
+.gbb-phone-field .gba-input:not(:placeholder-shown) ~ .gba-label {
+  transform: translateY(-50%);
 }
-/* Поле в ошибке красит ОБЕ половины строки, иначе подчёркивание
-   рвётся пополам (правило .gba-input.invalid перекрывает hover
-   там, здесь тем же способом). */
-.gbb-phone.invalid .gbb-phone-trigger,
-.gbb-phone.invalid .gbb-phone-trigger:hover { border-color: var(--red-500); }
 
 .gbb-phone-menu {
   position: absolute;
@@ -320,6 +400,29 @@ gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
 .gbb-phone-option:hover { background: var(--zinc-100); }
 .gbb-phone-option[aria-selected="true"] { color: var(--blue-600); }
 .gbb-phone-option span:last-child { color: var(--zinc-500); }
+
+/* ---------------- ШАГ 1: РЯД КНОПКИ ----------------
+                                                 gbppl-booking-4
+   У живой формы сабмит стоит не «под последним полем с отступом
+   16», а в СВОЁМ ряду: div.flex.items-center с gap 8 и верхним
+   полем 16 / 24 с 1280 / 32 с 2000 (LIVE 27.08). Кнопка в этом
+   ряду flex-auto, то есть занимает строку целиком — это ровно наш
+   модификатор --block, и он работает на любом размере лестницы,
+   потому что читает pad-x выбранного размера (button.css). Ряд
+   заведён здесь, а не в auth.css, потому что это раскладка ШАГА, а
+   не анатомия поля: .gba-submit владеет отступом от поля к кнопке,
+   и у этой формы такого отступа нет. */
+.gbb-leadcta {
+  display: flex;
+  align-items: center;
+  gap: 8px;                            /* LIVE 27.08 */
+  padding-top: 16px;                   /* LIVE 27.08: pt-4 */
+}
+@media (min-width: 1280px) { .gbb-leadcta { padding-top: 24px; } }  /* LIVE 27.08: xl:pt-6 */
+@media (min-width: 2000px) { .gbb-leadcta { padding-top: 32px; } }  /* LIVE 27.08: 2xl:pt-8 */
+/* Последнее поле формы (комментарий) живёт с !mb-0: ряд кнопки уже
+   несёт своё верхнее поле, и второй отступ был бы двойным. */
+.gbb-lead > gb-field:last-child .gba-field { margin-bottom: 0; }
 
 /* ---------------- КАЛЕНДАРЬ ----------------
    Перенос из live\portal.html (.gsp-cal*, дверь Book a Meeting в
@@ -666,11 +769,13 @@ gb-booking-flow[layout="compact"] .gbb-slot:hover:not(.sel) {
 /* ---- Вертикальный ритм ---- */
 gb-booking-flow[layout="compact"] .gbb-steps { margin-bottom: var(--space-48); }   /* gbppl-space-1; Ton 25.08 15:38: still pressed, stepper gets 48 */
 gb-booking-flow[layout="compact"] .gbb-head { margin-bottom: var(--form-block-gap); }  /* head → fields 32 */
-/* Ton 25.08 15:39: on the form step the title and lede repeat what the
-   page already says to the left («Tell us your gifting needs...»), so the
-   compact form drops them and the stepper speaks straight to the fields.
-   The calendar and confirmation steps keep their heads. */
-gb-booking-flow[layout="compact"] .gbb-panel:has(.gba-form) > .gbb-head { display: none; }
+/* СНЯТО gbppl-booking-4: здесь стояло правило, которое прятало
+   заголовок карточки на шаге формы («Ton 25.08 15:39: the title and
+   lede repeat what the page already says to the left»). С 27.08
+   шаг 1 — живая лид-форма, а у живой карточки заголовка нет ВООБЩЕ,
+   ни в компакте, ни в раскладке по умолчанию, поэтому .gbb-head
+   ушёл из шаблона шага 1 (booking.js), и прятать больше нечего.
+   Шаги 2 и 3 свои заголовки носят по-прежнему. */
 /* Подпись над слотами: 22px базового отступа ужимаются до 16 сверху
    и снизу. В двухколоночной раскладке она встаёт в один ряд с
    шапкой календаря и верхний отступ там снимается совсем (см. блок
@@ -681,25 +786,30 @@ gb-booking-flow[layout="compact"] .gbb-title { font-size: 22px; }
 @media (min-width: 1280px) {
   gb-booking-flow[layout="compact"] .gbb-title { font-size: 24px; }
 }
-/* Поля стоят теснее, но роль лейбла и высота контрола не
-   трогаются: это лестница организма авторизации, она общая. */
-gb-booking-flow[layout="compact"] .gba-field { margin-bottom: var(--form-row-gap); }
+/* Отступ от содержимого шага до сабмита. Правило ОСТАЁТСЯ: его
+   носит Confirm шага 2 (замер до и после: 32px, y совпал число в
+   число). Шага 1 оно больше не касается — у живой лид-формы кнопка
+   стоит в своём ряду .gbb-leadcta и класса .gba-submit не носит
+   (booking.js, btnHTML bare). */
 gb-booking-flow[layout="compact"] .gba-submit { margin-top: var(--form-block-gap); }
-gb-booking-flow[layout="compact"] .gba-textarea { min-height: 80px; }
-/* ---- Шаг 1: поля в две дорожки ----
-   .gba-form уже flex-wrap с полями во всю ширину (auth.css,
-   живая сетка Materialize с mx -8 / px 8); две дорожки — это
-   ровно width 50% у ячейки, ничего больше. Последняя ячейка
-   (textarea «What are you looking for?») остаётся широкой.
-   Порог — ХОСТА, не окна (gbppl-booking-3), и он общий с шагом 2:
-   там, где помещаются календарь и два чипа, помещаются и две
-   дорожки полей по 260. */
-@container (width >= 520px) {
-  gb-booking-flow[layout="compact"] .gba-form > gb-field,
-  gb-booking-flow[layout="compact"] .gba-form > [data-role="phone-field"] { width: calc(50% - var(--form-col-gap) / 2); }
-  gb-booking-flow[layout="compact"] .gba-form > gb-field:last-child { width: 100%; }
-  gb-booking-flow[layout="compact"] .gba-form { column-gap: var(--form-col-gap); }
-}
+
+/* СНЯТО gbppl-booking-4 — ТРИ ПРАВИЛА КОМПАКТА, КОТОРЫЕ ЖИЛИ НА
+   ШАГЕ 1, И ОДНО ПРАВИЛО ДВУХ ДОРОЖЕК.
+   Здесь стояли: .gba-field margin-bottom 24, .gba-textarea
+   min-height 80 и контейнерный запрос, ставивший
+   поля лид-формы в ДВЕ дорожки по 50% от 520px хоста.
+
+   Тон, 27.08, дословно: «Я бы даже не переделывал то, как настеканы
+   поля в форме. Мы должны имитировать первый шаг точно так же, как
+   на live». Живая форма — одна колонка с отступами 24 / 32 с 768 /
+   40 с 1280, и теперь их несёт сам шаг (auth .gba-field--flow,
+   wrap-mod из booking.js), одинаково в любой раскладке. Компакт
+   больше не имеет к шагу 1 отношения ВООБЩЕ: он остался
+   модификатором ШАГА 2 (календарь рядом со слотами) и хозяйской
+   поверхности. Цена решения задокументирована в отчёте волны:
+   одноколоночная живая форма выше двухколоночной, и на низких
+   окнах страница получает вертикальную прокрутку. Приоритет —
+   имитация лайва. */
 
 /* ---- Шаг 2: календарь и слоты рядом ----
    Разметку шага booking.js отдаёт одним плоским списком детей
