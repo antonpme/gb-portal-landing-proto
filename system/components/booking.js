@@ -192,9 +192,17 @@
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+  /* gbppl-demo-polish-1: the two required fields used to answer with the
+     SAME anonymous line while the email named itself, so a submit with
+     three empty fields printed "Email is required" once and "This field
+     is required" twice. Each message names its own field now, the way
+     the email one always did. ERR_REQUIRED stays for anything the
+     organism does not know the name of. */
   var ERR_REQUIRED = 'This field is required';
   var ERR_EMAIL_EMPTY = 'Email is required';
   var ERR_EMAIL_BAD = 'Enter a valid email';
+  var ERR_PHONE = 'Phone number is required';
+  var ERR_NAME = 'Full name is required';
 
   /* ---------------- ПРАВИЛА ВСТРЕЧИ ---------------- */
 
@@ -493,7 +501,7 @@
           '<a class="gbb-quiet" data-role="exit" href="' + esc(siteHref) + '">' +
             esc(exitLabel) + '</a>' +
         '</div>' +
-        '<p class="gbb-note">Prototype: the invitation is not sent and nothing is scheduled.</p>' +
+        '<p class="gbb-note">Nothing is sent and nothing is scheduled yet.</p>' +
       '</div>'
     );
   };
@@ -671,7 +679,7 @@
         var span = document.createElement('span');
         span.setAttribute('role', 'alert');
         span.className = 'gba-error';
-        span.textContent = ERR_REQUIRED;
+        span.textContent = ERR_PHONE;
         phoneWrap.appendChild(span);
         ok = false; first = first || phoneInput;
       } else {
@@ -680,7 +688,7 @@
       }
 
       var name = this.field('gbb_name');
-      if (!name.input.value.trim()) { name.setError(ERR_REQUIRED); ok = false; first = first || name.input; }
+      if (!name.input.value.trim()) { name.setError(ERR_NAME); ok = false; first = first || name.input; }
       else name.clearError();
 
       if (!ok && focusFirst && first) first.focus();
