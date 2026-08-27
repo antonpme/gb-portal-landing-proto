@@ -229,9 +229,19 @@
          room ride along on the wordmark, so leaving a sandbox page does not drop
          you onto bare Live. Keys mirror the portal set the catalog carries.
          gbppl-prefooter-light-1 (26.08): prefooter joins them, so the light
-         pre-footer room of the catalog is not dropped by the wordmark. */
+         pre-footer room of the catalog is not dropped by the wordmark.
+         gbppl-panel-7 (27.08): device and studio join them. Тон-12 says the
+         context of a container survives a move inside it, and which screen the
+         reader is looking through is context: a link handed round as
+         ?device=768 must still be a tablet after the wordmark. studio rides
+         along for the same reason from the other side — a page opened inside
+         the device frame stays inside it and does not grow a second console.
+         The frame has a second guard that needs no key (nesting is refused
+         outright, see studio-panel.js), so this is the honest URL rather than
+         the mechanism. */
       if (homeHref !== '#') {
-        var KEEP = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock', 'prefooter'];
+        var KEEP = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock', 'prefooter',
+                    'device', 'studio'];
         var have = new URLSearchParams(location.search), carry = new URLSearchParams();
         KEEP.forEach(function (k) { if (have.has(k)) carry.set(k, have.get(k)); });
         var q = carry.toString();

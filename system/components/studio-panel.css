@@ -315,3 +315,108 @@ button.gbsp-link {
 .gbsp-seg:hover { color: var(--white); }
 .gbsp-seg.is-on { color: var(--blue-400); border-bottom-color: var(--blue-400); }
 .gbsp-seg:focus-visible { outline: 2px solid var(--blue-400); outline-offset: 2px; }
+
+
+/* ============================================================
+   СЕКЦИЯ DEVICE и СЦЕНА (gbppl-panel-7, заказ команды через Тона
+   27.08: «переключение девайсов прямо внутри прототипа: большой
+   десктоп, средний, маленький, планшет, мобильный»)
+   ------------------------------------------------------------
+   Вторая группа сегментов в той же первой секции, под Mode. Шесть
+   значений в одну строку не встают: 216px панели держат три
+   колонки, поэтому сегменты Device стоят сеткой 3 × 2, а не
+   рядом. Своего голоса группа не заводит — тот же .gbsp-seg, то
+   же подчёркивание выбранного Blue 400.
+
+   ЧИСЛО ПОД СЛОВОМ. Подпись человеческая («Tablet»), число мелко
+   под ней — но не мельче 12: пол системы, ниже него текст говорит
+   «я не важен» (Рассел). Табличные цифры, чтобы шесть подписей
+   стояли столбиком, а не пританцовывали.
+   ============================================================ */
+.gbsp-segs--grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 8px;
+}
+.gbsp-segs--grid .gbsp-seg { text-align: left; }
+.gbsp-seg__sub {
+  display: block;
+  margin-top: 1px;
+  color: var(--zinc-500);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.gbsp-seg:hover .gbsp-seg__sub { color: var(--zinc-400); }
+.gbsp-seg.is-on .gbsp-seg__sub { color: var(--blue-400); }
+
+/* ---- В кадре пульта нет ----
+   Разметка панели остаётся на месте (её API держит секцию Mode
+   для Inspect внутри кадра), гасится только вид. */
+.gbsp.is-embedded { display: none; }
+
+/* ---- СЦЕНА: тёмное поле, в центре кадр устройства ----
+   z 58: выше всей стопки прототипа (хедер 31, дроверы 40, модалка
+   50) и выше слоя Inspect (55), ниже консоли (60) и дровера
+   пропертиз (80). Пульт всегда снаружи и всегда доступен.
+
+   Земля Zinc 950 — язык панели: сцена принадлежит прибору, а не
+   странице, и должна читаться как его поверхность. Поле справа
+   шире остальных ровно на язычок консоли (32 + 16), чтобы кадр
+   стоял по центру ОСТАВШЕГОСЯ места и никогда не уезжал под
+   пульт. Кадр шире окна (XL 2258 на ноутбуке) честно прокручивает
+   сцену по горизонтали: это признак того, что экрана не хватает,
+   и прятать его нечем. */
+.gbsp-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 58;
+  display: flex;
+  overflow: auto;
+  padding: 16px 56px 24px 16px;
+  background: var(--zinc-950);
+  font-family: var(--font-sans);
+}
+html.gbsp-devicing { overflow: hidden; }
+
+.gbsp-device {
+  margin: auto;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* Подпись кадра: имя пресета и ИЗМЕРЕННЫЙ размер, не объявленный.
+   Число снимается с самого кадра после раскладки — тот же закон,
+   по которому живёт Inspect. */
+.gbsp-device__cap {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--zinc-500);
+  font-size: 12px;
+  line-height: 1.2;
+}
+.gbsp-device__cap b {
+  color: var(--zinc-300);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.gbsp-device__cap span { font-variant-numeric: tabular-nums; }
+
+/* Рамка устройства и есть всё устройство: волосок Zinc 700 и
+   радиус системы. Никаких корпусов, динамиков и кнопки Home —
+   мы меряем раскладку, а не рисуем телефон. */
+.gbsp-screen {
+  display: block;
+  width: 100%;
+  /* 88 = поля сцены 40 + подпись с зазором 28, с запасом на
+     округление: кадр ровно в окно, без второй полосы прокрутки. */
+  height: calc(100vh - 88px);
+  background: var(--white);
+  border: 1px solid var(--zinc-700);
+  border-radius: var(--radius);
+}

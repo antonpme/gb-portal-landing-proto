@@ -119,6 +119,17 @@
    неё нет: панель не рисует переключателя, за которым ничего не
    стоит.
 
+   СЕКЦИЯ DEVICE (gbppl-panel-7, заказ команды через Тона 27.08:
+   «переключение девайсов прямо внутри прототипа: большой десктоп,
+   средний, маленький, планшет, мобильный»). Вторая группа в той же
+   первой секции, под Mode: шесть сегментов Full · XL 2258 · L 1920
+   · M 1280 · Tablet 768 · Mobile 390. В отличие от Mode её
+   объявляет САМА панель — экран есть у любой страницы, и просить
+   об этом каждого потребителя было бы двадцатью строками одного и
+   того же. Устройство, флаги и состояние описаны у mountDevice
+   ниже. Порядок групп в секции держится рангом, а не порядком
+   вызова: Mode 1, Device 2.
+
    Свёрнута по умолчанию, как PROTO: страница-прототип открывается
    собой, а не нашей консолью. Состояние не запоминается — это
    оболочка, ей нечего помнить.
@@ -349,11 +360,24 @@
 
     var wrap = document.createElement('div');
     wrap.className = 'gbsp-seggroup';
+    /* gbppl-panel-7: место группы в секции задаётся РАНГОМ, а не
+       порядком вызова. Mode объявляет inspect.js асинхронно (через
+       whenDefined), Device — сама панель в connectedCallback, то есть
+       раньше; без ранга порядок на экране зависел бы от того, кто
+       успел первым. Mode = 1, Device = 2, и так на каждой странице. */
+    var rank = typeof spec.rank === 'number' ? spec.rank : 50;
+    wrap.setAttribute('data-rank', String(rank));
     var html = '<span class="gbsp-eyebrow">' + esc(spec.title || 'Mode') + '</span>' +
-               '<div class="gbsp-segs" role="group" aria-label="' + esc(spec.title || 'Mode') + '">';
+               '<div class="gbsp-segs' + (spec.grid ? ' gbsp-segs--grid' : '') + '"' +
+               ' role="group" aria-label="' + esc(spec.title || 'Mode') + '">';
     options.forEach(function (o, i) {
+      /* Подпись сегмента бывает двухэтажной: слово человеку, число
+         прибору («Tablet» и 768). Второй этаж необязателен — у
+         режима его нет и не должно быть. */
       html += '<button class="gbsp-seg" type="button" data-seg="' + i + '"' +
-              ' aria-pressed="false">' + esc(o.label) + '</button>';
+              ' aria-pressed="false">' + esc(o.label) +
+              (o.sub ? '<span class="gbsp-seg__sub">' + esc(o.sub) + '</span>' : '') +
+              '</button>';
     });
     html += '</div><p class="gbsp-note"></p>';
     wrap.innerHTML = html;
@@ -384,13 +408,246 @@
       if (typeof spec.onChange === 'function') spec.onChange(o.value, o);
     });
 
-    sec.appendChild(wrap);
+    var before = null, kin = sec.querySelectorAll('.gbsp-seggroup');
+    for (var q = 0; q < kin.length; q++) {
+      if ((+kin[q].getAttribute('data-rank') || 50) > rank) { before = kin[q]; break; }
+    }
+    sec.insertBefore(wrap, before);
     paint();
 
     return {
       element: wrap,
       setActive: function (value) { current = value; paint(); }
     };
+  }
+
+  /* ============================================================
+     СЕКЦИЯ DEVICE (gbppl-panel-7)
+     ------------------------------------------------------------
+     Заказ команды через Тона, 27.08, после второго показа: «Всем
+     очень понравился Inspect, просят показывать больше данных и
+     чётче. И переключение девайсов прямо внутри прототипа: большой
+     десктоп, средний, маленький, планшет, мобильный».
+
+     ПОЧЕМУ ЭТО ЖИВЁТ В ПАНЕЛИ И РЯДОМ С MODE. У прототипа один
+     пульт (Тон 26.08), и вопрос «на каком экране я смотрю» — это
+     тот же вопрос «как сейчас работает страница», что и режим
+     View / Inspect. Поэтому Device не заводит своей секции, а
+     встаёт второй строкой в ту же первую секцию, под Mode:
+     216px панели не выдержали бы третьей полки, а смысл у двух
+     групп один.
+
+     ЧТО ПРОИСХОДИТ ПРИ ВЫБОРЕ. Full = обычная страница, никакого
+     прибора. Любой другой пресет: страница накрывается СЦЕНОЙ
+     (Zinc 950, язык панели), в центре сцены стоит <iframe> нужной
+     ширины с той же самой страницей, высотой в окно минус поля,
+     в тонкой рамке Zinc 700 радиусом --radius. Никаких «телефонов»
+     с кнопкой Home: мы меряем раскладку, а не рисуем устройство.
+
+     Панель остаётся СНАРУЖИ рамки и управляет ею: сцена лежит на
+     z 58 — выше всей стопки прототипа и выше слоя Inspect (55),
+     ниже консоли (60) и дровера (80). Поэтому в кадре видно ровно
+     страницу, а пульт по-прежнему под рукой.
+
+     ВНУТРИ РАМКИ ПАНЕЛИ НЕТ. Адрес кадра несёт ?studio=embedded, и
+     страница с этим ключом прячет свою консоль (.gbsp is-embedded):
+     разметка остаётся на месте, поэтому addSegments и addGroup
+     работают и Inspect внутри кадра поднимается как обычно. Второй
+     страж — сам факт вложенности (window.top !== window.self): по
+     любой ссылке внутри кадра приедет страница уже без ключа, и
+     она всё равно не покажет ни консоли, ни вложенной сцены.
+     Рекурсия невозможна по построению, а не по договорённости.
+
+     ГДЕ ОТКРЫВАЕТСЯ ДРОВЕР ПРОПЕРТИЗ: ВНУТРИ КАДРА. Решение
+     осознанное. Дровер описывает то, что измерено в ЭТОМ
+     документе, и всё, что он показывает — computed-стили, копию
+     CSS, ссылку в Oro — он берёт у себя под ногами; вынести его
+     наружу значит гонять готовый HTML через postMessage и потерять
+     кнопку Copy вместе с провенансом. Ширина дровера min(520px,
+     100%), поэтому и в кадре 390 он помещается целиком.
+
+     НАРУЖУ ПЕРЕДАЁТСЯ ТОЛЬКО РЕЖИМ. inspect.js на внешней странице
+     кричит событием gbi:mode, панель пересылает его в кадр через
+     postMessage, inspect.js внутри кадра слушает message и
+     переключается. Сам режим и без того переживает загрузку: он
+     лежит в sessionStorage, а её кадр делит с вкладкой.
+
+     СОСТОЯНИЕ. sessionStorage gbppl-device плюс ключ ?device= в
+     адресе: ссылка ?device=768 открывает страницу сразу планшетом,
+     а переход дверями панели держит выбранный экран без ключа в
+     адресе. Ключ добавлен в KEEP header.js (Тон-12: контекст
+     переживает переходы внутри контейнера).
+     ============================================================ */
+  var DKEY = 'gbppl-device';
+
+  /* Ширины = наши мерочные пороги (раздел 5 скилла), плюс 2258 —
+     кастомный 2xl клиента, на котором снимался лайв. Слово
+     человеку, число под ним. */
+  var DEVICES = [
+    { value: 'full', label: 'Full',   sub: 'window' },
+    { value: '2258', label: 'XL',     sub: '2258' },
+    { value: '1920', label: 'L',      sub: '1920' },
+    { value: '1280', label: 'M',      sub: '1280' },
+    { value: '768',  label: 'Tablet', sub: '768' },
+    { value: '390',  label: 'Mobile', sub: '390' }
+  ];
+
+  function inFrame() {
+    try { return window.top !== window.self; } catch (e) { return true; }
+  }
+  function embedded() {
+    var q = null;
+    try { q = new URLSearchParams(location.search).get('studio'); } catch (e) {}
+    return q === 'embedded' || inFrame();
+  }
+  function normDevice(v) {
+    v = String(v == null ? 'full' : v);
+    for (var i = 0; i < DEVICES.length; i++) if (DEVICES[i].value === v) return v;
+    return 'full';
+  }
+  function deviceLabel(v) {
+    for (var i = 0; i < DEVICES.length; i++) if (DEVICES[i].value === v) return DEVICES[i].label;
+    return 'Full';
+  }
+  function readDevice() {
+    var q = null;
+    try { q = new URLSearchParams(location.search).get('device'); } catch (e) {}
+    if (q !== null) {
+      var v = normDevice(q);
+      try { sessionStorage.setItem(DKEY, v); } catch (e) {}
+      return v;
+    }
+    try { return normDevice(sessionStorage.getItem(DKEY)); } catch (e) { return 'full'; }
+  }
+
+  /* Адрес кадра: та же страница, ключ device снят (иначе кадр стал
+     бы строить кадр), ключ studio=embedded поставлен. */
+  function frameSrc() {
+    try {
+      var u = new URL(location.href);
+      u.searchParams.delete('device');
+      u.searchParams.set('studio', 'embedded');
+      return u.href;
+    } catch (e) {
+      return location.href;
+    }
+  }
+
+  function mountDevice(host) {
+    if (embedded()) return null;
+
+    var current = readDevice();
+    var stage = null, screen = null, cap = null, handle = null;
+
+    handle = makeSegments(host, {
+      title: 'Device',
+      rank: 2,
+      grid: true,
+      value: current,
+      options: DEVICES.map(function (d) {
+        return {
+          label: d.label, value: d.value, sub: d.sub,
+          note: d.value === 'full'
+            ? 'The page fills the window, as a visitor sees it.'
+            : d.label + ' frame: the page runs at ' + d.sub + 'px inside it. Inspect works in the frame.'
+        };
+      }),
+      onChange: function (v) { apply(v, true); }
+    });
+
+    /* Подпись говорит то, что ВНУТРИ читает window.innerWidth, а не
+       габарит рамки: прибор показывает окно страницы, а не коробку,
+       в которую оно вставлено. Число снимается, а не объявляется. */
+    function measure() {
+      if (!screen || !cap) return;
+      var w = screen.clientWidth, h = screen.clientHeight;
+      try {
+        if (screen.contentWindow && screen.contentWindow.innerWidth) {
+          w = screen.contentWindow.innerWidth;
+          h = screen.contentWindow.innerHeight;
+        }
+      } catch (e) { /* кадр ещё не приехал */ }
+      cap.innerHTML = '<b>' + esc(deviceLabel(current)) + '</b>' +
+        '<span>' + Math.round(w) + ' × ' + Math.round(h) + '</span>';
+    }
+
+    function build(width) {
+      if (!stage) {
+        stage = document.createElement('div');
+        stage.className = 'gbsp-stage';
+        stage.setAttribute('role', 'group');
+        stage.setAttribute('aria-label', 'Device preview');
+        stage.innerHTML =
+          '<div class="gbsp-device">' +
+            '<p class="gbsp-device__cap"></p>' +
+            '<iframe class="gbsp-screen" title="The page at the chosen device width"></iframe>' +
+          '</div>';
+        document.body.appendChild(stage);
+        screen = stage.querySelector('.gbsp-screen');
+        cap = stage.querySelector('.gbsp-device__cap');
+        screen.addEventListener('load', function () {
+          measure();
+          relay();
+        });
+        screen.src = frameSrc();
+      }
+      /* Смена пресета шириной, БЕЗ перезагрузки кадра: страница
+         внутри слышит resize и отвечает своими медиазапросами —
+         ровно то, ради чего переключатель и просили.
+
+         +2 — это волосок рамки с двух сторон. Кадр считается по
+         border-box, и без поправки Mobile 390 давал внутри окно 388:
+         пресет обязан значить ровно ту ширину, которую внутри
+         прочтёт window.innerWidth и медиазапрос, а рамка устройства
+         стоит СНАРУЖИ измеряемого. Замер после правки: 390 в 390. */
+      stage.querySelector('.gbsp-device').style.width = (width + 2) + 'px';
+      document.documentElement.classList.add('gbsp-devicing');
+      requestAnimationFrame(measure);
+    }
+
+    function teardown() {
+      document.documentElement.classList.remove('gbsp-devicing');
+      if (stage) { stage.remove(); stage = null; screen = null; cap = null; }
+    }
+
+    /* Ключ в адресной строке идёт следом за выбором, чтобы ссылку
+       на «эту страницу планшетом» можно было просто скопировать.
+       replaceState, не push: экран — это как смотрят, а не куда
+       пришли, и кнопка «назад» не должна разбирать его по шагам. */
+    function stamp(v) {
+      try {
+        var u = new URL(location.href);
+        if (v === 'full') u.searchParams.delete('device');
+        else u.searchParams.set('device', v);
+        history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+      } catch (e) {}
+    }
+
+    function apply(v, fromClick) {
+      current = normDevice(v);
+      try { sessionStorage.setItem(DKEY, current); } catch (e) {}
+      if (fromClick) stamp(current);
+      if (current === 'full') teardown();
+      else build(+current);
+      if (handle) handle.setActive(current);
+    }
+
+    function relay(mode) {
+      if (!screen || !screen.contentWindow) return;
+      var m = mode;
+      if (!m) { try { m = sessionStorage.getItem('gbppl-inspect-mode'); } catch (e) {} }
+      try { screen.contentWindow.postMessage({ gbsp: 'mode', mode: m === 'inspect' ? 'inspect' : 'view' }, '*'); } catch (e) {}
+    }
+
+    /* Режим объявляет inspect.js, кадру его пересылает панель:
+       прибор не знает про рамку, рамка не знает про прибор. */
+    document.addEventListener('gbi:mode', function (e) {
+      relay(e.detail && e.detail.mode);
+    });
+    window.addEventListener('resize', function () { if (stage) requestAnimationFrame(measure); });
+
+    apply(current, false);
+    return { apply: apply, value: function () { return current; } };
   }
 
   class GbStudioPanel extends HTMLElement {
@@ -414,6 +671,14 @@
 
       var shell = this.querySelector('.gbsp');
       var tab   = this.querySelector('.gbsp-tab');
+
+      /* gbppl-panel-7. В кадре пульта нет: он стоит снаружи и
+         управляет кадром оттуда. Разметка остаётся на месте, гасится
+         только вид, — иначе addSegments и addGroup потеряли бы дом, а
+         вместе с ними Inspect внутри кадра. */
+      if (embedded()) shell.classList.add('is-embedded');
+      else this.__device = mountDevice(this);
+
       tab.addEventListener('click', function () {
         var collapsed = shell.classList.toggle('is-collapsed');
         tab.setAttribute('aria-expanded', String(!collapsed));
