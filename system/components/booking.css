@@ -468,9 +468,22 @@ gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
 /* gbppl-cal-circle (Тон, 19.08): выбранный день — КРУГ, конвенция
    календарей, независимо от --radius кнопок. Квадрат фиксированного
    размера по центру 1fr-дорожки держит hover и выбор одной формой. */
+/* gbppl-booking-5 (27.08): круг был жёстким (40 / 44 с 768), и на
+   360 сетка просила 7x40 + 6x2 = 292, а колонка живого каркаса
+   contact-us-219 давала 201 (.gbmp-col 40 + .gbmp-card 32 с каждой
+   стороны) — суббота и воскресенье уезжали за карточку. Поля
+   хозяина трогать нельзя: это пиксельная копия лайва (Тон 27.08,
+   «Live имитирует лайв целиком»). Поэтому чинится У ВЛАДЕЛЬЦА, и
+   не новым порогом с выдуманным числом, а потолком: круг берёт
+   свою дорожку целиком, но не больше --gbb-day. Ниже ~380px
+   контейнера он сам садится на (ширина - 12) / 7 и сетка перестаёт
+   вылезать на ЛЮБОЙ ширине. Переменная одна на оба режима: компакт
+   ниже переобъявляет её на .gbb-panel и ничего больше не пишет. */
+.gbb-panel { --gbb-day: 40px; }
+@media (min-width: 768px) { .gbb-panel { --gbb-day: 44px; } }
 .gbb-day {
-  width: 40px;
-  height: 40px;
+  width: min(100%, var(--gbb-day));
+  aspect-ratio: 1;
   justify-self: center;
   border-radius: var(--radius-pill);
   background: transparent;
@@ -480,7 +493,6 @@ gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
   transition: background-color var(--mo-micro) var(--mo-move),
               color var(--mo-micro) var(--mo-move);
 }
-@media (min-width: 768px) { .gbb-day { width: 44px; height: 44px; } }
 .gbb-day:hover:not(:disabled):not(.sel) { background: var(--zinc-100); }
 .gbb-day:disabled { color: var(--zinc-300); cursor: default; }
 .gbb-day.sel { background: var(--blue-600); color: var(--white); }
@@ -735,10 +747,8 @@ gb-booking-flow[layout="compact"] .gbb-panel { --gbb-day: 44px; }
 @media (max-height: 780px) {
   gb-booking-flow[layout="compact"] .gbb-panel { --gbb-day: 38px; }
 }
-gb-booking-flow[layout="compact"] .gbb-day {
-  width: var(--gbb-day);
-  height: var(--gbb-day);
-}
+/* Своего размера у компактного дня больше нет: базовое правило
+   выше читает ту же --gbb-day, которую компакт переобъявляет. */
 
 /* ---- Хозяйская поверхность ----
    Компактный режим существует ровно для случая «организм стоит
