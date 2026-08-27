@@ -33,6 +33,14 @@
    to tokens.css and do not reach for them in a component. Every
    other value here IS a token: the hairline and the live state
    are Blue 600, the plate is Zinc 950, the type is Inter at 12.
+
+   THE LENGTHS, AFTER gbppl-studio-tokens-1. Every length that is a
+   rung is now written as one (--space-*, --radius). What stayed a
+   number is the geometry of the DRAWING itself: the field inside a
+   label, the pitch of the hatching and of the dashes, the blur of
+   the halo behind a digit. None of them is a gap between blocks,
+   the space scale does not describe them, and each carries a
+   NO TOKEN line saying so.
    ============================================================ */
 
 .gbi-layer {
@@ -75,6 +83,8 @@
 .gbi-mar {
   position: absolute;
   background: var(--gbi-mar-fill);
+  /* NO TOKEN: 2 / 6 is the pitch of the hatching, the texture of the
+     drawing rather than a distance in the layout. */
   background-image: repeating-linear-gradient(
     -45deg,
     rgba(234, 120, 20, 0.32) 0 2px,
@@ -100,6 +110,8 @@
   line-height: 1;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  /* NO TOKEN: 3 is the blur of the halo that keeps a digit legible
+     over a photograph, not a length in the layout. */
   text-shadow: 0 0 3px var(--white), 0 0 3px var(--white), 0 0 3px var(--white);
 }
 .gbi-num--pad { color: var(--gbi-pad-ink); }
@@ -119,9 +131,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  /* NO TOKEN on 1 and 5: the plate is a LABEL, and its two lines and
+     its inner field are set from the type, not from the space scale:
+     a --space-8 field would make a badge the size of a button. */
   gap: 1px;
-  max-width: calc(100vw - 16px);
-  padding: 5px 8px;
+  max-width: calc(100vw - var(--space-16));
+  padding: 5px var(--space-8);
   border-radius: var(--radius);
   background: var(--zinc-950);
   box-shadow: var(--shadow-panel);
@@ -133,7 +148,7 @@
   text-overflow: ellipsis;
 }
 .gbi-badge b { font-weight: 600; }
-.gbi-badge__meta { display: flex; align-items: baseline; gap: 8px; }
+.gbi-badge__meta { display: flex; align-items: baseline; gap: var(--space-8); }
 .gbi-badge i { font-style: normal; color: var(--zinc-400); }
 .gbi-badge em {
   font-style: normal;
@@ -157,6 +172,8 @@
 /* The dashes run ALONG the line, so the direction is spelt out: a
    pattern painted across a one-pixel bar comes out solid, and solid
    here already means something else. */
+/* NO TOKEN on 3 / 6: the pitch of the dashes, the texture of the
+   line rather than a distance in the layout. */
 .gbi-dist--edge { background: none; }
 .gbi-dist--v.gbi-dist--edge {
   background-image: repeating-linear-gradient(
@@ -173,7 +190,7 @@
   position: absolute;
   display: block;
   transform: translate(-50%, -50%);
-  padding: 1px 5px;
+  padding: 1px 5px;   /* NO TOKEN: the same label field as .gbi-badge, set from the type */
   border-radius: var(--radius);
   background: var(--blue-600);
   color: var(--white);
@@ -211,7 +228,7 @@ a.gbi-oro,
 body.gb-demo a.gbi-oro {
   color: var(--blue-600);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 2px;   /* NO TOKEN: the underline's own geometry, the same 2 the console's segments use */
 }
 a.gbi-oro:hover,
 body.gb-demo a.gbi-oro:hover { color: var(--blue-700); }
