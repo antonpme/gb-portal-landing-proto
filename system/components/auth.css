@@ -427,6 +427,119 @@ gb-field { display: block; width: 100%; }
 }
 @media (min-width: 2000px) { .gba-textarea { min-height: 96px; } }
 
+/* ---------------- ВЕРСИЯ ПОЛЯ: ПЛАВАЮЩИЙ ЛЕЙБЛ ----------------
+                                          gbppl-field-floating-1
+   27.08. Тон, дословно: «Должно быть полностью как на live. Раз мы
+   имитируем live, должно быть как там. Я бы даже не переделывал
+   то, как настеканы поля в форме. Мы должны имитировать первый шаг
+   точно так же, как на live. Это не sandbox, это live.»
+
+   Живая лид-форма https://www.gildedbox.com/page/contact-us-219
+   носит ДРУГОЙ облик того же поля: лейбл стоит внутри строки, а на
+   фокусе или при заполнении уезжает вверх и сжимается. Это версия,
+   не новое поле (Тон-6): подчёркивание, цвет чернил, ошибка,
+   hover-синий и звёздочка required остаются от .gba-input, версия
+   переписывает лестницу и место лейбла.
+
+   ПОЧЕМУ ЛЕСТНИЦА СВОЯ. У гостевой авторизации (portal, замер
+   18.08) поле идёт 14/16/18 при высоте 48/56/64. У лид-формы
+   (замер 27.08, прибор на четырёх ширинах) — 13 / 14 с 1280 / 16 с
+   2000 при высоте 48 / 48 / 56 и pad-x 12/12/16. Это ДВЕ разные
+   живые страницы клиента, и на Live-странице мы носим ту, что
+   стоит на ней. Дефолт <gb-field> не изменился ни на пиксель.
+
+   ЧИСЛА ЛЕЙБЛА, снятые с живого label (LIVE 27.08):
+     покой    absolute, top 50%, left 12 (16 с 2000), width 100%,
+              translateY(-50%), Inter 300 14/1.5 (16 с 2000), ls
+              0.2, zinc-600, pointer-events none
+     активный top -4px, шрифт 11.2px/1.5, translateY(-50%) остаётся
+     переход  all 200ms cubic-bezier(.4,0,.2,1) — та же кривая, что
+              у остальных переходов поля
+
+   11.2 НЕ ВЫДУМАНО. Живое правило — text-[70%], и 70% считаются от
+   шрифта РОДИТЕЛЯ (16px базового текста страницы), а не от 14px
+   самого лейбла: 16 x 0.7 = 11.2 на всех ширинах, включая 2xl, где
+   покой уже 16. Записываем результат числом, потому что у нас
+   родитель не обязан быть 16px, и процент дал бы другую ступень.
+
+   ПОДЪЁМ БЕЗ JS. Лайв вешает на инпут класс .filled скриптом; нам
+   хватает соседа: лейбл стоит ПОСЛЕ контрола, и «пусто» читается
+   через :placeholder-shown (auth.js даёт таким полям плейсхолдер в
+   один пробел — на placeholder="" псевдокласс не срабатывает
+   вовсе). Автозаполнение Chrome тоже снимает :placeholder-shown,
+   то есть лейбл поднимается и там, где события input не было. */
+.gba-field--floating .gba-inputwrap { position: relative; }
+
+/* Лестница живой лид-формы. Порог 2xl тот же 2000. */
+.gba-field--floating .gba-input {
+  min-height: var(--form-ctl-h);      /* LIVE 27.08: 48 и на 1280 */
+  font-size: 13px;                    /* LIVE 27.08 */
+}
+@media (min-width: 1280px) {
+  .gba-field--floating .gba-input { min-height: var(--form-ctl-h); font-size: 14px; }
+}
+@media (min-width: 2000px) {
+  .gba-field--floating .gba-input {
+    min-height: var(--form-ctl-h-xl); /* LIVE 27.08: 56, не 64 */
+    font-size: 16px;
+    padding: 0 16px;
+  }
+}
+
+.gba-field--floating .gba-inputwrap > .gba-label {
+  position: absolute;
+  top: 50%;
+  left: 12px;                          /* LIVE 27.08: left-3 */
+  width: 100%;
+  margin: 0;
+  transform: translateY(-50%);
+  font-size: 14px;                     /* LIVE 27.08 */
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  text-transform: none;
+  color: var(--zinc-600);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (min-width: 2000px) {
+  .gba-field--floating .gba-inputwrap > .gba-label { left: 16px; font-size: 16px; }
+}
+/* Поднятое состояние. Демо-класс .is-focus повторяет живое правило
+   и ничего своего не говорит — той же породы, что .gba-input.is-focus
+   строкой выше: витрине нужно поставить состояния в один ряд. */
+.gba-field--floating .gba-input:focus ~ .gba-label,
+.gba-field--floating .gba-input.is-focus ~ .gba-label,
+.gba-field--floating .gba-input:not(:placeholder-shown) ~ .gba-label {
+  top: -4px;                           /* LIVE 27.08: -top-1 */
+  font-size: 11.2px;                   /* LIVE 27.08: text-[70%] от 16 */
+}
+
+/* Статичный лейбл над полем остаётся ровно у одного поля живой
+   формы — у комментария (LIVE 27.08: 11 / 12 с 1280, 600, ls 0.5,
+   zinc-500). От гостевого он отличается ОДНИМ: регистр не
+   переворачивается. Класс uppercase в живой разметке есть, но
+   computed на всех четырёх ширинах говорит text-transform: none. */
+.gba-field--floating > .gba-label { text-transform: none; }
+
+/* Многострочник живой формы: своя лестница шрифта (13/14/16, как у
+   однострочника этой же страницы), 160% междустрочия, min-h 80 на
+   всех ширинах и рост по содержимому — высоту ставит booking.js,
+   поэтому собственной прокрутки у поля нет. */
+.gba-field--floating .gba-textarea {
+  min-height: 80px;                    /* LIVE 27.08: !min-h-[80px] */
+  padding: 12px;
+  line-height: 1.6;                    /* LIVE 27.08: leading-[160%] */
+  overflow: hidden;                    /* растёт, а не прокручивается */
+}
+@media (min-width: 2000px) {
+  .gba-field--floating .gba-textarea { min-height: 80px; padding: 12px 16px; }
+}
+/* Плейсхолдер многострочника на лайве на ступень темнее, чем у
+   однострочников (surface-500 против surface-400): у него он
+   работает подсказкой, а не заглушкой. */
+.gba-field--floating .gba-textarea::placeholder { color: var(--zinc-500); }
+
 /* Ошибка (по сабмиту, live 18.08: пустой и невалидный e-mail дают
    одно состояние): бордер red-500 (перекрывает hover), сообщение
    red-600 11px справа. Классов helper-text/errorMessage у лайва

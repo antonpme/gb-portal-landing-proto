@@ -20,7 +20,12 @@
                         состояния: пустое / focus (гаснет только
                         плейсхолдер) / filled / error (бордер
                         red-500 + span[role=alert].text-red-600);
-                        атрибут eye — глазок пароля.
+                        атрибут eye — глазок пароля. Второй облик:
+                        label-style="floating" (gbppl-field-floating-1,
+                        27.08) — лейбл внутри поля, уезжает вверх и
+                        сжимается; лестница живой contact-us
+                        13/14/16 при 48/48/56. Без атрибута поле
+                        байт-в-байт прежнее.
      <gb-auth-flow>     колонка формы max-w 600 и ФЛОУ живого
                         гостя: signin (e-mail + Google) → сабмит
                         пустого/невалидного = ошибка «Please enter
@@ -149,28 +154,73 @@
        type=textarea вместо <input> печатает <textarea>, несущий
                      .gba-input + версию .gba-textarea (auth.css).
                      Атрибуты те же, плейсхолдер тот же, ошибка та
-                     же — снаружи это по-прежнему <gb-field>. */
+                     же — снаружи это по-прежнему <gb-field>.
+
+     ТРЕТЬЕ РАСШИРЕНИЕ: label-style="floating"    gbppl-field-floating-1
+     (27.08). Тон, дословно: «Должно быть полностью как на live.
+     Раз мы имитируем live, должно быть как там... Мы должны
+     имитировать первый шаг точно так же, как на live». Лид-форма
+     живой contact-us-219 носит НЕ наш статичный капс-лейбл над
+     полем, а лейбл ВНУТРИ поля, который уезжает вверх и сжимается
+     при фокусе или заполнении. Это второй облик ОДНОГО поля, а не
+     второе поле (Тон-6, шаг 2), поэтому он приходит атрибутом:
+
+       label-style="floating"  обёртка получает .gba-field--floating,
+                               и меняется РОВНО ОДНО: лейбл
+                               переезжает ВНУТРЬ .gba-inputwrap и
+                               встаёт ПОСЛЕ контрола. Порядок в DOM
+                               не косметика: подъём лейбла — чистый
+                               CSS на соседе (.gba-input:focus ~
+                               .gba-label), без единой строки JS,
+                               ровно как у лайва, который вешает
+                               класс .filled скриптом. Живой
+                               плейсхолдер у таких полей пустой (в
+                               покое там стоит лейбл), а нам нужен
+                               ОДИН пробел: :placeholder-shown не
+                               срабатывает на placeholder="", и
+                               «поле заполнено» перестало бы
+                               читаться без JS. Пробел невидим и
+                               ничего не печатает.
+
+     У textarea живая страница floating НЕ применяет: единственное
+     поле формы со статичным лейблом над полем — комментарий
+     (harvest label-comment-static, 11/12 600 ls .5 zinc-500). Так
+     и здесь: floating + type=textarea = статичный лейбл сверху,
+     который отличается от гостевого только регистром (лайв тут БЕЗ
+     капса, замер 27.08 text-transform: none — класс uppercase в их
+     разметке есть, но computed его не показывает). */
   function fieldHTML(opts) {
+    var floating = opts.labelStyle === 'floating';
+    var isArea = opts.type === 'textarea';
     var eye = opts.eye
       ? '<button class="gba-eye" type="button" aria-label="Show password" data-eye>' + ICON_EYE + '</button>'
       : '';
+    /* Плавающему однострочнику плейсхолдер задаёт вариант, не
+       потребитель: он служебный (см. шапку), а видимую подсказку в
+       покое несёт сам лейбл. */
+    var placeholder = (floating && !isArea) ? ' ' : opts.placeholder;
     var common =
       ' name="' + esc(opts.name) + '" id="' + esc(opts.id) + '"' +
       ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' +
-      ' placeholder="' + esc(opts.placeholder) + '"';
-    var control = opts.type === 'textarea'
+      ' placeholder="' + esc(placeholder) + '"';
+    var control = isArea
       ? '<textarea' + common + ' rows="3" class="valid browser-default gba-input gba-textarea">' +
           esc(opts.value) + '</textarea>'
       : '<input type="' + esc(opts.type) + '"' + common +
           (opts.value ? ' value="' + esc(opts.value) + '"' : '') +
           ' class="valid browser-default gba-input">';
+    var label =
+      '<label for="' + esc(opts.id) + '" class="active gba-label">' + esc(opts.label) + '</label>';
+    var inside = floating && !isArea;
     return (
       '<div class="input-field col active s12 m12 l12 staticLabel ' +
-          (opts.optional ? '' : 'required ') + 'gba-field ' + (opts.wrapMod || '') + '">' +
-        '<label for="' + esc(opts.id) + '" class="active gba-label">' + esc(opts.label) + '</label>' +
+          (opts.optional ? '' : 'required ') + 'gba-field ' +
+          (floating ? 'gba-field--floating ' : '') + (opts.wrapMod || '') + '">' +
+        (inside ? '' : label) +
         '<div class="relative gba-inputwrap">' +
           control +
           eye +
+          (inside ? label : '') +
         '</div>' +
       '</div>'
     );
@@ -189,6 +239,7 @@
         autocomplete: this.getAttribute('autocomplete') || '',
         value: this.getAttribute('value') || '',
         wrapMod: this.getAttribute('wrap-mod') || '',
+        labelStyle: this.getAttribute('label-style') || '',
         eye: this.hasAttribute('eye'),
         optional: this.hasAttribute('optional'),
       });
