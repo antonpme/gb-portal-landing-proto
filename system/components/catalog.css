@@ -89,28 +89,33 @@ gb-catalog-hero, gb-catalog-filters, gb-catalog-grid {
    640: у лайва там сходятся leading-[170%] и md:text-lg, и
    вторая приходит в каскаде позже. Не наша логика, лайвовая.
    ------------------------------------------------------------ */
-/* gbppl-catalog-hero-2 (Ton 27.08: «верни вертикальные отступы, как были для
-   Hero; правильно было у нас»): the vertical rhythm is OURS, the compact hero
-   of the prototype (190 / 220 from 768 / 263 from 1280, title at the top),
-   not live's 354/300/400 with a centred column. Colour, type and subtitle
-   stay live 27.08. Deliberate departure, decided by Ton. */
+/* gbppl-catalog-hero-3 (Ton 27.08, on seeing hero-2: «ты убрал отступ сверху и
+   оставил снизу, так нельзя тулить заголовок прямо к хедеру; нужно было
+   сократить отступы сверху и снизу и оставить их одинаковыми»). hero-2 copied
+   the old build hero literally (title on the section's top edge, all the air
+   below) from a hidden element measured out of context, and nobody looked at
+   the result. Now the hero has no fixed height: equal padding above and below
+   on the space scale, 32 / 48 from 768 / 64 from 1280, and the content
+   (title 54 or 72 + subtitle 70) sets the rest. That lands at ~188 / 222 /
+   272, the compact heights Ton asked back, with the air split evenly.
+   Colour, type and subtitle stay live 27.08. */
 .gbcH-hero {
   position: relative;
-  height: 190px;
+  padding-block: var(--space-32);
   background: var(--white);
 }
 @media (min-width: 768px) {
-  .gbcH-hero { height: 220px; }
+  .gbcH-hero { padding-block: var(--space-48); }
 }
 @media (min-width: 1280px) {
-  .gbcH-hero { height: 263px; }
+  .gbcH-hero { padding-block: var(--space-64); }
 }
 
 /* md:container лайва: ниже md голый блок без полей; с md поля 24
    СРАЗУ (не 16, как у .container, — замер grid-section-wrapper
    768 = 24px); с 1920 клэмп 1920 + поля 48. Ступени 1600 у
    md:container НЕТ (1920 читает width 1920, не 1600). */
-.gbcH-container { height: 100%; padding-top: 0; }   /* gbppl-catalog-hero-2: title sits at the top, no 50px shim */
+.gbcH-container { padding-top: 0; }   /* gbppl-catalog-hero-3: the hero's own padding-block carries the air */
 @media (min-width: 768px) {
   .gbcH-container {
     width: 100%;
@@ -148,13 +153,13 @@ gb-catalog-hero, gb-catalog-filters, gb-catalog-grid {
    белому титулу на фотографии, которой нет). */
 .gbcH-titleCol {
   display: flex;
-  align-items: flex-start;   /* gbppl-catalog-hero-2: ours, top-aligned */
+  align-items: flex-start;   /* gbppl-catalog-hero-3: content flows, padding-block frames it */
   width: 100%;
   height: auto;
   text-align: left;
 }
 @media (min-width: 1024px) {
-  .gbcH-titleCol { height: 100%; width: 25%; }
+  .gbcH-titleCol { width: 25%; }
 }
 @media (min-width: 1280px) {
   .gbcH-titleCol { width: 40%; }
