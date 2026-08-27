@@ -241,7 +241,7 @@
          the mechanism. */
       if (homeHref !== '#') {
         var KEEP = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock', 'prefooter',
-                    'device', 'studio', 'panel'];
+                    'device', 'studio'];   /* gbppl-panel-10: panel left with the second console layout */
         var have = new URLSearchParams(location.search), carry = new URLSearchParams();
         KEEP.forEach(function (k) { if (have.has(k)) carry.set(k, have.get(k)); });
         var q = carry.toString();

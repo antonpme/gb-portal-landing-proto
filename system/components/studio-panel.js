@@ -2,7 +2,8 @@
    SYSTEM COMPONENT: STUDIO PANEL, JS-шаблон (gbppl-panel-4,
    Тон 2026-08-24, секция Sandbox 2026-08-25, секция This page
    2026-08-26, Mode 2026-08-26, Device gbppl-panel-7 2026-08-27,
-   вторая компоновка gbppl-panel-8 2026-08-27)
+   вторая компоновка gbppl-panel-8 2026-08-27, Classic снят
+   gbppl-panel-10 2026-08-27)
    ------------------------------------------------------------
    ОДИН ПУЛЬТ. Тон 26.08, дословно: «обязательно свести язык к
    Studio, одной волной», и следом «нужно просто унифицировать всё
@@ -135,32 +136,27 @@
    собой, а не нашей консолью. Состояние не запоминается — это
    оболочка, ей нечего помнить.
 
-   ДВЕ КОМПОНОВКИ РЯДОМ (gbppl-panel-8, 2026-08-27). Тон спросил, что
-   улучшить в управлении прототипом; предложение собрано ЦЕЛИКОМ и
-   стоит рядом с нынешней консолью, а не вместо неё: «давай попробуем
-   собрать твой вариант и сравнить». Отсюда два правила этого файла.
+   ОДНА КОМПОНОВКА (gbppl-panel-10, 2026-08-27). Волна panel-8 собрала
+   вторую компоновку рядом с первой на слово Тона «давай попробуем
+   собрать твой вариант и сравнить»; сравнили, и Тон сказал: «никакого
+   старого варианта, конечно, Proposed». Classic ушёл целиком — ветка
+   шаблона, свои правила CSS, сегмент Layout внизу ящика, ключ ?panel и
+   память sessionStorage gbppl-panel-layout. Старая ссылка с
+   ?panel=v1|v2 открывается нормально: ключ просто никем не читается.
 
-   · Classic (v1) — сегодняшняя консоль, байт в байт. Единственное
-     добавление — сегмент Layout в самом низу, чтобы щёлкнуть на
-     любой странице и увидеть второй вариант на том же месте.
-   · Proposed (v2) — консоль как НАВИГАЦИЯ: титул, разделы студии с
-     подсветкой текущего, версия этой страницы сегментом, инструменты
-     (Mode и одна строка девайсов), одна строка состояния вместо
-     абзацев под группами, Copy link, Layout.
-
-   Переключение: ключ ?panel=v1|v2, память sessionStorage
-   gbppl-panel-layout, дефолт Classic. Ключ едет в кадр устройства
-   рядом с studio=embedded, поэтому копия внутри рамки той же
-   компоновки, что снаружи, и сравнение честное.
+   Консоль — НАВИГАЦИЯ: титул, разделы студии с подсветкой текущего,
+   версия этой страницы сегментом, инструменты (Mode и одна строка
+   девайсов), одна строка состояния вместо абзацев под группами,
+   Copy link. Всё, что раньше было «только в v2» — клавиши 1..6,
+   стеснительный ярлык под чужим оверлеем, строка состояния, Copy link,
+   верхняя полоса над кадром, — теперь просто поведение консоли.
 
    API НЕ ТРОНУТ. addGroup / addSegments / setActive / setNote / ранги
-   работают одинаково в обеих компоновках: inspect.js и реестр про
-   вторую компоновку не знают ничего. Меняется место секции в DOM и
-   её одежда, а не договор.
+   работают ровно как прежде: inspect.js и реестр про компоновки не
+   знали ничего и не узнают.
 
-   РАЗБОР ТОНА ПО PROPOSED (gbppl-panel-9, 2026-08-27). Три правки, и
-   все три ТОЛЬКО в Proposed: Classic не меняется ни на пиксель, пока
-   Тон не сказал, какая компоновка остаётся.
+   РАЗБОР ТОНА (gbppl-panel-9, 2026-08-27). Три правки, с которых
+   Proposed и стал тем, что осталось.
 
    1. «Первому блоку не хватает понятной подписи: не сразу ясно, где
       ты сейчас находишься... Назвать блок не Hub, а Hub Homepage.
@@ -172,11 +168,10 @@
       дверей отвечал «куда пойти» и молчал о том, где ты; теперь он
       отвечает на оба вопроса, а это и был вопрос Тона.
    2. «Сделать так, чтобы Live Prototype начинался не сразу с сайта, а
-      с экрана выбора (как в Sandboxes).» Дверь Live Prototype в
-      Proposed ведёт на live\map.html — дерево страниц прототипа со
-      статусами. live\index.html остался главной сайта и никуда не
-      переехал: на него по-прежнему смотрят data-home, ссылки внутри
-      прототипа и дверь хаба.
+      с экрана выбора (как в Sandboxes).» Дверь Live Prototype ведёт
+      на live\map.html — дерево страниц прототипа со статусами.
+      live\index.html остался главной сайта и никуда не переехал: на
+      него по-прежнему смотрят data-home и ссылки внутри прототипа.
    3. «Versions of this page: для Live нужно явно показывать, что это
       текущая версия»; «между Mode и Device нужен разделитель, такой
       же, как между Versions of this page и Mode»; «переключение
@@ -192,34 +187,6 @@
 (function () {
   'use strict';
 
-  /* ============================================================
-     КОМПОНОВКА (gbppl-panel-8)
-     ------------------------------------------------------------
-     Читается один раз, до первой отрисовки: от неё зависит порядок
-     секций в шаблоне, а не только классы. Ключ в адресе побеждает
-     память вкладки и сам в неё записывается — ссылка ?panel=v2,
-     переданная в чате, оставляет вкладку в этом варианте и после
-     перехода дверями.
-     ============================================================ */
-  var LKEY = 'gbppl-panel-layout';
-
-  function readLayout() {
-    var q = null;
-    try { q = new URLSearchParams(location.search).get('panel'); } catch (e) {}
-    if (q === 'v1' || q === 'v2') {
-      try { sessionStorage.setItem(LKEY, q); } catch (e) {}
-      return q;
-    }
-    try {
-      var s = sessionStorage.getItem(LKEY);
-      if (s === 'v1' || s === 'v2') return s;
-    } catch (e) {}
-    return 'v1';
-  }
-
-  var LAYOUT = readLayout();
-  var V2 = LAYOUT === 'v2';
-
   /* Copy link кладёт в адрес mode=inspect, значит адрес обязан
      работать (gbppl-panel-8). Прибор читает режим из sessionStorage и
      стартует после нас, поэтому ключ переписывается здесь, до его
@@ -232,15 +199,8 @@
     } catch (e) {}
   })();
 
-  var DOORS = [
-    ['index.html',                'Hub'],
-    ['live/index.html',           'Live Prototype'],
-    ['sandboxes.html',            'Sandboxes'],
-    ['system/oro/index.html',     'Design System']
-  ];
-
   /* ============================================================
-     КАРТА СТУДИИ, Proposed (gbppl-panel-9)
+     КАРТА СТУДИИ (gbppl-panel-9)
      ------------------------------------------------------------
      Те же четыре места, но не плоским списком: хаб — корень, три
      раздела — его дети. Третье поле у ребёнка — КЛЮЧ РАЗДЕЛА, тот
@@ -291,27 +251,15 @@
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M5.5 3 9.5 7l-4 4"/></svg>';
 
-  /* Активная дверь = страница, на которой стоишь. Адрес разрешает
-     сам браузер (пустой <a> с href), поэтому сравнение честное и на
-     file://, и на хостинге; каталожный путь приравнен к index.html
-     той же папки. Слово «index.html» встречается в трёх дверях,
-     сравнение полного пути их и различает. */
-  function isHere(href) {
-    var probe = document.createElement('a');
-    probe.href = href;
-    var norm = function (p) { return p.replace(/\/$/, '/index.html'); };
-    return norm(probe.pathname) === norm(location.pathname);
-  }
-
-  /* Proposed: подсвечивается не страница, а РАЗДЕЛ, в котором стоишь
-     (gbppl-panel-8). В Classic дверь синеет только на самой себе, и
-     на live/catalog или на typography ни одна дверь не горит — список
-     читается как «куда пойти» и молчит о том, где ты. Ящик-навигация
-     обязан отвечать и на второй вопрос, поэтому путь страницы
-     сравнивается с ПАПКОЙ двери: всё внутри live/ — это Live
-     Prototype, всё внутри system/ — Design System (витрина и мерочные
-     страницы живут в одном разделе студии). Корень считается от
-     data-root, а не от глубины страницы: адрес разрешает браузер. */
+  /* Подсвечивается не страница, а РАЗДЕЛ, в котором стоишь
+     (gbppl-panel-8). Плоский список дверей синел только на самой себе,
+     и на live/catalog или на typography не горела ни одна — он читался
+     как «куда пойти» и молчал о том, где ты. Ящик-навигация обязан
+     отвечать и на второй вопрос, поэтому путь страницы сравнивается с
+     ПАПКОЙ двери: всё внутри live/ — это Live Prototype, всё внутри
+     system/ — Design System (витрина и мерочные страницы живут в одном
+     разделе студии). Корень считается от data-root, а не от глубины
+     страницы: адрес разрешает браузер. */
   function rootPath(root) {
     var probe = document.createElement('a');
     probe.href = root || './';
@@ -350,49 +298,8 @@
     return String(status || 'in progress').replace(/-/g, ' ');
   }
 
-  /* СЕКЦИЯ SANDBOX. Один <li> на строку, тот же .gbsp-link, что у
-     дверей выше: список песочниц — такая же навигация, и второго
-     языка для неё заводить незачем (Тон-6). Текущее место синее
-     (Тон-5: синий = состояние), недоступный вариант не ссылка вовсе
-     — <span>, чтобы курсор не обещал перехода, которого нет. */
-  function sandboxSection(pageId, root) {
-    if (!pageId) return '';
-    var reg = window.GB_SANDBOXES;
-    if (!reg || typeof reg.forPage !== 'function') return '';
-    var slice = reg.forPage(pageId, root);
-    if (!slice) return '';
-
-    var rows = [];
-
-    rows.push(row(slice.live.label, slice.live.href, slice.live.current, true, ''));
-
-    slice.variants.forEach(function (v) {
-      rows.push(row(v.label, v.href, v.current, v.ready, v.ready ? '' : statusWord(v.status)));
-    });
-
-    if (!slice.variants.length) {
-      rows.push('<li><span class="gbsp-none">None yet</span></li>');
-    }
-
-    return (
-      '<div class="gbsp-sec">' +
-        '<span class="gbsp-eyebrow">Sandbox · this page</span>' +
-        '<ul class="gbsp-list">' + rows.join('') + '</ul>' +
-      '</div>'
-    );
-
-    function row(label, href, current, ready, note) {
-      var tail = note ? ' <span class="gbsp-state">' + esc(note) + '</span>' : '';
-      if (!ready) {
-        return '<li><span class="gbsp-link is-off">' + esc(label) + tail + '</span></li>';
-      }
-      return '<li><a class="gbsp-link' + (current ? ' is-active' : '') + '" href="' + esc(href) + '"' +
-             (current ? ' aria-current="page"' : '') + '>' + esc(label) + '</a></li>';
-    }
-  }
-
   /* ============================================================
-     СЕКЦИЯ НАВИГАЦИИ, Proposed (gbppl-panel-9)
+     СЕКЦИЯ НАВИГАЦИИ (gbppl-panel-9)
      ------------------------------------------------------------
      Тон: «Первому блоку не хватает понятной подписи: не сразу ясно,
      где ты сейчас находишься... Назвать блок не Hub, а Hub Homepage.
@@ -445,8 +352,8 @@
     );
   }
 
-  /* ВЕРСИЯ ЭТОЙ СТРАНИЦЫ, Proposed (gbppl-panel-8). Те же данные
-     реестра, что у секции Sandbox, но не списком, а сегментами: у
+  /* ВЕРСИЯ ЭТОЙ СТРАНИЦЫ (gbppl-panel-8). Те же данные реестра, что
+     носила прежняя секция Sandbox, но не списком, а сегментами: у
      страницы РОВНО ОДНА версия в силе, варианты взаимоисключающие, и
      это тумблер, а не навигация — тот же довод, по которому Mode стал
      сегментами (gbppl-panel-6). Реестр не тронут ни строкой: срез
@@ -490,58 +397,25 @@
     }
   }
 
-  /* ПОДВАЛ, Proposed (gbppl-panel-8): строка состояния, копия ссылки,
-     выбор компоновки. Держится одним узлом, потому что все секции,
-     которые страница дописывает позже (Mode, Device, This page),
-     встают ПЕРЕД ним. */
+  /* ПОДВАЛ (gbppl-panel-8): строка состояния и копия ссылки. Держится
+     одним узлом, потому что все секции, которые страница дописывает
+     позже (Mode, Device, This page), встают ПЕРЕД ним. Сегмент Layout
+     стоял здесь же и ушёл с Classic (gbppl-panel-10). */
   function footHtml() {
     return (
       '<div class="gbsp-foot">' +
         '<p class="gbsp-status"></p>' +
-        copyHtml() +
-        layoutHtml() +
-      '</div>'
-    );
-  }
-
-  function copyHtml() {
-    return '<button class="gbsp-link gbsp-copy" type="button">Copy link to this view</button>';
-  }
-
-  /* Сегмент компоновки стоит в ОБЕИХ: сравнивают, щёлкая туда-сюда на
-     одной и той же странице, и кнопка обязана быть под рукой в любом
-     варианте (Тон: «давай попробуем собрать твой вариант и сравнить»).
-     Это единственная правка разметки Classic за волну. */
-  function layoutHtml() {
-    return (
-      '<div class="gbsp-sec gbsp-sec--layout">' +
-        '<span class="gbsp-eyebrow">Layout</span>' +
-        '<div class="gbsp-segs" role="group" aria-label="Layout">' +
-          '<button class="gbsp-seg' + (V2 ? '' : ' is-on') + '" type="button" data-layout="v1">Classic</button>' +
-          '<button class="gbsp-seg' + (V2 ? ' is-on' : '') + '" type="button" data-layout="v2">Proposed</button>' +
-        '</div>' +
+        '<button class="gbsp-link gbsp-copy" type="button">Copy link to this view</button>' +
       '</div>'
     );
   }
 
   var TEMPLATE = function (root, pageId) {
-    var items = DOORS.map(function (d) {
-      var active = isHere(root + d[0]) ? ' is-active' : '';
-      return '<li><a class="gbsp-link' + active + '" href="' + root + d[0] + '"' +
-             (active ? ' aria-current="page"' : '') + '>' + d[1] + '</a></li>';
-    }).join('');
-    /* gbppl-panel-9: в Proposed плоский список дверей заменён секцией
-       навигации с корнем и детьми, поэтому items здесь больше не
-       считаются. Classic собирается ровно как прежде. */
-    var body = V2
-      ? navSection(root) +
-        versionSection(pageId, root) +
-        footHtml()
-      : '<ul class="gbsp-list">' + items + '</ul>' +
-        sandboxSection(pageId, root) +
-        layoutHtml();
+    var body = navSection(root) +
+               versionSection(pageId, root) +
+               footHtml();
     return (
-      '<div class="gbsp is-collapsed' + (V2 ? ' gbsp--v2' : '') + '">' +
+      '<div class="gbsp gbsp--v2 is-collapsed">' +
         '<button class="gbsp-tab" type="button" aria-expanded="false" aria-controls="gbsp-panel"' +
                 ' aria-label="Open the Design Studio panel">' +
           CHEVRON +
@@ -556,10 +430,9 @@
   };
 
   /* Все секции, которые дописываются после отрисовки, встают перед
-     хвостом: в Classic хвост — сегмент Layout, в Proposed — весь
-     подвал. Один вызов на обе компоновки. */
+     хвостом, а хвост — подвал ящика. */
   function tail(host) {
-    return host.querySelector('.gbsp-foot, .gbsp-sec--layout');
+    return host.querySelector('.gbsp-foot');
   }
 
   /* ============================================================
@@ -578,8 +451,8 @@
     sec = document.createElement('div');
     sec.className = 'gbsp-sec gbsp-sec--page';
     sec.innerHTML = '<span class="gbsp-eyebrow">This page</span>';
-    /* gbppl-panel-8: не в самый конец, а перед хвостом — сегмент
-       Layout и подвал Proposed стоят последними всегда. */
+    /* gbppl-panel-8: не в самый конец, а перед хвостом — подвал ящика
+       стоит последним всегда. */
     var panel = host.querySelector('.gbsp-panel');
     panel.insertBefore(sec, tail(host));
     return sec;
@@ -677,11 +550,10 @@
     sec = document.createElement('div');
     sec.className = 'gbsp-sec gbsp-sec--mode';
     var panel = host.querySelector('.gbsp-panel');
-    /* Classic: первой секцией, сразу под титулом, над дверями.
-       Proposed: инструменты стоят ПОСЛЕ навигации и версии страницы
-       (gbppl-panel-8) — сначала «где я и что смотрю», потом «чем
+    /* Инструменты стоят ПОСЛЕ навигации и версии страницы
+       (gbppl-panel-8): сначала «где я и что смотрю», потом «чем
        смотрю». */
-    panel.insertBefore(sec, V2 ? tail(host) : panel.querySelector('.gbsp-list'));
+    panel.insertBefore(sec, tail(host));
     return sec;
   }
 
@@ -700,32 +572,29 @@
     var rank = typeof spec.rank === 'number' ? spec.rank : 50;
     wrap.setAttribute('data-rank', String(rank));
     var title = spec.title || 'Mode';
-    var shape = spec.grid ? ' gbsp-segs--grid' : (spec.row ? ' gbsp-segs--row' : '');
+    var shape = spec.row ? ' gbsp-segs--row' : '';
     var html = '<span class="gbsp-eyebrow">' + esc(title) + '</span>' +
                '<div class="gbsp-segs' + shape + '"' +
                ' role="group" aria-label="' + esc(title) + '">';
     options.forEach(function (o, i) {
-      /* Подпись сегмента бывает двухэтажной: слово человеку, число
-         прибору («Tablet» и 768). Второй этаж необязателен — у
-         режима его нет и не должно быть. В Proposed девайсы стоят
-         одной строкой ИКОНОК (gbppl-panel-9), и тогда имя с числом
-         живут в title и во всплывающей подписи под строкой: у кнопки
-         без слова обязано быть слово где-то ещё. */
+      /* Девайсы стоят одной строкой ИКОНОК (gbppl-panel-9), и тогда
+         имя с числом живут в title и во всплывающей подписи под
+         строкой: у кнопки без слова обязано быть слово где-то ещё.
+         У режима слово своё, и глифа ему не нужно. */
       html += '<button class="gbsp-seg' + (o.icon ? ' gbsp-seg--icon' : '') +
               '" type="button" data-seg="' + i + '"' +
               (o.title ? ' title="' + esc(o.title) + '"' : '') +
               (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
               ' aria-pressed="false">' + (o.icon || esc(o.label)) +
-              (o.sub ? '<span class="gbsp-seg__sub">' + esc(o.sub) + '</span>' : '') +
               '</button>';
     });
     /* МЕСТО ПОД COMMENT (gbppl-panel-8). Третий режим заказан, но не
-       сделан, и Proposed говорит об этом вслух: выключенный сегмент
+       сделан, и консоль говорит об этом вслух: выключенный сегмент
        рядом с двумя живыми честнее пустоты — тумблер сразу показывает,
-       на сколько положений он рассчитан. Стоит только в Proposed и
-       только у Mode: панель владеет ВИДОМ и МЕСТОМ тумблера
-       (gbppl-panel-6), а значит и его будущей третьей позицией. */
-    if (V2 && title === 'Mode') {
+       на сколько положений он рассчитан. Стоит только у Mode: панель
+       владеет ВИДОМ и МЕСТОМ тумблера (gbppl-panel-6), а значит и его
+       будущей третьей позицией. */
+    if (title === 'Mode') {
       html += '<span class="gbsp-seg is-off" title="coming soon">Comment</span>';
     }
     html += '</div>';
@@ -875,7 +744,7 @@
   ];
 
   /* ============================================================
-     ШЕСТЬ ЭКРАНОВ КАРТИНКАМИ (gbppl-panel-9, только Proposed)
+     ШЕСТЬ ЭКРАНОВ КАРТИНКАМИ (gbppl-panel-9)
      ------------------------------------------------------------
      Тон: «переключение устройств лучше сделать иконками, а не
      числовыми шкалами/размерами. Размеры понятны не всем, а тем же
@@ -916,7 +785,7 @@
            'aria-hidden="true">' + body + '</svg>';
   }
 
-  /* Proposed: своя ширина и поворот (gbppl-panel-8). Пресеты отвечают
+  /* Своя ширина и поворот (gbppl-panel-8). Пресеты отвечают
      на вопрос «как это выглядит на наших порогах»; своя ширина — на
      вопрос «а на 1000?», который задаётся ровно тогда, когда ищут, где
      раскладка ломается. Границы 320..2560: ниже 320 не бывает
@@ -941,9 +810,7 @@
   function normDevice(v) {
     v = String(v == null ? 'full' : v);
     if (isPreset(v)) return v;
-    /* Своя ширина живёт только в Proposed: Classic не должен менять
-       поведения от волны, которая его не касается. */
-    if (V2 && /^\d{3,4}$/.test(v)) {
+    if (/^\d{3,4}$/.test(v)) {
       var n = +v;
       if (n >= CUSTOM_MIN && n <= CUSTOM_MAX) return String(n);
     }
@@ -955,17 +822,17 @@
   }
 
   /* ============================================================
-     СТРОКА СОСТОЯНИЯ (gbppl-panel-8, только Proposed)
+     СТРОКА СОСТОЯНИЯ (gbppl-panel-8)
      ------------------------------------------------------------
-     В Classic под каждой группой стоит свой абзац подсказки, и на
-     странице с инспектором их сразу два: «The page behaves as it does
-     for a visitor» и «The page fills the window, as a visitor sees
-     it» — две трети высоты первой секции заняты текстом, который
-     говорит одно и то же дважды. Proposed заменяет их ОДНОЙ строкой
-     внизу ящика: она отвечает не «что делает эта кнопка», а «что у
-     меня сейчас включено», и это единственный вопрос, который читают
-     каждый раз. Абзацы секции This page остаются: они говорят про
-     сценарий страницы, чего строка состояния сказать не может.
+     Прежде под каждой группой стоял свой абзац подсказки, и на
+     странице с инспектором их было сразу два: «The page behaves as it
+     does for a visitor» и «The page fills the window, as a visitor
+     sees it» — две трети высоты первой секции занимал текст, который
+     говорит одно и то же дважды. Вместо них ОДНА строка внизу ящика:
+     она отвечает не «что делает эта кнопка», а «что у меня сейчас
+     включено», и это единственный вопрос, который читают каждый раз.
+     Абзацы секции This page остаются: они говорят про сценарий
+     страницы, чего строка состояния сказать не может.
      ============================================================ */
   var STATE = { mode: 'view', device: 'full' };
 
@@ -1003,18 +870,13 @@
       var u = new URL(location.href);
       u.searchParams.delete('device');
       u.searchParams.set('studio', 'embedded');
-      /* gbppl-panel-8: компоновка едет в кадр рядом с флагом. Консоль
-         внутри рамки не видна, но она живая — держит Mode для Inspect
-         и слушает клавиши, — и обязана быть того же варианта, что
-         снаружи, иначе сравнение сравнивало бы разное. */
-      u.searchParams.set('panel', LAYOUT);
       return u.href;
     } catch (e) {
       return location.href;
     }
   }
 
-  /* Адрес ЭТОГО вида: страница, экран, режим и компоновка (gbppl-panel-8).
+  /* Адрес ЭТОГО вида: страница, экран и режим (gbppl-panel-8).
      Ключ device ставится только когда он что-то значит, mode — только
      когда включён Inspect: ссылка не должна нести умолчаний, иначе
      нельзя отличить «я так выбрал» от «так вышло». */
@@ -1025,7 +887,6 @@
       else u.searchParams.delete('device');
       if (currentMode() === 'inspect') u.searchParams.set('mode', 'inspect');
       else u.searchParams.delete('mode');
-      u.searchParams.set('panel', LAYOUT);
       u.searchParams.delete('studio');
       return u.href;
     } catch (e) {
@@ -1058,13 +919,13 @@
   }
 
   /* ============================================================
-     ВЕРХНЯЯ ПОЛОСА СЦЕНЫ (gbppl-panel-8, только Proposed)
+     ВЕРХНЯЯ ПОЛОСА СЦЕНЫ (gbppl-panel-8)
      ------------------------------------------------------------
-     В Classic пресеты живут в ящике: чтобы сменить экран, надо
-     открыть консоль, попасть в ячейку сетки 3 × 2 и закрыть консоль
-     обратно. Но как только страница ушла в кадр, экран становится
-     главным предметом на столе, и место его переключателя — над
-     кадром, а не в выдвижном ящике. Полоса стоит В ТЕХ ЖЕ 88px, что
+     Пресеты живут и в ящике, но чтобы сменить там экран, надо открыть
+     консоль, попасть в чип и закрыть консоль обратно. Как только
+     страница ушла в кадр, экран становится главным предметом на
+     столе, и место его переключателя — над кадром, а не в выдвижном
+     ящике. Полоса стоит В ТЕХ ЖЕ 88px, что
      сцена и так отдавала подписи: 36 (нижняя ступень сетки высот
      кнопок) + поле --space-8 сверху, подпись кадра переезжает в
      правый край полосы и перестаёт занимать свою строку.
@@ -1110,26 +971,22 @@
     if (embedded()) return null;
 
     var current = readDevice();
-    var stage = null, screen = null, cap = null, handle = null, bar = null;
+    var stage = null, screen = null, handle = null, bar = null;
 
     handle = makeSegments(host, {
       title: 'Device',
       rank: 2,
-      /* Classic: сетка 3 × 2 со словом и числом. Proposed: одна строка
-         ИКОНОК, имя и размер уходят в title и в подпись под строкой
-         (gbppl-panel-9, было — шесть чисел, gbppl-panel-8) — ряд
-         читается как одна шкала от окна до телефона, а не как
-         таблица чисел. */
-      grid: !V2,
-      row: V2,
-      caption: V2,
+      /* Одна строка ИКОНОК, имя и размер уходят в title и в подпись
+         под строкой (gbppl-panel-9) — ряд читается как одна шкала от
+         окна до телефона, а не как таблица чисел. */
+      row: true,
+      caption: true,
       value: current,
       options: DEVICES.map(function (d) {
         return {
-          label: V2 ? (d.value === 'full' ? 'Full' : d.sub) : d.label,
-          icon: V2 ? deviceIcon(d.value) : null,
+          label: d.value === 'full' ? 'Full' : d.sub,
+          icon: deviceIcon(d.value),
           value: d.value,
-          sub: V2 ? null : d.sub,
           title: d.value === 'full' ? 'Full window' : d.label + ' ' + d.sub,
           note: d.value === 'full'
             ? 'The page fills the window, as a visitor sees it.'
@@ -1151,10 +1008,6 @@
           h = screen.contentWindow.innerHeight;
         }
       } catch (e) { /* кадр ещё не приехал */ }
-      if (cap) {
-        cap.innerHTML = '<b>' + esc(deviceLabel(current)) + '</b>' +
-          '<span>' + Math.round(w) + ' × ' + Math.round(h) + '</span>';
-      }
       if (bar) {
         bar.querySelector('.gbsp-tb__w').textContent = Math.round(w) + ' × ' + Math.round(h);
       }
@@ -1216,18 +1069,16 @@
         stage.setAttribute('aria-label', 'Device preview');
         stage.innerHTML =
           '<div class="gbsp-device">' +
-            (V2 ? '' : '<p class="gbsp-device__cap"></p>') +
             '<iframe class="gbsp-screen" title="The page at the chosen device width"></iframe>' +
           '</div>';
         document.body.appendChild(stage);
         screen = stage.querySelector('.gbsp-screen');
-        cap = stage.querySelector('.gbsp-device__cap');
         screen.addEventListener('load', function () {
           measure();
           relay();
         });
         screen.src = frameSrc();
-        if (V2) buildBar();
+        buildBar();
       }
       /* Смена пресета шириной, БЕЗ перезагрузки кадра: страница
          внутри слышит resize и отвечает своими медиазапросами —
@@ -1246,7 +1097,7 @@
 
     function teardown() {
       document.documentElement.classList.remove('gbsp-devicing');
-      if (stage) { stage.remove(); stage = null; screen = null; cap = null; bar = null; }
+      if (stage) { stage.remove(); stage = null; screen = null; bar = null; }
     }
 
     /* Ключ в адресной строке идёт следом за выбором, чтобы ссылку
@@ -1311,13 +1162,13 @@
   }
 
   /* ============================================================
-     КЛАВИШИ (gbppl-panel-8, только Proposed)
+     КЛАВИШИ (gbppl-panel-8)
      ------------------------------------------------------------
      i уже переключал режим (inspect.js, gbppl-inspect-1), Esc уже
-     закрывал дровер и консоль. Proposed добавляет ряд 1..6 на
-     экраны — те же шесть чипов, что в ящике, в том же порядке, 1 =
-     Full. Ни одна не срабатывает, пока курсор в поле или зажат
-     модификатор: клавиша-одиночка в тексте — это буква.
+     закрывал дровер и консоль. К ним добавлен ряд 1..6 на экраны —
+     те же шесть чипов, что в ящике, в том же порядке, 1 = Full. Ни
+     одна не срабатывает, пока курсор в поле или зажат модификатор:
+     клавиша-одиночка в тексте — это буква.
 
      Внутри кадра клавиши слышит копия консоли, и она передаёт их
      наружу тем же способом, каким наружу уходит режим.
@@ -1328,7 +1179,6 @@
   }
 
   function wireKeys(device) {
-    if (!V2) return;
     document.addEventListener('keydown', function (e) {
       if (typingIn(e.target) || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
       var n = '123456'.indexOf(e.key);
@@ -1390,35 +1240,33 @@
         tab.setAttribute('aria-expanded', String(open));
         tab.setAttribute('aria-label',
           open ? 'Close the Design Studio panel' : 'Open the Design Studio panel');
-        /* Proposed помнит ящик между страницами (gbppl-panel-8): за
-           один проход по прототипу консоль открывают по десять раз, и
+        /* Ящик помнится между страницами (gbppl-panel-8): за один
+           проход по прототипу консоль открывают по десять раз, и
            каждый раз она встречает закрытой. Память вкладки, не
            навсегда: это состояние работы, а не настройка. */
-        if (V2) { try { sessionStorage.setItem(OKEY, open ? '1' : '0'); } catch (e) {} }
+        try { sessionStorage.setItem(OKEY, open ? '1' : '0'); } catch (e) {}
       }
 
       tab.addEventListener('click', function () {
         setOpen(shell.classList.contains('is-collapsed'));
       });
 
-      if (V2) {
-        var saved = null;
-        try { saved = sessionStorage.getItem(OKEY); } catch (e) {}
-        if (saved === '1') setOpen(true);
-        watchTab(shell);
-      }
+      var saved = null;
+      try { saved = sessionStorage.getItem(OKEY); } catch (e) {}
+      if (saved === '1') setOpen(true);
+      watchTab(shell);
 
-      /* Escape закрывает — тот же жест, что у меню хедера. В Proposed
-         очередь честная: сначала дровер пропертиз, потом ящик
-         (gbppl-panel-8). В Classic порядок прежний. */
+      /* Escape закрывает — тот же жест, что у меню хедера. Очередь
+         честная: сначала дровер пропертиз, потом ящик
+         (gbppl-panel-8). */
       document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape' || shell.classList.contains('is-collapsed')) return;
-        if (V2 && document.querySelector('.gbd-panel.is-open')) return;
+        if (document.querySelector('.gbd-panel.is-open')) return;
         /* Один Esc — одно закрытие. Слушателей на этой клавише трое
            (дровер, консоль, прибор), все на document, и наш висит
            первым: без остановки цепочки один нажим и закрывал ящик, и
-           выводил из Inspect (замер 27.08). В Classic очередь прежняя. */
-        if (V2 && e.stopImmediatePropagation) e.stopImmediatePropagation();
+           выводил из Inspect (замер 27.08). */
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
         setOpen(false);
         tab.focus();
       });
@@ -1428,7 +1276,7 @@
   }
 
   /* ============================================================
-     ЯРЛЫК: ТИШЕ И НЕ ПОПЕРЁК ДОРОГИ (gbppl-panel-8, Proposed)
+     ЯРЛЫК: ТИШЕ И НЕ ПОПЕРЁК ДОРОГИ (gbppl-panel-8)
      ------------------------------------------------------------
      Прогон нашёл две настоящие помехи: на 360 язычок ложится на крест
      адресного дровера чекаута и на угол START-попапа портала. Оба
@@ -1505,12 +1353,12 @@
   }
 
   /* ============================================================
-     ПОДВАЛ: КОПИЯ ССЫЛКИ, СОСТОЯНИЕ, КОМПОНОВКА (gbppl-panel-8)
+     ПОДВАЛ: КОПИЯ ССЫЛКИ И СОСТОЯНИЕ (gbppl-panel-8)
      ------------------------------------------------------------
      Copy link отвечает на просьбу, которая до сих пор решалась
      диктовкой в чат: «покажи мне то же самое». Ссылка несёт страницу,
-     экран, режим и компоновку, то есть весь вид целиком, и её можно
-     просто вставить.
+     экран и режим, то есть весь вид целиком, и её можно просто
+     вставить.
      ============================================================ */
   function wireFoot(host) {
     var copy = host.querySelector('.gbsp-copy');
@@ -1526,26 +1374,6 @@
             copy.classList.remove('is-said');
           }, 1500);
         });
-      });
-    }
-
-    var seg = host.querySelector('.gbsp-sec--layout');
-    if (seg) {
-      seg.addEventListener('click', function (e) {
-        var b = e.target.closest ? e.target.closest('[data-layout]') : null;
-        if (!b) return;
-        var v = b.getAttribute('data-layout');
-        if (v === LAYOUT) return;
-        try { sessionStorage.setItem(LKEY, v); } catch (err) {}
-        /* Перезагрузка честнее перерисовки: порядок секций в Proposed
-           другой в самой разметке, и собирать его на лету значило бы
-           держать две сборки одного ящика. Ключ в адресе — чтобы
-           ссылку на вариант можно было передать. */
-        try {
-          var u = new URL(location.href);
-          u.searchParams.set('panel', v);
-          location.href = u.href;
-        } catch (err) { location.reload(); }
       });
     }
 
