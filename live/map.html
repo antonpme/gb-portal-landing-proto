@@ -6,7 +6,7 @@
 <title>Live Prototype · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
-     gbppl-panel-9 — THE PAGE MAP OF THE LIVE PROTOTYPE
+     gbppl-panel-9 / -10 — THE PAGE MAP OF THE LIVE PROTOTYPE
      ------------------------------------------------------------
      Ton, 27.08, on the Proposed console: «Когда переключаешься на
      Sandboxes, попадаешь на список песочниц, а при клике на Live
@@ -21,24 +21,35 @@
      console. Nothing of its own except the tree.
 
      live\index.html DID NOT MOVE. It is still the front page of the
-     site: data-home points at it, the links inside the prototype
-     point at it, the hub door points at it. Only the Live Prototype
-     door of the PROPOSED console now opens this screen first.
+     site: data-home points at it and the links inside the prototype
+     point at it. What changed with gbppl-panel-10 is the DOOR: the hub
+     card, every studio bar and the console all open this screen first,
+     and the walk starts from the map.
 
-     WHAT THE TREE IS ALLOWED TO SAY. Names, statuses, links, and
-     where a name came from. Nothing else: a map that describes pages
-     it has not got is a map of a site nobody built.
+     WHAT THE MAP IS ALLOWED TO SAY. Names, statuses, links, and where
+     a name came from. Nothing else: a map that describes pages it has
+     not got is a map of a site nobody built.
 
        ready      the page exists in live\ and stands on the system
        expected   the name is promised somewhere real and we do not
                   have the page: the queue in studio\TODO.md (both
                   product pages) or a nav item of the live site that
                   leads nowhere in our prototype
+       container  a place that holds pages, so no status at all
+                  (gbppl-panel-10, Ton: «портал не может быть ready,
+                  потому что портал это контейнер, а не страница»)
 
-     Two of the branches carry STATES rather than files: the portal
-     dashboard, the checkout confirmation and the three booking steps
-     all live inside their page. That is said out loud in the row
-     instead of being hidden behind a link that looks like a page.
+     TWO TREES, NOT ONE (gbppl-panel-10). Ton, on the first map:
+     «веб-сайт и портал должны быть двумя отдельными деревьями с
+     точками пересечения между собой». The site is rooted at Home, the
+     portal at a container, and the four places where one hands over to
+     the other stand in a shelf of their own, drawn with a dashed line
+     rather than a branch: a crossing is not a child.
+
+     Several rows carry STATES rather than files: the portal dashboard
+     and its Start popup, the checkout confirmation, the three booking
+     steps. That is said out loud in the row instead of being hidden
+     behind a link that looks like a page.
 
      Sandbox coverage is read from system\sandbox-registry.js, the
      one place a room is registered. The page prints the count and
@@ -76,11 +87,10 @@
         <span class="gbh-lock__word">Design Studio</span>
       </a>
       <nav class="gbh-nav" aria-label="Studio">
-        <!-- The Live Prototype item points at this screen, because on
-             this screen it IS this screen. The bars of the other studio
-             pages still open live\index.html directly; unifying them is
-             one line each and waits on Ton's word about which console
-             layout stays. -->
+        <!-- The Live Prototype item points at this screen everywhere
+             now (gbppl-panel-10): the hub door, every studio bar and the
+             console all open the map first. Inside the prototype the
+             front page of the site is still live\index.html. -->
         <a class="gbh-link is-active" href="map.html" aria-current="page">Live Prototype</a>
         <a class="gbh-link" href="../sandboxes.html">Sandboxes</a>
         <a class="gbh-link" href="../system/oro/index.html">Design System</a>
@@ -98,10 +108,10 @@
       <div class="gbs-wrap">
 
         <section class="gbs-shelf">
-          <h2 class="gbs-h2">Live Prototype</h2>
-          <p class="gbs-lede">The pages of the prototype and the way they lead into each other. Ready means the page stands and runs on the system; expected means the name is promised and the page is not built yet.</p>
+          <h2 class="gbs-h2">Website</h2>
+          <p class="gbs-lede">The public site and the pages it leads into. Ready means the page stands and runs on the system; expected means the name is promised somewhere real and the page is not built yet.</p>
 
-          <div id="gbsTree"></div>
+          <div id="gbsTreeSite"></div>
         </section>
 
         <section class="gbs-shelf">
@@ -109,6 +119,20 @@
           <p class="gbs-lede">The footer of the live site leads to these pages. Our footer carries the same words and no destinations, so they stand here rather than in the tree.</p>
 
           <div id="gbsFooter"></div>
+        </section>
+
+        <section class="gbs-shelf">
+          <h2 class="gbs-h2">Portal</h2>
+          <p class="gbs-lede">A container, not a page: it holds one page of its own and the states that page can be in. Containers carry no status, only the pages and states inside them do.</p>
+
+          <div id="gbsTreePortal"></div>
+        </section>
+
+        <section class="gbs-shelf">
+          <h2 class="gbs-h2">Where the trees meet</h2>
+          <p class="gbs-lede">The two trees are separate, and these are the four places one hands over to the other. Each line is a link that exists in the markup today, not a route we would like to have.</p>
+
+          <div id="gbsCross"></div>
         </section>
 
       </div>
@@ -125,44 +149,89 @@
 
 <script src="../system/sandbox-registry.js"></script>
 <script>
-/* ---- The tree, painted from one table (gbppl-panel-9).
+/* ---- The two trees, painted from two tables (gbppl-panel-10).
 
-   The table is the page's content, so it lives on the page, the way
+   The tables are the page's content, so they live on the page, the way
    the doors of the hub lived on the hub before three surfaces needed
-   them. The one thing it does NOT own is sandbox coverage: that comes
+   them. The one thing they do NOT own is sandbox coverage: that comes
    from system\sandbox-registry.js, and the count is printed, not
    retyped.
 
-   A node is { name, href?, page?, note?, from?, kids? }.
-     href   present  -> the page exists: status ready, the row is a link
-            absent   -> status expected, the row is not a link at all
-     page   id in the sandbox registry, for the coverage line
-     note   what the row is, when it is not a file of its own
-     from   where the name of an expected page came from
+   TWO TREES, NOT ONE (Ton, 27.08): "портал не может быть ready, потому
+   что портал это контейнер, а не страница. Дерево сделано неправильно:
+   веб-сайт и портал должны быть двумя отдельными деревьями с точками
+   пересечения между собой". So the site is one tree rooted at Home, the
+   portal is another rooted at a CONTAINER, and the places they hand over
+   to each other are drawn apart from both, in their own shelf.
+
+   A node is { name, href?, page?, note?, from?, container?, kids? }.
+     href       present -> the page exists: status ready, the row is a link
+                absent  -> status expected, the row is not a link at all
+     container  the row is a place that holds pages, not a page: no
+                status at all, because a container cannot be ready
+     page       id in the sandbox registry, for the coverage line
+     note       what the row is, when it is not a file of its own
+     from       where the name of an expected page came from
    ---- */
 (function () {
   'use strict';
 
-  var TREE = [
+  /* THE SITE. Home is the root because every other page of the site is
+     reached from it, the checkout included: the catalog opens a gift and
+     the gift lands there. */
+  var SITE = [
     { name: 'Home', href: 'index.html', page: 'home', kids: [
       { name: 'Gifts catalog', href: 'catalog/index.html', page: 'catalog', kids: [
         { name: 'Product page, old layout', from: 'in the queue' },
         { name: 'Product page, new layout', from: 'in the queue' }
       ] },
       { name: 'Customize', from: 'in the header nav' },
-      { name: 'Explore', from: 'in the header nav' }
-    ] },
-    { name: 'Portal', href: 'portal.html', page: 'portal', kids: [
-      { name: 'Dashboard', href: 'portal.html', note: 'a state of the portal page' }
-    ] },
-    { name: 'Checkout', href: 'checkout.html', page: 'checkout', kids: [
-      { name: 'Confirmation', href: 'checkout.html', note: 'a state of the checkout page' }
-    ] },
-    { name: 'Book a meeting', href: 'book-a-meeting.html', page: 'booking', kids: [
-      { name: 'Details', href: 'book-a-meeting.html', note: 'step 1' },
-      { name: 'Pick a time', href: 'book-a-meeting.html', note: 'step 2' },
-      { name: 'Confirmed', href: 'book-a-meeting.html', note: 'step 3' }
+      { name: 'Explore', from: 'in the header nav' },
+      { name: 'Book a meeting', href: 'book-a-meeting.html', page: 'booking', kids: [
+        { name: 'Details', href: 'book-a-meeting.html', note: 'step 1' },
+        { name: 'Pick a time', href: 'book-a-meeting.html', note: 'step 2' },
+        { name: 'Confirmed', href: 'book-a-meeting.html', note: 'step 3' }
+      ] },
+      { name: 'Checkout', href: 'checkout.html', page: 'checkout', kids: [
+        { name: 'Confirmation', href: 'checkout.html', note: 'a state of the checkout page' }
+      ] }
     ] }
+  ];
+
+  /* THE PORTAL. The root holds no status of its own: it is the place
+     behind the sign in, and a place cannot be ready. Everything under it
+     is either the one page we have or a state that page can be in, and
+     every name below is a literal in live\portal.html. */
+  var PORTAL = [
+    { name: 'Portal', container: true, kids: [
+      { name: 'Portal landing', href: 'portal.html', page: 'portal' },
+      { name: 'Dashboard', href: 'portal.html', note: 'a state of the portal page' },
+      { name: 'Talk to a gifting expert', href: 'portal.html', note: 'the Start popup, a state of the portal page', kids: [
+        { name: 'Chat with our team', href: 'portal.html', note: 'a door of the popup' },
+        { name: 'Book a meeting', href: 'portal.html', note: 'a door of the popup' },
+        { name: 'Call us', href: 'portal.html', note: 'a door of the popup' }
+      ] }
+    ] }
+  ];
+
+  /* WHERE THE TREES MEET. Four crossings, and every one of them is a
+     link that exists in the markup today. The row is a statement, not a
+     door: the trees above already carry every address, and a card with
+     two names in it cannot be one link without lying about which name
+     was clicked. */
+  var CROSS = [
+    { from: 'My Portal, in the site header',
+      to:   'Portal landing',
+      why:  'the header button carries portal-href on every page of the site' },
+    { from: 'Explore Gifts, in the portal',
+      to:   'Gifts catalog',
+      why:  'the portal opens the v1 catalog in an overlay' },
+    { from: 'Portal',
+      to:   'Checkout',
+      why:  'the checkout keeps a scenario that arrives from the portal' },
+    { from: 'Talk to a gifting expert, in the portal',
+      to:   'Book a meeting',
+      why:  'the booking flow runs inside the popup' }
   ];
 
   /* Words taken from the footer of the live site, verbatim, live case
@@ -175,6 +244,13 @@
     'Client Advisor', 'Client Service', 'Shipping Information',
     'Terms and Conditions', 'Warranty', 'FAQ'
   ];
+
+  /* The same glyph the doors of the hub wear, in the quiet ink of the
+     crossing row: an arrow that says which way the hand-over goes. */
+  var ARROW =
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" ' +
+    'stroke="currentColor" stroke-width="1.5" stroke-linecap="round" ' +
+    'stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
   function esc(v) {
     return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -199,12 +275,22 @@
 
   function node(n) {
     var ready = !!n.href;
+    var stamp = ' style="--gbs-step: ' + (step++) + '"';
+
+    /* A container says what it is instead of how far along it is: ready
+       and expected are both answers to a question that cannot be asked
+       about a place (Ton 27.08). */
+    if (n.container) {
+      return '<div class="gbs-node gbs-node--place"' + stamp + '>' +
+             '<span class="gbs-node__name">' + esc(n.name) + '</span>' +
+             '<span class="gbs-node__aside">container</span></div>';
+    }
+
     var chip = '<span class="gbs-chip ' + (ready ? 'gbs-chip--ready">ready' : 'gbs-chip--expected">expected') + '</span>';
     var name = '<span class="gbs-node__name">' + esc(n.name) + '</span>';
     var side = ready ? (n.note || coverage(n.page)) : (n.from || '');
     var aside = side ? '<span class="gbs-node__aside">' + esc(side) + '</span>' : '';
     var body = name + chip + aside;
-    var stamp = ' style="--gbs-step: ' + (step++) + '"';
     if (!ready) return '<div class="gbs-node gbs-node--expected"' + stamp + '>' + body + '</div>';
     return '<a class="gbs-node" href="' + esc(n.href) + '"' + stamp + '>' + body + '</a>';
   }
@@ -216,14 +302,39 @@
     return '<li class="gbs-branch">' + node(n) + kids + '</li>';
   }
 
-  var mount = document.getElementById('gbsTree');
-  if (mount) {
+  /* Каскад считается ОТ КАЖДОЙ полки заново (gbppl-panel-10): узлов
+     на странице стало тридцать пять, и сквозной счёт довёл бы приход
+     последней строки до полутора секунд. Полка появляется за свои
+     полсекунды, и все четыре идут разом. */
+  function paint(id, rows) {
+    var mount = document.getElementById(id);
+    if (!mount) return;
+    step = 0;
     mount.innerHTML = '<ul class="gbs-tree gbs-tree--top">' +
-      TREE.map(branch).join('') + '</ul>';
+      rows.map(branch).join('') + '</ul>';
+  }
+
+  paint('gbsTreeSite', SITE);
+  paint('gbsTreePortal', PORTAL);
+
+  var cross = document.getElementById('gbsCross');
+  if (cross) {
+    step = 0;
+    cross.innerHTML = '<ul class="gbs-tree gbs-cross">' +
+      CROSS.map(function (c) {
+        return '<li class="gbs-branch">' +
+          '<div class="gbs-node gbs-node--cross" style="--gbs-step: ' + (step++) + '">' +
+            '<span class="gbs-node__name">' + esc(c.from) + '</span>' +
+            '<span class="gbs-cross__link" aria-hidden="true">' + ARROW + '</span>' +
+            '<span class="gbs-node__name">' + esc(c.to) + '</span>' +
+            '<span class="gbs-node__aside">' + esc(c.why) + '</span>' +
+          '</div></li>';
+      }).join('') + '</ul>';
   }
 
   var flat = document.getElementById('gbsFooter');
   if (flat) {
+    step = 0;
     flat.innerHTML = '<ul class="gbs-tree gbs-flat">' +
       FROM_FOOTER.map(function (name) {
         return '<li class="gbs-branch">' +
