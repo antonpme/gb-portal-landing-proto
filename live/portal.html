@@ -3610,7 +3610,13 @@
           <a class="snav-item" href="#"><span class="snav-icon"><img src="../system/icons/alarm.svg" alt=""></span><span class="snav-label">Notifications</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="../system/icons/cogwheel.svg" alt=""></span><span class="snav-label">Account Information</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="../system/icons/lock.svg" alt=""></span><span class="snav-label">Password</span></a>
-          <a class="snav-item" href="#"><span class="snav-icon"><img src="../system/icons/leave.svg" alt=""></span><span class="snav-label">Log out</span></a>
+          <!-- The exit, and since gbppl-header-cart-1 (28.08) a live one: it
+               drops sessionStorage 'gbppl-signed-in' and walks out to the
+               public home (wired at the foot of this file). The WORDING stays
+               live's own «Log out» — the list above says the live portal keeps
+               it verbatim, and renaming it "Sign out" for the sake of our own
+               vocabulary would put our word in the client's mouth. -->
+          <a class="snav-item" href="#" data-gbppl-signout><span class="snav-icon"><img src="../system/icons/leave.svg" alt=""></span><span class="snav-label">Log out</span></a>
         </nav>
       </section>
 
@@ -4087,6 +4093,21 @@
      often as from a server, and ES modules meet CORS there. -->
 <script src="../system/components/auth.js"></script>
 <script src="../system/components/booking.js"></script>
+<!-- A THIRD one since gbppl-header-cart-1 (2026-08-28), and the
+     paragraph above does not describe it. header.js defines
+     <gb-site-header>, which this page does not stand (both its bars
+     are assembled from classes), but the file also holds the
+     prototype's ONE place of truth about being signed in:
+     window.GbAuth over sessionStorage 'gbppl-signed-in'. Ton, 28.08:
+     «Корзина должна быть видна только авторизованным пользователям.
+     Пока ты не авторизован, она не отображается.» This page is where
+     that state is switched on and off (the script at the foot, next
+     to the cart-is-a-door one), and it goes through the owner rather
+     than keeping a second copy of the key's name. Loading it costs
+     this page nothing else: with no <gb-site-header> in the markup
+     there is nothing to upgrade, and it styles nothing (header.css
+     was linked in the head back on 25.08). -->
+<script src="../system/components/header.js"></script>
 
 <script>
 (function () {
@@ -5225,6 +5246,59 @@
       location.href = 'checkout.html' + location.search;
     });
   }
+})();
+</script>
+
+<!-- ============================================================
+     THE PORTAL IS THE SIGN IN — gbppl-header-cart-1, 2026-08-28.
+     ------------------------------------------------------------
+     Ton, 28.08, verbatim: «Корзина должна быть видна только
+     авторизованным пользователям. Пока ты не авторизован, она не
+     отображается.» The cart of the SITE bar is drawn by
+     <gb-site-header>, which reads sessionStorage 'gbppl-signed-in';
+     this page is where that key is written, because this page is
+     where the prototype signs a person in and out.
+
+     WHY OPENING THE PAGE IS THE SIGN IN. There is no login form here
+     and never has been. The portal has no guest state at all: the
+     sidebar draws Anton Parkhomenko and his verified email from the
+     first paint, every panel is his, and the only account door it
+     carries is the exit at the foot of the sidebar. So in this
+     prototype ENTERING THE PORTAL IS THE SIGN IN, and it is said out
+     loud here rather than assumed anywhere else. When a real sign in
+     screen arrives (system/pages/auth.html holds the measured one),
+     the true call moves to its submit and this line goes; the key,
+     the event and every reader of them stay as they are.
+
+     WHY LOG OUT LEAVES. A portal you are signed out of is not a page
+     to keep looking at, and both of this page's own bars carry a
+     cart. So the exit drops the flag and walks out to the public
+     home, carrying the container keys the way the wordmark does
+     (Ton-12: the room you are in survives the move; ?device= must
+     still be a tablet on the other side).
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+  var auth = window.GbAuth;
+  if (!auth) return;   /* header.js absent: the page is simply itself */
+
+  auth.setSignedIn(true);
+
+  /* Same list the wordmark of <gb-site-header> carries, minus the
+     portal-only keys that mean nothing on the public home. */
+  var KEEP = ['device', 'studio'];
+
+  var exit = document.querySelector('[data-gbppl-signout]');
+  if (!exit) return;
+  exit.addEventListener('click', function (event) {
+    event.preventDefault();
+    auth.setSignedIn(false);
+    var have = new URLSearchParams(location.search), carry = new URLSearchParams();
+    KEEP.forEach(function (k) { if (have.has(k)) carry.set(k, have.get(k)); });
+    var q = carry.toString();
+    location.href = 'index.html' + (q ? '?' + q : '');
+  });
 })();
 </script>
 

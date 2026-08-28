@@ -120,15 +120,28 @@
     if (!slot || !account || !search) return false;
 
     /* Account goes before the cart: the two utilities of the site bar sit in
-       the corner, and the person glyph reads first of the pair. */
+       the corner, and the person glyph reads first of the pair.
+
+       gbppl-header-cart-1 (28.08): THERE MAY BE NO CART. Ton: «Корзина должна
+       быть видна только авторизованным пользователям. Пока ты не авторизован,
+       она не отображается», so <gb-site-header> puts the cart in and takes it
+       out with sessionStorage 'gbppl-signed-in'. A guest bar has no cart node
+       to aim at, and insertBefore(account, null) would APPEND — landing the
+       person glyph after the search and flipping the pair. So the anchor falls
+       back to our own search glyph, which is where the cart would have stood.
+       Nothing here has to answer to the flag afterwards: the build carries no
+       cart of its own (grepped, 28.08 — the only "cart" in index-*.js is prose
+       inside the customizer), and when the header adds the cart back it aims
+       at the search too, so the corner reads account -> cart -> search either
+       way round. */
+    var ourSearch = slot.querySelector('button.gbh-icon-button[aria-label="Search gifts"]');
     var cart = slot.querySelector('.gbh-icon-button[aria-label^="Cart"]');
-    slot.insertBefore(account, cart);
+    slot.insertBefore(account, cart || ourSearch);
     adopt(account.querySelector('.icon-button'));
 
     /* Search REPLACES ours. The component's search glyph is a dead button of
        the prototype (no handler, nowhere to go); the build's opens a working
        overlay over this very catalogue. One glyph, the live one. */
-    var ourSearch = slot.querySelector('button.gbh-icon-button[aria-label="Search gifts"]');
     if (ourSearch) slot.replaceChild(search, ourSearch);
     else slot.appendChild(search);
     adopt(search);

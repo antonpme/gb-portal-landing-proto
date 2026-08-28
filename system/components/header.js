@@ -118,9 +118,111 @@
    не поддерживает. ОСОЗНАННОЕ УПРОЩЕНИЕ: все пункты и обе кнопки
    ведут на страницу категорий как есть. Когда у каталога появится
    ключ категории — здесь меняется одна строка ITEMS.
+
+   ------------------------------------------------------------
+   THE CART BELONGS TO A SIGNED IN VISITOR (gbppl-header-cart-1,
+   2026-08-28)
+   ------------------------------------------------------------
+   Ton, 28.08, verbatim: «Корзина должна быть видна только
+   авторизованным пользователям. Пока ты не авторизован, она не
+   отображается.» And, in the same message, about the bar itself:
+   «по поводу меню: я бы оставил бургер» — so the grid, the 1280
+   collapse and the rhythm of the bar are NOT touched by this wave.
+   The right pocket is simply shorter for a guest.
+
+   HOW "SIGNED IN" IS DECIDED, AND WHERE IT IS WRITTEN. One place of
+   truth for the whole prototype: sessionStorage 'gbppl-signed-in'
+   === '1'. Session, not local, because a demo is one sitting and the
+   next tab should open a guest again.
+
+     SET     live/portal.html, on load. The portal has NO sign in
+             form: it has never had a guest state, the sidebar draws
+             a name and an email from the first paint, and the only
+             account door it carries is the exit. So in this
+             prototype ENTERING THE PORTAL IS THE SIGN IN, and the
+             page says so out loud (one script at its foot, next to
+             the cart-is-a-door one).
+     CLEARED live/portal.html, the sidebar's last visible item, «Log
+             out» — the live portal's own exit, kept under the live
+             wording (Ton-3: the list is verbatim from live, and
+             renaming it "Sign out" for our sake would be our word in
+             the client's mouth). It drops the flag and walks out to
+             the public home, because a portal you are signed out of
+             is not a page to keep looking at.
+     DEMO    ?signedin=1 / ?signedin=0 on ANY page carrying this
+             file: sets or clears the flag and then removes itself
+             with history.replaceState, so the address bar keeps the
+             view and not the switch. ONE SHOT ON PURPOSE, and NOT in
+             the KEEP list above: a state is not a container (Ton-12
+             is about which room you are in, and being signed in is
+             not a room). Written for the showing: a link can hand
+             someone the signed in bar without a console.
+
+   HOW A CHANGE TRAVELS. sessionStorage fires no 'storage' event in
+   the tab that wrote it, so every writer goes through setSignedIn(),
+   which dispatches window event 'gbppl-auth' after the write; each
+   header listens for it and for 'storage'. The second one is not
+   decoration: the studio's device scene runs the page in a
+   same-origin iframe, an iframe SHARES the tab's session storage
+   area, and 'storage' is exactly how a write on one side reaches the
+   other.
+
+   WHAT IS NOT TOUCHED. The account glyph (it arrives on the catalog
+   from the bundle through oro-header-bridge.js and is the only door
+   to signing in there) and the search dot: Ton spoke about the cart
+   and only the cart.
    ============================================================ */
 (function () {
   'use strict';
+
+  /* ----------------------------------------------------------------
+     SIGNED IN, THE ONE PLACE OF TRUTH (gbppl-header-cart-1, 28.08).
+     See the head of this file for Ton's decision and for who writes.
+     Published as window.GbAuth so the portal, which assembles its two
+     bars from classes rather than from <gb-site-header>, reads and
+     writes the same key instead of keeping a second copy of it.
+     ---------------------------------------------------------------- */
+  var AUTH_KEY = 'gbppl-signed-in';
+  var AUTH_EVENT = 'gbppl-auth';
+
+  /* Storage throws rather than returns null in a locked-down browser
+     (Safari private mode, third-party frame): a guest is the honest
+     answer to "cannot tell", and it is also the safe one. */
+  function signedIn() {
+    try { return sessionStorage.getItem(AUTH_KEY) === '1'; } catch (e) { return false; }
+  }
+  function setSignedIn(on) {
+    try {
+      if (on) sessionStorage.setItem(AUTH_KEY, '1');
+      else sessionStorage.removeItem(AUTH_KEY);
+    } catch (e) { /* nothing to do: the bar below just stays a guest */ }
+    window.dispatchEvent(new Event(AUTH_EVENT));
+  }
+
+  window.GbAuth = {
+    key: AUTH_KEY,
+    event: AUTH_EVENT,
+    signedIn: signedIn,
+    setSignedIn: setSignedIn
+  };
+
+  /* The demo key, read once at load and then wiped from the address:
+     ?signedin=1 turns the state on, anything else in that slot (0,
+     no, off) turns it off. Runs before the first header connects, so
+     the bar is drawn right the first time and never blinks. */
+  (function readSignedInKey() {
+    var have;
+    try { have = new URLSearchParams(location.search); } catch (e) { return; }
+    if (!have.has('signedin')) return;
+    var want = have.get('signedin') === '1';
+    have.delete('signedin');
+    var rest = have.toString();
+    try {
+      history.replaceState(null, '',
+        location.pathname + (rest ? '?' + rest : '') + location.hash);
+    } catch (e) { /* file:// refuses replaceState; the key just stays visible */ }
+    setSignedIn(want);
+  })();
 
   /* Тексты и aria-лейблы — один в один с лайвом (24.08); href у всех
      один, страница категорий (см. шапку файла). */
@@ -174,6 +276,20 @@
     );
   };
 
+  /* Cart glyph and badge, unchanged from the template it left
+     (gbppl-header-cart-1): same 22px stroke drawing, same .gbh-count.
+     data-gbh-cart is the handle this file and the catalog bridge use
+     to find it, the way [data-gbh-outline] names the outline button:
+     an address, not a name. */
+  var CART = function () {
+    return (
+      '<button class="gbh-icon-button" type="button" aria-label="Cart, 3 items" data-gbh-cart>' +
+        '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>' +
+        '<span class="gbh-count" aria-hidden="true">3</span>' +
+      '</button>'
+    );
+  };
+
   var TEMPLATE = function (logoSrc, catalogHref, portalHref, meetingHref, homeHref) {
     return (
       '<header class="gb-header">' +
@@ -199,10 +315,10 @@
                2026-08-12); лейбл в своём span per живой анатомии. */
             '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="' + meetingHref + '"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
             '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" href="' + portalHref + '" data-gbh-outline><span class="gb-btn__label" data-pc-section="label">My Portal</span></a>' +
-            '<button class="gbh-icon-button" type="button" aria-label="Cart, 3 items">' +
-              '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>' +
-              '<span class="gbh-count" aria-hidden="true">3</span>' +
-            '</button>' +
+            /* The cart is NOT in the template: it belongs to a signed
+               in visitor and is put in (and taken out) by __applyCart
+               below. Its markup lives in CART() so that the glyph and
+               the badge are still written once. */
             '<button class="gbh-icon-button" type="button" aria-label="Search gifts">' +
               '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>' +
             '</button>' +
@@ -210,6 +326,36 @@
         '</div>' +
       '</header>'
     );
+  };
+
+  /* ============================================================
+     КЛЮЧИ КОНТЕКСТА, ОДИН СПИСОК (gbppl-comments-b, 28.08)
+     ------------------------------------------------------------
+     Список жил внутри connectedCallback, потому что читал его один
+     лого. Теперь читателей двое: Comment mode собирает из него
+     строку ВЕРСИИ страницы (спека §5), и вторая копия разошлась бы с
+     этой на первом же новом ключе.
+
+     Разведены две природы, которые до сих пор лежали вперемешку:
+
+       content   ЧТО смотрят: сценарий чекаута, шапка портала,
+                 раскладка, светлый прифутер. Меняет содержимое
+                 страницы, поэтому и есть версия, к которой
+                 привязывается комментарий.
+       view      КАК смотрят: экран (device) и то, что страница едет
+                 внутри кадра (studio). Содержимого не меняют, и
+                 одна и та же строка на мобильном и на десктопе —
+                 это одна и та же строка.
+
+     Лого несёт ОБА (Тон-12: контейнер и экран переживают переход),
+     комментарий — только первый.
+     ============================================================ */
+  var KEEP_CONTENT = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock', 'prefooter'];
+  var KEEP_VIEW    = ['device', 'studio'];   /* gbppl-panel-10: panel ушёл со второй компоновкой */
+  window.GB_KEEP = {
+    content: KEEP_CONTENT,
+    view: KEEP_VIEW,
+    all: KEEP_CONTENT.concat(KEEP_VIEW)
   };
 
   class GbSiteHeader extends HTMLElement {
@@ -249,7 +395,51 @@
       }
       this.innerHTML = TEMPLATE(logoSrc, catalogHref, portalHref, meetingHref, homeHref);
       this.__wireMenu();
+      this.__wireCart();
       if (this.getAttribute('variant') === 'transparent-dark') this.__wireTransparent();
+    }
+
+    /* THE CART FOLLOWS THE STATE (gbppl-header-cart-1, Ton 28.08; the
+       head of this file carries the decision). The node is put in and
+       taken out rather than hidden with CSS: «не отображается» is a
+       statement about the bar, and a display:none control still sits
+       in the markup for anyone reading it. Flex gap counts real
+       children, so the right pocket closes up on its own and the grid
+       (168 / minmax(0,1fr) / auto, gap 32) is not touched — trap 17
+       stands as it stands. */
+    __wireCart() {
+      var self = this;
+      var apply = function () { self.__applyCart(); };
+      apply();
+      /* Same tab: sessionStorage fires nothing for its own writer, so
+         setSignedIn() shouts. Other browsing context of the same tab
+         (the studio's device iframe shares this session storage area):
+         'storage' is the only thing that crosses. */
+      window.addEventListener(AUTH_EVENT, apply);
+      window.addEventListener('storage', function (e) {
+        if (!e.key || e.key === AUTH_KEY) apply();
+      });
+    }
+
+    __applyCart() {
+      var slot = this.querySelector('.gbh-actions');
+      if (!slot) return;
+      var cart = slot.querySelector('[data-gbh-cart]');
+      if (!signedIn()) {
+        if (cart) cart.parentNode.removeChild(cart);
+        return;
+      }
+      if (cart) return;
+      var host = document.createElement('div');
+      host.innerHTML = CART();
+      cart = host.firstChild;
+      /* The search glyph closes the row on every page: ours, or the
+         bundle's, which oro-header-bridge.js stands in its place under
+         the same aria-label. Anchoring to it keeps the corner order
+         account -> cart -> search whichever way round the two arrived,
+         and insertBefore(node, null) simply appends if a page ever
+         drops the search dot. */
+      slot.insertBefore(cart, slot.querySelector('[aria-label="Search gifts"]'));
     }
 
     /* Планка над видео. Порог 50 — живая константа; порог белого
