@@ -957,3 +957,79 @@ html.gbc-on .gbdoc-regcard__go[href]::after { pointer-events: none; }
   transform: none;
   transition: none;
 }
+
+/* ============================================================
+   gbppl-oro-eyebrow-2 — THE CONTEXT SCENE
+   ------------------------------------------------------------
+   Тон, 28.08, глядя на Overview витрины Eyebrow (два образца
+   в пустом контейнере): «Что можно понять по превью eyebrow
+   здесь? Там как будто кто-то нагадил текстом просто
+   в контейнер.» Согласовано: айбрау не читается сам по себе,
+   только в своём месте.
+
+   A specimen shelf works for an organism that keeps its shape
+   when you take it out of the page: a button is a button on any
+   ground. An Eyebrow is not that. It is a caption, and a caption
+   with nothing under it is a word. So the smallest components of
+   the system get a SCENE instead of a slot: a small piece of a
+   real place, with the specimen standing where it actually
+   stands, and a caption underneath naming the place.
+
+   Why not `.gbdoc-shelf` with `--cols`: the shelf is ONE white
+   card holding several specimens side by side on a shared floor,
+   and its slots caption from above in Zinc 900. A scene is the
+   opposite arrangement — several separate grounds, each its own
+   little page, named quietly from below — so the two cannot be
+   the same class. Everything else here is borrowed: the ground,
+   the hairline, the radius and the padding are the plinth values
+   `.gbdoc-shelf` already uses (only the ground steps from white
+   to Zinc 50, because what stands on a scene is usually a white
+   card), the caption is `.gb-eyebrow` itself, and the gap
+   between an eyebrow and the thing under it is `--space-8`.
+
+   THE 8 IS MEASURED, NOT CHOSEN. Two places in the house already
+   stand an eyebrow over a title, and both say 8: the live
+   checkout, where every section caption is `.gb-eyebrow mb-2`
+   (measured 7.99 at 1280, gbppl-oro-eyebrow-2), and the registry
+   card of this showcase, whose `gap` is `--space-8`. live/index
+   was measured too and has no such pair at all: its heading strip
+   is a serif h2 on its own.
+   ============================================================ */
+.gbdoc-scenes {
+  display: grid;
+  /* LAYOUT MEASURE, the same one .gbdoc-reg uses for its cards:
+     240 is the narrowest a small scene reads at. Three across a
+     1280 reading column, one at 390. */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  /* One height for all of them at every width, stacked or in a row:
+     three scenes of the same component are one comparison, and a
+     row of different heights reads as three different things. */
+  grid-auto-rows: 1fr;
+  gap: var(--space-16);
+  margin-top: var(--space-16);
+}
+/* The rows of the grid stretch, so the stages come out one height
+   whatever stands in them. */
+.gbdoc-scene { display: flex; flex-direction: column; }
+.gbdoc-scene__stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-24);
+  background: var(--zinc-50);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+}
+/* The caption is the role itself, quiet and underneath: the scene
+   above it is the loud half. */
+.gbdoc-scene__cap { display: block; margin-top: var(--space-8); }
+
+/* An eyebrow and the thing it stands over, as one block. Whatever
+   the pair is made of brings its own type and its own colour; the
+   pair brings only the rhythm. */
+.gbdoc-scene__pair > * { margin: 0; }
+.gbdoc-scene__pair > .gb-eyebrow { display: block; margin-bottom: var(--space-8); }
+/* The preview tile of a registry card centres what stands in it, so
+   a pair standing there centres with it. */
+.gbdoc-regcard__spec > .gbdoc-scene__pair { text-align: center; }
