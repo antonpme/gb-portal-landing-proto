@@ -44,6 +44,40 @@
    measures that are not tokens — the 520px panel and the 40 per
    cent backdrop — are marked NO TOKEN below, because the system
    has no panel-width scale and no scrim colour yet.
+
+   AND NOT ONE SIZE OF TYPE EITHER, since gbppl-drawer-type-1
+   (28.08). Three numbers here were type written as literals —
+   the title line height, the body size and the subtitle size —
+   and the audit of the showcase said so out loud: «type does
+   have a scale». They are now declared once, at the top of the
+   panel, each naming the rung of the record it stands on
+   (system/type-scale.js). Two of the three were already sitting
+   on a rung and only had to say which one. Two numbers moved,
+   the body size and the line box of the foot, which the wave
+   found on the way and which was the same 14 as the subtitle
+   wearing a different ratio:
+
+     .gbd-body  15px/1.6 -> 16px/1.5   +1px, LINE BOX UNCHANGED
+     .gbd-foot  14px/1.6 -> 14px/1.5   line box 22.4 -> 21
+
+   15 is not a rung of the reading group at all; the record says
+   content sits at 16 and secondary content at 14, and the group
+   has no 14 < x < 16 role. Body base is 16/24, verified live, so
+   the drawer's reading size became 16 with a 1.5 ratio and the
+   line box stayed exactly 24px, which is what it had been at
+   15/1.6. Nothing measurable moved: the wave read all five
+   drawers (Inspect, Comment, sign in, checkout address, the
+   playground) at 390 and 1280, and in the four real ones NOT ONE
+   element inherits the body size — Inspect and Comment set their
+   own 12, 13, 14 and 15 on every line they draw. The size is the
+   default under loose prose a caller sends in, and loose prose
+   in a panel is content.
+
+   The foot is the fourth. It is the subtitle's rung, 14, and it
+   was carrying 1.6 while the subtitle carried 1.5: one rung with
+   two line boxes in one file. Both now read the same pair, and
+   the strip loses 1.4px a line, which on the tallest foot in the
+   house (Inspect, three lines at 1280) is four pixels.
    ============================================================ */
 
 gb-drawer { display: contents; }
@@ -89,6 +123,38 @@ gb-drawer { display: contents; }
 /* Leaving accelerates: one clock for both, 350ms. */
 .gbd-scrim.is-out,
 .gbd-panel.is-out { transition-duration: var(--mo-medium-out); transition-timing-function: var(--mo-exit); }
+
+/* ---- The type of the drawer ----
+   gbppl-drawer-type-1. Declared on the panel and not on
+   <gb-drawer>, because the panel is moved to document.body when
+   it opens (drawer.js) and would inherit nothing from the host.
+   Every value below is a rung of the record, and the comment on
+   each one is the role it is standing in. Nothing here is a
+   preference: change one and it stops matching the record. */
+.gbd-panel {
+  /* Serif title. The reference measured 20.13 and 22.75 on a
+     floating root; our root is a fixed 16 and these are the two
+     rungs beside them. The ratio is the one both serif title
+     roles of the record carry: H1 page title 28/35 and H1 panel
+     title 32/40 are 1.25 exactly, and a drawer head is a panel
+     title. It is also what centres the first line on the circle,
+     which is why the padding below is written from it. */
+  --gbd-title-size: 24px;
+  --gbd-title-lh: 1.25;
+
+  /* Reading size. Body base, 16/24, verified live. The ratio is
+     written as 1.5 rather than 24px so the line box follows the
+     size if the size ever steps. */
+  --gbd-body-size: 16px;
+  --gbd-body-lh: 1.5;
+
+  /* The second voice: the subtitle that opens the body and the
+     foot. Small regular, 14, and the 21px line box the record
+     records at that rung three times over (Price 14/21, Navigation
+     item 14/21, Choice card label 14/21). */
+  --gbd-aside-size: 14px;
+  --gbd-aside-lh: 1.5;
+}
 
 /* ============================================================
    ---- Head ----   ONE HEAD FOR EVERY DRAWER IN THE HOUSE
@@ -163,11 +229,11 @@ gb-drawer { display: contents; }
   flex: 1 1 auto;
   min-width: 0;
   margin: 0;
-  padding-block: calc((var(--gb-btn-icon-size) - 1.25em) / 2);
+  padding-block: calc((var(--gb-btn-icon-size) - var(--gbd-title-lh) * 1em) / 2);
   font-family: var(--font-serif);
-  font-size: 24px;
+  font-size: var(--gbd-title-size);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: var(--gbd-title-lh);
   color: var(--zinc-900);
   overflow-wrap: anywhere;   /* a long single word yields, the panel does not */
 }
@@ -190,8 +256,8 @@ gb-drawer { display: contents; }
   flex: 1 1 auto;
   overflow-y: auto;
   padding: var(--space-24);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: var(--gbd-body-size);
+  line-height: var(--gbd-body-lh);
   color: var(--zinc-700);
 }
 
@@ -200,8 +266,8 @@ gb-drawer { display: contents; }
    Zinc 500, first line, above everything the caller sent. */
 .gbd-sub {
   margin: 0 0 var(--space-16);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: var(--gbd-aside-size);
+  line-height: var(--gbd-aside-lh);
   color: var(--zinc-500);
 }
 .gbd-sub:empty { display: none; }
@@ -212,8 +278,8 @@ gb-drawer { display: contents; }
   padding: var(--space-16) var(--space-24);
   border-top: 1px solid var(--zinc-200);
   background: var(--zinc-50);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: var(--gbd-aside-size);
+  line-height: var(--gbd-aside-lh);
   color: var(--zinc-600);
 }
 .gbd-foot:empty { display: none; }
@@ -225,5 +291,7 @@ gb-drawer { display: contents; }
       var(--space-16);
   }
   .gbd-body { padding: var(--space-16); }
-  .gbd-title { font-size: 20px; }
+  /* The title steps down one rung; the ratio does not step, so
+     the padding that centres the first line follows it. */
+  .gbd-panel { --gbd-title-size: 20px; }
 }
