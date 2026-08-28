@@ -26,9 +26,19 @@
      будем переделывать первыми: улучшить структуру, смерджить
      дублирующие по логике страницы». Explore says so in its own right
      hand column, «in the header nav · redesign next», and it grew no
-     children because the live nav gives it none (see the row). And the
-     footer pages were confirmed where they are: their own shelf at the
-     bottom, marked as coming from the footer, nothing to change.
+     children because the live nav gives it none (see the row).
+
+     And once more the same day: «Expected from footer должно стать
+     частью веб-сайта, отдельной группой внутри него. Вверху всего два
+     таба: Website и Portal. Я не хочу скроллить далеко вниз, чтобы
+     найти портал: переключиться на него сразу вверху... Всё, что из
+     футера относится к сайту, остаётся на сайте, а то, что часть
+     портала, в портале.» So the page grew one H1 and two tabs above the
+     content, each tree lives under its own tab, the crossings stay under
+     both, and the footer shelf was dissolved into two groups inside the
+     trees. The split of the eleven footer names is OURS and goes to
+     Russell and Julia: the portal group says «to confirm with the
+     client» out loud.
      ------------------------------------------------------------
      Ton, 27.08, on the Proposed console: «Когда переключаешься на
      Sandboxes, попадаешь на список песочниц, а при клике на Live
@@ -129,27 +139,61 @@
     <div class="gb-container">
       <div class="gbs-wrap">
 
-        <section class="gbs-shelf">
-          <h2 class="gbs-h2">Website</h2>
-          <p class="gbs-lede">The showroom upstairs: the same gifts and the same catalog as the portal, laid out to show and to tell. Ready means the page stands and runs on the system; expected means the name is promised somewhere real and the page is not built yet.</p>
+        <!-- One title for the whole map (gbppl-map-2, Ton 28.08: «вверху
+             всего два таба: Website и Portal... не хочу скроллить далеко
+             вниз, чтобы найти портал»). The shelf titles used to be the
+             only headings on the page and they were doing two jobs at
+             once, naming the page and naming the floor. Now the page is
+             named once, at the top, and each floor keeps its own H2
+             under the tab that opens it. -->
+        <div class="gbs-hubhead">
+          <h1 class="gbs-h1">Live Prototype</h1>
+        </div>
 
-          <div id="gbsTreeSite"></div>
-        </section>
+        <!-- THE TWO TABS. Ton-6 before drawing: the studio already owns
+             this control. It is .gbdoc-seg from docs.css, the segment the
+             workbench in system/oro/components.html and the filters on
+             sandboxes.html both wear: transparent ground, 2px Blue 600
+             under the chosen one, and its own --mo-micro transition. What
+             it is NOT is the live site's <gb-brand-tabs>: that tablist
+             draws six LogoFont wordmarks with PUA ligatures and a sliding
+             bar measured off them, a home-page organism with no text tab
+             in it. The only thing this page needed on top of the segment
+             was page rhythm, and that is one block at the foot of
+             studio.css on the ladder .gbs-hub-sub already walks (18 → 20
+             from 1280). No new numbers.
 
-        <section class="gbs-shelf">
-          <h2 class="gbs-h2">Expected from the footer</h2>
-          <p class="gbs-lede">The footer of the live site leads to these pages. Our footer carries the same words and no destinations, so they stand here rather than in the tree.</p>
+             Real tabs, not radios: these swap the view, so role=tab,
+             aria-selected and aria-controls, and the arrows walk the
+             tablist the way a tablist is walked. -->
+        <div class="gbs-tabs" role="tablist" aria-label="Two trees">
+          <button class="gbdoc-seg is-on" type="button" role="tab" id="gbsTabSite"
+                  aria-controls="gbsViewSite" aria-selected="true" data-tree="site">Website</button>
+          <button class="gbdoc-seg" type="button" role="tab" id="gbsTabPortal"
+                  aria-controls="gbsViewPortal" aria-selected="false" tabindex="-1" data-tree="portal">Portal</button>
+        </div>
 
-          <div id="gbsFooter"></div>
-        </section>
+        <div id="gbsViewSite" role="tabpanel" aria-labelledby="gbsTabSite" tabindex="0">
+          <section class="gbs-shelf">
+            <h2 class="gbs-h2">Website</h2>
+            <p class="gbs-lede">The showroom upstairs: the same gifts and the same catalog as the portal, laid out to show and to tell. Ready means the page stands and runs on the system; expected means the name is promised somewhere real and the page is not built yet.</p>
 
-        <section class="gbs-shelf">
-          <h2 class="gbs-h2">Portal</h2>
-          <p class="gbs-lede">The warehouse downstairs: you come down here to sign in, build a campaign, track it and check out, and the tills stand at the far end. A container, not a page, so it carries no status; only the pages and states inside it do.</p>
+            <div id="gbsTreeSite"></div>
+          </section>
+        </div>
 
-          <div id="gbsTreePortal"></div>
-        </section>
+        <div id="gbsViewPortal" role="tabpanel" aria-labelledby="gbsTabPortal" tabindex="0" hidden>
+          <section class="gbs-shelf">
+            <h2 class="gbs-h2">Portal</h2>
+            <p class="gbs-lede">The warehouse downstairs: you come down here to sign in, build a campaign, track it and check out, and the tills stand at the far end. A container, not a page, so it carries no status; only the pages and states inside it do.</p>
 
+            <div id="gbsTreePortal"></div>
+          </section>
+        </div>
+
+        <!-- Under both tabs, never hidden: a crossing belongs to neither
+             tree, and a reader who switched to the portal to find the
+             checkout should still see how the gift got there. -->
         <section class="gbs-shelf">
           <h2 class="gbs-h2">Where the trees meet</h2>
           <p class="gbs-lede">The two trees are separate, and these are the four places one hands over to the other. Each line is read off the markup as it stands today, not off a route we would like to have.</p>
@@ -191,6 +235,8 @@
                 absent  -> status expected, the row is not a link at all
      container  the row is a place that holds pages, not a page: no
                 status at all, because a container cannot be ready
+     aside      what kind of place a container is, when «container» is
+                not the useful word (the footer groups say «footer nav»)
      page       id in the sandbox registry, for the coverage line
      note       what the row is, when it is not a file of its own
      from       where the name of an expected page came from
@@ -224,6 +270,28 @@
         { name: 'Details', href: 'book-a-meeting.html', note: 'step 1' },
         { name: 'Pick a time', href: 'book-a-meeting.html', note: 'step 2' },
         { name: 'Confirmed', href: 'book-a-meeting.html', note: 'step 3' }
+      ] },
+      /* THE FOOTER PAGES CAME INTO THE TREE (gbppl-map-2, Ton 28.08:
+         «Expected from footer должно стать частью веб-сайта, отдельной
+         группой внутри него... Всё, что из футера относится к сайту,
+         остаётся на сайте, а то, что часть портала, в портале»). They
+         used to stand in a shelf of their own below the trees, which is
+         where a name goes when nobody has decided whose it is. A group
+         is a CONTAINER: it holds pages and has no status of its own, the
+         same answer the portal root gives, and it says «footer nav» in
+         the column where the portal root says «container».
+
+         The children carry no «in the footer nav» of their own any more:
+         the group above them says it once, and a line repeated eleven
+         times is not information. */
+      { name: 'From the footer', container: true, aside: 'footer nav', kids: [
+        { name: 'Our Work' },
+        { name: 'Platform' },
+        { name: 'Design' },
+        { name: 'Integrations' },
+        { name: 'Our Story' },
+        { name: 'FAQ' },
+        { name: 'Terms and Conditions' }
       ] }
     ] }
   ];
@@ -247,6 +315,24 @@
         { name: 'Chat with our team', href: 'portal.html', note: 'a door of the popup' },
         { name: 'Book a meeting', href: 'portal.html', note: 'a door of the popup' },
         { name: 'Call us', href: 'portal.html', note: 'a door of the popup' }
+      ] },
+      /* The other half of the footer, the half that only means anything
+         to somebody who has signed in: an advisor, the service desk, a
+         shipment, a warranty claim. Split by one rule, said out loud so
+         it can be argued with: the site tells the story of the company,
+         the portal does the work of the customer.
+
+         IT IS A PROPOSAL, NOT A FACT. Ton, 28.08, said the split still
+         goes to Russell and Julia, so the group says «to confirm with
+         the client» in its own column and nobody reads it as settled.
+
+         Standing here rather than last on purpose: the tills close the
+         walk (Ton's IKEA), so Checkout keeps the last row. */
+      { name: 'From the footer', container: true, aside: 'footer nav · to confirm with the client', kids: [
+        { name: 'Client Advisor' },
+        { name: 'Client Service' },
+        { name: 'Shipping Information' },
+        { name: 'Warranty' }
       ] },
       { name: 'Checkout', href: 'checkout.html', page: 'checkout', kids: [
         { name: 'Confirmation', href: 'checkout.html', note: 'a state of the checkout page' }
@@ -290,16 +376,13 @@
       why:  'the booking flow runs inside the popup' }
   ];
 
-  /* Words taken from the footer of the live site, verbatim, live case
-     and all: this is published copy of the client, not our own
-     (rules of copy, section 3 of the skill). The Curations column is
-     not here, it filters the catalogue; the Follow column leaves the
-     site altogether. */
-  var FROM_FOOTER = [
-    'Our Work', 'Platform', 'Design', 'Integrations', 'Our Story',
-    'Client Advisor', 'Client Service', 'Shipping Information',
-    'Terms and Conditions', 'Warranty', 'FAQ'
-  ];
+  /* The eleven footer names now live inside the two trees above, seven
+     under the site and four under the portal, so the flat list that used
+     to stand here is gone with gbppl-map-2. They are still the client's
+     published words, verbatim and in the live case (rules of copy,
+     section 3 of the skill); the Curations column is still not among
+     them, it filters the catalogue, and the Follow column still leaves
+     the site altogether. */
 
   /* The same glyph the doors of the hub wear, in the quiet ink of the
      crossing row: an arrow that says which way the hand-over goes. */
@@ -337,9 +420,13 @@
        and expected are both answers to a question that cannot be asked
        about a place (Ton 27.08). */
     if (n.container) {
+      /* `aside` lets a container say WHICH kind of place it is: the two
+         footer groups say «footer nav» where the portal root says
+         «container» (gbppl-map-2). Same column, same voice, no second
+         class and no second row. */
       return '<div class="gbs-node gbs-node--place"' + stamp + '>' +
              '<span class="gbs-node__name">' + esc(n.name) + '</span>' +
-             '<span class="gbs-node__aside">container</span></div>';
+             '<span class="gbs-node__aside">' + esc(n.aside || 'container') + '</span></div>';
     }
 
     var chip = '<span class="gbs-chip ' + (ready ? 'gbs-chip--ready">ready' : 'gbs-chip--expected">expected') + '</span>';
@@ -370,8 +457,73 @@
       rows.map(branch).join('') + '</ul>';
   }
 
-  paint('gbsTreeSite', SITE);
-  paint('gbsTreePortal', PORTAL);
+  /* ---- THE TWO TABS (gbppl-map-2, Ton 28.08).
+
+     The switch is a REPAINT, not a class: the tree that comes into view
+     is drawn again, so it arrives with the cascade it arrives with on
+     load (gbsNodeIn, --mo-small on --mo-arrive, 40ms a step, studio.css).
+     Nothing new was written for the motion, and there is nothing to keep
+     in sync with it.
+
+     State rides in two places, and neither of them is KEEP: ?tree=portal
+     so a link can be handed to somebody, replaceState so the back button
+     still means the page you came from, and sessionStorage so the tab
+     survives a walk into the prototype and back. `tree` deliberately
+     stays OUT of the KEEP set of header.js and of the device frame: it
+     names a view of this one page, not the container you are in
+     (Ton-12). ---- */
+  var VIEWS = {
+    site:   { tab: 'gbsTabSite',   panel: 'gbsViewSite',   mount: 'gbsTreeSite',   rows: SITE },
+    portal: { tab: 'gbsTabPortal', panel: 'gbsViewPortal', mount: 'gbsTreePortal', rows: PORTAL }
+  };
+  var TREE_KEY = 'gbppl-map-tree';
+  var current = null;
+
+  function show(which, remember) {
+    if (!VIEWS[which] || which === current) return;
+    current = which;
+    Object.keys(VIEWS).forEach(function (key) {
+      var v = VIEWS[key];
+      var on = key === which;
+      var tab = document.getElementById(v.tab);
+      var panel = document.getElementById(v.panel);
+      if (tab) {
+        tab.classList.toggle('is-on', on);
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        if (on) tab.removeAttribute('tabindex'); else tab.setAttribute('tabindex', '-1');
+      }
+      if (panel) panel.hidden = !on;
+      if (on) paint(v.mount, v.rows);
+    });
+    if (!remember) return;
+    try { sessionStorage.setItem(TREE_KEY, which); } catch (e) {}
+    var url = new URL(window.location.href);
+    if (which === 'site') url.searchParams.delete('tree');
+    else url.searchParams.set('tree', which);
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+  }
+
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.gbs-tabs [data-tree]'));
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { show(tab.getAttribute('data-tree'), true); });
+    /* A tablist is walked with the arrows, and the tab that gets focus
+       is the tab that opens: the same behaviour the segment rows of the
+       workbench have had since docs.css. */
+    tab.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var next = tabs[(i + d + tabs.length) % tabs.length];
+      show(next.getAttribute('data-tree'), true);
+      next.focus();
+    });
+  });
+
+  /* The address wins over the memory: a link handed round says which
+     tree it meant, and a remembered tab must not argue with it. */
+  var asked = new URL(window.location.href).searchParams.get('tree');
+  if (!asked) { try { asked = sessionStorage.getItem(TREE_KEY); } catch (e) {} }
+  show(VIEWS[asked] ? asked : 'site', false);
 
   var cross = document.getElementById('gbsCross');
   if (cross) {
@@ -388,15 +540,6 @@
       }).join('') + '</ul>';
   }
 
-  var flat = document.getElementById('gbsFooter');
-  if (flat) {
-    step = 0;
-    flat.innerHTML = '<ul class="gbs-tree gbs-flat">' +
-      FROM_FOOTER.map(function (name) {
-        return '<li class="gbs-branch">' +
-               node({ name: name, from: 'in the footer nav' }) + '</li>';
-      }).join('') + '</ul>';
-  }
 })();
 </script>
 
