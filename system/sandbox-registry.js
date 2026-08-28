@@ -104,7 +104,27 @@
     home: {
       label: 'Home',
       live: 'live/index.html',
-      variants: []
+      variants: [
+        {
+          /* Ton-16, 28.08: «Сейчас на лайве отвратительное решение:
+             кнопка Start Gifting фактически даёт авторизацию и
+             отправляет на портал... Это единственное, что мы точно не
+             хотим повторять за текущим лайвом», и там же: «Попробуем
+             так сделать на сэндбоксе и посмотрим, как оно будет
+             выглядеть». Ключ читает <gb-site-header>, поэтому та же
+             комната открывается и на каталоге (?hdr=auth едет по
+             внутренним ссылкам); дверь ведёт на главную, потому что
+             там бар прозрачный и обе его земли видно сразу. */
+          id: 'header-auth',
+          label: 'Sign in by the account icon',
+          desc: 'One blue button and a row of glyphs. The person opens a sign in drawer, then becomes your initials with the cart beside them.',
+          status: 'proposal',
+          href: 'live/index.html?hdr=auth',
+          ready: true,
+          tags: ['header', 'flow'],
+          updated: '2026-08-28'
+        }
+      ]
     },
 
     catalog: {
