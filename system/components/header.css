@@ -869,3 +869,261 @@ body.gb-demo a.gbh-away:hover { color: var(--zinc-900); }
   .gbh-lock--stack .gbh-lock__mark { width: 108px; height: 36px; }
   .gbh-lock--stack .gbh-lock__word { font-size: 11px; }
 }
+
+/* ============================================================
+   ВАРИАНТ: SIGNING IN THROUGH THE BAR (.gbh-bar--auth)
+   gbppl-header-auth-1, 2026-08-28
+   ------------------------------------------------------------
+   Ton-16, verbatim: «Сейчас на лайве отвратительное решение: кнопка
+   Start Gifting фактически даёт авторизацию и отправляет на портал...
+   Это единственное, что мы точно не хотим повторять за текущим
+   лайвом.» И там же: «Попробуем так сделать на сэндбоксе и посмотрим,
+   как оно будет выглядеть.»
+
+   ЭТО ПЕСОЧНИЦА. Ни одно правило ниже не читается без класса
+   .gbh-bar--auth, который header.js ставит только на ?hdr=auth.
+   Замер бара до и после волны на live/index и live/catalog, 1280 и
+   390, без ключа: 0 расхождений.
+
+   ЧТО В КАРМАНЕ. Одна синяя кнопка и ряд глифов: Book a meeting ·
+   лупа · [корзина] · человечек-или-инициалы. Кнопки My Portal в баре
+   НЕТ, она первым пунктом меню под инициалами: две кнопки, из которых
+   одна на деле вход, это то самое «жрёт горизонтальное место».
+
+   ТРИ СТУПЕНИ ШИРИНЫ (картина, утверждённая Тоном 28.08 12:58):
+     >= 1280      нав в баре, как сегодня.
+     1024..1279   нав в бургере. Порог наш (ловушка 17: правый карман
+                  шире живого), новое здесь только то, что наву есть
+                  куда уйти, а не «нав исчезает».
+     <= 1023      бургер, знак, угол. Book a meeting уходит из бара и
+                  становится ПЕРВОЙ СТРОКОЙ бургер-меню.
+   БУРГЕР СТОИТ СЛЕВА НА ОБЕИХ СТУПЕНЯХ. Тон назвал сторону только
+   для < 1024 («бургер слева, логотип»); одна сторона у одного
+   контрола — системный ответ, и заодно ничто не перепрыгивает бар
+   при переходе окна через 1024.
+
+   ОДНА СЕМЬЯ ВЫПАДАШЕК. Меню аккаунта и бургер-меню — это .gbh-menu,
+   та же тёмная плита, тот же вход 200ms и те же строки
+   .gbh-menu__item, что у Gifts (Тон-6: вторая визуальная семья в том
+   же углу и есть тот «разнобой», против которого Тон-16). Своего у
+   модификаторов ровно три вещи: сторона привязки, плотность полей и
+   отсутствие ховер-мостика (он у Gifts закрывает разрыв для КУРСОРА,
+   а эти две панели открываются кликом, и мостик накрыл бы низ самой
+   кнопки).
+
+   ОБЩАЯ ЛИНИЯ ПАНЕЛЕЙ. Живая панель Gifts стоит на 86 от верха бара
+   (top 74 от пункта высотой 56, центрированного в 80). Глиф — круг 44,
+   центрированный в тех же 80, то есть его низ на 62; чтобы панель
+   встала НА ТУ ЖЕ ЛИНИЮ, отступ под кнопкой = 86 - 62 = 24 =
+   --space-24. Не число, а следствие: обе панели читаются как одна
+   полка.
+   ============================================================ */
+
+/* Правый карман становится системой координат: под ним висят меню
+   аккаунта и тихая строка, и обе привязаны к его правой кромке. */
+.gbh-bar--auth .gbh-actions { position: relative; }
+
+/* ---- БУРГЕР -------------------------------------------------- */
+.gbh-burger { position: relative; display: none; align-items: center; }
+.gbh-bar--auth .gbh-burger__btn { flex: 0 0 auto; }
+
+/* ---- ЧЕЛОВЕЧЕК, КОТОРЫЙ СТАНОВИТСЯ ИНИЦИАЛАМИ ---------------- */
+/* ОДНА кнопка с двумя лицами, а не две кнопки: Тон сказал
+   «человечек СТАНОВИТСЯ кругом с инициалами», а подмена узлов ещё и
+   роняла бы фокус посреди фразы. */
+.gbh-account { position: relative; display: flex; align-items: center; }
+.gbh-account__btn { position: relative; }
+.gbh-account__glyph {
+  display: grid;
+  place-items: center;
+  transition: opacity var(--mo-small) var(--mo-move),
+              transform var(--mo-small) var(--mo-move);
+}
+.gbh-account__initials {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--space-32);
+  height: var(--space-32);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-circle);
+  background: var(--zinc-900);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  transition: opacity var(--mo-small) var(--mo-move),
+              transform var(--mo-small) var(--mo-move);
+}
+.gbh-account__btn.is-known .gbh-account__glyph { opacity: 0; transform: scale(0.8); }
+.gbh-account__btn.is-known .gbh-account__initials { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+/* Круг сам себе подложка: наведение красит его, а не 44px вокруг. */
+.gbh-account__btn.is-known:hover { background: transparent; }
+.gbh-account__btn.is-known:hover .gbh-account__initials { background: var(--zinc-700); }
+
+/* ---- КОРЗИНА ПРИЕЗЖАЕТ ИЗ-ЗА ИНИЦИАЛОВ ----------------------- */
+/* Отрицательное поле в первом кадре ровно равно зазору кармана (12),
+   поэтому соседи не прыгают на старте, а ЕДУТ вместе с шириной. */
+@keyframes gbh-cart-in {
+  from { width: 0; margin-right: -12px; opacity: 0; transform: translateX(var(--space-8)) scale(0.8); }
+  to   { width: var(--icon-button-size); margin-right: 0; opacity: 1; transform: none; }
+}
+.gbh-bar--auth [data-gbh-cart].is-arriving {
+  overflow: hidden;
+  animation: gbh-cart-in var(--mo-medium) var(--mo-enter) both;
+}
+
+/* ---- ДВЕ ПАНЕЛИ СЕМЬИ .gbh-menu ------------------------------ */
+.gbh-menu[data-open="true"] {
+  display: block;
+  animation: gbh-menu-in 200ms linear forwards;   /* LIVE 24.08: showBlock */
+}
+.gbh-menu--account,
+.gbh-menu--burger {
+  top: calc(100% + var(--space-24));   /* см. «общая линия панелей» выше */
+  padding: var(--space-16) var(--space-24);
+}
+/* Мостик — только для наведения; кликовым панелям он накрывает низ
+   их собственной кнопки. */
+.gbh-menu--account::before,
+.gbh-menu--burger::before { content: none; }
+
+.gbh-menu--account {
+  left: auto;
+  right: 0;
+  transform-origin: top right;
+}
+.gbh-menu--burger {
+  left: 0;
+  /* Три ступени шкалы: блочной кнопке нужна ширина, а max-content по
+     четырём коротким словам дал бы 96px и «Book a Meeting» в две
+     строки. */
+  min-width: calc(var(--space-64) * 3);
+}
+/* Строки-кнопки (Log out, мёртвые пункты нава) носят те же чернила и
+   тот же ховер, что строки-ссылки: разметка разная, строка одна. */
+.gbh-menu__item--btn {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+/* CTA бургера: своя строка над списком, ритм со шкалы. Вес 0-2-0 не
+   косметика: `.gb-btn { display: inline-flex }` весит столько же, а
+   button.css подключён ПОСЛЕ header.css на сайтовых страницах и ДО
+   него на вендорном каталоге — на голом `.gbh-menu__cta` кнопка
+   пряталась на одной странице и не пряталась на другой (поймано
+   прогоном 1024 на обеих). */
+.gbh-bar--auth .gbh-menu__cta { display: none; margin-bottom: var(--space-16); }
+
+/* ---- ТИХАЯ СТРОКА -------------------------------------------- */
+/* «На пару секунд появляется тихая строка». Висит ПОД УГЛОМ, а не по
+   центру бара: фраза про инициалы и корзину, и то и другое в этом
+   углу, а строка через весь бар читалась бы как баннер страницы.
+   В раскладке не участвует (absolute), поэтому под хедером ничего не
+   двигается, пока она на экране. Кегль 14 и Zinc 600 — вторичный
+   голос системы (раздел 3 скилла). */
+.gbh-flash {
+  position: absolute;
+  top: calc(100% + var(--space-24));
+  right: 0;
+  margin: 0;
+  max-width: calc(var(--space-64) * 5);
+  color: var(--zinc-600);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: right;
+  opacity: 0;
+  transform: translateY(calc(var(--space-8) * -1));
+  transition: opacity var(--mo-small) var(--mo-arrive),
+              transform var(--mo-small) var(--mo-arrive);
+  pointer-events: none;
+}
+.gbh-flash.is-in { opacity: 1; transform: none; }
+
+/* ---- СТУПЕНИ ШИРИНЫ ------------------------------------------ */
+/* >= 1280: три дорожки, как у сегодняшнего бара. Бургера нет. */
+@media (min-width: 1280px) {
+  .gbh-bar.gbh-bar--auth { grid-template-columns: 168px minmax(0, 1fr) auto; }
+}
+/* <= 1279: бургер · знак · карман. Зазор 16 — та же ступень, на
+   которой стоит бар ниже 900; 32 между бургером и знаком читалось бы
+   как две отдельные вещи. */
+@media (max-width: 1279px) {
+  .gbh-bar.gbh-bar--auth {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    column-gap: var(--space-16);
+  }
+  .gbh-bar--auth .gbh-burger { display: flex; }
+  .gbh-bar--auth .gbh-actions { justify-self: end; }
+}
+/* <= 1023: кнопка уходит из бара в первую строку меню. Адресуем
+   именно карман: .gb-btn внутри бургер-меню тем же именем накрылся
+   бы вместе с ней. */
+@media (max-width: 1023px) {
+  .gbh-bar--auth .gbh-actions .gb-btn { display: none; }
+  .gbh-bar--auth .gbh-menu--burger .gbh-menu__cta { display: inline-flex; }
+}
+
+/* ---- ПРОЗРАЧНЫЙ БАР ------------------------------------------ */
+/* Над видео чернила переворачиваются, ровно как у .gbh-icon-button
+   выше: круг инициалов становится белым с тёмными буквами, тихая
+   строка белой. Ниже героя всё возвращается. */
+.gb-header--transparent .gbh-account__initials {
+  background: var(--white);
+  color: var(--zinc-900);
+}
+.gb-header--transparent .gbh-account__btn.is-known:hover .gbh-account__initials {
+  background: rgba(255, 255, 255, 0.8);   /* пара к ховеру глифа выше, вне токенов */
+}
+.gb-header--transparent .gbh-flash { color: var(--white); }
+.gb-header--transparent.is-past-hero .gbh-account__initials {
+  background: var(--zinc-900);
+  color: var(--white);
+}
+.gb-header--transparent.is-past-hero .gbh-account__btn.is-known:hover .gbh-account__initials {
+  background: var(--zinc-700);
+}
+.gb-header--transparent.is-past-hero .gbh-flash { color: var(--zinc-600); }
+
+/* ---- ВЕЖЛИВОСТЬ ---------------------------------------------- */
+/* Тон-7 запрещает вежливые ветки ФИРМЕННОЙ хореографии (двери,
+   стекло хедера). Здесь служебный микро-моушен состояния — смена
+   лица, приезд корзины, приход строки, — и ему ветка положена. Сама
+   строка при этом никуда не девается: она несёт СМЫСЛ, а не эффект,
+   и просто появляется без хода. */
+@media (prefers-reduced-motion: reduce) {
+  .gbh-account__glyph,
+  .gbh-account__initials,
+  .gbh-flash { transition: none; }
+  .gbh-bar--auth [data-gbh-cart].is-arriving { animation: none; }
+}
+
+/* ---- ДРОВЕР ВХОДА -------------------------------------------- */
+/* Поверхность системная (<gb-drawer>), поле системное
+   (.gba-field--floating из auth.css), кнопка системная
+   (.gb-btn --m --filled --primary --block). Своего здесь один отступ
+   между полем и кнопкой, той же ступенью, что у .gba-submit. */
+/* ЛОВУШКА 3 СКИЛЛА, ТРЕТИЙ РАЗ. auth.css воспроизводит preflight
+   лайва (border 0 solid на каждом элементе) внутри своего скоупа
+   gb-guest-header / gb-auth-flow; в дровере поле стоит вне обоих, и
+   без антидота вокруг него встаёт полная UA-рамка вместо
+   подчёркивания (снято глазами на первом прогоне 1280). Вторая
+   половина того же preflight — box-sizing: без него width 100% плюс
+   паддинг делают поле шире тела дровера. Слово в слово тот же
+   антидот, что у .gbc-form в comments.css. */
+.gbh-signin .gba-input {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+  border-bottom-width: 1px;
+}
+/* .gba-field носит поля 0 8px живой сетки Materialize: в колонке
+   формы это часть сетки, в дровере — лишний сдвиг от края тела. */
+.gbh-signin .gbh-signin__field { padding: 0; }   /* вес 0-2-0: auth.css грузится позже */
+.gbh-signin__go { margin-top: var(--space-16); }
