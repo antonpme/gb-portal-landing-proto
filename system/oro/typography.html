@@ -380,7 +380,13 @@
 <script src="../components/comments.js"></script>
 <script>
 /* ============================================================
-   gbppl-oro-typography-2 — THE LADDER, SHOWN AND MEASURED
+   gbppl-oro-typography-2 / gbppl-oro-cleanup-1 — THE LADDER,
+   SHOWN AND MEASURED
+   ------------------------------------------------------------
+   gbppl-oro-cleanup-1 (28.08) took px, the clipboard and the
+   contents reader out to window.GbOro in oro.js. What stayed is
+   what belongs to this page: which declaration a row copies, and
+   the tick the quiet button answers with.
    ------------------------------------------------------------
    ONE RULE, unchanged from the first version: NOTHING ON THIS PAGE
    PRINTS A NUMBER THAT WAS TYPED INTO A CAPTION. Every figure is
@@ -467,13 +473,10 @@
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
-  /* One decimal, not two: the second one is the reader's display
-     scaling talking, not the system. */
-  function px(v) {
-    var n = parseFloat(v);
-    if (isNaN(n)) return v;
-    return Math.round(n * 10) / 10 + 'px';
-  }
+  /* gbppl-oro-cleanup-1: px, the clipboard and the contents reader
+     are the showcase template and live in oro.js as window.GbOro. */
+  var ORO = window.GbOro;
+  var px = ORO.px;
   function famName(cs) {
     return String(cs.fontFamily).split(',')[0].replace(/["']/g, '').trim();
   }
@@ -710,37 +713,23 @@
   }
 
   /* ---------- copy the declaration ----------
-     Clipboard where the browser allows it, a hidden textarea where
-     it does not: the showcase is opened over http and over file://
-     and has to work in both. */
-  function copyText(text, btn) {
-    var done = function () {
-      btn.classList.add('is-done');
-      setTimeout(function () { btn.classList.remove('is-done'); }, 1400);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
-    } else {
-      fallback(text, done);
-    }
-  }
-  function fallback(text, done) {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
-    document.body.removeChild(ta);
-  }
+     The clipboard itself is the showcase template and lives in
+     oro.js (gbppl-oro-cleanup-1). What is this page's own is WHAT
+     is copied and how the button answers: a role's whole
+     declaration out of the cache, and a tick on the quiet button
+     rather than the word Copied, because there is one per row. */
   document.addEventListener('click', function (e) {
     var btn = e.target.closest ? e.target.closest('.gbdoc-copybtn') : null;
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
     var id = btn.getAttribute('data-copy');
-    if (CSS_CACHE[id]) copyText(CSS_CACHE[id], btn);
+    if (!CSS_CACHE[id]) return;
+    ORO.copy(CSS_CACHE[id]).then(function (ok) {
+      if (!ok) return;
+      btn.classList.add('is-done');
+      setTimeout(function () { btn.classList.remove('is-done'); }, 1400);
+    });
   });
 
   /* ---------- the two views ---------- */
@@ -926,30 +915,19 @@
     }
   };
 
-  /* ---------- the contents follow the reader ---------- */
-  var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
-  var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
-  var spyTimer;
-  function spy() {
-    var best = 0;
-    for (var i = 0; i < marks.length; i++) {
-      if (marks[i] && marks[i].getBoundingClientRect().top <= 140) best = i;
-    }
-    links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
-  }
-
+  /* ---------- the contents follow the reader ----------
+     oro.js reads the links once (gbppl-oro-cleanup-1), and this
+     page draws a sub link per group of the scale further up, so the
+     call has to stand here, after they exist, exactly where the two
+     lines it replaces used to stand. */
   paint();
-  spy();
+  ORO.watchToc();
 
   var resizeTimer;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(paint, 120);
   });
-  window.addEventListener('scroll', function () {
-    clearTimeout(spyTimer);
-    spyTimer = setTimeout(spy, 90);
-  }, { passive: true });
 })();
 </script>
 

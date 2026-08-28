@@ -1,4 +1,13 @@
 /* ============================================================
+   gbppl-oro-pages-1 / gbppl-oro-cleanup-1
+   — WHAT EVERY ORO PAGE SHARES
+   ------------------------------------------------------------
+   TWO BLOCKS, ONE FILE. The rail (gbppl-oro-pages-1) and the five
+   small scripts every showcase used to keep its own copy of
+   (gbppl-oro-cleanup-1, window.GbOro, at the bottom). Both are
+   here for the same reason and the argument is written out once,
+   under each.
+   ------------------------------------------------------------
    gbppl-oro-pages-1 — THE RAIL, IN ONE PLACE
    ------------------------------------------------------------
    Ton, 28.08 (Ton-19): «Сейчас это выглядит так, будто всё лежит
@@ -134,4 +143,172 @@
      The listener is the safety net for a page that moves the tag. */
   if (document.querySelector('[data-oro-rail]')) boot();
   else document.addEventListener('DOMContentLoaded', boot);
+})();
+
+
+/* ============================================================
+   gbppl-oro-cleanup-1 — THE FIVE THINGS EVERY SHOWCASE DID ITSELF
+   ------------------------------------------------------------
+   Ton, 28.08 (Ton-14, section 6a of the skill): «система не только
+   в компонентах, но и в паттернах, в отступах, в шрифтах,
+   абсолютно во всём; строим систему, начиная с нашей собственной
+   студии, она должна быть воплощением системности». The rail was
+   the first thing the showcase stopped copying by hand. This is
+   the second, and it is the same argument: eight pages carried
+   the same five small scripts, byte for byte in the lucky cases
+   and nearly so in the rest, and «nearly» is how a page ends up
+   telling the reader something its neighbour does not.
+
+   WHAT MOVED, AND WHY THESE FIVE. Every one of them is furniture
+   of the showcase TEMPLATE, not of any one component: how a
+   measured number is printed, how a readout is written, how a
+   snippet reaches the clipboard, how the contents follow the
+   reader, how the window says how wide it is. Nothing that
+   describes a component came along: the playgrounds, the
+   workbenches and the state tables stay on their own pages,
+   because they are the page.
+
+   THE DIVERGENCES THAT EXISTED, AND WHICH READING WON. The rule
+   for the wave was button.html, the reference showcase.
+     · drawer.html reported a successful copy even when the
+       clipboard REFUSED it (`.then(done, done)`), and its
+       textarea fallback was missing the readonly flag. Both gone:
+       it now copies the way the other seven do.
+     · icons.html had already factored a `copy(text, done)` out of
+       the button handler for its second consumer, the glyph rows.
+       That factoring is what this module is.
+     · colors.html reads the boolean execCommand returns and says
+       «Could not reach the clipboard» when it is false. THIS is
+       the one place button.html did NOT win: it calls the copy
+       done as soon as execCommand has not thrown, which reports
+       a success the browser refused, and «прибор не выдумывает»
+       (Ton, 27.08) settles that. copy() therefore resolves to
+       true or false, and the seven pages that only light a label
+       light it on true.
+     · eyebrow.html and badge.html carried the copy wiring with no
+       Copy button anywhere in their markup. They keep the call:
+       one line, the same no-op, and the day either page grows a
+       snippet it behaves like its siblings without remembering to.
+
+   WHAT DID NOT CHANGE, AND WAS CHECKED BEFORE AND AFTER: the word
+   Copied, the 1400ms it stands, the 140px line the contents
+   measure a section against, the 90ms it waits after a scroll,
+   and one decimal on every number.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- one decimal ----------
+     The second one is the reader's display scaling talking, not
+     the system: a 20px glyph comes back as 19.99 at 113 per cent. */
+  function px(v) {
+    var n = parseFloat(v);
+    if (isNaN(n)) return v;
+    return Math.round(n * 10) / 10 + 'px';
+  }
+
+  /* ---------- write a measured value into the page ---------- */
+  function txt(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  /* ---------- the window says how wide it is ----------
+     Every page prints the same sentence in one to three places,
+     and every one of them means window.innerWidth. */
+  function widthNow() {
+    var w = window.innerWidth + 'px';
+    for (var i = 0; i < arguments.length; i++) txt(arguments[i], w);
+    return w;
+  }
+
+  /* ---------- the clipboard ----------
+     Clipboard API where the browser allows it, a hidden textarea
+     and execCommand where it does not: the showcase is opened over
+     http and over file:// and has to work in both. Resolves to
+     whether the text actually left: a caller that lights a label
+     lights it on true, and colors.html says so out loud on false. */
+  function legacyCopy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok !== false;
+    } catch (err) { return false; }
+  }
+
+  function copy(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text)
+        .then(function () { return true; },
+              function () { return legacyCopy(text); });
+    }
+    return Promise.resolve(legacyCopy(text));
+  }
+
+  /* ---------- the Copy button of a code block ----------
+     `.gbdoc-copy[data-copy]` points at the element whose text is
+     the snippet. The label says Copied for 1400ms and goes back. */
+  function watchCopy(root) {
+    var scope = root || document;
+    Array.prototype.forEach.call(
+      scope.querySelectorAll('.gbdoc-copy[data-copy]'),
+      function (btn) {
+        btn.addEventListener('click', function () {
+          var target = document.querySelector(btn.getAttribute('data-copy'));
+          if (!target) return;
+          copy(target.textContent).then(function (ok) {
+            if (!ok) return;
+            btn.textContent = 'Copied';
+            setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
+          });
+        });
+      }
+    );
+  }
+
+  /* ---------- the contents follow the reader ----------
+     The links are read ONCE, so a page that builds part of its own
+     contents (typography.html draws a sub link per group) has to
+     call this after it has drawn them, exactly as it did when the
+     two lines lived on the page. The lit entry is the last section
+     whose top has passed 140px, and the scroll is answered 90ms
+     after it stops. Returns the reader, for a page that wants to
+     re-light it on its own account. */
+  function watchToc() {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
+    var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+    var spyTimer;
+
+    function spy() {
+      var best = 0;
+      for (var i = 0; i < marks.length; i++) {
+        if (marks[i] && marks[i].getBoundingClientRect().top <= 140) best = i;
+      }
+      links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
+    }
+
+    spy();
+    window.addEventListener('scroll', function () {
+      clearTimeout(spyTimer);
+      spyTimer = setTimeout(spy, 90);
+    }, { passive: true });
+
+    return spy;
+  }
+
+  window.GbOro = {
+    px: px,
+    txt: txt,
+    widthNow: widthNow,
+    copy: copy,
+    watchCopy: watchCopy,
+    watchToc: watchToc
+  };
 })();

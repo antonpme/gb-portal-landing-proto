@@ -237,7 +237,13 @@
 <script src="../components/comments.js"></script>
 <script>
 /* ============================================================
-   gbppl-oro-components-3 / gbppl-oro-pages-1 — THE EYEBROW READOUT
+   gbppl-oro-components-3 / gbppl-oro-pages-1 / gbppl-oro-cleanup-1
+   — THE EYEBROW READOUT
+   ------------------------------------------------------------
+   gbppl-oro-cleanup-1 (28.08) took px, txt, the clipboard, the
+   contents reader and the width readout out to window.GbOro in
+   oro.js, where all eight showcases read them. Nothing about how
+   this page behaves changed with them.
    ------------------------------------------------------------
    NOTHING HERE PRINTS A NUMBER THAT WAS TYPED. The three values
    in the anatomy table are read off the specimen above it.
@@ -245,15 +251,12 @@
 (function () {
   'use strict';
 
-  /* One decimal: the second one is the reader's display scaling
-     talking, not the system (a 20px glyph comes back as 19.99 at
-     113 per cent). */
-  function px(v) {
-    var n = parseFloat(v);
-    if (isNaN(n)) return v;
-    return Math.round(n * 10) / 10 + 'px';
-  }
-  function txt(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
+  /* gbppl-oro-cleanup-1: px, txt, the clipboard, the contents and
+     the width readout are the showcase template and live in oro.js
+     as window.GbOro. */
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
 
   /* ---------- the anatomy readout ---------- */
   function paintAnatomy() {
@@ -265,62 +268,24 @@
       txt('ebInk', es.color);
     }
 
-    txt('wnow', window.innerWidth + 'px');
+    ORO.widthNow('wnow');
   }
 
-  /* ---------- copy a snippet ---------- */
-  function fallbackCopy(text, done) {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.setAttribute('readonly', '');
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
-    document.body.removeChild(ta);
-  }
-  Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-copy[data-copy]'), function (btn) {
-    btn.addEventListener('click', function () {
-      var target = document.querySelector(btn.getAttribute('data-copy'));
-      if (!target) return;
-      var text = target.textContent;
-      var done = function () {
-        btn.textContent = 'Copied';
-        setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
-      } else {
-        fallbackCopy(text, done);
-      }
-    });
-  });
-
-  /* ---------- the contents follow the reader ---------- */
-  var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
-  var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
-  var spyTimer;
-  function spy() {
-    var best = 0;
-    for (var i = 0; i < marks.length; i++) {
-      if (marks[i] && marks[i].getBoundingClientRect().top <= 140) best = i;
-    }
-    links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
-  }
+  /* ---------- copy a snippet, and the contents follow the reader ----------
+     Both are the showcase template and both live in oro.js
+     (gbppl-oro-cleanup-1). There is no Copy button in this page's
+     markup yet; the call stays so that the day one arrives it
+     behaves like every other snippet in the showcase. */
+  ORO.watchCopy();
 
   paintAnatomy();
-  spy();
+  ORO.watchToc();
 
   var resizeTimer;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(paintAnatomy, 120);
   });
-  window.addEventListener('scroll', function () {
-    clearTimeout(spyTimer);
-    spyTimer = setTimeout(spy, 90);
-  }, { passive: true });
 })();
 </script>
 

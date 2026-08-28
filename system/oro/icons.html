@@ -591,8 +591,13 @@
 <script src="../components/comments.js"></script>
 <script>
 /* ============================================================
-   gbppl-oro-icons-1 — THE READOUT, THE PLAYGROUND AND THE
-   VARIANT WORKBENCH
+   gbppl-oro-icons-1 / gbppl-oro-cleanup-1 — THE READOUT, THE
+   PLAYGROUND AND THE VARIANT WORKBENCH
+   ------------------------------------------------------------
+   gbppl-oro-cleanup-1 (28.08) took px, txt, the clipboard, the
+   contents reader and the width readout out to window.GbOro in
+   oro.js. What stayed is what belongs to this page: the glyph
+   rows, which copy one icon each and answer with a tick.
    ------------------------------------------------------------
    Same three jobs and the same one rule as the button card:
    NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
@@ -606,12 +611,12 @@
   var INSPECT = window.GbInspect || {};
   var ICONS = window.GbIcons;
 
-  function px(v) {
-    var n = parseFloat(v);
-    if (isNaN(n)) return v;
-    return Math.round(n * 10) / 10 + 'px';
-  }
-  function txt(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
+  /* gbppl-oro-cleanup-1: px, txt, the clipboard, the contents and
+     the width readout are the showcase template and live in oro.js
+     as window.GbOro. */
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
   function glyph(name) { return ICONS && ICONS.has(name) ? ICONS.svg(name) : ''; }
 
   /* Relative luminance and the WCAG ratio, so the contrast claims
@@ -704,8 +709,7 @@
       cell.textContent = d && d[k] ? d[k] : 'no value';
     });
 
-    var w = window.innerWidth + 'px';
-    txt('wnow', w); txt('wnow2', w);
+    ORO.widthNow('wnow', 'wnow2');
   }
 
   /* ---------- the glyph shelf of the sizes section ---------- */
@@ -1008,58 +1012,24 @@
     }).join('');
   }
 
-  /* ---------- copying ---------- */
-  function fallbackCopy(text, done) {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.setAttribute('readonly', '');
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
-    document.body.removeChild(ta);
-  }
-  function copy(text, done) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
-    } else {
-      fallbackCopy(text, done);
-    }
-  }
-
-  Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-copy[data-copy]'), function (btn) {
-    btn.addEventListener('click', function () {
-      var target = document.querySelector(btn.getAttribute('data-copy'));
-      if (!target) return;
-      copy(target.textContent, function () {
-        btn.textContent = 'Copied';
-        setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
-      });
-    });
-  });
+  /* ---------- copying ----------
+     The snippet buttons are the showcase template and oro.js wires
+     them (gbppl-oro-cleanup-1). The glyph rows are this page's own:
+     a row copies the markup of ONE icon and answers with a tick on
+     the button rather than a word, because the button is a glyph. */
+  ORO.watchCopy();
 
   document.addEventListener('click', function (e) {
     var btn = e.target.closest ? e.target.closest('[data-copy-icon]') : null;
     if (!btn || !ICONS) return;
     var name = btn.getAttribute('data-copy-icon');
-    copy('<span class="gb-icon gb-icon--20" aria-hidden="true">' + ICONS.svg(name) + '</span>', function () {
-      btn.classList.add('is-done');
-      setTimeout(function () { btn.classList.remove('is-done'); }, 1400);
-    });
+    ORO.copy('<span class="gb-icon gb-icon--20" aria-hidden="true">' + ICONS.svg(name) + '</span>')
+      .then(function (ok) {
+        if (!ok) return;
+        btn.classList.add('is-done');
+        setTimeout(function () { btn.classList.remove('is-done'); }, 1400);
+      });
   });
-
-  /* ---------- the contents follow the reader ---------- */
-  var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
-  var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
-  var spyTimer;
-  function spy() {
-    var best = 0;
-    for (var i = 0; i < marks.length; i++) {
-      if (marks[i] && marks[i].getBoundingClientRect().top <= 140) best = i;
-    }
-    links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
-  }
 
   paintSet();
   paintShelf();
@@ -1067,7 +1037,7 @@
   paintPlayground();
   paintWorkbench();
   paintContrastOnce();
-  spy();
+  ORO.watchToc();
 
   var resizeTimer;
   window.addEventListener('resize', function () {
@@ -1076,10 +1046,6 @@
       paintAnatomy(); paintShelf(); paintPlayground(); paintWorkbench();
     }, 120);
   });
-  window.addEventListener('scroll', function () {
-    clearTimeout(spyTimer);
-    spyTimer = setTimeout(spy, 90);
-  }, { passive: true });
 })();
 </script>
 

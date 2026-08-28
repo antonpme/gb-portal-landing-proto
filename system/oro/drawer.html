@@ -530,7 +530,13 @@ panel.addEventListener('gbd:close', function () { ... });</code></pre>
 <script src="../components/comments.js"></script>
 <script>
 /* ============================================================
-   gbppl-oro-drawer-1 — THE READOUT AND THE PLAYGROUND
+   gbppl-oro-drawer-1 / gbppl-oro-cleanup-1 — THE READOUT AND THE
+   PLAYGROUND
+   ------------------------------------------------------------
+   gbppl-oro-cleanup-1 (28.08) took px, txt, the clipboard, the
+   contents reader and the width readout out to window.GbOro in
+   oro.js. One thing did change here and it was a fix: this page's
+   own copy said Copied even when the clipboard refused the text.
    ------------------------------------------------------------
    Same one rule as the button and icon cards: NOTHING ON THIS
    PAGE PRINTS A NUMBER THAT WAS TYPED. Every measurement is read
@@ -552,17 +558,17 @@ panel.addEventListener('gbd:close', function () { ... });</code></pre>
 
   var ICONS = window.GbIcons;
 
-  function px(v) {
-    var n = parseFloat(v);
-    if (isNaN(n)) return v;
-    return Math.round(n * 10) / 10 + 'px';
-  }
+  /* gbppl-oro-cleanup-1: px, txt, the clipboard, the contents and
+     the width readout are the showcase template and live in oro.js
+     as window.GbOro. ms stays: only this page prints a duration. */
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
   function ms(v) {
     var n = parseFloat(v);
     if (isNaN(n)) return v;
     return Math.round(n * 1000) + 'ms';
   }
-  function txt(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
   function glyph(name) { return ICONS && ICONS.has(name) ? ICONS.svg(name) : ''; }
 
   /* ---------- the head, written the way drawer.js writes it ----------
@@ -871,63 +877,30 @@ panel.addEventListener('gbd:close', function () { ... });</code></pre>
   }
   if (openBtn) openBtn.addEventListener('click', openIt);
 
-  /* ---------- copying ---------- */
-  Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-copy[data-copy]'), function (btn) {
-    btn.addEventListener('click', function () {
-      var target = document.querySelector(btn.getAttribute('data-copy'));
-      if (!target) return;
-      var done = function () {
-        btn.textContent = 'Copied';
-        setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(target.textContent).then(done, done);
-      } else {
-        var ta = document.createElement('textarea');
-        ta.value = target.textContent;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
-        document.body.removeChild(ta);
-      }
-    });
-  });
-
-  /* ---------- the contents follow the reader ---------- */
-  var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
-  var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
-  var spyTimer;
-  function spy() {
-    var best = 0;
-    for (var i = 0; i < marks.length; i++) {
-      if (marks[i] && marks[i].getBoundingClientRect().top <= 140) best = i;
-    }
-    links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
-  }
+  /* ---------- copying, and the contents follow the reader ----------
+     Both are the showcase template and both live in oro.js
+     (gbppl-oro-cleanup-1). This page's own copy used to say Copied
+     even when the clipboard REFUSED the text, and its fallback
+     textarea was missing the readonly flag; it now behaves like the
+     other seven. */
+  ORO.watchCopy();
 
   function paintAll() {
     paintSpecimens();
     PROBE = read(document.getElementById('prPanel'), document.getElementById('prScrim'));
     paint(PROBE, 'Read off the probe, at ' + window.innerWidth + 'px wide.');
-    txt('wnow', window.innerWidth + 'px');
-    txt('wnow2', window.innerWidth + 'px');
+    ORO.widthNow('wnow', 'wnow2');
   }
 
   paintControls();
   paintAll();
-  spy();
+  ORO.watchToc();
 
   var resizeTimer;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(paintAll, 120);
   });
-  window.addEventListener('scroll', function () {
-    clearTimeout(spyTimer);
-    spyTimer = setTimeout(spy, 90);
-  }, { passive: true });
 })();
 </script>
 

@@ -635,7 +635,7 @@
 
 <script>
 /* ============================================================
-   gbppl-oro-1 — THE READOUT AND THE COPY
+   gbppl-oro-1 / gbppl-oro-cleanup-1 — THE READOUT AND THE COPY
    ------------------------------------------------------------
    Two jobs, one pass over the rows.
 
@@ -651,6 +651,11 @@
       small thing to ask a person to hit. Clipboard API first;
       where it is unavailable (an old file:// context is the case
       we actually hit) a hidden textarea and execCommand carry it.
+      That mechanism moved to oro.js as window.GbOro.copy
+      (gbppl-oro-cleanup-1), where the seven other showcases spend
+      it too. This page kept the reading it always had: copy
+      resolves to whether the text actually left, and a row that
+      could not reach the clipboard says so instead of lying.
    ============================================================ */
 (function () {
   var rows = Array.prototype.slice.call(document.querySelectorAll('.sw-row'));
@@ -691,34 +696,16 @@
     row.addEventListener('click', function () {
       var value = row.dataset.hex;
       if (!value) return;
-      copy(value).then(function (ok) {
+      /* gbppl-oro-cleanup-1: the clipboard itself is the showcase
+         template and lives in oro.js as window.GbOro.copy, which
+         resolves to whether the text actually left. This page's
+         reading of that boolean is the one the module took: a row
+         that could not reach the clipboard says so. */
+      window.GbOro.copy(value).then(function (ok) {
         show(ok ? value : null);
       });
     });
   });
-
-  function copy(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(text)
-        .then(function () { return true; })
-        .catch(function () { return legacy(text); });
-    }
-    return Promise.resolve(legacy(text));
-  }
-
-  function legacy(text) {
-    try {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      ta.setAttribute('readonly', '');
-      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0;';
-      document.body.appendChild(ta);
-      ta.select();
-      var ok = document.execCommand('copy');
-      document.body.removeChild(ta);
-      return ok;
-    } catch (e) { return false; }
-  }
 
   function show(value) {
     toast.innerHTML = value
