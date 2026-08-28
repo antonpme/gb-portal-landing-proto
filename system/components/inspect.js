@@ -1,9 +1,18 @@
 /* ============================================================
-   gbppl-inspect-1 / gbppl-oro-icons-1 — INSPECT MODE, THE CORE
+   gbppl-inspect-1 / gbppl-oro-icons-1 / gbppl-oro-drawer-1
+   — INSPECT MODE, THE CORE
    ------------------------------------------------------------
    gbppl-oro-icons-1 (28.08) added two rows to the recognition
    table and two kinds beside them, Icon button and Icon, plus one
    owner prefix. Nothing else in this file moved.
+
+   gbppl-oro-drawer-1 (28.08) added ONE kind, Drawer head, for the
+   specimen on system\oro\drawer.html, and widened one guard by a
+   single `:not()` so that a drawn panel counts as a specimen while
+   the real one still does not. The recognition table was
+   deliberately left alone, so the drawer standing on fourteen other
+   pages reads exactly as it did before (verified byte for byte on
+   live/index.html).
    ------------------------------------------------------------
    Ton, 26.08, the order this file answers: «переключать режимы
    View / Inspect, наводить на любые секции, блоки, что угодно, и
@@ -1171,6 +1180,103 @@
       }
     },
 
+    /* ---------- gbppl-oro-drawer-1: the drawer head ----------
+       A drawer is a surface, and a surface cannot be put on a
+       plinth: the panel the reader opens is fixed to the right edge
+       of the window and covers the page it would be a specimen of.
+       What CAN stand in the page is its HEAD, which is also the
+       part Ton-18 settled and the part every drawer in the house
+       now shares, so that is what a specimen of a drawer is here:
+       the slot, the title beside it, and the edge the cross moves
+       to when a step back takes the left.
+
+       This kind is registered but not named in COMPONENTS on
+       purpose. The recognition table already says «Drawer» for
+       gb-drawer and .gbd-panel, and giving that row a kind would
+       change what Inspect prints on fourteen pages that did not ask
+       for it. The card asks, through data-inspect. */
+    drawer: {
+      name: 'Drawer head',
+      owner: 'system/components/drawer.css',
+      find: function (slot) { return slot.querySelector('.gbd-head'); },
+
+      describe: function (el) {
+        var slots = el.querySelectorAll('.gbd-slot');
+        var shown = [];
+        Array.prototype.forEach.call(slots, function (s) {
+          if (!s.hidden) shown.push(s.getAttribute('aria-label') || 'unnamed');
+        });
+        var title = el.querySelector('.gbd-title');
+        return {
+          shown: shown,
+          back: shown.indexOf('Back') >= 0,
+          lines: title
+            ? Math.round(title.getBoundingClientRect().height /
+                         (parseFloat(getComputedStyle(title).lineHeight) || 1))
+            : 0
+        };
+      },
+
+      title: function (el, d) {
+        return (d.back ? 'a step back on the left, the cross at the right edge'
+                       : 'the cross on the left, and nothing else') +
+               (d.lines > 1 ? ', title over ' + d.lines + ' lines' : '');
+      },
+
+      body: function (el, d) {
+        var cs = getComputedStyle(el);
+        var titleEl = el.querySelector('.gbd-title');
+        var ts = titleEl ? getComputedStyle(titleEl) : null;
+        var first = el.querySelector('.gbd-slot:not([hidden])');
+        var fs = first ? getComputedStyle(first) : null;
+        var glyph = first ? first.querySelector('.gb-btn__icon') : null;
+        var panel = el.closest('.gbd-panel');
+
+        var rowsList = [
+          row('Head height', px(el.getBoundingClientRect().height), null,
+              d.lines > 1
+                ? 'the circle plus equal air, grown by a title of ' + d.lines + ' lines'
+                : 'the circle plus equal air: 44 and 18 either side'),
+          row('Head measure', cs.getPropertyValue('--gbd-head-h').trim() || 'not declared here', null,
+              'LIVE, the v1 catalogue drawers. No token: the system has no head scale'),
+          row('Padding, vertical', px(cs.paddingTop), null,
+              'derived: half of the head measure less the circle'),
+          row('Padding, horizontal', px(cs.paddingLeft), ['--space-24', '--space-16']),
+          row('Gap, slot to title', px(cs.columnGap), ['--space-16']),
+          row('Slot circle', fs ? px(fs.width) : 'no slot', fs ? ['--gb-btn-icon-size', '--icon-button-size'] : null),
+          row('Slot glyph', glyph ? px(getComputedStyle(glyph).width) : 'no glyph',
+              glyph ? ['--gb-btn-icon-glyph'] : null),
+          row('Controls in the head', String(d.shown.length) + ' · ' + (d.shown.join(', ') || 'none'), null,
+              d.back ? 'the only head that carries two' : 'one slot, and no actions'),
+          row('Title size', ts ? px(ts.fontSize) : 'no title', null, '24, and 20 below 640'),
+          row('Title weight', ts ? ts.fontWeight : 'no title', null, 'quiet'),
+          /* Two values that cannot be compared to a token: the family
+             token carries a fallback stack the element resolves away,
+             and the hairline is two properties said in one line. */
+          knownRow('Title family', ts ? ts.fontFamily.split(',')[0].replace(/"/g, '') : 'no title',
+                   null, '--font-serif'),
+          row('Title line height', ts ? px(ts.lineHeight) : 'no title', null, 'quiet'),
+          row('Title alignment', ts ? ts.textAlign : 'no title', null,
+              'left, after the slot: Ton-18, 28 August'),
+          knownRow('Hairline under', px(cs.borderBottomWidth) + ' ' + cs.borderBottomColor,
+                   null, '--zinc-200'),
+          row('Panel around it', panel ? px(getComputedStyle(panel).width) : 'this specimen stands in the page',
+              null, panel ? 'min(520px, 100%)' : 'the head is the same in and out of the panel')
+        ];
+
+        var code =
+          '<gb-drawer id="d"></gb-drawer>\n\n' +
+          'document.getElementById(\'d\').open({\n' +
+          '  title: ' + JSON.stringify(titleEl ? titleEl.textContent : '') + ',\n' +
+          (d.back ? '  back:  function () { flow.back(); },\n' : '') +
+          '  html:  \'<p>...</p>\'\n' +
+          '});';
+
+        return block('Properties, measured on this specimen', table(rowsList)) +
+          block('Markup', snippet(code));
+      }
+    },
+
     /* ---------- gbppl-oro-typography-1: a type role ----------
        The third kind, and the first one that is not a component.
        A specimen here is a line of text, and the seven things worth
@@ -1353,7 +1459,12 @@
 
   function openShowcase(target) {
     if (!target || !target.closest) return false;
-    if (target.closest('.gbd-panel')) return false;   /* inside the drawer itself */
+    /* Inside the drawer itself: a reader clicking a row of the
+       properties table is reading, not pointing at a specimen.
+       gbppl-oro-drawer-1 carved out the one exception: the drawer
+       card draws a panel IN the page (`.gbdoc-panel`, docs.css) as
+       its own specimen, and that one is exactly what a click means. */
+    if (target.closest('.gbd-panel:not(.gbdoc-panel)')) return false;
     if (target.closest('[data-axis]')) return false;  /* a control chip, not a specimen */
     var slot = slotOf(target);
     if (!slot) return false;
