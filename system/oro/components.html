@@ -7,6 +7,56 @@
 <link rel="icon" href="data:," />
 
 <!-- ============================================================
+     gbppl-oro-cards-1 — THE CARDS SHOW INSTEAD OF TELLING
+     ------------------------------------------------------------
+     Ton, 28.08: «Сложно ли показывать превью компонента в
+     квадратике вместо тонн текста? Я не хочу читать текст. Там,
+     где ты мне листишь компоненты, миллиард текста, от которого
+     эпилепсия. Вместо этого лучше превью показывать.»
+
+     So all 54 registry cards lost their owner line, their list of
+     pages and their long description, and gained a tile. The face
+     of a card is now a picture, a name, a status chip and one
+     short line. Nothing was thrown away: those three facts ride in
+     data-oro-* on the article, in the title of the tile, and in
+     the drawer the tile opens.
+
+     THREE KINDS OF TILE, one rule each.
+
+     1. A BASE COMPONENT SHOWS ITSELF. The tile holds the real
+        markup in the real classes, at its natural size, on Zinc 50
+        with a hairline. It is a picture made of live code, so the
+        shelf cannot drift from the system: break an organism and
+        the catalogue breaks with it. It does not answer the
+        pointer (pointer-events none, tabindex -1, aria-hidden).
+
+     2. A COMPOSITE COMPONENT SHOWS THE PAGE IT STANDS ON, as a
+        SNAPSHOT taken with the instrument on 28 August, not as an
+        iframe. Two reasons, and the first one settles it. Half of
+        this shelf is not a resting surface but a STATE: the drawer
+        is shut until something opens it, the sign in flow lives
+        inside that drawer, the date picker is the second step of a
+        flow, the inspect overlay and the comment pin exist only in
+        their mode, the device frame only once a preset is chosen.
+        An iframe of a page shows none of those and cannot be asked
+        to; the instrument can, and it clicked, typed and switched
+        modes to bring each component into the state that shows it.
+        Second, nineteen live pages in one document is nineteen
+        bundles, videos and consoles loading behind one catalogue
+        page, and at the size of a tile a 1280px page scaled to 350
+        is unreadable mush where a crop is legible. The cost is
+        honest and said once under the grid: a snapshot is dated, and
+        it goes stale.
+
+     3. A HOLE SHOWS NOTHING. Dashed Zinc 300, empty, with the
+        eyebrow saying «not in the system» once.
+
+     The tile is also the way IN to what left the card: the grid
+     carries data-inspect="regcard", the kind is registered from this
+     page, and a click opens <gb-drawer> with the level, the status,
+     the owner, the pages and the whole description.
+
+     ------------------------------------------------------------
      gbppl-oro-levels-1 / gbppl-oro-drawer-1
      — THREE SHELVES OVER THE CATALOGUE
      ------------------------------------------------------------
@@ -123,7 +173,13 @@
 <link rel="stylesheet" href="../components/shell.css">
 <link rel="stylesheet" href="../components/header.css">
 <link rel="stylesheet" href="../components/button.css">
+<link rel="stylesheet" href="../components/icon.css">
 <link rel="stylesheet" href="../components/auth.css">
+<!-- gbppl-oro-cards-1. booking.css arrives for ONE specimen, the phone
+     row on its registry tile: booking.css owns that control and the
+     showcase is not allowed to redraw it. The file is scoped .gbb-*
+     from end to end, so nothing else on this page can feel it. -->
+<link rel="stylesheet" href="../components/booking.css">
 <link rel="stylesheet" href="../components/drawer.css">
 <link rel="stylesheet" href="../components/docs.css">
 <link rel="stylesheet" href="../components/inspect.css">
@@ -162,6 +218,13 @@
    comes back and the underline reads as a box. Zeroed here once,
    exactly as index.html does it for the gate. */
 .gba-input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
+/* gbppl-oro-cards-1. The same antidote, for the two controls the
+   registry tiles brought onto this page: the cells of the one time
+   code (auth.css) and the country box of the phone row
+   (booking.css). Both are drawn by their owner without a frame and
+   both get the full browser one outside the preflight scope. */
+.gba-otp input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
+.gbb-phone-trigger { border-width: 0; }
 
 /* ANTIDOTE 2, composition. The count badge needs an anchor to sit
    on, the way it has one in the bar: there the anchor is the 44px
@@ -227,17 +290,17 @@
       <div class="oro-toc-list">
         <a class="oro-toc-link" href="#foundations">Foundations</a>
         <a class="oro-toc-link" href="#base">Base components</a>
-        <a class="oro-toc-link oro-toc-link--sub" href="#buttons">Button</a>
+        <a class="oro-toc-link" href="#composite">Composite components</a>
+        <a class="oro-toc-link" href="#buttons">Button</a>
         <a class="oro-toc-link oro-toc-link--sub2" href="#variants">Variants</a>
         <a class="oro-toc-link oro-toc-link--sub2" href="#states">States</a>
         <a class="oro-toc-link oro-toc-link--sub2" href="#sizes">Sizes</a>
         <a class="oro-toc-link oro-toc-link--sub2" href="#icons">With icon</a>
         <a class="oro-toc-link oro-toc-link--sub2" href="#properties">Properties</a>
         <a class="oro-toc-link oro-toc-link--sub2" href="#usage">Usage</a>
-        <a class="oro-toc-link oro-toc-link--sub" href="#fields">Field</a>
-        <a class="oro-toc-link oro-toc-link--sub" href="#eyebrow">Eyebrow</a>
-        <a class="oro-toc-link oro-toc-link--sub" href="#badge">Count badge</a>
-        <a class="oro-toc-link" href="#composite">Composite components</a>
+        <a class="oro-toc-link" href="#fields">Field</a>
+        <a class="oro-toc-link" href="#eyebrow">Eyebrow</a>
+        <a class="oro-toc-link" href="#badge">Count badge</a>
       </div>
     </div>
   </nav>
@@ -251,230 +314,416 @@
       <header class="oro-head">
         <span class="gb-eyebrow">Design system</span>
         <h1 class="oro-h1">Components</h1>
-        <p class="oro-lede">The catalogue of the system, on three shelves: the foundations components are made of, the base components that hold no other component inside them, and the composite ones assembled out of those. Every component in the system has a card here with its status, so the page tells the truth about its own coverage. Where a full showcase exists, the card leads into it, and every number on a showcase is read back out of the rendered page at your current window width.</p>
+        <p class="oro-lede">Every component the system has, and every place where it has none, one card each. The tile shows the thing itself where it can be drawn here, and the page it stands on where it cannot; the chip says whether a full showcase exists yet. Where one does, the card leads into it, and every number on a showcase is read back out of the rendered page at your current window width.</p>
         <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The button ladders step at 640, 768, 1280 and 2000.</p>
       </header>
 
       <!-- ============================================================
-           SHELF 1 — FOUNDATIONS
+      <!-- ============================================================
+           THE GRID: one card for every component in the system
            ------------------------------------------------------------
-           gbppl-oro-levels-1, Ton 28.08: «по атомарному дизайну
-           компоненты делятся по уровням: базовые (кнопка) и составные
-           (хедер: логотип, навигация, кнопки, иконки)». Three shelves,
-           and this is the one below both of his: not components at
-           all, but the values and records components are made of.
-           Each already has its own page or is waiting for one.
+           gbppl-oro-cards-1. ONE grid, not three shelves. Ton, 28.08,
+           on where the Components section is going: the section becomes
+           an opening page plus a page per component, with the
+           navigation on the left, and no intermediate catalogue of big
+           shelves in between. So a level is down to an eyebrow over a
+           row of cards, the paragraphs explaining what a level is are
+           gone, and the grid below is written as ONE SELF CONTAINED
+           FRAGMENT: the next wave lifts this single
+           <section class="gbdoc-reg"> onto the opening page untouched
+           and cuts the four full cards under it into their own files.
+
+           The three ids the rail and the contents list point at
+           (#foundations, #base, #composite) moved onto the eyebrows,
+           so every link that existed still lands.
            ============================================================ -->
-      <section class="oro-shelf" id="foundations">
-        <header class="gbdoc-card__head">
-          <span class="gb-eyebrow">Catalogue</span>
-          <h2 class="oro-h2">Foundations</h2>
-          <p class="oro-shelf__line">Not components: the values, records and atoms that components are spent out of. Nothing on the two shelves below invents a number that is not decided here.</p>
-        </header>
+      <section class="gbdoc-reg" data-inspect="regcard">
+        <h2 class="gbdoc-reg__group gb-eyebrow" id="foundations">Foundations</h2>
 
-        <div class="gbdoc-reg">
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Typography <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">Forty seven roles in two families, each with the provenance of the measurement it came from.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> system/type-scale.js · stands on every page</p>
-            <a class="gbdoc-regcard__go" href="typography.html">Open Typography</a>
-          </article>
+        <article class="gbdoc-regcard" data-oro-name="Typography" data-oro-level="Foundation" data-oro-status="Documented" data-oro-owner="system/type-scale.js, the canon in studio/system/TYPE-SCALE.md" data-oro-pages="every page" data-oro-about="Forty seven roles in two families, each with the provenance of the measurement it came from." data-oro-preview="three roles drawn from the type record at your window width">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Typography" title="Owner: system/type-scale.js, the canon in studio/system/TYPE-SCALE.md. Stands on every page. Preview: three roles drawn from the type record at your window width."><div class="gbdoc-regcard__spec" aria-hidden="true" data-oro-paint="type"></div></div>
+          <h3 class="gbdoc-regcard__name">Typography <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">Forty seven roles in two families.</p>
+          <a class="gbdoc-regcard__go" href="typography.html">Open Typography</a>
+        </article>
 
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Colors <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">One grey ladder, one accent blue, one error red, and the rule about which of them is allowed to mean what.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> system/assets/tokens.css · stands on every page</p>
-            <a class="gbdoc-regcard__go" href="colors.html">Open Colors</a>
-          </article>
+        <article class="gbdoc-regcard" data-oro-name="Colors" data-oro-level="Foundation" data-oro-status="Documented" data-oro-owner="system/assets/tokens.css" data-oro-pages="every page" data-oro-about="One grey ladder, one accent blue, one error red, and the rule about which of them is allowed to mean what." data-oro-preview="the colour tokens themselves, in order">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Colors" title="Owner: system/assets/tokens.css. Stands on every page. Preview: the colour tokens themselves, in order."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--band" aria-hidden="true"><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-50)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-100)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-200)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-300)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-400)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-500)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-600)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-700)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-800)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-900)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--zinc-950)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--blue-600)"></span><span class="gbdoc-regcard__sw" style="--sw: var(--blue-700)"></span></div></div>
+          <h3 class="gbdoc-regcard__name">Colors <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">One grey ladder, one accent blue, one error red.</p>
+          <a class="gbdoc-regcard__go" href="colors.html">Open Colors</a>
+        </article>
 
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Icons <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">The glyph set the interface points with, and the sizes a glyph is allowed to be drawn at.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/icon.css, with the set recorded in components/icon.js · stands in the header, the drawer, the portal, the hub and the catalog</p>
-            <a class="gbdoc-regcard__go" href="icons.html">Open Icons</a>
-          </article>
+        <article class="gbdoc-regcard" data-oro-name="Icons" data-oro-level="Foundation" data-oro-status="Documented" data-oro-owner="components/icon.css, with the set recorded in components/icon.js" data-oro-pages="the header, the drawer, the portal, the hub and the catalog" data-oro-about="The glyph set the interface points with, and the sizes a glyph is allowed to be drawn at." data-oro-preview="six glyphs drawn from the icon record itself">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Icons" title="Owner: components/icon.css, with the set recorded in components/icon.js. Stands on the header, the drawer, the portal, the hub and the catalog. Preview: six glyphs drawn from the icon record itself."><div class="gbdoc-regcard__spec" aria-hidden="true" data-oro-paint="icons"></div></div>
+          <h3 class="gbdoc-regcard__name">Icons <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">The glyph set the interface points with.</p>
+          <a class="gbdoc-regcard__go" href="icons.html">Open Icons</a>
+        </article>
 
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Tokens <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">Colour, radius, elevation, spacing and the four button ladders, as the raw values every component spends.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> system/assets/tokens.css · stands on every page</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
+        <article class="gbdoc-regcard" data-oro-name="Tokens" data-oro-level="Foundation" data-oro-status="Built" data-oro-owner="system/assets/tokens.css" data-oro-pages="every page" data-oro-about="Colour, radius, elevation, spacing and the four button ladders, as the raw values every component spends." data-oro-preview="four plates on the colour, radius and elevation tokens">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Tokens" title="Owner: system/assets/tokens.css. Stands on every page. Preview: four plates on the colour, radius and elevation tokens."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--row" aria-hidden="true"><span class="gbdoc-regcard__plate" style="--sw: var(--blue-600)"></span><span class="gbdoc-regcard__plate" style="--sw: var(--zinc-900)"></span><span class="gbdoc-regcard__plate" style="--sw: var(--zinc-200)"></span><span class="gbdoc-regcard__plate gbdoc-regcard__plate--lift" style="--sw: var(--white)"></span></div></div>
+          <h3 class="gbdoc-regcard__name">Tokens <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Colour, radius, elevation and spacing, raw.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
 
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Motion <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The clock: durations and curves named by the size of the journey, never by the thing that happens to travel.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> tokens.css, the <code>--mo-</code> block · stands on every animation in the system</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
+        <article class="gbdoc-regcard" data-oro-name="Motion" data-oro-level="Foundation" data-oro-status="Built" data-oro-owner="tokens.css, the --mo- block, with the rules in studio/docs/MOTION.md" data-oro-pages="every animation in the system" data-oro-about="The clock: durations and curves named by the size of the journey, never by the thing that happens to travel." data-oro-preview="the four durations and their curves, playing">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Motion" title="Owner: tokens.css, the --mo- block, with the rules in studio/docs/MOTION.md. Stands on every animation in the system. Preview: the four durations and their curves, playing."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--stack" aria-hidden="true"><span class="gbdoc-regcard__track" style="--dur: var(--mo-micro); --curve: var(--mo-move)"><i></i></span><span class="gbdoc-regcard__track" style="--dur: var(--mo-small); --curve: var(--mo-enter)"><i></i></span><span class="gbdoc-regcard__track" style="--dur: var(--mo-medium); --curve: var(--mo-arrive)"><i></i></span><span class="gbdoc-regcard__track" style="--dur: var(--mo-large); --curve: var(--mo-arrive)"><i></i></span></div></div>
+          <h3 class="gbdoc-regcard__name">Motion <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The clock: durations and curves, named by journey.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
 
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Layout and spacing <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The container ladder and the spacing scale every gap in the system is cut from.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> system/components/shell.css · stands on every page of the prototype</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-        </div>
+        <article class="gbdoc-regcard" data-oro-name="Layout and spacing" data-oro-level="Foundation" data-oro-status="Built" data-oro-owner="system/components/shell.css" data-oro-pages="every page of the prototype" data-oro-about="The container ladder and the spacing scale every gap in the system is cut from." data-oro-preview="four squares cut from the spacing scale itself">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Layout and spacing" title="Owner: system/components/shell.css. Stands on every page of the prototype. Preview: four squares cut from the spacing scale itself."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--row gbdoc-regcard__spec--floor" aria-hidden="true"><span class="gbdoc-regcard__sq" style="--sq: var(--space-16)"></span><span class="gbdoc-regcard__sq" style="--sq: var(--space-24)"></span><span class="gbdoc-regcard__sq" style="--sq: var(--space-32)"></span><span class="gbdoc-regcard__sq" style="--sq: var(--space-48)"></span></div></div>
+          <h3 class="gbdoc-regcard__name">Layout and spacing <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The container ladder and the spacing scale.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <h2 class="gbdoc-reg__group gb-eyebrow" id="base">Base components</h2>
+
+        <article class="gbdoc-regcard" data-oro-name="Button" data-oro-level="Base component" data-oro-status="Documented" data-oro-owner="components/button.css" data-oro-pages="all sixteen pages" data-oro-about="Every action in the product. Four sizes, three types, three colours, one organism and no second source." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Button" title="Owner: components/button.css. Stands on all sixteen pages. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec" aria-hidden="true"><button class="gb-btn gb-btn--m gb-btn--filled gb-btn--primary" type="button" tabindex="-1"><span class="gb-btn__label">Continue</span><span class="gb-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg></span></button></div></div>
+          <h3 class="gbdoc-regcard__name">Button <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">Every action in the product, from one organism.</p>
+          <a class="gbdoc-regcard__go" href="#buttons">Open the card</a>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Icon button" data-oro-level="Base component" data-oro-status="Documented" data-oro-owner="components/button.css" data-oro-pages="the head of every drawer" data-oro-about="A glyph in a circle: the cross, the arrow back, the search. A shape of the button organism, not a size of it." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Icon button" title="Owner: components/button.css. Stands on the head of every drawer. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--row" aria-hidden="true"><button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button><button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary" type="button" tabindex="-1"><span class="gb-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button></div></div>
+          <h3 class="gbdoc-regcard__name">Icon button <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">A glyph in a circle, with no label beside it.</p>
+          <a class="gbdoc-regcard__go" href="icons.html#iconbutton">Open Icon button</a>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Field" data-oro-level="Base component" data-oro-status="Documented" data-oro-owner="components/auth.css" data-oro-pages="the gate, the sign in, the booking, the portal and the checkout" data-oro-about="The underlined text input and its caps label, single line and multi line. A field is an underline, not a box." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Field" title="Owner: components/auth.css. Stands on the gate, the sign in, the booking, the portal and the checkout. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--full" aria-hidden="true"><div class="gba-field"><label class="gba-label" for="pv-field">Work email</label><div class="gba-inputwrap"><input class="gba-input" id="pv-field" type="email" placeholder="you@company.com" tabindex="-1" readonly></div></div></div></div>
+          <h3 class="gbdoc-regcard__name">Field <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">The underlined text input and its caps label.</p>
+          <a class="gbdoc-regcard__go" href="#fields">Open the card</a>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Field, floating label" data-oro-level="Base component" data-oro-status="Built" data-oro-owner="components/auth.css" data-oro-pages="the first step of the booking and the comment thread" data-oro-about="The second look of the same field: the label sits inside the control at rest and rises out of the way when it is used." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Field, floating label" title="Owner: components/auth.css. Stands on the first step of the booking and the comment thread. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--full" aria-hidden="true"><div class="gba-field gba-field--floating"><div class="gba-inputwrap"><input class="gba-input" id="pv-float" type="text" placeholder=" " tabindex="-1" readonly><label class="gba-label" for="pv-float">Company Name</label></div></div></div></div>
+          <h3 class="gbdoc-regcard__name">Field, floating label <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The label rides inside the control at rest.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Phone field" data-oro-level="Base component" data-oro-status="Built" data-oro-owner="components/booking.css" data-oro-pages="the first step of the booking" data-oro-about="One underlined row: the country box, a hairline, the number." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Phone field" title="Owner: components/booking.css. Stands on the first step of the booking. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--full" aria-hidden="true"><div class="gba-field gba-field--floating gbb-phone-field"><div class="gba-inputwrap gbb-phone"><button class="gbb-phone-trigger" type="button" tabindex="-1"><span>+1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><input class="gba-input" id="pv-phone" type="tel" placeholder=" " tabindex="-1" readonly><label class="gba-label" for="pv-phone">Phone</label></div></div></div></div>
+          <h3 class="gbdoc-regcard__name">Phone field <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">One underlined row: country, hairline, number.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="One time code" data-oro-level="Base component" data-oro-status="Built" data-oro-owner="components/auth.css" data-oro-pages="wherever the sign in flow stands" data-oro-about="Six cells for the code that arrives by mail, filled and cleared as one control." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of One time code" title="Owner: components/auth.css. Stands on wherever the sign in flow stands. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--full" aria-hidden="true"><div class="gba-otp"><input type="text" inputmode="numeric" maxlength="1" value="4" tabindex="-1" readonly><input type="text" inputmode="numeric" maxlength="1" value="7" tabindex="-1" readonly><input type="text" inputmode="numeric" maxlength="1" value="1" tabindex="-1" readonly><input type="text" inputmode="numeric" maxlength="1" value="" tabindex="-1" readonly><input type="text" inputmode="numeric" maxlength="1" value="" tabindex="-1" readonly><input type="text" inputmode="numeric" maxlength="1" value="" tabindex="-1" readonly></div></div></div>
+          <h3 class="gbdoc-regcard__name">One time code <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Six cells for the code that arrives by mail.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Eyebrow" data-oro-level="Base component" data-oro-status="Documented" data-oro-owner="components/shell.css" data-oro-pages="every page" data-oro-about="The one small all caps label in the system, and there is no second one." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Eyebrow" title="Owner: components/shell.css. Stands on every page. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec" aria-hidden="true"><span class="gb-eyebrow">Design system</span></div></div>
+          <h3 class="gbdoc-regcard__name">Eyebrow <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">The one small all caps label in the system.</p>
+          <a class="gbdoc-regcard__go" href="#eyebrow">Open the card</a>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Count badge" data-oro-level="Base component" data-oro-status="Documented" data-oro-owner="components/header.css" data-oro-pages="the header of a signed in visitor and the portal" data-oro-about="The small blue count that rides on a glyph button, because a count is a state." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Count badge" title="Owner: components/header.css. Stands on the header of a signed in visitor and the portal. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec" aria-hidden="true"><span class="badge-host"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg><span class="gbh-count">3</span></span></div></div>
+          <h3 class="gbdoc-regcard__name">Count badge <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">The small blue count that rides on a glyph.</p>
+          <a class="gbdoc-regcard__go" href="#badge">Open the card</a>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Beta badge" data-oro-level="Base component" data-oro-status="Built" data-oro-owner="components/header.css" data-oro-pages="the Gifts submenu" data-oro-about="The one piece of gold left anywhere in the interface, and it says a single word." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Beta badge" title="Owner: components/header.css. Stands on the Gifts submenu. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec" aria-hidden="true"><span class="gbh-beta">Beta</span></div></div>
+          <h3 class="gbdoc-regcard__name">Beta badge <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The one piece of gold left in the interface.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Account initials" data-oro-level="Base component" data-oro-status="Built" data-oro-owner="components/header.css" data-oro-pages="the header once someone is signed in" data-oro-about="The circle a signed in visitor is recognised by, and the menu it opens." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Account initials" title="Owner: components/header.css. Stands on the header once someone is signed in. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec" aria-hidden="true"><span class="gbh-account__btn is-known"><span class="gbh-account__initials">AP</span></span></div></div>
+          <h3 class="gbdoc-regcard__name">Account initials <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The circle a signed in visitor is known by.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Status chip" data-oro-level="Base component" data-oro-status="Built" data-oro-owner="studio.css, docs.css and comments.css" data-oro-pages="the hub, the map, the sandboxes and this page" data-oro-about="The small caps plaque that says ready, built or expected. Three families do this today, in three files, which is one question for the catalogue rather than three answers." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Status chip" title="Owner: studio.css, docs.css and comments.css. Stands on the hub, the map, the sandboxes and this page. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--wrap" aria-hidden="true"><span class="gbdoc-flag gbdoc-flag--ready">Documented</span><span class="gbdoc-flag">Built</span><span class="gbdoc-flag gbdoc-flag--expected">Expected</span></div></div>
+          <h3 class="gbdoc-regcard__name">Status chip <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Ready, built or expected, said in one word.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Segmented control" data-oro-level="Base component" data-oro-status="Built" data-oro-owner="docs.css and studio-panel.css" data-oro-pages="the showcase axes and the console" data-oro-about="Two or three exclusive choices in one row, underlined rather than boxed: a tool must not look like an object." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Segmented control" title="Owner: docs.css and studio-panel.css. Stands on the showcase axes and the console. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--full" aria-hidden="true"><div class="gbdoc-axis"><span class="gbdoc-axis__name">View</span><span class="gbdoc-seg is-on">Specimens</span><span class="gbdoc-seg">Table</span></div></div></div>
+          <h3 class="gbdoc-regcard__name">Segmented control <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Exclusive choices in a row, underlined.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Documentation atoms" data-oro-level="Base component" data-oro-status="Built" data-oro-owner="components/docs.css" data-oro-pages="every page of the showcase" data-oro-about="The furniture a showcase page is assembled from: the card, the reading table, the code block, the plaque, the shelf, the stage and the specimen ladder." data-oro-preview="a live specimen, drawn by the system">
+          <div class="gbdoc-slot gbdoc-regcard__preview" role="img" aria-label="Preview of Documentation atoms" title="Owner: components/docs.css. Stands on every page of the showcase. Preview: a live specimen, drawn by the system."><div class="gbdoc-regcard__spec gbdoc-regcard__spec--full" aria-hidden="true"><span class="gbdoc-cap">Anatomy</span><table class="gbdoc-table"><tbody><tr><td>Height</td><td class="gbdoc-num">48px</td></tr><tr><td>Radius</td><td class="gbdoc-num">5px</td></tr></tbody></table></div></div>
+          <h3 class="gbdoc-regcard__name">Documentation atoms <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The furniture a showcase page is built from.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Checkbox" data-oro-level="Base component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="three carriers on the checkout" data-oro-about="There is no component. The three on the checkout run on the browser&#x27;s own accent colour, which gets the blue right and leaves everything else to the browser." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by three carriers on the checkout."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Checkbox <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. The browser accent does the blue.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Needs a measurement first</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Radio" data-oro-level="Base component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="two groups on the checkout" data-oro-about="There is no component. Two groups on the checkout run on accent colour, and the choice card in the sign in flow is a card around a radio, not the control itself." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by two groups on the checkout."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Radio <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. Two groups run on the accent.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Needs a measurement first</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Switch" data-oro-level="Base component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="nothing in the prototype toggles this way yet" data-oro-about="There is no component and not one carrier anywhere in the prototype, although the accent rule names the switch by name." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by nothing in the prototype toggles this way yet."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Switch <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component, and not one carrier anywhere.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Needs a decision first</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Select" data-oro-level="Base component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="two carriers on the checkout" data-oro-about="There is no component. The two on the checkout wear the field, which is the nearest true thing the system has, and lose the chevron a select is supposed to carry." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by two carriers on the checkout."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Select <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. The two on the checkout wear the field.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Stepper" data-oro-level="Base component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="four carriers on the checkout" data-oro-about="Minus, number and plus are one control, not three. Four of them are drawn by hand on the checkout, and each one needs an icon button under it." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by four carriers on the checkout."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Stepper <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. Minus, number and plus are one.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Tooltip" data-oro-level="Base component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="four places on the checkout ask for it today" data-oro-about="There is no component, and the checkout leans on the browser&#x27;s own title attribute. A glyph with no label needs one, which makes this a dependency of the icon button." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by four places on the checkout ask for it today."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Tooltip <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. The checkout leans on title.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Breadcrumb" data-oro-level="Base component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="measured on the live site, never brought over" data-oro-about="There is no component, and eleven of the fourteen live page templates carry one." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by measured on the live site, never brought over."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Breadcrumb <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. Eleven live templates carry one.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <h2 class="gbdoc-reg__group gb-eyebrow" id="composite">Composite components</h2>
+
+        <article class="gbdoc-regcard" data-oro-name="Site header" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/header.css" data-oro-pages="eight pages" data-oro-about="The 80px bar: the lock, the navigation, the Gifts submenu, the burger, the buttons and the glyphs. Four variants over it." data-oro-preview="snapshot 28.08, the catalog measuring page">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/header.css. Stands on eight pages. Preview: snapshot 28.08, the catalog measuring page."><img src="previews/site-header.jpg" alt="Site header on the catalog measuring page, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Site header <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The 80px bar: lock, navigation, buttons, glyphs.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Portal bar" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/header.css" data-oro-pages="the portal" data-oro-about="The header of the warehouse: its own row of actions, its own rhythm, a variant of the same file." data-oro-preview="snapshot 28.08, the portal landing">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/header.css. Stands on the portal. Preview: snapshot 28.08, the portal landing."><img src="previews/portal-bar.jpg" alt="Portal bar on the portal landing, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Portal bar <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The header of the warehouse, with its own row.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Site footer" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/footer.css" data-oro-pages="six pages" data-oro-about="The full footer, folded into an accordion below 641." data-oro-preview="snapshot 28.08, the home page">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/footer.css. Stands on six pages. Preview: snapshot 28.08, the home page."><img src="previews/site-footer.jpg" alt="Site footer on the home page, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Site footer <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The full footer, folded into an accordion below 641.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Drawer" data-oro-level="Composite component" data-oro-status="Documented" data-oro-owner="components/drawer.css" data-oro-pages="fourteen of the sixteen pages" data-oro-about="The panel from the right: one round slot on the left, the title beside it, everything else in the body. Every drawer in the prototype is this one." data-oro-preview="snapshot 28.08, the sign in drawer of the header">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/drawer.css. Stands on fourteen of the sixteen pages. Preview: snapshot 28.08, the sign in drawer of the header."><img src="previews/drawer.jpg" alt="Drawer on the sign in drawer of the header, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Drawer <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
+          <p class="gbdoc-regcard__line">The panel from the right, on one head.</p>
+          <a class="gbdoc-regcard__go" href="drawer.html">Open Drawer</a>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Sign in flow" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/auth.css and auth.js" data-oro-pages="seven pages" data-oro-about="Google or mail, then a six digit code or a password, then done. Every sign in in the prototype is this one flow, never a new form." data-oro-preview="snapshot 28.08, the sign in page">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/auth.css and auth.js. Stands on seven pages. Preview: snapshot 28.08, the sign in page."><img src="previews/sign-in-flow.jpg" alt="Sign in flow on the sign in page, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Sign in flow <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Google or mail, then a code, then done.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Guest header" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/auth.css" data-oro-pages="the sign in page" data-oro-about="The slim bar a signed out visitor gets over the sign in page." data-oro-preview="snapshot 28.08, the sign in page">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/auth.css. Stands on the sign in page. Preview: snapshot 28.08, the sign in page."><img src="previews/guest-header.jpg" alt="Guest header on the sign in page, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Guest header <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The slim bar over the sign in page.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Booking flow" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/booking.css" data-oro-pages="the meeting page and the portal popup" data-oro-about="Three steps: the lead form, the day and the slot, the confirmation. Two layouts, chosen by the width of the host rather than the window." data-oro-preview="snapshot 28.08, the meeting page">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/booking.css. Stands on the meeting page and the portal popup. Preview: snapshot 28.08, the meeting page."><img src="previews/booking-flow.jpg" alt="Booking flow on the meeting page, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Booking flow <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Three steps: the lead, the slot, the confirmation.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Date picker" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/booking.css" data-oro-pages="the second step of the booking" data-oro-about="Month, arrows and a grid of days, with the chosen day in the accent. It has no file of its own: it lives inside the booking flow and has never had a second consumer." data-oro-preview="snapshot 28.08, the booking popup of the portal">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/booking.css. Stands on the second step of the booking. Preview: snapshot 28.08, the booking popup of the portal."><img src="previews/date-picker.jpg" alt="Date picker on the booking popup of the portal, snapshot of 28 August" loading="lazy" width="520" height="260"></div>
+          <h3 class="gbdoc-regcard__name">Date picker <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Month, arrows and a grid of days.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Time slot list" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/booking.css" data-oro-pages="the second step of the booking" data-oro-about="The chips of a chosen day, held in a band four rows tall so a busy day cannot stretch its host." data-oro-preview="snapshot 28.08, the booking popup of the portal">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/booking.css. Stands on the second step of the booking. Preview: snapshot 28.08, the booking popup of the portal."><img src="previews/time-slot-list.jpg" alt="Time slot list on the booking popup of the portal, snapshot of 28 August" loading="lazy" width="520" height="260"></div>
+          <h3 class="gbdoc-regcard__name">Time slot list <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The chips of a chosen day, four rows tall.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Step rail" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/booking.css" data-oro-pages="the booking" data-oro-about="Dots and a rail that say where in a flow you are. It moves out of the booking file as soon as a second flow needs it." data-oro-preview="snapshot 28.08, the booking popup of the portal">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/booking.css. Stands on the booking. Preview: snapshot 28.08, the booking popup of the portal."><img src="previews/step-rail.jpg" alt="Step rail on the booking popup of the portal, snapshot of 28 August" loading="lazy" width="520" height="260"></div>
+          <h3 class="gbdoc-regcard__name">Step rail <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Dots and a rail that say where you are.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Home sections" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/home.css" data-oro-pages="the home page and the catalog" data-oro-about="Hero, brand tabs, testimonials, the video banner, the conversation banner and the advantages band. The last two also close the catalog." data-oro-preview="snapshot 28.08, the home page">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/home.css. Stands on the home page and the catalog. Preview: snapshot 28.08, the home page."><img src="previews/home-sections.jpg" alt="Home sections on the home page, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Home sections <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">Six bands of the home page, two of them travel.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Catalog hero, filters and grid" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/catalog.css" data-oro-pages="the catalog and its measuring page" data-oro-about="The three parts of a listing page, each one measured against the live catalog." data-oro-preview="snapshot 28.08, the catalog measuring page">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/catalog.css. Stands on the catalog and its measuring page. Preview: snapshot 28.08, the catalog measuring page."><img src="previews/catalog.jpg" alt="Catalog hero, filters and grid on the catalog measuring page, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Catalog hero, filters and grid <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The three parts of a listing page.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Listing card" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/catalog.css" data-oro-pages="the catalog grid" data-oro-about="One gift in the grid: media, badge, title, price." data-oro-preview="snapshot 28.08, the catalog measuring page">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/catalog.css. Stands on the catalog grid. Preview: snapshot 28.08, the catalog measuring page."><img src="previews/listing-card.jpg" alt="Listing card on the catalog measuring page, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Listing card <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">One gift in the grid: media, badge, title, price.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Studio door and shelf" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/studio.css" data-oro-pages="the hub and the sandboxes" data-oro-about="The card and the shelf the studio itself is navigated by, with the nested link pattern that keeps a link out of a link." data-oro-preview="snapshot 28.08, the hub">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/studio.css. Stands on the hub and the sandboxes. Preview: snapshot 28.08, the hub."><img src="previews/studio-door.jpg" alt="Studio door and shelf on the hub, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Studio door and shelf <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The card the studio itself is navigated by.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Page tree" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/studio.css" data-oro-pages="the map" data-oro-about="The map of the prototype: branches, nodes, the pages that do not exist yet and the crossings between the two trees." data-oro-preview="snapshot 28.08, the map">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/studio.css. Stands on the map. Preview: snapshot 28.08, the map."><img src="previews/page-tree.jpg" alt="Page tree on the map, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Page tree <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The map of the prototype, branch by branch.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Studio console" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/studio-panel.css" data-oro-pages="all sixteen pages" data-oro-about="One console for the whole prototype: the mode, the device, the doors, the sandboxes of the page and the page&#x27;s own switches." data-oro-preview="snapshot 28.08, the Colors page, with the console open">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/studio-panel.css. Stands on all sixteen pages. Preview: snapshot 28.08, the Colors page, with the console open."><img src="previews/studio-console.jpg" alt="Studio console on the Colors page, with the console open, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Studio console <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">One console for the whole prototype.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Device frame" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/studio-panel.css" data-oro-pages="wherever the console stands" data-oro-about="The stage that puts the page inside a screen of a chosen width, with the console left outside it and the instrument still working inside." data-oro-preview="snapshot 28.08, the catalog measuring page at the tablet preset">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/studio-panel.css. Stands on wherever the console stands. Preview: snapshot 28.08, the catalog measuring page at the tablet preset."><img src="previews/device-frame.jpg" alt="Device frame on the catalog measuring page at the tablet preset, snapshot of 28 August" loading="lazy" width="900" height="450"></div>
+          <h3 class="gbdoc-regcard__name">Device frame <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The page inside a screen of a chosen width.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Inspect overlay" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/inspect.css and inspect.js" data-oro-pages="wherever the console stands" data-oro-about="The instrument: the name plate, the padding, the margin, the distance to the neighbour and the properties drawer behind a click." data-oro-preview="snapshot 28.08, the catalog measuring page in Inspect mode">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/inspect.css and inspect.js. Stands on wherever the console stands. Preview: snapshot 28.08, the catalog measuring page in Inspect mode."><img src="previews/inspect-overlay.jpg" alt="Inspect overlay on the catalog measuring page in Inspect mode, snapshot of 28 August" loading="lazy" width="700" height="350"></div>
+          <h3 class="gbdoc-regcard__name">Inspect overlay <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">The name plate, the padding and the margin.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Comment pin and thread" data-oro-level="Composite component" data-oro-status="Built" data-oro-owner="components/comments.css and comments.js" data-oro-pages="all sixteen pages" data-oro-about="A remark belongs to a thing, so the pin sits on the element and the conversation opens in a drawer." data-oro-preview="snapshot 28.08, the catalog measuring page in Comment mode">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--frame" title="Owner: components/comments.css and comments.js. Stands on all sixteen pages. Preview: snapshot 28.08, the catalog measuring page in Comment mode."><img src="previews/comment-pin.jpg" alt="Comment pin and thread on the catalog measuring page in Comment mode, snapshot of 28 August" loading="lazy" width="900" height="450"></div>
+          <h3 class="gbdoc-regcard__name">Comment pin and thread <span class="gbdoc-flag">Built</span></h3>
+          <p class="gbdoc-regcard__line">A remark belongs to a thing, so it sits on it.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Modal" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="one carrier on the checkout" data-oro-about="There is no component. The import dialog on the checkout is drawn by hand and carries its own entrance, because a modal is not a drawer and the drawer&#x27;s choreography does not fit it." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by one carrier on the checkout."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Modal <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. The import dialog is drawn by hand.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Cookie bar" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="measured on the live site, never brought over" data-oro-about="There is no component, and thirteen of the fourteen live page templates carry one." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by measured on the live site, never brought over."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Cookie bar <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. Thirteen live templates carry one.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Accordion" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="two live templates ask for it" data-oro-about="The footer has one, scoped to itself and unusable anywhere else. The one the product page and the help page use has never been brought over." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by two live templates ask for it."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Accordion <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">The footer has one, scoped to itself.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Data table" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="one carrier on the checkout" data-oro-about="There is no component. The recipients table on the checkout is drawn by hand, and it is the densest surface in the prototype." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by one carrier on the checkout."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Data table <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. The recipients table is by hand.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Pagination" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="one carrier on the checkout" data-oro-about="There is no component. The live site has none either: it loads more instead, and the only pair of arrows in the prototype is on the checkout." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by one carrier on the checkout."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Pagination <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component, and live has none either.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Toast" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="borrowed on the catalog" data-oro-about="There is no component. The catalog shows the one inside its vendored bundle, and the live site keeps empty containers for a toast it never fills." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by borrowed on the catalog."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Toast <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. The catalog borrows the bundle one.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Search overlay" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="borrowed on the catalog" data-oro-about="There is no component. The catalog borrows the bundle&#x27;s own through a bridge, and the glyph in our own header has nothing to open." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by borrowed on the catalog."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Search overlay <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component. The catalog borrows one.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Product page layout" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="measured on the live site, never brought over" data-oro-about="There is no component, in either of its two shapes, and one hundred and twelve live pages are one of them. The largest single hole in the catalogue." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by measured on the live site, never brought over."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Product page layout <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component, and 112 live pages are one.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
+
+        <article class="gbdoc-regcard" data-oro-name="Media gallery" data-oro-level="Composite component" data-oro-status="Not in the system" data-oro-owner="" data-oro-pages="measured on the live site, never brought over" data-oro-about="There is no component: neither the carousel with thumbnails nor the vertical stack the newer product page uses." data-oro-preview="">
+          <div class="gbdoc-slot gbdoc-regcard__preview gbdoc-regcard__preview--none" title="No owner. Held today by measured on the live site, never brought over."><span class="gb-eyebrow">Not in the system</span></div>
+          <h3 class="gbdoc-regcard__name">Media gallery <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
+          <p class="gbdoc-regcard__line">No component: no carousel and no stack.</p>
+          <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
+        </article>
       </section>
 
-      <!-- ============================================================
-           SHELF 2 — BASE COMPONENTS
-           ------------------------------------------------------------
-           A base component holds no other component inside it. The
-           registry below lists every one the system has, plus the
-           places where it has none; under the registry stand the
-           four that already have a full card, unchanged, with every
-           anchor they had before (#buttons, #fields, #eyebrow,
-           #badge and the sections inside them).
-           ============================================================ -->
-      <section class="oro-shelf" id="base">
-        <header class="gbdoc-card__head">
-          <span class="gb-eyebrow">Catalogue</span>
-          <h2 class="oro-h2">Base components</h2>
-          <p class="oro-shelf__line">One job each, and no other component inside. A base component can be dropped into anything, which is why a hole on this shelf is felt on every screen at once.</p>
-        </header>
-
-        <div class="gbdoc-reg">
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Button <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">Every action in the product. Four sizes, three types, three colours, one organism and no second source.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/button.css · stands on all sixteen pages</p>
-            <a class="gbdoc-regcard__go" href="#buttons">Open the card</a>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Icon button <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">A glyph in a circle: the cross, the arrow back, the search. A shape of the button organism, not a size of it.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/button.css · stands in the head of every drawer</p>
-            <a class="gbdoc-regcard__go" href="icons.html#iconbutton">Open Icon button</a>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Field <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">The underlined text input and its caps label, single line and multi line. A field is an underline, not a box.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/auth.css · stands on the gate, the sign in, the booking, the portal and the checkout</p>
-            <a class="gbdoc-regcard__go" href="#fields">Open the card</a>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Field, floating label <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The second look of the same field: the label sits inside the control at rest and rises out of the way when it is used.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/auth.css · stands on the first step of the booking and in the comment thread</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Phone field <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">One underlined row: the country box, a hairline, the number.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/booking.css · stands on the first step of the booking</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">One time code <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">Six cells for the code that arrives by mail, filled and cleared as one control.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/auth.css · stands wherever the sign in flow stands</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Eyebrow <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">The one small all caps label in the system, and there is no second one.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/shell.css · stands on every page</p>
-            <a class="gbdoc-regcard__go" href="#eyebrow">Open the card</a>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Count badge <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">The small blue count that rides on a glyph button, because a count is a state.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/header.css · stands in the header of a signed in visitor and on the portal</p>
-            <a class="gbdoc-regcard__go" href="#badge">Open the card</a>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Beta badge <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The one piece of gold left anywhere in the interface, and it says a single word.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/header.css · stands in the Gifts submenu</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Account initials <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The circle a signed in visitor is recognised by, and the menu it opens.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/header.css · stands in the header once someone is signed in</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Status chip <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The small caps plaque that says ready, built or expected. Three families do this today, in three files, which is one question for the catalogue rather than three answers.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> studio.css, docs.css and comments.css · stands on the hub, the map, the sandboxes and this page</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Segmented control <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">Two or three exclusive choices in one row, underlined rather than boxed: a tool must not look like an object.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> docs.css and studio-panel.css · stands on the showcase axes and in the console</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Documentation atoms <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The furniture a showcase page is assembled from: the card, the reading table, the code block, the plaque, the shelf, the stage and the specimen ladder.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/docs.css · stands on every page of the showcase</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Checkbox <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component. The three on the checkout run on the browser's own accent colour, which gets the blue right and leaves everything else to the browser.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · named by the accent rule alongside the radio and the switch</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Needs a measurement first</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Radio <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component. Two groups on the checkout run on accent colour, and the choice card in the sign in flow is a card around a radio, not the control itself.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · the choice card lives in auth.css and does not stand in for it</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Needs a measurement first</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Switch <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component and not one carrier anywhere in the prototype, although the accent rule names the switch by name.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · nothing in the prototype toggles this way yet</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Needs a decision first</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Select <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component. The two on the checkout wear the field, which is the nearest true thing the system has, and lose the chevron a select is supposed to carry.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · first candidate for a new component after the checkout</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Stepper <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">Minus, number and plus are one control, not three. Four of them are drawn by hand on the checkout, and each one needs an icon button under it.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · drawn on the checkout, on tokens but outside the system</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Tooltip <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component, and the checkout leans on the browser's own title attribute. A glyph with no label needs one, which makes this a dependency of the icon button.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · four places on the checkout ask for it today</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Breadcrumb <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component, and eleven of the fourteen live page templates carry one.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · measured on the live site, never brought over</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-        </div>
+      <p class="oro-note">A tile with a component in it is that component, drawn by the system on this page: break the organism and the tile breaks with it. A tile with a page in it is a snapshot taken with the instrument on 28 August, because half of the composite list is a state rather than a resting surface, and a snapshot goes stale when the page moves. An empty dashed tile means there is nothing to show yet. Click a tile for the level, the owner, the pages it stands on and the whole entry.</p>
 
       <!-- ============================================================
            BUTTONS
@@ -1077,228 +1326,6 @@
         <p class="oro-note">One deviation, inherited and recorded: live anchors the badge at top -13 and right 5 of a 20px glyph box, and ours sits on the prototype's round 44px button instead. The badge itself is live to the pixel.</p>
       </section>
 
-      </section>
-      <!-- ^ end of shelf 2, BASE COMPONENTS -->
-
-      <!-- ============================================================
-           SHELF 3 — COMPOSITE COMPONENTS
-           ------------------------------------------------------------
-           Ton's own example of the level: «хедер: логотип, навигация,
-           кнопки, иконки». Everything here is assembled out of the
-           shelf above, which is why none of it can be documented
-           before its parts are.
-
-           This shelf replaced the flat «Documented soon» table. The
-           table could only list nine things that exist; a shelf of
-           registry cards also shows the holes, and the holes are the
-           half of the catalogue Ton asked about.
-           ============================================================ -->
-      <section class="oro-shelf" id="composite">
-        <header class="gbdoc-card__head">
-          <span class="gb-eyebrow">Catalogue</span>
-          <h2 class="oro-h2">Composite components</h2>
-          <p class="oro-shelf__line">Assembled out of base components. The header is a lock, a navigation, buttons and glyphs; the drawer is a glyph button, a title and a body. None of them can be documented honestly before its parts are.</p>
-        </header>
-
-        <div class="gbdoc-reg">
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Site header <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The 80px bar: the lock, the navigation, the Gifts submenu, the burger, the buttons and the glyphs. Four variants over it.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/header.css · stands on eight pages</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Portal bar <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The header of the warehouse: its own row of actions, its own rhythm, a variant of the same file.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/header.css · stands on the portal</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Site footer <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The full footer, folded into an accordion below 641.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/footer.css · stands on six pages</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Drawer <span class="gbdoc-flag gbdoc-flag--ready">Documented</span></h3>
-            <p class="gbdoc-regcard__line">The panel from the right: one round slot on the left, the title beside it, everything else in the body. Every drawer in the prototype is this one.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/drawer.css · stands on fourteen of the sixteen pages</p>
-            <a class="gbdoc-regcard__go" href="drawer.html">Open Drawer</a>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Sign in flow <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">Google or mail, then a six digit code or a password, then done. Every sign in in the prototype is this one flow, never a new form.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/auth.css and auth.js · stands on seven pages</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Guest header <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The slim bar a signed out visitor gets over the sign in page.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/auth.css · stands on the sign in page</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Booking flow <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">Three steps: the lead form, the day and the slot, the confirmation. Two layouts, chosen by the width of the host rather than the window.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/booking.css · stands on the meeting page and in the portal popup</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Date picker <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">Month, arrows and a grid of days, with the chosen day in the accent. It has no file of its own: it lives inside the booking flow and has never had a second consumer.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/booking.css · stands on the second step of the booking</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Time slot list <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The chips of a chosen day, held in a band four rows tall so a busy day cannot stretch its host.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/booking.css · stands on the second step of the booking</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Step rail <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">Dots and a rail that say where in a flow you are. It moves out of the booking file as soon as a second flow needs it.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/booking.css · stands on the booking</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Home sections <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">Hero, brand tabs, testimonials, the video banner, the conversation banner and the advantages band. The last two also close the catalog.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/home.css · stands on the home page and the catalog</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Catalog hero, filters and grid <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The three parts of a listing page, each one measured against the live catalog.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/catalog.css · stands on the catalog and its measuring page</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Listing card <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">One gift in the grid: media, badge, title, price.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/catalog.css · stands in the catalog grid</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Studio door and shelf <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The card and the shelf the studio itself is navigated by, with the nested link pattern that keeps a link out of a link.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/studio.css · stands on the hub and the sandboxes</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Page tree <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The map of the prototype: branches, nodes, the pages that do not exist yet and the crossings between the two trees.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/studio.css · stands on the map</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Studio console <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">One console for the whole prototype: the mode, the device, the doors, the sandboxes of the page and the page's own switches.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/studio-panel.css · stands on all sixteen pages</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Device frame <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The stage that puts the page inside a screen of a chosen width, with the console left outside it and the instrument still working inside.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/studio-panel.css · stands wherever the console stands</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Inspect overlay <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">The instrument: the name plate, the padding, the margin, the distance to the neighbour and the properties drawer behind a click.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/inspect.css and inspect.js · stands wherever the console stands</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Comment pin and thread <span class="gbdoc-flag">Built</span></h3>
-            <p class="gbdoc-regcard__line">A remark belongs to a thing, so the pin sits on the element and the conversation opens in a drawer.</p>
-            <p class="gbdoc-regcard__where"><b>Owner</b> components/comments.css and comments.js · stands on all sixteen pages</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Modal <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component. The import dialog on the checkout is drawn by hand and carries its own entrance, because a modal is not a drawer and the drawer's choreography does not fit it.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · one carrier on the checkout</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Cookie bar <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component, and thirteen of the fourteen live page templates carry one.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · measured on the live site, never brought over</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Accordion <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">The footer has one, scoped to itself and unusable anywhere else. The one the product page and the help page use has never been brought over.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · two live templates ask for it</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Data table <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component. The recipients table on the checkout is drawn by hand, and it is the densest surface in the prototype.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · one carrier on the checkout</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Pagination <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component. The live site has none either: it loads more instead, and the only pair of arrows in the prototype is on the checkout.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · one carrier on the checkout</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Toast <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component. The catalog shows the one inside its vendored bundle, and the live site keeps empty containers for a toast it never fills.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · borrowed on the catalog</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Search overlay <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component. The catalog borrows the bundle's own through a bridge, and the glyph in our own header has nothing to open.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · borrowed on the catalog</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Product page layout <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component, in either of its two shapes, and one hundred and twelve live pages are one of them. The largest single hole in the catalogue.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · measured on the live site, never brought over</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-
-          <article class="gbdoc-regcard">
-            <h3 class="gbdoc-regcard__name">Media gallery <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span></h3>
-            <p class="gbdoc-regcard__line">There is no component: neither the carousel with thumbnails nor the vertical stack the newer product page uses.</p>
-            <p class="gbdoc-regcard__where"><b>No owner</b> · measured on the live site, never brought over</p>
-            <span class="gbdoc-regcard__go gbdoc-regcard__go--none">Showcase pending</span>
-          </article>
-        </div>
-      </section>
-
       <footer class="oro-foot">
         Sources: <a href="../components/button.css">button.css</a>, <a href="../components/auth.css">auth.css</a>, <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
       </footer>
@@ -1325,6 +1352,7 @@
      showcase and every page of the prototype now read specimens with the
      same core, and the type record it names roles from is one file. -->
 <script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
 <script src="../components/drawer.js"></script>
 <script src="../components/inspect.js"></script>
 <script src="../components/comments.js"></script>
@@ -1782,6 +1810,128 @@
     clearTimeout(spyTimer);
     spyTimer = setTimeout(spy, 90);
   }, { passive: true });
+})();
+</script>
+
+<script>
+/* ============================================================
+   gbppl-oro-cards-1 — THE REGISTRY TILES
+   ------------------------------------------------------------
+   Two jobs, and the same rule as the script above it: NOTHING
+   HERE TYPES A VALUE. The three foundation tiles that cannot be
+   written as static markup are drawn out of the records
+   themselves (the type ladder, the icon set), and the drawer
+   behind a tile reads the registry entry off the card it belongs
+   to.
+
+   WHY A KIND AND NOT A HANDLER. inspect.js already owns the
+   pattern «a region marked data-inspect hands its specimens to a
+   kind», it already owns the drawer, and it publishes register()
+   for exactly this. So the catalogue borrows the mechanism rather
+   than growing a second click handler beside it, and the tiles
+   answer in View mode and in Inspect mode alike, like every other
+   specimen on this page.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- the type tile: three roles, read off the record ----------
+     Same reading typography.html does for its ladder, and for the
+     same reason: a class exists for eight roles out of forty seven,
+     so the rest are drawn from the rungs that were measured. */
+  function paintType(host) {
+    var T = window.GB_TYPE_SCALE;
+    if (!T) return;
+    host.classList.add('gbdoc-regcard__spec--stack');
+    var w = window.innerWidth;
+    var lines = ['h1-panel', 'body-base', 'eyebrow'];
+    host.innerHTML = lines.map(function (id) {
+      var role = T.byId[id];
+      if (!role) return '';
+      var r = T.rungFor(role, w);
+      var fam = role.fam === 'serif' ? 'var(--font-serif)' : 'var(--font-sans)';
+      return '<p class="gbdoc-sample" style="font-family:' + fam +
+        ';font-size:' + r.s + 'px;font-weight:' + r.f +
+        ';line-height:' + r.lh + ';letter-spacing:' + r.ls +
+        ';text-transform:' + r.tt + '">' + (r.tt === 'uppercase' ? 'Eyebrow' : 'Handled') + '</p>';
+    }).join('');
+  }
+
+  /* ---------- the icon tile: six glyphs, out of the set ---------- */
+  function paintIcons(host) {
+    var I = window.GbIcons;
+    if (!I) return;
+    host.classList.add('gbdoc-regcard__spec--wrap');
+    var want = ['close', 'search', 'user', 'menu', 'cart', 'filters'];
+    var have = I.names();
+    var six = want.filter(function (n) { return I.has(n); });
+    for (var i = 0; i < have.length && six.length < 6; i++) {
+      if (six.indexOf(have[i]) === -1) six.push(have[i]);
+    }
+    host.innerHTML = six.slice(0, 6).map(function (n) { return I.html(n, 24); }).join('');
+  }
+
+  var PAINT = { type: paintType, icons: paintIcons };
+  function paintAll() {
+    var hosts = document.querySelectorAll('[data-oro-paint]');
+    Array.prototype.forEach.call(hosts, function (h) {
+      var fn = PAINT[h.getAttribute('data-oro-paint')];
+      if (fn) fn(h);
+    });
+  }
+  paintAll();
+  var tick;
+  window.addEventListener('resize', function () {
+    clearTimeout(tick);
+    tick = setTimeout(paintAll, 120);
+  });
+
+  /* ---------- the drawer behind a tile ---------- */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function rows(list) {
+    return '<table class="gbdoc-table"><tbody>' + list.map(function (r) {
+      return '<tr><td>' + esc(r[0]) + '</td><td>' + r[1] + '</td></tr>';
+    }).join('') + '</tbody></table>';
+  }
+  function cap(t) { return '<span class="gbdoc-cap">' + esc(t) + '</span>'; }
+
+  if (window.GbInspect && window.GbInspect.register) {
+    window.GbInspect.register('regcard', {
+      /* The tile IS the specimen: there is one per card and the
+         card above it holds the entry. */
+      find: function (slot) { return slot; },
+
+      describe: function (el) {
+        var card = el.closest('.gbdoc-regcard');
+        return card ? card.dataset : {};
+      },
+
+      name: function (el, d) { return d.oroName || 'Registry card'; },
+      owner: function (el, d) { return d.oroOwner || 'no owner: this one is not in the system'; },
+      title: function (el, d) {
+        return (d.oroLevel || 'Component') + ', ' + String(d.oroStatus || '').toLowerCase();
+      },
+
+      body: function (el, d) {
+        var list = [
+          ['Level', esc(d.oroLevel)],
+          ['Status', esc(d.oroStatus)],
+          ['Owner', d.oroOwner ? '<code>' + esc(d.oroOwner) + '</code>' : 'No owner yet'],
+          ['Stands on', esc(d.oroPages)]
+        ];
+        if (d.oroPreview) list.push(['Preview', esc(d.oroPreview)]);
+        return cap('The registry entry') + rows(list) +
+          cap('What it is') + '<p class="gbdoc-card__line">' + esc(d.oroAbout) + '</p>' +
+          cap('Where these words come from') +
+          '<p class="gbdoc-card__line">The census, <code>studio/docs/ORO-COMPONENT-INVENTORY.md</code>. ' +
+          'To have the component measured instead of read, point at the component itself: on its ' +
+          'own page, or on its card further down this one.</p>';
+      }
+    });
+  }
 })();
 </script>
 
