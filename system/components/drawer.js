@@ -1,5 +1,5 @@
 /* ============================================================
-   gbppl-drawer-1 / gbppl-drawer-unify-1 — <gb-drawer>
+   gbppl-drawer-1 / gbppl-drawer-unify-1 / gbppl-drawer-focus-1 — <gb-drawer>
    ------------------------------------------------------------
    The element behind drawer.css. One instance per page is enough:
    it is a surface, and the page decides what goes on it.
@@ -45,11 +45,37 @@
    WHAT IT TAKES CARE OF, so no page has to:
      Esc closes it, a click on the scrim closes it, the close
      button closes it.
-     Focus moves into the panel on open and returns to the
-     element that opened it on close.
+     Focus moves into the panel on open, STAYS THERE while it is
+     open, and returns to the element that opened it on close.
      The page behind stops scrolling while it is open.
      Two opens in a row swap the content instead of stacking two
      panels.
+
+   FOCUS IS SHUT IN (gbppl-drawer-focus-1, 28.08). Found by the
+   drawer showcase: the panel said role="dialog" aria-modal="true"
+   and then let Tab walk straight out of it, into a page that is
+   frozen, scrimmed and unreadable. A promise made in an attribute
+   and broken by the keyboard is worse than no promise. Now Tab off
+   the last control lands on the first, Shift+Tab off the first
+   lands on the last, and focus that got out some other way (out to
+   the browser chrome and back, a script that moved it) is pulled
+   in on the next Tab.
+
+   The ring is read LIVE on every keystroke, never cached: the auth
+   flow and the comment thread redraw the body under themselves,
+   and a cached list would hold focus on buttons that stopped
+   existing. Hidden slots of the head fall out of it by themselves,
+   because a rectangle is what the filter asks for, not a class.
+
+   NO `inert` ON THE NEIGHBOURS. Chrome carries it since 102 and it
+   would work, but here it buys nothing that is not already bought:
+   pointers are stopped by the scrim (z 80 / 81, over everything
+   the studio owns), assistive technology by aria-modal, and the
+   keyboard by the ring above. What it would add is an attribute
+   written onto foreign body children, the vendored catalogue
+   bundle among them, that stays there and kills the page if any
+   close path is ever missed. A state that can get stuck is not a
+   cheap state.
 
    THE FIRST BRICK OF DEV MODE (Ton, 25.08): the showcase opens
    this drawer on any specimen a developer clicks and fills it
@@ -71,6 +97,39 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
     'stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M15 5l-7 7 7 7"/></svg>';
+
+  /* THE RING. The standard tabbable list; `[tabindex]` is in it for
+     the roles a page invents, and the same line is why the filter
+     below throws out anything below zero, the panel's own -1
+     included. */
+  var FOCUS_SEL = [
+    'a[href]', 'area[href]', 'button', 'input', 'select', 'textarea',
+    'summary', 'iframe', 'object', 'embed',
+    'audio[controls]', 'video[controls]',
+    '[contenteditable]:not([contenteditable="false"])',
+    '[tabindex]'
+  ].join(',');
+
+  function tabbable(root) {
+    var list = root.querySelectorAll(FOCUS_SEL);
+    var out = [];
+    for (var i = 0; i < list.length; i++) {
+      var n = list[i];
+      if (n.disabled) continue;
+      if (n.closest('fieldset[disabled], [inert]')) continue;
+      if (n.getAttribute('aria-hidden') === 'true') continue;
+      var ti = n.getAttribute('tabindex');
+      if (ti !== null && !(Number(ti) >= 0)) continue;
+      /* Visible, measured, not declared: `hidden`, display:none and
+         a collapsed ancestor all come back as no rectangles at all,
+         and visibility has to be asked for separately because it
+         keeps the box and only stops painting it. */
+      if (!n.getClientRects().length) continue;
+      if (getComputedStyle(n).visibility === 'hidden') continue;
+      out.push(n);
+    }
+    return out;
+  }
 
   function el(tag, cls, html) {
     var n = document.createElement(tag);
@@ -149,7 +208,41 @@
     /* Esc closes, with a back step or without one. See the head
        block at the top of the file for why it is not a step back. */
     host._onKey = function (e) {
-      if (e.key === 'Escape' && host._open) { e.preventDefault(); host.close(); }
+      if (!host._open) return;
+      if (e.key === 'Escape') { e.preventDefault(); host.close(); return; }
+      if (e.key !== 'Tab') return;
+
+      var ring = tabbable(host._panel);
+      var here = document.activeElement;
+
+      /* An empty panel still has to hold the key: the panel itself
+         is the only thing left to stand on. */
+      if (!ring.length) {
+        e.preventDefault();
+        host._panel.focus({ preventScroll: true });
+        return;
+      }
+
+      var first = ring[0];
+      var last = ring[ring.length - 1];
+
+      /* Out of the panel, or standing on the panel itself with
+         Shift held: either way the browser is about to leave, so
+         the step is made by hand instead. Forward off the panel
+         needs no help, the first control is already next in the
+         document. */
+      if (!here || !host._panel.contains(here)) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+        return;
+      }
+      if (e.shiftKey && (here === first || here === host._panel)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && here === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
   }
 
