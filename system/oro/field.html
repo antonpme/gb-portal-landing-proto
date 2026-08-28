@@ -16,22 +16,38 @@
      компоненты; дальше отдельные страницы самих компонентов.»
 
      So this card moved out of components.html and became a page.
-     Every section below is the same markup it was on the catalogue,
-     in the same order, under the same id (#fields). Two things
-     changed and both are structure, not content: the card head
-     became the crumb at the top of the page, because a page about
-     one component says its name once; and the sections that had no
-     id got one, so the contents list on the left can reach them.
-
      Old links still land: components.html keeps a redirect for the
      hashes that used to live on it, and the «Open in Oro» of
      Inspect now points here.
 
+     ------------------------------------------------------------
+     gbppl-oro-field-2 — ALL FIVE LOOKS, NOT ONE
+     ------------------------------------------------------------
+     Until this wave the page documented ONE look of the field, the
+     underlined control with a caps label over it, and the system
+     had five. The other four were built, measured and shipped, and
+     a reader of this page could not tell they existed:
+
+       floating label   auth.css, .gba-field--floating, the lead
+                        form of the live contact page
+       phone            booking.css, .gbb-phone*, one underlined
+                        row: country box, hairline, number
+       one time code    auth.css, .gba-otp, six cells
+       password reveal  auth.css, .gba-eye, the eye in the corner
+
+     NOTHING WAS BUILT BY THIS WAVE (rule 7.1 of the skill). Every
+     specimen below is the organism itself: either the real
+     <gb-field> of auth.js, with the real attributes and the real
+     setError(), or markup copied character for character out of
+     the file that owns it. Where a look has no answer for a state,
+     the page says so out loud instead of inventing one.
+
      Ton-10: this page is a CONSUMER. Its card, tables, shelves,
      chips and code blocks are the atoms of ..\components\docs.css;
      its drawer is ..\components\drawer.css; its specimens are the
-     organism itself. What is left in the <style> block is the width
-     of the reading column and the one antidote documented where it stands.
+     organisms themselves. What is left in the <style> block is the
+     width of the reading column and the antidotes documented where
+     they stand.
 
      NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
      measurement is read back out of the rendered page.
@@ -47,6 +63,12 @@
 <link rel="stylesheet" href="../components/button.css">
 <link rel="stylesheet" href="../components/icon.css">
 <link rel="stylesheet" href="../components/auth.css">
+<!-- gbppl-oro-field-2. booking.css comes along for ONE look, the
+     phone row: it is the file that owns .gbb-phone, and a showcase
+     is not allowed to redraw it. The file is scoped .gbb-* from end
+     to end, so nothing else on this page can feel it. It is here
+     for the same reason components.html links it. -->
+<link rel="stylesheet" href="../components/booking.css">
 <link rel="stylesheet" href="../components/drawer.css">
 <link rel="stylesheet" href="../components/docs.css">
 <link rel="stylesheet" href="../components/inspect.css">
@@ -69,6 +91,24 @@
    exactly as index.html does it for the gate and components.html
    does it for the registry tiles. */
 .gba-input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
+/* gbppl-oro-field-2. The same antidote for the three controls the
+   four other looks bring onto this page. The phone row is a div,
+   and a div outside the preflight scope has border-style none, so
+   its one hairline would not be drawn at all: the row needs the
+   style as well as the widths. The country box and the eye are
+   buttons, which arrive with the browser's own frame. */
+.gba-otp input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
+.gbb-phone { border-style: solid; border-width: 0; border-bottom-width: 1px; }
+.gbb-phone-trigger,
+.gba-eye { border-width: 0; }
+
+/* LAYOUT ONLY, this page. A field is a full width control, and a
+   showcase slot is sized for content, because docs.css was written
+   first for buttons and glyphs. .gbdoc-hold--block is the atom that
+   already means «a specimen that owns its column», so its child is
+   told to fill it. No length is set here: this is a fact about the
+   layout, not a property of the component. */
+.gbdoc-hold--block > * { width: 100%; }
 </style>
 </head>
 <body>
@@ -107,12 +147,17 @@
       <span class="oro-toc-title">On this page</span>
       <div class="oro-toc-list">
         <a class="oro-toc-link" href="#fields">Field</a>
-        <a class="oro-toc-link oro-toc-link--sub" href="#states">States</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#playground">Playground</a>
         <a class="oro-toc-link oro-toc-link--sub" href="#variants">Variants</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#states">States</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#sizes">Sizes</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#label">With label</a>
         <a class="oro-toc-link oro-toc-link--sub" href="#anatomy">Anatomy</a>
         <a class="oro-toc-link oro-toc-link--sub" href="#properties">Properties</a>
         <a class="oro-toc-link oro-toc-link--sub" href="#usage">Usage</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#a11y">Accessibility</a>
         <a class="oro-toc-link oro-toc-link--sub" href="#code">Code</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#changelog">Changelog</a>
       </div>
     </div>
   </nav>
@@ -124,163 +169,362 @@
       <header class="oro-head">
         <span class="gb-eyebrow">Base component</span>
         <h1 class="oro-h1">Field <span class="gbdoc-flag gbdoc-status">Stable</span></h1>
-        <p class="oro-lede">The underline input of the live sign in, with its label, its error and its multi line version.</p>
-        <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. Every number in the tables below is read off a specimen at that width.</p>
+        <p class="oro-lede">One control in five looks: the underlined input of the live sign in, the floating label of the live lead form, the phone row, the six cell code and the password with an eye.</p>
+        <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The field has two height ladders and they do not step together.</p>
       </header>
 
       <section class="gbdoc-card" id="fields">
+        <!-- ---- OVERVIEW ---- -->
         <span class="gbdoc-sub">Overview</span>
+        <h3 class="oro-h3">One field, five looks, two owners</h3>
+        <p class="oro-p">A field is an underline, not a box: no frame, no ground and no radius anywhere in the family. Everything below is that one control seen from a different side. Four of the five come from <code>auth.css</code>, which owns the field; the phone row comes from <code>booking.css</code>, which owns the only place two controls share one underline. Nothing here is new: the looks were built between 18 and 28 August, and this wave stands them up and measures them.</p>
+
         <div class="gbdoc-tablewrap">
         <table class="gbdoc-table">
+          <thead><tr><th>Look</th><th>Owner</th><th>Class or attribute</th><th>Worn by</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>Owner</td><td><code>system/components/auth.css</code>, with the markup from <code>system/components/auth.js</code></td></tr>
-            <tr><td>Element</td><td><code>&lt;gb-field&gt;</code> with <code>input-id</code>, <code>name</code>, <code>type</code>, <code>label</code>, <code>placeholder</code>, <code>optional</code></td></tr>
-            <tr><td>Worn by</td><td>Guest sign in, the booking flow, the checkout drawers and the studio gate</td></tr>
-            <tr><td>Ladder</td><td>48 at base, 56 from 1280, 64 from 2000, the same family the L button walks</td></tr>
-            <tr><td>Status</td><td>Stable, with one open question: the disabled state has never been measured on live</td></tr>
+            <tr id="underline"><td>Underline, caps label</td><td><code>auth.css</code></td><td><code>&lt;gb-field&gt;</code>, <code>.gba-input</code> with <code>.gba-label</code> over it</td><td>The gate, guest sign in, the portal, the checkout drawers</td><td>Stable, the default</td></tr>
+            <tr id="floating"><td>Floating label</td><td><code>auth.css</code></td><td><code>label-style="floating"</code>, <code>.gba-field--floating</code></td><td>The first step of the booking, the comment thread</td><td>Stable since 27 August</td></tr>
+            <tr id="phone"><td>Phone</td><td><code>booking.css</code></td><td><code>.gbb-phone</code>, <code>.gbb-phone-trigger</code>, <code>.gbb-phone-field</code></td><td>The first step of the booking</td><td>Stable, one consumer</td></tr>
+            <tr id="otp"><td>One time code</td><td><code>auth.css</code></td><td><code>.gba-otp</code> with <code>.gba-vlabel</code> over it</td><td>The code step of the sign in flow, wherever it stands</td><td>Stable, one consumer</td></tr>
+            <tr id="password"><td>Password reveal</td><td><code>auth.css</code></td><td><code>eye</code> on <code>&lt;gb-field&gt;</code>, <code>.gba-eye</code></td><td>The password step of the sign in flow</td><td>Stable, one consumer</td></tr>
           </tbody>
         </table>
         </div>
 
-        <span class="gbdoc-sub" id="states">States</span>
-        <h3 class="oro-h3">Six states, and one the system has not decided</h3>
-        <p class="oro-p">The live field has no focus ring. Focus does exactly one thing on the product: it fades the placeholder out and leaves the underline where it was. Hover is the only step that moves the line, and it moves it to blue. That is not an omission on our side, it is what the instrument read, and the showcase shows it rather than improving on it quietly. Click any field to read its properties.</p>
+        <p class="oro-note">Each row has an address of its own, and the workbench in Variants reads it: arriving at <code>#phone</code> puts the phone row on the stage. Single line against multi line is not a sixth look, it is <code>type</code>: the two text looks answer it with <code>.gba-textarea</code>, and the other three have no multi line version at all.</p>
 
-        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="field">
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Empty</b></span>
-            <div class="gba-field">
-              <label class="gba-label" for="f-empty">Work email</label>
-              <div class="gba-inputwrap"><input class="gba-input" id="f-empty" type="email" placeholder="you@company.com"></div>
+        <!-- ---- PLAYGROUND ---- -->
+        <span class="gbdoc-sub" id="playground">Playground</span>
+        <h3 class="oro-h3">Build a field and read it back</h3>
+        <p class="oro-p">Set the axes and the one field on the stage rebuilds itself; the markup and the measurements below follow it. Where a look and a state have no answer in the system the chip goes quiet and the line under the stage says why, because a showcase that offers a state the organism does not have is teaching a thing that does not exist. The controls are deliberately not fields, so the stage holds the only field on the screen.</p>
+
+        <div class="gbdoc-frame">
+          <div class="gbdoc-controls" id="pgControls">
+            <div class="gbdoc-axis" role="radiogroup" data-axis="look">
+              <span class="gbdoc-axis__name">Look</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="underline">Underline</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="floating">Floating</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="type">
+              <span class="gbdoc-axis__name">Type</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="text">Text</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="email">Email</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="textarea">Textarea</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="phone">Phone</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="code">Code</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="password">Password</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="state">
+              <span class="gbdoc-axis__name">State</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="rest">Rest</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="hover">Hover</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="focus">Focus</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="filled">Filled</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="error">Error</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="disabled">Disabled</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="label">
+              <span class="gbdoc-axis__name">Label</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="required">Required</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="optional">Optional</button>
             </div>
           </div>
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Hover</b></span>
-            <div class="gba-field">
-              <label class="gba-label" for="f-hover">Work email</label>
-              <div class="gba-inputwrap"><input class="gba-input is-hover" id="f-hover" type="email" placeholder="you@company.com"></div>
-            </div>
+          <div class="gbdoc-stage gbdoc-stage--center" id="pgStage" data-inspect="field">
+            <div class="gbdoc-hold gbdoc-hold--block" id="pgHold"></div>
           </div>
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Focus</b></span>
-            <div class="gba-field">
-              <label class="gba-label" for="f-focus">Work email</label>
-              <div class="gba-inputwrap"><input class="gba-input is-focus" id="f-focus" type="email" placeholder="you@company.com"></div>
-            </div>
-          </div>
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Filled</b></span>
-            <div class="gba-field">
-              <label class="gba-label" for="f-filled">Work email</label>
-              <div class="gba-inputwrap"><input class="gba-input" id="f-filled" type="email" value="anna@gildedbox.com"></div>
-            </div>
-          </div>
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Error</b></span>
-            <div class="gba-field">
-              <label class="gba-label" for="f-error">Work email</label>
-              <div class="gba-inputwrap"><input class="gba-input invalid" id="f-error" type="email" value="anna@" aria-invalid="true"></div>
-              <span class="gba-error" role="alert">Enter a valid email address</span>
-            </div>
-          </div>
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Disabled</b></span>
-            <div class="gba-field">
-              <label class="gba-label" for="f-disabled">Work email</label>
-              <div class="gba-inputwrap"><input class="gba-input" id="f-disabled" type="email" value="anna@gildedbox.com" disabled></div>
-            </div>
-          </div>
+          <p class="gbdoc-foot" id="pgFoot"></p>
         </div>
 
-        <p class="oro-note">Disabled is the state the system has not decided. The field above is a plain disabled input wearing whatever the browser gives it, because no live screen has ever shown us a disabled field, and inventing one quietly is the thing this page exists to prevent. On the list for Ton.</p>
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
+          <pre><code id="pgCode"></code></pre>
+        </div>
 
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Measured on the sample</th><th>Value</th><th>Measured on the sample</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Height</td><td class="gbdoc-num" id="pgH"></td><td>Type</td><td class="gbdoc-num" id="pgFont"></td></tr>
+            <tr><td>Padding</td><td class="gbdoc-num" id="pgPad"></td><td>Label</td><td class="gbdoc-num" id="pgLabel"></td></tr>
+            <tr><td>Line</td><td class="gbdoc-num" id="pgLine"></td><td>Line drawn by</td><td class="gbdoc-num" id="pgLineOn"></td></tr>
+            <tr><td>Ink</td><td class="gbdoc-num" id="pgInk"></td><td>Ladder</td><td class="gbdoc-num" id="pgLadder"></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- VARIANTS ---- -->
         <span class="gbdoc-sub" id="variants">Variants</span>
-        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="field">
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Required</b></span>
-            <div class="gba-field required">
-              <label class="gba-label" for="f-req">Company name</label>
-              <div class="gba-inputwrap"><input class="gba-input" id="f-req" type="text" placeholder="GildedBox"></div>
-            </div>
-          </div>
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Optional</b></span>
-            <div class="gba-field">
-              <label class="gba-label" for="f-opt">Phone</label>
-              <div class="gba-inputwrap"><input class="gba-input" id="f-opt" type="tel" placeholder="+1 847 801 0345"></div>
-            </div>
-          </div>
-          <div class="gbdoc-slot gbdoc-slot--grow">
-            <span class="gbdoc-slot__cap"><b>Multi line</b></span>
-            <div class="gba-field">
-              <label class="gba-label" for="f-area">What are you looking for?</label>
-              <div class="gba-inputwrap"><textarea class="gba-input gba-textarea" id="f-area" placeholder="A few words is plenty"></textarea></div>
-            </div>
-          </div>
-        </div>
+        <h3 class="oro-h3">One look at a time, in every state it has</h3>
+        <p class="oro-p">The table names all five; the stage under it shows one. Pick a look and the band walks it through the states the system actually gives it, with the height and the type size read off each specimen. Click any specimen to open its properties.</p>
 
-        <span class="gbdoc-sub" id="anatomy">Anatomy</span>
-        <p class="gbdoc-readout">Measured at <b id="wnow3">measuring</b> wide.</p>
         <div class="gbdoc-tablewrap">
         <table class="gbdoc-table">
-          <thead><tr><th>Measure</th><th>Value</th><th>Provenance</th></tr></thead>
+          <thead><tr><th>Look</th><th>What it is for</th><th>Where it stands today</th></tr></thead>
           <tbody>
-            <tr><td>Height</td><td class="gbdoc-num" id="fH"></td><td><span class="gbdoc-flag">Live</span> 48 / 56 / 64</td></tr>
-            <tr><td>Padding, horizontal</td><td class="gbdoc-num" id="fPx"></td><td><span class="gbdoc-flag">Live</span> 12 / 12 / 16</td></tr>
-            <tr><td>Type</td><td class="gbdoc-num" id="fFont"></td><td><span class="gbdoc-flag">Live</span> Inter 300, 14 / 16 / 18</td></tr>
-            <tr><td>Underline</td><td class="gbdoc-num" id="fLine"></td><td><span class="gbdoc-flag">Live</span> 1px Zinc 400, blue on hover, Red 500 on error</td></tr>
-            <tr><td>Label</td><td class="gbdoc-num" id="fLabel"></td><td><span class="gbdoc-flag">Live</span> 11 / 12 caps 600, Zinc 500</td></tr>
-            <tr><td>Radius</td><td class="gbdoc-num" id="fR"></td><td><span class="gbdoc-flag">Live</span> none. The field is an underline, not a box</td></tr>
+            <tr><td>Underline, caps label</td><td>A form that owns its page and has room for a label over every line, where the label has to stay readable while the field is full</td><td>The gate, guest sign in, the portal composer and the checkout drawers</td></tr>
+            <tr><td>Floating label</td><td>A dense form, a drawer or a panel with no room for a row of labels: the label is the hint until the field is used, then it gets out of the way</td><td>The first step of the booking and the comment thread of the studio</td></tr>
+            <tr><td>Phone</td><td>A number that needs a country beside it. Two controls, one underline, so the pair reads as one field</td><td>The first step of the booking, and nowhere else yet</td></tr>
+            <tr><td>One time code</td><td>Six digits that arrive by mail. Six boxes rather than one, so the length of the answer is visible before it is typed</td><td>The code step of the sign in flow</td></tr>
+            <tr><td>Password reveal</td><td>A password a person is setting rather than remembering: the eye lets them check what they typed</td><td>The password step of the sign in flow, on both fields</td></tr>
           </tbody>
         </table>
         </div>
 
+        <div class="gbdoc-frame">
+          <div class="gbdoc-controls" id="wbControls">
+            <div class="gbdoc-axis" role="radiogroup" data-axis="look">
+              <span class="gbdoc-axis__name">Look</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="underline">Underline</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="floating">Floating</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="phone">Phone</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="code">Code</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="password">Password</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="lines">
+              <span class="gbdoc-axis__name">Lines</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="one">One</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="many">Many</button>
+            </div>
+          </div>
+          <div class="gbdoc-stage" id="wbStage" data-inspect="field">
+            <div class="gbdoc-band">
+              <span class="gbdoc-band__cap" id="wbCap">States</span>
+              <div class="gbdoc-row" id="wbStates"></div>
+            </div>
+          </div>
+          <p class="gbdoc-foot" id="wbFoot"></p>
+        </div>
+
+        <p class="oro-note">The rest specimen is a real field: hover it, tab into it, type in it. The others are held still by <code>.is-hover</code> and <code>.is-focus</code>, by a real value, by the organism's own <code>setError()</code> and by a real <code>disabled</code>. The two demo classes are declared in <code>auth.css</code> beside the live rules they repeat, they say nothing of their own, and no product page may wear them.</p>
+
+        <!-- ---- STATES ---- -->
+        <span class="gbdoc-sub" id="states">States</span>
+        <h3 class="oro-h3">What changes, and to what</h3>
+        <p class="oro-p">The table follows the workbench: it is filled by measuring the specimens standing above it, so it always describes the look on the stage and never a general case. The field changes three things and the line is the loudest of them: it goes blue under the pointer, blue under the caret and red when the answer is wrong. The label and the ink stay where they are, and there is no ring, no ground and no shadow anywhere in the family.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>State</th><th>Line</th><th>Ink</th><th>Label</th><th>Token</th></tr></thead>
+          <tbody id="stBody"></tbody>
+        </table>
+        </div>
+
+        <p class="oro-note"><b>Focus is DECLARED, and it is the one value on this page live did not give us.</b> Until 28 August the field answered the pointer and ignored the caret: hover took the line to Blue 600, focus only faded the placeholder. Ton, the same day: «при постановке курсора полоса не становится активной; должно быть как у обычного TextInput». The live lead form did not render in any frame that day, so there was nothing to measure, and by Ton-17 an obvious gap in live is closed here and live catches up later. Focus took the hover colour, because blue is state (Ton-5) and a focused field is the most stated a field gets. One rule, both controls. At the next harvest of the live form, read the focused <code>border-bottom-color</code> off an input and a textarea and bring it back here.</p>
+
+        <p class="oro-note">Disabled is the state the system has still not decided. The disabled specimen is a plain disabled control wearing whatever the browser gives it, because no live screen has ever shown us a disabled field, and inventing one quietly is the thing this page exists to prevent. On the list for Ton.</p>
+
+        <!-- ---- SIZES ---- -->
+        <span class="gbdoc-sub" id="sizes">Sizes</span>
+        <h3 class="oro-h3">Two ladders, and they do not climb together</h3>
+        <p class="oro-p">The field has two height ladders, not one, and that is not drift: they were measured on two different pages of the same client. The guest sign in walks the control family 48, 56, 64, and its type grows 14, 16, 18. The lead form of the live contact page stays at 48 through 1280 and only reaches 56 at 2000, with type at 13, 14, 16. A Live page wears the ladder of the live page it imitates, so both are right and neither may be tidied into the other.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Ladder</th><th>Base</th><th>From 1280</th><th>From 2000</th><th>Height right now</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Underline, guest family</td><td class="gbdoc-num">48 / 14</td><td class="gbdoc-num">56 / 16</td><td class="gbdoc-num">64 / 18</td><td class="gbdoc-num" id="szUnder">measuring</td><td><span class="gbdoc-flag">Live</span> guest sign in, 18 August</td></tr>
+            <tr><td>Floating, lead form family</td><td class="gbdoc-num">48 / 13</td><td class="gbdoc-num">48 / 14</td><td class="gbdoc-num">56 / 16</td><td class="gbdoc-num" id="szFloat">measuring</td><td><span class="gbdoc-flag">Live</span> contact page, 27 August</td></tr>
+            <tr><td>Phone row</td><td class="gbdoc-num">48</td><td class="gbdoc-num">48</td><td class="gbdoc-num">56</td><td class="gbdoc-num" id="szPhone">measuring</td><td><span class="gbdoc-flag">Live</span> contact page, 27 August</td></tr>
+            <tr><td>One time code cell</td><td class="gbdoc-num">48 / 14</td><td class="gbdoc-num">56 / 16</td><td class="gbdoc-num">64 / 18</td><td class="gbdoc-num" id="szOtp">measuring</td><td><span class="gbdoc-flag">Live</span> guest family, 18 August</td></tr>
+            <tr><td>Textarea floor</td><td class="gbdoc-num">80</td><td class="gbdoc-num">80</td><td class="gbdoc-num">96 underline, 80 floating</td><td class="gbdoc-num" id="szArea">measuring</td><td><span class="gbdoc-flag">Live</span> contact page, 25 and 27 August</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">The fifth column is read off five probes standing off screen right now, at <b id="wnow2">measuring</b> wide, so a ladder that moved would disagree with the table beside it on the first reload. The three control heights come from the tokens the buttons spend as well, <code>--form-ctl-h</code>, <code>--form-ctl-h-xl</code> and <code>--form-ctl-h-2xl</code>: what the two ladders differ in is which rung they take at which width, not the rungs themselves. The textarea has a floor rather than a height, because the number of lines decides the rest.</p>
+
+        <!-- ---- WITH LABEL ---- -->
+        <span class="gbdoc-sub" id="label">With label</span>
+        <h3 class="oro-h3">Three caps labels, and one open question</h3>
+        <p class="oro-p">Every look but the floating one puts a small caps label over the line, and the system has one caps voice for that: the Eyebrow role, 12 at 600 with 0.12em of tracking in Zinc 500. On 27 August the field label moved onto it, a documented departure from the live sign in, which sets its own 11 at 0.5px. Measured today the field label and the Eyebrow are the same voice to the hundredth. The label of the code step is the one that did not come along.</p>
+
+        <div class="gbdoc-shelf gbdoc-shelf--cols">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Field label</b><span id="capLab">measuring</span></span>
+            <label class="gba-label" id="lab-field">Work email</label>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Eyebrow</b><span id="capEye">measuring</span></span>
+            <span class="gb-eyebrow" id="lab-eyebrow">Work email</span>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Code label</b><span id="capV">measuring</span></span>
+            <label class="gba-vlabel" id="lab-v">Verification Code</label>
+          </div>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Class</th><th>Owner</th><th>Size and weight</th><th>Tracking</th><th>Case</th><th>Ink</th><th>Asterisk</th></tr></thead>
+          <tbody id="labBody"></tbody>
+        </table>
+        </div>
+
+        <p class="oro-note"><b>The question for Ton.</b> Two of the three agree and the third does not. <code>.gba-vlabel</code>, the label over the six code cells, is the same size, the same weight and the same ink as the Eyebrow, and carries half its tracking. It also prints the gold asterisk unconditionally, with no way for a consumer to say the field is optional. The copy rule of the system says caps labels are the Eyebrow role and that there is one caps voice; either the code label joins it, which is two lines at its owner and a visible change to the sign in flow, or the exception is declared and written down. This wave measured it and did not touch it.</p>
+
+        <p class="oro-note">The floating look has no caps label at all. At rest its label is the hint, in Inter 300 at the size of the input; when the field is used it shrinks to 11.2px and rises four pixels above the line. 11.2 is not invented: the live rule is 70 per cent of the parent, the parent is the 16px body text of that page, and the result is the same 11.2 at every width. One field of the live lead form keeps a static label over the line anyway, the comment, and it is the one place in the house where a label over a field is <b>not</b> in caps: the live computed style says so on all four widths, whatever the class in their markup claims.</p>
+
+        <!-- ---- ANATOMY ---- -->
+        <span class="gbdoc-sub" id="anatomy">Anatomy</span>
+        <h3 class="oro-h3">The parts, measured on probes</h3>
+        <p class="gbdoc-readout">Measured at <b id="wnow3">measuring</b> wide, on probes standing off screen.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Part</th><th>What it is</th><th>Measured</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Label</td><td>The caps line over the field, tied to it by <code>for</code> and <code>id</code></td><td class="gbdoc-num" id="anLabel"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the Eyebrow role, 27 August</td></tr>
+            <tr><td>Control</td><td>The input itself: transparent ground, no frame, no radius</td><td class="gbdoc-num" id="anCtl"></td><td><span class="gbdoc-flag">Live</span> 48 / 56 / 64, Inter 300</td></tr>
+            <tr><td>Line</td><td>The one border the field has, under the control</td><td class="gbdoc-num" id="anLine"></td><td><span class="gbdoc-flag">Live</span> 1px Zinc 400</td></tr>
+            <tr><td>Required asterisk</td><td>Printed by the label's <code>::after</code> when the wrapper is required</td><td class="gbdoc-num" id="anStar"></td><td><span class="gbdoc-flag">Live</span> the gold of the live form, matched to the value</td></tr>
+            <tr><td>Error</td><td>One sentence under the field, in <code>role="alert"</code>, right aligned</td><td class="gbdoc-num" id="anErr"></td><td><span class="gbdoc-flag">Live</span> 11px Red 600, 18 August</td></tr>
+            <tr><td>Radius</td><td>None, on every part. A field is an underline, not a box</td><td class="gbdoc-num" id="anR"></td><td><span class="gbdoc-flag">Live</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">The asterisk is the one part of the field that is not on the palette: <code>--auth-required-gold</code> is <code>#bd9f58</code>, a colour of the live form and of nothing else in the system. It stayed a token of its own rather than being rounded into the zinc scale, and gold in the interface is otherwise vetoed, so this is the exception and it is written down here.</p>
+
+        <!-- ---- PROPERTIES ---- -->
         <span class="gbdoc-sub" id="properties">Properties</span>
+        <h3 class="oro-h3">The attributes, and the drawer that reads a specimen</h3>
+        <p class="oro-p">Two layers, the way the mature systems keep them. The table is the whole surface of the component, readable and linkable in one piece. The drawer answers a different question, about one specimen: click any field on this page and it opens with the geometry, the type, the colours and the label measured off that element, with the token that produced each value beside it.</p>
+
         <div class="gbdoc-tablewrap">
         <table class="gbdoc-table">
           <thead><tr><th>Attribute</th><th>Type</th><th>Default</th><th>What it does</th></tr></thead>
           <tbody>
             <tr><td><code>input-id</code></td><td>string</td><td>required</td><td>Ties the label to the input. Every field needs one, and it has to be unique on the page</td></tr>
             <tr><td><code>name</code></td><td>string</td><td>required</td><td>The name the form submits under</td></tr>
-            <tr><td><code>type</code></td><td>string</td><td><code>text</code></td><td>Any input type, plus <code>textarea</code> for the multi line version</td></tr>
-            <tr><td><code>label</code></td><td>string</td><td>required</td><td>The caps label over the line. Sentence case in the markup</td></tr>
-            <tr><td><code>placeholder</code></td><td>string</td><td>empty</td><td>The hint inside the line. It fades out on focus, which is what live does</td></tr>
-            <tr><td><code>optional</code></td><td>boolean</td><td>off</td><td>Marks the field as not required. Required is the default, which is why the modifier names the exception</td></tr>
-            <tr><td><code>.is-hover .is-focus</code></td><td>class</td><td>off</td><td>Demo only, this page. Hold a state still for a screenshot</td></tr>
+            <tr><td><code>type</code></td><td>string</td><td><code>text</code></td><td>Any input type, plus <code>textarea</code> for the multi line version, and <code>password</code>, which is the one that takes an eye</td></tr>
+            <tr><td><code>label</code></td><td>string</td><td>required</td><td>The label. Sentence case in the markup: the caps belong to the role, not to the copy</td></tr>
+            <tr><td><code>placeholder</code></td><td>string</td><td>empty</td><td>The hint inside the line. It fades out on focus, which is what live does. A floating single line field ignores it and takes one space of its own instead, because <code>:placeholder-shown</code> does not fire on an empty string and the label would never rise</td></tr>
+            <tr><td><code>optional</code></td><td>boolean</td><td>off</td><td>Marks the field as not required. Required is the default, which is why the modifier names the exception, and it is the switch the gold asterisk reads</td></tr>
+            <tr><td><code>label-style</code></td><td>string</td><td>empty</td><td><code>floating</code> puts the label inside the control and lets it rise. It changes one thing in the markup, the position of the label after the control, because the rise is CSS on a sibling and not a line of script</td></tr>
+            <tr><td><code>eye</code></td><td>boolean</td><td>off</td><td>Adds the reveal button in the corner of the control. It flips <code>type</code> between password and text and does nothing else</td></tr>
+            <tr><td><code>value</code></td><td>string</td><td>empty</td><td>The value the field opens with</td></tr>
+            <tr><td><code>autocomplete</code></td><td>string</td><td>the name</td><td>Handed straight to the control, so the browser can fill it. A floating label rises for a browser fill too, since Chrome clears <code>:placeholder-shown</code></td></tr>
+            <tr><td><code>wrap-mod</code></td><td>string</td><td>empty</td><td>An extra class on the wrapper, for the spacing a form needs: <code>.gba-field--flow</code> is the 24 / 32 / 40 rhythm of the live flow, <code>.gba-field--last</code> is the last field of a group</td></tr>
+            <tr><td><code>el.setError(text)</code></td><td>method</td><td>none</td><td>Puts the control in error and prints the sentence under it; <code>clearError()</code> takes both away. This is how the specimens above go red: the page does not write the error markup itself</td></tr>
+            <tr><td><code>.is-hover .is-focus</code></td><td>class</td><td>off</td><td>Demo only, the showcase. Hold a state still so a row of them can stand side by side</td></tr>
           </tbody>
         </table>
         </div>
 
+        <p class="oro-note">The phone row and the code have no element of their own. The phone is markup inside the booking flow, because two controls share one underline and one row; the code is six inputs the flow drives as a single control, with paste and auto advance. Both are shown here as their owner writes them, character for character. If either ever gets a second consumer, that is the day it becomes an element.</p>
+
+        <!-- ---- USAGE ---- -->
         <span class="gbdoc-sub" id="usage">Usage</span>
+        <h3 class="oro-h3">Which look, and when</h3>
+
         <div class="gbdoc-tablewrap">
         <table class="gbdoc-table">
           <thead><tr><th>Do</th><th>Do not</th></tr></thead>
           <tbody>
-            <tr><td>Label every field, in sentence case, above the line</td><td>Use the placeholder as the label. It disappears the moment someone types</td></tr>
-            <tr><td>Say what is wrong under the field, in one sentence</td><td>Colour the line red and leave the person to guess what it means</td></tr>
+            <tr><td>Reach for the underline with a caps label when the form owns the page and has room above every line</td><td>Mix the two looks in one form. One form, one look: two labels behaving differently in one column reads as a bug</td></tr>
+            <tr><td>Reach for the floating label in a drawer, a panel or a dense column, where a row of labels would cost more height than the fields</td><td>Use the floating label for a field a person has to re read while it is full. Once it is filled the label is 11.2px above the line, a reminder rather than a heading</td></tr>
+            <tr><td>Label every field, in sentence case, and let the role put the caps on</td><td>Use the placeholder as the label. It disappears the moment someone types, in both looks</td></tr>
+            <tr><td>Say what is wrong under the field, in one sentence, through <code>setError()</code></td><td>Colour the line red and leave the person to guess what it means</td></tr>
             <tr><td>Mark the optional ones, since required is the default</td><td>Mark the required ones with an asterisk. There would be one on almost every field</td></tr>
+            <tr><td>Let a textarea grow with its content, and keep its resize handle vertical</td><td>Give a textarea a horizontal handle. It breaks the column of the form, which is why the organism allows one axis</td></tr>
+            <tr><td>Put the error under the field it belongs to</td><td>Move the error into a tooltip or a toast, or collect all of them at the top of the form. It has to stand where the answer is being typed</td></tr>
           </tbody>
         </table>
         </div>
 
-        <span class="gbdoc-sub" id="code">Code</span>
-        <div class="gbdoc-code">
-          <button class="gbdoc-copy" type="button" data-copy="#codeField">Copy</button>
-          <pre><code id="codeField">&lt;gb-field input-id="email" name="email" type="email"
-          label="Work email" placeholder="you@company.com"&gt;&lt;/gb-field&gt;
+        <p class="oro-note">Ton, 27 August, on the form we imitate: «Раз мы имитируем live, должно быть как там». That is why the floating ladder is not the guest ladder, why the phone line is a step darker than the four fields beside it, and why the error sentences of the booking read in the live wording. Copy quoted from a live page is quoted whole; the rules of our own copy apply to the words we write.</p>
 
-&lt;gb-field input-id="brief" name="brief" type="textarea"
-          label="What are you looking for?" optional&gt;&lt;/gb-field&gt;</code></pre>
+        <!-- ---- ACCESSIBILITY ---- -->
+        <span class="gbdoc-sub" id="a11y">Accessibility</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Label</td><td>Every field carries a real <code>label</code> with <code>for</code> pointing at the control's <code>id</code>, in both looks. A floating label is still a label: it moves, it does not stop existing, and it is never replaced by a placeholder</td></tr>
+            <tr><td>Error</td><td><code>setError()</code> sets <code>aria-invalid="true"</code> on the control and prints the sentence in a <code>role="alert"</code>, so it is announced when it appears. Tying the two together with <code>aria-describedby</code> is the gap here: the sentence is announced but it is not yet named as the description of the field, and closing it is a change at the owner</td></tr>
+            <tr><td>Focus</td><td>Visible on every look since 28 August: the line goes Blue 600 when the caret arrives. Declared, not measured, and the one behaviour on this page live does not have yet</td></tr>
+            <tr><td>Disabled</td><td>The native attribute, on the control. What it should look like is undecided, so what a person sees today is the browser's own grey</td></tr>
+            <tr><td>Autofill</td><td>Every field takes <code>autocomplete</code> and defaults it to the field name. The floating label rises for a browser fill as well as for a keystroke, because the rise reads <code>:placeholder-shown</code> and not an input event</td></tr>
+            <tr><td>The code</td><td>Six cells, each with a name of its own, Digit 1 to Digit 6, and <code>inputmode="numeric"</code> so a phone opens the number pad. A paste into any cell fills all six</td></tr>
+            <tr><td>The eye</td><td>A real button with an <code>aria-label</code>, not a glyph on a div, and it sits inside the field's own box, so a tab reaches it right after the control</td></tr>
+            <tr><td>Target size</td><td>The shortest control in the family is 48 tall at every width, which clears the 44 a touch target needs. The eye is an 18px glyph in the corner and is the one thing under it</td></tr>
+          </tbody>
+        </table>
         </div>
 
-        <p class="oro-note">The specimens above are written out as plain markup so the states can be held still. In the product a field is one custom element and the markup comes from the organism, which is what the snippet shows.</p>
+        <!-- ---- CODE ---- -->
+        <span class="gbdoc-sub" id="code">Code</span>
+        <p class="oro-p">Four of the five looks are one element and its attributes. The phone is the one that is markup, and it is markup because two controls share a row.</p>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeField">Copy</button>
+          <pre><code id="codeField">&lt;!-- the default: underline, caps label over the line --&gt;
+&lt;gb-field input-id="email" name="email" type="email"
+          label="Work email" placeholder="you@company.com"&gt;&lt;/gb-field&gt;
+
+&lt;!-- multi line, and not required --&gt;
+&lt;gb-field input-id="brief" name="brief" type="textarea"
+          label="What are you looking for?" optional&gt;&lt;/gb-field&gt;
+
+&lt;!-- the floating label, with the rhythm of the live flow --&gt;
+&lt;gb-field input-id="company" name="company" type="text"
+          label="Company Name" label-style="floating"
+          wrap-mod="gba-field--flow" optional&gt;&lt;/gb-field&gt;
+
+&lt;!-- the password, with the eye --&gt;
+&lt;gb-field input-id="pass" name="password" type="password"
+          label="Password" placeholder="Set your password"
+          autocomplete="new-password" eye&gt;&lt;/gb-field&gt;</code></pre>
+        </div>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeRow">Copy</button>
+          <pre><code id="codeRow">&lt;!-- the phone row, booking.css. Two controls, one underline.
+     The placeholder is one space on purpose: without it the
+     label cannot know the field is empty. --&gt;
+&lt;div class="gba-field gba-field--floating gbb-phone-field"&gt;
+  &lt;div class="gba-inputwrap gbb-phone"&gt;
+    &lt;button class="gbb-phone-trigger" type="button"
+            aria-haspopup="listbox" aria-expanded="false"
+            aria-label="Country calling code"&gt;&lt;span&gt;+1&lt;/span&gt;&lt;svg&gt;...&lt;/svg&gt;&lt;/button&gt;
+    &lt;input type="tel" name="phone" id="phone" placeholder=" "
+           class="gba-input"&gt;
+    &lt;label for="phone" class="gba-label"&gt;Phone&lt;/label&gt;
+    &lt;div class="gbb-phone-menu" role="listbox" hidden&gt;...&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- the six cells, auth.css. The flow drives them as one control. --&gt;
+&lt;label class="gba-vlabel"&gt;Verification Code&lt;/label&gt;
+&lt;div class="gba-otp"&gt;
+  &lt;input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 1"&gt;
+  ... six of them
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- ---- CHANGELOG ---- -->
+        <span class="gbdoc-sub" id="changelog">Changelog</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>When</th><th>What</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>18 August</td><td>The field is born in <code>auth.css</code> as a pixel copy of the guest sign in: underline, caps label, the control family 48 / 56 / 64 and Inter 300 at 14 / 16 / 18. The six cells and the eye arrive with it, inside the sign in flow</td><td>The sign in was the first live screen we rebuilt, and its field is the field</td></tr>
+            <tr><td>25 August</td><td><code>.gba-textarea</code>, a version rather than a second field: three things change and everything that makes it a field stays</td><td>The booking needed a multi line answer</td></tr>
+            <tr><td>26 August</td><td>The submit stops being the field's business: <code>.gba-btn</code> becomes the button organism, and <code>auth.css</code> is left owning fields only</td><td>One source of buttons, phase two</td></tr>
+            <tr><td>27 August</td><td><code>label-style="floating"</code>, the second look, measured on the live contact page, with its own ladder of 13 / 14 / 16 at 48 / 48 / 56. The phone row lands with it, in <code>booking.css</code></td><td>Ton: the first step of the booking imitates the live form whole, and the live form floats its labels</td></tr>
+            <tr><td>27 August</td><td>The caps label moves onto the Eyebrow role: 12 at 600, 0.12em, Zinc 500. A documented departure from the live 11 at 0.5px, and the checkout labels move onto it the same day</td><td>Ton: one caps voice in the system</td></tr>
+            <tr><td>28 August</td><td>Focus. The line answers the caret with Blue 600, on input and textarea alike. DECLARED: the live form did not render that day and there was nothing to measure</td><td>Ton: «при постановке курсора полоса не становится активной». Ton-17: the gap is closed here and live catches up</td></tr>
+            <tr><td>28 August</td><td>This page. The four looks that were built and undocumented come onto the showcase, with the playground, the workbench and the two ladders</td><td>The registry called Field documented while four of its five looks stood on no page at all</td></tr>
+          </tbody>
+        </table>
+        </div>
 
         <span class="gbdoc-sub">Related</span>
-        <p class="oro-p"><a href="button.html">Button</a>, since a form ends in one, and the booking flow, which is the biggest thing built out of both.</p>
+        <p class="oro-p"><a href="button.html">Button</a>, which every form ends in, and <a href="icons.html#iconbutton">Icon button</a>, which the eye is not: the eye is an 18px glyph in the corner of a field and predates the round shape. <a href="drawer.html">Drawer</a> is where the floating look is worn most, in the comment thread. The two flows built out of all of this are the sign in, <code>&lt;gb-auth-flow&gt;</code>, and the booking, <code>&lt;gb-booking-flow&gt;</code>: the first owns the code and the password, the second owns the phone.</p>
       </section>
 
       <footer class="oro-foot">
-        Sources: <a href="../components/button.css">button.css</a>, <a href="../components/auth.css">auth.css</a>, <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
+        Sources: <a href="../components/auth.css">auth.css</a>, <a href="../components/auth.js">auth.js</a>, <a href="../components/booking.css">booking.css</a>, <a href="../components/button.css">button.css</a>, <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
       </footer>
 
     </div>
@@ -291,23 +535,62 @@
 <!-- The properties drawer. One per page; the inspector fills it. -->
 <gb-drawer id="propsDrawer"></gb-drawer>
 
+<!-- The probes. One per ladder, parked off screen, so the sizes and
+     the anatomy tables read something that is not on a stage and
+     cannot be changed by a chip. -->
+<div class="gbdoc-probes" aria-hidden="true">
+  <div class="gba-field required">
+    <label class="gba-label" for="probe-under">Probe</label>
+    <div class="gba-inputwrap"><input class="gba-input" id="probe-under" type="text" tabindex="-1"></div>
+    <span class="gba-error" id="probe-err">Probe</span>
+  </div>
+  <div class="gba-field gba-field--floating">
+    <div class="gba-inputwrap"><input class="gba-input" id="probe-float" type="text" placeholder=" " tabindex="-1"><label class="gba-label" for="probe-float">Probe</label></div>
+  </div>
+  <div class="gba-field gba-field--floating gbb-phone-field">
+    <div class="gba-inputwrap gbb-phone" id="probe-phone"><input class="gba-input" id="probe-phone-input" type="tel" placeholder=" " tabindex="-1"><label class="gba-label" for="probe-phone-input">Probe</label></div>
+  </div>
+  <div class="gba-otp"><input type="text" id="probe-otp" tabindex="-1"></div>
+  <div class="gba-field">
+    <div class="gba-inputwrap"><textarea class="gba-input gba-textarea" id="probe-area" tabindex="-1"></textarea></div>
+  </div>
+</div>
+
 <script src="../type-scale.js"></script>
 <script src="../components/icon.js"></script>
+<script src="../components/auth.js"></script>
 <script src="../components/drawer.js"></script>
 <script src="../components/inspect.js"></script>
 <script src="../components/comments.js"></script>
 <script>
 /* ============================================================
-   gbppl-oro-components-3 / gbppl-oro-pages-1 — THE FIELD READOUT
+   gbppl-oro-field-2 — THE READOUT, THE PLAYGROUND AND THE
+   VARIANT WORKBENCH
    ------------------------------------------------------------
-   One rule, the same one every page of the showcase keeps:
-   NOTHING HERE PRINTS A NUMBER THAT WAS TYPED. The anatomy table
-   is filled by measuring the first specimen on the shelf, so if a
-   token moves the table moves with it, and if the organism breaks
-   it breaks here first.
+   Three jobs, one file, and two rules over all three.
+
+   ONE: NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED.
+   Every measurement is read back out of the rendered page with
+   getComputedStyle, so if a token moves the page moves with it,
+   and if an organism breaks it breaks here first.
+
+   TWO: NOTHING ON THIS PAGE BUILDS A FIELD. Three of the five
+   looks are the real <gb-field> of auth.js, created with the real
+   attributes and put in error with the organism's own setError().
+   The two that have no element, the phone row and the six cells,
+   are markup copied character for character out of booking.js and
+   auth.js, and the copies are marked below so the next reader can
+   diff them against their owner.
+
+   Where a look has no answer for a state, the chip goes
+   unavailable and the foot says why. The alternative would be to
+   draw a hover the system does not have, which is exactly what
+   the instrument is not allowed to do.
    ============================================================ */
 (function () {
   'use strict';
+
+  var INSPECT = window.GbInspect || {};
 
   /* One decimal: the second one is the reader's display scaling
      talking, not the system (a 20px glyph comes back as 19.99 at
@@ -319,23 +602,458 @@
   }
   function txt(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
 
-  /* ---------- the anatomy readout ---------- */
-  function paintAnatomy() {
-    var fin = document.getElementById('f-empty');
-    var flab = document.querySelector('label[for="f-empty"]');
-    if (fin && flab) {
-      var fs = getComputedStyle(fin);
-      var fl = getComputedStyle(flab);
-      txt('fH', px(fs.minHeight));
-      txt('fPx', px(fs.paddingLeft));
-      txt('fFont', px(fs.fontSize) + ' / ' + fs.fontWeight);
-      txt('fLine', px(fs.borderBottomWidth) + ' ' + fs.borderBottomColor);
-      txt('fLabel', px(fl.fontSize) + ' / ' + fl.fontWeight + ' / ' + fl.letterSpacing);
-      txt('fR', px(fs.borderTopLeftRadius));
+  /* ---------- the two copied markups ----------
+     COPIED, NOT WRITTEN. The phone row is the phone block of
+     STEP1_TEMPLATE in booking.js and the caret is its ICON_CARET;
+     the cells are the otpCells loop of auth.js and the label is
+     the one its code panel prints. The country list stays with its
+     owner: it is data of the booking flow, and a menu that cannot
+     open is not a specimen. */
+  var CARET =
+    '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="m2.5 4.5 3.5 3.5 3.5-3.5"/></svg>';
+
+  function phoneHTML(id, req, value) {
+    return '<div class="input-field col active staticLabel ' + (req ? 'required ' : '') +
+        'gba-field gba-field--floating gbb-phone-field">' +
+        '<div class="relative gba-inputwrap gbb-phone">' +
+          '<button class="gbb-phone-trigger" type="button" aria-haspopup="listbox" ' +
+            'aria-expanded="false" aria-label="Country calling code">' +
+            '<span>+1</span>' + CARET + '</button>' +
+          '<input type="tel" name="phone" id="' + id + '" autocomplete="tel" placeholder=" " ' +
+            'class="valid browser-default gba-input"' + (value ? ' value="' + value + '"' : '') + '>' +
+          '<label for="' + id + '" class="active gba-label">Phone</label>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function otpHTML(id, filled) {
+    var cells = '';
+    var digits = filled ? ['4', '7', '1', '9', '0', '2'] : ['', '', '', '', '', ''];
+    for (var i = 0; i < 6; i++) {
+      cells += '<input type="text" inputmode="numeric" maxlength="1" aria-label="Digit ' + (i + 1) + '"' +
+        (i === 0 ? ' id="' + id + '"' : '') +
+        (digits[i] ? ' value="' + digits[i] + '"' : '') + '>';
+    }
+    return '<div><label class="gba-vlabel">Verification Code</label>' +
+      '<div class="gba-otp">' + cells + '</div></div>';
+  }
+
+  /* ---------- what each look can honestly show ----------
+     Read this as the answer to «why is that chip grey». Every line
+     is a fact about an owner file, not a decision of the showcase. */
+  var LOOKS = {
+    underline: { label: 'Underline', ladder: 'guest 48 / 56 / 64', line: '.gba-field' },
+    floating:  { label: 'Floating',  ladder: 'lead form 48 / 48 / 56', line: '.gba-field--floating' },
+    phone:     { label: 'Phone',     ladder: 'lead form 48 / 48 / 56', line: '.gbb-phone' },
+    code:      { label: 'Code',      ladder: 'guest 48 / 56 / 64', line: '.gba-otp' },
+    password:  { label: 'Password',  ladder: 'guest 48 / 56 / 64', line: '&lt;gb-field ... eye&gt;' }
+  };
+
+  var STATES_FOR = {
+    underline: ['rest', 'hover', 'focus', 'filled', 'error', 'disabled'],
+    floating:  ['rest', 'hover', 'focus', 'filled', 'error', 'disabled'],
+    password:  ['rest', 'hover', 'focus', 'filled', 'error', 'disabled'],
+    phone:     ['rest', 'filled', 'error', 'disabled'],
+    code:      ['rest', 'filled', 'disabled']
+  };
+  var WHY_OUT = {
+    phone: 'Hover and focus are out on the phone: the line belongs to the row, and booking.css gives the row a real hover but no demo class to hold it still. Hover it with the pointer instead.',
+    code:  'Hover, focus and error are out on the code: auth.css gives a cell a real focus and nothing else, and there is no hover rule and no error state for the six cells anywhere in the system. Optional is out too, because .gba-vlabel prints its asterisk unconditionally.'
+  };
+  var LABEL_FOR = { code: ['required'] };
+
+  function statesFor(look) { return STATES_FOR[look] || STATES_FOR.underline; }
+  function labelsFor(look) { return LABEL_FOR[look] || ['required', 'optional']; }
+
+  /* ---------- making one specimen ----------
+     For the three looks that have an element this IS the element,
+     with the attributes a consumer would write. The state is then
+     put on the rendered control the way a consumer would: a value,
+     a disabled attribute, the organism's setError, and for hover
+     and focus the two demo classes auth.css declares beside the
+     live rules they repeat. */
+  var COPY = {
+    text:     { label: 'Your Name', ph: 'Anna Weber', value: 'Anna Weber', error: 'this is a required field' },
+    email:    { label: 'Work email', ph: 'you@company.com', value: 'anna@gildedbox.com', error: 'Enter a valid email address' },
+    textarea: { label: 'What are you looking for?', ph: 'A few words is plenty', value: 'Twenty boxes for the sales team, before the end of the quarter.', error: 'this is a required field' },
+    password: { label: 'Password', ph: 'Set your password', value: 'correcthorse', error: 'Enter at least eight characters' }
+  };
+
+  function mount(host, look, type, state, req, id) {
+    host.innerHTML = '';
+
+    if (look === 'phone') {
+      host.innerHTML = phoneHTML(id, req, state === 'filled' ? '847 801 0345' : '');
+      var pin = host.querySelector('.gba-input');
+      if (state === 'error') {
+        host.querySelector('.gbb-phone').classList.add('invalid');
+        pin.setAttribute('aria-invalid', 'true');
+      }
+      if (state === 'disabled') { pin.disabled = true; host.querySelector('.gbb-phone-trigger').disabled = true; }
+      return pin;
     }
 
+    if (look === 'code') {
+      host.innerHTML = otpHTML(id, state === 'filled');
+      var cells = host.querySelectorAll('.gba-otp input');
+      if (state === 'disabled') {
+        Array.prototype.forEach.call(cells, function (c) { c.disabled = true; });
+      }
+      return cells[0];
+    }
+
+    var copy = COPY[look === 'password' ? 'password' : type] || COPY.text;
+    var f = document.createElement('gb-field');
+    f.setAttribute('input-id', id);
+    f.setAttribute('name', look === 'password' ? 'password' : type);
+    f.setAttribute('type', look === 'password' ? 'password' : type);
+    f.setAttribute('label', copy.label);
+    if (type !== 'textarea' || look !== 'floating') f.setAttribute('placeholder', copy.ph);
+    if (look === 'floating') f.setAttribute('label-style', 'floating');
+    if (look === 'password') f.setAttribute('eye', '');
+    if (!req) f.setAttribute('optional', '');
+    host.appendChild(f);
+
+    var input = f.input;
+    if (state === 'filled') input.value = copy.value;
+    if (state === 'hover') input.classList.add('is-hover');
+    if (state === 'focus') input.classList.add('is-focus');
+    if (state === 'error') {
+      input.value = type === 'email' ? 'anna@' : '';
+      f.setError(copy.error);
+    }
+    if (state === 'disabled') {
+      input.disabled = true;
+      var eye = f.querySelector('.gba-eye');
+      if (eye) eye.disabled = true;
+    }
+    return input;
+  }
+
+  /* ---------- reading one specimen back ---------- */
+  function readField(el, look) {
+    if (!el) return null;
+    var cs = getComputedStyle(el);
+    var lab = el.id ? document.querySelector('label[for="' + el.id + '"]') : null;
+    if (!lab && look === 'code') lab = document.querySelector('.gbdoc-stage .gba-vlabel');
+    var ls = lab ? getComputedStyle(lab) : null;
+    /* The line belongs to the row on the phone and to the control
+       everywhere else, and saying which is part of the reading. */
+    var lineHost = look === 'phone' ? el.closest('.gbb-phone') : el;
+    var lcs = lineHost ? getComputedStyle(lineHost) : cs;
+    return {
+      h: px(el.tagName === 'TEXTAREA' ? cs.height : (look === 'phone' ? lcs.minHeight : cs.minHeight)),
+      font: px(cs.fontSize) + ' / ' + cs.fontWeight,
+      pad: px(cs.paddingTop) + ' / ' + px(cs.paddingLeft),
+      label: ls ? px(ls.fontSize) + ' / ' + ls.fontWeight + ' / ' + ls.letterSpacing : 'no label',
+      line: px(lcs.borderBottomWidth) + ' ' + lcs.borderBottomColor,
+      lineOn: look === 'phone' ? '.gbb-phone, the row'
+            : look === 'code' ? '.gba-otp input, each cell'
+            : (el.tagName === 'TEXTAREA' ? '.gba-textarea' : '.gba-input'),
+      ink: cs.color
+    };
+  }
+
+  function lightChips(row, chosen) {
+    Array.prototype.forEach.call(row.querySelectorAll('.gbdoc-seg'), function (seg) {
+      var on = seg.getAttribute('data-val') === chosen;
+      seg.classList.toggle('is-on', on);
+      seg.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  }
+  function markChips(row, allowed) {
+    Array.prototype.forEach.call(row.querySelectorAll('.gbdoc-seg'), function (seg) {
+      var ok = allowed.indexOf(seg.getAttribute('data-val')) !== -1;
+      seg.classList.toggle('is-unavailable', !ok);
+      seg.setAttribute('aria-disabled', ok ? 'false' : 'true');
+    });
+  }
+
+  /* ============================================================
+     THE PLAYGROUND
+     ============================================================ */
+  var PG = { look: 'underline', type: 'email', state: 'rest', label: 'required' };
+  var pgControls = document.getElementById('pgControls');
+  var pgHold = document.getElementById('pgHold');
+  var pgCode = document.getElementById('pgCode');
+  var pgFoot = document.getElementById('pgFoot');
+
+  /* The type chip decides the look where the system leaves no
+     choice: the phone exists floating only, the code has no label
+     look at all, and the password has only ever stood on the
+     underline ladder. */
+  function pgLook() {
+    if (PG.type === 'phone') return 'phone';
+    if (PG.type === 'code') return 'code';
+    if (PG.type === 'password') return 'password';
+    return PG.look;
+  }
+
+  function pgSnippet(look, type, req) {
+    if (look === 'phone') {
+      return '<!-- booking.css. Two controls, one underline. -->\n' +
+        '<div class="gba-field gba-field--floating gbb-phone-field">\n' +
+        '  <div class="gba-inputwrap gbb-phone">\n' +
+        '    <button class="gbb-phone-trigger" type="button">+1 <svg>...</svg></button>\n' +
+        '    <input type="tel" id="phone" placeholder=" " class="gba-input">\n' +
+        '    <label for="phone" class="gba-label">Phone</label>\n' +
+        '  </div>\n</div>';
+    }
+    if (look === 'code') {
+      return '<!-- auth.css. Six cells the flow drives as one control. -->\n' +
+        '<label class="gba-vlabel">Verification Code</label>\n' +
+        '<div class="gba-otp">\n' +
+        '  <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 1">\n' +
+        '  ... six of them\n</div>';
+    }
+    var name = look === 'password' ? 'password' : type;
+    var copy = COPY[name] || COPY.text;
+    var tail = ['label="' + copy.label + '"'];
+    if (type !== 'textarea' || look !== 'floating') tail.push('placeholder="' + copy.ph + '"');
+    if (look === 'floating') tail.push('label-style="floating"');
+    if (look === 'password') tail.push('eye');
+    if (!req) tail.push('optional');
+    return '<gb-field input-id="' + name + '" name="' + name + '" type="' + name + '"\n' +
+           '          ' + tail.join(' ') + '></gb-field>';
+  }
+
+  function paintPlayground() {
+    if (!pgHold) return;
+    var look = pgLook();
+    var states = statesFor(look);
+    var labels = labelsFor(look);
+    if (states.indexOf(PG.state) === -1) PG.state = 'rest';
+    if (labels.indexOf(PG.label) === -1) PG.label = 'required';
+    var req = PG.label === 'required';
+    var type = (look === 'phone' || look === 'code') ? 'tel'
+             : (look === 'password' ? 'password' : PG.type);
+
+    var el = mount(pgHold, look, type, PG.state, req, 'pgField');
+
+    Array.prototype.forEach.call(pgControls.querySelectorAll('.gbdoc-axis'), function (row) {
+      var axis = row.getAttribute('data-axis');
+      if (axis === 'look') {
+        /* A look the type has already decided is shown lit and
+           locked: the reader changes it by changing the type. */
+        if (look === 'phone') { lightChips(row, 'floating'); markChips(row, []); }
+        else if (look === 'password') { lightChips(row, 'underline'); markChips(row, []); }
+        else if (look === 'code') { lightChips(row, ''); markChips(row, []); }
+        else { lightChips(row, PG.look); markChips(row, ['underline', 'floating']); }
+      } else if (axis === 'state') {
+        lightChips(row, PG.state); markChips(row, states);
+      } else if (axis === 'label') {
+        lightChips(row, PG.label); markChips(row, labels);
+      } else {
+        lightChips(row, PG.type);
+        markChips(row, ['text', 'email', 'textarea', 'phone', 'code', 'password']);
+      }
+    });
+
+    if (pgCode) pgCode.textContent = pgSnippet(look, PG.type, req);
+
+    var d = readField(el, look);
+    if (d) {
+      txt('pgH', d.h); txt('pgFont', d.font); txt('pgPad', d.pad);
+      txt('pgLabel', d.label); txt('pgLine', d.line); txt('pgLineOn', d.lineOn);
+      txt('pgInk', d.ink); txt('pgLadder', LOOKS[look].ladder);
+    }
+
+    var why = WHY_OUT[look] || '';
+    if (look === 'code') why = 'The code has no label look to choose: its cells stand under a caps label of their own, and neither the underline nor the floating rule reaches them. ' + why;
+    if (look === 'password') why = 'The password stands on the underline ladder only: the eye is placed for that box, and no live screen has ever shown a floating password.';
+    if (look === 'phone') why = 'The phone exists floating only: .gbb-phone-field carries .gba-field--floating in its own file. ' + why;
+    pgFoot.innerHTML = 'On the stage: <code>' + LOOKS[look].label + '</code>, ' + PG.state +
+      (why ? '. ' + why : '.');
+  }
+
+  if (pgControls) {
+    pgControls.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-val]') : null;
+      if (!chip || chip.classList.contains('is-unavailable')) return;
+      var axis = chip.parentNode.getAttribute('data-axis');
+      if (!axis) return;
+      PG[axis] = chip.getAttribute('data-val');
+      paintPlayground();
+    });
+  }
+
+  /* ============================================================
+     THE VARIANT WORKBENCH
+     One look on the stage, walked through the states it has.
+     ============================================================ */
+  var WB = { look: 'underline', lines: 'one' };
+  var wbControls = document.getElementById('wbControls');
+  var wbStates = document.getElementById('wbStates');
+  var wbCap = document.getElementById('wbCap');
+  var wbFoot = document.getElementById('wbFoot');
+  var stBody = document.getElementById('stBody');
+  var STATE_WORD = { rest: 'Rest', hover: 'Hover', focus: 'Focus', filled: 'Filled', error: 'Error', disabled: 'Disabled' };
+
+  function wbMulti() { return WB.lines === 'many' && (WB.look === 'underline' || WB.look === 'floating'); }
+
+  function paintWorkbench() {
+    if (!wbStates) return;
+    var look = WB.look;
+    var states = statesFor(look);
+    var multi = wbMulti();
+    var wide = look === 'code' || multi;
+
+    wbStates.innerHTML = '';
+    states.forEach(function (st, i) {
+      var slot = document.createElement('div');
+      slot.className = 'gbdoc-slot' + (wide ? ' gbdoc-slot--wide' : ' gbdoc-slot--grow');
+      var hold = document.createElement('div');
+      hold.className = 'gbdoc-hold gbdoc-hold--block';
+      slot.appendChild(hold);
+      var cap = document.createElement('span');
+      cap.className = 'gbdoc-slot__cap';
+      slot.appendChild(cap);
+      wbStates.appendChild(slot);
+      var el = mount(hold, look, multi ? 'textarea' : (look === 'password' ? 'password' : 'email'),
+                     st, true, 'wb-' + look + '-' + i);
+      var d = readField(el, look);
+      cap.innerHTML = '<b>' + STATE_WORD[st] + '</b>' +
+        (d ? d.h + ' tall, type ' + d.font.split(' / ')[0] : '');
+    });
+
+    Array.prototype.forEach.call(wbControls.querySelectorAll('.gbdoc-axis'), function (row) {
+      var axis = row.getAttribute('data-axis');
+      if (axis === 'look') {
+        lightChips(row, WB.look);
+        markChips(row, ['underline', 'floating', 'phone', 'code', 'password']);
+      } else {
+        lightChips(row, WB.lines);
+        markChips(row, (look === 'underline' || look === 'floating') ? ['one', 'many'] : ['one']);
+      }
+    });
+
+    wbCap.textContent = 'States of the ' + LOOKS[look].label.toLowerCase() + ' look' +
+      (multi ? ', multi line' : '') + ', at ' + window.innerWidth + 'px';
+
+    var why = WHY_OUT[look] || 'Six states, held still.';
+    if (!multi && (look === 'phone' || look === 'code' || look === 'password')) {
+      why += ' Multi line is out here as well: only the two text looks have a textarea version.';
+    }
+    wbFoot.innerHTML = 'On the stage: <code>' + LOOKS[look].line + '</code>. ' + why;
+
+    paintStateTable(look, states);
+  }
+
+  /* The state table is filled by measuring the specimens standing
+     above it, and the token beside each value is found by the same
+     lookup the properties drawer uses. */
+  function paintStateTable(look, states) {
+    if (!stBody) return;
+    var slots = wbStates.querySelectorAll('.gbdoc-slot');
+    var candidates = ['--zinc-200', '--zinc-400', '--zinc-500', '--zinc-600',
+                      '--zinc-800', '--zinc-900', '--blue-600', '--red-500', '--red-600'];
+    var html = '';
+    Array.prototype.forEach.call(slots, function (slot, i) {
+      var el = slot.querySelector('.gba-input') || slot.querySelector('.gba-otp input');
+      if (!el) return;
+      var d = readField(el, look);
+      var lineHost = look === 'phone' ? el.closest('.gbb-phone') : el;
+      var lcs = getComputedStyle(lineHost);
+      var tok = INSPECT.tokenFor ? INSPECT.tokenFor(lcs.borderBottomColor, candidates) : null;
+      html += '<tr><td>' + STATE_WORD[states[i]] + '</td>' +
+        '<td class="gbdoc-num">' + d.line + '</td>' +
+        '<td class="gbdoc-num">' + d.ink + '</td>' +
+        '<td class="gbdoc-num">' + d.label + '</td>' +
+        '<td>' + (tok ? '<code>' + tok + '</code>'
+                      : '<span class="gbdoc-flag gbdoc-flag--none">In the organism</span>') +
+        (states[i] === 'focus' ? ' <span class="gbdoc-flag gbdoc-flag--declared">Declared</span>' : '') +
+        '</td></tr>';
+    });
+    stBody.innerHTML = html;
+  }
+
+  if (wbControls) {
+    wbControls.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-val]') : null;
+      if (!chip || chip.classList.contains('is-unavailable')) return;
+      var axis = chip.parentNode.getAttribute('data-axis');
+      if (!axis) return;
+      WB[axis] = chip.getAttribute('data-val');
+      paintWorkbench();
+    });
+  }
+
+  /* ============================================================
+     THE LADDERS, THE LABELS AND THE ANATOMY, ALL OFF PROBES
+     ============================================================ */
+  function twoOf(id) {
+    var el = document.getElementById(id);
+    if (!el) return 'no probe';
+    var cs = getComputedStyle(el);
+    return px(cs.minHeight) + ' / ' + px(cs.fontSize);
+  }
+
+  function paintSizes() {
+    txt('szUnder', twoOf('probe-under'));
+    txt('szFloat', twoOf('probe-float'));
+    var phone = document.getElementById('probe-phone');
+    txt('szPhone', phone ? px(getComputedStyle(phone).minHeight) : 'no probe');
+    txt('szOtp', twoOf('probe-otp'));
+    var area = document.getElementById('probe-area');
+    txt('szArea', area ? px(getComputedStyle(area).minHeight) : 'no probe');
+  }
+
+  var LABELS = [
+    ['lab-field', '.gba-label', 'auth.css', 'on .required only'],
+    ['lab-eyebrow', '.gb-eyebrow', 'shell.css', 'none'],
+    ['lab-v', '.gba-vlabel', 'auth.css', 'always, no way to turn it off']
+  ];
+
+  function paintLabels() {
+    var body = document.getElementById('labBody');
+    if (!body) return;
+    var html = '';
+    LABELS.forEach(function (row) {
+      var el = document.getElementById(row[0]);
+      if (!el) return;
+      var cs = getComputedStyle(el);
+      var star = getComputedStyle(el, '::after');
+      var hasStar = star && star.content && star.content !== 'none' && star.content !== 'normal';
+      html += '<tr><td><code>' + row[1] + '</code></td><td>' + row[2] + '</td>' +
+        '<td class="gbdoc-num">' + px(cs.fontSize) + ' / ' + cs.fontWeight + '</td>' +
+        '<td class="gbdoc-num">' + cs.letterSpacing + '</td>' +
+        '<td class="gbdoc-num">' + cs.textTransform + '</td>' +
+        '<td class="gbdoc-num">' + cs.color + '</td>' +
+        '<td>' + row[3] + (hasStar ? ', <span class="gbdoc-num">' + star.color + '</span>' : '') +
+        '</td></tr>';
+    });
+    body.innerHTML = html;
+
+    var cap = function (id, elId) {
+      var el = document.getElementById(elId);
+      if (!el) return;
+      var cs = getComputedStyle(el);
+      txt(id, px(cs.fontSize) + ' / ' + cs.fontWeight + ' / ' + cs.letterSpacing);
+    };
+    cap('capLab', 'lab-field'); cap('capEye', 'lab-eyebrow'); cap('capV', 'lab-v');
+  }
+
+  function paintAnatomy() {
+    var input = document.getElementById('probe-under');
+    var lab = document.querySelector('label[for="probe-under"]');
+    var err = document.getElementById('probe-err');
+    if (input && lab) {
+      var cs = getComputedStyle(input);
+      var ls = getComputedStyle(lab);
+      var star = getComputedStyle(lab, '::after');
+      var es = err ? getComputedStyle(err) : null;
+      txt('anLabel', px(ls.fontSize) + ' / ' + ls.fontWeight + ' / ' + ls.letterSpacing + ' / ' + ls.color);
+      txt('anCtl', px(cs.minHeight) + ' tall, ' + px(cs.fontSize) + ' / ' + cs.fontWeight + ', pad ' + px(cs.paddingLeft));
+      txt('anLine', px(cs.borderBottomWidth) + ' ' + cs.borderBottomStyle + ' ' + cs.borderBottomColor);
+      txt('anStar', (star.content && star.content !== 'none' ? star.content + ' ' : 'no asterisk ') +
+        star.color + ', pad ' + px(star.paddingLeft));
+      txt('anErr', es ? px(es.fontSize) + ' ' + es.color + ', ' + es.textAlign : 'no probe');
+      txt('anR', px(cs.borderTopLeftRadius));
+    }
     var w = window.innerWidth + 'px';
-    txt('wnow', w); txt('wnow3', w);
+    txt('wnow', w); txt('wnow2', w); txt('wnow3', w);
   }
 
   /* ---------- copy a snippet ---------- */
@@ -379,13 +1097,24 @@
     links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
   }
 
+  /* The address of a look puts that look on the workbench, so the
+     row in the overview and the stage below say the same thing. */
+  var hash = (location.hash || '').replace('#', '');
+  if (LOOKS[hash]) WB.look = hash;
+
   paintAnatomy();
+  paintSizes();
+  paintLabels();
+  paintPlayground();
+  paintWorkbench();
   spy();
 
   var resizeTimer;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(paintAnatomy, 120);
+    resizeTimer = setTimeout(function () {
+      paintAnatomy(); paintSizes(); paintLabels(); paintPlayground(); paintWorkbench();
+    }, 120);
   });
   window.addEventListener('scroll', function () {
     clearTimeout(spyTimer);
