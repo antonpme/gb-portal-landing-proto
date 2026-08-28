@@ -1,5 +1,5 @@
 /* ============================================================
-   gbppl-button-1 / -2 — THE BUTTON ORGANISM
+   gbppl-button-1 / -2 / gbppl-oro-icons-1 — THE BUTTON ORGANISM
    ------------------------------------------------------------
    Ton's spec, 25.08, in one class: three TYPES (filled, outline,
    ghost), two COLOURS (primary blue, secondary black) plus the
@@ -22,10 +22,16 @@
    --primary and --l exist as explicit spellings for people who
    would rather write the whole sentence.
 
-   One SHAPE stands beside the four sizes: --icon, the 44px circle
-   that holds a glyph and no label (gbppl-drawer-unify-1, 28.08).
-   It is a shape rather than a size because it answers a different
-   question; see its own block near the end of this file.
+   One SHAPE stands beside the four sizes: --icon, the circle that
+   holds a glyph and no label (gbppl-drawer-unify-1, 28.08). It is
+   a shape rather than a size because it answers a different
+   question. Since gbppl-oro-icons-1 it reads the size modifiers
+   too, on four flat rungs of the height grid (40, the live 44,
+   48, 56), and carries two axes of its own: --static for a glyph
+   that decorates a block instead of answering the pointer, and
+   --plain for one that never lays a wash. Its own block is near
+   the end of this file. A glyph standing OUTSIDE a button is not
+   this shape and not this file: it is .gb-icon, in icon.css.
 
    NOT ONE LITERAL LIVES HERE. Every number, colour and curve is
    spent out of the BUTTON ORGANISM block of assets\tokens.css,
@@ -560,18 +566,103 @@ body.gb-demo a.gb-btn { color: var(--gbb-ink); }
    Every value comes out of the ICON block of tokens.css, which
    carries the provenance and says out loud that 44 is off the
    height grid on purpose.
+
+   ------------------------------------------------------------
+   THREE MORE RUNGS AND TWO MORE AXES (gbppl-oro-icons-1, 28.08)
+   ------------------------------------------------------------
+   Ton, on the round glyphs of the header and the drawer cross:
+   «должны быть вариативным компонентом. Разных размеров и с
+   разными состояниями: интерактивные (с hover) и неинтерактивные
+   (без hover, просто в блоках); с подложкой и обычные.» Three
+   axes, and every one of them is already in this class except the
+   last two words of each pair, so the shape grows two modifiers
+   and reads the size modifiers it was ignoring.
+
+   SIZE. The circle stands on the height grid, flat: 40, 48, 56,
+   with the live 44 as the default. It does NOT step with the
+   window, for the reason the block above already gives, so a size
+   modifier on --icon reads the BASE rung of a ladder and no media
+   query touches it.
+
+     --s   40 = the M base    glyph 20
+     none  44 = LIVE          glyph 22
+     --m   48 = the L base    glyph 24
+     --l   56 = the XL base   glyph 28
+
+   THE GLYPH IS HALF THE CIRCLE. 22 of 44 is the live ratio,
+   measured, and holding it lands every other rung on a number the
+   system already has: 20 and 24 are the L glyph at 1280 and 2000,
+   28 is the XL glyph at 2000. Not one new number is spent.
+
+   WHY S IS 40 AND NOT 36. A circle carries no label, so at the
+   same rank it sits one rung below the labelled button: the live
+   44 lies between 40 and 48, and the two neighbours are the step
+   down and the step up from it. 36 would put a 18px glyph under
+   the thumb minimum, and 64 has no consumer.
+
+   INTERACTIVE OR STATIC. The same circle stands in a block as
+   decoration, and there it must not answer the pointer at all.
+   --static is that: no hover, no target, no cursor of its own. It
+   belongs on a <span>, not a <button>, and it is aria-hidden.
+
+   WASH OR PLAIN. Both our round glyphs rest TRANSPARENT and wash
+   at 5% ink on hover — the header and the catalogue drawers, same
+   number. --plain takes even that away: no ground in any state,
+   and the hover lives in the ink alone. Which means --plain only
+   moves where the colour family has a hover ink to move to, and
+   today that is primary; secondary and inverse hold one ink at
+   rest and at hover because that is what live measures. The quiet
+   glyph family the portal bar wears by hand (Zinc 500 darkening to
+   Zinc 700) has NO TOKEN in this organism, and whether the
+   organism gets a fourth colour for it is Ton's call.
    ============================================================ */
 .gb-btn--icon {
+  --gbb-circle:     var(--gb-btn-icon-size);      /* LIVE 44 */
   --gbb-wash-hover: var(--gb-btn-wash-icon-hover);
-  --gbb-icon:       var(--gb-btn-icon-glyph);
+  --gbb-icon:       var(--gb-btn-icon-glyph);     /* LIVE 22, half the circle */
 
   flex: 0 0 auto;   /* a glyph in a tight row is not the thing that gives way */
-  width:      var(--gb-btn-icon-size);
-  height:     var(--gb-btn-icon-size);
-  min-height: var(--gb-btn-icon-size);
+  width:      var(--gbb-circle);
+  height:     var(--gbb-circle);
+  min-height: var(--gbb-circle);
   padding: 0;
   gap: 0;
   border-radius: var(--gb-btn-icon-radius);
+}
+
+/* The three rungs. Written as two classes so they outweigh both
+   --icon and the size modifier they stand beside, and so a size
+   modifier on a LABELLED button keeps meaning exactly what it
+   meant before this wave. */
+.gb-btn--icon.gb-btn--s {
+  --gbb-circle: var(--gb-btn-m-h);           /* 40, the M base of the grid */
+  --gbb-icon:   var(--gb-btn-l-icon-xl);     /* 20 */
+}
+.gb-btn--icon.gb-btn--m {
+  --gbb-circle: var(--gb-btn-l-h);           /* 48, the L base of the grid */
+  --gbb-icon:   var(--gb-btn-l-icon-2xl);    /* 24 */
+}
+.gb-btn--icon.gb-btn--l {
+  --gbb-circle: var(--gb-btn-xl-h);          /* 56, the XL base of the grid */
+  --gbb-icon:   var(--gb-btn-xl-icon-2xl);   /* 28 */
+}
+
+/* No ground, in any state. The wash slots are set rather than the
+   background, so filled keeps its fill and the modifier stays what
+   it says it is: a note about the WASH, not about the paint. */
+.gb-btn--icon.gb-btn--plain {
+  --gbb-wash-hover:  transparent;
+  --gbb-wash-active: transparent;
+}
+
+/* Decoration. pointer-events is what actually holds the promise —
+   :hover cannot match an element the pointer never lands on — and
+   it also hands the cursor back to whatever the glyph is standing
+   inside, which is the behaviour a decorative mark in a clickable
+   card needs. The cursor line says the intention out loud. */
+.gb-btn--icon.gb-btn--static {
+  cursor: default;
+  pointer-events: none;
 }
 
 /* ============================================================

@@ -1,0 +1,150 @@
+/* ============================================================
+   gbppl-oro-icons-1 — THE ICON
+   ------------------------------------------------------------
+   Ton, 28.08: «Нужны иконка и icon button. Те иконки, которые у
+   нас стоят в хедере (круглые) или крестик закрытия drawer,
+   должны быть вариативным компонентом. Разных размеров и с
+   разными состояниями: интерактивные (с hover) и неинтерактивные
+   (без hover, просто в блоках); с подложкой и обычные.»
+
+   That sentence names TWO things, and they are two components:
+
+     THE ICON        a glyph standing in a block. It has a size and
+                     an ink and nothing else. No hover, no cursor,
+                     no target. This file.
+     THE ICON BUTTON a control with a glyph and no label. It is the
+                     --icon shape of the button organism, and it
+                     lives in button.css, because a control that is
+                     round is still a button and the organism
+                     already owns type, colour and state.
+
+   The line between them is INTERACTION, not shape: the moment a
+   glyph answers a pointer it is a button, and the moment it does
+   not it is an icon. Drawing the line anywhere else produces the
+   thing every system regrets, a div that looks clickable.
+
+       <span class="gb-icon gb-icon--20" aria-hidden="true">
+         <svg viewBox="0 0 24 24">...</svg>
+       </span>
+
+   ------------------------------------------------------------
+   THE SCALE, AND WHERE EACH RUNG WAS MEASURED
+   ------------------------------------------------------------
+   Nothing here is invented. Every number is one this house was
+   already rendering somewhere, read off the page with the
+   instrument:
+
+     16   the device strip over the console frame, the glyph of an
+          S button, and the w-4 of every checkout row
+     20   the device icons in the console drawer, and the glyph of
+          an L button from 1280
+     22   THE LIVE CIRCLE. The v1 catalogue drawers and our own
+          header both carry a 22px glyph in a 44px round button,
+          measured 28.08. It is off the four-apart rhythm of the
+          rungs above and below it, and it is not being rounded
+          away for the same reason the header's 42px button is not:
+          live wins over the formula. Whether it stays a rung of
+          its own or the circle moves up to 24 is Ton's call, and
+          the showcase stands both measurements side by side.
+     24   the glyph of an L button from 2000, and of XL from 1280
+
+   NO TOKEN OF ITS OWN, ON PURPOSE. The system has no icon scale
+   yet: 16, 20, 22 and 24 live today as slots INSIDE the button
+   organism (--gb-btn-*-icon), and studio-panel.css already carries
+   a NO TOKEN note saying that a console glyph has no business
+   reaching into them. This file borrows those same four values
+   through ONE indirection each, so that promoting them to a real
+   --gb-icon-16/20/22/24 block in tokens.css is a four line change
+   and not a hunt. That promotion is a decision for Ton (skill,
+   section 8), and this wave does not take it on its own.
+
+   STROKE 1.5. Measured on the catalogue drawers, on our header and
+   on our own drawer. NO TOKEN: the system has a space scale, a
+   height grid and a radius, and no stroke scale at all; 1.5 is a
+   line weight, not a length, and inventing --gb-stroke-1 to hold
+   one number would be a token for the sake of a token. It is a
+   slot here so the census finding below can be answered in one
+   line when Ton answers it.
+
+   THE CENSUS FINDING. The glyphs this house draws today are drawn
+   at FOUR different weights: 1.2 (the envelope in auth), 1.5 (the
+   header family, the drawer, the catalogue filters), 1.8 (the
+   forward arrow of every submit) and 2 (the carousel chevrons of
+   the home strip). Nobody chose four; each was drawn where it was
+   needed. The component sets ONE, so a glyph put inside .gb-icon
+   comes out at the house weight whatever its own drawing says.
+   Consumers are not converted in this wave; the showcase prints
+   the census and the migration list.
+
+   OPTICAL WEIGHT IS NOT CONSTANT, and this is said out loud rather
+   than corrected. One drawing on a 24 grid rendered into a 16 box
+   puts 1 device pixel on screen, and into a 24 box puts 1.5. The
+   live set behaves the same way and nobody has complained, so the
+   component keeps one drawing and one attribute rather than three
+   stroke steps nobody measured. The showcase prints the rendered
+   weight per rung so the choice is visible.
+
+   COLOUR IS ALWAYS currentColor. An icon has no palette: it is the
+   ink of the sentence, the row or the button it stands in. That is
+   the whole reason our glyphs are inline SVG and not <img>, and it
+   is why system/icons/*.svg — Figma exports with #71717A baked
+   into every stroke, carried by the portal as <img> — are pictures
+   and not icons. They are listed on the showcase as what they are.
+   ============================================================ */
+
+.gb-icon {
+  /* ---- the four rungs, each borrowed from the button once ---- */
+  --gbic-16: var(--gb-btn-l-icon);        /* LIVE auth 18.08 */
+  --gbic-20: var(--gb-btn-l-icon-xl);     /* LIVE auth 18.08 */
+  --gbic-22: var(--gb-btn-icon-glyph);    /* LIVE catalogue drawers 28.08 */
+  --gbic-24: var(--gb-btn-l-icon-2xl);    /* LIVE auth 18.08 */
+
+  /* NO TOKEN: a line weight, not a length. See the header. */
+  --gbic-stroke: 1.5;
+
+  /* 20 is the default because it is the middle of the scale and
+     the size a glyph standing on its own in a panel wants. 16 is
+     for dense rows, 24 for a glyph that is the subject. */
+  --gbic-size: var(--gbic-20);
+
+  flex: 0 0 auto;   /* a glyph in a tight row is not what gives way */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--gbic-size);
+  height: var(--gbic-size);
+  color: currentColor;
+
+  /* NO CURSOR AND NO HOVER, and both by omission rather than by
+     declaration. An icon inherits whatever the pointer is doing in
+     the thing that contains it: inside a link it is a link, inside
+     a paragraph it is text. Declaring `cursor: default` here would
+     put a plain arrow in the middle of a clickable card. */
+}
+
+/* The drawing fills the box, and the box is the only thing that
+   decides how big the glyph is. stroke-width set here reaches
+   every path inside by SVG inheritance, and it beats an attribute
+   written on the <svg> element itself; a path that carries its own
+   stroke-width attribute keeps it, which is the one case where a
+   glyph can still come out at the wrong weight. */
+.gb-icon > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  stroke-width: var(--gbic-stroke);
+}
+
+/* ============================================================
+   SIZE
+   ------------------------------------------------------------
+   Named by the number, the way Carbon and Material name theirs,
+   and not by S / M / L. The letters are taken: they mean a button
+   ladder, and a 16px glyph is the glyph of an S button AND of an L
+   button at base width. The number is unambiguous and it is what
+   the reader is going to measure anyway.
+   ============================================================ */
+.gb-icon--16 { --gbic-size: var(--gbic-16); }
+.gb-icon--20 { --gbic-size: var(--gbic-20); }
+.gb-icon--22 { --gbic-size: var(--gbic-22); }
+.gb-icon--24 { --gbic-size: var(--gbic-24); }

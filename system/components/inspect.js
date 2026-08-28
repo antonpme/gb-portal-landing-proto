@@ -1,5 +1,9 @@
 /* ============================================================
-   gbppl-inspect-1 — INSPECT MODE, THE CORE
+   gbppl-inspect-1 / gbppl-oro-icons-1 — INSPECT MODE, THE CORE
+   ------------------------------------------------------------
+   gbppl-oro-icons-1 (28.08) added two rows to the recognition
+   table and two kinds beside them, Icon button and Icon, plus one
+   owner prefix. Nothing else in this file moved.
    ------------------------------------------------------------
    Ton, 26.08, the order this file answers: «переключать режимы
    View / Inspect, наводить на любые секции, блоки, что угодно, и
@@ -288,6 +292,7 @@
      not the drawer. */
   var OWNERS = [
     [/^gb-btn/, 'system/components/button.css'],
+    [/^gb-icon/, 'system/components/icon.css'],
     [/^gbsp-/, 'system/components/studio-panel.css'],
     [/^gbdoc-/, 'system/components/docs.css'],
     [/^gbd-/, 'system/components/drawer.css'],
@@ -391,7 +396,21 @@
      component to Inspect is one row here. */
   var COMPONENTS = [
     { sel: '.gb-btn__label', name: 'Button label', oro: 'typography.html#g-button' },
-    { sel: '.gb-btn__icon', name: 'Button glyph', oro: 'components.html#icons' },
+    { sel: '.gb-btn__icon', name: 'Button glyph', oro: 'icons.html#icon' },
+    /* gbppl-oro-icons-1. The round one stands ABOVE the labelled
+       one: a circle with no label is a different reading, and the
+       rule of this table is that the smaller, more specific thing
+       comes first. */
+    { sel: '.gb-btn--icon', name: 'Icon button', kind: 'iconbutton', oro: 'icons.html#iconbutton',
+      detail: function (el) {
+        var d = KINDS.iconbutton.describe(el);
+        return d.role + ' · ' + d.wash + ' · ' + d.type + ' ' + d.colour;
+      } },
+    { sel: '.gb-icon', name: 'Icon', kind: 'icon', oro: 'icons.html#icon',
+      detail: function (el) {
+        var m = /gb-icon--(\d+)\b/.exec(String(el.className));
+        return m ? m[1] + 'px' : 'default rung';
+      } },
     { sel: '.gb-btn', name: 'Button', kind: 'button', oro: 'components.html#buttons',
       detail: function (el) {
         var d = KINDS.button.describe(el);
@@ -984,6 +1003,174 @@
       }
     },
 
+    /* ---------- gbppl-oro-icons-1: the icon button ----------
+       The round control. It reads as a Button everywhere else in
+       this file and it would read as one here too, but the four
+       things a reader wants out of a circle — how wide it is, how
+       big the glyph inside it is, what the ratio between them is
+       and whether the target clears the accessible minimum — are
+       not rows the labelled button has. So it gets a kind rather
+       than four conditional rows in the one above. */
+    iconbutton: {
+      name: 'Icon button',
+      owner: 'system/components/button.css',
+      find: function (slot) { return slot.querySelector('.gb-btn--icon'); },
+
+      describe: function (el) {
+        var c = String(el.className);
+        var m = /gb-btn--(s|m|l)\b/.exec(c);
+        return {
+          size: m ? m[1] : 'live',
+          type: /gb-btn--outline\b/.test(c) ? 'outline' : /gb-btn--ghost\b/.test(c) ? 'ghost' : 'filled',
+          colour: /gb-btn--secondary\b/.test(c) ? 'secondary' : /gb-btn--inverse\b/.test(c) ? 'inverse' : 'primary',
+          wash: /gb-btn--plain\b/.test(c) ? 'plain' : 'washed',
+          role: /gb-btn--static\b/.test(c) ? 'static' : 'interactive',
+          state: el.disabled || el.classList.contains('is-disabled') ? 'disabled'
+               : el.classList.contains('is-hover') ? 'hover'
+               : el.classList.contains('is-focus') ? 'focus'
+               : el.classList.contains('is-active') ? 'active' : 'rest'
+        };
+      },
+
+      title: function (el, d) {
+        return d.role + ' ' + d.wash + ', ' + d.type + ' ' + d.colour + ', ' +
+               (d.size === 'live' ? 'the live circle' : 'size ' + SIZE_NAME[d.size]) +
+               (d.state === 'rest' ? '' : ', ' + d.state);
+      },
+
+      body: function (el, d) {
+        var cs = getComputedStyle(el);
+        var icon = el.querySelector('.gb-btn__icon');
+        var box = parseFloat(cs.width) || 0;
+        var glyph = icon ? (parseFloat(getComputedStyle(icon).width) || 0) : 0;
+        var circleTok = d.size === 'live' ? ['--gb-btn-icon-size', '--icon-button-size']
+                      : d.size === 's' ? ['--gb-btn-m-h']
+                      : d.size === 'm' ? ['--gb-btn-l-h'] : ['--gb-btn-xl-h'];
+        var glyphTok = d.size === 'live' ? ['--gb-btn-icon-glyph']
+                     : d.size === 's' ? ['--gb-btn-l-icon-xl']
+                     : d.size === 'm' ? ['--gb-btn-l-icon-2xl'] : ['--gb-btn-xl-icon-2xl'];
+        var fam = d.colour === 'primary' ? 'accent' : d.colour === 'secondary' ? 'ink' : 'inverse';
+        var fillStates = [
+          '--gb-btn-fill-' + d.colour,
+          '--gb-btn-fill-' + d.colour + '-hover',
+          '--gb-btn-wash-icon-hover',
+          '--gb-btn-wash-' + fam + '-hover'
+        ];
+        var inkStates = d.type === 'filled'
+          ? ['--gb-btn-ink-on-' + d.colour]
+          : ['--gb-btn-ink-' + d.colour, '--gb-btn-ink-' + d.colour + '-hover'];
+
+        var rowsList = [
+          row('Circle', px(cs.width), circleTok,
+              d.size === 'live' ? 'live, and off the height grid on purpose' : ''),
+          row('Glyph box', icon ? px(glyph) : 'no glyph', icon ? glyphTok : null),
+          row('Glyph against circle', glyph && box ? Math.round((glyph / box) * 100) + ' per cent' : 'no glyph',
+              null, 'the live ratio is half'),
+          /* A circle is 50 PER CENT, not 50 pixels: pushing a
+             percentage through px() would print a number that is
+             not on the screen. */
+          row('Radius', /%\s*$/.test(cs.borderTopLeftRadius) ? cs.borderTopLeftRadius : px(cs.borderTopLeftRadius),
+              ['--gb-btn-icon-radius', '--radius-circle']),
+          row('Ground', cs.backgroundColor, fillStates,
+              d.type === 'filled' ? '' : 'transparent at rest'),
+          row('Ink', cs.color, inkStates),
+          /* The wash cannot be compared: at rest it is not on the
+             element, and it is named rather than measured. */
+          knownRow('Wash on hover', d.wash === 'plain' ? 'none, in any state' : 'ink at 5 per cent',
+              null, d.wash === 'plain' ? null : '--gb-btn-wash-icon-hover',
+              d.wash === 'plain' ? 'the modifier takes the ground away' : ''),
+          row('Answers the pointer', d.role === 'interactive' ? 'yes' : 'no, it is decoration',
+              null, d.role === 'interactive' ? 'it is a control' : 'pointer events are off'),
+          row('Target', Math.round(box) + ' by ' + Math.round(parseFloat(cs.height) || 0), null,
+              Math.round(box) >= 44 ? 'clears the 44 minimum' : 'under 44: it needs room around it'),
+          row('Accessible name',
+              el.getAttribute('aria-label') ||
+                (el.getAttribute('aria-hidden') === 'true' ? 'hidden from the reader' : 'none'),
+              null, d.role === 'interactive'
+                ? 'an interactive glyph needs one'
+                : 'a decorative glyph must not have one')
+        ];
+
+        var mods = String(el.className).split(/\s+/).filter(function (c) { return c.indexOf('gb-btn') === 0; });
+        var demo = String(el.className).split(/\s+/).filter(function (c) { return /^is-/.test(c); });
+        var tag = d.role === 'interactive' ? 'button' : 'span';
+        var attr = d.role === 'interactive'
+          ? ' type="button" aria-label="' + (el.getAttribute('aria-label') || 'Name it') + '"'
+          : ' aria-hidden="true"';
+        var code = '<' + tag + ' class="' + mods.join(' ') + '"' + attr + '>\n' +
+          '  <span class="gb-btn__icon"><svg>...</svg></span>\n' +
+          '</' + tag + '>';
+
+        return block('Properties, measured on this specimen', table(rowsList)) +
+          block('Modifiers', chips(mods)) +
+          (demo.length ? block('Demo only, never on a product page', chips(demo)) : '') +
+          block('Markup', snippet(code));
+      }
+    },
+
+    /* ---------- gbppl-oro-icons-1: a bare glyph ----------
+       Not a control, and the drawer is shaped by that: «what
+       happens on hover» is not a row here, because nothing does. */
+    icon: {
+      name: 'Icon',
+      owner: 'system/components/icon.css',
+      find: function (slot) { return slot.querySelector('.gb-icon'); },
+
+      describe: function (el) {
+        var m = /gb-icon--(\d+)\b/.exec(String(el.className));
+        return { size: m ? m[1] : 'default', named: el.getAttribute('data-icon-name') || '' };
+      },
+
+      title: function (el, d) {
+        return (d.named ? d.named + ', ' : '') +
+               (d.size === 'default' ? 'the default rung' : d.size + 'px');
+      },
+
+      body: function (el, d) {
+        var cs = getComputedStyle(el);
+        var svgEl = el.querySelector('svg');
+        var tok = d.size === '16' ? ['--gb-btn-l-icon']
+                : d.size === '22' ? ['--gb-btn-icon-glyph']
+                : d.size === '24' ? ['--gb-btn-l-icon-2xl']
+                : ['--gb-btn-l-icon-xl'];
+        var grid = svgEl ? (svgEl.getAttribute('viewBox') || 'no viewBox') : 'no drawing';
+        var drawn = svgEl ? parseFloat(getComputedStyle(svgEl).strokeWidth) : 0;
+        var boxw = parseFloat(cs.width) || 0;
+        var vb = /0 0 (\d+(?:\.\d+)?) /.exec(grid);
+        var onScreen = (drawn && boxw && vb)
+          ? Math.round((drawn * boxw / parseFloat(vb[1])) * 100) / 100 + 'px'
+          : 'no drawing';
+
+        var rowsList = [
+          row('Box', px(cs.width) + ' by ' + px(cs.height), tok,
+              'borrowed from the button until the icon scale is its own'),
+          row('Drawing grid', grid, null, 'one grid for the whole set'),
+          row('Stroke, as drawn', drawn ? drawn + ' on the grid' : 'no drawing', null,
+              'the house weight, set by the component'),
+          row('Stroke, on screen', onScreen, null,
+              'one drawing in a smaller box puts a thinner line on the glass'),
+          row('Ink', cs.color, null, 'currentColor: the ink of whatever it stands in'),
+          row('Answers the pointer', 'no', null, 'an icon is not a control'),
+          row('Name for the reader', el.getAttribute('aria-hidden') === 'true'
+              ? 'hidden, it is decoration'
+              : (el.getAttribute('aria-label') || 'none, and it is not hidden either'),
+              null, 'a glyph is decoration unless it is said otherwise')
+        ];
+
+        var code = '<span class="' + String(el.className).split(/\s+/).filter(function (c) {
+            return c.indexOf('gb-icon') === 0;
+          }).join(' ') + '" aria-hidden="true">\n' +
+          '  <svg viewBox="0 0 24 24">...</svg>\n' +
+          '</span>';
+
+        return block('Properties, measured on this specimen', table(rowsList)) +
+          block('Modifiers', chips(String(el.className).split(/\s+/).filter(function (c) {
+            return c.indexOf('gb-icon') === 0;
+          }))) +
+          block('Markup', snippet(code));
+      }
+    },
+
     /* ---------- gbppl-oro-typography-1: a type role ----------
        The third kind, and the first one that is not a component.
        A specimen here is a line of text, and the seven things worth
@@ -1545,7 +1732,7 @@
      one and you get the whole. Hold Alt to switch that off and
      take the exact element under the pointer, which is how a
      developer gets to the label, the glyph or the wrapper. */
-  var SOLID = '.gb-btn, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
+  var SOLID = '.gb-btn, .gb-icon, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
               '.gbb-slot, .gbs-chip, .gb-eyebrow, .gbh-navitem, .gbh-link';
   function resolveTarget(el, drill) {
     if (drill || !el || !el.closest) return el;
