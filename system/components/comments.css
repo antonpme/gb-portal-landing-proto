@@ -6,6 +6,11 @@
    мини-диалог». Spec: studio\docs\COMMENT-MODE-SPEC.md.
    Behaviour and the whole of the mode: comments.js.
 
+   gbppl-comments-c, 28.08: two answers to Ton on the day. The status
+   chip goes quieter inside the console (THE STATUS CHIP), and the free
+   text field of the drawer moves onto the variant the live lead form
+   wears (THE FREE TEXT FIELD). Nothing else moved.
+
    WHAT THIS FILE DRAWS, AND WHAT IT DELIBERATELY DOES NOT.
    Three things are new here and nothing else: the pin on the page,
    the shelf of threads in the console, and the thread inside the
@@ -183,9 +188,20 @@ html.gbc-on ::selection { background: transparent; }
   text-transform: uppercase;
   vertical-align: baseline;
 }
-.gbsp .gbc-chip { background: var(--zinc-800); color: var(--zinc-400); }
+/* gbppl-comments-c, 28.08. In the console the chip was louder than the
+   line it labels: a Zinc 800 plate stood off the Zinc 950 ground and, in a
+   216px box, took a line of its own. THE PLATE was the shouting half, not
+   the ink, so the plate is the half that moves: one rung down the same
+   scale, onto the ground it sits on, no new numbers. The ink stays Zinc
+   400. Dropping it too (tried, measured) puts 12px 600 caps at 3.8:1 on
+   Zinc 900 — quieter and unreadable is not quieter. The light ground is
+   untouched: Eyebrow on a Zinc 100 plate is the shape Ton described, and
+   in the white drawer it never shouted. */
+.gbsp .gbc-chip { background: var(--zinc-900); color: var(--zinc-400); }
 .gbc-chip--lost { background: var(--zinc-200); color: var(--zinc-700); }
-.gbsp .gbc-chip--lost { background: var(--zinc-700); color: var(--zinc-200); }
+/* One rung louder than a plain status on both grounds: "element moved" is
+   a warning about the anchor, not a state of the thread. */
+.gbsp .gbc-chip--lost { background: var(--zinc-800); color: var(--zinc-300); }
 
 /* ============================================================
    THE THREAD IN THE DRAWER
@@ -278,7 +294,59 @@ html.gbc-on ::selection { background: transparent; }
    лид-страницы это часть колонки, в дровере — лишний сдвиг от края
    тела. Обнуляется здесь, у потребителя, а не у владельца. */
 .gbc-field { padding: 0; margin-bottom: var(--space-16); }
-.gbc-field .gba-label { margin-bottom: var(--space-8); }
+.gbc-field > .gba-label { margin-bottom: var(--space-8); }
+
+/* ============================================================
+   THE FREE TEXT FIELD (gbppl-comments-c, 28.08)
+   ------------------------------------------------------------
+   Ton, on a screenshot of the thread drawer: «Странно выглядит и
+   работает наш компонент FreeText». Three things were wrong and all
+   three were the wrong VARIANT, not a missing one. The drawer wore
+   the default field — the guest ladder, 16px in a 56px box with a
+   caps eyebrow over it — while the form it sits beside on Live, step
+   one of Book a Meeting, wears .gba-field--floating: 14/22.4, 80
+   tall, a quiet 12/600 label with no caps. The markup now asks for
+   that variant by name (comments.js, areaBlock), so everything below
+   is only what the variant cannot know: no handle, a ceiling, and
+   what a locked field looks like.
+
+   NO HANDLE. The resize corner let the field grow wider than the
+   drawer and left a visible notch in a 520px column. The same call
+   the checkout made when its four textareas came onto the organism
+   (live/checkout.html, the migration table): resize none, and the
+   height comes from the content instead.
+
+   THE CEILING IS A RUNG, NOT A NUMBER. The floor is the variant's
+   own 80. The ceiling is three rungs of 64 — the tallest the field
+   may get before the thread above it stops being readable — and past
+   it the field scrolls inside itself rather than pushing the Post
+   button off the panel. The variant hides its overflow because
+   booking.js sets its height for it; here the height is ours, so the
+   scrollbar has to come back.
+   ============================================================ */
+.gbc-form .gba-textarea {
+  resize: none;
+  overflow-y: auto;
+  max-height: calc(var(--space-64) * 3);
+}
+
+/* A locked field says so with ink, not with a browser default grey:
+   the line steps back one rung and the text and label go with it. Both
+   values are rungs the field already stands on — Zinc 400 is its own
+   placeholder ink, Zinc 200 one rung back from its own Zinc 400 line —
+   so nothing new is declared here. */
+.gbc-form .gba-input:disabled,
+.gbc-form .gba-input:disabled:hover {
+  border-color: var(--zinc-200);
+  color: var(--zinc-400);
+  cursor: not-allowed;
+  -webkit-text-fill-color: var(--zinc-400);   /* Safari paints its own grey otherwise */
+  opacity: 1;
+}
+.gbc-form .gba-input:disabled ~ .gba-label,
+.gbc-form.is-down .gbc-field > .gba-label { color: var(--zinc-400); }
+.gbc-form .gbdoc-seg:disabled { color: var(--zinc-400); cursor: not-allowed; }
+.gbc-form.is-down .gbc-hint { color: var(--zinc-600); }
 
 .gbc-as {
   margin: 0 0 var(--space-16);

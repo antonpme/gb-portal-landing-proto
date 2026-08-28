@@ -36,6 +36,11 @@
    со шкалой». На вендорном каталоге --space-* на :root принадлежат
    бандлу, и слой, подвешенный в body, читал бы чужие числа.
 
+   ВОЛНА C (gbppl-comments-c, 28.08). Провод дотянут до шестнадцатой
+   страницы — sandboxes.html, единственная с консолью, но без режима;
+   копи-линт видимых строк: подпись булавок сокращена до «Show pins»
+   (Тон просил коротко), строка сироты сведена к двум фразам.
+
    КАК ПОДКЛЮЧАТЬ (на каждой странице с консолью, ПОСЛЕ inspect.js):
 
      <link rel="stylesheet" href="../system/components/comments.css">
@@ -330,20 +335,41 @@
     });
   }
 
-  /* Отказ произносится один раз и одинаково: спека просит ровно эту
-     строку, и она уходит в строку состояния консоли, а не в консоль
-     браузера. */
-  function fell() {
-    down = 'Comments unavailable';
+  /* ДВЕ РАЗНЫЕ БЕДЫ, ДВЕ РАЗНЫЕ ПОДПИСИ (gbppl-comments-c, 28.08; Тон
+     по скрину дровера: «Странно выглядит и работает наш компонент
+     FreeText» — форма стояла живой над мёртвой кнопкой и молча
+     принимала текст, которому некуда деться). Нет кода гейта или
+     сервис его не принял — это дело поправимое человеком, и подпись
+     говорит, что нажать. Сеть или сервис молчат — поправить нечего,
+     и подпись говорит только это. Строка состояния консоли и счётчик
+     полки остаются короткими: они рапортуют СОСТОЯНИЕ, а что делать
+     говорят там, где делают, — под кнопкой. */
+  var SAY = {
+    code: 'Comments need the studio code. Press LOCK and sign in once.',
+    net:  'Comments are offline right now.'
+  };
+
+  function why(err) {
+    var m = (err && err.message) || '';
+    return (m === 'no code' || /\b40[13]\b/.test(m)) ? 'code' : 'net';
+  }
+
+  function fell(err) {
+    down = why(err);
     announce();
     paintShelf();
     paintPins();
+    dress();
   }
 
+  /* Сервис ответил — форма оживает сама, без перезагрузки, если она
+     сейчас открыта и стоит запертой. Дёшево: перерисовать тот же
+     дровер тем же вызовом, который его открыл. */
   function rose() {
     if (!down) return;
     down = '';
     announce();
+    if (document.querySelector('.gbc-form.is-down')) reopenSame(null);
   }
 
   function load() {
@@ -361,7 +387,7 @@
         }
         return items;
       })
-      .catch(function () { fell(); });
+      .catch(fell);
   }
 
   /* ============================================================
@@ -460,7 +486,7 @@
       '</div>' +
       '<ul class="gbsp-list gbc-list"></ul>' +
       '<button class="gbsp-link gbc-pintoggle" type="button" aria-pressed="false">' +
-        'Show pins in other modes</button>';
+        'Show pins</button>';
 
     shelf.addEventListener('click', function (e) {
       var f = e.target.closest ? e.target.closest('[data-f]') : null;
@@ -496,7 +522,7 @@
     });
 
     var count = shelf.querySelector('.gbc-count');
-    count.textContent = down ? down
+    count.textContent = down ? 'Comments unavailable'
       : (open + ' open · ' + done + ' resolved' + (applied ? ' · ' + applied + ' applied' : ''));
 
     var segs = shelf.querySelectorAll('[data-f]');
@@ -567,18 +593,49 @@
 
   /* Подпись автора: имя спрашивается ОДИН раз в браузере, дальше
      сворачивается в строку «as <имя> · change» (спека §4.2). */
-  function authorBlock() {
+  /* ПОЛЯ ДРОВЕРА = ШАГ 1 БУКИНГА, ТОТ ЖЕ ВАРИАНТ (gbppl-comments-c).
+     Замер live/book-a-meeting.html на 1280: обёртка носит
+     .gba-field--floating, однострочник 48 высотой, Inter 300 14/14,
+     лейбл ВНУТРИ .gba-inputwrap и ПОСЛЕ контрола (порядок в DOM
+     несущий: подъём это :focus ~ и :not(:placeholder-shown) ~), а
+     плейсхолдер один пробел, иначе псевдокласс не срабатывает и
+     подсказка лежит под лейблом. До этой волны дровер носил ДЕФОЛТ
+     поля, гостевую лестницу 16/56 с капс-подписью сверху, то есть не
+     тот облик, что на живой форме рядом. */
+  function authorBlock(dis) {
     var me = author();
     if (!me) {
-      return '<div class="gba-field gbc-field">' +
-        '<label class="gba-label" for="gbc-name">Your name</label>' +
+      return '<div class="gba-field gba-field--floating gbc-field">' +
         '<div class="gba-inputwrap">' +
-          '<input class="gba-input" id="gbc-name" type="text" autocomplete="name" placeholder="Who is writing">' +
+          '<input class="gba-input" id="gbc-name" type="text" autocomplete="name"' +
+            ' placeholder=" "' + dis + '>' +
+          '<label class="gba-label" for="gbc-name">Your name</label>' +
         '</div>' +
       '</div>';
     }
     return '<p class="gbc-as">as ' + esc(me) +
-           ' <button class="gbc-link" type="button" data-act="rename">change</button></p>';
+           ' <button class="gbc-link" type="button" data-act="rename"' + dis + '>change</button></p>';
+  }
+
+  /* МНОГОСТРОЧНИК ТОГО ЖЕ ВАРИАНТА. У него лейбл НЕ плавает, и это не
+     наш выбор, а живая форма: на contact-us-219 единственное поле с
+     лейблом над строкой это как раз комментарий (auth.css, «статичный
+     лейбл над полем»), и computed говорит 12 / 600 / ls 1.44 Zinc 500
+     без капса. Плавать ему негде: покой лейбла у варианта top 50%, то
+     есть середина восьмидесяти пикселей.
+     ОТКРЫТО ТОНУ: он просил «поле с рамкой». Рамки у поля нет ни у
+     нас, ни на лайве, .gba-input подчёркнут на всех страницах,
+     которые мы мерили; выдумывать её здесь значит завести пятую
+     версию поля мимо владельца. Носим замеренное, вопрос на столе. */
+  function areaBlock(id, label, placeholder, value, dis) {
+    return '<div class="gba-field gba-field--floating gbc-field">' +
+      '<label class="gba-label" for="' + id + '">' + label + '</label>' +
+      '<div class="gba-inputwrap">' +
+        '<textarea class="gba-input gba-textarea" id="' + id + '" rows="3"' +
+          (placeholder ? ' placeholder="' + placeholder + '"' : '') + dis + '>' +
+          (value || '') + '</textarea>' +
+      '</div>' +
+    '</div>';
   }
 
   function msgBlock(c, i) {
@@ -614,16 +671,24 @@
      рядом стоит то, что написано сейчас (спека §4.2). Сегмент взят у
      документации (.gbdoc-seg, «контролы не кнопки»), поле и кнопка —
      у системы (.gba-input, .gb-btn). */
+  /* ЗАПЕРТО ЦЕЛИКОМ ИЛИ НЕ ЗАПЕРТО ВОВСЕ (gbppl-comments-c). Пока
+     писать некуда, форма не принимает ни буквы: disabled стоит на
+     полях, на сегментах note | suggest и на кнопке. Наполовину живая
+     форма врёт дважды: принимает текст, которого не сохранит, и
+     заставляет догадываться, почему кнопка серая. */
+  function dis() { return down ? ' disabled' : ''; }
+
   function formBlock(el, kind) {
     var current = el ? textOf(el, true) : '';
     var suggest = kind === 'suggest';
-    return '<form class="gbc-form" data-form="new">' +
-      authorBlock() +
+    var d = dis();
+    return '<form class="gbc-form' + (down ? ' is-down' : '') + '" data-form="new">' +
+      authorBlock(d) +
       '<div class="gbdoc-axis gbc-kinds">' +
         '<button class="gbdoc-seg' + (suggest ? '' : ' is-on') + '" type="button" data-kind="note"' +
-          ' aria-pressed="' + (!suggest) + '">note</button>' +
+          ' aria-pressed="' + (!suggest) + '"' + d + '>note</button>' +
         '<button class="gbdoc-seg' + (suggest ? ' is-on' : '') + '" type="button" data-kind="suggest"' +
-          ' aria-pressed="' + suggest + '">suggest text</button>' +
+          ' aria-pressed="' + suggest + '"' + d + '>suggest text</button>' +
       '</div>' +
       (suggest ?
         '<div class="gbc-diff gbc-diff--live">' +
@@ -632,44 +697,31 @@
           '<p class="gbc-diff__row"><span class="gbc-diff__k">now</span>' +
             '<span class="gbc-diff__v gbc-diff__v--new" data-now>' + esc(current) + '</span></p>' +
         '</div>' +
-        '<div class="gba-field gbc-field">' +
-          '<label class="gba-label" for="gbc-new">New text</label>' +
-          '<div class="gba-inputwrap">' +
-            '<textarea class="gba-input gba-textarea" id="gbc-new" rows="3">' + esc(current) + '</textarea>' +
-          '</div>' +
-        '</div>' : '') +
-      '<div class="gba-field gbc-field">' +
-        '<label class="gba-label" for="gbc-body">' + (suggest ? 'Why' : 'Comment') + '</label>' +
-        '<div class="gba-inputwrap">' +
-          '<textarea class="gba-input gba-textarea" id="gbc-body" rows="3" placeholder="' +
-            (suggest ? 'Optional' : 'What should change here') + '"></textarea>' +
-        '</div>' +
-      '</div>' +
+        areaBlock('gbc-new', 'New text', '', esc(current), d) : '') +
+      areaBlock('gbc-body', suggest ? 'Why' : 'Comment',
+                suggest ? 'Optional' : 'What should change here', '', d) +
       '<div class="gbc-actions">' +
         '<button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="submit"' +
-          (down ? ' disabled' : '') + '><span class="gb-btn__label">Post</span></button>' +
-        '<span class="gbc-hint">' + (down ? 'Comments unavailable' : 'Ctrl and Enter posts') + '</span>' +
+          d + '><span class="gb-btn__label">Post</span></button>' +
+        '<span class="gbc-hint">' + (down ? SAY[down] : 'Ctrl and Enter posts') + '</span>' +
       '</div>' +
     '</form>';
   }
 
   function threadBlock(c) {
     var replies = (c.replies || []).map(replyBlock).join('');
+    var d = dis();
     return msgBlock(c) + replies +
-      '<form class="gbc-form" data-form="reply">' +
-        authorBlock() +
-        '<div class="gba-field gbc-field">' +
-          '<label class="gba-label" for="gbc-body">Reply</label>' +
-          '<div class="gba-inputwrap">' +
-            '<textarea class="gba-input gba-textarea" id="gbc-body" rows="2" placeholder="Answer in the thread"></textarea>' +
-          '</div>' +
-        '</div>' +
+      '<form class="gbc-form' + (down ? ' is-down' : '') + '" data-form="reply">' +
+        authorBlock(d) +
+        areaBlock('gbc-body', 'Reply', 'Answer in the thread', '', d) +
         '<div class="gbc-actions">' +
           '<button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="submit"' +
-            (down ? ' disabled' : '') + '><span class="gb-btn__label">Post</span></button>' +
+            d + '><span class="gb-btn__label">Post</span></button>' +
           '<button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-act="status"' +
-            (down ? ' disabled' : '') + '><span class="gb-btn__label">' +
+            d + '><span class="gb-btn__label">' +
             (c.status === 'open' ? 'Resolve' : 'Reopen') + '</span></button>' +
+          (down ? '<span class="gbc-hint">' + SAY[down] + '</span>' : '') +
         '</div>' +
       '</form>';
   }
@@ -722,7 +774,7 @@
         eyebrow: 'Comment',
         title: (c.anchor && c.anchor.role) || 'Element',
         sub: sub,
-        html: '<p class="gbi-lede">This element is no longer on the page, so the pin has nowhere to stand. ' +
+        html: '<p class="gbi-lede">This element is no longer on the page. ' +
               'The thread is kept.</p>' + threadBlock(c)
       });
       wireDrawer(null);
@@ -731,6 +783,44 @@
 
   function drawerBody() {
     return document.querySelector('.gbd-panel .gbd-body');
+  }
+
+  /* Форма уже нарисована, а сервис ответил (или замолчал) после неё.
+     Перерисовываем ровно тогда, когда положение изменилось: иначе
+     каждый ответ сервиса стирал бы то, что человек печатает. */
+  function dress() {
+    var f = document.querySelector('.gbc-form');
+    if (!f) return;
+    if (!!down === f.classList.contains('is-down')) return;
+    /* Написанное переживает перерисовку. Форма запирается ровно тогда,
+       когда сервис отвалился под уже набранным текстом, и стереть его
+       было бы второй потерей после первой. */
+    var keep = {};
+    ['gbc-body', 'gbc-new', 'gbc-name'].forEach(function (id) {
+      var el = f.querySelector('#' + id);
+      if (el) keep[id] = el.value;
+    });
+    reopenSame(null);
+    var b = drawerBody();
+    if (!b) return;
+    Object.keys(keep).forEach(function (id) {
+      var el = b.querySelector('#' + id);
+      if (el && !el.value) { el.value = keep[id]; grow(el); }
+    });
+  }
+
+  /* РОСТ ПО СОДЕРЖИМОМУ, БЕЗ УГОЛКА (gbppl-comments-c; Тон о живой
+     форме: «странно выглядит и работает»). Потолок и низ объявлены в
+     comments.css ступенями, здесь только высота по факту набранного:
+     обнулить, снять scrollHeight, вернуть вместе с рамкой. Дальше
+     потолка поле прокручивается само (overflow-y: auto), и это
+     честнее уголка, который ломал колонку дровера. */
+  function grow(t) {
+    if (!t) return;
+    var cs = getComputedStyle(t);
+    var edge = (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0);
+    t.style.height = '0px';
+    t.style.height = (t.scrollHeight + edge) + 'px';
   }
 
   /* ---------- проводка формы в дровере ----------
@@ -752,6 +842,15 @@
     if (newEl && nowEl) {
       newEl.addEventListener('input', function () { nowEl.textContent = newEl.value; });
     }
+
+    var areas = body.querySelectorAll('.gba-textarea');
+    for (var a = 0; a < areas.length; a++) {
+      (function (t) {
+        grow(t);
+        t.addEventListener('input', function () { grow(t); });
+      })(areas[a]);
+    }
+
     if (!form) return;
 
     form.addEventListener('click', function (e) {
@@ -830,7 +929,7 @@
            { author: who, body: text })
         .then(function () { return load(); })
         .then(function () { busy = false; openThread(openId, false); })
-        .catch(function () { busy = false; fell(); });
+        .catch(function (err) { busy = false; fell(err); });
       return;
     }
 
@@ -855,7 +954,7 @@
         pending = null;
         return load().then(function () { busy = false; if (id) openThread(id, false); });
       })
-      .catch(function () { hold(false); fell(); });
+      .catch(function (err) { hold(false); fell(err); });
   }
 
   function flipStatus() {
@@ -866,7 +965,7 @@
          { status: c.status === 'open' ? 'resolved' : 'open' })
       .then(function () { return load(); })
       .then(function () { busy = false; openThread(openId, false); })
-      .catch(function () { busy = false; fell(); });
+      .catch(function (err) { busy = false; fell(err); });
   }
 
   /* ============================================================
@@ -875,7 +974,7 @@
   function announce() {
     try {
       document.dispatchEvent(new CustomEvent('gbc:mode', {
-        detail: { on: ON, down: ON ? down : '' }
+        detail: { on: ON, down: ON && down ? 'Comments unavailable' : '' }
       }));
     } catch (e) {}
   }
