@@ -1,5 +1,5 @@
 /* ============================================================
-   gbppl-drawer-1 — THE DRAWER ORGANISM
+   gbppl-drawer-1 / gbppl-drawer-unify-1 — THE DRAWER ORGANISM
    ------------------------------------------------------------
    A panel that comes in from the right edge, over a backdrop,
    and gives back the screen when it leaves. It is the first
@@ -90,45 +90,102 @@ gb-drawer { display: contents; }
 .gbd-scrim.is-out,
 .gbd-panel.is-out { transition-duration: var(--mo-medium-out); transition-timing-function: var(--mo-exit); }
 
-/* ---- Head ---- */
+/* ============================================================
+   ---- Head ----   ONE HEAD FOR EVERY DRAWER IN THE HOUSE
+   ------------------------------------------------------------
+   gbppl-drawer-unify-1 (28.08). Ton: «Давай даже на лайве
+   приведём все дроверы к общему знаменателю. Сейчас в дровере
+   аккаунта хедер вообще не такой, как в новых дроверах. Посмотри
+   компонент, который мы создавали для страницы категорий, все
+   дроверы там. Нам нужно сделать все дроверы по такому принципу.
+   Если мы переносим крестик влево и делаем иконку круглой: если
+   появляется стрелка назад, мы показываем её вместо иконки.»
+
+   MEASURED, not copied from a stylesheet (the reference is the
+   vendored v1 catalogue running over http, filters and favorites
+   drawers, 390 and 1280, 28.08):
+
+     head height        80          both widths
+     control            44 circle, ghost, left, x 16 / 32 from the edge
+     glyph              22 x 22, stroke 1.5
+     hover              ink at 5 per cent
+     title              serif 500, one line, 20.13 at 390 / 22.75 at 1280
+     hairline under     1px
+
+   The bundle's root floats 11.5..13px, so its serif title lands on
+   20.13 and 22.75; our root is a fixed 16 and the drawer stands on
+   the type scale rungs either side of those two numbers, 20 and 24.
+   The difference is 1.25px at 1280 and 0.13px at 390, it is the
+   floating root and nothing else, and the rung wins (see the report
+   of the wave).
+
+   THE TITLE IS LEFT ALIGNED, NOT CENTRED, and this is a decision
+   taken against the reference on purpose. The catalogue centres
+   «Filters» and «My Favorites» between two 44px wings. Our titles
+   are longer and unequal — an element name, a gift name, «Sign in
+   or create an account» — and at 390 a centred title between two
+   wings has 88px less room, so it either clips or crowds the
+   glyph. Left aligned, the head reads in DOM order, every drawer
+   in the house has exactly one control in the same place, and a
+   long title simply takes a second line. The catalogue bundle
+   stays centred until it is rebuilt; that divergence is recorded
+   under Ton-17 (live catches up with us).
+
+   ONE SLOT ON THE LEFT. The cross, or the back arrow when the
+   drawer has a step behind it — never both on the same side,
+   because two glyphs 8px apart are a menu, not a way out. When the
+   arrow takes the left slot the cross moves to the right edge, and
+   that is the only case in which the head carries two controls.
+   NO ACTIONS in the head: Clear all and its kind live in the body,
+   where the thing they act on is.
+
+   VERTICAL RHYTHM. The head has no height of its own: it is the
+   44px control plus equal air, and the air is derived from the two
+   measured numbers rather than typed. A title that wraps grows the
+   head and keeps its FIRST LINE centred on the control, which is
+   what the padding-block on .gbd-title buys (half the difference
+   between the circle and one line box).
+   ============================================================ */
 .gbd-head {
+  /* LIVE catalogue 28.08. No token: the system has no drawer head
+     scale, and this is the one number the reference states. */
+  --gbd-head-h: 80px;
+
   display: flex;
   align-items: flex-start;
   gap: var(--space-16);
-  padding: var(--space-24);
+  padding:
+    calc((var(--gbd-head-h) - var(--gb-btn-icon-size)) / 2)
+    var(--space-24);
   border-bottom: 1px solid var(--zinc-200);
 }
-.gbd-titles { flex: 1 1 auto; min-width: 0; }
-.gbd-eyebrow {
-  display: block;
-  margin-bottom: 6px;
-  font-size: var(--eyebrow-size);
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  line-height: 1;
-  text-transform: uppercase;
-  color: var(--eyebrow-color);
-}
 .gbd-title {
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
+  padding-block: calc((var(--gb-btn-icon-size) - 1.25em) / 2);
   font-family: var(--font-serif);
   font-size: 24px;
   font-weight: 500;
   line-height: 1.25;
   color: var(--zinc-900);
+  overflow-wrap: anywhere;   /* a long single word yields, the panel does not */
 }
-.gbd-sub {
-  margin: 6px 0 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--zinc-500);
-}
-/* The close control is the button organism, size S, ghost: a
-   drawer does not get a hand drawn X of its own (Ton-6). */
-.gbd-close { flex: 0 0 auto; }
-.gbd-close .gb-btn__icon svg { stroke-width: 1.6; }
+.gbd-title:empty { display: none; }
 
-/* ---- Body ---- */
+/* The two controls are the button organism wearing --icon: a
+   drawer does not get a hand drawn circle of its own (Ton-6). */
+.gbd-slot { flex: 0 0 auto; }
+/* The organism declares display, and the UA rule behind [hidden] is
+   a bare attribute selector, so it loses. A hidden slot has to be
+   told to go away in the same breath it is told to be a button. */
+.gbd-slot[hidden] { display: none; }
+
+/* ---- Body ----
+   The gutter stays --space-24, which is where the body has always
+   been and where the head now joins it: head and body share one
+   left edge, and that matters more than matching the 32 of a
+   reference panel 120px wider than ours. */
 .gbd-body {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -137,6 +194,17 @@ gb-drawer { display: contents; }
   line-height: 1.6;
   color: var(--zinc-700);
 }
+
+/* The subtitle used to sit in the head under the title. It is a
+   sentence about the CONTENT, so it now opens the body: same 14 on
+   Zinc 500, first line, above everything the caller sent. */
+.gbd-sub {
+  margin: 0 0 var(--space-16);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+.gbd-sub:empty { display: none; }
 
 /* ---- Foot, optional ---- */
 .gbd-foot {
@@ -151,6 +219,11 @@ gb-drawer { display: contents; }
 .gbd-foot:empty { display: none; }
 
 @media (max-width: 639px) {
-  .gbd-head, .gbd-body { padding: var(--space-16); }
+  .gbd-head {
+    padding:
+      calc((var(--gbd-head-h) - var(--gb-btn-icon-size)) / 2)
+      var(--space-16);
+  }
+  .gbd-body { padding: var(--space-16); }
   .gbd-title { font-size: 20px; }
 }

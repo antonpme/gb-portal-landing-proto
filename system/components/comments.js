@@ -727,14 +727,20 @@
   }
 
   /* Шапка дровера у треда и у замера одинаковая по строению: что это
-     за элемент и где он живёт. Разное только слово в eyebrow. */
+     за элемент и где он живёт. С gbppl-drawer-unify-1 она одинакова
+     и буквально: один слот, один заголовок, и разницы между режимами
+     в шапке больше нет. */
   function openDrawerFor(el, html, sub) {
     var d = drawerHost();
     if (!d) return;
     var lede = (el && window.GbInspect && window.GbInspect.lede) ? window.GbInspect.lede(el) : '';
     var name = el && window.GbInspect ? window.GbInspect.identify(el).name : 'Element';
+    /* gbppl-drawer-unify-1: no eyebrow in the head. The word
+       «Comment» was saying which mode you are in, and the mode
+       segment in the console says that already; the title is the
+       thing the note is about, which is the only question the head
+       has to answer. */
     d.open({
-      eyebrow: 'Comment',
       title: name,
       sub: sub,
       html: lede + html
@@ -771,7 +777,6 @@
       var d = drawerHost();
       if (!d) return;
       d.open({
-        eyebrow: 'Comment',
         title: (c.anchor && c.anchor.role) || 'Element',
         sub: sub,
         html: '<p class="gbi-lede">This element is no longer on the page. ' +

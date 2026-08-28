@@ -868,8 +868,11 @@
                window.innerWidth + 'px wide, and the token beside it is the one whose ' +
                'resolved value matches what the browser drew.';
 
+    /* gbppl-drawer-unify-1: the head is one slot and one title now,
+       so the «Inspect» eyebrow is gone. What the element IS still
+       opens the reading — it just does it in the first line of the
+       body, where `sub` moved. */
     d.open({
-      eyebrow: 'Inspect',
       title: desc.name,
       sub: (desc.detail ? esc(desc.detail) + ' &middot; ' : '') +
            '<code>' + esc(desc.selector) + '</code> &middot; measured at ' +
@@ -898,7 +901,6 @@
 
   var KINDS = {
     button: {
-      eyebrow: 'Component',
       name: 'Button',
       owner: 'system/components/button.css',
       find: function (slot) { return slot.querySelector('.gb-btn'); },
@@ -999,7 +1001,6 @@
        through window.GbTypeRoles, so the record lives in exactly
        one place. */
     type: {
-      eyebrow: 'Type role',
       name: function (el, d) { return d.role ? d.role.name : 'Type role'; },
       owner: function (el, d) {
         if (!d.role || !d.role.cls) return 'studio/system/TYPE-SCALE.md, the recorded ladder';
@@ -1107,7 +1108,6 @@
     },
 
     field: {
-      eyebrow: 'Component',
       name: 'Field',
       owner: 'system/components/auth.css',
       find: function (slot) { return slot.querySelector('.gba-input'); },
@@ -1186,7 +1186,6 @@
     var name = typeof kind.name === 'function' ? kind.name(el, info) : kind.name;
     var owner = typeof kind.owner === 'function' ? kind.owner(el, info) : kind.owner;
     d.open({
-      eyebrow: kind.eyebrow,
       title: name,
       sub: kind.title(el, info) + ' &middot; measured at ' + window.innerWidth + 'px wide',
       html: kind.body(el, info),
