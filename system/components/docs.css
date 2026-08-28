@@ -49,6 +49,15 @@
 @media (min-width: 1280px) { .gbdoc-card { padding-top: var(--space-64); } }
 
 .gbdoc-card__head { padding-bottom: var(--space-8); }
+/* gbppl-oro-pages-1. A card that stands ALONE on its own page has no
+   head of its own: the crumb over it already says the eyebrow, the
+   name, the status and the line, and saying them twice on one screen
+   is the «оторванный элемент» of Ton-1. Then the first section
+   caption inherits the card's own 48 / 64 of air and adds 32 to it,
+   which reads as a gap rather than a rhythm. Zeroed once, here at the
+   owner, so every component page starts at the same distance from the
+   rule as a card with a head does. */
+.gbdoc-card > .gbdoc-sub:first-child { margin-top: 0; }
 .gbdoc-card__line {
   margin: var(--space-8) 0 0;
   font-size: var(--font-size-root);
@@ -639,6 +648,38 @@
 .gbdoc-stage--dark [data-inspect] .gbdoc-slot::after,
 [data-inspect] .gbdoc-stage--dark .gbdoc-slot::after,
 [data-inspect] .gbdoc-stage--dark .gbdoc-cell::after { color: var(--blue-400); }
+
+/* THE ONE REGION THAT IS NOT A SHELF OF SPECIMENS (gbppl-oro-pages-1).
+   Тон, 28.08: «Показывать плавающую кнопку Properties, которая
+   открывает Drawer, на карточках компонентов нужно только внутри самих
+   компонентов. В превью и вообще где-либо ещё её быть не должно.»
+   A tile on the catalogue is a PICTURE OF A COMPONENT, and the thing
+   to do with it is open that component's page, so it must not offer
+   the reading affordance a specimen offers. The caption goes and the
+   pointer goes with it; the card underneath carries the link. Written
+   here, after the block it overrides, because the two selectors weigh
+   the same and the later one has to win. Inspect mode is untouched:
+   there every element on every page answers, tile included. */
+.gbdoc-reg .gbdoc-slot { cursor: default; }
+.gbdoc-reg .gbdoc-slot::after { content: none; }
+
+/* THE WHOLE CARD IS THE WAY IN. The same pattern the studio door uses
+   (studio.css): the card is the positioned box, the exit link spreads
+   an invisible ::after over it, and nothing is ever an a inside an a.
+   A card with no page to go to carries a span instead of a link, so
+   it stays exactly as inert as it reads. */
+.gbdoc-regcard { position: relative; }
+.gbdoc-regcard__go[href]::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius); }
+/* And it stands DOWN in Inspect mode. The sheet over the card is what
+   makes the card a door, but under the instrument it would be the only
+   thing the pointer ever finds, and the tile behind it is exactly what
+   a reader is pointing at. html.gbi-on is set by inspect.js on the
+   root for the length of the mode, and comments.js sets html.gbc-on
+   the same way: a pin belongs to the tile it is pointing at, not to
+   the sheet over it. */
+html.gbi-on .gbdoc-regcard__go[href]::after,
+html.gbc-on .gbdoc-regcard__go[href]::after { pointer-events: none; }
+
 .gbdoc-hold { display: flex; justify-content: center; max-width: 100%; }
 .gbdoc-hold--block { width: 100%; max-width: 420px; }
 

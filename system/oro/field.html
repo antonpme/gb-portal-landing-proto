@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Field · Oro, GildedBox Design System</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-oro-pages-1 — THE FIELD PAGE
+     ------------------------------------------------------------
+     Тон, 28.08 (Ton-19): «Каждый компонент должен быть представлен
+     отдельной страницей, должна быть нормальная навигация...
+     Пользователь заходит в раздел Components, никакого промежуточного
+     каталога нет; сразу открывается вводная страница, что такое
+     компоненты; дальше отдельные страницы самих компонентов.»
+
+     So this card moved out of components.html and became a page.
+     Every section below is the same markup it was on the catalogue,
+     in the same order, under the same id (#fields). Two things
+     changed and both are structure, not content: the card head
+     became the crumb at the top of the page, because a page about
+     one component says its name once; and the sections that had no
+     id got one, so the contents list on the left can reach them.
+
+     Old links still land: components.html keeps a redirect for the
+     hashes that used to live on it, and the «Open in Oro» of
+     Inspect now points here.
+
+     Ton-10: this page is a CONSUMER. Its card, tables, shelves,
+     chips and code blocks are the atoms of ..\components\docs.css;
+     its drawer is ..\components\drawer.css; its specimens are the
+     organism itself. What is left in the <style> block is the width
+     of the reading column and the one antidote documented where it stands.
+
+     NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
+     measurement is read back out of the rendered page.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../components/shell.css">
+<link rel="stylesheet" href="../components/header.css">
+<link rel="stylesheet" href="../components/button.css">
+<link rel="stylesheet" href="../components/icon.css">
+<link rel="stylesheet" href="../components/auth.css">
+<link rel="stylesheet" href="../components/drawer.css">
+<link rel="stylesheet" href="../components/docs.css">
+<link rel="stylesheet" href="../components/inspect.css">
+<link rel="stylesheet" href="../components/comments.css">
+<link rel="stylesheet" href="../components/studio-panel.css">
+<link rel="stylesheet" href="oro.css">
+
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<style>
+.oro-col { max-width: 1180px; }
+.oro-lede, .oro-p, .oro-note, .gbdoc-card__line { max-width: 860px; }
+
+/* ANTIDOTE, trap 3 of the skill. auth.css reproduces the live
+   preflight (border 0 solid on everything) only INSIDE
+   gb-guest-header and gb-auth-flow, because that is the scope the
+   computed comparison with public-login was made in. The showcase
+   stands its field specimens outside both, so the browser frame
+   comes back and the underline reads as a box. Zeroed here once,
+   exactly as index.html does it for the gate and components.html
+   does it for the registry tiles. */
+.gba-input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
+</style>
+</head>
+<body>
+
+<!-- The studio bar, the same markup every studio page carries. -->
+<header class="gb-header gb-header--studio">
+  <div class="gb-container gbh-bar gbh-bar--studio">
+    <a class="gbh-lock" href="../../index.html" aria-label="GildedBox Design Studio, home">
+      <img class="gbh-lock__mark" src="../assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+      <span class="gbh-lock__rule" aria-hidden="true"></span>
+      <span class="gbh-lock__word">Design Studio</span>
+    </a>
+    <nav class="gbh-nav" aria-label="Studio">
+      <a class="gbh-link" href="../../live/map.html">Live Prototype</a>
+      <a class="gbh-link" href="../../sandboxes.html">Sandboxes</a>
+      <a class="gbh-link is-active" href="index.html" aria-current="page">Design System</a>
+    </nav>
+    <div class="gbh-actions">
+      <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-studio-lock>
+        <span class="gb-btn__label" data-pc-section="label">Lock</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="oro">
+
+  <nav class="oro-rail" aria-label="Design system sections">
+    <!-- gbppl-oro-pages-1. The rail is rendered from the page table in
+         oro.js, one copy for the whole showcase; aria-current is read
+         off location. The contents of THIS page stay below, in the
+         markup, because they describe this document and nothing else. -->
+    <div data-oro-rail></div>
+
+    <div class="oro-toc">
+      <span class="oro-toc-title">On this page</span>
+      <div class="oro-toc-list">
+        <a class="oro-toc-link" href="#fields">Field</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#states">States</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#variants">Variants</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#anatomy">Anatomy</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#properties">Properties</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#usage">Usage</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#code">Code</a>
+      </div>
+    </div>
+  </nav>
+  <script src="oro.js"></script>
+
+  <main class="oro-main">
+    <div class="oro-col">
+
+      <header class="oro-head">
+        <span class="gb-eyebrow">Base component</span>
+        <h1 class="oro-h1">Field <span class="gbdoc-flag gbdoc-status">Stable</span></h1>
+        <p class="oro-lede">The underline input of the live sign in, with its label, its error and its multi line version.</p>
+        <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. Every number in the tables below is read off a specimen at that width.</p>
+      </header>
+
+      <section class="gbdoc-card" id="fields">
+        <span class="gbdoc-sub">Overview</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Owner</td><td><code>system/components/auth.css</code>, with the markup from <code>system/components/auth.js</code></td></tr>
+            <tr><td>Element</td><td><code>&lt;gb-field&gt;</code> with <code>input-id</code>, <code>name</code>, <code>type</code>, <code>label</code>, <code>placeholder</code>, <code>optional</code></td></tr>
+            <tr><td>Worn by</td><td>Guest sign in, the booking flow, the checkout drawers and the studio gate</td></tr>
+            <tr><td>Ladder</td><td>48 at base, 56 from 1280, 64 from 2000, the same family the L button walks</td></tr>
+            <tr><td>Status</td><td>Stable, with one open question: the disabled state has never been measured on live</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub" id="states">States</span>
+        <h3 class="oro-h3">Six states, and one the system has not decided</h3>
+        <p class="oro-p">The live field has no focus ring. Focus does exactly one thing on the product: it fades the placeholder out and leaves the underline where it was. Hover is the only step that moves the line, and it moves it to blue. That is not an omission on our side, it is what the instrument read, and the showcase shows it rather than improving on it quietly. Click any field to read its properties.</p>
+
+        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="field">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Empty</b></span>
+            <div class="gba-field">
+              <label class="gba-label" for="f-empty">Work email</label>
+              <div class="gba-inputwrap"><input class="gba-input" id="f-empty" type="email" placeholder="you@company.com"></div>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Hover</b></span>
+            <div class="gba-field">
+              <label class="gba-label" for="f-hover">Work email</label>
+              <div class="gba-inputwrap"><input class="gba-input is-hover" id="f-hover" type="email" placeholder="you@company.com"></div>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Focus</b></span>
+            <div class="gba-field">
+              <label class="gba-label" for="f-focus">Work email</label>
+              <div class="gba-inputwrap"><input class="gba-input is-focus" id="f-focus" type="email" placeholder="you@company.com"></div>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Filled</b></span>
+            <div class="gba-field">
+              <label class="gba-label" for="f-filled">Work email</label>
+              <div class="gba-inputwrap"><input class="gba-input" id="f-filled" type="email" value="anna@gildedbox.com"></div>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Error</b></span>
+            <div class="gba-field">
+              <label class="gba-label" for="f-error">Work email</label>
+              <div class="gba-inputwrap"><input class="gba-input invalid" id="f-error" type="email" value="anna@" aria-invalid="true"></div>
+              <span class="gba-error" role="alert">Enter a valid email address</span>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Disabled</b></span>
+            <div class="gba-field">
+              <label class="gba-label" for="f-disabled">Work email</label>
+              <div class="gba-inputwrap"><input class="gba-input" id="f-disabled" type="email" value="anna@gildedbox.com" disabled></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="oro-note">Disabled is the state the system has not decided. The field above is a plain disabled input wearing whatever the browser gives it, because no live screen has ever shown us a disabled field, and inventing one quietly is the thing this page exists to prevent. On the list for Ton.</p>
+
+        <span class="gbdoc-sub" id="variants">Variants</span>
+        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="field">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Required</b></span>
+            <div class="gba-field required">
+              <label class="gba-label" for="f-req">Company name</label>
+              <div class="gba-inputwrap"><input class="gba-input" id="f-req" type="text" placeholder="GildedBox"></div>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Optional</b></span>
+            <div class="gba-field">
+              <label class="gba-label" for="f-opt">Phone</label>
+              <div class="gba-inputwrap"><input class="gba-input" id="f-opt" type="tel" placeholder="+1 847 801 0345"></div>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Multi line</b></span>
+            <div class="gba-field">
+              <label class="gba-label" for="f-area">What are you looking for?</label>
+              <div class="gba-inputwrap"><textarea class="gba-input gba-textarea" id="f-area" placeholder="A few words is plenty"></textarea></div>
+            </div>
+          </div>
+        </div>
+
+        <span class="gbdoc-sub" id="anatomy">Anatomy</span>
+        <p class="gbdoc-readout">Measured at <b id="wnow3">measuring</b> wide.</p>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Measure</th><th>Value</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Height</td><td class="gbdoc-num" id="fH"></td><td><span class="gbdoc-flag">Live</span> 48 / 56 / 64</td></tr>
+            <tr><td>Padding, horizontal</td><td class="gbdoc-num" id="fPx"></td><td><span class="gbdoc-flag">Live</span> 12 / 12 / 16</td></tr>
+            <tr><td>Type</td><td class="gbdoc-num" id="fFont"></td><td><span class="gbdoc-flag">Live</span> Inter 300, 14 / 16 / 18</td></tr>
+            <tr><td>Underline</td><td class="gbdoc-num" id="fLine"></td><td><span class="gbdoc-flag">Live</span> 1px Zinc 400, blue on hover, Red 500 on error</td></tr>
+            <tr><td>Label</td><td class="gbdoc-num" id="fLabel"></td><td><span class="gbdoc-flag">Live</span> 11 / 12 caps 600, Zinc 500</td></tr>
+            <tr><td>Radius</td><td class="gbdoc-num" id="fR"></td><td><span class="gbdoc-flag">Live</span> none. The field is an underline, not a box</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub" id="properties">Properties</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Attribute</th><th>Type</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>input-id</code></td><td>string</td><td>required</td><td>Ties the label to the input. Every field needs one, and it has to be unique on the page</td></tr>
+            <tr><td><code>name</code></td><td>string</td><td>required</td><td>The name the form submits under</td></tr>
+            <tr><td><code>type</code></td><td>string</td><td><code>text</code></td><td>Any input type, plus <code>textarea</code> for the multi line version</td></tr>
+            <tr><td><code>label</code></td><td>string</td><td>required</td><td>The caps label over the line. Sentence case in the markup</td></tr>
+            <tr><td><code>placeholder</code></td><td>string</td><td>empty</td><td>The hint inside the line. It fades out on focus, which is what live does</td></tr>
+            <tr><td><code>optional</code></td><td>boolean</td><td>off</td><td>Marks the field as not required. Required is the default, which is why the modifier names the exception</td></tr>
+            <tr><td><code>.is-hover .is-focus</code></td><td>class</td><td>off</td><td>Demo only, this page. Hold a state still for a screenshot</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub" id="usage">Usage</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Do</th><th>Do not</th></tr></thead>
+          <tbody>
+            <tr><td>Label every field, in sentence case, above the line</td><td>Use the placeholder as the label. It disappears the moment someone types</td></tr>
+            <tr><td>Say what is wrong under the field, in one sentence</td><td>Colour the line red and leave the person to guess what it means</td></tr>
+            <tr><td>Mark the optional ones, since required is the default</td><td>Mark the required ones with an asterisk. There would be one on almost every field</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub" id="code">Code</span>
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeField">Copy</button>
+          <pre><code id="codeField">&lt;gb-field input-id="email" name="email" type="email"
+          label="Work email" placeholder="you@company.com"&gt;&lt;/gb-field&gt;
+
+&lt;gb-field input-id="brief" name="brief" type="textarea"
+          label="What are you looking for?" optional&gt;&lt;/gb-field&gt;</code></pre>
+        </div>
+
+        <p class="oro-note">The specimens above are written out as plain markup so the states can be held still. In the product a field is one custom element and the markup comes from the organism, which is what the snippet shows.</p>
+
+        <span class="gbdoc-sub">Related</span>
+        <p class="oro-p"><a href="button.html">Button</a>, since a form ends in one, and the booking flow, which is the biggest thing built out of both.</p>
+      </section>
+
+      <footer class="oro-foot">
+        Sources: <a href="../components/button.css">button.css</a>, <a href="../components/auth.css">auth.css</a>, <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- The properties drawer. One per page; the inspector fills it. -->
+<gb-drawer id="propsDrawer"></gb-drawer>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+<script>
+/* ============================================================
+   gbppl-oro-components-3 / gbppl-oro-pages-1 — THE FIELD READOUT
+   ------------------------------------------------------------
+   One rule, the same one every page of the showcase keeps:
+   NOTHING HERE PRINTS A NUMBER THAT WAS TYPED. The anatomy table
+   is filled by measuring the first specimen on the shelf, so if a
+   token moves the table moves with it, and if the organism breaks
+   it breaks here first.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* One decimal: the second one is the reader's display scaling
+     talking, not the system (a 20px glyph comes back as 19.99 at
+     113 per cent). */
+  function px(v) {
+    var n = parseFloat(v);
+    if (isNaN(n)) return v;
+    return Math.round(n * 10) / 10 + 'px';
+  }
+  function txt(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
+
+  /* ---------- the anatomy readout ---------- */
+  function paintAnatomy() {
+    var fin = document.getElementById('f-empty');
+    var flab = document.querySelector('label[for="f-empty"]');
+    if (fin && flab) {
+      var fs = getComputedStyle(fin);
+      var fl = getComputedStyle(flab);
+      txt('fH', px(fs.minHeight));
+      txt('fPx', px(fs.paddingLeft));
+      txt('fFont', px(fs.fontSize) + ' / ' + fs.fontWeight);
+      txt('fLine', px(fs.borderBottomWidth) + ' ' + fs.borderBottomColor);
+      txt('fLabel', px(fl.fontSize) + ' / ' + fl.fontWeight + ' / ' + fl.letterSpacing);
+      txt('fR', px(fs.borderTopLeftRadius));
+    }
+
+    var w = window.innerWidth + 'px';
+    txt('wnow', w); txt('wnow3', w);
+  }
+
+  /* ---------- copy a snippet ---------- */
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
+    document.body.removeChild(ta);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-copy[data-copy]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.querySelector(btn.getAttribute('data-copy'));
+      if (!target) return;
+      var text = target.textContent;
+      var done = function () {
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  });
+
+  /* ---------- the contents follow the reader ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
+  var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  var spyTimer;
+  function spy() {
+    var best = 0;
+    for (var i = 0; i < marks.length; i++) {
+      if (marks[i] && marks[i].getBoundingClientRect().top <= 140) best = i;
+    }
+    links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
+  }
+
+  paintAnatomy();
+  spy();
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(paintAnatomy, 120);
+  });
+  window.addEventListener('scroll', function () {
+    clearTimeout(spyTimer);
+    spyTimer = setTimeout(spy, 90);
+  }, { passive: true });
+})();
+</script>
+
+<gb-studio-panel data-root="../../" page="oro"></gb-studio-panel>
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>
