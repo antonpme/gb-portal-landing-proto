@@ -22,6 +22,18 @@
    Meeting стояла мёртвой с рождения прототипа, а теперь странице
    есть куда её послать — live\book-a-meeting.html.
 
+   ЧЕТЫРЕ КРУГЛЫЕ КНОПКИ БАРА = ОРГАНИЗМ (gbppl-icon-consumers-1,
+   28.08). Лупа, корзина, человечка/инициалы и бургер варианта auth
+   носят `.gb-btn .gb-btn--icon .gb-btn--ghost .gb-btn--secondary`,
+   а над видео — `--inverse` вместо `--secondary`, той же строкой
+   apply(), что переключает контурную кнопку. Своего
+   `.gbh-icon-button` у сайтового бара больше нет; класс остался
+   в header.css ради трёх глифов ПОРТАЛЬНОЙ планки (тихие
+   чернила Zinc 500, семьи под них у организма нет — раздел 8
+   скилла). Рисунки глифов не тронуты: они потеряли только
+   собственные width/height, потому что размер теперь несёт слот
+   `.gb-btn__icon` (22 у круга 44).
+
    ------------------------------------------------------------
    ВАРИАНТ НАД ВИДЕО (variant="transparent-dark", Тон 24.08)
    ------------------------------------------------------------
@@ -283,8 +295,8 @@
      an address, not a name. */
   var CART = function () {
     return (
-      '<button class="gbh-icon-button" type="button" aria-label="Cart, 3 items" data-gbh-cart>' +
-        '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg>' +
+      '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" aria-label="Cart, 3 items" data-gbh-cart>' +
+        '<span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/></svg></span>' +
         '<span class="gbh-count" aria-hidden="true">3</span>' +
       '</button>'
     );
@@ -319,8 +331,8 @@
                in visitor and is put in (and taken out) by __applyCart
                below. Its markup lives in CART() so that the glyph and
                the badge are still written once. */
-            '<button class="gbh-icon-button" type="button" aria-label="Search gifts">' +
-              '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>' +
+            '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" aria-label="Search gifts">' +
+              '<span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>' +
             '</button>' +
           '</div>' +
         '</div>' +
@@ -410,13 +422,17 @@
   window.GbAuth.setName = setAccountName;
   window.GbAuth.initialsFor = initialsFor;
 
+  /* Размер глифа больше не пишется на самом рисунке: слот
+     .gb-btn__icon организма несёт --gbb-icon (22 у круга 44), и svg
+     заполняет его целиком (gbppl-icon-consumers-1). aria-hidden
+     переехал на слот вместе с ним. */
   var GLYPH_PERSON =
-    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
     'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>';
 
   var GLYPH_BURGER =
-    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
     'stroke-width="1.5" stroke-linecap="round" aria-hidden="true">' +
     '<path d="M3 6h18M3 12h18M3 18h18"/></svg>';
 
@@ -441,9 +457,9 @@
   var ACCOUNT = function (portalHref) {
     return (
       '<div class="gbh-account" data-gbh-account-wrap>' +
-        '<button class="gbh-icon-button gbh-account__btn" type="button" data-gbh-account' +
+        '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-account__btn" type="button" data-gbh-account' +
           ' aria-label="Sign in" title="Sign in" aria-haspopup="dialog" aria-expanded="false">' +
-          '<span class="gbh-account__glyph" aria-hidden="true">' + GLYPH_PERSON + '</span>' +
+          '<span class="gb-btn__icon gbh-account__glyph" aria-hidden="true">' + GLYPH_PERSON + '</span>' +
           '<span class="gbh-account__initials" aria-hidden="true"></span>' +
         '</button>' +
         ACCOUNT_MENU(portalHref) +
@@ -464,9 +480,9 @@
     }).join('');
     return (
       '<div class="gbh-burger" data-gbh-burger-wrap>' +
-        '<button class="gbh-icon-button gbh-burger__btn" type="button" data-gbh-burger' +
+        '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-burger__btn" type="button" data-gbh-burger' +
           ' aria-label="Menu" aria-haspopup="menu" aria-expanded="false" aria-controls="gbh-burger-menu">' +
-          GLYPH_BURGER +
+          '<span class="gb-btn__icon" aria-hidden="true">' + GLYPH_BURGER + '</span>' +
         '</button>' +
         '<div class="gbh-menu gbh-menu--burger" id="gbh-burger-menu" role="menu" aria-label="Menu">' +
           /* First row, and only below 1024, where the bar has let it go. */
@@ -498,8 +514,8 @@
           '</nav>' +
           '<div class="gbh-actions">' +
             '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="' + meetingHref + '"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
-            '<button class="gbh-icon-button" type="button" aria-label="Search gifts">' +
-              '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>' +
+            '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" aria-label="Search gifts">' +
+              '<span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>' +
             '</button>' +
             /* The cart is put in by __applyCart when the flag is on, and
                it aims at the account wrapper: guest -> nothing, signed in
@@ -992,6 +1008,18 @@
          поровну, и оставленный лишний класс решал бы спор порядком
          строк в чужом файле. */
       var outline = bar.querySelector('[data-gbh-outline]');
+      /* gbppl-icon-consumers-1: круглые глифы бара прошли ту же
+         операцию. Над видео они --inverse (белые чернила, ховер
+         rgba(255,255,255,.2)), на белом стекле --secondary (Zinc 900,
+         ховер --v1-ink-hover). Раньше это делали два правила
+         .gb-header--transparent .gbh-icon-button в header.css; теперь
+         оба состояния объявлены в button.css по одному разу, а вариант
+         только переключает слово. Список снимается ЗАНОВО на каждом
+         кадре: корзина приезжает и уезжает по флагу входа уже после
+         первого. */
+      var glyphs = function () {
+        return bar.querySelectorAll('.gbh-actions .gb-btn--icon, .gbh-burger__btn');
+      };
 
       var apply = function () {
         ticking = false;
@@ -1012,6 +1040,10 @@
           outline.classList.toggle('gb-btn--inverse', !past);
           outline.classList.toggle('gb-btn--secondary', past);
         }
+        Array.prototype.forEach.call(glyphs(), function (g) {
+          g.classList.toggle('gb-btn--inverse', !past);
+          g.classList.toggle('gb-btn--secondary', past);
+        });
       };
 
       apply();

@@ -20,6 +20,29 @@
      DEVIATION      прототип держит sticky вместо живого fixed
                     (у лайва плейсхолдер h-0 + fixed бар); перенесено
                     как в прототипе.
+
+   ГЛИФЫ ШАПКИ ТОЖЕ .gb-btn (gbppl-icon-consumers-1, 28.08).
+   ------------------------------------------------------------
+   Четыре круглых кнопки сайтового бара — лупа, корзина,
+   человечек/инициалы и бургер варианта auth — носят
+   `.gb-btn .gb-btn--icon .gb-btn--ghost .gb-btn--secondary`, ровно
+   как контурная пара носит `.gb-btn --s`. Замер до/после на
+   1280/390/1920 (live/index, live/catalog, live/checkout): круг 44,
+   глиф 22, stroke 1.5, чернила Zinc 900, ховер --v1-ink-hover —
+   всё совпало число в число.
+
+   ЕДИНСТВЕННОЕ ОСОЗНАННОЕ РАСХОЖДЕНИЕ: ДЛИТЕЛЬНОСТЬ 300 -> 200ms.
+   Здесь стояло `transition: background 300ms, color 300ms` (живой
+   глиф 24.08 отдавал color .3s), у организма --gb-btn-duration 200ms
+   (LIVE 24-25.08 на кнопке). Две длительности на одной кнопке
+   невозможны, и по Тон-6 побеждает организм: кнопка одна, и её
+   часы одни. Разница видна только на ховере и только в 100ms.
+
+   ЧТО ОСТАЛОСЬ ЗДЕСЬ ОТ .gbh-icon-button: ТОЛЬКО ПОРТАЛЬНАЯ ПЛАНКА.
+   Три глифа `.gbh-pbar__icon` и `.gbh-pbar__burger` (live/portal.html)
+   ждут решения Тона по ТИХОЙ СЕМЬЕ ЦВЕТОВ (Zinc 500 -> Zinc 700):
+   такой колонки у организма нет, и выдумывать её волна не стала
+   (раздел 8 скилла). До того дня класс живёт ради них четверых.
    ============================================================ */
 
 /* Кастом-элемент несёт sticky-позицию: внутренний header.gb-header
@@ -225,6 +248,14 @@ gb-site-header {
   color: var(--white);
   font-size: 10px;
 }
+/* ПОСЛЕДНИЕ ЧЕТВЕРО (gbppl-icon-consumers-1, 28.08). Сайтовый бар
+   свои круглые кнопки отдал организму (`.gb-btn--icon`, шапка
+   файла); здесь класс остался ради портальной планки, где глиф
+   носит ТИХИЕ чернила Zinc 500 -> Zinc 700, а такой цветовой
+   семьи у организма нет и волна её не выдумывала. Числа те же,
+   что у организма: круг 44 (--icon-button-size = --gb-btn-icon-size),
+   радиус круга, ховер --v1-ink-hover; расходится только
+   длительность, и она тоже уйдёт вместе с последним потребителем. */
 .gbh-icon-button {
   position: relative;
   width: var(--icon-button-size);
@@ -243,6 +274,11 @@ gb-site-header {
               color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .gbh-icon-button:hover { background: var(--v1-ink-hover); }
+
+/* Бейджу корзины нужна система координат, и организм её не даёт:
+   круглая кнопка ничем не позиционирована. Одна строка по АДРЕСУ
+   (глиф в кармане шапки), не по имени. */
+.gbh-actions .gb-btn--icon { position: relative; }
 
 /* ============================================================
    СТУПЕНИ СХЛОПЫВАНИЯ — ПЕРЕСНЯТЫ С ЛАЙВА 2026-08-27
@@ -322,8 +358,11 @@ gb-site-header {
      портального (.gbh-pbar) — прямо в баре. Старое правило
      .gbh-cta{display:none} накрывало обе одним именем; адрес
      обязан накрыть ровно те же. */
-  .gbh-bar .gb-btn,
-  .gbh-pbar .gb-btn { display: none; }
+  /* :not(--icon) с gbppl-icon-consumers-1: глифы теперь тоже .gb-btn,
+     а правило всегда значило «кнопки уходят, ГЛИФЫ ОСТАЮТСЯ». Без
+     оговорки лупа исчезала бы на 390, где она стояла всегда. */
+  .gbh-bar .gb-btn:not(.gb-btn--icon),
+  .gbh-pbar .gb-btn:not(.gb-btn--icon) { display: none; }
 }
 
 /* ============================================================
@@ -796,11 +835,16 @@ body.gb-demo a.gbh-menu__item {
 .gb-header--transparent .gbh-link,
 .gb-header--transparent a.gbh-link,
 body.gb-demo .gb-header--transparent a.gbh-link { color: var(--white); }
-.gb-header--transparent .gbh-icon-button { color: var(--white); }
-/* Подложка глифа — та же живая rgba(255,255,255,.2), что носит
-   инвертированная кнопка панели: на тёмном грунте Zinc-подмес
-   прототипа не читается, а нового значения заводить незачем. */
-.gb-header--transparent .gbh-icon-button:hover { background: rgba(255, 255, 255, 0.2); }
+/* ГЛИФЫ В ПРОЗРАЧНОМ БАРЕ ТОЖЕ НЕ ПЕРЕКРАШИВАЮТСЯ ЗДЕСЬ
+   (gbppl-icon-consumers-1, 28.08) — ровно та же операция, что
+   контурная кнопка прошла с gbppl-button-2 и о которой сказано
+   абзацем ниже. Круглая кнопка МЕНЯЕТ ЦВЕТОВОЙ МОДИФИКАТОР:
+   --inverse над видео, --secondary на белом стекле, обе стороны
+   переключает header.js в том же apply(). Значения не новые:
+   белые чернила и ховер rgba(255,255,255,.2) наверху,
+   Zinc 900 и --v1-ink-hover внизу — те же, что стояли здесь
+   двумя правилами, просто теперь они сказаны в button.css по
+   одному разу (пара .gb-btn--icon.gb-btn--inverse). */
 /* КОНТУРНАЯ КНОПКА В ПРОЗРАЧНОМ БАРЕ НЕ ПЕРЕКРАШИВАЕТСЯ ЗДЕСЬ
    (gbppl-button-2). Раньше вариант дважды переписывал ей цвет и
    бордер — белым над видео и обратно Zinc 900 у низа героя, — и
@@ -827,8 +871,7 @@ body.gb-demo .gb-header--transparent a.gbh-link { color: var(--white); }
 .gb-header--transparent.is-past-hero .gbh-link,
 .gb-header--transparent.is-past-hero a.gbh-link,
 body.gb-demo .gb-header--transparent.is-past-hero a.gbh-link { color: var(--zinc-900); }
-.gb-header--transparent.is-past-hero .gbh-icon-button { color: var(--zinc-900); }
-.gb-header--transparent.is-past-hero .gbh-icon-button:hover { background: var(--v1-ink-hover); }
+
 /* ============================================================
    ВАРИАНТ: PORTAL BAR (gbppl-portal-system, 2026-08-25)
    ------------------------------------------------------------
@@ -1065,6 +1108,11 @@ body.gb-demo a.gbh-away:hover { color: var(--zinc-900); }
   color: var(--white);
   font-size: 12px;
   font-weight: 600;
+  /* Организм ведёт кнопку как ТЕКСТОВУЮ: трекинг лестницы L и
+     uppercase достаются всякому потомку. Инициалы не лейбл кнопки,
+     а бейдж, и стоят по центру круга 32 — трекинг сдвинул бы их
+     влево на пол-пикселя (gbppl-icon-consumers-1). */
+  letter-spacing: normal;
   line-height: 1;
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.8);
@@ -1185,7 +1233,7 @@ body.gb-demo a.gbh-away:hover { color: var(--zinc-900); }
    именно карман: .gb-btn внутри бургер-меню тем же именем накрылся
    бы вместе с ней. */
 @media (max-width: 1023px) {
-  .gbh-bar--auth .gbh-actions .gb-btn { display: none; }
+  .gbh-bar--auth .gbh-actions .gb-btn:not(.gb-btn--icon) { display: none; }
   .gbh-bar--auth .gbh-menu--burger .gbh-menu__cta { display: inline-flex; }
 }
 

@@ -108,9 +108,14 @@
 
   function adopt(el) {
     /* Our ink and our hover, the bundle's behaviour. Both classes describe the
-       same 44px circle; header.css loads after the build's css, so where the
-       two disagree (glyph colour, hover wash) ours is the one that lands. */
-    el.classList.add('gbh-icon-button');
+       same 44px circle; our stylesheets load after the build's css, so where
+       the two disagree (glyph colour, hover wash) ours is the one that lands.
+
+       gbppl-icon-consumers-1 (28.08): the class is no longer the header's own
+       .gbh-icon-button but the SHAPE OF THE ORGANISM, the same four words the
+       bar's own glyphs now wear. A carried-in node is a foreign drawing in one
+       of our sockets, and it should read as the socket. */
+    el.classList.add('gb-btn', 'gb-btn--icon', 'gb-btn--ghost', 'gb-btn--secondary');
   }
 
   /* gbppl-header-auth-1 (2026-08-28). With ?hdr=auth the bar carries its OWN
@@ -155,8 +160,8 @@
        inside the customizer), and when the header adds the cart back it aims
        at the search too, so the corner reads account -> cart -> search either
        way round. */
-    var ourSearch = slot.querySelector('button.gbh-icon-button[aria-label="Search gifts"]');
-    var cart = slot.querySelector('.gbh-icon-button[aria-label^="Cart"]');
+    var ourSearch = slot.querySelector('button.gb-btn--icon[aria-label="Search gifts"]');
+    var cart = slot.querySelector('.gb-btn--icon[aria-label^="Cart"]');
     if (account) {
       slot.insertBefore(account, cart || ourSearch);
       adopt(account.querySelector('.icon-button'));
