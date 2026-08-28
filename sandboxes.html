@@ -6,6 +6,41 @@
 <title>Sandboxes · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-sandboxes-4 — THE SANDBOXES PAGE, A PROJECT MANAGER
+     ------------------------------------------------------------
+     Ton, 28.08: «что если страница Sandboxes будет выполнять роль
+     менеджера проектов в Figma? Сейчас один view: большие карточки,
+     сгруппированные по принадлежности. 1. View должен быть и
+     списком, и карточками. 2. Группировку стоит делать через теги
+     (показывать бейджем принадлежность к чему-либо). Можно сделать
+     фильтрацию или группировку на странице, группировка
+     опциональная. 3. Можно смотреть проекты по последнему активному
+     (что последнее изменялось).»
+
+     WHAT THE PAGE DOES NOW. A shelf of controls above the content:
+     View (cards or list), Group (none, page, status, tag), Sort
+     (last active, name, status) and a row of tag chips that filters.
+     The controls are the documentation segments of docs.css, not new
+     furniture; the cards are the same .gbs-door--box they were, with
+     a row of badges and the date of last activity added; the list is
+     the one new object on the page.
+
+     GROUPING IS NOW OPTIONAL, AND THE DEFAULT IS FLAT. Until today
+     the rooms were always grouped by the page they belong to, and
+     that was the only reading. It is still one click away (Group ·
+     Page), but the page opens sorted by what moved last, because
+     that is the question Ton put first.
+
+     STATE LIVES IN TWO PLACES, ON PURPOSE. localStorage remembers
+     how YOU left the page (gbppl-sandboxes-view / -group / -sort /
+     -tags); the query string carries a view you want to SEND to
+     somebody (?view=list&group=page&tag=header). The URL wins on
+     load, and it is written with replaceState so the back button
+     still means the previous page. These four keys are page keys,
+     not prototype context, so they are NOT in the KEEP list of
+     header.js: sending them along to live/checkout.html would be
+     nonsense.
+     ------------------------------------------------------------
      gbppl-sandboxes-3 — THE SANDBOXES PAGE
      ------------------------------------------------------------
      The second room of the studio (hub-9, Ton 24.08: the nav must
@@ -94,6 +129,36 @@
           <h2 class="gbs-h2">Sandboxes</h2>
           <p class="gbs-lede">Parallel rooms, one open question each. They move; the walk on the Live Prototype page does not.</p>
 
+          <!-- The controls are the documentation segments (docs.css,
+               .gbdoc-axis / .gbdoc-seg), in the markup the button
+               workbench in system/oro/components.html already uses:
+               a radiogroup per axis, a radio per option. Nothing new
+               was drawn for them (Ton-6). The tag row is filled from
+               the registry, because tags are data. -->
+          <div class="gbs-controls" id="gbsControls">
+            <div class="gbdoc-axis" role="radiogroup" aria-label="View" data-axis="view">
+              <span class="gbdoc-axis__name">View</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="cards">Cards</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="list">List</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" aria-label="Group" data-axis="group">
+              <span class="gbdoc-axis__name">Group</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="none">None</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="page">Page</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="status">Status</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="tag">Tag</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" aria-label="Sort" data-axis="sort">
+              <span class="gbdoc-axis__name">Sort</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="last-active">Last active</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="name">Name</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="status">Status</button>
+            </div>
+            <div class="gbdoc-axis" aria-label="Filter by tag" data-axis="tags" id="gbsTagAxis">
+              <span class="gbdoc-axis__name">Tags</span>
+            </div>
+          </div>
+
           <div class="gbs-rooms" id="gbsRooms"></div>
         </section>
 
@@ -111,18 +176,29 @@
 
 <script src="system/sandbox-registry.js"></script>
 <script>
-/* ---- The doors, painted from the registry (gbppl-sandboxes-3).
-   .gbs-door--box with a chip, a title, a line of description and,
-   in the foot, the page the room belongs to.
+/* ---- The shelf, painted from the registry (gbppl-sandboxes-4).
+   Three questions the visitor arrives with, and the page answers all
+   three from one list: what moved last (Sort), what belongs together
+   (Group), what is about the thing I care about (Tags).
 
-   THE FOOT USED TO PRINT THE FILE PATH (live/checkout.html?v=1).
-   Ton 26.08: the cards are read by people who do not have the repo
-   open, and a query string is not a place. It now carries the page's
-   name out of the registry: Checkout, Portal, Book a meeting. The
-   internal references went out of the descriptions with it. ---- */
+   THE CARD IS THE ONE THAT STOOD HERE (gbppl-sandboxes-3), plus a row
+   of badges and a line of date. The page's name moved out of the foot
+   and into a badge: it was printed once either way, and the foot was
+   the only place the date could stand without pushing the description
+   around. THE LIST is new, and it is the only new object.
+
+   TAGS ARE CHIPS IN TWO PLACES AND TEXT IN A THIRD. On the card a tag
+   is a label, in the filter row it is a target; in the list row it is
+   a line of text, because four chips in a dense row double its
+   height. Same data, three jobs, and the quiet one is the one that
+   has to fit.
+   ---- */
 (function () {
   'use strict';
-  var mount = document.getElementById('gbsRooms');
+
+  var mount    = document.getElementById('gbsRooms');
+  var controls = document.getElementById('gbsControls');
+  var tagAxis  = document.getElementById('gbsTagAxis');
   var reg = window.GB_SANDBOXES;
   if (!mount || !reg) return;
 
@@ -137,30 +213,314 @@
                     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function door(v, page) {
-    var chip  = '<span class="gbs-chip">' + esc(String(v.status).replace(/-/g, ' ')) + '</span>';
-    var title = '<h3 class="gbs-door-title">' + esc(v.label) + '</h3>';
-    var desc  = '<p class="gbs-door-desc">' + esc(v.desc) + '</p>';
-    /* The room that is not open yet keeps the same foot, with the
-       arrow's place taken by the reason there is no arrow. */
-    var end   = v.ready ? ARROW : '<span class="gbs-door-note">Not open yet</span>';
-    var foot  = '<span class="gbs-door-foot"><span class="gbs-door-page">' +
-                esc(page) + '</span>' + end + '</span>';
-    var body  = chip + title + desc + foot;
-    if (!v.ready) return '<div class="gbs-door gbs-door--box gbs-door--coming">' + body + '</div>';
-    return '<a class="gbs-door gbs-door--box" href="' + esc(v.href) + '">' + body + '</a>';
+  /* ---- The three segment axes: what is legal, what is default and
+     which key remembers it. Tags are the fourth axis and are kept
+     apart: they are a multiple choice, not a toggle. ---- */
+  var AXES = {
+    view:  { key: 'gbppl-sandboxes-view',  def: 'cards',       ok: ['cards', 'list'] },
+    group: { key: 'gbppl-sandboxes-group', def: 'none',        ok: ['none', 'page', 'status', 'tag'] },
+    sort:  { key: 'gbppl-sandboxes-sort',  def: 'last-active', ok: ['last-active', 'name', 'status'] }
+  };
+  var TAGS_KEY = 'gbppl-sandboxes-tags';
+
+  /* Порядок статусов ОБЪЯВЛЕН, а не алфавитный: что движется, что
+     предложено, что решено. Он же порядок групп при Group · Status и
+     тайбрейк при Sort · Status. */
+  var STATUS_ORDER = ['in-progress', 'proposal', 'approved'];
+
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* приватное окно */ } }
+
+  /* ---- The registry, flattened: one row per sandbox ---- */
+  var items = [];
+  reg.rooms('').forEach(function (page, pageIndex) {
+    page.variants.forEach(function (v) {
+      items.push({
+        label: v.label, desc: v.desc, status: v.status, ready: v.ready,
+        href: v.href, tags: v.tags || [], updated: v.updated || '',
+        page: page.label, pageIndex: pageIndex
+      });
+    });
+  });
+
+  var tagCount = {};
+  items.forEach(function (it) {
+    it.tags.forEach(function (t) { tagCount[t] = (tagCount[t] || 0) + 1; });
+  });
+  /* Самый населённый тег первым: строка фильтра читается как карта
+     того, чем студия сейчас занята. */
+  var allTags = Object.keys(tagCount).sort(function (a, b) {
+    return (tagCount[b] - tagCount[a]) || a.localeCompare(b);
+  });
+
+  /* ---- Дата: 'YYYY-MM-DD' разбирается как ЛОКАЛЬНЫЙ день. new
+     Date('2026-08-27') читается как UTC-полночь и в минусовых поясах
+     съезжает на сутки назад. ---- */
+  function parseDay(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+  function today() {
+    var n = new Date();
+    return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  }
+  function relative(s) {
+    var d = parseDay(s);
+    if (!d) return '';
+    var days = Math.round((today() - d) / 86400000);
+    if (days <= 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 7) return days + ' days ago';
+    if (days < 14) return 'a week ago';
+    if (days < 31) return Math.round(days / 7) + ' weeks ago';
+    if (days < 62) return 'a month ago';
+    return Math.round(days / 30) + ' months ago';
+  }
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function absolute(s) {
+    var d = parseDay(s);
+    return d ? d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear() : 'not recorded';
   }
 
-  var html = reg.rooms('').map(function (page) {
-    return '<div class="gbs-room">' +
-             '<span class="gb-eyebrow">' + esc(page.label) + '</span>' +
-             '<div class="gbs-grid">' + page.variants.map(function (v) {
-               return door(v, page.label);
-             }).join('') + '</div>' +
-           '</div>';
-  }).join('');
+  function statusWord(s) { return String(s).replace(/-/g, ' '); }
+  function statusRank(s) {
+    var i = STATUS_ORDER.indexOf(String(s).replace(/ /g, '-'));
+    return i < 0 ? STATUS_ORDER.length : i;
+  }
 
-  mount.innerHTML = html || '<p class="gbs-lede">None yet.</p>';
+  /* ---- State. localStorage remembers how you left the page, the
+     query string carries a view you want to send to somebody, and the
+     query string wins on load. Written with replaceState, so Back
+     still means the previous page. ---- */
+  var state = { view: '', group: '', sort: '', tags: [] };
+
+  function readState() {
+    var q = new URLSearchParams(location.search);
+    Object.keys(AXES).forEach(function (name) {
+      var a = AXES[name];
+      var fromUrl = q.get(name);
+      var fromLs  = lsGet(a.key);
+      state[name] = a.ok.indexOf(fromUrl) > -1 ? fromUrl
+                  : a.ok.indexOf(fromLs) > -1 ? fromLs
+                  : a.def;
+    });
+    function known(t) { return !!tagCount[t]; }
+    /* ?tag= присутствует, но пустой = «ни одного тега», и это не то
+       же самое, что «ключа нет»: во втором случае вспоминается
+       localStorage. */
+    state.tags = q.has('tag')
+      ? q.getAll('tag').filter(known)
+      : (lsGet(TAGS_KEY) || '').split(',').filter(known);
+  }
+
+  function writeState() {
+    Object.keys(AXES).forEach(function (name) { lsSet(AXES[name].key, state[name]); });
+    lsSet(TAGS_KEY, state.tags.join(','));
+
+    var q = new URLSearchParams(location.search);
+    Object.keys(AXES).forEach(function (name) {
+      q.delete(name);
+      if (state[name] !== AXES[name].def) q.set(name, state[name]);
+    });
+    q.delete('tag');
+    state.tags.forEach(function (t) { q.append('tag', t); });
+    var s = q.toString();
+    history.replaceState(null, '', location.pathname + (s ? '?' + s : '') + location.hash);
+  }
+
+  /* ---- Filter, sort, group ---- */
+  function visible() {
+    if (!state.tags.length) return items.slice();
+    /* ЛЮБОЙ из выбранных, не все сразу: чипы расширяют полку, а не
+       сужают её до пересечения. Со счётчиком на чипе это читается. */
+    return items.filter(function (it) {
+      return state.tags.some(function (t) { return it.tags.indexOf(t) > -1; });
+    });
+  }
+
+  function sortItems(list) {
+    var by = state.sort;
+    return list.slice().sort(function (a, b) {
+      var byName = a.label.localeCompare(b.label);
+      var byPage = a.pageIndex - b.pageIndex;
+      if (by === 'name') return byName;
+      if (by === 'status') return (statusRank(a.status) - statusRank(b.status)) || byPage || byName;
+      /* Last active: свежее сверху. Даты ISO, поэтому сравниваются
+         строками. Ничья разводится порядком страниц в реестре, потом
+         именем, и в первый день это ничья у всех шести. */
+      var byDate = a.updated === b.updated ? 0 : (a.updated < b.updated ? 1 : -1);
+      return byDate || byPage || byName;
+    });
+  }
+
+  function groups(list) {
+    if (state.group === 'none') return [{ label: '', items: list }];
+
+    var bucket = {}, keys = [];
+    list.forEach(function (it) {
+      /* По тегу песочница попадает в НЕСКОЛЬКО групп, и это не
+         ошибка: у варианта столько областей, сколько он трогает. */
+      var ks = state.group === 'page'   ? [it.page]
+             : state.group === 'status' ? [statusWord(it.status)]
+             : (it.tags.length ? it.tags.slice() : ['no tags']);
+      ks.forEach(function (k) {
+        if (!bucket[k]) { bucket[k] = []; keys.push(k); }
+        bucket[k].push(it);
+      });
+    });
+
+    if (state.group === 'page') {
+      keys.sort(function (a, b) { return bucket[a][0].pageIndex - bucket[b][0].pageIndex; });
+    } else if (state.group === 'status') {
+      keys.sort(function (a, b) { return statusRank(a) - statusRank(b); });
+    } else {
+      keys.sort(function (a, b) { return (bucket[b].length - bucket[a].length) || a.localeCompare(b); });
+    }
+
+    return keys.map(function (k) { return { label: k, items: bucket[k] }; });
+  }
+
+  /* ---- Drawing ---- */
+  var step = 0;
+  /* Каскад: шаг 40ms объявлен в studio.css, здесь только номер по
+     порядку. Потолок 14, чтобы длинная полка не докладывалась
+     дольше, чем человек на неё смотрит. */
+  function stamp() { return ' style="--gbs-step: ' + Math.min(step++, 14) + '"'; }
+
+  /* Верхний ряд карточки: страница и статус, всегда ровно два бейджа
+     и всегда одна строка. Теги идут отдельным рядом внизу, иначе
+     заголовки шести карточек встают на разных высотах (замер и скрин
+     28.08, см. studio.css). */
+  function badges(it) {
+    return '<span class="gbs-badges">' +
+             '<span class="gbs-chip gbs-chip--page">' + esc(it.page) + '</span>' +
+             '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
+           '</span>';
+  }
+
+  function tagBadges(it) {
+    if (!it.tags.length) return '';
+    return '<span class="gbs-badges gbs-badges--tags">' + it.tags.map(function (t) {
+      return '<span class="gbs-chip gbs-chip--tag">' + esc(t) + '</span>';
+    }).join('') + '</span>';
+  }
+
+  function card(it) {
+    var body =
+      badges(it) +
+      '<h3 class="gbs-door-title">' + esc(it.label) + '</h3>' +
+      '<p class="gbs-door-desc">' + esc(it.desc) + '</p>' +
+      tagBadges(it) +
+      '<span class="gbs-door-foot">' +
+        '<span class="gbs-door-updated" title="' + esc(absolute(it.updated)) + '">updated ' +
+        esc(relative(it.updated) || 'not recorded') + '</span>' +
+        (it.ready ? ARROW : '<span class="gbs-door-note">Not open yet</span>') +
+      '</span>';
+    if (!it.ready) return '<div class="gbs-door gbs-door--box gbs-door--coming"' + stamp() + '>' + body + '</div>';
+    return '<a class="gbs-door gbs-door--box" href="' + esc(it.href) + '"' + stamp() + '>' + body + '</a>';
+  }
+
+  function row(it) {
+    var tags = it.tags.join(', ');
+    var body =
+      '<span class="gbs-row__name">' + esc(it.label) +
+        (it.ready ? '' : '<span class="gbs-row__note">· not open yet</span>') +
+      '</span>' +
+      '<span class="gbs-row__meta">' +
+        '<span class="gbs-chip gbs-chip--page">' + esc(it.page) + '</span>' +
+        '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
+        '<span class="gbs-row__tags" title="' + esc(tags) + '">' + esc(tags) + '</span>' +
+      '</span>' +
+      /* Дата и стрелка стоят СНАРУЖИ меты: на узком экране они
+         поднимаются к имени, а мета уходит под них целой строкой,
+         и порядок переставляет CSS через order. */
+      '<span class="gbs-row__updated" title="' + esc(absolute(it.updated)) + '">' +
+      esc(relative(it.updated) || 'not recorded') + '</span>' +
+      (it.ready ? ARROW : '');
+    if (!it.ready) return '<div class="gbs-row gbs-row--coming"' + stamp() + '>' + body + '</div>';
+    return '<a class="gbs-row" href="' + esc(it.href) + '"' + stamp() + '>' + body + '</a>';
+  }
+
+  function paintControls() {
+    if (!controls) return;
+    Object.keys(AXES).forEach(function (name) {
+      var axis = controls.querySelector('[data-axis="' + name + '"]');
+      if (!axis) return;
+      Array.prototype.forEach.call(axis.querySelectorAll('.gbdoc-seg'), function (b) {
+        var on = b.getAttribute('data-val') === state[name];
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+    });
+    if (!tagAxis) return;
+    Array.prototype.forEach.call(tagAxis.querySelectorAll('.gbs-tagbtn'), function (b) {
+      var on = state.tags.indexOf(b.getAttribute('data-tag')) > -1;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
+  function render() {
+    step = 0;
+    var list = sortItems(visible());
+
+    if (!items.length) {
+      mount.innerHTML = '<p class="gbs-empty">None yet.</p>';
+    } else if (!list.length) {
+      mount.innerHTML = '<p class="gbs-empty">No sandbox carries these tags. Turn one off to widen the shelf.</p>';
+    } else {
+      mount.innerHTML = groups(list).map(function (g) {
+        var inner = state.view === 'list'
+          ? '<div class="gbs-list">' + g.items.map(row).join('') + '</div>'
+          : '<div class="gbs-grid">' + g.items.map(card).join('') + '</div>';
+        if (!g.label) return inner;
+        return '<div class="gbs-room">' +
+                 '<span class="gb-eyebrow">' + esc(g.label) + ' · ' + g.items.length + '</span>' +
+                 inner +
+               '</div>';
+      }).join('');
+    }
+    paintControls();
+  }
+
+  /* ---- Wiring ---- */
+  if (tagAxis) {
+    if (!allTags.length) {
+      tagAxis.hidden = true;
+    } else {
+      tagAxis.insertAdjacentHTML('beforeend', allTags.map(function (t) {
+        return '<button class="gbs-chip gbs-tagbtn" type="button" aria-pressed="false" data-tag="' +
+               esc(t) + '">' + esc(t) + ' · ' + tagCount[t] + '</button>';
+      }).join(''));
+    }
+  }
+
+  if (controls) {
+    controls.addEventListener('click', function (e) {
+      var el = e.target;
+      if (!el || !el.closest) return;
+      var seg = el.closest('.gbdoc-seg');
+      if (seg && seg.parentNode) {
+        var axis = seg.parentNode.getAttribute('data-axis');
+        var val  = seg.getAttribute('data-val');
+        if (AXES[axis] && state[axis] !== val) { state[axis] = val; writeState(); render(); }
+        return;
+      }
+      var chip = el.closest('.gbs-tagbtn');
+      if (chip) {
+        var t = chip.getAttribute('data-tag');
+        var i = state.tags.indexOf(t);
+        if (i > -1) state.tags.splice(i, 1); else state.tags.push(t);
+        writeState();
+        render();
+      }
+    });
+  }
+
+  readState();
+  writeState();
+  render();
 })();
 </script>
 

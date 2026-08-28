@@ -1,7 +1,9 @@
 /* ============================================================
    STUDIO CHROME — хаб, полки, двери, подвал студийных страниц
    (gbppl-hub-13, Тон 2026-08-25; серый холст и дерево
-   страниц gbppl-panel-9 2026-08-27)
+   страниц gbppl-panel-9 2026-08-27; полка контролов, список и
+   бейджи песочниц gbppl-sandboxes-4 2026-08-28, блок в конце
+   файла)
    ------------------------------------------------------------
    ЗАГОЛОВКИ ХАБА НАЗВАНЫ РОЛЯМИ КАРТЫ (hub-13, Тон 25.08,
    дословно): «Мне нравится, как ты переделал Хаб, выглядит
@@ -372,6 +374,10 @@
   align-self: flex-start;   /* карточка — flex-колонка; без этого
                                чип растягивается в полосу */
   padding: 4px var(--space-8);   /* NO TOKEN на 4: пол ступени, поле чипа вокруг строки 12/1.2 */
+  /* Чип — одна нерушимая надпись: «BOOK A MEETING», сломанное на две
+     строки в узкой строке списка, перестаёт быть бейджем и становится
+     абзацем (замер 390, gbppl-sandboxes-4). */
+  white-space: nowrap;
   background: var(--zinc-100);
   border-radius: var(--radius);
   font-size: var(--eyebrow-size);   /* 12: голос eyebrow, не мельче */
@@ -675,6 +681,15 @@ body.gb-demo a.gbs-door-link { color: var(--zinc-900); }
   text-decoration: none;
   transition: border-color var(--mo-small) var(--mo-move),
               box-shadow var(--mo-small) var(--mo-move);
+}
+/* Каскад объявлен ОДИН РАЗ на все поверхности, которые им живут:
+   узел карты, карточка песочницы и строка списка (gbppl-sandboxes-4).
+   Раньше он стоял внутри .gbs-node; вынесен без единого изменения
+   числа, потому что вторая копия той же хореографии — это и есть
+   вторая хореография. */
+.gbs-node,
+.gbs-door--box,
+.gbs-row {
   animation: gbsNodeIn var(--mo-small) var(--mo-arrive) both;
   /* NO TOKEN: 40ms это ШАГ каскада, а не длительность: у --mo-* названы
      длины движения, а не расстояние между их началами. Число живое,
@@ -803,6 +818,256 @@ body.gb-demo a.gbs-node:hover { border-color: var(--zinc-900); box-shadow: var(-
   border-top: 1px dashed var(--zinc-500);
 }
 .gbs-cross__link svg { display: block; flex: 0 0 auto; margin-left: -4px; }   /* NO TOKEN: наконечник садится на конец линии, это стык фигур, а не отступ */
+
+
+/* ============================================================
+   МЕНЕДЖЕР ПРОЕКТОВ НА СТРАНИЦЕ SANDBOXES (gbppl-sandboxes-4,
+   Тон 2026-08-28)
+   ------------------------------------------------------------
+   Тон, дословно: «что если страница Sandboxes будет выполнять роль
+   менеджера проектов в Figma? Сейчас один view: большие карточки,
+   сгруппированные по принадлежности. 1. View должен быть и списком,
+   и карточками. 2. Группировку стоит делать через теги (показывать
+   бейджем принадлежность к чему-либо). Можно сделать фильтрацию или
+   группировку на странице, группировка опциональная. 3. Можно
+   смотреть проекты по последнему активному (что последнее
+   изменялось).»
+
+   ЧТО ЗДЕСЬ НОВОГО И ЧТО ВЗЯТО ГОТОВЫМ (Тон-6, 6a.2 скилла):
+     контролы   .gbdoc-axis / .gbdoc-axis__name / .gbdoc-seg из
+                docs.css, БЕЗ единой правки: сегмент документации и
+                есть инструмент студии, а инструмент не должен
+                выглядеть предметом (Тон 26.08). docs.css уже
+                линкуется этой страницей ради дровера Inspect.
+     карточка   та же .gbs-door--box, ей добавлен ряд бейджей и
+                строка даты в подвале.
+     заголовок  та же .gbs-room + .gb-eyebrow, что рисовала группы
+                по страницам; теперь она рисует любую группировку.
+     чип        тот же .gbs-chip: три окраса вместо одного.
+     каскад     та же анимация gbsNodeIn с шагом 40ms, что у карты.
+   Своего заведено ровно два предмета: полка контролов и строка
+   списка. Оба ниже.
+
+   ТРИ ОКРАСА ЧИПА И ПОЧЕМУ ИМЕННО ТАК (Тон-5). Страница, которой
+   принадлежит комната, — вечная мебель, значит Zinc 900 сплошным.
+   Статус остаётся тем, чем его принял Тон 25.08: Zinc 100 в голосе
+   eyebrow, цвета в палитру не добавляет. Тег — тихий контур: он не
+   состояние и не мебель, он ярлык. Выбранный тег в фильтре — Blue
+   600: выбор это состояние.
+
+   КОНТУР ЧИПА РИСУЕТСЯ inset box-shadow, А НЕ БОРДЕРОМ. Чипы стоят
+   в один ряд с соседями без контура, и настоящая рамка сделала бы
+   их на 2px выше. Тень внутрь даёт ту же линию, не трогая
+   размерную коробку и не заводя второго набора паддингов.
+   ============================================================ */
+
+/* ---- Полка контролов над содержимым ----
+   Воздух симметричен относительно волоска (6a.3): 32 сверху,
+   32 снизу, 32 до первой группы. */
+.gbs-controls {
+  margin-top: var(--space-32);
+  padding-bottom: var(--space-32);
+  border-bottom: 1px solid var(--zinc-200);
+}
+
+/* ---- Чип: страница, тег, фильтр ---- */
+.gbs-chip--page {
+  background: var(--zinc-900);
+  color: var(--white);
+}
+.gbs-chip--tag {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--zinc-200);
+  color: var(--zinc-500);
+}
+
+/* Тот же чип, ставший мишенью. Кольцо фокуса — DECLARED Blue 600
+   2px/2px, как у .gbdoc-seg. */
+.gbs-tagbtn {
+  appearance: none;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--zinc-200);
+  color: var(--zinc-500);
+  transition: color var(--mo-micro) var(--mo-move),
+              background-color var(--mo-micro) var(--mo-move),
+              box-shadow var(--mo-micro) var(--mo-move);
+}
+.gbs-tagbtn:hover { color: var(--zinc-900); box-shadow: inset 0 0 0 1px var(--zinc-400); }
+.gbs-tagbtn.is-on { background: var(--blue-600); color: var(--white); box-shadow: none; }
+.gbs-tagbtn:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }
+
+/* ---- Карточка: ряд бейджей сверху, теги внизу, дата в подвале ----
+   Ряд бейджей встал на место одиночного чипа статуса, поэтому зазор
+   до заголовка (12) не менялся. Имя страницы ушло из подвала в
+   бейдж: печатать его дважды незачем, а подвал был единственным
+   местом, куда просилась дата.
+
+   ТЕГИ СТОЯТ ВНИЗУ, А НЕ В ВЕРХНЕМ РЯДУ, И ЭТО РЕШЕНИЕ ПО СКРИНУ
+   (6a.4). В одном ряду с бейджами четыре тега переносились на три
+   строки в колонке 336px, заголовки шести карточек вставали на
+   четырёх разных высотах, и ряд, который должен читаться первым,
+   становился самым громким пятном карточки. Верхний ряд оставлен
+   ОДНОСТРОЧНЫМ по составу: страница и статус, их всегда ровно два.
+   Теги живут в подвижной части карточки, под описанием, где перенос
+   не двигает ничего. */
+.gbs-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+.gbs-badges--tags { margin-top: 12px; }   /* тот же зазор «строка под строкой», что у всей карточки */
+.gbs-door-updated {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+  font-variant-numeric: tabular-nums;
+}
+.gbs-door--coming .gbs-door-updated { color: var(--zinc-400); }
+
+/* ---- Список ----
+   Одна белая карточка, внутри строки через волосок: та же пара
+   «белое на Zinc 100 с рамкой Zinc 200», что у двери и у узла
+   карты, только не по карточке на песочницу, а одна на все.
+   Ховер строки — цинковое мытьё (ghost-состояние организма
+   кнопки): рамку внутри общей карточки подсветить нечем. */
+.gbs-list {
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  padding: 0 var(--space-16);
+  overflow: hidden;
+}
+.gbs-room .gbs-list { margin-top: var(--space-16); }
+/* Без группировки заголовка над содержимым нет, и весь воздух даёт
+   .gbs-rooms (32). Собственный отступ сетки в этом случае удвоил бы
+   его: один зазор между однотипными вещами (6a.3). */
+.gbs-rooms > .gbs-grid,
+.gbs-rooms > .gbs-list { margin-top: 0; }
+
+/* Мытьё ховера обязано доходить до кромок карточки, поэтому строка
+   выходит из её полей отрицательными полями и возвращает их
+   паддингом.
+
+   ТРИ РОСТА ОДНОЙ СТРОКИ. База (узкий экран) — ДВЕ СТРОКИ: имя со
+   стрелкой сверху, вся мета под ним слева. С 768 обе половины
+   встают в один ряд. С 1100 ряд становится КОЛОНКАМИ: список
+   читают сверху вниз, и статус с датой обязаны находиться на одном
+   и том же месте в каждой строке. Порог 1100 — тот же, на котором
+   сетка карточек становится трёхколоночной; ниже него шести
+   колонкам просто не хватает меры. */
+.gbs-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8) var(--space-16);
+  margin: 0 calc(var(--space-16) * -1);
+  padding: var(--space-16);
+  text-decoration: none;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+.gbs-row + .gbs-row { border-top: 1px solid var(--zinc-200); }
+a.gbs-row:hover,
+body.gb-demo a.gbs-row:hover { background: var(--zinc-50); }
+a.gbs-row,
+body.gb-demo a.gbs-row { color: var(--zinc-900); }
+a.gbs-row:hover .gbs-arrow { transform: translateX(4px); }
+
+/* Имя песочницы — базовая роль, 16 (Тон 24.08: ничего мельче). */
+.gbs-row__name {
+  order: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+/* ПОРЯДОК ЯЧЕЕК ЗАДАН order, А НЕ РАЗМЕТКОЙ, потому что на узком
+   экране он ДРУГОЙ: дата и стрелка уходят наверх, к имени, а мета
+   падает под них целой строкой. Разметка одна на три роста. */
+.gbs-row__updated {
+  order: 1;
+  flex: 0 0 auto;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-400);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.gbs-row .gbs-arrow { order: 2; flex: 0 0 auto; }
+.gbs-row__meta {
+  order: 3;
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: var(--space-8);
+  min-width: 0;
+}
+/* Теги в СПИСКЕ — строка, а не чипы: строка плотная, и четыре чипа
+   в ней подняли бы её вдвое. Чип остаётся там, где он предмет: на
+   карточке (ярлык) и в фильтре (мишень). Полный список в title. */
+.gbs-row__tags {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
+/* Причина, по которой у строки нет стрелки, стоит РЯДОМ С ИМЕНЕМ, а
+   не в конце ряда: конец ряда — колонка стрелки шириной со стрелку,
+   и слово в ней сдвинуло бы дату у одной строки из шести. */
+.gbs-row__note {
+  margin-left: var(--space-8);
+  font-size: 14px;
+  color: var(--zinc-500);
+  white-space: nowrap;
+}
+/* Строка без комнаты: тот же язык, что у .gbs-door--coming, но без
+   пунктирной рамки — рамки у строки нет вовсе. */
+.gbs-row--coming { background: var(--zinc-50); }
+.gbs-row--coming .gbs-row__name { color: var(--zinc-400); }
+
+@media (min-width: 768px) {
+  .gbs-row { flex-wrap: nowrap; }
+  .gbs-row__meta { order: 1; flex: 0 1 auto; gap: var(--space-16); justify-content: flex-end; }
+  .gbs-row__updated { order: 2; }
+  .gbs-row .gbs-arrow { order: 3; }
+}
+
+/* Колонки. Меры в ch — это мера ТЕКСТА (тем же ch описание двери
+   ограничено 60ch), а не длина со шкалы отступов: 18ch держит самый
+   длинный бейдж страницы («Book a meeting»), 12ch — самый длинный
+   статус («in progress»), 10ch — самую длинную дату («3 weeks ago»).
+   Колонка стрелки шириной ровно в ступень 24. */
+@media (min-width: 1100px) {
+  .gbs-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) 18ch 12ch minmax(0, 1fr) 10ch var(--space-24);
+    align-items: center;
+  }
+  /* Обёртка меты растворяется, и её три ячейки становятся колонками
+     сами: на узком экране она нужна как строка, здесь — только как
+     имя для группы. order у неё при этом перестаёт значить что-либо
+     (у элемента с display: contents нет своего бокса), и порядок
+     колонок задают DOM плюс order даты и стрелки. */
+  .gbs-row__meta { display: contents; }
+  .gbs-row .gbs-chip { justify-self: start; }
+  .gbs-row__updated { justify-self: end; }
+  .gbs-row .gbs-arrow { justify-self: end; }
+}
+
+/* Пусто после фильтра. Тот же голос лида полки. */
+.gbs-empty {
+  margin: var(--space-32) 0 0;
+  font-size: 16px;
+  line-height: 1.625;
+  letter-spacing: 0.2px;
+  color: var(--zinc-500);
+}
 
 /* ---- Табы страницы (gbppl-map-2, 28.08) ----
    Тон: «Вверху всего два таба: Website и Portal. Я не хочу скроллить
