@@ -386,10 +386,10 @@
          outright, see studio-panel.js), so this is the honest URL rather than
          the mechanism. */
       if (homeHref !== '#') {
-        var KEEP = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock', 'prefooter',
-                    'device', 'studio'];   /* gbppl-panel-10: panel left with the second console layout */
+        /* gbppl-comments-b: список уехал наверх, к обоим читателям, и
+           лого берёт его целиком — контекст и экран вместе. */
         var have = new URLSearchParams(location.search), carry = new URLSearchParams();
-        KEEP.forEach(function (k) { if (have.has(k)) carry.set(k, have.get(k)); });
+        window.GB_KEEP.all.forEach(function (k) { if (have.has(k)) carry.set(k, have.get(k)); });
         var q = carry.toString();
         if (q) homeHref += (homeHref.indexOf('?') >= 0 ? '&' : '?') + q;
       }

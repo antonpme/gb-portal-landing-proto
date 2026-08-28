@@ -155,6 +155,38 @@
    работают ровно как прежде: inspect.js и реестр про компоновки не
    знали ничего и не узнают.
 
+   ------------------------------------------------------------
+   ТРЕТИЙ РЕЖИМ (gbppl-comments-b, 28.08)
+   ------------------------------------------------------------
+   Тон, 27.08, заказом на комментарии: «комментарий принадлежит
+   объекту; видно, кто оставил; на комментарии можно отвечать».
+   Спека: studio\docs\COMMENT-MODE-SPEC.md.
+
+   Панель отдала под это три вещи и НИ ОДНОЙ строки поведения:
+
+   1. ТРЕТЬЯ ПОЗИЦИЯ ТУМБЛЕРА. Выключенный сегмент «Comment · coming
+      soon» (gbppl-panel-8) снят; вместо него ручка addSegments
+      получила addOption, и живой сегмент дописывает его владелец —
+      system\components\comments.js. Панель по-прежнему владеет видом
+      и местом, поведение принадлежит владельцу режима, как у View и
+      Inspect.
+   2. addSection({ title, rank }) — своя полка ящика для того, что не
+      является переключателем страницы. Ранги секций: Mode и Device
+      10, Comments 20, This page 90; подвал последний всегда.
+   3. ПРОВОД В КАДР. Тот же, что у режима прибора: событие gbc:mode
+      наружу пересылается внутрь как postMessage {gbsp:'cmode'},
+      изнутри наружу как {gbsp:'cmode-up'}, и обе стороны сравнивают
+      значение перед тем, как что-то делать. Строка состояния
+      печатает «Comment · <экран>», а при отказе сервиса — то, что
+      владелец режима в этом же событии передал строкой.
+
+   Плюс АТРИБУТ data-api на самом элементе: база адреса сервиса
+   комментариев. Пусто (по умолчанию) значит same-origin, ровно как
+   на VPS за Caddy. Задаётся только в проверочных прогонах, где сайт
+   и сервис стоят на разных портах и проксировать некому. Панель
+   значение не читает: она его ХРАНИТ, потому что она единственный
+   элемент студии, который стоит на всех страницах с консолью.
+
    РАЗБОР ТОНА (gbppl-panel-9, 2026-08-27). Три правки, с которых
    Proposed и стал тем, что осталось.
 
@@ -196,6 +228,15 @@
     try {
       var m = new URLSearchParams(location.search).get('mode');
       if (m === 'inspect' || m === 'view') sessionStorage.setItem('gbppl-inspect-mode', m);
+      /* gbppl-comments-b: третье значение того же ключа. Comment и
+         Inspect взаимоисключающи, поэтому адрес с mode=comment гасит
+         прибор в том же движении, каким зажигает комментарии. */
+      if (m === 'comment') {
+        sessionStorage.setItem('gbppl-inspect-mode', 'view');
+        sessionStorage.setItem('gbppl-comment-mode', '1');
+      } else if (m === 'inspect' || m === 'view') {
+        sessionStorage.setItem('gbppl-comment-mode', '0');
+      }
     } catch (e) {}
   })();
 
@@ -435,6 +476,25 @@
     return host.querySelector('.gbsp-foot');
   }
 
+  /* ПОРЯДОК ДОПИСАННЫХ СЕКЦИЙ ДЕРЖИТСЯ РАНГОМ (gbppl-comments-b).
+     То же правило, по которому внутри секции стоят группы сегментов
+     (gbppl-panel-7): кто объявляется раньше, зависит от порядка
+     скриптов и от промисов, а порядок на экране обязан быть один на
+     всех страницах. Ранги: Mode и Device 10, Comments 20, This page
+     90 — сначала «чем смотрю», потом «что здесь сказано», потом «что
+     покрутить». Подвал остаётся последним всегда. */
+  function placeSection(host, sec, rank) {
+    sec.setAttribute('data-rank', String(rank));
+    var panel = host.querySelector('.gbsp-panel');
+    var before = tail(host);
+    var kin = panel.querySelectorAll('.gbsp-sec[data-rank]');
+    for (var i = 0; i < kin.length; i++) {
+      if ((+kin[i].getAttribute('data-rank') || 0) > rank) { before = kin[i]; break; }
+    }
+    panel.insertBefore(sec, before);
+    return sec;
+  }
+
   /* ============================================================
      СЕКЦИЯ «THIS PAGE» (gbppl-panel-4)
      ------------------------------------------------------------
@@ -452,10 +512,9 @@
     sec.className = 'gbsp-sec gbsp-sec--page';
     sec.innerHTML = '<span class="gbsp-eyebrow">This page</span>';
     /* gbppl-panel-8: не в самый конец, а перед хвостом — подвал ящика
-       стоит последним всегда. */
-    var panel = host.querySelector('.gbsp-panel');
-    panel.insertBefore(sec, tail(host));
-    return sec;
+       стоит последним всегда. gbppl-comments-b: место теперь считает
+       общий рангоукладчик, число то же самое (последней из секций). */
+    return placeSection(host, sec, 90);
   }
 
   /* Одна группа: подпись, строки выбора, строки-команды, подсказка.
@@ -549,12 +608,10 @@
     if (sec) return sec;
     sec = document.createElement('div');
     sec.className = 'gbsp-sec gbsp-sec--mode';
-    var panel = host.querySelector('.gbsp-panel');
     /* Инструменты стоят ПОСЛЕ навигации и версии страницы
        (gbppl-panel-8): сначала «где я и что смотрю», потом «чем
        смотрю». */
-    panel.insertBefore(sec, tail(host));
-    return sec;
+    return placeSection(host, sec, 10);
   }
 
   function makeSegments(host, spec) {
@@ -573,30 +630,34 @@
     wrap.setAttribute('data-rank', String(rank));
     var title = spec.title || 'Mode';
     var shape = spec.row ? ' gbsp-segs--row' : '';
+    /* Девайсы стоят одной строкой ИКОНОК (gbppl-panel-9), и тогда
+       имя с числом живут в title и во всплывающей подписи под
+       строкой: у кнопки без слова обязано быть слово где-то ещё.
+       У режима слово своё, и глифа ему не нужно. */
+    function segHtml(o, i) {
+      return '<button class="gbsp-seg' + (o.icon ? ' gbsp-seg--icon' : '') +
+             '" type="button" data-seg="' + i + '"' +
+             (o.title ? ' title="' + esc(o.title) + '"' : '') +
+             (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
+             ' aria-pressed="false">' + (o.icon || esc(o.label)) +
+             '</button>';
+    }
     var html = '<span class="gbsp-eyebrow">' + esc(title) + '</span>' +
                '<div class="gbsp-segs' + shape + '"' +
                ' role="group" aria-label="' + esc(title) + '">';
-    options.forEach(function (o, i) {
-      /* Девайсы стоят одной строкой ИКОНОК (gbppl-panel-9), и тогда
-         имя с числом живут в title и во всплывающей подписи под
-         строкой: у кнопки без слова обязано быть слово где-то ещё.
-         У режима слово своё, и глифа ему не нужно. */
-      html += '<button class="gbsp-seg' + (o.icon ? ' gbsp-seg--icon' : '') +
-              '" type="button" data-seg="' + i + '"' +
-              (o.title ? ' title="' + esc(o.title) + '"' : '') +
-              (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
-              ' aria-pressed="false">' + (o.icon || esc(o.label)) +
-              '</button>';
-    });
-    /* МЕСТО ПОД COMMENT (gbppl-panel-8). Третий режим заказан, но не
-       сделан, и консоль говорит об этом вслух: выключенный сегмент
-       рядом с двумя живыми честнее пустоты — тумблер сразу показывает,
-       на сколько положений он рассчитан. Стоит только у Mode: панель
-       владеет ВИДОМ и МЕСТОМ тумблера (gbppl-panel-6), а значит и его
-       будущей третьей позицией. */
-    if (title === 'Mode') {
-      html += '<span class="gbsp-seg is-off" title="coming soon">Comment</span>';
-    }
+    options.forEach(function (o, i) { html += segHtml(o, i); });
+    /* ТРЕТЬЯ ПОЗИЦИЯ MODE ОЖИЛА (gbppl-comments-b, 28.08). С panel-8
+       здесь стоял выключенный сегмент «Comment» с подписью coming
+       soon: тумблер честно показывал, на сколько положений он
+       рассчитан, пока третьего режима не было. Теперь он есть, и
+       ставит его не панель, а его владелец — system\components\
+       comments.js через addOption ниже. Панель по-прежнему владеет
+       ВИДОМ и МЕСТОМ (gbppl-panel-6): форма сегмента, его порядок в
+       ряду и правило взаимоисключения остались здесь, а поведение
+       ушло туда же, куда ушло поведение View и Inspect.
+
+       Страница без comments.js получает тумблер из двух положений и
+       не врёт про третье. */
     html += '</div>';
     /* ВСПЛЫВАЮЩАЯ ПОДПИСЬ ПОД СТРОКОЙ (gbppl-panel-9). Строка иконок
        молчалива, и молчание лечится не только тултипом системы:
@@ -607,6 +668,7 @@
     html += '<p class="gbsp-note"></p>';
     wrap.innerHTML = html;
 
+    var row    = wrap.querySelector('.gbsp-segs');
     var segEls = wrap.querySelectorAll('[data-seg]');
     var noteEl = wrap.querySelector('.gbsp-note');
     var capEl  = wrap.querySelector('.gbsp-cap');
@@ -656,7 +718,12 @@
       if (!o || o.value === current) return;
       current = o.value;
       paint();
-      if (typeof spec.onChange === 'function') spec.onChange(o.value, o);
+      /* Позиция, дописанная другим владельцем, несёт СВОЁ поведение
+         (gbppl-comments-b): у тумблера Mode с этой волны два хозяина,
+         и группа не решает за них. Нет своего — отвечает хозяин
+         группы, как было. */
+      if (typeof o.onChange === 'function') o.onChange(o.value, o);
+      else if (typeof spec.onChange === 'function') spec.onChange(o.value, o);
     });
 
     var before = null, kin = sec.querySelectorAll('.gbsp-seggroup');
@@ -668,7 +735,22 @@
 
     return {
       element: wrap,
-      setActive: function (value) { current = value; paint(); }
+      setActive: function (value) { current = value; paint(); },
+      /* gbppl-comments-b. Один тумблер, три положения, два владельца
+         поведения: View и Inspect объявляет inspect.js, Comment —
+         comments.js, и объявляет он их в разное время (первый ждёт
+         whenDefined, второй ждёт первого). Заводить второй ряд
+         сегментов было бы вторым тумблером на один вопрос, поэтому
+         позиция дописывается в существующий ряд. Возвращает ту же
+         ручку: у группы один голос наружу. */
+      addOption: function (o) {
+        if (!o || !row) return this;
+        options.push(o);
+        row.insertAdjacentHTML('beforeend', segHtml(o, options.length - 1));
+        segEls = wrap.querySelectorAll('[data-seg]');
+        paint();
+        return this;
+      }
     };
   }
 
@@ -834,10 +916,15 @@
      Абзацы секции This page остаются: они говорят про сценарий
      страницы, чего строка состояния сказать не может.
      ============================================================ */
-  var STATE = { mode: 'view', device: 'full' };
+  var STATE = { mode: 'view', device: 'full', comment: false, commentsDown: '' };
 
   function statusLine() {
-    var mode = STATE.mode === 'inspect' ? 'Inspect' : 'View';
+    /* gbppl-comments-b. Comment перебивает пару View / Inspect,
+       потому что это тот же тумблер: одно положение зараз. А отказ
+       сервиса перебивает всё — режим, в котором нечего сохранить, —
+       не то состояние, о котором стоит рапортовать первым. */
+    if (STATE.comment && STATE.commentsDown) return STATE.commentsDown;
+    var mode = STATE.comment ? 'Comment' : (STATE.mode === 'inspect' ? 'Inspect' : 'View');
     var d = STATE.device;
     if (d === 'full') return mode + ' · Full window';
     return mode + ' · ' + deviceLabel(d) + ' ' + d + ', page runs inside the frame';
@@ -885,7 +972,10 @@
       var u = new URL(location.href);
       if (STATE.device && STATE.device !== 'full') u.searchParams.set('device', STATE.device);
       else u.searchParams.delete('device');
-      if (currentMode() === 'inspect') u.searchParams.set('mode', 'inspect');
+      /* gbppl-comments-b: три положения тумблера, один ключ. Comment
+         стоит первым, потому что он и на экране перебивает пару. */
+      if (STATE.comment) u.searchParams.set('mode', 'comment');
+      else if (currentMode() === 'inspect') u.searchParams.set('mode', 'inspect');
       else u.searchParams.delete('mode');
       u.searchParams.delete('studio');
       return u.href;
@@ -1087,6 +1177,9 @@
         screen.addEventListener('load', function () {
           measure();
           relay();
+          /* gbppl-comments-b: кадр приезжает позже подписки, и оба
+             режима догоняют его здесь, одним движением. */
+          relayComment(window.GbComments && window.GbComments.on());
         });
         screen.src = frameSrc();
         buildBar();
@@ -1147,6 +1240,18 @@
     document.addEventListener('gbi:mode', function (e) {
       relay(e.detail && e.detail.mode);
     });
+
+    /* Тот же провод для третьего режима (gbppl-comments-b). Пересылка,
+       а не решение: панель не знает, что такое комментарий, она знает
+       только, что у кадра и у страницы один тумблер на двоих. */
+    function relayComment(on) {
+      if (!screen || !screen.contentWindow) return;
+      try { screen.contentWindow.postMessage({ gbsp: 'cmode', on: !!on }, '*'); } catch (e) {}
+    }
+    document.addEventListener('gbc:mode', function (e) {
+      relayComment(e.detail && e.detail.on);
+    });
+
     window.addEventListener('resize', function () { if (stage) requestAnimationFrame(measure); });
 
     /* Обратный провод из кадра (gbppl-panel-8). Копия консоли внутри
@@ -1165,6 +1270,12 @@
          сделано, и сегмент Mode на пульте отставал бы (замер 27.08). */
       if (d.gbsp === 'mode-up' && window.GbInspect && window.GbInspect.mode() !== d.mode) {
         window.GbInspect.setMode(d.mode);
+      }
+      /* gbppl-comments-b, тот же довод и та же защита от петли:
+         сравнение с живым состоянием владельца, не с хранилищем,
+         которое кадр делит с вкладкой. */
+      if (d.gbsp === 'cmode-up' && window.GbComments && window.GbComments.on() !== !!d.on) {
+        window.GbComments.setMode(!!d.on);
       }
     });
 
@@ -1213,6 +1324,11 @@
       var m = e.detail && e.detail.mode === 'inspect' ? 'inspect' : 'view';
       try { window.parent.postMessage({ gbsp: 'mode-up', mode: m }, '*'); } catch (err) {}
     });
+    /* gbppl-comments-b: третий режим ходит по тому же проводу. */
+    document.addEventListener('gbc:mode', function (e) {
+      var on = !!(e.detail && e.detail.on);
+      try { window.parent.postMessage({ gbsp: 'cmode-up', on: on }, '*'); } catch (err) {}
+    });
   }
 
   class GbStudioPanel extends HTMLElement {
@@ -1226,6 +1342,42 @@
     addSegments(spec) {
       if (!this.__rendered) this.connectedCallback();
       return makeSegments(this, spec);
+    }
+
+    /* СВОЯ ПОЛКА ЯЩИКА (gbppl-comments-b). addGroup кладёт группу в
+       секцию «This page», и это правильное место для переключателей
+       страницы: сценарий чекаута, шапка портала. Список комментариев
+       страницы — не переключатель, у него свой заголовок и своё место
+       в порядке чтения ящика, поэтому владелец режима просит СЕКЦИЮ, а
+       не группу. Панель по-прежнему решает, где она встанет: ранг тут,
+       а не у просящего.
+
+         var sec = panel.addSection({ title: 'Comments on this page',
+                                      rank: 20 });
+         sec.body.innerHTML = ...;      // мебель ящика, .gbsp-*
+
+       Возвращает { element, body }: element — сама полка с подписью,
+       body — пустой узел под содержимое, чтобы подпись нельзя было
+       затереть, переписав внутренности. */
+    /* ГДЕ МЫ СТОИМ, ОДНИМ ОТВЕТОМ (gbppl-comments-b). Путь страницы
+       от корня студии консоль считает и так — им подсвечивается
+       раздел и им берётся имя из PLACES. Комментарий адресуется тем
+       же путём (спека §5, page), и второй ответ на тот же вопрос
+       разошёлся бы с первым на первой же странице-папке:
+       live/catalog/ и live/catalog/index.html — одно место. */
+    place() {
+      return relHere(this.getAttribute('data-root') || '');
+    }
+
+    addSection(spec) {
+      if (!this.__rendered) this.connectedCallback();
+      spec = spec || {};
+      var sec = document.createElement('div');
+      sec.className = 'gbsp-sec' + (spec.className ? ' ' + spec.className : '');
+      sec.innerHTML = '<span class="gbsp-eyebrow">' + esc(spec.title || '') + '</span>' +
+                      '<div class="gbsp-secbody"></div>';
+      placeSection(this, sec, typeof spec.rank === 'number' ? spec.rank : 50);
+      return { element: sec, body: sec.querySelector('.gbsp-secbody') };
     }
 
     connectedCallback() {
@@ -1392,6 +1544,17 @@
     paintStatus();
     document.addEventListener('gbi:mode', function (e) {
       STATE.mode = e.detail && e.detail.mode === 'inspect' ? 'inspect' : 'view';
+      paintStatus();
+    });
+    /* gbppl-comments-b. Третий режим и его беда приходят одним
+       событием: включён ли Comment и есть ли кому отвечать. Строка
+       состояния — единственное место консоли, которое произносит
+       «Comments unavailable»: отказ сервиса это состояние вида, а не
+       ошибка страницы, и в консоль браузера ему ходить незачем. */
+    document.addEventListener('gbc:mode', function (e) {
+      var d = e.detail || {};
+      STATE.comment = !!d.on;
+      STATE.commentsDown = d.down ? String(d.down) : '';
       paintStatus();
     });
   }

@@ -111,6 +111,21 @@
    here: setMode announces itself with a gbi:mode event, the console
    forwards it into the frame, and the copy of this file inside the
    frame hears it as a message. Nothing else crosses.
+
+   ------------------------------------------------------------
+   WHAT COMMENT MODE BORROWS (gbppl-comments-b, 28.08)
+   ------------------------------------------------------------
+   The third position of the Mode toggle belongs to
+   system\components\comments.js, and it points at elements for a
+   living: a comment belongs to an element, so it asks the same
+   questions this file already answers — which element the pointer
+   means, what to call it, which file owns it. Nothing was copied
+   over there. Six methods went onto window.GbInspect instead
+   (target, isChrome, outline, outlineOff, lede, onModeSwitch, see
+   the foot of this file), plate() came out of paint() so both modes
+   draw the same label, and setMode was taught to ignore a value that
+   is not its own. Recognition, ownership and the plate stay here,
+   with one definition each.
    ============================================================ */
 (function () {
   'use strict';
@@ -1411,12 +1426,22 @@
        without a key, because that is the one being worked on. */
     if (altHeld || (selected && el === selected)) distances(el, r);
 
-    /* The plate: TWO lines since gbppl-inspect-2 (the team, through
-       Ton, 27.08: «просят показывать больше данных и чётче»). The
-       name of the thing on the first line and heavier, because that
-       is what is being answered; the size and the modifiers below it,
-       quieter. One line held all three and the eye had to hunt for
-       the name in the middle of a sentence. */
+    plate(el, r);
+  }
+
+  /* ---------- the plate, on its own ----------
+     Lifted out of paint with gbppl-comments-b, unchanged in what it
+     draws. Comment mode names the element under the pointer exactly
+     the way Inspect names it, and the way to keep one answer in the
+     system is to have one function that gives it, not a second copy
+     that drifts (Тон-6). */
+  function plate(el, r) {
+    /* TWO lines since gbppl-inspect-2 (the team, through Ton, 27.08:
+       «просят показывать больше данных и чётче»). The name of the
+       thing on the first line and heavier, because that is what is
+       being answered; the size and the modifiers below it, quieter.
+       One line held all three and the eye had to hunt for the name in
+       the middle of a sentence. */
     var d = identify(el);
     var badge = document.createElement('div');
     badge.className = 'gbi-badge';
@@ -1440,6 +1465,27 @@
     top = Math.min(Math.max(top, 4), Math.max(4, vh - bh - 4));
     badge.style.left = Math.min(Math.max(r.left, 4), Math.max(4, vw - bw - 4)) + 'px';
     badge.style.top = top + 'px';
+  }
+
+  /* ---------- the outline, for a mode that is not measuring ----------
+     gbppl-comments-b. Comment mode points at the same things Inspect
+     points at and asks a different question: not «how big is this»
+     but «which one of these am I talking about». So it borrows the
+     recognition and the hairline and leaves the rulers behind — no
+     padding fill, no margin hatching, no distances, because none of
+     them is part of the question and all of them would sit under the
+     pin the reader is about to drop.
+
+     Same layer, same class, same plate. Inspect's own repaint is
+     gated on MODE === 'inspect' and cannot fight this one. */
+  function outline(el) {
+    if (!el || !el.isConnected) { clearOverlay(); return; }
+    makeLayer();
+    layer.innerHTML = '';
+    layer.hidden = false;
+    var r = el.getBoundingClientRect();
+    piece('gbi-box', r.left, r.top, r.width, r.height);
+    plate(el, r);
   }
 
   function clearOverlay() {
@@ -1466,6 +1512,19 @@
   var MODE = 'view';
   var handle = null;
   var drawerOpen = false;
+
+  /* gbppl-comments-b. The Mode toggle is ONE toggle with three
+     positions, and its third belongs to comments.js. That file has no
+     way to wait for a handle that is created inside a whenDefined
+     promise here, so the handle is handed out instead of guessed at:
+     ask, and you are called when it exists, or straight away if it
+     already does. */
+  var switchWaiters = [];
+  function onModeSwitch(fn) {
+    if (typeof fn !== 'function') return;
+    if (handle) fn(handle);
+    else switchWaiters.push(fn);
+  }
 
   /* The console, the drawer, the instrument's own layer — and, since
      gbppl-panel-7, the device stage: the dark field a framed page
@@ -1632,8 +1691,16 @@
           { label: 'Inspect', value: 'inspect',
             note: 'Hover for the box, click for properties. Keys: i switches, Alt drills in and measures the gaps, Esc leaves.' }
         ],
-        onChange: function (v) { setMode(v); }
+        /* gbppl-comments-b: the toggle now has a third position, and
+           it is not ours. A click on View or Inspect is a click AWAY
+           from Comment, so the value is passed on as it came and the
+           other owner reads it off the same event we already send. */
+        onChange: function (v) { if (v === 'view' || v === 'inspect') setMode(v); }
       });
+      /* Whoever asked for the toggle gets it the moment it exists. */
+      var waiting = switchWaiters;
+      switchWaiters = [];
+      waiting.forEach(function (fn) { fn(handle); });
     };
     if (window.customElements && customElements.whenDefined) {
       customElements.whenDefined('gb-studio-panel').then(go);
@@ -1660,11 +1727,33 @@
      tokens the same way the drawer does, so the lookup is
      published rather than written twice. identify and openFor are
      published for the same reason: a page that wants to open the
-     properties of something without waiting for a click can. */
+     properties of something without waiting for a click can.
+
+     SIX MORE WITH gbppl-comments-b, and every one of them exists so
+     that Comment mode does not grow a second answer to a question
+     this file already answers (Тон-6). A comment belongs to an
+     ELEMENT, and which element the pointer means, what to call it,
+     which file owns it and what not to point at are the instrument's
+     questions, asked in a different mode:
+
+       target(el, drill)  the SOLID resolution: a button is one thing,
+                          not a label inside a box
+       isChrome(el)       the console, the drawer, the stage and this
+                          layer are not the page
+       outline(el)        the hairline and the plate, without rulers
+       outlineOff()       and take it away
+       lede(el)           the «Lives in <file>» line of the drawer, so
+                          a thread opens with the same first line a
+                          measurement does
+       onModeSwitch(fn)   the Mode toggle, when it exists */
   window.GbInspect = {
     tokenFor: tokenFor, tokenValue: tokenValue, px: px, norm: norm, rungs: rungs,
     identify: identify, openFor: openFor,
     setMode: setMode, mode: function () { return MODE; },
-    register: function (name, spec) { KINDS[name] = spec; }
+    register: function (name, spec) { KINDS[name] = spec; },
+    target: resolveTarget, isChrome: isChrome,
+    outline: outline, outlineOff: clearOverlay,
+    lede: function (el) { return ledeBlock(identify(el)); },
+    onModeSwitch: onModeSwitch
   };
 })();
