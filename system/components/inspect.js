@@ -427,6 +427,22 @@
                (d.state === 'rest' ? '' : ' · ' + d.state);
       } },
 
+    /* gbppl-oro-field-2. The four other looks of the field, above the
+       plain one because the rule of this table is that the smaller,
+       more specific thing comes first. The phone row is also a
+       .gba-inputwrap and the floating wrapper is also a .gba-field, so
+       both have to stand over the general rows or they would never be
+       reached. */
+    { sel: '.gba-otp input', name: 'One time code cell', oro: 'field.html#otp' },
+    { sel: '.gba-otp', name: 'One time code', oro: 'field.html#otp' },
+    { sel: '.gba-vlabel', name: 'One time code label', oro: 'field.html#label' },
+    { sel: '.gba-eye', name: 'Password reveal', oro: 'field.html#password' },
+    { sel: '.gbb-phone-option', name: 'Country option', oro: 'field.html#phone' },
+    { sel: '.gbb-phone-menu', name: 'Country list', oro: 'field.html#phone' },
+    { sel: '.gbb-phone-trigger', name: 'Country code', oro: 'field.html#phone' },
+    { sel: '.gbb-phone', name: 'Phone field', oro: 'field.html#phone' },
+    { sel: '.gba-field--floating', name: 'Field, floating label', oro: 'field.html#floating' },
+
     { sel: '.gba-textarea', name: 'Field', kind: 'field', oro: 'field.html#fields',
       detail: function () { return 'multi line'; } },
     { sel: '.gba-input', name: 'Field', kind: 'field', oro: 'field.html#fields',
@@ -1403,7 +1419,11 @@
     field: {
       name: 'Field',
       owner: 'system/components/auth.css',
-      find: function (slot) { return slot.querySelector('.gba-input'); },
+      /* gbppl-oro-field-2. The showcase of the field stands the six
+         cells of the code on the same shelf, and a cell carries no
+         .gba-input: it is drawn by .gba-otp input in the same file.
+         Second look, same kind. */
+      find: function (slot) { return slot.querySelector('.gba-input') || slot.querySelector('.gba-otp input'); },
 
       describe: function (el) {
         var state = el.disabled ? 'disabled'
@@ -1421,7 +1441,11 @@
         var lab = el.id ? document.querySelector('label[for="' + el.id + '"]') : null;
         var lsty = lab ? getComputedStyle(lab) : null;
         var rowsList = [
-          row('Height', px(d.area ? cs.height : cs.minHeight), ['--gba-input-h', '--gba-input-h-xl', '--gba-input-h-2xl']),
+          /* gbppl-oro-field-2. The three names looked up here did not
+             exist, so a field height always came back «No token».
+             The control family is --form-ctl-h in tokens.css, the
+             same rungs the L button spends. */
+          row('Height', px(d.area ? cs.height : cs.minHeight), ['--form-ctl-h', '--form-ctl-h-xl', '--form-ctl-h-2xl']),
           row('Padding, horizontal', px(cs.paddingLeft), null),
           row('Type size', px(cs.fontSize), null),
           row('Type weight', cs.fontWeight, null),
