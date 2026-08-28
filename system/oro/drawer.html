@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Drawer · Oro, GildedBox Design System</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-oro-drawer-1 — THE DRAWER CARD
+     ------------------------------------------------------------
+     First of the showcase queue (studio\docs\ORO-COMPONENT-INVENTORY,
+     section 6) and first of the composite level, because the drawer
+     is the surface the other three composites are shown on: the
+     sign in flow, the properties of Inspect and the comment thread
+     all arrive inside it, and none of them can be described until
+     it is.
+
+     Ton-18, 28 August: «Давай даже на лайве приведём все дроверы к
+     общему знаменателю. Сейчас в дровере аккаунта хедер вообще не
+     такой, как в новых дроверах.» That rule has lived in a code
+     comment since the day it was taken. This page is where it
+     becomes readable.
+
+     THE CARD TEMPLATE, the same order as Buttons and Icons, so a
+     reader who has learned one finds everything here blindfold
+     (ORO-SKILL 7a):
+       Overview      what it is, who owns it, where it stands
+       Playground    build a drawer and open the real one
+       Variants      one line per shape, and where it stands today
+       States        closed, arriving, open, leaving, measured
+       Sizes         the measures, with provenance on each
+       Anatomy       the panel drawn in the page, part by part
+       Properties    the API table, and the inspect drawer
+       Usage         when a drawer, and when a page
+       Accessibility focus, escape, names, the page underneath
+       Code          the markup and the call
+       Changelog     what changed and what it used to be
+       Related       where to go next
+
+     ONE SECTION OF THE THIRTEEN IS ABSENT AND IT IS ON PURPOSE.
+     The sixth slot of the template is «With icon» on the button
+     card and «The set» on the icon card: the place where a
+     component says what it does with a glyph. A drawer has exactly
+     one glyph, it belongs to the icon button in its slot, and it is
+     documented there. Inventing a section to fill the slot would be
+     the padding the template exists to prevent.
+
+     Ton-10: this page is a CONSUMER. Its card, tables, stages,
+     shelves, chips and code blocks are the atoms of
+     ..\components\docs.css; the panel it draws is
+     ..\components\drawer.css itself; the glyphs come out of the
+     record in ..\components\icon.js. What is left in the <style>
+     block below is the width of the reading column and nothing
+     else.
+
+     NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
+     measurement is read back out of a rendered panel, and the page
+     says which panel each time.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../components/shell.css">
+<link rel="stylesheet" href="../components/header.css">
+<link rel="stylesheet" href="../components/button.css">
+<link rel="stylesheet" href="../components/icon.css">
+<link rel="stylesheet" href="../components/auth.css">
+<link rel="stylesheet" href="../components/drawer.css">
+<link rel="stylesheet" href="../components/docs.css">
+<link rel="stylesheet" href="../components/inspect.css">
+<link rel="stylesheet" href="../components/comments.css">
+<link rel="stylesheet" href="../components/studio-panel.css">
+<link rel="stylesheet" href="oro.css">
+
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<style>
+/* ============================================================
+   DRAWER — LAYOUT ONLY (Ton-10)
+   ------------------------------------------------------------
+   Wide blocks, narrow prose: a panel specimen is 520 wide and a
+   table of measures is wider, so the column opens up and the
+   READING elements keep their measure. LAYOUT MEASURE: 1180 and
+   860 are column widths, not tokens. Same two numbers as the icon
+   card, on purpose: two showcase pages side by side must not have
+   two different columns.
+   ============================================================ */
+.oro-col { max-width: 1180px; }
+.oro-lede, .oro-p, .oro-note, .gbdoc-card__line { max-width: 860px; }
+</style>
+</head>
+<body>
+
+<!-- The studio bar, the same markup every studio page carries. -->
+<header class="gb-header gb-header--studio">
+  <div class="gb-container gbh-bar gbh-bar--studio">
+    <a class="gbh-lock" href="../../index.html" aria-label="GildedBox Design Studio, home">
+      <img class="gbh-lock__mark" src="../assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+      <span class="gbh-lock__rule" aria-hidden="true"></span>
+      <span class="gbh-lock__word">Design Studio</span>
+    </a>
+    <nav class="gbh-nav" aria-label="Studio">
+      <a class="gbh-link" href="../../live/map.html">Live Prototype</a>
+      <a class="gbh-link" href="../../sandboxes.html">Sandboxes</a>
+      <a class="gbh-link is-active" href="index.html" aria-current="page">Design System</a>
+    </nav>
+    <div class="gbh-actions">
+      <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-studio-lock>
+        <span class="gb-btn__label" data-pc-section="label">Lock</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="oro">
+
+  <nav class="oro-rail" aria-label="Design system sections">
+    <a class="oro-lock" href="index.html">
+      <span class="oro-lock-name">Oro</span>
+      <span class="oro-lock-sub gb-eyebrow">Design system</span>
+    </a>
+
+    <div class="oro-nav">
+      <a class="oro-link" href="index.html">About</a>
+
+      <span class="oro-navgroup">Foundations</span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Branding <span class="oro-soon">Soon</span></span>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Tone of Voice <span class="oro-soon">Soon</span></span>
+      <a class="oro-link" href="typography.html">Typography</a>
+      <a class="oro-link" href="colors.html">Colors</a>
+      <a class="oro-link" href="icons.html">Icons</a>
+      <span class="oro-link oro-link--soon" aria-disabled="true">Tokens <span class="oro-soon">Soon</span></span>
+
+      <span class="oro-navgroup">Components</span>
+      <a class="oro-link" href="components.html">Catalogue</a>
+      <a class="oro-link" href="components.html#base">Base</a>
+      <a class="oro-link" href="components.html#composite" aria-current="page">Composite</a>
+    </div>
+
+    <div class="oro-toc">
+      <span class="oro-toc-title">On this page</span>
+      <div class="oro-toc-list">
+        <a class="oro-toc-link" href="#drawer">Drawer</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#playground">Playground</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#variants">Variants</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#states">States</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#sizes">Sizes</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#anatomy">Anatomy</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#properties">Properties</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#usage">Usage</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#a11y">Accessibility</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#code">Code</a>
+        <a class="oro-toc-link oro-toc-link--sub" href="#changelog">Changelog</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="oro-main">
+    <div class="oro-col">
+
+      <header class="oro-head">
+        <span class="gb-eyebrow">Design system</span>
+        <h1 class="oro-h1">Drawer</h1>
+        <p class="oro-lede">A panel that comes in from the right edge over a dimmed page, and gives the screen back when it leaves. Every drawer in the prototype is this one element with different content in it, and since 28 August every one of them wears the same head. The sections below are in the same order as every other component card, and every number is read off a rendered panel at your current window width.</p>
+        <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>, and the panel measures <b id="wpanel">measuring</b> at it.</p>
+      </header>
+
+      <section class="gbdoc-card" id="drawer">
+        <header class="gbdoc-card__head">
+          <span class="gb-eyebrow">Component</span>
+          <h2 class="oro-h2">Drawer <span class="gbdoc-flag gbdoc-status">Stable</span></h2>
+          <p class="gbdoc-card__line">One surface, one head, one way out. The page decides what goes on it; nothing about the drawer knows what it is carrying.</p>
+        </header>
+
+        <!-- ---- OVERVIEW ---- -->
+        <span class="gbdoc-sub">Overview</span>
+        <h3 class="oro-h3">What it is</h3>
+        <p class="oro-p">A fixed panel on the right of the window, sitting over a backdrop that dims the page underneath. It is <code>min(520px, 100%)</code> wide, so on a phone it takes the screen rather than pretending to be a panel on it. One instance per page is enough: opening it a second time swaps the content instead of stacking a second panel, which is why fourteen pages of the prototype carry exactly one <code>&lt;gb-drawer&gt;</code> and everything that needs a surface asks that one for it.</p>
+        <p class="oro-p">The head is the part that was settled last and matters most. Ton, 28 August: bring every drawer in the house to one denominator. So there is one round slot on the left, the title beside it, and nothing else. No eyebrow, no subtitle, no actions: a Clear all belongs next to the thing it clears, and a sentence about the content opens the body where the content is.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Owner</td><td><code>system/components/drawer.css</code> and <code>drawer.js</code></td></tr>
+            <tr><td>Element</td><td><code>&lt;gb-drawer&gt;</code>, with the classes <code>.gbd-scrim</code>, <code>.gbd-panel</code>, <code>.gbd-head</code>, <code>.gbd-slot</code>, <code>.gbd-title</code>, <code>.gbd-body</code>, <code>.gbd-sub</code>, <code>.gbd-foot</code></td></tr>
+            <tr><td>Level</td><td>Composite. It is assembled out of the button organism in its slot, the serif title role and the space scale, and it draws no circle and no glyph of its own</td></tr>
+            <tr><td>Worn by</td><td>Fourteen of the sixteen pages of the prototype</td></tr>
+            <tr><td>Defaults</td><td>The cross on the left, the title beside it, no subtitle, no foot, no step back. Everything except the title is optional</td></tr>
+            <tr><td>Status</td><td>Stable. Born 26 August, head rewritten 28 August, and every hand drawn drawer in the prototype has been converted to it</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3 class="oro-h3">Where it stands today</h3>
+        <p class="oro-p">Six places, and the head is identical in the first five. The sixth is the exception, and it is recorded rather than hidden.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Where</th><th>What opens it</th><th>What the head carries</th><th>What the body carries</th></tr></thead>
+          <tbody>
+            <tr><td>Inspect, the properties panel</td><td>A click on any element while Inspect mode is on</td><td>The name of the element</td><td>The owner, then the measured tables, and the provenance in the foot</td></tr>
+            <tr><td>Comment, the thread</td><td>A pin, or a click on an element while Comment mode is on</td><td>The name of the element</td><td>The thread, and a form of floating fields under it</td></tr>
+            <tr><td>Sign in, in the site header</td><td>The guest face in the bar, on <code>?hdr=auth</code></td><td>Account, and the step back once the code step arrives</td><td>The whole of <code>&lt;gb-auth-flow&gt;</code>, unchanged</td></tr>
+            <tr><td>Checkout, four drawers</td><td>Greeting card, gift personalization, personalization and shipping address</td><td>The name of the thing being edited</td><td>A form, and its buttons in the foot</td></tr>
+            <tr><td>The Oro showcase</td><td>A click on any specimen on a card, in either mode</td><td>The name of the component</td><td>The measured properties of that one specimen</td></tr>
+            <tr><td>The v1 catalogue bundle: filters, favourites, search, account</td><td>The bar of the vendored bundle</td><td>A centred title, and Clear all still in the head</td><td>The bundle's own content</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">The last row is the one open divergence. Those four drawers are the reference the head was measured from, and they live inside a React bundle we do not rebuild here, so they still centre their title between two wings and still keep an action in the head. Under Ton-17 that is not something we copy back: our head is the one that is right, and the bundle catches up when it is rebuilt.</p>
+
+        <!-- ---- PLAYGROUND ---- -->
+        <span class="gbdoc-sub" id="playground">Playground</span>
+        <h3 class="oro-h3">Build a head and open the real drawer</h3>
+        <p class="oro-p">Set the four axes and press the button: what opens is the page's own <code>&lt;gb-drawer&gt;</code>, not a picture of one. Escape closes it, so does the backdrop, so does the cross. Choose the step back and the arrow takes the left slot while the cross moves to the right edge; press the arrow and it walks back a step and hands the left slot to the cross again, which is what <code>setBack</code> does in a real flow.</p>
+
+        <div class="gbdoc-frame">
+          <div class="gbdoc-controls" id="pgControls">
+            <div class="gbdoc-axis" role="radiogroup" data-axis="slot">
+              <span class="gbdoc-axis__name">Left slot</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="cross">Cross</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="back">Step back</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="title">
+              <span class="gbdoc-axis__name">Title</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="short">Short</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="long">Long</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="sub">
+              <span class="gbdoc-axis__name">Subtitle</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="on">On</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="off">Off</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="foot">
+              <span class="gbdoc-axis__name">Foot</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="on">On</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="off">Off</button>
+            </div>
+          </div>
+          <div class="gbdoc-stage gbdoc-stage--center">
+            <button class="gb-btn gb-btn--m gb-btn--filled gb-btn--primary" type="button" id="pgOpen">
+              <span class="gb-btn__label">Open the drawer</span>
+            </button>
+          </div>
+          <p class="gbdoc-foot" id="pgFoot"></p>
+        </div>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
+          <pre><code id="pgCode"></code></pre>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Measured on the panel</th><th>Value</th><th>Measured on the panel</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Panel width</td><td class="gbdoc-num" id="pgPanel"></td><td>Head height</td><td class="gbdoc-num" id="pgHead"></td></tr>
+            <tr><td>Slot circle</td><td class="gbdoc-num" id="pgSlot"></td><td>Title size</td><td class="gbdoc-num" id="pgTitle"></td></tr>
+            <tr><td>Arriving</td><td class="gbdoc-num" id="pgIn"></td><td>Leaving</td><td class="gbdoc-num" id="pgOut"></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- VARIANTS ---- -->
+        <span class="gbdoc-sub" id="variants">Variants</span>
+        <h3 class="oro-h3">Four shapes, and there is no fifth</h3>
+        <p class="oro-p">A drawer has no colour axis, no size axis and no type axis: it is one surface, and what varies is which of its optional parts a caller hands over. So the variants are named by what is in the call, and every one of them is standing somewhere in the prototype today.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Variant</th><th>In the call</th><th>What it is for</th><th>Where it stands today</th></tr></thead>
+          <tbody>
+            <tr><td>Without a foot</td><td><code>title</code>, <code>html</code>, and often <code>sub</code></td><td>The plain case. Everything the reader needs is in the body, and the body scrolls to the bottom of the panel</td><td>The comment thread, and the sign in drawer in the site header</td></tr>
+            <tr><td>With a foot</td><td>and <code>foot</code></td><td>A strip that does not scroll with the body: the provenance of what is above it, or the buttons that finish the job</td><td>The properties drawer of Inspect and of every showcase card, and the four drawers of the checkout</td></tr>
+            <tr><td>With a step back</td><td>and <code>back</code>, or <code>setBack</code> later</td><td>A flow of more than one step. The arrow takes the left slot, the cross moves to the right edge, and Escape still closes rather than steps back</td><td>The sign in drawer, from the code step onward: the flow hands the drawer its own way back</td></tr>
+            <tr><td>With a form inside</td><td><code>html</code> holding fields</td><td>A drawer is a working surface, not a message. The fields are the field organism, floating labels and all, and the drawer contributes only the gutter around them</td><td>The comment thread, the four checkout drawers and the whole sign in flow</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Two of these can be worn at once, and three of the four often are: the checkout drawers carry a form and a foot, and the sign in drawer carries a form and grows a step back halfway through. What no drawer carries is a second variant of the head. That was the whole of the 28 August decision, and it is the reason this table has no row for a centred title.</p>
+
+        <!-- ---- STATES ---- -->
+        <span class="gbdoc-sub" id="states">States</span>
+        <h3 class="oro-h3">Closed, arriving, open, leaving</h3>
+        <p class="oro-p">Four states and two clocks. The panel is dense from the first pixel and travels its own width in 800ms on the entrance curve, while the backdrop dims under it in 280: the light goes down before the panel arrives. Leaving accelerates and is shorter, 350ms for both, the same clock the checkout overlay leaves on. This is a brand signature under Ton-7, so there is no reduced motion branch anywhere in the file: the drawer plays for everyone.</p>
+        <p class="gbdoc-readout">The rows below are measured by toggling the organism's own classes on a real panel and reading the result back, not by copying the stylesheet.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>State</th><th>What is on screen</th><th>The clock</th><th>Token</th></tr></thead>
+          <tbody id="stBody"></tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Escape, a click on the backdrop and the cross all do the same thing, and they do it from any state. A drawer that is already open and is opened again does not play the arrival a second time: the content swaps under a panel that never left, which is what makes a flow of steps feel like one surface rather than four.</p>
+
+        <!-- ---- SIZES ---- -->
+        <span class="gbdoc-sub" id="sizes">Sizes</span>
+        <h3 class="oro-h3">Every measure, and where each one comes from</h3>
+        <p class="oro-p">A drawer has no size ladder: it is one panel at one width, and the only thing that steps is the gutter and the title, once, at 640. What the table below is really for is the provenance column, because this component sits on three different kinds of number: measured off live, taken from the scales, and a handful that are neither and are named out loud.</p>
+        <p class="oro-p">One number moves between the two readings and it is worth knowing why before reading the table. An open drawer locks the page behind it, and locking the page takes its scrollbar away, so below 520 the panel is the whole window while it is open and the window less the scrollbar while it is not. Open the drawer above and the row changes under you, with the difference named.</p>
+        <p class="gbdoc-readout">Measured at <b id="wnow2">measuring</b> wide. <span id="szWhen">Reading the probe.</span></p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Measure</th><th>Here, right now</th><th>The rule</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Panel width</td><td class="gbdoc-num" data-m="panelW"></td><td><code>min(520px, 100%)</code>: below 520 it takes the screen, because a 520 panel on a 390 phone is a modal pretending to be a drawer</td><td><span class="gbdoc-flag gbdoc-flag--none">No token</span> 520 is a layout measure</td></tr>
+            <tr><td>Head</td><td class="gbdoc-num" data-m="headH"></td><td>The circle plus equal air. 80 is the measure it is built from, and a title that wraps grows it</td><td><span class="gbdoc-flag">Live</span> the catalogue drawers · <span class="gbdoc-flag gbdoc-flag--none">No token</span></td></tr>
+            <tr><td>Slot circle</td><td class="gbdoc-num" data-m="slotW"></td><td>The button organism wearing <code>--icon</code>. The drawer draws no circle of its own</td><td><span class="gbdoc-flag">Live</span> <code>--icon-button-size</code></td></tr>
+            <tr><td>Slot glyph</td><td class="gbdoc-num" data-m="slotGlyph"></td><td>Half the circle, at stroke 1.5 on a 24 grid</td><td><span class="gbdoc-flag">Live</span> <code>--gb-btn-icon-glyph</code></td></tr>
+            <tr><td>Head padding, vertical</td><td class="gbdoc-num" data-m="headPadY"></td><td>Derived rather than typed: half of the head measure less the circle, so the two are never out of step</td><td>Derived from the two above</td></tr>
+            <tr><td>Head and body gutter</td><td class="gbdoc-num" data-m="gutter"></td><td>24, and 16 at 639 and below. Head and body share one left edge</td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> <code>--space-24</code>, <code>--space-16</code></td></tr>
+            <tr><td>Slot to title</td><td class="gbdoc-num" data-m="gap"></td><td>One step of the space scale</td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> <code>--space-16</code></td></tr>
+            <tr><td>Title</td><td class="gbdoc-num" data-m="titleFS"></td><td>Serif 500, left aligned after the slot, 24 and 20 at 639 and below. It may take a second line and the slot stays on the first</td><td><span class="gbdoc-flag">Live</span> the reference measured 20.13 and 22.75 on a floating root; ours are the two rungs beside them</td></tr>
+            <tr><td>Title line height</td><td class="gbdoc-num" data-m="titleLH"></td><td>1.25, which is also what centres the first line on the circle</td><td><span class="gbdoc-flag gbdoc-flag--none">No token</span> a literal in the file</td></tr>
+            <tr><td>Body text</td><td class="gbdoc-num" data-m="bodyFS"></td><td>The reading size of a panel: smaller than the 16 of a page, larger than the 14 of a caption</td><td><span class="gbdoc-flag gbdoc-flag--none">No token</span> a literal in the file</td></tr>
+            <tr><td>Subtitle</td><td data-m="subFS"></td><td>The first line of the body, on Zinc 500. It used to sit in the head and moved out on 28 August</td><td><span class="gbdoc-flag gbdoc-flag--none">No token</span> a literal in the file</td></tr>
+            <tr><td>Foot</td><td class="gbdoc-num" data-m="footPad"></td><td>A strip on Zinc 50 above a hairline, 16 down and the body gutter across</td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> <code>--space-16</code>, <code>--space-24</code></td></tr>
+            <tr><td>Backdrop</td><td class="gbdoc-num" data-m="scrimBg"></td><td>The checkout backdrop, promoted into the system with the rest of the geometry</td><td><span class="gbdoc-flag gbdoc-flag--none">No token</span> the system has no scrim colour</td></tr>
+            <tr><td>Shadow</td><td data-m="shadow"></td><td>The floating panel shadow, shared with the console</td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> <code>--shadow-panel</code></td></tr>
+            <tr><td>Layer</td><td class="gbdoc-num" data-m="layers"></td><td>Above the console at 60 and the pins at 56, because a drawer is the thing you are reading and everything else is behind it</td><td><span class="gbdoc-flag gbdoc-flag--none">No token</span> the system has no layer scale</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Seven rows say No token, and they are two different admissions. Four are the ones the drawer cannot help: the system has no panel width scale, no head scale, no scrim colour and no layer scale, so the component carries four literals and names every one of them in its own file. The other three are type, and type does have a scale: the title line height, the body size and the subtitle size are literals in a file that had no reason to be. Those three are a decision for Ton rather than a shrug, and they are the one thing this card found that the organism did not already know about itself.</p>
+
+        <!-- ---- ANATOMY ---- -->
+        <span class="gbdoc-sub" id="anatomy">Anatomy</span>
+        <h3 class="oro-h3">The panel, drawn in the page</h3>
+        <p class="oro-p">The panel below is the real thing with one line of the showcase's own CSS on it, which takes it out of the corner of the window and puts it in the flow so it can be pointed at. Everything else about it is <code>drawer.css</code>. Click the head and the properties drawer opens on it.</p>
+
+        <div class="gbdoc-frame">
+          <div class="gbdoc-stage" data-inspect="drawer">
+            <div class="gbdoc-slot gbdoc-slot--wide">
+              <div class="gbd-panel gbdoc-panel" id="anatomyPanel"></div>
+              <span class="gbdoc-slot__cap"><b>The panel</b><span id="anatomyCap">measuring</span></span>
+            </div>
+          </div>
+          <p class="gbdoc-foot">A specimen, not the instrument: it stands still, so it has no arrival to play and no window edge to be fixed to. Every number on this page is read off a panel that is fixed, laid out and measured exactly as the reader's own drawer is.</p>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Part</th><th>Class</th><th>What it is</th><th>Measured</th></tr></thead>
+          <tbody>
+            <tr><td>Backdrop</td><td><code>.gbd-scrim</code></td><td>The dimmed page. A click on it closes the drawer</td><td class="gbdoc-num" data-m="scrimBg"></td></tr>
+            <tr><td>Panel</td><td><code>.gbd-panel</code></td><td>The surface. A column of three: head, body, foot</td><td class="gbdoc-num" data-m="panelW"></td></tr>
+            <tr><td>Head</td><td><code>.gbd-head</code></td><td>One row, aligned to the top so a wrapping title keeps the slot on its first line</td><td class="gbdoc-num" data-m="headH"></td></tr>
+            <tr><td>Head, left slot</td><td><code>.gbd-slot</code></td><td>The cross, or the step back when there is one. Never both on the same side</td><td class="gbdoc-num" data-m="slotW"></td></tr>
+            <tr><td>Head, title</td><td><code>.gbd-title</code></td><td>Serif, left aligned, straight after the slot. It may take a second line</td><td class="gbdoc-num" data-m="titleFS"></td></tr>
+            <tr><td>Head, right edge</td><td><code>.gbd-slot</code>, the third one</td><td>Empty, unless a step back has taken the left slot. Then the cross stands here, and this is the only head in the house with two controls in it</td><td data-m="rightEdge"></td></tr>
+            <tr><td>Head, hairline</td><td><code>.gbd-head</code></td><td>One pixel of Zinc 200 under the row</td><td data-m="hair"></td></tr>
+            <tr><td>Body</td><td><code>.gbd-body</code></td><td>Everything the caller sent, and the only part that scrolls</td><td class="gbdoc-num" data-m="bodyPad"></td></tr>
+            <tr><td>Body, first line</td><td><code>.gbd-sub</code></td><td>The subtitle, when there is one. It opens the body because it is a sentence about the content</td><td data-m="subFS"></td></tr>
+            <tr><td>Foot</td><td><code>.gbd-foot</code></td><td>Optional. It does not scroll, and it disappears entirely when it is empty</td><td class="gbdoc-num" data-m="footPad"></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- PROPERTIES ---- -->
+        <span class="gbdoc-sub" id="properties">Properties</span>
+        <h3 class="oro-h3">The API, and the drawer that reads a head</h3>
+        <p class="oro-p">Two layers, the way the mature systems keep them. The table is the whole surface of the component, readable and linkable in one piece. The drawer answers a different question, about one specimen: click either head below and it opens with the height, the slot, the title and the hairline measured off that head, with the token that produced each value beside it.</p>
+
+        <div class="gbdoc-frame">
+          <div class="gbdoc-stage" data-inspect="drawer">
+            <div class="gbdoc-band">
+              <span class="gbdoc-band__cap">The head with one control</span>
+              <div class="gbdoc-slot gbdoc-slot--wide">
+                <div class="gbd-panel gbdoc-panel" id="headPlain"></div>
+                <span class="gbdoc-slot__cap"><b>Default</b><span id="headPlainCap">measuring</span></span>
+              </div>
+            </div>
+            <div class="gbdoc-band">
+              <span class="gbdoc-band__cap">The head with a step behind it</span>
+              <div class="gbdoc-slot gbdoc-slot--wide">
+                <div class="gbd-panel gbdoc-panel" id="headBack"></div>
+                <span class="gbdoc-slot__cap"><b>With a step back</b><span id="headBackCap">measuring</span></span>
+              </div>
+            </div>
+          </div>
+          <p class="gbdoc-foot">The arrow does not join the cross, it replaces it. Two glyphs eight pixels apart are a menu, not a way out, so the cross crosses the head instead.</p>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Name</th><th>Kind</th><th>Type</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>open({ ... })</code></td><td>Method</td><td>object</td><td>required</td><td>Fills the panel and brings it in. Called again while it is open, it swaps the content and plays nothing</td></tr>
+            <tr><td><code>title</code></td><td>Option</td><td>string</td><td>empty</td><td>The head. Plain text, serif, left aligned, and it may wrap. An empty title takes the whole line away</td></tr>
+            <tr><td><code>sub</code></td><td>Option</td><td>string, html allowed</td><td>none</td><td>One sentence about the content. It is written as the first line of the BODY, not into the head</td></tr>
+            <tr><td><code>html</code></td><td>Option</td><td>string</td><td>empty</td><td>The body. Anything the page can render, including a whole component</td></tr>
+            <tr><td><code>foot</code></td><td>Option</td><td>string, html allowed</td><td>none</td><td>The strip under the body. An empty foot takes itself away</td></tr>
+            <tr><td><code>back</code></td><td>Option</td><td>function</td><td>none</td><td>Grows the step back. The arrow takes the left slot, the cross moves to the right edge, and this function runs when the arrow is pressed</td></tr>
+            <tr><td><code>setBack(fn)</code></td><td>Method</td><td>function or null</td><td>required</td><td>Grows or drops the step back while the panel is already on screen. Null takes the arrow away again</td></tr>
+            <tr><td><code>setTitle(text)</code></td><td>Method</td><td>string</td><td>required</td><td>Rewrites the head without touching the body, for a flow that renames its step</td></tr>
+            <tr><td><code>close()</code></td><td>Method</td><td>no arguments</td><td>required</td><td>Sends the panel out and gives the page back. A host rarely needs it: Escape, the backdrop and the cross all call it</td></tr>
+            <tr><td><code>gbd:open</code></td><td>Event</td><td>bubbles</td><td>none</td><td>Fired when the panel starts arriving, so a host can follow the drawer without owning it</td></tr>
+            <tr><td><code>gbd:close</code></td><td>Event</td><td>bubbles</td><td>none</td><td>Fired when it starts leaving. The site header waits out the 350 on this one before it changes the bar</td></tr>
+            <tr><td>Attributes</td><td>None</td><td>none</td><td>none</td><td>The element takes no attributes at all. Everything it shows arrives through the call, because the content of a drawer is a decision taken at the moment it opens and never in markup</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- USAGE ---- -->
+        <span class="gbdoc-sub" id="usage">Usage</span>
+        <h3 class="oro-h3">When a drawer, and when a page</h3>
+        <p class="oro-p">One question decides it before any other: does the reader have to come back to what is underneath? A drawer keeps the context on screen and dimmed behind the panel, and it costs the reader nothing to leave. A page replaces the context, and it is the right answer whenever the work is long enough that being sent back would feel like losing it.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Reach for</th><th>When</th><th>Not when</th></tr></thead>
+          <tbody>
+            <tr><td>A drawer</td><td>A side task that belongs to something on the page: editing one row, reading the properties of one element, signing in without losing the basket</td><td>The main work of a screen. A drawer that is the point of the page is a page in a costume, 520 wide for no reason</td></tr>
+            <tr><td>A page</td><td>Work with steps, work worth a URL, work a reader may want to leave and come back to</td><td>A confirmation, a detail, a note: sending someone away and back for one field is the more expensive answer</td></tr>
+            <tr><td>One title</td><td>The head says what the drawer is, once. The body starts with the content</td><td>Repeating the title as a heading inside the body. Two names for one surface, eighty pixels apart, is a mistake the reader has to work out</td></tr>
+            <tr><td>Actions in the body</td><td>Next to the thing they act on: a Clear all at the top of the list it clears, a Save in the foot beside the form it saves</td><td>In the head. The head has one control and it is the way out, and that is the whole of the 28 August rule</td></tr>
+            <tr><td>The step back</td><td>A flow that genuinely has a step behind it, and only while it does. The flow hands the drawer its own way back</td><td>As a second close. Escape and the cross already do that, and an arrow that closes is a lie about where the reader is</td></tr>
+            <tr><td>A subtitle</td><td>One sentence that names what the content is about: whose gift, which element, which shipment</td><td>As an instruction. A sentence the reader has to act on belongs in the body next to the control it is about</td></tr>
+            <tr><td>A foot</td><td>Something that must stay visible while the body scrolls: the buttons that finish, or the provenance of what is above</td><td>For text nobody has to see. An empty foot is better than a full one, and an empty one removes itself</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Escape always closes, even when there is a step behind. Escape is the way out of a surface, not a way back through it; the arrow is the way back, and it is a button rather than a gesture because a person has to be able to see that the step exists. And one drawer per page: two panels on top of each other is a stack nobody can leave in one press, which is exactly what the element prevents by swapping its content instead.</p>
+
+        <!-- ---- ACCESSIBILITY ---- -->
+        <span class="gbdoc-sub" id="a11y">Accessibility</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Role</td><td>The panel is <code>role="dialog"</code> with <code>aria-modal="true"</code>, and its <code>aria-label</code> is written from the title and the subtitle at the moment it opens, so a reader who cannot see the head is told the same thing it says</td></tr>
+            <tr><td>Focus in</td><td>The panel itself takes focus when it arrives. It is <code>tabindex="-1"</code>, so it is reachable by script and not by the tab key, and the first tab from there lands on the first control inside the drawer rather than somewhere on the page behind</td></tr>
+            <tr><td>Focus out</td><td>On close, focus returns to the element that opened it. A reader who pressed a pin, a face or a row goes back to that pin, face or row, not to the top of the document</td></tr>
+            <tr><td>Escape</td><td>Closes, from any step, with a step behind it or without. It is bound while the drawer is open and unbound when it leaves, so it never eats an Escape the page wanted</td></tr>
+            <tr><td>The backdrop</td><td>A click anywhere on the dimmed page closes the drawer. It is the largest target on the screen and it means the same thing as the cross</td></tr>
+            <tr><td>The slot names</td><td>The cross is named Close and the arrow is named Back, always. They are glyphs with no label, so without a name a screen reader announces a button and nothing else</td></tr>
+            <tr><td>The page underneath</td><td>Stops scrolling while the panel is open, and gets its scrolling back on close. Without that, a wheel over the backdrop moves the page the reader is not looking at</td></tr>
+            <tr><td>The target</td><td>The slot is the 44 circle of the button organism, which is exactly the WCAG 2.2 minimum, and it keeps the organism's focus ring</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">One honest gap. Focus is moved in and moved back, and the page behind is frozen, but focus is not TRAPPED: a determined tab key can still walk out of the panel and into the page underneath. For a modal dialog that is a real shortcoming rather than a taste, and closing it is a change to the organism, so it is written down here rather than fixed quietly in a showcase wave.</p>
+
+        <!-- ---- CODE ---- -->
+        <span class="gbdoc-sub" id="code">Code</span>
+        <p class="oro-p">One element in the markup, and everything else in the call. The element can be written anywhere on the page: the panel and the backdrop move themselves onto the body when it is built, so a transformed ancestor cannot become their containing block and slide the drawer inside a card.</p>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeBasics">Copy</button>
+          <pre><code id="codeBasics">&lt;!-- once per page, anywhere in the body --&gt;
+&lt;gb-drawer id="panel"&gt;&lt;/gb-drawer&gt;
+
+&lt;link rel="stylesheet" href="system/components/drawer.css"&gt;
+&lt;script src="system/components/drawer.js"&gt;&lt;/script&gt;</code></pre>
+        </div>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeCall">Copy</button>
+          <pre><code id="codeCall">var panel = document.getElementById('panel');
+
+// the plain case
+panel.open({
+  title: 'Shipping address',
+  sub:   'For Alice Nakamura',
+  html:  '&lt;div class="gba-form"&gt;...&lt;/div&gt;',
+  foot:  '&lt;button class="gb-btn gb-btn--m"&gt;...&lt;/button&gt;'
+});
+
+// a flow with a step behind it: the arrow takes the left slot
+// and the cross moves to the right edge
+panel.open({
+  title: 'Enter the code',
+  back:  function () { flow.back(); },
+  html:  flow.stepHTML()
+});
+
+// or grown while the panel is already on screen
+panel.setBack(function () { flow.back(); });
+panel.setBack(null);
+panel.setTitle('Enter the code');
+panel.close();
+
+// following it without owning it
+panel.addEventListener('gbd:open',  function () { ... });
+panel.addEventListener('gbd:close', function () { ... });</code></pre>
+        </div>
+
+        <p class="oro-note">Two things a caller does not have to write. There is no close button to add: the head builds its own slots and wires them. And there is no scroll lock, no focus save and no key listener to remember, because a drawer that leaves any of those to its callers has fourteen chances to get one of them wrong.</p>
+
+        <!-- ---- CHANGELOG ---- -->
+        <span class="gbdoc-sub" id="changelog">Changelog</span>
+        <h3 class="oro-h3">What changed, and what it used to be</h3>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>When</th><th>What</th></tr></thead>
+          <tbody>
+            <tr><td>26 August, <code>gbppl-drawer-1</code></td><td>The organism was born. There was no drawer in the system: the catalogue had one inside a bundle we do not own, and the checkout had four written into the page in utilities, one per drawer, with no element to call. The geometry and the choreography of the checkout drawer were promoted into the system rather than redesigned, and the first consumer was the properties panel of Inspect</td></tr>
+            <tr><td>28 August, <code>gbppl-drawer-unify-1</code></td><td>One head for every drawer in the house. The eyebrow left the head, the subtitle moved down into the body, the actions left for the body, the cross became the round icon button and moved to the left, the title moved to the left beside it, and the step back arrived as a slot that replaces the cross rather than joining it. The four hand drawn drawers of the checkout were converted to the element in the same wave, and the sign in drawer in the site header became the whole of <code>&lt;gb-auth-flow&gt;</code> on this surface</td></tr>
+            <tr><td>28 August, this wave</td><td>The card. Nothing in the organism moved: the rule that every drawer wears one head has lived in a code comment since the day it was taken, and this page is the first place a reader can find it. Inspect gained one kind, Drawer head, and the documentation atoms gained one class, so a fixed panel can stand still in a page and be pointed at</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub">Related</span>
+        <p class="oro-p"><a href="icons.html#iconbutton">Icon button</a>, which is the circle in the slot and owns everything about it, and <a href="components.html#buttons">Button</a>, whose organism that circle is a shape of. <a href="components.html#fields">Field</a> is what a drawer with a form in it is made of. The three composites that are only ever seen inside this panel have their cards in the <a href="components.html#composite">composite shelf</a>: the sign in flow, the properties of Inspect and the comment thread.</p>
+      </section>
+
+      <footer class="oro-foot">
+        Sources: <a href="../components/drawer.css">drawer.css</a>, <a href="../components/drawer.js">drawer.js</a>, <a href="../components/button.css">button.css</a>, <a href="../components/icon.js">icon.js</a>, <a href="../components/docs.css">docs.css</a> and the motion and space blocks of <a href="../assets/tokens.css">tokens.css</a> · every panel on this page, including the one that opens over it, is rendered by those files.
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- The drawer of this page. It is both the specimen of the
+     playground and the surface the properties open on: one per
+     page is the rule, and a showcase that kept two would be
+     breaking the rule it is documenting. -->
+<gb-drawer id="propsDrawer"></gb-drawer>
+
+<!-- The probe. A real panel, fixed exactly as the reader's own is,
+     parked off screen so the tables have something to measure
+     before anybody has opened anything. Whenever the real drawer
+     does open, the same reading runs on it and the page says which
+     of the two it is printing. -->
+<div class="gbdoc-probes" aria-hidden="true" id="probes"></div>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+<script>
+/* ============================================================
+   gbppl-oro-drawer-1 — THE READOUT AND THE PLAYGROUND
+   ------------------------------------------------------------
+   Same one rule as the button and icon cards: NOTHING ON THIS
+   PAGE PRINTS A NUMBER THAT WAS TYPED. Every measurement is read
+   back out of a rendered panel with getComputedStyle, so if a
+   token moves the page moves with it, and if the organism breaks
+   it breaks here first.
+
+   TWO PANELS ARE READ, AND THE PAGE SAYS WHICH. The probe below
+   is the organism's own markup, fixed to the window exactly as
+   the real panel is, so it measures the same at every width and
+   it is there before anybody has pressed anything. The moment the
+   reader opens the real drawer the same reading runs on that, and
+   the caption says so. If the two ever disagree, the caption says
+   that too, because a probe that has drifted from the thing it
+   stands for is worse than no probe.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var ICONS = window.GbIcons;
+
+  function px(v) {
+    var n = parseFloat(v);
+    if (isNaN(n)) return v;
+    return Math.round(n * 10) / 10 + 'px';
+  }
+  function ms(v) {
+    var n = parseFloat(v);
+    if (isNaN(n)) return v;
+    return Math.round(n * 1000) + 'ms';
+  }
+  function txt(id, value) { var el = document.getElementById(id); if (el) el.textContent = value; }
+  function glyph(name) { return ICONS && ICONS.has(name) ? ICONS.svg(name) : ''; }
+
+  /* ---------- the head, written the way drawer.js writes it ----------
+     Same classes, same order of slots, same glyphs out of the record.
+     A specimen of a head that was drawn by hand in a different shape
+     would be a picture of the component, not the component. */
+  function slotHTML(kind, hidden) {
+    return '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button"' +
+      (hidden ? ' hidden' : '') + ' tabindex="-1" aria-label="' + (kind === 'back' ? 'Back' : 'Close') + '">' +
+      '<span class="gb-btn__icon" aria-hidden="true">' +
+      glyph(kind === 'back' ? 'chevron-left' : 'close') + '</span></button>';
+  }
+  function headHTML(title, back) {
+    return '<div class="gbd-head">' +
+      slotHTML('back', !back) +
+      slotHTML('close', back) +
+      '<h2 class="gbd-title">' + title + '</h2>' +
+      slotHTML('close', !back) +
+      '</div>';
+  }
+
+  /* ---------- the probe ---------- */
+  var probes = document.getElementById('probes');
+  if (probes) {
+    probes.innerHTML =
+      '<div class="gbd-scrim" id="prScrim"></div>' +
+      '<div class="gbd-panel" id="prPanel">' +
+        headHTML('Shipping address', false) +
+        '<div class="gbd-body"><p class="gbd-sub">For this recipient</p><p>Body</p></div>' +
+        '<div class="gbd-foot">Foot</div>' +
+      '</div>';
+  }
+
+  /* ---------- one reading, used on both panels ---------- */
+  function read(panel, scrim) {
+    if (!panel) return null;
+    var head = panel.querySelector('.gbd-head');
+    var title = panel.querySelector('.gbd-title');
+    var body = panel.querySelector('.gbd-body');
+    var sub = panel.querySelector('.gbd-sub');
+    var foot = panel.querySelector('.gbd-foot');
+    var slot = panel.querySelector('.gbd-slot:not([hidden])');
+    var slotIcon = slot ? slot.querySelector('.gb-btn__icon') : null;
+    var cs = getComputedStyle(panel);
+    var hs = head ? getComputedStyle(head) : null;
+    var ts = title ? getComputedStyle(title) : null;
+
+    /* The two clocks are read by wearing the organism's own classes
+       for the length of one measurement and taking them off again.
+       Nothing is copied out of the stylesheet and nothing is left
+       behind on the element. The panel transitions ONE property, so
+       the computed strings are single values and must not be split
+       on the comma: a cubic-bezier has three of its own. */
+    var had = panel.classList.contains('is-out');
+    panel.classList.remove('is-out');
+    var inDur = getComputedStyle(panel).transitionDuration.trim();
+    var inFn = getComputedStyle(panel).transitionTimingFunction.trim();
+    panel.classList.add('is-out');
+    var outDur = getComputedStyle(panel).transitionDuration.trim();
+    var outFn = getComputedStyle(panel).transitionTimingFunction.trim();
+    if (!had) panel.classList.remove('is-out');
+
+    var scrimDur = 'no backdrop', scrimBg = 'no backdrop';
+    if (scrim) {
+      var ss = getComputedStyle(scrim);
+      scrimBg = ss.backgroundColor;
+      scrimDur = ss.transitionDuration.trim();
+    }
+
+    return {
+      panelW: px(cs.width),
+      shadow: cs.boxShadow,
+      layers: (scrim ? getComputedStyle(scrim).zIndex + ' backdrop, ' : '') + cs.zIndex + ' panel',
+      headH: head ? px(head.getBoundingClientRect().height) : 'no head',
+      headPadY: hs ? px(hs.paddingTop) : 'no head',
+      gutter: hs ? px(hs.paddingLeft) : 'no head',
+      gap: hs ? px(hs.columnGap) : 'no head',
+      hair: hs ? px(hs.borderBottomWidth) + ' ' + hs.borderBottomColor : 'no head',
+      slotW: slot ? px(getComputedStyle(slot).width) : 'no slot',
+      slotGlyph: slotIcon ? px(getComputedStyle(slotIcon).width) : 'no glyph',
+      titleFS: ts ? px(ts.fontSize) : 'no title',
+      titleLH: ts ? px(ts.lineHeight) : 'no title',
+      bodyFS: body ? px(getComputedStyle(body).fontSize) : 'no body',
+      bodyPad: body ? px(getComputedStyle(body).paddingTop) : 'no body',
+      /* Null, not «none»: whether a panel carries a subtitle or a
+         foot is the caller's decision and not a measurement, so a
+         panel without one leaves the row alone rather than wiping
+         the reading that is in it. */
+      subFS: sub ? px(getComputedStyle(sub).fontSize) + ' ' + getComputedStyle(sub).color : null,
+      footPad: foot && foot.innerHTML ? getComputedStyle(foot).padding : null,
+      scrimBg: scrimBg,
+      rightEdge: hs ? px(hs.paddingRight) + ' in from the panel edge' : 'no head',
+      inDur: ms(inDur), inFn: inFn, outDur: ms(outDur), outFn: outFn, scrimDur: ms(scrimDur)
+    };
+  }
+
+  /* ---------- painting the measured cells ---------- */
+  var cells = document.querySelectorAll('[data-m]');
+  var LAST = null;
+  var PROBE = null;
+
+  /* The promise the comment at the top of this block makes, kept:
+     a probe that has drifted from the panel it stands for is worse
+     than no probe, so every live reading is put beside the probe's
+     and any row that differs is named. */
+  var ROW_NAME = {
+    panelW: 'panel width', headH: 'head', slotW: 'slot circle', slotGlyph: 'slot glyph',
+    headPadY: 'head padding', gutter: 'gutter', gap: 'slot to title', titleFS: 'title size',
+    titleLH: 'title line height', bodyFS: 'body text', subFS: 'subtitle', footPad: 'foot',
+    scrimBg: 'backdrop', shadow: 'shadow', layers: 'layer', hair: 'hairline',
+    bodyPad: 'body gutter', rightEdge: 'right edge', inDur: 'arrival', outDur: 'departure'
+  };
+  function diffWithProbe(live) {
+    if (!PROBE) return '';
+    var out = [];
+    Object.keys(ROW_NAME).forEach(function (k) {
+      if (PROBE[k] == null || live[k] == null) return;   /* not measured on both */
+      if (PROBE[k] !== live[k]) out.push(ROW_NAME[k] + ', ' + PROBE[k] + ' on the probe against ' + live[k] + ' here');
+    });
+    return out.length
+      ? ' It differs from the probe on ' + out.join('; ') + '.'
+      : ' Every row matched the probe.';
+  }
+
+  function paint(data, source) {
+    if (!data) return;
+    LAST = data;
+    Array.prototype.forEach.call(cells, function (cell) {
+      var k = cell.getAttribute('data-m');
+      if (data[k] == null) return;   /* not measured here: keep what is in the cell */
+      cell.textContent = data[k];
+    });
+    txt('pgPanel', data.panelW);
+    txt('pgHead', data.headH);
+    txt('pgSlot', data.slotW + ' circle, ' + data.slotGlyph + ' glyph');
+    txt('pgTitle', data.titleFS + ' over ' + data.titleLH);
+    txt('pgIn', data.inDur + ' ' + data.inFn);
+    txt('pgOut', data.outDur + ' ' + data.outFn);
+    txt('szWhen', source);
+    txt('wpanel', data.panelW);
+    paintStates(data);
+  }
+
+  function paintStates(d) {
+    var body = document.getElementById('stBody');
+    if (!body) return;
+    /* Four columns, not six. A state of this component is a
+       sentence about two things moving together, and splitting the
+       panel from the backdrop and the duration from the curve turned
+       every cell into a ribbon eight words wide. And the clock is
+       NOT a `gbdoc-num` cell: that class holds a measurement on one
+       line and will not wrap, which is right for 44px and wrong for
+       a duration and a curve in the same breath. */
+    var rows = [
+      ['Closed',
+       'The panel and the backdrop are both out of the document, and the page scrolls.',
+       'Nothing is playing', '', []],
+      ['Arriving',
+       'The panel is dense from the first pixel and travels its own width in from the right edge. The backdrop dims under it and finishes first, so the light goes down before the panel lands.',
+       d.inDur + ' the panel, ' + d.scrimDur + ' the backdrop', d.inFn,
+       ['--mo-drawer-in', '--mo-small', '--mo-enter']],
+      ['Open',
+       'The panel stands at the edge and the backdrop is fully dim. The page underneath stops scrolling, focus is inside the panel, and a click on the backdrop closes.',
+       'Nothing is playing', '', []],
+      ['Leaving',
+       'Both go together and it is quicker than the way in: the panel accelerates out and is hidden again once it has gone.',
+       d.outDur + ' for both', d.outFn,
+       ['--mo-medium-out', '--mo-exit']]
+    ];
+    body.innerHTML = rows.map(function (r) {
+      return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td>' +
+        '<td>' + r[2] + (r[3] ? '<br><code>' + r[3] + '</code>' : '') + '</td><td>' +
+        (r[4].length
+          ? r[4].map(function (t) { return '<code>' + t + '</code>'; }).join(' ')
+          : '<span class="gbdoc-flag gbdoc-flag--none">Nothing to name</span>') +
+        '</td></tr>';
+    }).join('');
+  }
+
+  /* ---------- the specimens that stand in the page ---------- */
+  function paintSpecimens() {
+    var anatomy = document.getElementById('anatomyPanel');
+    if (anatomy) {
+      anatomy.innerHTML = headHTML('Gift personalization', false) +
+        '<div class="gbd-body"><p class="gbd-sub">For this recipient</p>' +
+        '<p>The body is everything the caller sent, and the only part of the panel that scrolls.</p></div>' +
+        '<div class="gbd-foot">The foot stays put while the body moves.</div>';
+    }
+    var plain = document.getElementById('headPlain');
+    if (plain) plain.innerHTML = headHTML('Filters', false);
+    var back = document.getElementById('headBack');
+    if (back) back.innerHTML = headHTML('Sign in or create an account', true);
+
+    [['anatomyPanel', 'anatomyCap'], ['headPlain', 'headPlainCap'], ['headBack', 'headBackCap']]
+      .forEach(function (pair) {
+        var p = document.getElementById(pair[0]);
+        var cap = document.getElementById(pair[1]);
+        if (!p || !cap) return;
+        var h = p.querySelector('.gbd-head');
+        /* Short on purpose: the hover hint of an inspect region sits
+           in the bottom right corner of the slot, and a caption that
+           runs the width of a 390 panel meets it there. */
+        cap.textContent = px(getComputedStyle(p).width) + ' wide, ' +
+          px(h.getBoundingClientRect().height) + ' head';
+      });
+  }
+
+  /* ---------- the playground ---------- */
+  var STATE = { slot: 'cross', title: 'short', sub: 'on', foot: 'off' };
+  var TITLES = { short: 'Filters', long: 'Sign in or create an account' };
+  var SUB = 'One sentence about the content, written as the first line of the body.';
+  var BODY = '<p>The body is whatever the caller sent. It is the only part that scrolls, ' +
+    'and the gutter around it is the same one the head stands on.</p>' +
+    '<p>Press Escape, click the dimmed page, or use the slot in the head. All three do the same thing.</p>';
+  var FOOT = 'The foot does not scroll with the body.';
+
+  var controls = document.getElementById('pgControls');
+  var openBtn = document.getElementById('pgOpen');
+  var codeEl = document.getElementById('pgCode');
+  var pgFoot = document.getElementById('pgFoot');
+  var drawer = document.getElementById('propsDrawer');
+
+  function callObject(forCode) {
+    var o = [];
+    o.push("  title: '" + TITLES[STATE.title] + "'");
+    if (STATE.slot === 'back') o.push('  back:  function () { flow.back(); }');
+    if (STATE.sub === 'on') o.push("  sub:   'One sentence about the content'");
+    o.push("  html:  '<p>...</p>'");
+    if (STATE.foot === 'on') o.push("  foot:  'The foot does not scroll with the body.'");
+    return forCode ? "panel.open({\n" + o.join(',\n') + "\n});" : o;
+  }
+
+  function paintControls() {
+    Array.prototype.forEach.call(controls.querySelectorAll('.gbdoc-axis'), function (row) {
+      var axis = row.getAttribute('data-axis');
+      Array.prototype.forEach.call(row.querySelectorAll('.gbdoc-seg'), function (seg) {
+        var on = seg.getAttribute('data-val') === STATE[axis];
+        seg.classList.toggle('is-on', on);
+        seg.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+    });
+    if (codeEl) codeEl.textContent = callObject(true);
+    pgFoot.innerHTML = STATE.slot === 'back'
+      ? 'The arrow is on the left and the cross has moved to the right edge. Press the arrow and the drawer walks back a step: same panel, new content, and the cross returns to the left.'
+      : 'One control in the head, and it is the way out. Escape, the backdrop and the cross all close it.';
+  }
+
+  /* The step behind, played for real: the arrow swaps the content
+     and drops itself, which is what a flow does when it reaches its
+     first step again. */
+  function firstStep() {
+    drawer.open({
+      title: 'The step before this one',
+      sub: STATE.sub === 'on' ? 'The arrow took the drawer back, and gave the left slot to the cross.' : '',
+      html: BODY,
+      foot: STATE.foot === 'on' ? FOOT : ''
+    });
+    measureLive();
+  }
+
+  function openIt() {
+    drawer.open({
+      title: TITLES[STATE.title],
+      sub: STATE.sub === 'on' ? SUB : '',
+      html: BODY,
+      foot: STATE.foot === 'on' ? FOOT : '',
+      back: STATE.slot === 'back' ? firstStep : null
+    });
+    measureLive();
+  }
+
+  /* Trap 11 of the skill: a panel measured in the middle of its
+     arrival reports a geometry that is on no screen. The reading
+     waits for the arrival to finish, and the panel says when that
+     is rather than a timer guessing. */
+  function measureLive() {
+    var panel = document.querySelector('body > .gbd-panel');
+    var scrim = document.querySelector('body > .gbd-scrim');
+    if (!panel) return;
+    var spent = false;
+    var done = function () {
+      if (spent) return;
+      spent = true;
+      panel.removeEventListener('transitionend', done);
+      var live = read(panel, scrim);
+      paint(live, 'Read off the drawer you opened, at ' + window.innerWidth + 'px wide.' + diffWithProbe(live));
+    };
+    panel.addEventListener('transitionend', done);
+    /* A panel that was ALREADY on screen swaps its content without
+       moving, so there is no transition to wait for and no event to
+       hear. The arrival is measured, not typed, so the fallback is
+       the panel's own clock read a line earlier, plus a frame. */
+    var wait = parseFloat(getComputedStyle(panel).transitionDuration) * 1000 + 60;
+    setTimeout(done, isNaN(wait) ? 900 : wait);
+  }
+
+  if (controls) {
+    controls.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-val]') : null;
+      if (!chip) return;
+      var axis = chip.parentNode.getAttribute('data-axis');
+      if (!axis) return;
+      STATE[axis] = chip.getAttribute('data-val');
+      paintControls();
+    });
+  }
+  if (openBtn) openBtn.addEventListener('click', openIt);
+
+  /* ---------- copying ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-copy[data-copy]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.querySelector(btn.getAttribute('data-copy'));
+      if (!target) return;
+      var done = function () {
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(target.textContent).then(done, done);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = target.textContent;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  /* ---------- the contents follow the reader ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
+  var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  var spyTimer;
+  function spy() {
+    var best = 0;
+    for (var i = 0; i < marks.length; i++) {
+      if (marks[i] && marks[i].getBoundingClientRect().top <= 140) best = i;
+    }
+    links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
+  }
+
+  function paintAll() {
+    paintSpecimens();
+    PROBE = read(document.getElementById('prPanel'), document.getElementById('prScrim'));
+    paint(PROBE, 'Read off the probe, at ' + window.innerWidth + 'px wide.');
+    txt('wnow', window.innerWidth + 'px');
+    txt('wnow2', window.innerWidth + 'px');
+  }
+
+  paintControls();
+  paintAll();
+  spy();
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(paintAll, 120);
+  });
+  window.addEventListener('scroll', function () {
+    clearTimeout(spyTimer);
+    spyTimer = setTimeout(spy, 90);
+  }, { passive: true });
+})();
+</script>
+
+<gb-studio-panel data-root="../../" page="oro"></gb-studio-panel>
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>
