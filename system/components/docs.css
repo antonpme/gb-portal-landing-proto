@@ -125,10 +125,19 @@
    gbppl-oro-levels-1, Ton 28.08: «в дизайн-системе готово много
    компонентов, но витрины сделаны далеко не для всех, витрины
    пустуют». A shelf of these tells the truth about coverage at a
-   glance: name, status chip, one line of purpose, the pages it
-   stands on, and the way in, or the words «showcase pending».
+   glance: a preview tile, the name, the status chip and one line
+   of purpose, plus the way in or the words «showcase pending».
    It replaces the flat «Documented soon» table, which could only
    list what exists and had no way of showing a hole.
+
+   gbppl-oro-cards-1, Ton 28.08: «сложно ли показывать превью
+   компонента в квадратике вместо тонн текста? Я не хочу читать
+   текст. Там, где ты мне листишь компоненты, миллиард текста, от
+   которого эпилепсия. Вместо этого лучше превью показывать.» So
+   the owner, the list of pages and the long description LEFT THE
+   CARD. They are not lost: they ride in data-oro-* on the article,
+   in the title of the tile, and in the drawer the tile opens.
+   What is left on the face of a card is a picture and one line.
 
    240 is not a token: it is the same layout measure
    .gbdoc-slot--grow already uses in this file for a specimen that
@@ -137,11 +146,36 @@
    under it.
    ============================================================ */
 .gbdoc-reg {
+  /* THE ONE NEW LENGTH OF THIS WAVE, and it is built out of the
+     scale rather than typed: 64 + 64 + 32. It has to hold a live
+     specimen at its NATURAL size with air around it (an L button
+     is 48, a field with its caps label is about 70, the six cells
+     of a code are 48) so nothing has to be scaled down to fit,
+     and it has to letterbox a page snapshot at about 2 to 1, the
+     shape a frame of a page reads in. 120 would clip the field
+     and squeeze a snapshot to 3 to 1; 192 would push the name of
+     the fourth row under the fold on a laptop. */
+  --gbdoc-preview-h: calc(var(--space-64) * 2 + var(--space-32));
+
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--space-16);
   margin-top: var(--space-24);
 }
+
+/* A LEVEL IS AN EYEBROW OVER A ROW, not a shelf with a heading and a
+   paragraph (gbppl-oro-cards-1, Ton 28.08 on where the Components
+   section is going). It takes the full width of the grid, so the row
+   under it starts clean, and it is the Eyebrow role and nothing else:
+   the name of a level is a caption, not a title. 48 is the step on
+   the scale that reads as «a new group» beside a 16 gap between
+   cards; the first one takes no air, the grid has its own. */
+.gbdoc-reg__group {
+  grid-column: 1 / -1;
+  margin: var(--space-48) 0 0;
+  scroll-margin-top: var(--space-24);
+}
+.gbdoc-reg__group:first-child { margin-top: 0; }
 .gbdoc-regcard {
   display: flex;
   flex-direction: column;
@@ -165,13 +199,6 @@
   line-height: 1.6;
   color: var(--zinc-600);
 }
-.gbdoc-regcard__where {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--zinc-500);
-}
-.gbdoc-regcard__where b { font-weight: 600; color: var(--zinc-700); }
 /* The way in sits on the floor of the card whatever the card above
    it does, so a shelf of cards has one line of exits. */
 .gbdoc-regcard__go {
@@ -185,6 +212,107 @@
 /* No card, no link: the same line in the quiet voice, so the row
    of exits still reads as a row. */
 .gbdoc-regcard__go--none { color: var(--zinc-400); }
+
+/* ---- THE PREVIEW TILE (gbppl-oro-cards-1) -------------------
+   The tile is a .gbdoc-slot as well, which is what makes it a
+   specimen the inspector already knows how to pick up: the shelf
+   carries data-inspect and the click opens the drawer with the
+   registry entry behind this card. The two class selector is
+   deliberate: .gbdoc-slot is declared further down this file and
+   would otherwise win the properties they share.
+
+   THE TILE IS A PICTURE, NOT A CONTROL. Whatever stands in it is
+   real markup from the real component, so the shelf cannot drift
+   from the system, but it does not answer the pointer, does not
+   take the tab and is not read out: pointer-events none on the
+   contents, tabindex -1 on anything focusable, aria-hidden on the
+   specimen and one aria-label on the tile instead. */
+.gbdoc-regcard > .gbdoc-regcard__preview {
+  display: grid;
+  place-items: center;
+  gap: 0;
+  width: 100%;
+  height: var(--gbdoc-preview-h);
+  padding: var(--space-16);
+  overflow: hidden;
+  background: var(--zinc-50);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.gbdoc-regcard__preview > * { max-width: 100%; }
+.gbdoc-regcard__preview * { pointer-events: none; }
+
+/* A frame of the page a composite component stands on: the picture
+   fills the tile edge to edge, because a snapshot with a margin
+   round it reads as a screenshot pasted into a card rather than a
+   window onto the page. */
+.gbdoc-regcard__preview--frame { padding: 0; background: var(--white); }
+.gbdoc-regcard__preview--frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* A hole in the catalogue gets an empty tile: dashed, nothing in
+   it, and the eyebrow saying so once. The dash is the same signal
+   the map uses for a page that does not exist yet. */
+.gbdoc-regcard__preview--none {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--zinc-300);
+}
+
+/* ---- how a specimen stands inside the tile ---- */
+.gbdoc-regcard__spec { display: flex; align-items: center; justify-content: center; }
+.gbdoc-regcard__spec--row { gap: var(--space-16); }
+.gbdoc-regcard__spec--wrap { flex-wrap: wrap; gap: var(--space-8); }
+.gbdoc-regcard__spec--full { display: block; width: 100%; }
+.gbdoc-regcard__spec--stack { flex-direction: column; width: 100%; gap: var(--space-16); }
+.gbdoc-regcard__spec--floor { align-items: flex-end; }
+.gbdoc-regcard__spec--band { width: 100%; gap: 0; }
+
+/* ---- the schematics: foundations drawn out of their own values ----
+   Not pictures of the tokens: the tokens themselves, spent. --sw,
+   --sq, --dur and --curve are handed in from the markup as var()
+   references, never as literals, so a token that moves moves the
+   preview with it. */
+.gbdoc-regcard__sw { flex: 1 1 0; height: var(--space-48); background: var(--sw); }
+.gbdoc-regcard__plate {
+  width: var(--space-32);
+  height: var(--space-32);
+  border-radius: var(--radius);
+  background: var(--sw);
+}
+.gbdoc-regcard__plate--lift { box-shadow: var(--shadow-card); }
+.gbdoc-regcard__sq { width: var(--sq); height: var(--sq); background: var(--zinc-300); }
+
+/* The clock shown as the clock: four dots, each one travelling for
+   its own duration on its own curve. Ton-7, the house motion plays
+   and is not branched away. */
+.gbdoc-regcard__track {
+  position: relative;
+  width: 100%;
+  height: var(--space-8);
+  border-radius: var(--radius-circle);
+  background: var(--zinc-200);
+}
+.gbdoc-regcard__track i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-circle);
+  background: var(--blue-600);
+  animation: gbdoc-mo-run var(--dur) var(--curve) infinite alternate;
+}
+@keyframes gbdoc-mo-run {
+  from { left: 0; }
+  to   { left: calc(100% - var(--space-8)); }
+}
 
 /* ============================================================
    THE READING TABLE
