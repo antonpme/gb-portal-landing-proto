@@ -1,14 +1,23 @@
 /* ============================================================
    SANDBOX REGISTRY — один источник песочниц (gbppl-sandboxes-3,
-   Тон 2026-08-25, копи-правка 2026-08-26)
+   Тон 2026-08-25, копи-правка 2026-08-26; теги и дата последней
+   активности gbppl-sandboxes-4, Тон 2026-08-28)
    ------------------------------------------------------------
    КАК ЗАРЕГИСТРИРОВАТЬ НОВУЮ ПЕСОЧНИЦУ (три строки):
    1. Найди страницу по её id в PAGES (или заведи новую запись:
       label, live, variants: []).
    2. Добавь в variants объект: id, label, desc (одна строка),
-      status, href (от корня студии, с query), ready.
+      status, href (от корня студии, с query), ready, tags,
+      updated.
    3. Всё. Панель, PROTO-блок чекаута и sandboxes.html рисуются
       отсюда, руками ничего дописывать не нужно.
+
+   ПРАВИЛО ДЛЯ КАЖДОЙ СЛЕДУЮЩЕЙ ВОЛНЫ (gbppl-sandboxes-4): волна,
+   которая ТРОГАЕТ вариант — его страницу, его параметр, его копию,
+   его статус, — обновляет `updated` этого варианта В ТОМ ЖЕ
+   КОММИТЕ. Дата, которую никто не двигает, врёт быстрее, чем
+   отсутствующая: сортировка «last active» на странице песочниц
+   читает ровно это поле, и ничего другого у неё нет.
    ------------------------------------------------------------
    Тон, 25.08, дословно: «Мы показываем эту панель управления
    прототипом везде, даже на лайве. Лайв всегда остаётся лайвом,
@@ -41,7 +50,43 @@
              решение принято, кода ещё нет: показывается серым с
              подписью статуса и без ссылки. Ставится true в тот
              день, когда страница начинает читать параметр.
+     tags    [] области, которых вариант касается. Короткие строки
+             в sentence case, ТОЛЬКО реальные по смыслу desc и по
+             истории волн в шапке файла варианта: 'header',
+             'navigation', 'hero', 'pre-footer', 'flow',
+             'shipping', 'personalization', 'copy', 'colour',
+             'client feedback'. СТРАНИЦУ И СТАТУС В ТЕГИ НЕ
+             ПИШЕМ: и то и другое страница песочниц печатает
+             бейджем сама, из PAGES[id].label и из status, и
+             повтор превратил бы фильтр в шум.
+     updated 'YYYY-MM-DD', день последнего изменения варианта.
+             Провенанс первичных значений ниже.
    }
+
+   ПРОВЕНАНС ПЕРВИЧНЫХ `updated` (gbppl-sandboxes-4, снято
+   2026-08-28, записывается ОДИН РАЗ; дальше поле ведут волны).
+   Правило: `git log -1 --format=%as` по файлу страницы варианта
+   (href без query) И `git log -L <строка id>` по строке варианта
+   в этом файле, берётся БОЛЕЕ ПОЗДНЯЯ из двух дат.
+
+     вариант                файл страницы   строка здесь   взято
+     catalog/prefooter-light   2026-08-27      2026-08-26   08-27
+     checkout/v1               2026-08-27      2026-08-25   08-27
+     checkout/v2               2026-08-27      2026-08-25   08-27
+     portal/pth                2026-08-27      2026-08-25   08-27
+     portal/hero-start         2026-08-27      2026-08-25   08-27
+     booking/proposition       2026-08-27      2026-08-25   08-27
+
+   Все шесть сошлись на 2026-08-27, и это честный ответ, а не сбой
+   замера: 27.08 прошла волна по КАЖДОЙ живой странице (герой
+   каталога, контейнер, чекаут на организме, лид-форма букинга,
+   портал), и файл страницы у всех шести сдвинулся в один день.
+   Поэтому в первый день «last active» — ничья, и сортировка
+   разводит её вторым ключом (порядок страниц в реестре, потом
+   имя). Со следующей волны поле расходится. Вопрос Тону: не
+   правильнее ли считать датой варианта день, когда двигалось ЕГО
+   собственное решение (строка в реестре: 25 и 26.08), а не день,
+   когда кто-то трогал общий файл страницы.
 
    ПУТИ. Все адреса от корня студии, как в data-root (ловушка 2
    скилла: у страниц разная глубина, поэтому page-relative дефолты
@@ -82,7 +127,11 @@
           desc: 'The closing banner and the advantages in light ink, tighter, no gradient.',
           status: 'proposal',
           href: 'live/catalog/index.html?prefooter=light',
-          ready: true
+          ready: true,
+          /* Джулия и Рассел на живой странице категорий, отсюда
+             'client feedback'; правка цветовая и по высоте лент. */
+          tags: ['pre-footer', 'colour', 'client feedback'],
+          updated: '2026-08-27'
         }
       ]
     },
@@ -100,7 +149,11 @@
           desc: "Today's checkout with the agreed quick fixes: one address or a different address per gift, the steps renamed, bulk personalize and edit selected.",
           status: 'in-progress',
           href: 'live/checkout.html?v=1',
-          ready: true
+          ready: true,
+          /* Адрес на подарок = 'shipping', bulk personalize =
+             'personalization', переименованные шаги = 'copy'. */
+          tags: ['flow', 'shipping', 'personalization', 'copy'],
+          updated: '2026-08-27'
         },
         {
           id: 'v2',
@@ -108,7 +161,9 @@
           desc: 'Gifts are not personalized by default. Quantity is a pool on the gift, and personalization is an add-on behind a choice of two doors.',
           status: 'in-progress',
           href: 'live/checkout.html?v=2',
-          ready: true
+          ready: true,
+          tags: ['flow', 'personalization'],
+          updated: '2026-08-27'
         }
       ]
     },
@@ -123,7 +178,9 @@
           desc: "The portal's own bar instead of the website's: the GildedBox | Portal lock, and the utilities ordered out to the edge.",
           status: 'in-progress',
           href: 'live/portal.html?pth=1',
-          ready: true
+          ready: true,
+          tags: ['header', 'navigation'],
+          updated: '2026-08-27'
         },
         {
           id: 'hero-start',
@@ -131,7 +188,9 @@
           desc: 'The hero of the portal landing rebuilt around the Start Gifting entry, with the greeting kept out of its way.',
           status: 'in-progress',
           href: 'live/portal.html?hero=start',
-          ready: true
+          ready: true,
+          tags: ['hero', 'flow'],
+          updated: '2026-08-27'
         }
       ]
     },
@@ -151,7 +210,9 @@
           desc: 'The meeting page led by the proposition: what the call is for, said before the calendar asks for a day.',
           status: 'in-progress',
           href: 'live/book-a-meeting.html?v=proposition',
-          ready: false
+          ready: false,
+          tags: ['copy', 'flow'],
+          updated: '2026-08-27'
         }
       ]
     },
@@ -230,6 +291,11 @@
         desc: v.desc,
         status: v.status,
         ready: v.ready !== false,
+        /* Копия массива, а не сам массив: срез отдают наружу, и
+           потребитель, который отсортирует теги у себя, не должен
+           переставлять их в реестре (gbppl-sandboxes-4). */
+        tags: (v.tags || []).slice(),
+        updated: v.updated || '',
         href: root + v.href,
         current: v.ready !== false && matches(root + v.href)
       };
