@@ -420,26 +420,26 @@
         var m = /gb-icon--(\d+)\b/.exec(String(el.className));
         return m ? m[1] + 'px' : 'default rung';
       } },
-    { sel: '.gb-btn', name: 'Button', kind: 'button', oro: 'components.html#buttons',
+    { sel: '.gb-btn', name: 'Button', kind: 'button', oro: 'button.html#buttons',
       detail: function (el) {
         var d = KINDS.button.describe(el);
         return d.type + ' ' + d.colour + ' · ' + SIZE_WORD[d.size] +
                (d.state === 'rest' ? '' : ' · ' + d.state);
       } },
 
-    { sel: '.gba-textarea', name: 'Field', kind: 'field', oro: 'components.html#fields',
+    { sel: '.gba-textarea', name: 'Field', kind: 'field', oro: 'field.html#fields',
       detail: function () { return 'multi line'; } },
-    { sel: '.gba-input', name: 'Field', kind: 'field', oro: 'components.html#fields',
+    { sel: '.gba-input', name: 'Field', kind: 'field', oro: 'field.html#fields',
       detail: function (el) { return 'single line · ' + KINDS.field.describe(el).state; } },
-    { sel: '.gba-label', name: 'Field label', oro: 'components.html#fields' },
-    { sel: '.gba-inputwrap', name: 'Field box', oro: 'components.html#fields' },
-    { sel: 'gb-field, .gba-field', name: 'Field', oro: 'components.html#fields' },
+    { sel: '.gba-label', name: 'Field label', oro: 'field.html#fields' },
+    { sel: '.gba-inputwrap', name: 'Field box', oro: 'field.html#fields' },
+    { sel: 'gb-field, .gba-field', name: 'Field', oro: 'field.html#fields' },
     { sel: '.gba-error', name: 'Field error' },
     { sel: '.gba-submit', name: 'Form submit' },
     { sel: '.gba-form', name: 'Form' },
 
-    { sel: '.gb-eyebrow', name: 'Eyebrow', oro: 'components.html#eyebrow' },
-    { sel: '.gbh-count', name: 'Count badge', oro: 'components.html#badge' },
+    { sel: '.gb-eyebrow', name: 'Eyebrow', oro: 'eyebrow.html#eyebrow' },
+    { sel: '.gbh-count', name: 'Count badge', oro: 'badge.html#badge' },
     { sel: '.gbh-beta', name: 'Beta badge' },
     { sel: '.gbh-navitem, .gbh-link', name: 'Header nav link' },
     { sel: '.gbh-menu__title', name: 'Submenu column heading' },
@@ -1471,6 +1471,17 @@
     var region = slot.closest('[data-inspect]');
     var kind = KINDS[region.getAttribute('data-inspect')];
     if (!kind) return false;
+    /* gbppl-oro-pages-1. Тон, 28.08: «Показывать плавающую кнопку
+       Properties, которая открывает Drawer, на карточках компонентов
+       нужно только внутри самих компонентов. В превью и вообще
+       где-либо ещё её быть не должно.» A kind whose region is not a
+       shelf of specimens but a catalogue of cards says so once, and
+       then a click in View mode belongs to the card: the link under
+       it goes to the component's page. In Inspect mode the region
+       answers as everything else does, because in Inspect mode the
+       question is always «what is this», and the entry is the
+       answer. */
+    if (MODE !== 'inspect' && kind.inViewMode === false) return false;
     /* The clicked element is handed to find as well as the slot: a
        component slot holds one specimen, but a type specimen block
        holds six roles in one slot and the reader means the line

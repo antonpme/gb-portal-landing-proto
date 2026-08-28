@@ -334,7 +334,17 @@
     'system/oro/index.html':      'About Oro',
     'system/oro/typography.html': 'Typography',
     'system/oro/colors.html':     'Colors',
+    'system/oro/icons.html':      'Icons',
+    /* gbppl-oro-pages-1: the Components section became an opening
+       page plus a page per component (Ton-19), so the table grows a
+       line per showcase. Icons and Drawer had already become pages
+       and had been missed; they are here now. */
     'system/oro/components.html': 'Components',
+    'system/oro/button.html':     'Button',
+    'system/oro/badge.html':      'Count badge',
+    'system/oro/eyebrow.html':    'Eyebrow',
+    'system/oro/field.html':      'Field',
+    'system/oro/drawer.html':     'Drawer',
     'system/pages/index.html':    'Component pages',
     'system/pages/auth.html':     'Sign in, measured',
     'system/pages/catalog.html':  'Gifts, measured',
