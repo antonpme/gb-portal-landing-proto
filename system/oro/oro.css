@@ -113,6 +113,15 @@ button { font-family: inherit; cursor: pointer; }
 /* ---- The sections ---- */
 .oro-nav { display: flex; flex-direction: column; gap: 2px; }
 
+/* gbppl-oro-levels-1, Ton 28.08: «по атомарному дизайну компоненты
+   делятся по уровням». The rail says so out loud, so the sections
+   sit under caps captions. The caption is the SAME object as the
+   one over the table of contents further down (one declaration
+   block, two names): a rail must not hold two different ways of
+   saying «what follows is a group». */
+.oro-navgroup { margin-top: var(--space-24); }
+.oro-navgroup:first-child { margin-top: 0; }
+
 .oro-link {
   display: flex;
   align-items: center;
@@ -178,7 +187,8 @@ button { font-family: inherit; cursor: pointer; }
    documentation atoms went the other way, into
    ..\components\docs.css. */
 .oro-toc { margin-top: var(--space-32); }
-.oro-toc-title {
+.oro-toc-title,
+.oro-navgroup {
   display: block;
   margin-bottom: var(--space-8);
   font-size: var(--eyebrow-size);
@@ -200,10 +210,16 @@ button { font-family: inherit; cursor: pointer; }
 .oro-toc-link:hover { background: var(--zinc-100); color: var(--zinc-900); }
 .oro-toc-link.is-here { color: var(--blue-600); font-weight: 600; }
 .oro-toc-link--sub { padding-left: var(--space-24); }
+/* gbppl-oro-levels-1: a third rung. The page now has shelves over
+   the cards, so the card sits one step in and the sections inside
+   a card one step further. Both steps are the same --space-24 the
+   first indent already used, added once more. */
+.oro-toc-link--sub2 { padding-left: calc(var(--space-24) * 2); }
 .oro-toc-link--soon { color: var(--zinc-400); }
 @media (max-width: 1023px) {
   .oro-toc-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
-  .oro-toc-link--sub { padding-left: 12px; }
+  .oro-toc-link--sub,
+  .oro-toc-link--sub2 { padding-left: 12px; }
 }
 
 /* ---- The door back ----
@@ -245,6 +261,39 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 300;
   line-height: 1.65;
   color: var(--zinc-500);
+}
+
+/* ---- The shelf: one atomic level of the catalogue ----
+   gbppl-oro-levels-1, Ton 28.08: «по атомарному дизайну компоненты
+   делятся по уровням: базовые (кнопка) и составные (хедер: логотип,
+   навигация, кнопки, иконки)». A shelf holds one level and the
+   component cards of that level sit inside it.
+
+   THE LEVEL IS MARKED BY THE RULE AND BY THE AIR, NOT BY A NEW
+   TYPE SIZE. A card head and a shelf head speak in the same two
+   roles the document already owns (Eyebrow over .oro-h2), because
+   inventing a fifth heading size to say «this one is bigger» is
+   exactly the kind of new number 6a forbids. What separates them
+   is that a shelf opens on a hairline and stands 64 clear of what
+   came before, while a card opens on nothing at all.
+
+   The first shelf takes no rule: .oro-head has already drawn that
+   line, and two hairlines 64 apart would read as an empty band. */
+.oro-shelf {
+  padding-top: var(--space-64);
+  border-top: 1px solid var(--zinc-200);
+}
+/* 96 = --space-64 + --space-32: the scale stops at 64, and from
+   1280 a card is already 64 clear of its neighbour, so a shelf
+   needs the next step up to keep reading as the level above it. */
+@media (min-width: 1280px) { .oro-shelf { padding-top: calc(var(--space-64) + var(--space-32)); } }
+.oro-shelf:first-of-type { padding-top: var(--space-48); border-top: 0; }
+.oro-shelf__line {
+  margin: var(--space-8) 0 0;
+  max-width: 68ch;
+  font-size: var(--font-size-root);
+  line-height: 1.6;
+  color: var(--zinc-600);
 }
 
 /* ---- Sections ---- */
