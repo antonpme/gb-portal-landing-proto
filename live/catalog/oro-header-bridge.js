@@ -113,11 +113,32 @@
     el.classList.add('gbh-icon-button');
   }
 
+  /* gbppl-header-auth-1 (2026-08-28). With ?hdr=auth the bar carries its OWN
+     person glyph, its own sign in drawer and its own account menu, and Ton-16
+     is explicit about why the bundle's must not surface beside them: «иконка
+     аккаунта это фактически регистрация; меню на ней (бандл) не наше: шрифт не
+     наш». So on this variant the account control is NOT carried out of the
+     hidden header at all. It stays where it was born, inside
+     `#root .site-header`, which oro-ui-override.css keeps display:none: no node
+     in our bar, no menu to pop up, no click to intercept. The SEARCH is bridged
+     exactly as before — the bundle's overlay is the only working search on this
+     page, and Ton spoke about the account, not about it.
+     THE LOSS, WRITTEN DOWN RATHER THAN PAPERED OVER: signing in through our bar
+     sets OUR flag and does not tell the build, so on this variant the build's
+     own account drawer and its presence dot never appear. That is the point of
+     the variant, not a gap in it. */
+  function authVariant() {
+    try { return new URLSearchParams(location.search).get('hdr') === 'auth'; }
+    catch (e) { return false; }
+  }
+
   function bridge() {
     var slot = actions();
-    var account = bundleAccount();
+    var auth = authVariant();
+    var account = auth ? null : bundleAccount();
     var search = bundleSearch();
-    if (!slot || !account || !search) return false;
+    if (!slot || !search) return false;
+    if (!auth && !account) return false;
 
     /* Account goes before the cart: the two utilities of the site bar sit in
        the corner, and the person glyph reads first of the pair.
@@ -136,8 +157,10 @@
        way round. */
     var ourSearch = slot.querySelector('button.gbh-icon-button[aria-label="Search gifts"]');
     var cart = slot.querySelector('.gbh-icon-button[aria-label^="Cart"]');
-    slot.insertBefore(account, cart || ourSearch);
-    adopt(account.querySelector('.icon-button'));
+    if (account) {
+      slot.insertBefore(account, cart || ourSearch);
+      adopt(account.querySelector('.icon-button'));
+    }
 
     /* Search REPLACES ours. The component's search glyph is a dead button of
        the prototype (no handler, nowhere to go); the build's opens a working
