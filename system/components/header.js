@@ -795,6 +795,9 @@
          -------------------------------------------------------- */
       btn.addEventListener('click', function () {
         if (signedIn()) { openMenu(!menuOpen()); return; }
+        /* Дровер накрывает бар целиком: открытая бургер-панель под ним
+           не видна, но осталась бы открытой после закрытия. */
+        openBurger(false);
         self.__openSignin();
       });
       if (burgerBtn) {
