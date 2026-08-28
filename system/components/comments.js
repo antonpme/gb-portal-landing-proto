@@ -39,7 +39,50 @@
    ВОЛНА C (gbppl-comments-c, 28.08). Провод дотянут до шестнадцатой
    страницы — sandboxes.html, единственная с консолью, но без режима;
    копи-линт видимых строк: подпись булавок сокращена до «Show pins»
-   (Тон просил коротко), строка сироты сведена к двум фразам.
+   (Тон просил коротко; сам переключатель снят в gbppl-panel-11, см.
+   ниже), строка сироты сведена к двум фразам.
+
+   ------------------------------------------------------------
+   ПОЛКА ТОЛЬКО В СВОЁМ РЕЖИМЕ, СЧЁТ ВСЕГДА (gbppl-panel-11, 28.08)
+   ------------------------------------------------------------
+   Тон, 28.08, дословно: «Не логично показывать секцию Comments on
+   this page во View mode. Во View я хочу просто смотреть сайт,
+   комментарии показывать не нужно, только когда я перехожу в режим
+   комментариев... И когда есть комментарии, на иконке нужен бейдж с
+   количеством новых (непрочитанных) комментариев, чтобы я сразу это
+   видел».
+
+   1. ПОЛКА ОБЪЯВЛЯЕТ РЕЖИМ. addSection получает when: 'comment', и
+      дальше её гасит и зажигает панель (studio-panel.js, гардероб).
+      Список при этом ЖИВЁТ и в View: он кормит бейдж, и его данные
+      нужны раньше, чем полку откроют.
+   2. ЧТО СЧИТАЕТСЯ НОВЫМ. Отметка «просмотрено» этой страницы лежит
+      в localStorage (SEEN_KEY ниже) и ставится, пока человек в
+      режиме Comment: при входе и на каждом обновлении списка. Новое
+      — это комментарий или ОТВЕТ с created позже отметки. Отметки
+      нет (первый заход в этом браузере) — новыми считаются все
+      открытые треды: сказать «0» человеку, который эту страницу
+      никогда не открывал, значило бы соврать.
+      Отметка в localStorage, а не в sessionStorage, нарочно: «я это
+      видел» переживает вкладку, в отличие от «я сейчас в режиме
+      комментариев». Отметка своя у каждого браузера и никуда не
+      уходит: сервис хранит комментарии, прочитанность — дело того,
+      кто читает.
+   3. БЕЙДЖ. Ставится ручкой сегмента (handle.setBadge) на позицию
+      Comment и виден в View и Inspect. В самом Comment его нет: там
+      открыт список, и счёт непрочитанного рядом со списком — это
+      счёт того, на что человек прямо сейчас смотрит.
+   4. «SHOW PINS» СНЯТ. Переключатель показывал булавки в View и
+      Inspect; жил он в этой полке, а полка теперь стоит только в
+      Comment. Контрол, до которого можно дотянуться лишь оттуда, где
+      он ничего не меняет, — ловушка, а не удобство; и булавки поверх
+      страницы во View противоречат тому же решению Тона («во View я
+      хочу просто смотреть сайт») ровно так же, как сама полка.
+      Булавки стали свойством режима: есть режим — есть булавки.
+   5. ОДНА ЗАГРУЗКА, НЕ ОПРОС. Список читается один раз при старте и
+      потом на возврат фокуса в окно, но не чаще раза в минуту
+      (REFRESH_MS): бейдж должен догонять чужие комментарии, а не
+      стучать в сервис.
 
    КАК ПОДКЛЮЧАТЬ (на каждой странице с консолью, ПОСЛЕ inspect.js):
 
@@ -88,12 +131,16 @@
      сейчас, а не то, что он настроил навсегда. Имя автора — наоборот,
      localStorage: его вводят один раз в браузере (спека, шапка). */
   var MODE_KEY   = 'gbppl-comment-mode';
-  var PINS_KEY   = 'gbppl-comment-pins';
   var AUTHOR_KEY = 'gbppl-author';
+  /* gbppl-panel-11: «я это видел» переживает вкладку, значит
+     localStorage; ключ на страницу и версию, потому что и список
+     такой же (page + version, см. load). */
+  var SEEN_KEY   = 'gbppl-comments-seen:';
+  var REFRESH_MS = 60000;  /* не чаще раза в минуту на возврат фокуса */
 
   var ON = false;          /* режим включён */
-  var showPins = false;    /* булавки видны и в View / Inspect */
   var items = [];          /* треды этой страницы и этой версии */
+  var lastLoad = 0;        /* когда список читали в последний раз */
   var filter = 'open';
   var down = '';           /* пусто или строка состояния об отказе */
   var openId = null;       /* тред, открытый в дровере */
@@ -377,9 +424,19 @@
                        '&version=' + encodeURIComponent(versionKey()))
       .then(function (data) {
         items = (data && data.comments) || [];
+        lastLoad = Date.now();
         rose();
         paintShelf();
         paintPins();
+        /* gbppl-panel-11. Список, который сейчас показали, и есть
+           «просмотрено»: отметка ставится в режиме Comment, при входе
+           в него и на каждом обновлении. Сначала отметка, потом
+           бейдж, иначе бейдж посчитал бы то, что человек уже видит. */
+        if (ON) markSeen();
+        paintBadge();
+        /* Число открытых уехало в строку состояния консоли тем же
+           событием, каким объявляется режим. */
+        announce();
         if (deepLink) {
           var want = deepLink;
           deepLink = null;
@@ -414,7 +471,10 @@
     return layer;
   }
 
-  function pinsVisible() { return ON || showPins; }
+  /* БУЛАВКИ = СВОЙСТВО РЕЖИМА (gbppl-panel-11). Переключатель «Show
+     pins», державший их в View и Inspect, снят вместе с решением
+     Тона «во View я хочу просто смотреть сайт»: см. шапку, пункт 4. */
+  function pinsVisible() { return ON; }
 
   function paintPins() {
     if (!pinsVisible() && !layer) return;
@@ -454,6 +514,58 @@
     }
   }
 
+  /* ============================================================
+     НЕПРОЧИТАННОЕ И БЕЙДЖ (gbppl-panel-11)
+     ------------------------------------------------------------
+     Тон: «когда есть комментарии, на иконке нужен бейдж с
+     количеством новых (непрочитанных) комментариев, чтобы я сразу
+     это видел». Разбор решения — в шапке файла, пункт 2.
+     ============================================================ */
+  function seenKey() {
+    var v = versionKey();
+    return SEEN_KEY + pageKey() + (v ? '?' + v : '');
+  }
+
+  function seenAt() {
+    try { return Date.parse(localStorage.getItem(seenKey())) || 0; } catch (e) { return 0; }
+  }
+
+  function markSeen() {
+    try { localStorage.setItem(seenKey(), new Date().toISOString()); } catch (e) {}
+  }
+
+  function newer(iso, since) {
+    var t = Date.parse(iso);
+    return !!t && t > since;
+  }
+
+  function openCount() {
+    var n = 0;
+    items.forEach(function (c) { if (c.status === 'open') n++; });
+    return n;
+  }
+
+  /* Считаем ЗАПИСИ, а не треды: ответ в старом треде — такая же
+     новость, как новый тред, и человек, увидевший «1», должен найти
+     ровно одну вещь, которой не видел. */
+  function unread() {
+    var since = seenAt();
+    if (!since) return openCount();
+    var n = 0;
+    items.forEach(function (c) {
+      if (newer(c.created, since)) n++;
+      (c.replies || []).forEach(function (r) { if (newer(r.created, since)) n++; });
+    });
+    return n;
+  }
+
+  /* В самом Comment бейджа нет: там открыт список, и счёт того, на
+     что смотришь, — шум. Ноль тоже снимает бейдж (панель, setBadge). */
+  function paintBadge() {
+    if (!handle || typeof handle.setBadge !== 'function') return;
+    handle.setBadge('comment', ON ? 0 : unread());
+  }
+
   var pinFrame = 0;
   function repaintPins() {
     if (pinFrame) return;
@@ -474,7 +586,13 @@
     var sec = p.addSection({
       title: 'Comments on this page',
       rank: 20,                       /* сразу за инструментами (Mode, Device) */
-      className: 'gbsp-sec--comments'
+      className: 'gbsp-sec--comments',
+      /* gbppl-panel-11, решение Тона 28.08: «во View я хочу просто
+         смотреть сайт, комментарии показывать не нужно, только когда
+         я перехожу в режим комментариев». Полку гасит и зажигает
+         панель; список под ней читается всё равно, потому что он
+         кормит бейдж. */
+      when: 'comment'
     });
     shelf = sec.body;
     shelf.innerHTML =
@@ -484,15 +602,11 @@
         '<button class="gbsp-seg" type="button" data-f="resolved" aria-pressed="false">Resolved</button>' +
         '<button class="gbsp-seg" type="button" data-f="mine" aria-pressed="false">Mine</button>' +
       '</div>' +
-      '<ul class="gbsp-list gbc-list"></ul>' +
-      '<button class="gbsp-link gbc-pintoggle" type="button" aria-pressed="false">' +
-        'Show pins</button>';
+      '<ul class="gbsp-list gbc-list"></ul>';
 
     shelf.addEventListener('click', function (e) {
       var f = e.target.closest ? e.target.closest('[data-f]') : null;
       if (f) { filter = f.getAttribute('data-f'); paintShelf(); return; }
-      var t = e.target.closest ? e.target.closest('.gbc-pintoggle') : null;
-      if (t) { setShowPins(!showPins); return; }
       var row = e.target.closest ? e.target.closest('[data-go]') : null;
       if (row) openThread(row.getAttribute('data-go'), true);
     });
@@ -555,17 +669,6 @@
         '</li>';
       }).join('');
     }
-
-    var toggle = shelf.querySelector('.gbc-pintoggle');
-    toggle.classList.toggle('is-active', showPins);
-    toggle.setAttribute('aria-pressed', String(showPins));
-  }
-
-  function setShowPins(v) {
-    showPins = !!v;
-    ss(PINS_KEY, showPins ? '1' : '0');
-    paintShelf();
-    paintPins();
   }
 
   /* ============================================================
@@ -979,7 +1082,15 @@
   function announce() {
     try {
       document.dispatchEvent(new CustomEvent('gbc:mode', {
-        detail: { on: ON, down: ON && down ? 'Comments unavailable' : '' }
+        detail: {
+          on: ON,
+          down: ON && down ? 'Comments unavailable' : '',
+          /* gbppl-panel-11: строка состояния консоли в этом режиме
+             говорит «Comment · N open», и N приходит отсюда — считать
+             его второй раз в панели значило бы держать там копию
+             списка. */
+          open: openCount()
+        }
       }));
     } catch (e) {}
   }
@@ -1005,6 +1116,12 @@
     }
     if (handle) handle.setActive(ON ? 'comment' : (window.GbInspect ? window.GbInspect.mode() : 'view'));
     paintPins();
+    /* gbppl-panel-11. Вход в режим = «я это увидел»: список уже в
+       руках, и полка открывается вместе с режимом. Пока сервис молчит,
+       отметки нет: списка на экране тоже нет, и гасить бейдж значило
+       бы объявить прочитанным то, чего человеку не показали. */
+    if (ON && !down) markSeen();
+    paintBadge();
     announce();
     if (ON) load();
   }
@@ -1152,21 +1269,40 @@
         onChange: function () { setMode(true); }
       });
       if (ON) handle.setActive('comment');
+      /* Сегмент приезжает позже первой загрузки списка (он ждёт
+         прибора), поэтому счёт ставится здесь ещё раз: раньше его
+         некуда было ставить. */
+      paintBadge();
+    });
+  }
+
+  /* ВОЗВРАТ ФОКУСА, НЕ ОПРОС (gbppl-panel-11). Бейдж обязан догонять
+     чужие комментарии, но сервис не обязан слушать таймер: список
+     перечитывается, когда к окну вернулись, и не чаще раза в минуту.
+     В режиме Comment перечитывать нечего лишний раз — там список и
+     так обновляется каждым действием. */
+  function wireRefresh() {
+    window.addEventListener('focus', function () {
+      if (down === 'code') return;
+      if (Date.now() - lastLoad < REFRESH_MS) return;
+      load();
     });
   }
 
   function start() {
     deepLink = takeDeepLink();
-    showPins = ss(PINS_KEY) === '1';
     mountSwitch();
     mountShelf();
+
+    wireRefresh();
 
     var wanted = deepLink ? true : ss(MODE_KEY) === '1';
     if (wanted) setMode(true);
     else {
-      /* Даже в View список страницы читается: полка консоли для того
-         и стоит, чтобы увидеть, есть ли тут замечания, не входя в
-         режим. */
+      /* Даже в View список страницы читается, хотя полки не видно
+         (gbppl-panel-11): из него берётся счёт непрочитанного на
+         сегменте Comment, и человек видит, что здесь что-то сказано,
+         не входя в режим. Ровно один запрос на загрузку страницы. */
       announce();
       load();
     }

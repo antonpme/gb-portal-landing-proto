@@ -187,6 +187,41 @@
    значение не читает: она его ХРАНИТ, потому что она единственный
    элемент студии, который стоит на всех страницах с консолью.
 
+   ------------------------------------------------------------
+   ЯЩИК ОДЕВАЕТСЯ ПО РЕЖИМУ (gbppl-panel-11, 2026-08-28)
+   ------------------------------------------------------------
+   Тон, 28.08, дословно: «Не логично показывать секцию Comments on
+   this page во View mode. Во View я хочу просто смотреть сайт,
+   комментарии показывать не нужно, только когда я перехожу в режим
+   комментариев. Логика панелей: режим комментариев: нужна только
+   секция комментариев, панель выбора девайсов не нужна. Режимы View
+   и Inspect: нужна панель девайсов, секцию комментариев не
+   отображать. И когда есть комментарии, на иконке нужен бейдж с
+   количеством новых (непрочитанных) комментариев, чтобы я сразу это
+   видел».
+
+   Отсюда три вещи, и все три у панели: панель владеет ВИДОМ и МЕСТОМ
+   (gbppl-panel-6), владельцы режимов владеют поведением.
+
+   1. ГАРДЕРОБ. Секция и группа сегментов объявляют, в каких режимах
+      их видно: spec.when = 'comment' или 'view inspect'. Панель
+      пишет это в data-when и гасит лишнее классом is-away по
+      событиям gbi:mode и gbc:mode — без перерисовки ящика, с
+      коротким --mo-small на возвращении. Кто ничего не объявил,
+      стоит всегда: Mode, навигация, версия страницы, This page,
+      подвал.
+   2. БЕЙДЖ НА СЕГМЕНТЕ. Ручка addSegments получила setBadge(value,
+      n): маленький счёт на позиции тумблера. Это ТОТ ЖЕ бейдж, что у
+      корзины хедера (Count badge, токены --count-badge-*), а не
+      третий; правила в studio-panel.css. Сколько там непрочитанного,
+      панель не знает и знать не должна: число приносит владелец
+      режима.
+   3. КЛАВИШИ 1..6 МОЛЧАТ В COMMENT. Экран из режима комментариев не
+      переключается (решение Тона выше), значит и ряд цифр не
+      срабатывает. Полоса НАД КАДРОМ остаётся живой намеренно: она
+      принадлежит сцене, а не ящику, и когда кадр уже стоит, она
+      единственная дорога обратно в полное окно.
+
    РАЗБОР ТОНА (gbppl-panel-9, 2026-08-27). Три правки, с которых
    Proposed и стал тем, что осталось.
 
@@ -628,6 +663,9 @@
        успел первым. Mode = 1, Device = 2, и так на каждой странице. */
     var rank = typeof spec.rank === 'number' ? spec.rank : 50;
     wrap.setAttribute('data-rank', String(rank));
+    /* gbppl-panel-11: в каких режимах группу видно. Не объявили —
+       видно всегда, как было у всех групп до этой волны. */
+    if (spec.when) wrap.setAttribute('data-when', spec.when);
     var title = spec.title || 'Mode';
     var shape = spec.row ? ' gbsp-segs--row' : '';
     /* Девайсы стоят одной строкой ИКОНОК (gbppl-panel-9), и тогда
@@ -732,10 +770,68 @@
     }
     sec.insertBefore(wrap, before);
     paint();
+    dress();
+
+    /* Номер позиции по значению: сегменты дописываются позже
+       (addOption), и владелец режима знает своё value, а не индекс. */
+    function indexOf(value) {
+      for (var k = 0; k < options.length; k++) if (options[k].value === value) return k;
+      return -1;
+    }
 
     return {
       element: wrap,
       setActive: function (value) { current = value; paint(); },
+      /* СЧЁТ НА ПОЗИЦИИ ТУМБЛЕРА (gbppl-panel-11). Тон: «когда есть
+         комментарии, на иконке нужен бейдж с количеством новых
+         (непрочитанных) комментариев, чтобы я сразу это видел».
+
+         Бейдж не свой: это Count badge системы (--count-badge-*, тот
+         же, что на корзине хедера), переложенный на тёмное в
+         studio-panel.css. Панель ставит ЧИСЛО и ничего про него не
+         знает: что считать новым — вопрос владельца режима.
+
+         Ноль значит «бейджа нет»: пустой кружок сказал бы, что
+         что-то есть, и был бы неправ. */
+      setBadge: function (value, n) {
+        var i = indexOf(value);
+        if (i < 0) return this;
+        var btn = wrap.querySelector('[data-seg="' + i + '"]');
+        if (!btn) return this;
+        var b = btn.querySelector('.gbsp-badge');
+        n = Math.max(0, parseInt(n, 10) || 0);
+        /* Счёт добавляет ряду 24px (16 бейджа и 8 отступа), а ящик их
+           не отдаёт: замер 28.08 на 1280 — ряду Mode нужно 204.5 при
+           199 доступных, и слово Comment ломалось на две строки.
+           Ряд СО СЧЁТОМ встаёт на ступень 8 вместо 16 (188.5, с
+           запасом); без счёта всё остаётся как было. */
+        if (row) row.classList.toggle('has-badge', !!n);
+        if (!n) {
+          if (b) b.remove();
+          /* Метка уходит вместе с числом; у сегмента-глифа своя
+             (имя и размер экрана), её не трогаем. */
+          if (!options[i].icon) btn.removeAttribute('aria-label');
+          return this;
+        }
+        if (!b) {
+          b = document.createElement('span');
+          b.className = 'gbsp-badge';
+          /* Число читается вслух вместе с именем сегмента, а не
+             отдельной цифрой ниоткуда: aria-label на кнопке, сам
+             бейдж для читалки молчит (так же, как .gbh-count). */
+          b.setAttribute('aria-hidden', 'true');
+          btn.appendChild(b);
+        }
+        b.textContent = n > 99 ? '99+' : String(n);
+        /* Третий глиф просит ещё 6px, а их уже нет: «99+» упирается в
+           край ряда РОВНО (замер 28.08: 199.13 при 199.11), и слово
+           снова ломается. Тогда зазор ряда идёт на половину ступени —
+           та же половина, что у ряда девайсов ниже, и по той же
+           причине. Случай редкий, правило одно. */
+        row.classList.toggle('badge-wide', b.textContent.length > 2);
+        btn.setAttribute('aria-label', (options[i].label || value) + ', ' + n + ' unread');
+        return this;
+      },
       /* gbppl-comments-b. Один тумблер, три положения, два владельца
          поведения: View и Inspect объявляет inspect.js, Comment —
          comments.js, и объявляет он их в разное время (первый ждёт
@@ -916,7 +1012,7 @@
      Абзацы секции This page остаются: они говорят про сценарий
      страницы, чего строка состояния сказать не может.
      ============================================================ */
-  var STATE = { mode: 'view', device: 'full', comment: false, commentsDown: '' };
+  var STATE = { mode: 'view', device: 'full', comment: false, commentsDown: '', commentsOpen: 0 };
 
   function statusLine() {
     /* gbppl-comments-b. Comment перебивает пару View / Inspect,
@@ -924,7 +1020,12 @@
        сервиса перебивает всё — режим, в котором нечего сохранить, —
        не то состояние, о котором стоит рапортовать первым. */
     if (STATE.comment && STATE.commentsDown) return STATE.commentsDown;
-    var mode = STATE.comment ? 'Comment' : (STATE.mode === 'inspect' ? 'Inspect' : 'View');
+    /* gbppl-panel-11. В Comment строка говорит про КОММЕНТАРИИ, а не
+       про экран: экран из этого режима не переключается, и повторять
+       его нечем. Число открытых приносит владелец режима тем же
+       событием, каким объявляет сам режим. */
+    if (STATE.comment) return 'Comment · ' + STATE.commentsOpen + ' open';
+    var mode = STATE.mode === 'inspect' ? 'Inspect' : 'View';
     var d = STATE.device;
     if (d === 'full') return mode + ' · Full window';
     return mode + ' · ' + deviceLabel(d) + ' ' + d + ', page runs inside the frame';
@@ -933,6 +1034,47 @@
   function paintStatus() {
     var el = document.querySelector('.gbsp-status');
     if (el) el.textContent = statusLine();
+  }
+
+  /* ============================================================
+     ГАРДЕРОБ ЯЩИКА (gbppl-panel-11)
+     ------------------------------------------------------------
+     Решение Тона 28.08 целиком в шапке файла. Коротко: у ящика
+     теперь две одежды. View и Inspect — «как я смотрю страницу»,
+     и там нужен экран; Comment — «что здесь сказано», и там нужен
+     список, а экран не переключают вовсе.
+
+     Полка объявляет свои режимы САМА, одной строкой spec.when, и
+     панель только гасит лишнее: тогда правило живёт у того, кто
+     полку поставил, а панель не заводит таблицы «кто в каком
+     режиме», которая назавтра разойдётся с полками.
+
+     Гаснет display'ем, а не opacity: полка, которой нет, не должна
+     занимать высоту ящика. Возвращение короткое — та же ступень
+     --mo-small, что у шагов и сдвигов; уход мгновенный, как у всякой
+     двери (--mo-*-out короче входа, MOTION.md).
+     ============================================================ */
+  function modeWord() {
+    return STATE.comment ? 'comment' : (STATE.mode === 'inspect' ? 'inspect' : 'view');
+  }
+
+  function dress() {
+    var word = modeWord();
+    var kin = document.querySelectorAll('gb-studio-panel [data-when]');
+    for (var i = 0; i < kin.length; i++) {
+      var want = (' ' + kin[i].getAttribute('data-when') + ' ').indexOf(' ' + word + ' ') > -1;
+      var was = !kin[i].classList.contains('is-away');
+      kin[i].classList.toggle('is-away', !want);
+      /* Анимация ставится ЗАНОВО только на настоящем возвращении:
+         повесить класс на уже стоящую полку значило бы моргать ею на
+         каждом событии режима (а gbc:mode прилетает и при загрузке
+         списка). */
+      if (want && !was) {
+        kin[i].classList.remove('is-arriving');
+        void kin[i].offsetWidth;
+        kin[i].classList.add('is-arriving');
+      }
+    }
   }
 
   function currentMode() {
@@ -1066,6 +1208,12 @@
     handle = makeSegments(host, {
       title: 'Device',
       rank: 2,
+      /* gbppl-panel-11, решение Тона 28.08: «режим комментариев:
+         нужна только секция комментариев, панель выбора девайсов не
+         нужна». Гаснет ТОЛЬКО переключатель: сцена, если она уже
+         стоит, остаётся стоять, и полоса над кадром продолжает
+         работать — иначе из кадра было бы некуда выйти. */
+      when: 'view inspect',
       /* Одна строка ИКОНОК, имя и размер уходят в title и в подпись
          под строкой (gbppl-panel-9) — ряд читается как одна шкала от
          окна до телефона, а не как таблица чисел. */
@@ -1303,6 +1451,10 @@
   function wireKeys(device) {
     document.addEventListener('keydown', function (e) {
       if (typingIn(e.target) || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      /* gbppl-panel-11: в режиме комментариев экран не переключается
+         ни сегментом, ни клавишей. Ряд цифр — тот же переключатель,
+         только с клавиатуры, и молчать он обязан вместе с ним. */
+      if (STATE.comment) return;
       var n = '123456'.indexOf(e.key);
       if (n < 0) return;
       e.preventDefault();
@@ -1376,7 +1528,12 @@
       sec.className = 'gbsp-sec' + (spec.className ? ' ' + spec.className : '');
       sec.innerHTML = '<span class="gbsp-eyebrow">' + esc(spec.title || '') + '</span>' +
                       '<div class="gbsp-secbody"></div>';
+      /* gbppl-panel-11: полка может жить не во всех режимах. Спросили
+         — панель гасит её сама, по событиям режима; не спросили —
+         стоит всегда, как стояла. */
+      if (spec.when) sec.setAttribute('data-when', spec.when);
       placeSection(this, sec, typeof spec.rank === 'number' ? spec.rank : 50);
+      dress();
       return { element: sec, body: sec.querySelector('.gbsp-secbody') };
     }
 
@@ -1542,9 +1699,11 @@
 
     STATE.mode = currentMode();
     paintStatus();
+    dress();
     document.addEventListener('gbi:mode', function (e) {
       STATE.mode = e.detail && e.detail.mode === 'inspect' ? 'inspect' : 'view';
       paintStatus();
+      dress();
     });
     /* gbppl-comments-b. Третий режим и его беда приходят одним
        событием: включён ли Comment и есть ли кому отвечать. Строка
@@ -1555,7 +1714,12 @@
       var d = e.detail || {};
       STATE.comment = !!d.on;
       STATE.commentsDown = d.down ? String(d.down) : '';
+      /* gbppl-panel-11: сколько на странице открытых. Приходит тем же
+         событием, потому что это то же самое состояние режима, и
+         второго провода ради одного числа заводить незачем. */
+      STATE.commentsOpen = Math.max(0, parseInt(d.open, 10) || 0);
       paintStatus();
+      dress();
     });
   }
   if (!customElements.get('gb-studio-panel')) {
