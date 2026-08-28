@@ -40,6 +40,20 @@
        -> <span class="gb-icon gb-icon--20">...</span>
 
    Consumers are NOT converted in this wave (Ton: наброски first).
+
+   ------------------------------------------------------------
+   THE FIRST CONSUMER, AND SIX MORE DRAWINGS
+   (gbppl-icon-consumers-1, 28.08)
+   ------------------------------------------------------------
+   The console's device row is the first thing in the house to ask
+   the record for a glyph instead of carrying its own. Its six
+   screens moved in with it, redrawn from the grid of twenty they
+   were born on. Thirteen entries became nineteen; nothing else
+   about the file changed.
+
+   A page that shows the console therefore needs icon.css and
+   icon.js, and icon.js must run BEFORE studio-panel.js, because
+   the console writes its segments in connectedCallback.
    ============================================================ */
 (function () {
   'use strict';
@@ -52,6 +66,51 @@
       body: '<path d="M4 12h15M13 6l6 6-6 6"/>',
       from: 'auth.js, booking.js: the forward glyph of every submit',
       stroke: 1.8
+    },
+    /* ---- THE SIX SCREENS (gbppl-icon-consumers-1, 28.08) ----
+       The console's device presets. They were drawn in
+       studio-panel.js on a grid of TWENTY, because that was the size
+       they had to come out at; the set is drawn on 24, and a second
+       grid inside one set is the drift the record exists to end. So
+       they were redrawn here at 24, every coordinate multiplied and
+       landed on a half pixel, and they inherit the house weight and
+       the house round caps instead of the 1.4 and the square caps
+       they carried. Compared side by side with the originals at 20
+       and at 16 before this was kept.
+
+       XL and L are an HONEST DIFFERENCE OF SIZE, not two objects:
+       the same monitor, wider and narrower, both on a stand. The
+       laptop stands on its own broad foot, tablet and phone are
+       upright slabs, and Full is a browser window with a title bar. */
+    'browser': {
+      body: '<rect x="2.5" y="4" width="19" height="16" rx="1.5"/><path d="M2.5 9h19"/>',
+      from: 'studio-panel.js: the Full preset of the console',
+      stroke: 1.5
+    },
+    'laptop': {
+      body: '<rect x="5" y="4.5" width="14" height="11" rx="1.5"/><path d="M2.5 18.5h19"/>',
+      from: 'studio-panel.js: the 1280 preset of the console',
+      stroke: 1.5
+    },
+    'monitor': {
+      body: '<rect x="4" y="4.5" width="16" height="12" rx="1.5"/><path d="M12 16.5v3M9 19.5h6"/>',
+      from: 'studio-panel.js: the 1920 preset of the console',
+      stroke: 1.5
+    },
+    'monitor-wide': {
+      body: '<rect x="1.5" y="4" width="21" height="13" rx="1.5"/><path d="M12 17v3M8 20h8"/>',
+      from: 'studio-panel.js: the 2258 preset of the console',
+      stroke: 1.5
+    },
+    'phone': {
+      body: '<rect x="8" y="2.5" width="8" height="19" rx="1.5"/><path d="M10.5 18.5h3"/>',
+      from: 'studio-panel.js: the 390 preset of the console',
+      stroke: 1.5
+    },
+    'tablet': {
+      body: '<rect x="5.5" y="2.5" width="13" height="19" rx="1.5"/><path d="M10 18.5h4"/>',
+      from: 'studio-panel.js: the 768 preset of the console',
+      stroke: 1.5
     },
     'cart': {
       body: '<circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/>' +

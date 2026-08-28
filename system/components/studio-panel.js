@@ -975,21 +975,29 @@
      ноутбук на своей широкой пяте, планшет и телефон вертикальные
      плашки, Full — окно браузера с полосой заголовка.
      ============================================================ */
+  /* gbppl-icon-consumers-1 (28.08). THE SIX DRAWINGS LEFT THIS FILE.
+     They live in the icon record now (system/components/icon.js,
+     names below), redrawn on the set's grid of 24 at the house
+     weight; the console asks for them by name and gets the .gb-icon
+     box around them. What the console kept is the MAPPING from a
+     preset to a screen, which is its own knowledge and nobody
+     else's. A page carrying the console therefore links icon.css and
+     runs icon.js BEFORE this file. If it does not, the row still
+     works and simply shows no glyph: a missing picture must not take
+     the switch down with it. */
   var DICONS = {
-    'full': '<rect x="2" y="3.5" width="16" height="13" rx="1"/><path d="M2 7.5h16"/>',
-    '2258': '<rect x="1" y="3" width="18" height="11" rx="1"/><path d="M10 14v3M6.5 17h7"/>',
-    '1920': '<rect x="3" y="3.5" width="14" height="10" rx="1"/><path d="M10 13.5v3M7 16.5h6"/>',
-    '1280': '<rect x="4" y="3.5" width="12" height="9" rx="1"/><path d="M2 15.5h16"/>',
-    '768':  '<rect x="4.5" y="2" width="11" height="16" rx="1"/><path d="M8.5 15.4h3"/>',
-    '390':  '<rect x="6.5" y="2" width="7" height="16" rx="1"/><path d="M8.5 15.4h3"/>'
+    'full': 'browser',
+    '2258': 'monitor-wide',
+    '1920': 'monitor',
+    '1280': 'laptop',
+    '768':  'tablet',
+    '390':  'phone'
   };
 
-  function deviceIcon(value) {
-    var body = DICONS[value];
-    if (!body) return '';
-    return '<svg class="gbsp-dico" viewBox="0 0 20 20" fill="none" stroke="currentColor" ' +
-           'stroke-width="1.4" stroke-linecap="square" stroke-linejoin="miter" ' +
-           'aria-hidden="true">' + body + '</svg>';
+  function deviceIcon(value, size) {
+    var name = DICONS[value];
+    if (!name || !window.GbIcons || !window.GbIcons.has(name)) return '';
+    return window.GbIcons.html(name, size || 20);
   }
 
   /* Своя ширина и поворот (gbppl-panel-8). Пресеты отвечают
@@ -1210,7 +1218,7 @@
     var presets = DEVICES.map(function (d, i) {
       var label = d.value === 'full' ? 'Full window' : d.label + ' ' + d.sub;
       return '<button class="gbsp-tb__seg" type="button" data-tb="' + d.value + '"' +
-             ' aria-pressed="false">' + deviceIcon(d.value) +
+             ' aria-pressed="false">' + deviceIcon(d.value, 16) +
              '<span>' + esc(label) + '</span></button>';
     }).join('');
     return (
