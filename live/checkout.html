@@ -180,6 +180,10 @@
        5  crosses (four drawers, one modal), a 4px box with a glyph
           -> .gb-btn --s --ghost --secondary + __icon, byte for byte
              the markup drawer.js writes for the system drawer's cross
+             (gbppl-drawer-unify-1, 28.08: the four drawer crosses are
+             gone from this page altogether — the drawers moved onto
+             <gb-drawer> and the head, cross included, is the
+             organism's. The modal keeps the one that is left.)
        1  Remove shipment, 12px ghost with a red hover
           -> .gb-btn --s --ghost --secondary (red hover goes: the
              organism owns no danger colour, ORO-SKILL 8)
@@ -200,6 +204,8 @@
          took in gbppl-button-2, and for the same reason.
        · the drawer crosses grow from a 20px glyph box to the S rung
          (56x42 at 1440), the size the system drawer's cross is.
+         Superseded 28.08: they are now the 44px --icon circle, on the
+         left of the head, and they belong to <gb-drawer>.
 
      LEFT OFF THE ORGANISM ON PURPOSE, each because the system has no
      cell for it yet (all four are in the report to Ton, ORO-SKILL 8):
@@ -301,15 +307,48 @@
   .row-enter { animation: rowIn var(--mo-small) var(--mo-arrive); }
   @keyframes rowIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* The drawer crosses the whole screen: the long entrance on the brand curve. */
-  .drawer-enter { animation: drawerIn var(--mo-drawer-in) var(--mo-enter); }
-  @keyframes drawerIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  /* ============================================================
+     WHAT THE PAGE STILL OWNS INSIDE A DRAWER: LAYOUT, NOTHING ELSE
+     gbppl-drawer-unify-1 (28.08)
+     ------------------------------------------------------------
+     The panel, the head, the gutter, the foot and the motion all
+     belong to <gb-drawer>. These three classes are the page saying
+     where its own content stands inside it, which is exactly what a
+     consumer is allowed to keep. All on the space scale.
+     ============================================================ */
+  .ck-drawer-stack > * + * { margin-top: var(--space-32); }
+  .ck-drawer-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-16); }
 
-  /* Leaving accelerates and is shorter than arriving: the overlay fades while
-     the panel slides back into the edge it came from. */
-  .overlay-leave { transition: opacity var(--mo-medium-out) var(--mo-exit); }
-  .overlay-leave aside { transition: transform var(--mo-medium-out) var(--mo-exit); }
-  .overlay-leave-end aside { transform: translateX(100%); }
+  /* The tab strip rides at the top of the scrolling body and stays there while
+     the panel below it scrolls. It reaches back out to the drawer's own gutter
+     rather than naming a number, so it keeps spanning the full width when the
+     gutter steps 24 -> 16 under 640. Top is 0, not minus the gutter: the line
+     that says who this is for stands above the tabs and is allowed to scroll
+     away under them. */
+  .ck-drawer-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    margin-inline: calc(var(--space-24) * -1);
+    margin-bottom: var(--space-24);
+    padding-inline: var(--space-24);
+    background: var(--white);
+    border-bottom: 1px solid var(--zinc-200);
+  }
+  @media (max-width: 639px) {
+    .ck-drawer-tabs {
+      margin-inline: calc(var(--space-16) * -1);
+      margin-bottom: var(--space-16);
+      padding-inline: var(--space-16);
+    }
+  }
+
+  /* gbppl-drawer-unify-1: .drawer-enter, its keyframes and the whole
+     .overlay-leave family went out with the four hand drawn drawers. The
+     entrance and the exit are <gb-drawer>'s now, and they are the same two
+     clocks, because the organism was built out of these very values in
+     gbppl-drawer-1. The modal keeps its own leave, below: a modal is not a
+     drawer and there is no organism for it yet. */
   .modal-leave { transition: opacity var(--mo-medium-out) var(--mo-exit); }
   .menu-leave  { transition: opacity var(--mo-small-out) var(--mo-exit); }
 
@@ -1233,149 +1272,157 @@
      gildedbox.com ends. ========== -->
 <gb-site-footer></gb-site-footer>
 
-<!-- ====================================================== -->
+<!-- ==========================================================
+     THE FOUR DRAWERS MOVED ONTO THE ORGANISM
+     gbppl-drawer-unify-1 (28.08)
+     ----------------------------------------------------------
+     Ton: «Давай даже на лайве приведём все дроверы к общему
+     знаменателю... Нам нужно сделать все дроверы по такому
+     принципу.» These four were the last hand drawn drawers in the
+     house: a fixed overlay, an <aside> with its own width, its own
+     entrance animation, its own sticky head and its own cross,
+     four times over. drawer.css said in 26.08 that the checkout
+     «keeps its own until a wave moves it; when it does, it deletes
+     markup, not values» — this is that wave, and that is what it
+     did. The geometry the system drawer plays was taken FROM here
+     in the first place, so nothing about the motion changes.
+
+     WHAT MOVED AND WHAT DID NOT. The head is gone from the page
+     entirely: title, subtitle and cross now come from <gb-drawer>,
+     which is why all four heads are suddenly the same height, with
+     the same 44px circle in the same place. The BODIES are
+     untouched, field for field and word for word; they only sit in
+     <template> now, and the drawer stamps the one it is asked for.
+     The button rows go into the drawer's foot slot unchanged.
+
+     WHY TEMPLATES AND NOT MOVED NODES. Alpine's own observer
+     initialises anything added inside its root, and the panel
+     lives on document.body, which IS inside x-data="checkoutApp()".
+     So a stamped template is initialised with the page's scope and
+     every x-model reads and writes the same drawer.data it always
+     did. A fresh stamp per open is also why the two nested scopes
+     that used to need an x-effect to reset (recipientTab, bookOpen)
+     now simply start over.
+
+     THE PANEL IS 520 NOW, where these were 560 and 640. One drawer
+     width is the point of the exercise; the widest thing inside is
+     the item row, which is a grid that folds on its own.
+     ========================================================== -->
+<gb-drawer id="ck-drawer"></gb-drawer>
+
 <!-- ===== GREETING CARD DRAWER (master mode for Bulk Actions) ==== -->
-<!-- ====================================================== -->
-<div x-show="drawer.open && drawer.type === 'greeting'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40">
-  <div class="absolute inset-0 bg-zinc-900/40" @click="closeDrawer()"></div>
-  <aside class="absolute right-0 top-0 bottom-0 w-[min(560px,100%)] bg-white shadow-2xl drawer-enter overflow-y-auto">
-    <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
-      <div>
-        <h3 class="font-serif text-2xl" x-text="drawer.master ? 'Greeting card · apply to all' : 'Greeting card'"></h3>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="!drawer.master && currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.master">Apply to every recipient. Custom rows are preserved unless overwritten.</p>
-      </div>
-      <button @click="closeDrawer()" type="button" aria-label="Close" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span></button>
+<template id="ck-drawer-greeting">
+  <div class="ck-drawer-stack">
+
+    <div class="gba-inputwrap">
+      <label class="gb-eyebrow block mb-1">To</label>
+      <input type="text" x-model="drawer.data.to" placeholder="Recipient name on card" class="gba-input">
+      <p class="text-xs text-zinc-500 mt-1.5" x-show="drawer.master">Type <code class="bg-zinc-100 px-1 rounded-[var(--radius)] text-zinc-600">{{name}}</code> and every card prints that person’s name.</p>
     </div>
-    <div class="px-8 py-8 space-y-8">
 
-      <div class="gba-inputwrap">
-        <label class="gb-eyebrow block mb-1">To</label>
-        <input type="text" x-model="drawer.data.to" placeholder="Recipient name on card" class="gba-input">
-        <p class="text-xs text-zinc-500 mt-1.5" x-show="drawer.master">Type <code class="bg-zinc-100 px-1 rounded-[var(--radius)] text-zinc-600">{{name}}</code> and every card prints that person’s name.</p>
+    <div>
+      <div class="flex justify-between items-baseline mb-1">
+        <label class="gb-eyebrow">Message</label>
+        <span class="text-xs text-zinc-500"><span x-text="(drawer.data.message || '').length"></span> / 280</span>
       </div>
-
-      <div>
-        <div class="flex justify-between items-baseline mb-1">
-          <label class="gb-eyebrow">Message</label>
-          <span class="text-xs text-zinc-500"><span x-text="(drawer.data.message || '').length"></span> / 280</span>
-        </div>
-        <textarea x-model="drawer.data.message" rows="4" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
-      </div>
-
-      <div class="gba-inputwrap">
-        <label class="gb-eyebrow block mb-1">From</label>
-        <input type="text" x-model="drawer.data.from" placeholder="Your name or company" class="gba-input">
-      </div>
-
+      <textarea x-model="drawer.data.message" rows="4" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
     </div>
-    <!-- ============================================================
-         PRIMARY = BLUE 600, everywhere (Ton, 21.08). One committing button per
-         surface wears the accent — Place Order, every drawer's Save / Apply to
-         all, the modal's Import. Cancel stays a text link, Overwrite all keeps
-         its red outline, and the ghost buttons in the step-2 band stay ghosts.
-         The only black left on the page is furniture: the active toggle
-         segment and the site header and footer (the demo bar was the
-         third, until gbppl-checkout-2 sent it to the console).
-         ============================================================ -->
-    <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
-      <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
-      <div class="flex items-center gap-2">
-        <!-- gbppl-checkout-14: the page's ONE dangerous action, and the organism owns no
-             danger CELL (ORO-SKILL 8, Ton's call). So it wears the organism whole and repaints
-             one instance through the component's OWN slots: --gbb-accent is the property
-             .gb-btn--outline reads for its ink and its hairline, and Red 600 is a colour the
-             palette owns. Nothing of button.css is overridden, nothing is hand-measured, and
-             the S ladder, the label role and every breakpoint stay the organism's -- which is
-             why this button is now 42px at 1440 like the two standing beside it, where the
-             hand-drawn version was 38. The hover wash stays the secondary's zinc: a red wash
-             token does not exist, and this is not the wave that invents one. -->
-        <button x-show="drawer.master" @click="saveMasterGreeting(true)" type="button"
-                class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary"
-                style="--gbb-accent: var(--red-600); --gbb-accent-hover: var(--red-600); --gbb-accent-active: var(--red-600)"><span class="gb-btn__label">Overwrite all</span></button>
-        <button @click="saveGreeting()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
-      </div>
-    </div>
-  </aside>
-</div>
 
-<!-- ====================================================== -->
+    <div class="gba-inputwrap">
+      <label class="gb-eyebrow block mb-1">From</label>
+      <input type="text" x-model="drawer.data.from" placeholder="Your name or company" class="gba-input">
+    </div>
+
+  </div>
+</template>
+<!-- ============================================================
+     PRIMARY = BLUE 600, everywhere (Ton, 21.08). One committing button per
+     surface wears the accent — Place Order, every drawer's Save / Apply to
+     all, the modal's Import. Cancel stays a text link, Overwrite all keeps
+     its red outline, and the ghost buttons in the step-2 band stay ghosts.
+     The only black left on the page is furniture: the active toggle
+     segment and the site header and footer (the demo bar was the
+     third, until gbppl-checkout-2 sent it to the console).
+     ============================================================ -->
+<template id="ck-drawer-foot-greeting">
+  <div class="ck-drawer-actions">
+    <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+    <div class="flex items-center gap-2">
+      <!-- gbppl-checkout-14: the page's ONE dangerous action, and the organism owns no
+           danger CELL (ORO-SKILL 8, Ton's call). So it wears the organism whole and repaints
+           one instance through the component's OWN slots: --gbb-accent is the property
+           .gb-btn--outline reads for its ink and its hairline, and Red 600 is a colour the
+           palette owns. Nothing of button.css is overridden, nothing is hand-measured, and
+           the S ladder, the label role and every breakpoint stay the organism's -- which is
+           why this button is now 42px at 1440 like the two standing beside it, where the
+           hand-drawn version was 38. The hover wash stays the secondary's zinc: a red wash
+           token does not exist, and this is not the wave that invents one. -->
+      <button x-show="drawer.master" @click="saveMasterGreeting(true)" type="button"
+              class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary"
+              style="--gbb-accent: var(--red-600); --gbb-accent-hover: var(--red-600); --gbb-accent-active: var(--red-600)"><span class="gb-btn__label">Overwrite all</span></button>
+      <button @click="saveGreeting()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
+    </div>
+  </div>
+</template>
+
 <!-- ===== ITEM PERSONALIZATION DRAWER ==== -->
-<!-- ====================================================== -->
-<div x-show="drawer.open && drawer.type === 'item'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40">
-  <div class="absolute inset-0 bg-zinc-900/40" @click="closeDrawer()"></div>
-  <aside class="absolute right-0 top-0 bottom-0 w-[min(640px,100%)] bg-white shadow-2xl drawer-enter overflow-y-auto">
-    <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
-      <div>
-        <h3 class="font-serif text-2xl" x-text="drawer.master ? 'Gift personalization · apply to all' : 'Gift personalization'"></h3>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="!drawer.master && currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.master">Apply these details to every recipient in this shipment.</p>
-      </div>
-      <button @click="closeDrawer()" type="button" aria-label="Close" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span></button>
-    </div>
-    <div class="px-8 py-8 space-y-8">
+<template id="ck-drawer-item">
+  <div class="ck-drawer-stack">
 
-      <!-- One row per part this gift can carry — the list comes from the product,
-           so the drawer never asks for an engraving the gift does not have. -->
-      <template x-for="(it, idx) in productItems(currentProduct())" :key="'master-item-'+idx">
-        <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-6 items-center">
-          <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
-          <div>
-            <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
-            <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
-            <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
-          </div>
-          <div>
-            <template x-if="it.kind === 'initials'">
-              <div>
-                <div class="flex flex-wrap gap-2.5">
-                  <template x-for="i in 3" :key="'mslot-'+idx+'-'+i">
-                    <input
-                      type="text"
-                      maxlength="1"
-                      :value="itemSlotValue('item' + (idx+1), i-1)"
-                      @input="updateItemSlot('item' + (idx+1), i-1, $event.target.value, $event)"
-                      @keydown="itemSlotKeydown('item' + (idx+1), i-1, $event)"
-                      class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
-                  </template>
-                </div>
-                <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
-              </div>
-            </template>
-            <template x-if="it.kind !== 'initials'">
-              <div>
-                <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="gba-input">
-                <p class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
-              </div>
-            </template>
-          </div>
+    <!-- One row per part this gift can carry — the list comes from the product,
+         so the drawer never asks for an engraving the gift does not have. -->
+    <template x-for="(it, idx) in productItems(currentProduct())" :key="'master-item-'+idx">
+      <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-6 items-center">
+        <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
+        <div>
+          <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
+          <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
+          <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
         </div>
-      </template>
-
-    </div>
-    <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
-      <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
-      <button @click="saveItem()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
-    </div>
-  </aside>
-</div>
-
-<!-- ====================================================== -->
-<!-- ===== RECIPIENT FULL DRAWER (row click) ==== -->
-<!-- ====================================================== -->
-<div x-show="drawer.open && drawer.type === 'recipient'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40" x-data="{ recipientTab: 'items' }" x-effect="if (drawer.open && drawer.type === 'recipient') recipientTab = 'items'">
-  <div class="absolute inset-0 bg-zinc-900/40" @click="closeDrawer()"></div>
-  <aside class="absolute right-0 top-0 bottom-0 w-[min(640px,100%)] bg-white shadow-2xl drawer-enter overflow-y-auto flex flex-col">
-    <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
-      <div>
-        <h3 class="font-serif text-2xl">Personalization</h3>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
+        <div>
+          <template x-if="it.kind === 'initials'">
+            <div>
+              <div class="flex flex-wrap gap-2.5">
+                <template x-for="i in 3" :key="'mslot-'+idx+'-'+i">
+                  <input
+                    type="text"
+                    maxlength="1"
+                    :value="itemSlotValue('item' + (idx+1), i-1)"
+                    @input="updateItemSlot('item' + (idx+1), i-1, $event.target.value, $event)"
+                    @keydown="itemSlotKeydown('item' + (idx+1), i-1, $event)"
+                    class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
+                </template>
+              </div>
+              <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
+            </div>
+          </template>
+          <template x-if="it.kind !== 'initials'">
+            <div>
+              <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="gba-input">
+              <p class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+            </div>
+          </template>
+        </div>
       </div>
-      <button @click="closeDrawer()" type="button" aria-label="Close" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span></button>
-    </div>
+    </template>
 
-    <!-- TABS — distributed evenly across drawer width, filled state shown via green check-circle icon -->
-    <div class="sticky top-[73px] bg-white border-b border-zinc-200 z-10 px-8 flex">
+  </div>
+</template>
+<template id="ck-drawer-foot-item">
+  <div class="ck-drawer-actions">
+    <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+    <button @click="saveItem()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
+  </div>
+</template>
+
+<!-- ===== RECIPIENT FULL DRAWER (row click) ==== -->
+<template id="ck-drawer-recipient">
+  <div x-data="{ recipientTab: 'items' }">
+
+    <!-- TABS — distributed evenly across the drawer width, filled state shown via a check-circle.
+         They stay at the top of the scrolling body: .ck-drawer-tabs pulls itself out to the
+         drawer's own gutter (the token, so it tracks 24 / 16) instead of naming a number. -->
+    <div class="ck-drawer-tabs flex">
       <button @click="recipientTab = 'items'"
               :class="recipientTab === 'items' ? 'border-blue-600 text-blue-700' : 'border-transparent text-zinc-500 hover:text-zinc-700'"
               class="flex-1 px-4 py-3 text-sm font-medium border-b-2 -mb-px inline-flex items-center justify-center gap-2 transition">
@@ -1395,235 +1442,222 @@
       </button>
     </div>
 
-    <div class="px-8 py-8 flex-1">
+    <!-- ===== ITEMS PANEL ===== -->
+    <section x-show="recipientTab === 'items'">
+      <div class="ck-drawer-stack">
 
-      <!-- ===== ITEMS PANEL ===== -->
-      <section x-show="recipientTab === 'items'">
-        <div class="space-y-8">
+        <!-- Qty gets its full name here, next to the fields it actually counts: the number of gifts
+             carrying THIS personalization (Julia's semantics, meeting 20.08) — not "gifts for this person". -->
+        <div class="flex items-center justify-between border-b border-zinc-200 pb-6">
+          <div>
+            <p class="gb-eyebrow">Quantity of gifts</p>
+            <p class="text-xs text-zinc-500 mt-1">How many gifts with this personalization</p>
+          </div>
+          <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[var(--radius)] overflow-hidden">
+            <button @click="drawer.data.qty > 1 && drawer.data.qty--" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+            </button>
+            <input type="number" x-model.number="drawer.data.qty" min="1" class="w-14 text-center text-base font-medium bg-transparent border-x border-zinc-200 py-2 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
+            <button @click="drawer.data.qty++" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            </button>
+          </div>
+        </div>
 
-          <!-- Qty gets its full name here, next to the fields it actually counts: the number of gifts
-               carrying THIS personalization (Julia's semantics, meeting 20.08) — not "gifts for this person". -->
-          <div class="flex items-center justify-between border-b border-zinc-200 pb-6">
+        <!-- One row per part of THIS gift (product.items). The Yeti duo has two;
+             the travel set has three. Nothing invents a field the gift can't carry. -->
+        <template x-for="(it, idx) in productItems(currentProduct())" :key="'rec-item-'+idx">
+          <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-6 items-center">
+            <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
             <div>
-              <p class="gb-eyebrow">Quantity of gifts</p>
-              <p class="text-xs text-zinc-500 mt-1">How many gifts with this personalization</p>
+              <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
+              <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
+              <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
             </div>
-            <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[var(--radius)] overflow-hidden">
-              <button @click="drawer.data.qty > 1 && drawer.data.qty--" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
-              </button>
-              <input type="number" x-model.number="drawer.data.qty" min="1" class="w-14 text-center text-base font-medium bg-transparent border-x border-zinc-200 py-2 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
-              <button @click="drawer.data.qty++" class="px-3 py-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- One row per part of THIS gift (product.items). The Yeti duo has two;
-               the travel set has three. Nothing invents a field the gift can't carry. -->
-          <template x-for="(it, idx) in productItems(currentProduct())" :key="'rec-item-'+idx">
-            <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-6 items-center">
-              <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
-              <div>
-                <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
-                <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
-                <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
-              </div>
-              <div>
-                <template x-if="it.kind === 'initials'">
-                  <div>
-                    <div class="flex flex-wrap gap-2.5">
-                      <template x-for="i in 3" :key="'rslot-'+idx+'-'+i">
-                        <input
-                          type="text"
-                          maxlength="1"
-                          :value="itemSlotValue('item' + (idx+1), i-1)"
-                          @input="updateItemSlot('item' + (idx+1), i-1, $event.target.value, $event)"
-                          @keydown="itemSlotKeydown('item' + (idx+1), i-1, $event)"
-                          class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
-                      </template>
-                    </div>
-                    <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
+            <div>
+              <template x-if="it.kind === 'initials'">
+                <div>
+                  <div class="flex flex-wrap gap-2.5">
+                    <template x-for="i in 3" :key="'rslot-'+idx+'-'+i">
+                      <input
+                        type="text"
+                        maxlength="1"
+                        :value="itemSlotValue('item' + (idx+1), i-1)"
+                        @input="updateItemSlot('item' + (idx+1), i-1, $event.target.value, $event)"
+                        @keydown="itemSlotKeydown('item' + (idx+1), i-1, $event)"
+                        class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
+                    </template>
                   </div>
-                </template>
-                <template x-if="it.kind !== 'initials'">
-                  <div>
-                    <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="gba-input">
-                    <p class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
-                  </div>
-                </template>
-              </div>
+                  <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
+                </div>
+              </template>
+              <template x-if="it.kind !== 'initials'">
+                <div>
+                  <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="gba-input">
+                  <p class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+                </div>
+              </template>
             </div>
-          </template>
+          </div>
+        </template>
 
+      </div>
+    </section>
+
+    <!-- ===== GREETING PANEL ===== -->
+    <section x-show="recipientTab === 'greeting'">
+      <div class="ck-drawer-stack">
+
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">To</label>
+          <input type="text" x-model="drawer.data.greeting.to" placeholder="Recipient name on the card" class="gba-input">
         </div>
-      </section>
 
-      <!-- ===== GREETING PANEL ===== -->
-      <section x-show="recipientTab === 'greeting'">
-        <div class="space-y-8">
-
-          <div class="gba-inputwrap">
-            <label class="gb-eyebrow block mb-1">To</label>
-            <input type="text" x-model="drawer.data.greeting.to" placeholder="Recipient name on the card" class="gba-input">
+        <div>
+          <div class="flex justify-between items-baseline mb-1">
+            <label class="gb-eyebrow">Message</label>
+            <span class="text-xs text-zinc-500"><span x-text="(drawer.data.greeting.message || '').length"></span> / 280</span>
           </div>
-
-          <div>
-            <div class="flex justify-between items-baseline mb-1">
-              <label class="gb-eyebrow">Message</label>
-              <span class="text-xs text-zinc-500"><span x-text="(drawer.data.greeting.message || '').length"></span> / 280</span>
-            </div>
-            <textarea x-model="drawer.data.greeting.message" rows="4" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
-          </div>
-
-          <div class="gba-inputwrap">
-            <label class="gb-eyebrow block mb-1">From</label>
-            <input type="text" x-model="drawer.data.greeting.from" placeholder="Your name or company" class="gba-input">
-          </div>
-
+          <textarea x-model="drawer.data.greeting.message" rows="4" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
         </div>
-      </section>
 
-      <!-- ===== VIDEO PANEL ===== -->
-      <section x-show="recipientTab === 'video'">
-        <p class="text-sm text-zinc-600 mb-5">Record one video for everyone in this shipment, or upload a separate video per person.</p>
-        <button class="w-full flex items-center gap-4 px-4 py-4 border border-zinc-500 hover:border-zinc-700 transition text-left">
-          <svg class="w-5 h-5 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
-          <div>
-            <p class="text-sm text-zinc-900">Click to upload or record</p>
-            <p class="gb-eyebrow mt-0.5">MP4, MOV · up to 200MB</p>
-          </div>
-        </button>
-      </section>
-    </div>
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">From</label>
+          <input type="text" x-model="drawer.data.greeting.from" placeholder="Your name or company" class="gba-input">
+        </div>
 
-    <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-6 py-4 flex items-center justify-between">
-      <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
-      <button @click="saveRecipient()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Save</span></button>
-    </div>
-  </aside>
-</div>
+      </div>
+    </section>
 
-<!-- ====================================================== -->
+    <!-- ===== VIDEO PANEL ===== -->
+    <section x-show="recipientTab === 'video'">
+      <p class="text-sm text-zinc-600 mb-5">Record one video for everyone in this shipment, or upload a separate video per person.</p>
+      <button class="w-full flex items-center gap-4 px-4 py-4 border border-zinc-500 hover:border-zinc-700 transition text-left">
+        <svg class="w-5 h-5 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+        <div>
+          <p class="text-sm text-zinc-900">Click to upload or record</p>
+          <p class="gb-eyebrow mt-0.5">MP4, MOV · up to 200MB</p>
+        </div>
+      </button>
+    </section>
+  </div>
+</template>
+<template id="ck-drawer-foot-recipient">
+  <div class="ck-drawer-actions">
+    <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+    <button @click="saveRecipient()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Save</span></button>
+  </div>
+</template>
+
 <!-- ===== ADDRESS DRAWER (Tiffany style + Address book picker) ==== -->
-<!-- ====================================================== -->
-<div x-show="drawer.open && drawer.type === 'address'" x-cloak x-transition:leave="overlay-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 overlay-leave-end" class="fixed inset-0 z-40" x-data="{ bookOpen: false }" x-effect="if (!drawer.open) bookOpen = false">
-  <div class="absolute inset-0 bg-zinc-900/40" @click="closeDrawer()"></div>
-  <aside class="absolute right-0 top-0 bottom-0 w-[min(560px,100%)] bg-white shadow-2xl drawer-enter overflow-y-auto">
-    <div class="sticky top-0 bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between z-10">
-      <div>
-        <h3 class="font-serif text-2xl" x-text="drawer.addressBookMode ? 'Add new address' : 'Shipping address'"></h3>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="drawer.addressBookMode">Saved to your address book, and used for this shipment.</p>
-        <p class="text-xs text-zinc-500 mt-0.5" x-show="!drawer.addressBookMode && currentRecipient()" x-text="'For ' + (currentRecipient() ? currentRecipient().name || 'this recipient' : '')"></p>
-      </div>
-      <button @click="closeDrawer()" type="button" aria-label="Close" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span></button>
-    </div>
-    <div class="px-8 py-8 space-y-8">
+<template id="ck-drawer-address">
+  <div class="ck-drawer-stack" x-data="{ bookOpen: false }">
 
-      <!-- Address book picker (per-recipient mode only — skip when creating a new book entry) -->
-      <div x-show="!drawer.addressBookMode" class="space-y-2">
-        <p class="gb-eyebrow">Use a saved address</p>
-        <div class="relative">
-          <button @click="bookOpen = !bookOpen" class="gba-input flex items-center justify-between text-left cursor-pointer">
-            <span class="text-zinc-500">Choose from address book…</span>
-            <svg class="w-4 h-4 text-zinc-500 transition-transform" :class="bookOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
-          </button>
-          <div x-show="bookOpen" @click.outside="bookOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-2 bg-white border border-zinc-200 rounded-[var(--radius)] shadow-lg z-30 overflow-hidden">
-            <template x-for="addr in addressBook" :key="'book-' + addr.id">
-              <button @click="useAddressBookEntry(addr.id); bookOpen = false" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
-                <p class="text-sm font-medium text-zinc-900" x-text="addr.name"></p>
-                <p class="text-xs text-zinc-500 truncate mt-0.5" x-text="addr.label"></p>
-              </button>
-            </template>
-          </div>
-        </div>
-        <p class="text-xs text-zinc-500">Or fill in a new address below.</p>
-      </div>
-
-      <!-- Details -->
-      <div class="space-y-6">
-        <p class="gb-eyebrow">Details</p>
-        <div class="grid grid-cols-2 gap-6">
-          <div>
-            <!-- Per-recipient mode: this IS the field the table calls "Name for personalization",
-                 and saving prefills the row that has none yet (Valerie, 20.08) — so it wears the
-                 same words and the same permission to stay empty (approved copy set, 21.08).
-                 Address-book mode keeps the neutral, and genuinely required, "Full name". -->
-            <label class="gb-eyebrow block mb-1"><span x-text="drawer.addressBookMode ? 'Full name' : 'Name for personalization'"></span> <span class="text-red-500" x-show="drawer.addressBookMode">*</span></label>
-            <input type="text" x-model="drawer.data.name" :placeholder="drawer.addressBookMode ? 'Anton Parkhomenko' : 'Name or initials (optional)'" class="gba-input">
-          </div>
-          <div class="gba-inputwrap">
-            <label class="gb-eyebrow block mb-1">Company <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
-            <input type="text" x-model="drawer.data.company" placeholder="GildedBox" class="gba-input">
-          </div>
-        </div>
-        <div class="gba-inputwrap">
-          <label class="gb-eyebrow block mb-1">Phone <span class="text-zinc-400 font-normal normal-case tracking-normal">(for delivery)</span></label>
-          <input type="tel" x-model="drawer.data.phone" placeholder="+1 555 123 4567" class="gba-input">
-        </div>
-      </div>
-
-      <!-- Address -->
-      <div class="space-y-6">
-        <p class="gb-eyebrow">Address</p>
-        <div class="gba-inputwrap">
-          <label class="gb-eyebrow block mb-1">Street <span class="text-red-500">*</span></label>
-          <input type="text" x-model="drawer.data.street" placeholder="123 Main St" class="gba-input">
-        </div>
-        <div class="gba-inputwrap">
-          <label class="gb-eyebrow block mb-1">Apt / Suite <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
-          <input type="text" x-model="drawer.data.apt" class="gba-input">
-        </div>
-        <div class="grid grid-cols-3 gap-6">
-          <div class="gba-inputwrap">
-            <label class="gb-eyebrow block mb-1">City <span class="text-red-500">*</span></label>
-            <input type="text" x-model="drawer.data.city" class="gba-input">
-          </div>
-          <div class="gba-inputwrap">
-            <label class="gb-eyebrow block mb-1">State <span class="text-red-500">*</span></label>
-            <input type="text" x-model="drawer.data.state" class="gba-input">
-          </div>
-          <div class="gba-inputwrap">
-            <label class="gb-eyebrow block mb-1">ZIP <span class="text-red-500">*</span></label>
-            <input type="text" x-model="drawer.data.zip" class="gba-input">
-          </div>
-        </div>
-        <div class="gba-inputwrap">
-          <label class="gb-eyebrow block mb-1">Country <span class="text-red-500">*</span></label>
-          <select x-model="drawer.data.country" class="gba-input cursor-pointer"><option>United States</option><option>Canada</option><option>Italy</option><option>United Kingdom</option><option>Germany</option><option>France</option></select>
-        </div>
-      </div>
-
-      <!-- Shipping method (only for per-recipient mode, NOT for address book creation) -->
-      <div x-show="!drawer.addressBookMode" class="space-y-3">
-        <p class="gb-eyebrow">Shipping for this address</p>
-        <div class="space-y-2">
-          <template x-for="opt in shippingOptions" :key="'sh-'+opt.id">
-            <label class="flex items-center p-3 border rounded-[var(--radius)] cursor-pointer transition" :class="drawer.data.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 hover:border-zinc-400'">
-              <span class="flex items-center gap-3">
-                <input type="radio" name="drawer-shipping" :value="opt.id" x-model="drawer.data.shipping" class="accent-blue-600 w-4 h-4">
-                <span>
-                  <span class="text-sm font-medium block leading-tight" x-text="opt.label"></span>
-                  <span class="block text-sm text-zinc-500">$<span x-text="opt.cost"></span></span>
-                </span>
-              </span>
-            </label>
+    <!-- Address book picker (per-recipient mode only — skip when creating a new book entry) -->
+    <div x-show="!drawer.addressBookMode" class="space-y-2">
+      <p class="gb-eyebrow">Use a saved address</p>
+      <div class="relative">
+        <button @click="bookOpen = !bookOpen" class="gba-input flex items-center justify-between text-left cursor-pointer">
+          <span class="text-zinc-500">Choose from address book…</span>
+          <svg class="w-4 h-4 text-zinc-500 transition-transform" :class="bookOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </button>
+        <div x-show="bookOpen" @click.outside="bookOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-2 bg-white border border-zinc-200 rounded-[var(--radius)] shadow-lg z-30 overflow-hidden">
+          <template x-for="addr in addressBook" :key="'book-' + addr.id">
+            <button @click="useAddressBookEntry(addr.id); bookOpen = false" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+              <p class="text-sm font-medium text-zinc-900" x-text="addr.name"></p>
+              <p class="text-xs text-zinc-500 truncate mt-0.5" x-text="addr.label"></p>
+            </button>
           </template>
         </div>
       </div>
+      <p class="text-xs text-zinc-500">Or fill in a new address below.</p>
+    </div>
 
-      <!-- Estimated shipping notice (only for address book mode — shipping picked at shipment level) -->
-      <div x-show="drawer.addressBookMode" class="bg-zinc-50 rounded-[var(--radius)] p-3 text-xs text-zinc-600 flex items-center gap-2">
-        <svg class="w-4 h-4 text-zinc-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span>Shipping method will be selected at the shipment level after saving.</span>
+    <!-- Details -->
+    <div class="space-y-6">
+      <p class="gb-eyebrow">Details</p>
+      <div class="grid grid-cols-2 gap-6">
+        <div>
+          <!-- Per-recipient mode: this IS the field the table calls "Name for personalization",
+               and saving prefills the row that has none yet (Valerie, 20.08) — so it wears the
+               same words and the same permission to stay empty (approved copy set, 21.08).
+               Address-book mode keeps the neutral, and genuinely required, "Full name". -->
+          <label class="gb-eyebrow block mb-1"><span x-text="drawer.addressBookMode ? 'Full name' : 'Name for personalization'"></span> <span class="text-red-500" x-show="drawer.addressBookMode">*</span></label>
+          <input type="text" x-model="drawer.data.name" :placeholder="drawer.addressBookMode ? 'Anton Parkhomenko' : 'Name or initials (optional)'" class="gba-input">
+        </div>
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">Company <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
+          <input type="text" x-model="drawer.data.company" placeholder="GildedBox" class="gba-input">
+        </div>
+      </div>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1">Phone <span class="text-zinc-400 font-normal normal-case tracking-normal">(for delivery)</span></label>
+        <input type="tel" x-model="drawer.data.phone" placeholder="+1 555 123 4567" class="gba-input">
       </div>
     </div>
-    <div class="sticky bottom-0 bg-white border-t border-zinc-200 px-8 py-4 flex items-center justify-between">
-      <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
-      <button @click="saveAddress()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.addressBookMode ? 'Save & use for this shipment' : 'Save address & shipping'"></span></button>
+
+    <!-- Address -->
+    <div class="space-y-6">
+      <p class="gb-eyebrow">Address</p>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1">Street <span class="text-red-500">*</span></label>
+        <input type="text" x-model="drawer.data.street" placeholder="123 Main St" class="gba-input">
+      </div>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1">Apt / Suite <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
+        <input type="text" x-model="drawer.data.apt" class="gba-input">
+      </div>
+      <div class="grid grid-cols-3 gap-6">
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">City <span class="text-red-500">*</span></label>
+          <input type="text" x-model="drawer.data.city" class="gba-input">
+        </div>
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">State <span class="text-red-500">*</span></label>
+          <input type="text" x-model="drawer.data.state" class="gba-input">
+        </div>
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">ZIP <span class="text-red-500">*</span></label>
+          <input type="text" x-model="drawer.data.zip" class="gba-input">
+        </div>
+      </div>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1">Country <span class="text-red-500">*</span></label>
+        <select x-model="drawer.data.country" class="gba-input cursor-pointer"><option>United States</option><option>Canada</option><option>Italy</option><option>United Kingdom</option><option>Germany</option><option>France</option></select>
+      </div>
     </div>
-  </aside>
-</div>
+
+    <!-- Shipping method (only for per-recipient mode, NOT for address book creation) -->
+    <div x-show="!drawer.addressBookMode" class="space-y-3">
+      <p class="gb-eyebrow">Shipping for this address</p>
+      <div class="space-y-2">
+        <template x-for="opt in shippingOptions" :key="'sh-'+opt.id">
+          <label class="flex items-center p-3 border rounded-[var(--radius)] cursor-pointer transition" :class="drawer.data.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 hover:border-zinc-400'">
+            <span class="flex items-center gap-3">
+              <input type="radio" name="drawer-shipping" :value="opt.id" x-model="drawer.data.shipping" class="accent-blue-600 w-4 h-4">
+              <span>
+                <span class="text-sm font-medium block leading-tight" x-text="opt.label"></span>
+                <span class="block text-sm text-zinc-500">$<span x-text="opt.cost"></span></span>
+              </span>
+            </span>
+          </label>
+        </template>
+      </div>
+    </div>
+
+    <!-- Estimated shipping notice (only for address book mode — shipping picked at shipment level) -->
+    <div x-show="drawer.addressBookMode" class="bg-zinc-50 rounded-[var(--radius)] p-3 text-xs text-zinc-600 flex items-center gap-2">
+      <svg class="w-4 h-4 text-zinc-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span>Shipping method will be selected at the shipment level after saving.</span>
+    </div>
+  </div>
+</template>
+<template id="ck-drawer-foot-address">
+  <div class="ck-drawer-actions">
+    <button @click="closeDrawer()" class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+    <button @click="saveAddress()" class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.addressBookMode ? 'Save & use for this shipment' : 'Save address & shipping'"></span></button>
+  </div>
+</template>
 
 <!-- ====================================================== -->
 <!-- ===== CSV UPLOAD MODAL ==== -->
@@ -2016,6 +2050,12 @@ function checkoutApp() {
       const v = new URLSearchParams(location.search).get('v');
       if (v === '2') this.uiVersion = 'v2';
       else if (v === '1') this.uiVersion = 'v1';
+
+      // gbppl-drawer-unify-1: the surface can leave without the page asking
+      // (Esc, the scrim, the cross). One listener keeps `drawer.open` honest,
+      // so anything still reading that flag reads the truth.
+      const d = document.getElementById('ck-drawer');
+      if (d) d.addEventListener('gbd:close', () => { this.drawer.open = false; });
     },
 
     // ===== DATA MODEL (filled by setScenario in init) =====
@@ -2346,13 +2386,64 @@ function checkoutApp() {
     },
 
     // ===== DRAWERS =====
-    // All four drawers stay in the DOM behind x-show and share one `drawer.data`
-    // bag, so Alpine keeps evaluating the greeting panel's `drawer.data.greeting.to`
-    // even while the item drawer is the one on screen. The bag therefore always
-    // carries an empty greeting; without it every open threw "cannot read
-    // properties of undefined" into the console.
+    // gbppl-drawer-unify-1 (28.08): the four hand drawn panels are gone and
+    // all four now open the ONE system drawer, <gb-drawer id="ck-drawer">.
+    // `drawer` stays exactly what it was -- the bag of data the body types
+    // into -- and every open* below still fills it the same way; the only new
+    // line in each is showDrawer(), which hands the surface a title, a
+    // subtitle, the body template and the button row.
+    //
+    // The bag still always carries an empty greeting: the greeting panel is
+    // stamped fresh, but the recipient drawer's greeting tab reads
+    // drawer.data.greeting the moment it is initialised, and without the
+    // blank it would read a property of undefined.
     blankDrawerData() {
       return { greeting: { to: '', message: '', from: '' } };
+    },
+
+    // The head is the same three sentences the four sticky heads used to
+    // carry, word for word; they are computed here now because the head
+    // belongs to the organism and takes strings, not markup.
+    drawerTitle() {
+      const who = this.drawer.master ? ' · apply to all' : '';
+      if (this.drawer.type === 'greeting')  return 'Greeting card' + who;
+      if (this.drawer.type === 'item')      return 'Gift personalization' + who;
+      if (this.drawer.type === 'recipient') return 'Personalization';
+      if (this.drawer.type === 'address')   return this.drawer.addressBookMode ? 'Add new address' : 'Shipping address';
+      return '';
+    },
+    drawerSub() {
+      const r = this.currentRecipient();
+      const forWhom = r ? 'For ' + (r.name || 'this recipient') : '';
+      if (this.drawer.type === 'greeting') {
+        return this.drawer.master
+          ? 'Apply to every recipient. Custom rows are preserved unless overwritten.'
+          : forWhom;
+      }
+      if (this.drawer.type === 'item') {
+        return this.drawer.master
+          ? 'Apply these details to every recipient in this shipment.'
+          : forWhom;
+      }
+      if (this.drawer.type === 'recipient') return forWhom;
+      if (this.drawer.type === 'address') {
+        return this.drawer.addressBookMode
+          ? 'Saved to your address book, and used for this shipment.'
+          : forWhom;
+      }
+      return '';
+    },
+    showDrawer() {
+      const d = document.getElementById('ck-drawer');
+      if (!d || !d.open) return;
+      const body = document.getElementById('ck-drawer-' + this.drawer.type);
+      const foot = document.getElementById('ck-drawer-foot-' + this.drawer.type);
+      d.open({
+        title: this.drawerTitle(),
+        sub: this.drawerSub(),
+        html: body ? body.innerHTML : '',
+        foot: foot ? foot.innerHTML : ''
+      });
     },
 
     openGreetingDrawer(productId, shipmentId, recipientId) {
@@ -2361,6 +2452,7 @@ function checkoutApp() {
         open: true, type: 'greeting', productId, shipmentId, recipientId, master: false,
         data: { ...this.blankDrawerData(), ...(r.greeting || {}) }
       };
+      this.showDrawer();
     },
     openItemDrawer(productId, shipmentId, recipientId) {
       const r = this.findRecipient(productId, shipmentId, recipientId);
@@ -2368,6 +2460,7 @@ function checkoutApp() {
         open: true, type: 'item', productId, shipmentId, recipientId, master: false,
         data: { ...this.blankDrawerData(), item1: r.item1 || '', item2: r.item2 || '', item3: r.item3 || '' }
       };
+      this.showDrawer();
     },
     useAddressBookEntry(id) {
       const addr = this.addressBook.find(a => a.id === id);
@@ -2402,12 +2495,14 @@ function checkoutApp() {
         open: true, type: 'address', productId, shipmentId, recipientId, master: false, addressBookMode: false,
         data: { ...this.blankDrawerData(), name: (r && r.name) || '', company: '', phone: '', ...parsed, shipping: (r && r.shipping) || 'ground' }
       };
+      this.showDrawer();
     },
     openAddressBookDrawer(productId, shipmentId) {
       this.drawer = {
         open: true, type: 'address', productId, shipmentId, recipientId: null, master: false, addressBookMode: true,
         data: { ...this.blankDrawerData(), name: '', company: '', phone: '', street: '', apt: '', city: '', state: '', zip: '', country: 'United States', shipping: 'ground' }
       };
+      this.showDrawer();
     },
     openMasterDrawer(productId, shipmentId, type) {
       this.bulkMenuOpen = null;
@@ -2417,6 +2512,7 @@ function checkoutApp() {
           ? { ...this.blankDrawerData(), to: '', message: '', from: '' }
           : { ...this.blankDrawerData(), item1: '', item2: '', item3: '' }
       };
+      this.showDrawer();
     },
     openRecipientDrawer(productId, shipmentId, recipientId) {
       const r = this.findRecipient(productId, shipmentId, recipientId);
@@ -2431,6 +2527,7 @@ function checkoutApp() {
           greeting: { ...(r.greeting || { to: '', message: '', from: '' }) }
         }
       };
+      this.showDrawer();
     },
     saveRecipient() {
       const r = this.currentRecipient();
@@ -2447,7 +2544,15 @@ function checkoutApp() {
       }
       this.closeDrawer();
     },
-    closeDrawer() { this.drawer.open = false; },
+    // Two ways out, one state. Cancel and every save call closeDrawer();
+    // Esc, the scrim and the cross close the panel themselves and say so with
+    // gbd:close, which is wired in init() below. Calling close() on a panel
+    // that has already left is a no-op, so the two paths cannot fight.
+    closeDrawer() {
+      this.drawer.open = false;
+      const d = document.getElementById('ck-drawer');
+      if (d && d.close) d.close();
+    },
 
     // The greeting drawer types into the flat to/message/from of drawer.data;
     // pick exactly those three so the shared bag's other keys never ride along.
