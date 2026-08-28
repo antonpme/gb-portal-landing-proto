@@ -1118,3 +1118,62 @@ a.gbs-row:hover .gbs-arrow { transform: translateX(4px); }
 /* Панель вида не рисует фокус-кольца вокруг всей страницы: она получает
    фокус только программно, с таба. */
 [role="tabpanel"]:focus { outline: none; }
+
+
+/* ============================================================
+   ЧИП ОТКРЫТЫХ КОММЕНТАРИЕВ НА УЗЛЕ КАРТЫ (gbppl-map-3, 28.08)
+   ------------------------------------------------------------
+   Спека Comment mode, §4.3: «Карта live/map.html: у узла чип
+   „N open“ из /api/comments/summary». Чип ведёт на ту же страницу
+   в режиме Comment, то есть ссылок в узле стало ДВЕ, и узел-строка
+   с адресом перешёл на тот же паттерн, каким живёт дверь хаба
+   («КАРТОЧКА С РАСТЯНУТОЙ ССЫЛКОЙ» выше в этом файле): обёртка div,
+   главная ссылка на имени с растянутой ::after, вторая ссылка над
+   ней. Никогда a в a. Ховер и фокус переехали со ссылки на
+   карточку, поэтому клавиатура видит то же, что мышь.
+
+   ОКРАС ВЗЯТ СУЩЕСТВУЮЩИЙ, БАЗОВЫЙ .gbs-chip: плашка Zinc 100,
+   чернила Eyebrow. Это ровно тот окрас, которым комментарий уже
+   говорит на светлом грунте (.gbc-chip в дровере треда,
+   comments.css). Blue 600 в этом ряду занят статусом ready и по
+   Тон-5 значит состояние страницы; Zinc 900 (.gbs-chip--page) —
+   мебель принадлежности на полке песочниц; контуры (--expected,
+   --tag) значат «ещё нет» и «ярлык». Нового окраса не заведено, и
+   заметность чип берёт не цветом, а присутствием: он появляется
+   только там, где счёт больше нуля.
+
+   Ховер и кольцо фокуса — те же, что у чипа-мишени .gbs-tagbtn
+   (чернила в Zinc 900, кольцо Blue 600 2px/2px). Приход — та же
+   gbsNodeIn, которой приходит узел: счётчик приезжает ответом
+   сервиса, уже после дерева, и появиться молча не может (Тон-7).
+
+   Пара `a.gbs-node` выше по файлу осталась стоять и больше ни на
+   что не смотрит: узлов-ссылок в разметке больше нет, все узлы
+   стали div. Не снята нарочно: правка этой волны идёт только в
+   конец файла; уберёт её ближайшая волна, которая и так
+   открывает середину studio.css.
+   ============================================================ */
+.gbs-node--link:hover,
+.gbs-node--link:focus-within { border-color: var(--zinc-900); box-shadow: var(--shadow-card); }
+
+/* Растянутая главная ссылка. Цвет объявлен парой — ловушка 1. */
+a.gbs-node__link,
+body.gb-demo a.gbs-node__link { color: var(--zinc-900); text-decoration: none; }
+.gbs-node__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
+
+.gbs-node__open {
+  position: relative;   /* над растянутой ::after имени */
+  z-index: 1;
+  animation: gbsNodeIn var(--mo-small) var(--mo-arrive) both;
+  transition: color var(--mo-micro) var(--mo-move);
+}
+a.gbs-node__open,
+body.gb-demo a.gbs-node__open { color: var(--eyebrow-color); text-decoration: none; }
+a.gbs-node__open:hover,
+body.gb-demo a.gbs-node__open:hover { color: var(--zinc-900); }
+.gbs-node__open:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }

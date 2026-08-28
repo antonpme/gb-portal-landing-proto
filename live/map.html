@@ -6,7 +6,23 @@
 <title>Live Prototype · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
-     gbppl-panel-9 / -10 / map-2 — THE PAGE MAP OF THE LIVE PROTOTYPE
+     gbppl-panel-9 / -10 / map-2 / map-3 — THE PAGE MAP OF THE LIVE
+     PROTOTYPE
+     ------------------------------------------------------------
+     gbppl-map-3, 28.08. Comment mode spec, §4.3: «Карта
+     live/map.html: у узла чип „N open“ из /api/comments/summary».
+     A node that stands for a live page now says how many comments wait
+     on it, and the chip is a door: it opens that page with ?mode=comment.
+     The count is read, never written, and it is silent about everything
+     it does not know — no studio code, no service, no open thread, no
+     chip, and not one line in the browser console.
+     Two consequences worth knowing before reading the script below:
+     a page row carries two links now (the page and its comments), so it
+     moved onto the hub door pattern — a div with a stretched link on the
+     name — and the chip belongs to PAGES only: the dashboard, the
+     confirmation and the three booking steps are states of a page, they
+     share its address and its tally, and five equal numbers in one tree
+     would speak of five different places.
      ------------------------------------------------------------
      gbppl-map-2, 28.08. Ton: «Чекаут принадлежит больше к порталу, а не
      к сайту. Чтобы зайти на чекаут, нужно залогиниться через портал.
@@ -406,6 +422,95 @@
 
   var reg = window.GB_SANDBOXES;
 
+  /* ============================================================
+     СКОЛЬКО КОММЕНТАРИЕВ ЖДЁТ НА КАЖДОЙ СТРАНИЦЕ (gbppl-map-3)
+     ------------------------------------------------------------
+     Спека Comment mode, §4.3: «Карта live/map.html: у узла чип
+     „N open“ из /api/comments/summary». Один запрос на всю карту:
+     сводка приходит голой картой page → {open, resolved, applied},
+     и карта её только ЧИТАЕТ. Нет кода гейта, нет сервиса, нет
+     открытых — чипов нет, и это не поломка, а тишина: в консоль
+     браузера при этом не летит ни строки (то же правило, по
+     которому живёт отказ сервиса в comments.js).
+
+     КЛЮЧ ТОТ ЖЕ, КАКИМ АДРЕСУЕТСЯ КОММЕНТАРИЙ: путь страницы от
+     корня студии. Считает его консоль (panel.place(), спека §5,
+     page), и второй ответ на тот же вопрос разошёлся бы с первым на
+     первой же странице-папке. Здесь снимается имя файла и остаётся
+     папка карты, потому что адреса узлов написаны относительно неё.
+
+     СЧЁТЧИК НОСИТ СТРАНИЦА, НЕ СОСТОЯНИЕ. Dashboard, Confirmation и
+     три шага букинга — состояния своих страниц, у них тот же адрес
+     и та же сводка, и пять одинаковых чисел в одном дереве говорили
+     бы о пяти разных местах. Признак ровно тот, что уже есть в
+     таблице: у состояния стоит note.
+     ============================================================ */
+  var OPEN = null;   /* сводка сервиса или null, пока её нет */
+  var BASE = null;   /* 'live/', снятая с консоли */
+
+  function panelEl() { return document.querySelector('gb-studio-panel'); }
+
+  function base() {
+    if (BASE !== null) return BASE;
+    var p = panelEl();
+    BASE = (p && typeof p.place === 'function') ? p.place().replace(/[^/]*$/, '') : '';
+    return BASE;
+  }
+
+  /* АДРЕС СЕРВИСА. Тот же, что у comments.js: по умолчанию
+     same-origin (на VPS /api/* отдаёт Caddy), атрибут data-api на
+     консоли меняет базу и нужен только проверочным прогонам. Там эта
+     функция приватная — файл IIFE, наружу выходят только on, setMode
+     и reload, — поэтому здесь стоит её минимальный двойник: две
+     строки, читающие тот же атрибут у того же элемента. */
+  function apiBase() {
+    var p = panelEl();
+    return (p && p.getAttribute('data-api')) || '';
+  }
+
+  function chip(href, n) {
+    var mark = href.indexOf('?') >= 0 ? '&' : '?';
+    return '<a class="gbs-chip gbs-node__open" href="' + esc(href + mark) + 'mode=comment" ' +
+           'title="Open this page in comment mode">' + n + ' open</a>';
+  }
+
+  /* Чип дописывается к уже нарисованному узлу, а не рисуется вместе
+     с ним: сводка приходит после дерева, и перерисовывать дерево
+     ради неё значило бы второй раз проиграть каскад прихода. Один
+     путь на оба случая — полка зовёт это и после каждой перерисовки
+     (смена таба), и когда ответ сервиса дошёл. */
+  function stamp() {
+    if (!OPEN) return;
+    var from = base();
+    if (!from) return;
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.gbs-node--page'), function (el) {
+        if (el.querySelector('.gbs-node__open')) return;
+        var link = el.querySelector('.gbs-node__link');
+        if (!link) return;
+        var rec = OPEN[from + link.getAttribute('href')];
+        var n = rec && rec.open;
+        if (!n) return;
+        (el.querySelector('.gbs-chip--ready') || link)
+          .insertAdjacentHTML('afterend', chip(link.getAttribute('href'), n));
+      });
+  }
+
+  function ask() {
+    var key = (window.GB_STUDIO && window.GB_STUDIO.code()) || '';
+    if (!key || !base()) return;
+    fetch(apiBase() + '/api/comments/summary', {
+      headers: { 'X-GB-Code': key },
+      cache: 'no-store'
+    }).then(function (res) {
+      return res.ok ? res.json() : null;
+    }).then(function (data) {
+      if (!data) return;
+      OPEN = data;
+      stamp();
+    }).catch(function () { /* сервис молчит: карта просто без чипов */ });
+  }
+
   /* Coverage in the voice of the registry: how many rooms this page
      has open today. Silent where there are none: an empty count is
      not news. */
@@ -422,7 +527,7 @@
 
   function node(n) {
     var ready = !!n.href;
-    var stamp = ' style="--gbs-step: ' + (step++) + '"';
+    var mark = ' style="--gbs-step: ' + (step++) + '"';
 
     /* A container says what it is instead of how far along it is: ready
        and expected are both answers to a question that cannot be asked
@@ -432,18 +537,40 @@
          footer groups say «footer nav» where the portal root says
          «container» (gbppl-map-2). Same column, same voice, no second
          class and no second row. */
-      return '<div class="gbs-node gbs-node--place"' + stamp + '>' +
+      return '<div class="gbs-node gbs-node--place"' + mark + '>' +
              '<span class="gbs-node__name">' + esc(n.name) + '</span>' +
              '<span class="gbs-node__aside">' + esc(n.aside || 'container') + '</span></div>';
     }
 
-    var chip = '<span class="gbs-chip ' + (ready ? 'gbs-chip--ready">ready' : 'gbs-chip--expected">expected') + '</span>';
-    var name = '<span class="gbs-node__name">' + esc(n.name) + '</span>';
+    var status = '<span class="gbs-chip ' + (ready ? 'gbs-chip--ready">ready' : 'gbs-chip--expected">expected') + '</span>';
     var side = ready ? (n.note || coverage(n.page)) : (n.from || '');
     var aside = side ? '<span class="gbs-node__aside">' + esc(side) + '</span>' : '';
-    var body = name + chip + aside;
-    if (!ready) return '<div class="gbs-node gbs-node--expected"' + stamp + '>' + body + '</div>';
-    return '<a class="gbs-node" href="' + esc(n.href) + '"' + stamp + '>' + body + '</a>';
+    if (!ready) {
+      return '<div class="gbs-node gbs-node--expected"' + mark + '>' +
+             '<span class="gbs-node__name">' + esc(n.name) + '</span>' +
+             status + aside + '</div>';
+    }
+
+    /* ССЫЛОК В УЗЛЕ-СТРАНИЦЕ СТАЛО ДВЕ (gbppl-map-3): сама страница и
+       чип открытых комментариев, который ведёт на неё же в режиме
+       Comment. Отсюда тот же паттерн, каким живёт дверь хаба
+       (studio.css, «КАРТОЧКА С РАСТЯНУТОЙ ССЫЛКОЙ»): обёртка div,
+       главная ссылка на имени с ::after во всю карточку, вторая
+       ссылка над ней. Никогда a в a. Ховер и фокус переехали со
+       ссылки на карточку (:hover / :focus-within), поэтому клавиатура
+       видит то же, что мышь.
+
+       ДВА МОДИФИКАТОРА, И ОНИ ПРО РАЗНОЕ. --link это ФОРМА:
+       карточка с растянутой ссылкой, её носят все строки с адресом.
+       --page это СМЫСЛ: строка и есть страница, а не её состояние
+       или шаг. У состояния (note) адрес тот же, а сводки своей нет:
+       комментарий привязан к СТРАНИЦЕ, и пять одинаковых чисел в
+       одном дереве говорили бы о пяти разных местах. */
+    var kind = ' gbs-node--link' + (n.note ? '' : ' gbs-node--page');
+    return '<div class="gbs-node' + kind + '"' + mark + '>' +
+           '<a class="gbs-node__name gbs-node__link" href="' + esc(n.href) + '">' +
+             esc(n.name) + '</a>' +
+           status + aside + '</div>';
   }
 
   function branch(n) {
@@ -463,6 +590,10 @@
     step = 0;
     mount.innerHTML = '<ul class="gbs-tree gbs-tree--top">' +
       rows.map(branch).join('') + '</ul>';
+    /* Сводка могла прийти раньше, чем человек переключил таб
+       (gbppl-map-3): дерево рисуется заново, и чипы ставятся тем же
+       движением, что и по ответу сервиса. Пусто — ничего не делает. */
+    stamp();
   }
 
   /* ---- THE TWO TABS (gbppl-map-2, Ton 28.08).
@@ -532,6 +663,12 @@
   var asked = new URL(window.location.href).searchParams.get('tree');
   if (!asked) { try { asked = sessionStorage.getItem(TREE_KEY); } catch (e) {} }
   show(VIEWS[asked] ? asked : 'site', false);
+
+  /* Сводка спрашивается ПОСЛЕ разбора документа (gbppl-map-3):
+     путь страницы от корня студии считает консоль, а она стоит в
+     подвале и поднимается позже этого скрипта. Дерево рисуется
+     сразу и его никто не ждёт: счётчик дописывается, когда придёт. */
+  document.addEventListener('DOMContentLoaded', ask);
 
   var cross = document.getElementById('gbsCross');
   if (cross) {
