@@ -6,7 +6,29 @@
 <title>Live Prototype · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
-     gbppl-panel-9 / -10 — THE PAGE MAP OF THE LIVE PROTOTYPE
+     gbppl-panel-9 / -10 / map-2 — THE PAGE MAP OF THE LIVE PROTOTYPE
+     ------------------------------------------------------------
+     gbppl-map-2, 28.08. Ton: «Чекаут принадлежит больше к порталу, а не
+     к сайту. Чтобы зайти на чекаут, нужно залогиниться через портал.
+     Сравнение с IKEA: наш веб-сайт это их верхний шоурум, там те же
+     товары и каталог, но выставлено так, чтобы привлекать внимание,
+     рассказывать и показывать. Наш портал это нижний склад: сюда
+     спускаются, чтобы брать товары с полок, здесь вся функциональность:
+     зайти, создать кампанию, трекать её и воспользоваться чекаутом. В
+     IKEA кассы и выдача тоже в конце нижнего склада, а не в шоуруме.»
+     So Checkout left the site tree and stands last inside the portal
+     container, the tills at the end of the warehouse; the two ledes say
+     showroom and warehouse in plain words; and the crossing that read
+     Portal → Checkout, now a branch rather than a crossing, was
+     replaced by Gifts catalog → Checkout.
+
+     Same day, same wave, Ton again: «страницы под верхним меню Explore
+     будем переделывать первыми: улучшить структуру, смерджить
+     дублирующие по логике страницы». Explore says so in its own right
+     hand column, «in the header nav · redesign next», and it grew no
+     children because the live nav gives it none (see the row). And the
+     footer pages were confirmed where they are: their own shelf at the
+     bottom, marked as coming from the footer, nothing to change.
      ------------------------------------------------------------
      Ton, 27.08, on the Proposed console: «Когда переключаешься на
      Sandboxes, попадаешь на список песочниц, а при клике на Live
@@ -109,7 +131,7 @@
 
         <section class="gbs-shelf">
           <h2 class="gbs-h2">Website</h2>
-          <p class="gbs-lede">The public site and the pages it leads into. Ready means the page stands and runs on the system; expected means the name is promised somewhere real and the page is not built yet.</p>
+          <p class="gbs-lede">The showroom upstairs: the same gifts and the same catalog as the portal, laid out to show and to tell. Ready means the page stands and runs on the system; expected means the name is promised somewhere real and the page is not built yet.</p>
 
           <div id="gbsTreeSite"></div>
         </section>
@@ -123,14 +145,14 @@
 
         <section class="gbs-shelf">
           <h2 class="gbs-h2">Portal</h2>
-          <p class="gbs-lede">A container, not a page: it holds one page of its own and the states that page can be in. Containers carry no status, only the pages and states inside them do.</p>
+          <p class="gbs-lede">The warehouse downstairs: you come down here to sign in, build a campaign, track it and check out, and the tills stand at the far end. A container, not a page, so it carries no status; only the pages and states inside it do.</p>
 
           <div id="gbsTreePortal"></div>
         </section>
 
         <section class="gbs-shelf">
           <h2 class="gbs-h2">Where the trees meet</h2>
-          <p class="gbs-lede">The two trees are separate, and these are the four places one hands over to the other. Each line is a link that exists in the markup today, not a route we would like to have.</p>
+          <p class="gbs-lede">The two trees are separate, and these are the four places one hands over to the other. Each line is read off the markup as it stands today, not off a route we would like to have.</p>
 
           <div id="gbsCross"></div>
         </section>
@@ -176,9 +198,11 @@
 (function () {
   'use strict';
 
-  /* THE SITE. Home is the root because every other page of the site is
-     reached from it, the checkout included: the catalog opens a gift and
-     the gift lands there. */
+  /* THE SITE, the showroom. Home is the root because every other page of
+     the site is reached from it. The checkout is NOT one of them any
+     more (gbppl-map-2, 28.08): it moved into the portal container, the
+     way the tills of a warehouse stand past the shelves and not in the
+     room where the goods are shown. */
   var SITE = [
     { name: 'Home', href: 'index.html', page: 'home', kids: [
       { name: 'Gifts catalog', href: 'catalog/index.html', page: 'catalog', kids: [
@@ -186,22 +210,35 @@
         { name: 'Product page, new layout', from: 'in the queue' }
       ] },
       { name: 'Customize', from: 'in the header nav' },
-      { name: 'Explore', from: 'in the header nav' },
+      /* gbppl-map-2, 28.08. Ton: «страницы под верхним меню Explore будем
+         переделывать первыми: улучшить структуру, смерджить дублирующие по
+         логике страницы». The note rides in the SAME right-hand column the
+         row already had, after the middot the studio uses everywhere else:
+         no new class, no new number, no child rows. Children were checked
+         before they were left out — in system\components\header.js the only
+         nav item carrying a submenu is Gifts (GROUPS: By Category, By
+         Recipient, By Occasion); Customize, Portal and Explore are bare
+         buttons with nothing under them, so Explore has no pages to list. */
+      { name: 'Explore', from: 'in the header nav · redesign next' },
       { name: 'Book a meeting', href: 'book-a-meeting.html', page: 'booking', kids: [
         { name: 'Details', href: 'book-a-meeting.html', note: 'step 1' },
         { name: 'Pick a time', href: 'book-a-meeting.html', note: 'step 2' },
         { name: 'Confirmed', href: 'book-a-meeting.html', note: 'step 3' }
-      ] },
-      { name: 'Checkout', href: 'checkout.html', page: 'checkout', kids: [
-        { name: 'Confirmation', href: 'checkout.html', note: 'a state of the checkout page' }
       ] }
     ] }
   ];
 
-  /* THE PORTAL. The root holds no status of its own: it is the place
-     behind the sign in, and a place cannot be ready. Everything under it
-     is either the one page we have or a state that page can be in, and
-     every name below is a literal in live\portal.html. */
+  /* THE PORTAL, the warehouse. The root holds no status of its own: it
+     is the place behind the sign in, and a place cannot be ready. Under
+     it stand the pages we have and the states those pages can be in.
+
+     CHECKOUT STANDS HERE, LAST (gbppl-map-2, 28.08, Ton: «чекаут
+     принадлежит больше к порталу, а не к сайту; чтобы зайти на чекаут,
+     нужно залогиниться через портал»). Last on purpose: the tills of a
+     warehouse are at the end of the walk, not at its start, and the
+     markup agrees with the metaphor — the only link into checkout.html
+     anywhere in the prototype is the cart in live\portal.html, wired by
+     the script at the foot of that file. */
   var PORTAL = [
     { name: 'Portal', container: true, kids: [
       { name: 'Portal landing', href: 'portal.html', page: 'portal' },
@@ -210,15 +247,34 @@
         { name: 'Chat with our team', href: 'portal.html', note: 'a door of the popup' },
         { name: 'Book a meeting', href: 'portal.html', note: 'a door of the popup' },
         { name: 'Call us', href: 'portal.html', note: 'a door of the popup' }
+      ] },
+      { name: 'Checkout', href: 'checkout.html', page: 'checkout', kids: [
+        { name: 'Confirmation', href: 'checkout.html', note: 'a state of the checkout page' }
       ] }
     ] }
   ];
 
-  /* WHERE THE TREES MEET. Four crossings, and every one of them is a
-     link that exists in the markup today. The row is a statement, not a
+  /* WHERE THE TREES MEET. Four crossings, and every one of them is read
+     off the markup as it stands today. The row is a statement, not a
      door: the trees above already carry every address, and a card with
      two names in it cannot be one link without lying about which name
-     was clicked. */
+     was clicked.
+
+     Portal → Checkout left this shelf with gbppl-map-2: checkout moved
+     into the portal container, so the two are one branch now and a
+     branch is not a crossing. What took its place is the crossing that
+     really does cross, Gifts catalog → Checkout, and its line is
+     written from what the files say rather than from the route we would
+     like: the catalog carries no link to checkout at all. Its header is
+     <gb-site-header> with the same four addresses as everywhere, and
+     the cart in that bar is a plain <button> with no href and no
+     data-gbppl-cart, so it opens nothing; the bundle has no Add to cart
+     anywhere, and the customizer inside it ends on its own
+     live-checkout-boundary screen that says it stops before touching a
+     real cart. The one door into checkout.html in the whole prototype
+     is the cart in live\portal.html, and the checkout answers to it
+     with the "From the customizer" scenario. So the gift chosen in the
+     showroom reaches the till by going down into the portal. */
   var CROSS = [
     { from: 'My Portal, in the site header',
       to:   'Portal landing',
@@ -226,9 +282,9 @@
     { from: 'Explore Gifts, in the portal',
       to:   'Gifts catalog',
       why:  'the portal opens the v1 catalog in an overlay' },
-    { from: 'Portal',
+    { from: 'Gifts catalog',
       to:   'Checkout',
-      why:  'the checkout keeps a scenario that arrives from the portal' },
+      why:  'no link in the catalog: the gift reaches the till through the cart in the portal' },
     { from: 'Talk to a gifting expert, in the portal',
       to:   'Book a meeting',
       why:  'the booking flow runs inside the popup' }
