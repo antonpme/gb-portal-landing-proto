@@ -40,6 +40,13 @@
                         gba:done, всплывающее, detail {email}
                         (gbppl-header-auth-2, 28.08 — дровер входа
                         в хедере слушает его и закрывается).
+                        gbppl-drawer-unify-1 (28.08): Sign in with
+                        Google ведёт себя как введённый адрес
+                        (СИМУЛЯЦИЯ you@gmail.com, OAuth нет) и
+                        уходит на тот же шаг кода; каждый шаг
+                        кричит gba:step {step}; back() — публичный
+                        шаг назад, тот же, что «Use a different
+                        email».
 
    Живые имена классов сохранены в разметке как данные для замера
    (селекторы конфига public-login.json совпадают один в один);
@@ -436,6 +443,26 @@
       var self = this;
       var field = this.querySelector('gb-field');
       var submit = this.querySelector('button.bg-primary-600');
+
+      /* GOOGLE BEHAVES LIKE A TYPED ADDRESS    gbppl-drawer-unify-1 (28.08)
+         Ton: «Авторизацию через Google и email нужно сделать полноценной,
+         как на сайте, симулируем, как будто ты ввёл email, но остальное в
+         дровере дальше должно быть такое же, как на настоящем flow.»
+         There is no OAuth here and there is not going to be one in a
+         prototype, so the button does the one thing the real one does
+         before the popup: it hands the flow an address. SIMULATED — the
+         address below is invented, nothing leaves the browser, and from
+         the next line the code step is the same code step the e-mail
+         path reaches. */
+      var google = this.querySelector('.gba-google');
+      if (google) {
+        google.addEventListener('click', function () {
+          self.__email = 'you@gmail.com';   /* SIMULATION: no OAuth in the prototype */
+          self.__method = 'code';
+          self.renderVerify();
+        });
+      }
+      this.__step('signin');
       var go = function (event) {
         event.preventDefault();
         var value = (field.input.value || '').trim();
@@ -458,6 +485,7 @@
         VERIFY_TEMPLATE(this.__email, this.__method, this.__resendLeft || RESEND_SECONDS) + '</section>';
       var self = this;
       if (!this.__timer) this.startTimer(RESEND_SECONDS);
+      this.__step('verify');
 
       this.querySelectorAll('.gba-method').forEach(function (card) {
         card.addEventListener('click', function () {
@@ -468,8 +496,7 @@
 
       this.querySelector('[data-back]').addEventListener('click', function (event) {
         event.preventDefault();
-        self.stopTimer();
-        self.renderSignin();
+        self.back();
       });
       var resend = this.querySelector('[data-resend]');
       resend.addEventListener('click', function (event) {
@@ -530,6 +557,28 @@
           detail: { email: self.__email }
         }));
       });
+    }
+
+    /* THE WAY BACK, SAID ONCE    gbppl-drawer-unify-1 (28.08)
+       «Use a different email» under the code has always been here and
+       stays here, word for word as on the live page. What is new is
+       that the same step is now also the back arrow in the head of the
+       drawer the flow happens to be standing in — one step, two ways
+       to take it, and only one implementation of it. */
+    back() {
+      this.stopTimer();
+      this.renderSignin();
+    }
+
+    /* THE FLOW SAYS WHICH STEP IT IS ON, and nothing more. Whoever is
+       hosting it decides what that means: the header grows a back
+       arrow, system/pages/auth.html ignores it. Bubbling, like
+       gba:done, and carrying the one fact the host needs. */
+    __step(step) {
+      this.dispatchEvent(new CustomEvent('gba:step', {
+        bubbles: true,
+        detail: { step: step }
+      }));
     }
 
     startTimer(seconds) {

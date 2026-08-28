@@ -534,17 +534,22 @@
      else, and every line that duplicated it is gone: SIGNIN_BODY, the
      e-mail regexp, the error plumbing, the lead.
 
-     THE HEAD OF THE DRAWER IS EYEBROW AND CROSS, NO TITLE. Inspect and
-     Comment both open <gb-drawer> as eyebrow + title + sub, because
-     there the subject has no heading of its own and the head is the only
-     place it can be named. Here the flow carries its own <h1> («Sign in
-     or create an account») and its own lead, both measured off the live
-     page, and a second heading above them would be the same sentence
-     twice. So the head keeps only what belongs to the SURFACE: the
-     eyebrow that says which drawer this is, and the cross that closes
-     it. drawer.js leaves an empty title and an empty sub out of the
-     layout on their own (the <h2> collapses, the <p> is hidden), so
-     nothing here overrides the organism. */
+     THE HEAD SAYS «ACCOUNT», IN THE DRAWER'S OWN VOICE
+     (gbppl-drawer-unify-1, 28.08). Ton, on this very drawer: «вверху
+     этот Account не тем шрифтом, как во всех других дроверах». It was
+     an eyebrow — 12px caps, the voice of a label — while every other
+     drawer in the house names itself in the serif. The word was right,
+     the voice was not, so the word moves into the title slot and speaks
+     like the rest of them.
+
+     The alternative was an empty title, since the flow carries its own
+     <h1> («Sign in or create an account»). Both were built and looked
+     at side by side at 390: an empty title leaves a bare 80px strip
+     with a lone circle in it, which reads as a drawer that failed to
+     load rather than as restraint, and the panel then says nothing at
+     all until the body starts. «Account» and the <h1> are not the same
+     sentence either — one names the drawer, the other asks for the
+     address — so the head keeps the name and the body keeps the ask. */
   var DRAWER_OUT = 350;   /* --mo-medium-out, drawer.js CLOSE_MS; см. __openSignin */
 
   /* THE KEY. Read on every render rather than cached, because the device
@@ -919,7 +924,7 @@
       var d = signinDrawer();
       if (!d) return;
       d.open({
-        eyebrow: 'Account',
+        title: 'Account',
         html: '<gb-auth-flow class="gbh-signin"></gb-auth-flow>'
       });
       /* The drawer's panel lives on document.body, not inside <gb-drawer>.
@@ -945,6 +950,19 @@
          reader sees a bar that has already changed. The state is
          therefore written when the panel has left: DRAWER_OUT is
          drawer.js's own CLOSE_MS, --mo-medium-out. */
+      /* THE STEP BEHIND, SHOWN IN THE HEAD    gbppl-drawer-unify-1
+         Ton: «"Use a different email" на шаге кода дополнительно
+         становится стрелкой назад в шапке». The text link stays where
+         it is, word for word as on live; the arrow is a second door on
+         the same step, for the person who is looking at the top of the
+         panel and not at the bottom of it. The header does not know
+         what the steps are — it hears the flow name the one it is on
+         and hands the drawer the flow's own back(). */
+      flow.addEventListener('gba:step', function (e) {
+        var step = e.detail && e.detail.step;
+        d.setBack(step === 'signin' ? null : function () { flow.back(); });
+      });
+
       flow.addEventListener('gba:done', function (e) {
         var email = (e.detail && e.detail.email) || '';
         d.close();
