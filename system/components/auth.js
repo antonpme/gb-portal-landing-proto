@@ -35,7 +35,11 @@
                         OTP или пароль+confirm, Continue disabled
                         до заполнения, Resend с таймером, Use a
                         different email → назад). Бэкенда нет:
-                        код никуда не уходит, Continue инертен.
+                        код никуда не уходит. Continue ничего не
+                        отправляет, но КРИЧИТ О ЗАВЕРШЕНИИ:
+                        gba:done, всплывающее, detail {email}
+                        (gbppl-header-auth-2, 28.08 — дровер входа
+                        в хедере слушает его и закрывается).
 
    Живые имена классов сохранены в разметке как данные для замера
    (селекторы конфига public-login.json совпадают один в один);
@@ -508,9 +512,24 @@
           f.input.addEventListener('input', refreshPass);
         });
       }
-      /* Continue инертен: дальше живой гость не проходит без
-         настоящего кода из письма, demo-лайв бэкенда не носит. */
-      cont.addEventListener('click', function (event) { event.preventDefault(); });
+      /* КОНЕЦ ФЛОУ ГОВОРИТ О СЕБЕ ВСЛУХ    gbppl-header-auth-2 (28.08)
+         Continue по-прежнему никуда не ходит: настоящего кода из письма
+         нет, бэкенда у demo-лайва нет, запрос отсюда не уходит. Но у
+         дошедшего до конца флоу теперь есть слушатель: дровер входа в
+         хедере закрывается на нём и меняет бар на бар вошедшего
+         (header.js, __openSignin). Владелец объявляет только ФАКТ
+         завершения и ничего не знает о том, что будет дальше. Одно
+         событие, всплывающее, с адресом, который назвал гость. Кнопка
+         disabled до полного кода или пары паролей, то есть событие
+         приходит ровно на успешной проверке. */
+      cont.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (cont.disabled) return;
+        self.dispatchEvent(new CustomEvent('gba:done', {
+          bubbles: true,
+          detail: { email: self.__email }
+        }));
+      });
     }
 
     startTimer(seconds) {

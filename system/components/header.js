@@ -512,27 +512,39 @@
     );
   };
 
-  /* THE SIGN IN DRAWER. Its words are the ones already measured off
-     system/pages/auth.html, our copy of https://portal.gildedbox.com/guest/auth:
-     the heading, the lead and the field label are that page's, verbatim, and
-     nothing is invented on top. The button says Continue because Ton named it.
-     The field is the floating variant of .gba-input, the same clothes the
-     booking lead form and the comment drawer wear (auth.css owns it; the label
-     stands AFTER the control inside .gba-inputwrap and the placeholder is one
-     space, or :placeholder-shown never fires). */
-  var SIGNIN_BODY =
-    '<form class="gbh-signin" novalidate>' +
-      '<div class="gba-field gba-field--floating gbh-signin__field">' +
-        '<div class="gba-inputwrap">' +
-          '<input class="gba-input" id="gbh-signin-email" type="email" autocomplete="email" placeholder=" ">' +
-          '<label class="gba-label" for="gbh-signin-email">Email</label>' +
-        '</div>' +
-      '</div>' +
-      '<button class="gb-btn gb-btn--m gb-btn--filled gb-btn--primary gb-btn--block gbh-signin__go" type="submit">' +
-        '<span class="gb-btn__label" data-pc-section="label">Continue</span></button>' +
-    '</form>';
+  /* ============================================================
+     THE SIGN IN DRAWER CARRIES THE FLOW WE ALREADY HAVE
+     gbppl-header-auth-2 (2026-08-28)
+     ------------------------------------------------------------
+     Ton, verbatim: «Ты полностью сломал форму авторизации, которая есть
+     на лайве. У нас форма авторизации уже была в системе. Почему ты не
+     переиспользовал ту, которая есть? Там кнопка авторизоваться с Google
+     и все дела. У нас есть целый флоу регистрации и авторизации, просто
+     используй его. Не выдумывай ничего нового.»
 
-  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;   /* same test as auth.js */
+     He is right, and the mistake was in the brief of the wave before,
+     not in the drawer. gbppl-header-auth-1 wrote a one field form of its
+     own into this file — an e-mail input, its own validation, its own
+     lead — while <gb-auth-flow> had been standing in auth.js since 18.08
+     with the whole thing measured off portal.gildedbox.com/guest/auth:
+     Sign in with Google, «or», the e-mail form, then the six digit code
+     or a password with its confirmation, Resend with its timer, and the
+     way back. Ton-6, question one: is there a component already. There
+     was. So the body of this drawer is now that component and NOTHING
+     else, and every line that duplicated it is gone: SIGNIN_BODY, the
+     e-mail regexp, the error plumbing, the lead.
+
+     THE HEAD OF THE DRAWER IS EYEBROW AND CROSS, NO TITLE. Inspect and
+     Comment both open <gb-drawer> as eyebrow + title + sub, because
+     there the subject has no heading of its own and the head is the only
+     place it can be named. Here the flow carries its own <h1> («Sign in
+     or create an account») and its own lead, both measured off the live
+     page, and a second heading above them would be the same sentence
+     twice. So the head keeps only what belongs to the SURFACE: the
+     eyebrow that says which drawer this is, and the cross that closes
+     it. drawer.js leaves an empty title and an empty sub out of the
+     layout on their own (the <h2> collapses, the <p> is hidden), so
+     nothing here overrides the organism. */
   var DRAWER_OUT = 350;   /* --mo-medium-out, drawer.js CLOSE_MS; см. __openSignin */
 
   /* THE KEY. Read on every render rather than cached, because the device
@@ -900,60 +912,44 @@
       }, 2400);
     }
 
-    /* THE DRAWER. Surface from the system, words from the measured
-       sign in page, and nothing leaves the browser. */
+    /* THE DRAWER. Surface from the system (<gb-drawer>), flow from the
+       system (<gb-auth-flow>, auth.js), and nothing leaves the browser.
+       See the block by DRAWER_OUT for why the head has no title. */
     __openSignin() {
-      var self = this;
       var d = signinDrawer();
       if (!d) return;
       d.open({
         eyebrow: 'Account',
-        title: 'Sign in or create an account',
-        sub: 'Use your email and we’ll send a 6-digit verification code',
-        html: SIGNIN_BODY
+        html: '<gb-auth-flow class="gbh-signin"></gb-auth-flow>'
       });
-      /* The drawer's panel lives on document.body, not inside <gb-drawer>. */
-      var panel = document.querySelector('.gbd-panel .gbh-signin');
-      if (!panel) return;
-      var input = panel.querySelector('#gbh-signin-email');
-      var field = panel.querySelector('.gba-field');
-      if (input) setTimeout(function () { input.focus(); }, 80);
+      /* The drawer's panel lives on document.body, not inside <gb-drawer>.
+         The element upgrades while innerHTML is being set, so its first
+         step is already in the DOM by the line below. */
+      var flow = document.querySelector('.gbd-panel .gbh-signin');
+      if (!flow) return;
+      /* The flow does not take focus on its first step (the live page it
+         copies does not either); in a drawer the caret belongs in the
+         field the guest came here to fill. The verify step focuses its
+         own first cell, so this runs once, on the way in. */
+      var first = flow.querySelector('.gba-input');
+      if (first) setTimeout(function () { first.focus(); }, 80);
 
-      var clear = function () {
-        var err = field.querySelector('.gba-error');
-        if (err) err.parentNode.removeChild(err);
-        input.classList.remove('invalid');
-        input.removeAttribute('aria-invalid');
-      };
-      var fail = function (msg) {
-        clear();
-        input.classList.add('invalid');
-        input.setAttribute('aria-invalid', 'true');
-        var span = document.createElement('span');
-        span.setAttribute('role', 'alert');
-        span.className = 'gba-error';
-        span.textContent = msg;
-        field.appendChild(span);
-        input.focus();
-      };
-      input.addEventListener('input', clear);
-
-      panel.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var value = (input.value || '').trim();
-        /* The live guest form's own words, verbatim (auth.js). */
-        if (!EMAIL_RE.test(value)) { fail('Please enter a valid email address'); return; }
-        /* From here on it is only our own memory: no request, no account.
-           THE ORDER MATTERS. Ton: «дровер закрывается сам, хедер
-           меняется НА ГЛАЗАХ с моушеном». At 1280 the panel is 520 wide
-           and the right corner of the bar stands underneath it, so a
-           flag written on the same tick plays the whole change behind
-           the panel and the reader sees a bar that has already changed.
-           The state is therefore written when the panel has left:
-           DRAWER_OUT is drawer.js's own CLOSE_MS, --mo-medium-out. */
+      /* THE END OF THE FLOW, and only that. The component says gba:done
+         when the six digits or the two passwords check out; what it means
+         for the bar is ours to decide, and it is the same thing it meant
+         in gbppl-header-auth-1.
+         THE ORDER MATTERS. Ton: «дровер закрывается сам, хедер меняется
+         НА ГЛАЗАХ с моушеном». At 1280 the panel is 520 wide and the
+         right corner of the bar stands underneath it, so a flag written
+         on the same tick plays the whole change behind the panel and the
+         reader sees a bar that has already changed. The state is
+         therefore written when the panel has left: DRAWER_OUT is
+         drawer.js's own CLOSE_MS, --mo-medium-out. */
+      flow.addEventListener('gba:done', function (e) {
+        var email = (e.detail && e.detail.email) || '';
         d.close();
         setTimeout(function () {
-          window.GbAuth.setName(value.split('@')[0]);
+          window.GbAuth.setName(email.split('@')[0]);
           window.GbAuth.setSignedIn(true);
         }, DRAWER_OUT);
       });
