@@ -6,6 +6,13 @@
    table and two kinds beside them, Icon button and Icon, plus one
    owner prefix. Nothing else in this file moved.
 
+   gbppl-oro-cleanup-1 (28.08) let a kind name the two lines around
+   its drawer body. `sub` and `foot` were printed here for every
+   kind and both said «measured at this width with getComputedStyle»,
+   which is a lie on the registry cards of components.html, whose
+   words are read off the census. A kind that does not mention them
+   keeps them word for word. See THE SHOWCASE KINDS below.
+
    gbppl-oro-drawer-1 (28.08) added ONE kind, Drawer head, for the
    specimen on system\oro\drawer.html, and widened one guard by a
    single `:not()` so that a drawn panel counts as a specimen while
@@ -938,6 +945,21 @@
      above is component agnostic and stays that way. Inspect uses a
      kind wherever the recognition table names one, so Button reads
      the same in the prototype as it does on its card.
+
+     THE FIELDS A KIND MAY CARRY:
+
+       find(slot, target)   the specimen inside the clicked slot
+       describe(el)         whatever the other fields want to read
+       name, owner          a string, or a function (el, info)
+       title(el, info)      the standard subtitle, before the width
+       body(el, info)       the rows
+       inViewMode: false    a region that only answers in Inspect
+       sub, foot            gbppl-oro-cleanup-1: the two lines around
+                            the body. A string, a function
+                            (el, width, info), or null for a line
+                            that is not printed at all. Left out,
+                            both stay the sentences openShowcase has
+                            always written.
      ============================================================ */
 
   /* ---------- what each kind of specimen reports ---------- */
@@ -1518,12 +1540,34 @@
     var info = kind.describe(el);
     var name = typeof kind.name === 'function' ? kind.name(el, info) : kind.name;
     var owner = typeof kind.owner === 'function' ? kind.owner(el, info) : kind.owner;
+
+    /* gbppl-oro-cleanup-1 (28.08). The two lines around the body used
+       to be printed here for every kind, and both of them claimed the
+       same thing: measured, at this width, with getComputedStyle. True
+       of a specimen on a plinth. Not true of a card in the registry,
+       whose words are read off the census and never measured at all,
+       and the instrument does not get to say a number came from
+       somewhere it did not (Ton, 27.08, «прибор не выдумывает»).
+
+       So a kind may now name its own two lines. `sub` and `foot` are
+       each a string, a function (el, width, info) returning one, or
+       null for a line that is not printed. A kind that says nothing
+       keeps exactly the two sentences it had, which is why Button,
+       Field, Icon, Icon button and Drawer head read word for word as
+       they did before this wave. */
+    var line = function (key, standard) {
+      if (!(key in kind)) return standard;
+      var v = kind[key];
+      return typeof v === 'function' ? v(el, window.innerWidth, info) : v;
+    };
+
     d.open({
       title: name,
-      sub: kind.title(el, info) + ' &middot; measured at ' + window.innerWidth + 'px wide',
+      sub: line('sub', kind.title(el, info) + ' &middot; measured at ' + window.innerWidth + 'px wide'),
       html: kind.body(el, info),
-      foot: 'Owner: <code>' + owner + '</code>. Every number above was read off this specimen with ' +
-            'getComputedStyle at the current window width.'
+      foot: line('foot',
+        'Owner: <code>' + owner + '</code>. Every number above was read off this specimen with ' +
+        'getComputedStyle at the current window width.')
     });
     return true;
   }
