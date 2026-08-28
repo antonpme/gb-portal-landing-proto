@@ -1,0 +1,322 @@
+/* ============================================================
+   gbppl-comments-b — COMMENT MODE, THE PIN AND THE THREAD
+   ------------------------------------------------------------
+   Ton, 27.08: «комментарий принадлежит объекту (строке текста,
+   элементу); видно, кто оставил; на комментарии можно отвечать,
+   мини-диалог». Spec: studio\docs\COMMENT-MODE-SPEC.md.
+   Behaviour and the whole of the mode: comments.js.
+
+   WHAT THIS FILE DRAWS, AND WHAT IT DELIBERATELY DOES NOT.
+   Three things are new here and nothing else: the pin on the page,
+   the shelf of threads in the console, and the thread inside the
+   drawer. The hairline round the hovered element and the plate that
+   names it are Inspect's and are drawn by Inspect (inspect.css); the
+   segment of the Mode toggle is the console's (studio-panel.css); the
+   fields are auth.css, the buttons are button.css, the note | suggest
+   control is the documentation's .gbdoc-seg, and the drawer is
+   drawer.css. Тон-14, пункт 2: сначала ищем среди существующих
+   классов, заводим своё только с записью, почему не подошло.
+
+   THE LAYER SITS INSIDE <gb-studio-panel>. Ловушка 19 скилла: a layer
+   hung on document.body reads the bundle's --space-* on the vendored
+   catalog. The host is display: contents, so a fixed child of it is
+   laid out exactly as it would be in the body, and the scale is ours.
+
+   THE LENGTHS. Every one is a rung (--space-*, --radius, the type
+   floor 12) or carries a NO TOKEN line saying which drawing it
+   belongs to. The three NO TOKENs of this file are the z-index of the
+   layer, the width of the pin's ring, and the two-pixel underline
+   offset the console's segments already use.
+   ============================================================ */
+
+/* ============================================================
+   THE LAYER AND THE PIN
+   ------------------------------------------------------------
+   z 56: over Inspect's overlay (55), under the device stage (58),
+   the console (60) and the drawer (80/81). A pin has to be visible
+   over the page and must never cover the switch that turns it off.
+   NO TOKEN: the system has no z-index scale; the stack is written
+   out in studio-panel.css and inspect.css and this number belongs
+   to that list, not to a length scale.
+   ============================================================ */
+.gbc-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 56;
+  overflow: hidden;
+  pointer-events: none;
+  font-family: var(--font-sans);
+}
+.gbc-layer[hidden] { display: none; }
+
+/* 24 = --space-24, the same rung the console's rotate button stands
+   on (.gbsp-tb__rot). A pin is a target as much as a mark: at 24 it
+   is still hittable on a phone and still small enough to sit on a
+   line of text without covering the word it is about. */
+.gbc-pin {
+  position: absolute;
+  width: var(--space-24);
+  height: var(--space-24);
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  /* NO TOKEN on the 1px ring: it is the same white ring the count
+     badge wears (--count-badge-ring) so a blue disc stays legible on
+     a dark photograph, but that token is the badge's own slot and
+     borrowing another component's slot is not reuse. */
+  border: 1px solid var(--white);
+  border-radius: var(--radius-circle);
+  background: var(--blue-600);
+  box-shadow: var(--shadow-panel);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 12px;              /* the floor of the system, as .gbi-num */
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background var(--mo-micro) var(--mo-move),
+              transform var(--mo-micro) var(--mo-move);
+}
+.gbc-pin:hover { background: var(--blue-700); }
+.gbc-pin:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }
+
+/* Resolved is not a state you are in, it is a state you left, and
+   blue in this system means live state (Тон-5). So a settled pin
+   goes grey and stops asking for the eye. */
+.gbc-pin.is-done { background: var(--zinc-500); }
+.gbc-pin.is-done:hover { background: var(--zinc-600); }
+
+/* The one whose thread is open on screen. NO TOKEN on the 2: it is
+   the ring width the system already draws round a focused segment
+   (.gbsp-seg / .gbdoc-seg :focus-visible), not a gap in a layout. */
+.gbc-pin.is-open { box-shadow: 0 0 0 2px var(--blue-200), var(--shadow-panel); }
+
+/* Not posted yet: no number, because it has none, and dashed,
+   because it is a proposal and not a record. */
+.gbc-pin--new {
+  background: transparent;
+  border: 1px dashed var(--blue-600);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* The page while a comment is being placed. Same crosshair Inspect
+   uses and for the same reason: the pointer is choosing an object,
+   not following a link. The console, the drawer and the pins keep
+   their own pointer — they are the things you still operate. */
+html.gbc-on,
+html.gbc-on * { cursor: crosshair !important; }
+html.gbc-on :is(.gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim, .gbc-layer),
+html.gbc-on :is(.gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim, .gbc-layer) * { cursor: default !important; }
+html.gbc-on :is(.gbsp, .gbd-panel) :is(a, button),
+html.gbc-on .gbc-pin { cursor: pointer !important; }
+html.gbc-on ::selection { background: transparent; }
+
+/* ============================================================
+   THE SHELF IN THE CONSOLE
+   ------------------------------------------------------------
+   Its furniture is the console's own: the eyebrow of the section,
+   .gbsp-segs for the filter, .gbsp-link for a row, .gbsp-note for
+   the count. Everything below is what those classes cannot say —
+   a row of two lines, a number in front of it, a status chip.
+   ============================================================ */
+.gbc-count { font-variant-numeric: tabular-nums; }
+
+.gbc-filter { margin-bottom: var(--space-8); }
+
+.gbc-list { margin-top: var(--space-8); }
+
+.gbc-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  white-space: normal;
+}
+.gbc-item__head,
+.gbc-item__line { display: block; }
+.gbc-item__head {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--zinc-400);
+}
+.gbc-item__n {
+  margin-right: var(--space-8);
+  color: var(--blue-400);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.gbc-item__line {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--zinc-200);
+}
+.gbc-empty {
+  padding: var(--space-8) 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+
+/* ============================================================
+   THE STATUS CHIP, ON BOTH GROUNDS
+   ------------------------------------------------------------
+   The same chip is read in two places with opposite grounds: the
+   console is Zinc 950, the drawer is white. One class, two grounds,
+   declared in that order — base for the light surface, override
+   inside the console — rather than two classes saying one thing.
+   ============================================================ */
+.gbc-chip {
+  display: inline-block;
+  margin-left: var(--space-8);
+  padding: 0 var(--space-8);
+  border-radius: var(--radius);
+  background: var(--zinc-100);
+  color: var(--zinc-600);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.6;
+  text-transform: uppercase;
+  vertical-align: baseline;
+}
+.gbsp .gbc-chip { background: var(--zinc-800); color: var(--zinc-400); }
+.gbc-chip--lost { background: var(--zinc-200); color: var(--zinc-700); }
+.gbsp .gbc-chip--lost { background: var(--zinc-700); color: var(--zinc-200); }
+
+/* ============================================================
+   THE THREAD IN THE DRAWER
+   ============================================================ */
+.gbc-msg { margin: 0 0 var(--space-16); }
+.gbc-msg:last-of-type { margin-bottom: var(--space-24); }
+
+/* A reply is the same message one step in, and the step is drawn by
+   a hairline rather than by a second card: the drawer is 520 wide
+   and a nested box would eat it. */
+.gbc-msg--reply {
+  padding-left: var(--space-16);
+  border-left: 1px solid var(--zinc-200);
+}
+
+.gbc-msg__by {
+  margin: 0 0 var(--space-8);
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--zinc-900);
+}
+.gbc-msg__by time {
+  margin-left: var(--space-8);
+  font-weight: 400;
+  color: var(--zinc-500);
+}
+.gbc-msg__body {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--zinc-800);
+  white-space: pre-wrap;
+}
+
+/* WAS AND NOW. Two rows, one grid, the key in the eyebrow voice: a
+   suggestion is only readable when the two versions stand one under
+   the other and start at the same column. */
+.gbc-diff {
+  margin: 0 0 var(--space-16);
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius);
+  background: var(--zinc-50);
+}
+.gbc-diff__row {
+  display: flex;
+  gap: var(--space-16);
+  margin: 0;
+  padding: var(--space-8) 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.gbc-diff__row + .gbc-diff__row { border-top: 1px solid var(--zinc-200); }
+.gbc-diff__k {
+  flex: 0 0 var(--space-48);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.9;
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.gbc-diff__v { flex: 1 1 auto; min-width: 0; color: var(--zinc-500); }
+.gbc-diff__v--new { color: var(--zinc-900); }
+
+/* ---- the form ----
+   Fields are auth.css, the Post button is the organism. Only the
+   rhythm and the two things auth.css cannot know about live here. */
+.gbc-form { margin: 0; }
+
+/* ЛОВУШКА 3 СКИЛЛА: auth.css воспроизводит preflight В СВОЁМ СКОУПЕ
+   (gb-guest-header / gb-auth-flow), а тред живёт в дровере, который
+   стоит в body любой страницы, в том числе без reset. Без антидота
+   у input и textarea остаются рамки по умолчанию, и подчёркнутое
+   поле превращается в бокс. Локальный, с комментом, как велит
+   ловушка.
+
+   Второй половиной того же preflight приходит box-sizing: без него
+   width 100% плюс паддинг 12 дают поле шире тела дровера ровно на
+   свои поля, и подчёркивание уходит за правый край (замер 28.08 на
+   live/index.html: 544 в 472). */
+.gbc-form .gba-input {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+  border-bottom-width: 1px;
+}
+
+/* .gba-field носит поля 0 8px живой сетки Materialize: внутри формы
+   лид-страницы это часть колонки, в дровере — лишний сдвиг от края
+   тела. Обнуляется здесь, у потребителя, а не у владельца. */
+.gbc-field { padding: 0; margin-bottom: var(--space-16); }
+.gbc-field .gba-label { margin-bottom: var(--space-8); }
+
+.gbc-as {
+  margin: 0 0 var(--space-16);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+
+/* The quiet way out of a decision already made. Not a button: it
+   changes a name, it does not perform the page's business
+   (docs.css, 26.08: «контролы не кнопки»). The antidote comes in a
+   pair, as it always must on a page wearing body.gb-demo. */
+button.gbc-link,
+body.gb-demo button.gbc-link {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--blue-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;   /* NO TOKEN: the underline's own geometry, the 2 the console's segments use */
+  cursor: pointer;
+}
+button.gbc-link:hover,
+body.gb-demo button.gbc-link:hover { color: var(--blue-700); }
+
+.gbc-kinds { margin-bottom: var(--space-16); }
+
+.gbc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-16);
+  margin-top: var(--space-16);
+}
+.gbc-hint {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}

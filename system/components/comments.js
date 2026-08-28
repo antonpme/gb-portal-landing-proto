@@ -1,0 +1,1064 @@
+/* ============================================================
+   SYSTEM COMPONENT: COMMENT MODE (gbppl-comments-b, 2026-08-28)
+   ------------------------------------------------------------
+   Тон, 27.08, заказом: «комментарий принадлежит объекту (строке
+   текста, элементу); видно, кто оставил; на комментарии можно
+   отвечать, мини-диалог». Спека целиком:
+   studio\docs\COMMENT-MODE-SPEC.md (v0.1, разделы 4-7).
+
+   ЧТО ЭТО. Третий режим консоли, рядом с View и Inspect. Наведение
+   называет элемент теми же словами, что Inspect; клик ставит на него
+   булавку; булавка открывает тред в системном дровере; список тредов
+   страницы стоит полкой в ящике консоли. Записи живут в сервисе
+   gb-comments (волна A, тот же общий код гейта в заголовке
+   X-GB-Code), а не в браузере: комментарий, который видит только его
+   автор, это не комментарий.
+
+   ЧЕГО ЗДЕСЬ НЕТ И ПОЧЕМУ. Ни одной строки распознавания: чем
+   является элемент, какой файл им владеет и что писать на плашке,
+   отвечает system\components\inspect.js, и отвечает ОДИН раз
+   (Тон-6). Волна добавила ему шесть публичных методов (target,
+   isChrome, outline, outlineOff, lede, onModeSwitch) вместо того,
+   чтобы завести здесь вторую таблицу COMPONENTS, которая назавтра
+   разойдётся с первой.
+
+   Ни одной строки вида тумблера: сегмент Comment дописывается в
+   существующий ряд Mode через panel.addSegments(...).addOption, и
+   форма сегмента остаётся у панели (gbppl-panel-6). Ни одной строки
+   дровера: тред пишется в тот же <gb-drawer>, что и пропертиз,
+   потому что дровер — поверхность, и второй экземпляр значил бы две
+   панели, стакающиеся друг на друга.
+
+   ГДЕ ЖИВЁТ СЛОЙ БУЛАВОК. Внутри <gb-studio-panel>, а не в body —
+   ловушка 19 скилла, дословно: «любой новый слой студии (сцена,
+   будущие булавки и треды Comment, тосты) монтируется внутрь
+   <gb-studio-panel> (у него display: contents) или другого острова
+   со шкалой». На вендорном каталоге --space-* на :root принадлежат
+   бандлу, и слой, подвешенный в body, читал бы чужие числа.
+
+   КАК ПОДКЛЮЧАТЬ (на каждой странице с консолью, ПОСЛЕ inspect.js):
+
+     <link rel="stylesheet" href="../system/components/comments.css">
+     ...
+     <script src="../system/components/inspect.js"></script>
+     <script src="../system/components/comments.js"></script>
+
+   Порядок несущий: этот файл спрашивает у GbInspect тумблер режима
+   и распознавание, а у <gb-studio-panel> — полку ящика.
+
+   АДРЕС СЕРВИСА. По умолчанию same-origin: на VPS Caddy отдаёт
+   /api/* в контейнер gb-comments (спека §7), и базы у адреса нет.
+   Атрибут data-api на <gb-studio-panel> меняет базу — он нужен
+   только проверочным прогонам, где сайт стоит на python -m
+   http.server, а сервис на другом порту, и проксировать некому.
+
+   КОД ДОСТУПА. Не литерал и не копия: window.GB_STUDIO.code(),
+   владелец — system\components\studio.js, значение приходит с
+   клавиатуры гейта (см. шапку studio.js). Нет кода или сервис
+   молчит — режим работает на чтение того, что уже загружено, форма
+   гаснет, строка состояния консоли говорит «Comments unavailable»,
+   и в консоль браузера при этом не летит ни одной ошибки: отказ
+   сервиса это состояние вида, а не поломка страницы.
+
+   ПРИВЯЗКА (спека §5). Комментарий принадлежит элементу, а не
+   пикселю: sel — путь по DOM, kin — та же форма, что печатает
+   Inspect (тег с классами), role — имя, которым Inspect его зовёт,
+   text — первые 80 символов нормализованного текста, rect — точка
+   клика В ДОЛЯХ элемента. Восстановление идёт по sel; не нашли —
+   ищем среди kin тот, у кого совпал text; не нашли — запись
+   остаётся в списке с пометкой «element moved» и без булавки на
+   странице (спека §5, orphan).
+
+   ВО ФРЕЙМЕ ДЕВАЙСА. Тот же провод, что у Inspect (gbppl-panel-7):
+   снаружи режим объявляется событием gbc:mode, панель пересылает
+   его внутрь postMessage'ом, копия этого файла в кадре слушает
+   message. Изнутри наружу — тем же проводом обратно, и обе стороны
+   сравнивают значение перед тем, как что-то делать: петли нет.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- ключи ----------
+     Режим — состояние вкладки, как у Inspect: то, что человек делает
+     сейчас, а не то, что он настроил навсегда. Имя автора — наоборот,
+     localStorage: его вводят один раз в браузере (спека, шапка). */
+  var MODE_KEY   = 'gbppl-comment-mode';
+  var PINS_KEY   = 'gbppl-comment-pins';
+  var AUTHOR_KEY = 'gbppl-author';
+
+  var ON = false;          /* режим включён */
+  var showPins = false;    /* булавки видны и в View / Inspect */
+  var items = [];          /* треды этой страницы и этой версии */
+  var filter = 'open';
+  var down = '';           /* пусто или строка состояния об отказе */
+  var openId = null;       /* тред, открытый в дровере */
+  var pending = null;      /* новая булавка: { el, fx, fy } */
+  var hovered = null;
+  var deepLink = null;     /* ?comment=ID, снятый при загрузке */
+  var moving = false;      /* мы сами двигаем режим прибора */
+
+  var handle = null;       /* ручка сегментов Mode */
+  var shelf = null;        /* полка ящика */
+  var layer = null;        /* слой булавок */
+
+  /* ============================================================
+     СЛУЖЕБНОЕ
+     ============================================================ */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function panelEl() { return document.querySelector('gb-studio-panel'); }
+
+  function ss(key, value) {
+    try {
+      if (value === undefined) return sessionStorage.getItem(key);
+      sessionStorage.setItem(key, value);
+    } catch (e) { /* приватное окно */ }
+    return null;
+  }
+
+  function author(value) {
+    try {
+      if (value === undefined) return localStorage.getItem(AUTHOR_KEY) || '';
+      localStorage.setItem(AUTHOR_KEY, value);
+    } catch (e) {}
+    return null;
+  }
+
+  /* ОТНОСИТЕЛЬНОЕ ВРЕМЯ. Часы в треде читают не для того, чтобы
+     узнать дату: вопрос всегда «это свежее или вчерашнее». Точная
+     отметка живёт в title строки. */
+  function ago(iso) {
+    var t = Date.parse(iso);
+    if (!t) return '';
+    var s = Math.max(0, (Date.now() - t) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + ' min ago';
+    if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+    return Math.floor(s / 86400) + ' d ago';
+  }
+
+  function firstLine(c) {
+    var t = c.kind === 'suggest' && c.suggestion ? c.suggestion.after : c.body;
+    t = String(t || '').replace(/\s+/g, ' ').trim();
+    return t.length > 60 ? t.slice(0, 60) + '…' : t;
+  }
+
+  /* ============================================================
+     АДРЕС ЗАПИСИ: page, version, device (спека §5)
+     ============================================================ */
+
+  /* Путь страницы ОТ КОРНЯ СТУДИИ, без студийных ключей. Считает его
+     консоль: она и так держит эту таблицу для навигации, и второй
+     ответ на тот же вопрос разошёлся бы с первым на первой же
+     странице-папке (live/catalog/ против live/catalog/index.html). */
+  function pageKey() {
+    var p = panelEl();
+    if (p && typeof p.place === 'function') return p.place();
+    return location.pathname;
+  }
+
+  /* СТРОКА ВЕРСИИ. Ключи контекста берутся у их владельца — header.js
+     публикует GB_KEEP, где разведены content (что смотрят: v, nav,
+     hero, grid, layout, pth, lock, prefooter) и view (как смотрят:
+     device, studio). Комментарий принадлежит СОДЕРЖИМОМУ, поэтому
+     версию собирает только первый список: одна и та же строка на
+     мобильном и на десктопе — это одна и та же строка. */
+  function versionKey() {
+    var keys = (window.GB_KEEP && window.GB_KEEP.content) || [];
+    var have = new URLSearchParams(location.search);
+    var out = [];
+    keys.forEach(function (k) { if (have.has(k)) out.push(k + '=' + have.get(k)); });
+    return out.join('&');
+  }
+
+  /* Экран, на котором это написали. Пресет консоли, а внутри кадра,
+     когда пресета нет, — измеренная ширина окна кадра. */
+  function deviceKey() {
+    var v = ss('gbppl-device') || 'full';
+    var framed = false;
+    try { framed = window.top !== window.self; } catch (e) { framed = true; }
+    if (v === 'full' && framed) return String(window.innerWidth);
+    return v;
+  }
+
+  /* ============================================================
+     ПРИВЯЗКА К ЭЛЕМЕНТУ (спека §5)
+     ------------------------------------------------------------
+     Inspect строит короткое имя (тег с классами) для плашки, и оно
+     не адрес: на странице таких десятки. Адрес нужен свой, и он
+     строится здесь, потому что это вопрос комментария, а не
+     измерения. Путь идёт вверх до ближайшего id или до body, каждая
+     ступень — тег, до трёх устойчивых классов и nth-of-type.
+     Служебные классы состояния (is-*, has-*) и наши собственные в
+     путь не попадают: они меняются от наведения, а адрес меняться
+     не должен.
+     ============================================================ */
+  var SKIP_CLASS = /^(is-|has-|gbc-|gbi-|js-)/;
+
+  function stableClasses(el) {
+    var out = [];
+    var raw = (el.getAttribute && el.getAttribute('class')) || '';
+    String(raw).split(/\s+/).forEach(function (c) {
+      if (!c || SKIP_CLASS.test(c)) return;
+      if (!/^[A-Za-z_-][\w-]*$/.test(c)) return;   /* экзотику в селектор не пишем */
+      out.push(c);
+    });
+    return out.slice(0, 3);
+  }
+
+  function step(el) {
+    var s = el.tagName.toLowerCase();
+    var cls = stableClasses(el);
+    if (cls.length) s += '.' + cls.join('.');
+    var i = 1, prev = el;
+    while ((prev = prev.previousElementSibling)) {
+      if (prev.tagName === el.tagName) i++;
+    }
+    return s + ':nth-of-type(' + i + ')';
+  }
+
+  function selOf(el) {
+    var parts = [];
+    while (el && el.nodeType === 1 && el !== document.body &&
+           el !== document.documentElement) {
+      if (el.id && /^[A-Za-z][\w-]*$/.test(el.id)) { parts.unshift('#' + el.id); break; }
+      parts.unshift(step(el));
+      el = el.parentElement;
+    }
+    return parts.join(' > ');
+  }
+
+  /* Та же форма, что печатает Inspect на плашке: тег с классами, без
+     nth. Ею ищут элемент, когда путь больше не находит ничего. */
+  function kinOf(el) {
+    var cls = stableClasses(el);
+    return el.tagName.toLowerCase() + (cls.length ? '.' + cls.join('.') : '');
+  }
+
+  function textOf(el, full) {
+    var t = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+    return full ? t : t.slice(0, 80);
+  }
+
+  function anchorFor(el, fx, fy) {
+    var d = window.GbInspect ? window.GbInspect.identify(el) : { name: '', owner: {} };
+    return {
+      sel: selOf(el),
+      kin: kinOf(el),
+      role: d.name || '',
+      owner: (d.owner && d.owner.file) || '',
+      text: textOf(el),
+      rect: { x: Math.round(fx * 1000) / 1000, y: Math.round(fy * 1000) / 1000 }
+    };
+  }
+
+  /* ВОССТАНОВЛЕНИЕ (спека §5): сначала путь, потом текст среди своей
+     родни, потом ничего — и тогда это orphan, о котором список
+     говорит вслух. */
+  function resolve(anchor) {
+    if (!anchor) return null;
+    var el = null;
+    if (anchor.sel) {
+      try { el = document.querySelector(anchor.sel); } catch (e) { el = null; }
+    }
+    if (el && !isOurs(el)) return el;
+    if (anchor.kin && anchor.text) {
+      var kin = [];
+      try { kin = document.querySelectorAll(anchor.kin); } catch (e) { kin = []; }
+      for (var i = 0; i < kin.length; i++) {
+        if (isOurs(kin[i])) continue;
+        if (textOf(kin[i]) === anchor.text) return kin[i];
+      }
+    }
+    return null;
+  }
+
+  /* Наша собственная мебель адресом комментария быть не может. */
+  function isOurs(el) {
+    return !!(el && el.closest && el.closest('gb-studio-panel, .gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim, .gbi-layer, .gbc-layer'));
+  }
+
+  /* ============================================================
+     СЕРВИС (спека §7)
+     ------------------------------------------------------------
+     Same-origin, JSON, код гейта в заголовке на каждом запросе.
+     Единственная функция, которая ходит наружу, и единственное
+     место, где рождается состояние «сервис молчит»: отказ ловится
+     здесь и превращается в строку, а не в исключение.
+     ============================================================ */
+  function apiBase() {
+    var p = panelEl();
+    return (p && p.getAttribute('data-api')) || '';
+  }
+
+  function code() {
+    return (window.GB_STUDIO && window.GB_STUDIO.code()) || '';
+  }
+
+  function call(method, path, body) {
+    var key = code();
+    if (!key) {
+      return Promise.reject(new Error('no code'));
+    }
+    var opts = {
+      method: method,
+      headers: { 'X-GB-Code': key },
+      cache: 'no-store'
+    };
+    if (body) {
+      opts.headers['Content-Type'] = 'application/json';
+      opts.body = JSON.stringify(body);
+    }
+    return fetch(apiBase() + path, opts).then(function (res) {
+      if (!res.ok) throw new Error('http ' + res.status);
+      return res.status === 204 ? null : res.json();
+    });
+  }
+
+  /* Отказ произносится один раз и одинаково: спека просит ровно эту
+     строку, и она уходит в строку состояния консоли, а не в консоль
+     браузера. */
+  function fell() {
+    down = 'Comments unavailable';
+    announce();
+    paintShelf();
+    paintPins();
+  }
+
+  function rose() {
+    if (!down) return;
+    down = '';
+    announce();
+  }
+
+  function load() {
+    return call('GET', '/api/comments?page=' + encodeURIComponent(pageKey()) +
+                       '&version=' + encodeURIComponent(versionKey()))
+      .then(function (data) {
+        items = (data && data.comments) || [];
+        rose();
+        paintShelf();
+        paintPins();
+        if (deepLink) {
+          var want = deepLink;
+          deepLink = null;
+          openThread(want, true);
+        }
+        return items;
+      })
+      .catch(function () { fell(); });
+  }
+
+  /* ============================================================
+     СЛОЙ БУЛАВОК
+     ------------------------------------------------------------
+     Ловушка 19: слой стоит ВНУТРИ <gb-studio-panel>. z 56 — над
+     оверлеем прибора (55), под сценой девайсов (58), консолью (60)
+     и дровером (80): булавку видно поверх страницы и она никогда не
+     закрывает то, чем её выключают.
+     ============================================================ */
+  function makeLayer() {
+    if (layer && layer.isConnected) return layer;
+    layer = document.createElement('div');
+    layer.className = 'gbc-layer';
+    var host = panelEl() || document.body;
+    host.appendChild(layer);
+    layer.addEventListener('click', function (e) {
+      var pin = e.target.closest ? e.target.closest('[data-pin]') : null;
+      if (!pin) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openThread(pin.getAttribute('data-pin'), false);
+    });
+    return layer;
+  }
+
+  function pinsVisible() { return ON || showPins; }
+
+  function paintPins() {
+    if (!pinsVisible() && !layer) return;
+    makeLayer();
+    layer.innerHTML = '';
+    layer.hidden = !pinsVisible();
+    if (!pinsVisible()) return;
+
+    items.forEach(function (c, i) {
+      var el = resolve(c.anchor);
+      if (!el) return;                       /* orphan: живёт только в списке */
+      var r = el.getBoundingClientRect();
+      if (!r.width && !r.height) return;
+      var fx = (c.anchor && c.anchor.rect && c.anchor.rect.x) || 0.5;
+      var fy = (c.anchor && c.anchor.rect && c.anchor.rect.y) || 0.5;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'gbc-pin' + (c.status === 'open' ? '' : ' is-done') +
+                    (c.id === openId ? ' is-open' : '');
+      b.setAttribute('data-pin', c.id);
+      b.setAttribute('aria-label', 'Comment ' + (i + 1) + ' by ' + (c.author || 'someone'));
+      b.textContent = String(i + 1);
+      b.style.left = (r.left + fx * r.width) + 'px';
+      b.style.top  = (r.top + fy * r.height) + 'px';
+      layer.appendChild(b);
+    });
+
+    /* Булавка, которую ещё не отправили: пунктирная и без числа, у
+       неё пока нет ни номера, ни автора. */
+    if (pending && pending.el && pending.el.isConnected) {
+      var pr = pending.el.getBoundingClientRect();
+      var np = document.createElement('span');
+      np.className = 'gbc-pin gbc-pin--new';
+      np.style.left = (pr.left + pending.fx * pr.width) + 'px';
+      np.style.top  = (pr.top + pending.fy * pr.height) + 'px';
+      layer.appendChild(np);
+    }
+  }
+
+  var pinFrame = 0;
+  function repaintPins() {
+    if (pinFrame) return;
+    pinFrame = requestAnimationFrame(function () { pinFrame = 0; paintPins(); });
+  }
+
+  /* ============================================================
+     ПОЛКА КОНСОЛИ: «Comments on this page»
+     ------------------------------------------------------------
+     Своя секция, а не группа в «This page»: список тредов — не
+     переключатель страницы. Мебель вся своя, консольная: eyebrow у
+     заголовка, сегменты фильтра, строки списка того же .gbsp-link,
+     что двери и песочницы (Тон-14, пункт 2).
+     ============================================================ */
+  function mountShelf() {
+    var p = panelEl();
+    if (!p || typeof p.addSection !== 'function' || shelf) return;
+    var sec = p.addSection({
+      title: 'Comments on this page',
+      rank: 20,                       /* сразу за инструментами (Mode, Device) */
+      className: 'gbsp-sec--comments'
+    });
+    shelf = sec.body;
+    shelf.innerHTML =
+      '<p class="gbsp-note gbc-count"></p>' +
+      '<div class="gbsp-segs gbsp-segs--row gbc-filter" role="group" aria-label="Filter">' +
+        '<button class="gbsp-seg" type="button" data-f="open" aria-pressed="false">Open</button>' +
+        '<button class="gbsp-seg" type="button" data-f="resolved" aria-pressed="false">Resolved</button>' +
+        '<button class="gbsp-seg" type="button" data-f="mine" aria-pressed="false">Mine</button>' +
+      '</div>' +
+      '<ul class="gbsp-list gbc-list"></ul>' +
+      '<button class="gbsp-link gbc-pintoggle" type="button" aria-pressed="false">' +
+        'Show pins in other modes</button>';
+
+    shelf.addEventListener('click', function (e) {
+      var f = e.target.closest ? e.target.closest('[data-f]') : null;
+      if (f) { filter = f.getAttribute('data-f'); paintShelf(); return; }
+      var t = e.target.closest ? e.target.closest('.gbc-pintoggle') : null;
+      if (t) { setShowPins(!showPins); return; }
+      var row = e.target.closest ? e.target.closest('[data-go]') : null;
+      if (row) openThread(row.getAttribute('data-go'), true);
+    });
+    paintShelf();
+  }
+
+  function shown() {
+    var me = author();
+    return items.filter(function (c) {
+      if (filter === 'open') return c.status === 'open';
+      if (filter === 'resolved') return c.status !== 'open';
+      return me && c.author === me;
+    });
+  }
+
+  function paintShelf() {
+    if (!shelf) return;
+    /* Три статуса, две колонки счёта (спека §4.3): applied — это
+       resolved, у которого есть хеш коммита, и в счётчике он стоит
+       рядом только тогда, когда он есть; иначе строка врала бы про
+       колонку, которой на этой странице нет. */
+    var open = 0, done = 0, applied = 0;
+    items.forEach(function (c) {
+      if (c.status === 'open') open++;
+      else if (c.status === 'applied') { done++; applied++; }
+      else done++;
+    });
+
+    var count = shelf.querySelector('.gbc-count');
+    count.textContent = down ? down
+      : (open + ' open · ' + done + ' resolved' + (applied ? ' · ' + applied + ' applied' : ''));
+
+    var segs = shelf.querySelectorAll('[data-f]');
+    for (var i = 0; i < segs.length; i++) {
+      var on = segs[i].getAttribute('data-f') === filter;
+      segs[i].classList.toggle('is-on', on);
+      segs[i].setAttribute('aria-pressed', String(on));
+    }
+
+    var list = shelf.querySelector('.gbc-list');
+    var rows = shown();
+    if (!items.length) {
+      list.innerHTML = '<li class="gbc-empty">No comments on this page yet.</li>';
+    } else if (!rows.length) {
+      list.innerHTML = '<li class="gbc-empty">Nothing under this filter.</li>';
+    } else {
+      list.innerHTML = rows.map(function (c) {
+        var n = items.indexOf(c) + 1;
+        var lost = !resolve(c.anchor);
+        return '<li>' +
+          '<button class="gbsp-link gbc-item" type="button" data-go="' + esc(c.id) + '">' +
+            '<span class="gbc-item__head">' +
+              '<span class="gbc-item__n">' + n + '</span>' +
+              esc(c.author || 'someone') + ' · ' + esc(ago(c.created)) +
+              (c.status === 'open' ? '' : '<span class="gbc-chip">' + esc(c.status) + '</span>') +
+              (lost ? '<span class="gbc-chip gbc-chip--lost">element moved</span>' : '') +
+            '</span>' +
+            '<span class="gbc-item__line">' + esc(firstLine(c)) + '</span>' +
+          '</button>' +
+        '</li>';
+      }).join('');
+    }
+
+    var toggle = shelf.querySelector('.gbc-pintoggle');
+    toggle.classList.toggle('is-active', showPins);
+    toggle.setAttribute('aria-pressed', String(showPins));
+  }
+
+  function setShowPins(v) {
+    showPins = !!v;
+    ss(PINS_KEY, showPins ? '1' : '0');
+    paintShelf();
+    paintPins();
+  }
+
+  /* ============================================================
+     ТРЕД В ДРОВЕРЕ
+     ------------------------------------------------------------
+     Тот же <gb-drawer>, что у Inspect: дровер — поверхность, и
+     второй экземпляр стакал бы две панели друг на друга. Первая
+     строка тела — та же «Lives in <файл>», которую печатает
+     измерение (GbInspect.lede), потому что вопрос «где это лежит»
+     у замечания и у замера один.
+     ============================================================ */
+  function drawerHost() {
+    var d = document.querySelector('gb-drawer');
+    if (!d) {
+      d = document.createElement('gb-drawer');
+      document.body.appendChild(d);
+    }
+    return (d && typeof d.open === 'function') ? d : null;
+  }
+
+  function byId(id) {
+    for (var i = 0; i < items.length; i++) if (items[i].id === id) return items[i];
+    return null;
+  }
+
+  /* Подпись автора: имя спрашивается ОДИН раз в браузере, дальше
+     сворачивается в строку «as <имя> · change» (спека §4.2). */
+  function authorBlock() {
+    var me = author();
+    if (!me) {
+      return '<div class="gba-field gbc-field">' +
+        '<label class="gba-label" for="gbc-name">Your name</label>' +
+        '<div class="gba-inputwrap">' +
+          '<input class="gba-input" id="gbc-name" type="text" autocomplete="name" placeholder="Who is writing">' +
+        '</div>' +
+      '</div>';
+    }
+    return '<p class="gbc-as">as ' + esc(me) +
+           ' <button class="gbc-link" type="button" data-act="rename">change</button></p>';
+  }
+
+  function msgBlock(c, i) {
+    var suggestion = c.kind === 'suggest' && c.suggestion ?
+      '<div class="gbc-diff">' +
+        '<p class="gbc-diff__row"><span class="gbc-diff__k">was</span>' +
+          '<span class="gbc-diff__v">' + esc(c.suggestion.before) + '</span></p>' +
+        '<p class="gbc-diff__row"><span class="gbc-diff__k">now</span>' +
+          '<span class="gbc-diff__v gbc-diff__v--new">' + esc(c.suggestion.after) + '</span></p>' +
+      '</div>' : '';
+    var body = String(c.body || '').trim();
+    return '<article class="gbc-msg">' +
+      '<p class="gbc-msg__by">' + esc(c.author || 'someone') +
+        '<time title="' + esc(c.created) + '">' + esc(ago(c.created)) + '</time>' +
+        (c.status === 'open' ? '' : '<span class="gbc-chip">' + esc(c.status) +
+          (c.applied_ref ? ' ' + esc(c.applied_ref) : '') + '</span>') +
+      '</p>' +
+      suggestion +
+      (body ? '<p class="gbc-msg__body">' + esc(body) + '</p>' : '') +
+    '</article>';
+  }
+
+  function replyBlock(r) {
+    return '<article class="gbc-msg gbc-msg--reply">' +
+      '<p class="gbc-msg__by">' + esc(r.author || 'someone') +
+        '<time title="' + esc(r.created) + '">' + esc(ago(r.created)) + '</time></p>' +
+      '<p class="gbc-msg__body">' + esc(r.body) + '</p>' +
+    '</article>';
+  }
+
+  /* Форма нового комментария. Два вида, один переключатель: note —
+     замечание словами, suggest text — предложенная копия, и тогда
+     рядом стоит то, что написано сейчас (спека §4.2). Сегмент взят у
+     документации (.gbdoc-seg, «контролы не кнопки»), поле и кнопка —
+     у системы (.gba-input, .gb-btn). */
+  function formBlock(el, kind) {
+    var current = el ? textOf(el, true) : '';
+    var suggest = kind === 'suggest';
+    return '<form class="gbc-form" data-form="new">' +
+      authorBlock() +
+      '<div class="gbdoc-axis gbc-kinds">' +
+        '<button class="gbdoc-seg' + (suggest ? '' : ' is-on') + '" type="button" data-kind="note"' +
+          ' aria-pressed="' + (!suggest) + '">note</button>' +
+        '<button class="gbdoc-seg' + (suggest ? ' is-on' : '') + '" type="button" data-kind="suggest"' +
+          ' aria-pressed="' + suggest + '">suggest text</button>' +
+      '</div>' +
+      (suggest ?
+        '<div class="gbc-diff gbc-diff--live">' +
+          '<p class="gbc-diff__row"><span class="gbc-diff__k">was</span>' +
+            '<span class="gbc-diff__v">' + esc(current) + '</span></p>' +
+          '<p class="gbc-diff__row"><span class="gbc-diff__k">now</span>' +
+            '<span class="gbc-diff__v gbc-diff__v--new" data-now>' + esc(current) + '</span></p>' +
+        '</div>' +
+        '<div class="gba-field gbc-field">' +
+          '<label class="gba-label" for="gbc-new">New text</label>' +
+          '<div class="gba-inputwrap">' +
+            '<textarea class="gba-input gba-textarea" id="gbc-new" rows="3">' + esc(current) + '</textarea>' +
+          '</div>' +
+        '</div>' : '') +
+      '<div class="gba-field gbc-field">' +
+        '<label class="gba-label" for="gbc-body">' + (suggest ? 'Why' : 'Comment') + '</label>' +
+        '<div class="gba-inputwrap">' +
+          '<textarea class="gba-input gba-textarea" id="gbc-body" rows="3" placeholder="' +
+            (suggest ? 'Optional' : 'What should change here') + '"></textarea>' +
+        '</div>' +
+      '</div>' +
+      '<div class="gbc-actions">' +
+        '<button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="submit"' +
+          (down ? ' disabled' : '') + '><span class="gb-btn__label">Post</span></button>' +
+        '<span class="gbc-hint">' + (down ? 'Comments unavailable' : 'Ctrl and Enter posts') + '</span>' +
+      '</div>' +
+    '</form>';
+  }
+
+  function threadBlock(c) {
+    var replies = (c.replies || []).map(replyBlock).join('');
+    return msgBlock(c) + replies +
+      '<form class="gbc-form" data-form="reply">' +
+        authorBlock() +
+        '<div class="gba-field gbc-field">' +
+          '<label class="gba-label" for="gbc-body">Reply</label>' +
+          '<div class="gba-inputwrap">' +
+            '<textarea class="gba-input gba-textarea" id="gbc-body" rows="2" placeholder="Answer in the thread"></textarea>' +
+          '</div>' +
+        '</div>' +
+        '<div class="gbc-actions">' +
+          '<button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="submit"' +
+            (down ? ' disabled' : '') + '><span class="gb-btn__label">Post</span></button>' +
+          '<button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-act="status"' +
+            (down ? ' disabled' : '') + '><span class="gb-btn__label">' +
+            (c.status === 'open' ? 'Resolve' : 'Reopen') + '</span></button>' +
+        '</div>' +
+      '</form>';
+  }
+
+  /* Шапка дровера у треда и у замера одинаковая по строению: что это
+     за элемент и где он живёт. Разное только слово в eyebrow. */
+  function openDrawerFor(el, html, sub) {
+    var d = drawerHost();
+    if (!d) return;
+    var lede = (el && window.GbInspect && window.GbInspect.lede) ? window.GbInspect.lede(el) : '';
+    var name = el && window.GbInspect ? window.GbInspect.identify(el).name : 'Element';
+    d.open({
+      eyebrow: 'Comment',
+      title: name,
+      sub: sub,
+      html: lede + html
+    });
+    wireDrawer(el);
+  }
+
+  function openNew(el, fx, fy, kind) {
+    pending = { el: el, fx: fx, fy: fy, kind: kind || 'note' };
+    openId = null;
+    paintPins();
+    openDrawerFor(el, formBlock(el, pending.kind),
+      '<code>' + esc(kinOf(el)) + '</code> · on ' + esc(deviceKey() === 'full' ? 'full window' : deviceKey()));
+  }
+
+  function openThread(id, scroll) {
+    var c = byId(id);
+    if (!c) return;
+    pending = null;
+    openId = id;
+    var el = resolve(c.anchor);
+    paintPins();
+    if (scroll && el && el.scrollIntoView) {
+      el.scrollIntoView({ block: 'center', inline: 'nearest' });
+      repaintPins();
+    }
+    var sub = '<code>' + esc(c.anchor && c.anchor.kin ? c.anchor.kin : '') + '</code>' +
+              (el ? '' : ' · element moved');
+    if (el) {
+      openDrawerFor(el, threadBlock(c), sub);
+    } else {
+      /* Элемент уехал: тред всё равно читается, только шапку пишет
+         запись, а не страница — измерять больше нечего. */
+      var d = drawerHost();
+      if (!d) return;
+      d.open({
+        eyebrow: 'Comment',
+        title: (c.anchor && c.anchor.role) || 'Element',
+        sub: sub,
+        html: '<p class="gbi-lede">This element is no longer on the page, so the pin has nowhere to stand. ' +
+              'The thread is kept.</p>' + threadBlock(c)
+      });
+      wireDrawer(null);
+    }
+  }
+
+  function drawerBody() {
+    return document.querySelector('.gbd-panel .gbd-body');
+  }
+
+  /* ---------- проводка формы в дровере ----------
+     Дровер переписывает СОДЕРЖИМОЕ тела на каждом open, а сам узел
+     тела переживает открытия. Поэтому слушатели вешаются на ФОРМУ,
+     которая рождается заново каждый раз: на теле они копились бы, и
+     третий open отправлял бы комментарий трижды. */
+  function wireDrawer(el) {
+    var body = drawerBody();
+    if (!body) return;
+
+    var nameEl = body.querySelector('#gbc-name');
+    var bodyEl = body.querySelector('#gbc-body');
+    var newEl  = body.querySelector('#gbc-new');
+    var nowEl  = body.querySelector('[data-now]');
+    var form   = body.querySelector('form[data-form]');
+
+    /* Было и стало пишутся рядом, пока печатают (спека §4.2). */
+    if (newEl && nowEl) {
+      newEl.addEventListener('input', function () { nowEl.textContent = newEl.value; });
+    }
+    if (!form) return;
+
+    form.addEventListener('click', function (e) {
+      var k = e.target.closest ? e.target.closest('[data-kind]') : null;
+      if (k && pending) {
+        openNew(pending.el, pending.fx, pending.fy, k.getAttribute('data-kind'));
+        return;
+      }
+      var rn = e.target.closest ? e.target.closest('[data-act="rename"]') : null;
+      if (rn) { author(''); reopenSame(el); return; }
+      var st = e.target.closest ? e.target.closest('[data-act="status"]') : null;
+      if (st) { flipStatus(); return; }
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      submit(form.getAttribute('data-form'), el);
+    });
+
+    /* Ctrl+Enter отправляет из любого поля треда (спека §4.2). Esc
+       наверх не глушится: его ждёт дровер, и закрыть панель из поля
+       надо уметь. */
+    form.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        submit(form.getAttribute('data-form'), el);
+      }
+    });
+
+    var focusOn = nameEl || newEl || bodyEl;
+    if (focusOn) focusOn.focus({ preventScroll: true });
+  }
+
+  function reopenSame(el) {
+    if (pending) openNew(pending.el, pending.fx, pending.fy, pending.kind);
+    else if (openId) openThread(openId, false);
+  }
+
+  function readAuthor(body) {
+    var nameEl = body.querySelector('#gbc-name');
+    if (nameEl) {
+      var v = nameEl.value.trim();
+      if (!v) { nameEl.focus(); return ''; }
+      author(v);
+      return v;
+    }
+    return author();
+  }
+
+  /* ОДИН НАЖИМ — ОДНА ЗАПИСЬ (найдено прогоном 28.08: два одинаковых
+     треда на одном клике). Отправка асинхронна, и до ответа сервера
+     форма стоит нетронутая, с текстом и живой кнопкой: второй нажим,
+     повторный клик прибора или Ctrl+Enter следом дают вторую запись.
+     Задвижка снимается там же, где кончается запрос, в обе стороны. */
+  var busy = false;
+  function hold(on) {
+    busy = on;
+    var b = drawerBody();
+    var btn = b && b.querySelector('.gb-btn--primary');
+    if (btn) btn.disabled = on;
+  }
+
+  function submit(which, el) {
+    var body = drawerBody();
+    if (!body || down || busy) return;
+    var who = readAuthor(body);
+    if (!who) return;
+
+    var bodyEl = body.querySelector('#gbc-body');
+    var text = bodyEl ? bodyEl.value.trim() : '';
+
+    if (which === 'reply') {
+      if (!text) { bodyEl.focus(); return; }
+      hold(true);
+      call('POST', '/api/comments/' + encodeURIComponent(openId) + '/replies',
+           { author: who, body: text })
+        .then(function () { return load(); })
+        .then(function () { busy = false; openThread(openId, false); })
+        .catch(function () { busy = false; fell(); });
+      return;
+    }
+
+    var mark = pending;
+    if (!mark) return;
+    var newEl = body.querySelector('#gbc-new');
+    var kind = newEl ? 'suggest' : 'note';
+    if (kind === 'note' && !text) { bodyEl.focus(); return; }
+
+    var payload = {
+      page: pageKey(), version: versionKey(), device: deviceKey(),
+      anchor: anchorFor(mark.el, mark.fx, mark.fy),
+      author: who, kind: kind, body: text,
+      suggestion: kind === 'suggest'
+        ? { before: textOf(mark.el, true), after: newEl.value.trim() }
+        : null
+    };
+    hold(true);
+    call('POST', '/api/comments', payload)
+      .then(function (res) {
+        var id = res && res.comment && res.comment.id;
+        pending = null;
+        return load().then(function () { busy = false; if (id) openThread(id, false); });
+      })
+      .catch(function () { hold(false); fell(); });
+  }
+
+  function flipStatus() {
+    var c = byId(openId);
+    if (!c || down || busy) return;
+    busy = true;
+    call('PATCH', '/api/comments/' + encodeURIComponent(c.id),
+         { status: c.status === 'open' ? 'resolved' : 'open' })
+      .then(function () { return load(); })
+      .then(function () { busy = false; openThread(openId, false); })
+      .catch(function () { busy = false; fell(); });
+  }
+
+  /* ============================================================
+     РЕЖИМ
+     ============================================================ */
+  function announce() {
+    try {
+      document.dispatchEvent(new CustomEvent('gbc:mode', {
+        detail: { on: ON, down: ON ? down : '' }
+      }));
+    } catch (e) {}
+  }
+
+  function setMode(next) {
+    next = !!next;
+    if (next === ON) { announce(); return; }
+    ON = next;
+    ss(MODE_KEY, ON ? '1' : '0');
+    document.documentElement.classList.toggle('gbc-on', ON);
+
+    if (ON && window.GbInspect && window.GbInspect.mode() === 'inspect') {
+      /* Один тумблер, одно положение: включая Comment, гасим прибор.
+         Флаг нужен, чтобы наш же gbi:mode не выключил нас обратно. */
+      moving = true;
+      window.GbInspect.setMode('view');
+      moving = false;
+    }
+    if (!ON) {
+      pending = null;
+      hovered = null;
+      if (window.GbInspect) window.GbInspect.outlineOff();
+    }
+    if (handle) handle.setActive(ON ? 'comment' : (window.GbInspect ? window.GbInspect.mode() : 'view'));
+    paintPins();
+    announce();
+    if (ON) load();
+  }
+
+  /* Клик по View или Inspect — это клик ПРОЧЬ отсюда. Событие прибора
+     единственное, что нужно услышать: он объявляет любую смену, даже
+     на то же самое значение. */
+  document.addEventListener('gbi:mode', function () {
+    if (moving || !ON) return;
+    setMode(false);
+  });
+
+  /* Другой конец провода, внутри кадра девайса: снаружи консоль
+     посылает режим внутрь, страница переключается. Тот же разбор
+     отправителя, что у прибора (gbppl-panel-7). */
+  window.addEventListener('message', function (e) {
+    if (e.source !== window.parent || e.source === window) return;
+    var d = e.data;
+    if (!d || d.gbsp !== 'cmode') return;
+    if (!!d.on !== ON) setMode(!!d.on);
+  });
+
+  /* ============================================================
+     УКАЗАТЕЛЬ И КЛАВИШИ
+     ============================================================ */
+  document.addEventListener('pointermove', function (e) {
+    if (!ON) return;
+    var t = e.target;
+    if (!window.GbInspect) return;
+    if (window.GbInspect.isChrome(t) || t === document.documentElement) {
+      hovered = null;
+      window.GbInspect.outlineOff();
+      return;
+    }
+    t = window.GbInspect.target(t, e.altKey);
+    if (t === hovered) return;
+    hovered = t;
+    window.GbInspect.outline(t);
+  }, { passive: true });
+
+  document.addEventListener('pointerleave', function () {
+    if (!ON || !window.GbInspect) return;
+    hovered = null;
+    window.GbInspect.outlineOff();
+  });
+
+  /* Клик в режиме Comment — это выбор объекта, а не команда странице:
+     ссылка никуда не идёт, форма никуда не отправляется. Ровно то же
+     правило и по той же причине, что в Inspect. */
+  document.addEventListener('click', function (e) {
+    if (!ON) return;
+    if (!window.GbInspect || window.GbInspect.isChrome(e.target)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var el = window.GbInspect.target(e.target, e.altKey);
+    if (!el || el === document.documentElement || el === document.body) return;
+    var r = el.getBoundingClientRect();
+    var fx = r.width ? (e.clientX - r.left) / r.width : 0.5;
+    var fy = r.height ? (e.clientY - r.top) / r.height : 0.5;
+    openNew(el, Math.min(Math.max(fx, 0), 1), Math.min(Math.max(fy, 0), 1), 'note');
+  }, true);
+
+  document.addEventListener('mousedown', function (e) {
+    if (!ON || !window.GbInspect || window.GbInspect.isChrome(e.target)) return;
+    e.preventDefault();
+  }, true);
+
+  document.addEventListener('submit', function (e) {
+    if (!ON || !window.GbInspect || window.GbInspect.isChrome(e.target)) return;
+    e.preventDefault();
+  }, true);
+
+  /* c переключает, Esc выходит. Кириллическая с — та же физическая
+     клавиша, и стоит одно сравнение (то же решение, что у i в
+     inspect.js). Очередь Esc честная: дровер, потом консоль, потом
+     мы. */
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    var typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' ||
+                       t.tagName === 'SELECT' || t.isContentEditable);
+    if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'c' || e.key === 'C' || e.key === 'с' || e.key === 'С') {
+      e.preventDefault();
+      setMode(!ON);
+      return;
+    }
+    if (e.key === 'Escape' && ON) {
+      if (document.querySelector('.gbd-panel.is-open')) return;
+      if (document.querySelector('.gbsp:not(.is-collapsed)')) return;
+      setMode(false);
+    }
+  });
+
+  document.addEventListener('gbd:close', function () {
+    if (!pending && !openId) return;
+    pending = null;
+    openId = null;
+    paintPins();
+  });
+
+  window.addEventListener('scroll', repaintPins, { passive: true });
+  window.addEventListener('resize', repaintPins);
+
+  /* ============================================================
+     СТАРТ
+     ============================================================ */
+
+  /* DEEP LINK (спека §4.3). Ключ одноразовый: он не описывает вид
+     страницы, он описывает ПЕРЕХОД, и оставлять его в адресе значило
+     бы заново открывать тред на каждом обновлении. В KEEP header.js
+     он не входит по той же причине. Экран и версия приезжают своими
+     ключами, и сцену к этому моменту уже поставила консоль. */
+  function takeDeepLink() {
+    try {
+      var u = new URL(location.href);
+      var id = u.searchParams.get('comment');
+      if (!id) return null;
+      u.searchParams.delete('comment');
+      history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+      return id;
+    } catch (e) { return null; }
+  }
+
+  function mountSwitch() {
+    if (!window.GbInspect || !window.GbInspect.onModeSwitch) return;
+    window.GbInspect.onModeSwitch(function (h) {
+      handle = h;
+      handle.addOption({
+        label: 'Comment',
+        value: 'comment',
+        note: 'Point at anything and click to leave a note. Keys: c switches, Esc leaves.',
+        /* Своё поведение при своей позиции: у ряда Mode два хозяина, и
+           inspect.js не знает, что делать со значением comment. */
+        onChange: function () { setMode(true); }
+      });
+      if (ON) handle.setActive('comment');
+    });
+  }
+
+  function start() {
+    deepLink = takeDeepLink();
+    showPins = ss(PINS_KEY) === '1';
+    mountSwitch();
+    mountShelf();
+
+    var wanted = deepLink ? true : ss(MODE_KEY) === '1';
+    if (wanted) setMode(true);
+    else {
+      /* Даже в View список страницы читается: полка консоли для того
+         и стоит, чтобы увидеть, есть ли тут замечания, не входя в
+         режим. */
+      announce();
+      load();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  /* ---------- что может одолжить страница ----------
+     on() и setMode() нужны консоли, чтобы держать в согласии режим
+     снаружи кадра и внутри него (studio-panel.js, провод cmode);
+     reload() — волне C и карте, когда счётчики надо пересобрать. */
+  window.GbComments = {
+    on: function () { return ON; },
+    setMode: setMode,
+    reload: load
+  };
+})();

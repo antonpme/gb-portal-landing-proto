@@ -265,6 +265,7 @@
 <link rel="stylesheet" href="system/components/drawer.css">
 <link rel="stylesheet" href="system/components/docs.css">
 <link rel="stylesheet" href="system/components/inspect.css">
+<link rel="stylesheet" href="system/components/comments.css">
 
 <!-- Already inside? Then this page has nothing to ask, and it must
      not paint a locked door for half a frame before saying so. The
@@ -735,6 +736,13 @@ html.is-open #hub {
       }
       clearError();
       try { localStorage.setItem(FLAG, String(Date.now() + 30 * 24 * 60 * 60 * 1000)); } catch (e) {}
+      /* gbppl-comments-b. The code just typed is the same shared key
+         the comments service checks on every write (spec §3, §7), and
+         this form is the one keyboard it is ever spoken on. It goes to
+         the lock that owns it (studio.js) rather than into a second
+         file: the value still appears nowhere in the source, and the
+         reader asks for it instead of keeping a copy. */
+      if (window.GB_STUDIO && window.GB_STUDIO.remember) window.GB_STUDIO.remember(value);
       /* The guard on a locked page leaves a note saying where the
          visitor was headed (studio.js): a shared direct link must
          open itself after the code, not the hub. Read once, burn. */
@@ -793,6 +801,7 @@ html.is-open #hub {
 <script src="system/type-scale.js"></script>
 <script src="system/components/drawer.js"></script>
 <script src="system/components/inspect.js"></script>
+<script src="system/components/comments.js"></script>
 
 </body>
 </html>
