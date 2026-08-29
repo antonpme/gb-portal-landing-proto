@@ -98,6 +98,169 @@
      buttons that replaces them is exactly what E is for.
      ============================================================ -->
 
+<!-- ============================================================
+     gbppl-lab-f-1 — VARIANT F, AND HOW TO TURN ITS KNOBS
+     ------------------------------------------------------------
+     TO CHANGE F BY HAND, five lines:
+       1. Sizes, grounds, gaps and label sizes: the :root block
+          named LAB F KNOBS a few lines below. One place, all CSS.
+       2. Which axes the button and the field have, in what order,
+          and what group they sit in: window.LAB_F in the script
+          right under it. One place, all controls.
+       3. Group order and group names: LAB_F.GROUPS. An axis with
+          advanced:true goes under More; an axis with when(S) is
+          hidden until its condition is true.
+       4. Where the rail moves under the preview: the 1024 in the
+          two media queries of the F block (search "labF__body").
+       5. Nothing else in this file belongs to F. A..E are untouched.
+     ------------------------------------------------------------
+     WHAT F IS. Ton rejected C (underlined tabs as value switches)
+     and E (rows of product buttons as controls) and asked for the
+     recon first: studio\docs\RECON-PREVIEW-CONTROLS-2026-08-29.md,
+     ten systems read live. F is that report and nothing else:
+
+       LAYOUT (recon 2.1, 2.2, 2.6; Mantine and Joy UI)
+         one card, one hairline; the preview is fluid and stands on
+         the specimen ground, the control rail is narrow, fixed and
+         white; the code is a fold in the card's footer band, never
+         inside the rail.
+       CONTROLS (recon 1b, 2.4; Storybook, Mantine, Joy UI)
+         boolean = switch; two to four values = a quiet segment;
+         five and more = our Select; free text = a field. No
+         exception was found in ten systems, so F takes none.
+       CONDITIONAL (recon 2.8; Storybook if: {arg})
+         an axis that does not apply is REMOVED, never greyed; the
+         rare ones live behind one More disc (Ant, Figma).
+       GROUND (recon 2.7; Carbon theme selector)
+         Light and Dark is an axis like the others, drawn by the
+         same rule, standing last.
+       SILENCE (recon 2.3, 2.10)
+         no blue anywhere in the rail except the native focus ring,
+         and no line of text repeating what the specimen shows.
+
+     PLACEHOLDER UNTIL SWITCH FROM FIGMA. The system has no Switch
+     yet: hunted on live 29.08 across ten pages at two widths, none
+     exists, and Ton 13:33 rules that a component comes from a
+     measurement or does not get built. Figma has one and has not
+     been opened yet. So every boolean axis in F is a NATIVE
+     <input type="checkbox"> carrying our own 14px label, drawn with
+     no styling of ours at all: a thing that is obviously on loan
+     reads better than a hand drawn toggle that would have to be
+     unlearned. The day the Switch is measured, one function
+     (controlF) changes and the rest of F does not.
+     ============================================================ -->
+
+<!-- ---- LAB F KNOBS, THE CSS HALF ---- -->
+<style>
+:root {
+  /* THE RAIL. 320 = --space-64 * 5. The recon puts the convention at
+     250..360 (Mantine 250, Joy 300, Radix 360, Figma 300). 280 was
+     tried first and measured: at 280 the rail holds 231 of content
+     and the Colour row, the Type row and the Icon position row each
+     wrap to two lines; at 320 it holds 271 and only Colour and the
+     four glyphs wrap. No label breaks at either width, so this is a
+     choice about rows, not about words. */
+  --lab-f-rail: calc(var(--space-64) * 5);
+  /* THE SCENE, its floor rather than its height: 320 = --space-64 * 5
+     again, and it grows to whatever the rail needs, because one card
+     with two columns of different heights is not one card. */
+  --lab-f-scene-min: calc(var(--space-64) * 5);
+  --lab-f-scene-pad: var(--space-48);
+  /* Where the specimen stops when it follows the scroll: clear of
+     the studio bar, which is 80 at every width on live and is
+     sticky on every studio page. 80 = --space-64 + --space-16. */
+  --lab-f-scene-stick: calc(var(--space-64) + var(--space-16));
+  /* THE GROUNDS. Specimen ground by the docs.css rule: Zinc 100 with
+     a Zinc 200 hairline; the rail is white because it is read and
+     pressed, not looked at. */
+  --lab-f-ground-light: var(--zinc-100);
+  --lab-f-ground-dark: var(--zinc-950);
+  --lab-f-rail-ground: var(--white);
+  --lab-f-foot-ground: var(--zinc-50);
+  --lab-f-line: var(--zinc-200);
+  /* THE RHYTHM of the rail: air between two controls, more air
+     between two groups, and the rail's own padding. */
+  --lab-f-gap: var(--space-16);
+  --lab-f-group-gap: var(--space-24);
+  --lab-f-pad: var(--space-24);
+  /* THE TYPE. The axis name is the eyebrow of the system, which is
+     also exactly what gb-field prints over its own control, so a
+     Select and a segment carry the same label; the label beside a
+     checkbox is the reading size, the way Joy UI and Mantine letter
+     a switch. */
+  --lab-f-axis-size: var(--eyebrow-size);
+  --lab-f-axis-ink: var(--zinc-500);
+  --lab-f-bool-size: 14px;
+}
+</style>
+
+<!-- ---- LAB F KNOBS, THE SCHEMA HALF ---- -->
+<script>
+window.LAB_F = {
+  /* The order the groups are drawn in, and what each is called. The
+     last one is deliberately unnamed: a group of one axis whose name
+     is the group's own name prints Ground over GROUND. */
+  GROUPS: [['shape', 'Shape'], ['state', 'State'], ['content', 'Content'], ['ground', '']],
+
+  /* The one number in the control rule: from this many values an
+     axis becomes a Select. Below it, a segment of chips. */
+  SELECT_FROM: 5,
+
+  /* THE GROUND, an axis like any other and always last (recon 2.7,
+     Carbon draws the theme as one more control in the row). */
+  GROUND_AXIS: { id: 'ground', label: 'Ground', group: 'ground', def: 'light',
+                 values: [['light', 'Light'], ['dark', 'Dark']] },
+
+  /* THE BUTTON. Six axes on the rail, three under More. A boolean
+     names what it turns on, because a checkbox says the no itself. */
+  BUTTON_AXES: [
+    { id: 'size',    label: 'Size',   group: 'shape', def: 'l',
+      values: [['s', 'S'], ['m', 'M'], ['l', 'L'], ['xl', 'XL']] },
+    { id: 'type',    label: 'Type',   group: 'shape', def: 'filled',
+      values: [['filled', 'Filled'], ['outline', 'Outline'], ['ghost', 'Ghost']] },
+    { id: 'colour',  label: 'Colour', group: 'shape', def: 'primary',
+      values: [['primary', 'Primary'], ['secondary', 'Secondary'], ['inverse', 'Inverse']] },
+    { id: 'state',   label: 'State',  group: 'state', def: 'rest',
+      values: [['rest', 'Rest'], ['hover', 'Hover'], ['focus', 'Focus'],
+               ['active', 'Active'], ['disabled', 'Disabled']] },
+    { id: 'icon',    label: 'Icon',   group: 'content', kind: 'bool',
+      on: 'yes', off: 'no', def: 'no' },
+    { id: 'iconPos', label: 'Icon position', group: 'content', def: 'before',
+      values: [['before', 'Before'], ['after', 'After'], ['both', 'Both']],
+      when: function (S) { return S.icon === 'yes'; } },
+    { id: 'width',   label: 'Block width', group: 'content', kind: 'bool', advanced: true,
+      on: 'block', off: 'auto', def: 'auto' },
+    { id: 'label',   label: 'Label', group: 'content', kind: 'text', advanced: true,
+      def: 'Book a meeting' },
+    { id: 'glyph',   label: 'Glyph', group: 'content', def: 'box', advanced: true,
+      values: [['box', 'Box'], ['arrow', 'Arrow'], ['plus', 'Plus'], ['check', 'Check']],
+      when: function (S) { return S.icon === 'yes'; } }
+  ],
+
+  /* THE FIELD. Five looks, so Look is the one Select of shape; six
+     states, so State is the other. Type is asked only of the two
+     looks that have a choice; the error text exists only while the
+     state is Error. */
+  FIELD_AXES: [
+    { id: 'look',     label: 'Look', group: 'shape', def: 'underline',
+      values: [['underline', 'Underline'], ['floating', 'Floating'], ['phone', 'Phone'],
+               ['code', 'One time code'], ['password', 'Password']] },
+    { id: 'type',     label: 'Type', group: 'shape', def: 'email',
+      values: [['text', 'Text'], ['email', 'Email'], ['textarea', 'Textarea']],
+      when: function (S) { return S.look === 'underline' || S.look === 'floating'; } },
+    { id: 'state',    label: 'State', group: 'state', def: 'rest',
+      values: [['rest', 'Rest'], ['hover', 'Hover'], ['focus', 'Focus'],
+               ['filled', 'Filled'], ['error', 'Error'], ['disabled', 'Disabled']] },
+    { id: 'required', label: 'Required', group: 'content', kind: 'bool',
+      on: 'yes', off: 'no', def: 'yes' },
+    { id: 'error',    label: 'Error text', group: 'content', kind: 'text',
+      def: 'this is a required field',
+      when: function (S) { return S.state === 'error'; } },
+    { id: 'label',    label: 'Label', group: 'content', kind: 'text', advanced: true, def: '' }
+  ]
+};
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
@@ -565,6 +728,207 @@
 /* The one line the twin rows are allowed: which of the two is
    being looked at. */
 .labE__twin { display: block; margin-top: var(--space-8); font-size: 14px; line-height: 1.4; color: var(--zinc-500); }
+
+/* ============================================================
+   F — THE CONVENTION (gbppl-lab-f-1, 29.08)
+   ------------------------------------------------------------
+   Nothing here is invented. Every rule below points at a line of
+   studio\docs\RECON-PREVIEW-CONTROLS-2026-08-29.md, which read ten
+   systems live rather than from memory. The knobs are all in the
+   :root block at the top of this file; these rules only spend them.
+
+   ONE CARD, ONE HAIRLINE (recon 2.2). Mantine, Joy UI and the
+   Carbon site all put the preview and the controls inside one
+   frame with a single line between them, so the panel never reads
+   as a second block of the page. The card owns the border; nothing
+   inside it draws another.
+
+   THE RAIL IS A RAIL (recon 2.1). Fixed width, the preview takes
+   the rest. In no system do the controls outweigh the specimen by
+   area; at 1280 this card gives the preview 858 of 1180 and the
+   rail 320, which is 73 per cent to the thing being judged.
+
+   THE PANEL IS QUIET (recon 2.3). White ground, no accent, and the
+   only blue in the whole rail is the browser's own focus ring.
+   Colour belongs to the specimen.
+
+   THE CODE IS NOT A CONTROL (recon 2.6). It lives in the card's
+   footer band behind a Preview | Code segment, folded by default,
+   and never inside the rail.
+   ============================================================ */
+.labF {
+  background: var(--white);
+  border: 1px solid var(--lab-f-line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.labF__body { display: grid; }
+@media (min-width: 1024px) {
+  /* The preview is fluid, the rail is fixed. Below 1024 the rail
+     goes UNDER the preview at full width, which is what Mantine and
+     Joy UI do at 390 (recon 2.9), and the hairline turns with it. */
+  .labF__body { grid-template-columns: minmax(0, 1fr) var(--lab-f-rail); }
+}
+
+/* ---- the left column: the specimen, or its markup ---- */
+/* THE GROUND BELONGS TO THE COLUMN, THE SPECIMEN TO A BAND OF IT.
+   Seven axes make a taller rail than one button makes a stage, and
+   a stage stretched to meet it puts a small component in the middle
+   of a large empty field, which is Ton-21's complaint word for word.
+   So the whole column carries the specimen ground (one card, no
+   white gap beside the rail) and the specimen stands in a band of
+   --lab-f-scene-min at the top of it, which STICKS: scroll down the
+   rail and the specimen comes along, the way a canvas stays put in
+   Storybook and in Figma while the panel moves. To stop it
+   following, delete the position: sticky line below. */
+.labF__view {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--lab-f-ground-light);
+  transition: background-color var(--mo-small) var(--mo-move);
+}
+.labF__view.is-dark { background: var(--lab-f-ground-dark); }
+.labF__scene {
+  position: sticky;            /* and relative: the door hangs here */
+  top: var(--lab-f-scene-stick);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--lab-f-scene-min);
+  padding: var(--lab-f-scene-pad) var(--space-24);
+}
+/* Trap 3, the local antidote, the same three lines every surface off
+   the live bundle spends: auth.css names a border colour on four
+   sides and a width on one. */
+.labF .lab-hold .gba-input,
+.labF__row .gba-input {
+  border-style: solid;
+  border-width: 0;
+  border-bottom-width: 1px;
+}
+/* The markup, in the specimen's PLACE rather than under it: the two
+   are one thing seen two ways, and a code block that pushes the
+   stage down is the noise this bench exists to remove. It stands on
+   the same ground, in the same band, with the same air around it,
+   and it is as tall as the markup is: a plate of black the height of
+   the column would be the loudest thing on the page. */
+.labF__code {
+  position: sticky;
+  top: var(--lab-f-scene-stick);
+  flex: 0 0 auto;
+  display: flex;
+  min-width: 0;
+  padding: var(--lab-f-scene-pad) var(--space-24);
+}
+.labF__code .gbdoc-code { flex: 1 1 auto; margin: 0; }
+.labF [hidden] { display: none !important; }
+
+/* ---- the right column: the rail ---- */
+.labF__rail {
+  padding: var(--lab-f-pad);
+  background: var(--lab-f-rail-ground);
+  border-top: 1px solid var(--lab-f-line);
+}
+@media (min-width: 1024px) {
+  .labF__rail { border-top: 0; border-left: 1px solid var(--lab-f-line); }
+}
+/* Air between groups, and no rules between axes: the recon found
+   headings in the panels that have more than ten axes and hairlines
+   in none of the small ones (2.5). */
+.labF__group + .labF__group { margin-top: var(--lab-f-group-gap); }
+/* THE TWO LABEL LEVELS ARE THE SAME SIZE AND DIFFERENT INK. Both the
+   group name and the axis name are the eyebrow of the system, which
+   is also what gb-field prints over its own Select, so a segment and
+   a Select are lettered identically. The group is Zinc 900 and the
+   axis Zinc 500: the hierarchy is carried by ink rather than by a
+   second size, because a second size here would be a heading, and an
+   eyebrow is never a heading (Ton-21). */
+.labF__gname {
+  display: block;
+  margin-bottom: var(--space-16);
+  font-size: var(--lab-f-axis-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--zinc-900);
+}
+.labF__row + .labF__row { margin-top: var(--lab-f-gap); }
+.labF__row[hidden] { display: none; }
+.labF__name {
+  display: block;
+  margin-bottom: var(--space-8);
+  font-size: var(--lab-f-axis-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--lab-f-axis-ink);
+}
+/* A field inside the rail is a control of the rail: no margin of its
+   own and no required asterisk, because every axis already has a
+   value. */
+.labF__row .gba-field { margin: 0; }
+/* THE BOOLEAN, ON LOAN. A native checkbox with our own label beside
+   it, and not one line of styling on the box: see the note in the
+   file header. Joy UI and Mantine both letter a switch this way,
+   with the name at the reading size on the same baseline rather
+   than as an eyebrow above it. */
+.labF__bool {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--space-32);
+  font-size: var(--lab-f-bool-size);
+  line-height: 1.4;
+  color: var(--zinc-900);
+  cursor: pointer;
+}
+/* The one line of styling the borrowed box gets, and it is not a
+   style: a checked native checkbox is blue everywhere, and the rail
+   holds no blue but the focus ring (Ton-5, blue is state and this
+   panel is not the specimen). accent-color leaves the browser its
+   own control and only says which ink to use. */
+.labF__bool input { accent-color: var(--zinc-900); }
+.labF__more { margin-top: var(--lab-f-group-gap); }
+.labF__foot {
+  margin-top: var(--lab-f-group-gap);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--lab-f-line);
+}
+.labF__reset {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--zinc-500);
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.labF__reset:hover { color: var(--zinc-900); }
+.labF__reset:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; border-radius: 2px; }
+
+/* ---- the footer band of the card ---- */
+/* Zinc 50 is allowed here and only here: a strip inside an object,
+   the same permission the table head and the block foot have in the
+   docs.css ground rule. It carries the view switch on the left and
+   the one measured line on the right. The line says only what a
+   ruler says: nothing on it repeats what the specimen shows
+   (recon 2.10). */
+.labF__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8) var(--space-16);
+  padding: var(--space-8) var(--space-16);
+  background: var(--lab-f-foot-ground);
+  border-top: 1px solid var(--lab-f-line);
+}
+.labF__bar .lab-read { margin: 0; }
 </style>
 </head>
 <body>
@@ -596,9 +960,65 @@
     <header class="oro-head">
       <span class="gb-eyebrow">Lab</span>
       <h1 class="oro-h1">Playground layouts</h1>
-      <p class="oro-lede">Five ways to build the same block, so one of them can be chosen and the rest thrown away. A, B and C hold the axes and the specimen identical and change only the arrangement. D takes A's arrangement and changes the controls instead: its panel is rendered from a schema, and each axis gets the control its shape asks for. E puts C's colours and frame around D's schema and gives every short set a row of buttons instead of a row of words. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
+      <p class="oro-lede">Six ways to build the same block, so one of them can be chosen and the rest thrown away. F stands first because it is the only one that was not invented here: it is what ten design systems were found doing when they were read on 29 August, layout and controls both. The five under it are the earlier attempts, kept for comparison. A, B and C hold the axes and the specimen identical and change only the arrangement. D takes A's arrangement and changes the controls instead: its panel is rendered from a schema, and each axis gets the control its shape asks for. E puts C's colours and frame around D's schema and gives every short set a row of buttons instead of a row of words. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
       <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The specimen is the live button organism at that width.</p>
     </header>
+
+    <!-- ---- F, on the button ---- -->
+    <section class="oro-section">
+      <span class="gb-eyebrow">Variant F</span>
+      <h2 class="oro-h2">F &middot; the convention: Mantine and Joy UI layout, Storybook controls</h2>
+      <p class="oro-note">Not a sixth idea. This is what ten systems already agree on, read off their live pages on 29 August: one card with the specimen fluid on the left and a narrow white rail of controls on the right, a single hairline between them, and the markup folded into the card's footer band. Every axis gets the control its shape asks for, with no exception anywhere in the ten: a switch for yes and no, a quiet segment for two to four values, our Select from five, a field for free text. An axis that does not apply is removed rather than greyed, the rare ones are behind one More, and Light or Dark is simply the last axis, drawn like the rest. One thing here is on loan: the switch is a plain browser checkbox, because the system has no Switch until one is taken out of Figma and measured.</p>
+
+      <div class="labF" data-lab-f="button">
+        <div class="labF__body">
+          <div class="labF__view">
+            <div class="labF__scene" data-lab-stage data-inspect="button">
+              <div class="lab-hold" data-lab-hold></div>
+            </div>
+            <div class="labF__code" data-lab-codewrap hidden>
+              <div class="gbdoc-code">
+                <button class="gbdoc-copy" type="button" data-copy="#codeF">Copy</button>
+                <pre><code id="codeF" data-lab-code></code></pre>
+              </div>
+            </div>
+          </div>
+          <div class="labF__rail" data-lab-controls></div>
+        </div>
+        <div class="labF__bar">
+          <div class="gbdoc-chips" role="radiogroup" aria-label="View" data-lab-view></div>
+          <p class="lab-read" data-lab-read></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---- F, on the field: the same renderer, a different component ---- -->
+    <section class="oro-section">
+      <span class="gb-eyebrow">Variant F, second component</span>
+      <h2 class="oro-h2">The same card, on a field</h2>
+      <p class="oro-note">The same renderer given the field, because a panel that serves one component proves nothing. Look has five values and State has six, so both are our Select; Type has three and is a segment, and it is only asked of the two looks that have a choice to make. The error text exists only while the state is Error. Nothing else changes: the card, the rail, the rule and the footer band are the ones above.</p>
+
+      <div class="labF" data-lab-f="field">
+        <div class="labF__body">
+          <div class="labF__view">
+            <div class="labF__scene" data-lab-stage data-inspect="field">
+              <div class="lab-hold lab-hold--block" data-lab-hold></div>
+            </div>
+            <div class="labF__code" data-lab-codewrap hidden>
+              <div class="gbdoc-code">
+                <button class="gbdoc-copy" type="button" data-copy="#codeFF">Copy</button>
+                <pre><code id="codeFF" data-lab-code></code></pre>
+              </div>
+            </div>
+          </div>
+          <div class="labF__rail" data-lab-controls></div>
+        </div>
+        <div class="labF__bar">
+          <div class="gbdoc-chips" role="radiogroup" aria-label="View" data-lab-view></div>
+          <p class="lab-read" data-lab-read></p>
+        </div>
+      </div>
+    </section>
 
     <!-- ---- A ---- -->
     <section class="oro-section">
@@ -789,7 +1209,7 @@
     </section>
 
     <footer class="oro-foot">
-      A bench, not a page of the system: <a class="oro-a" href="../button.html">Button</a> keeps today's playground until one of these five is chosen.
+      A bench, not a page of the system: <a class="oro-a" href="../button.html">Button</a> keeps today's playground until one of these six is chosen.
     </footer>
 
   </div>
@@ -1666,9 +2086,292 @@
     return paint;
   }
 
+  /* ============================================================
+     VARIANT F — THE CONVENTION, RENDERED (gbppl-lab-f-1, 29.08)
+     ------------------------------------------------------------
+     The schema is not here. It is in window.LAB_F at the top of the
+     file, where it can be turned by hand; this half only obeys it.
+
+     THE CONTROL RULE, and it is the recon's, not a taste (1b, 2.4):
+
+       boolean            a switch. On loan until the real one is
+                          measured out of Figma: a native checkbox
+                          with our own label, styled by nobody.
+       2..4 values        a quiet segment, .gbdoc-chips
+       5 and more         our Select, .gba-select
+       free text          our field, .gba-input
+       Light | Dark       the same rule as everything else, which
+                          makes it a segment, standing last
+
+     CONDITIONAL IS SUBTRACTION (2.8). A row whose when(S) is false
+     is hidden, not greyed; a value the system cannot hold is greyed
+     where it stands, because a rule nobody can see is a rule nobody
+     learns. Rows are hidden and re-synced, never rebuilt: a Select
+     redrawn while its menu is open loses the menu.
+     ============================================================ */
+  var F = window.LAB_F;
+
+  /* The field sample of E with its ids moved out of the way: two
+     blocks on one page cannot both own #labe-field, and a duplicate
+     id sends F's floating label to E's input. One replace, so there
+     is still one description of the field on this bench. */
+  function fieldSampleF(S, forCode) {
+    return fieldSampleE(S, forCode).replace(/labe-/g, 'labf-');
+  }
+
+  var SCHEMAS_F = {
+    button: {
+      axes: F.BUTTON_AXES,
+      normalise: normalise,
+      available: available,
+      sample: sampleBtnE,
+      read: function (hold) {
+        var el = hold.querySelector('.gb-btn');
+        if (!el) return '';
+        var cs = getComputedStyle(el);
+        var lab = el.querySelector('.gb-btn__label');
+        var ls = lab ? getComputedStyle(lab) : null;
+        return 'Height <b>' + px(cs.minHeight) + '</b> · padding <b>' + px(cs.paddingTop) + ' / ' +
+               px(cs.paddingLeft) + '</b> · gap <b>' + px(cs.columnGap) + '</b> · label <b>' +
+               (ls ? px(ls.fontSize) + ' / ' + ls.fontWeight : 'none') + '</b>';
+      }
+    },
+    field: {
+      axes: F.FIELD_AXES,
+      normalise: function (S) { if (!fieldStates(S.look)[S.state]) S.state = 'rest'; },
+      available: function (S, axis, val) {
+        if (axis !== 'state') return true;
+        return !!fieldStates(S.look)[val];
+      },
+      sample: fieldSampleF,
+      after: fieldAfterF,
+      read: function (hold) {
+        var el = hold.querySelector('input, textarea, select');
+        if (!el) return '';
+        var cs = getComputedStyle(el);
+        var lab = hold.querySelector('.gba-label, .gba-vlabel');
+        var ls = lab ? getComputedStyle(lab) : null;
+        return 'Height <b>' + px(cs.height) + '</b> · type <b>' + px(cs.fontSize) + ' / ' +
+               cs.fontWeight + '</b> · line <b>' + px(cs.borderBottomWidth) + '</b> · label <b>' +
+               (ls ? px(ls.fontSize) + ' / ' + ls.fontWeight : 'none') + '</b>';
+      }
+    }
+  };
+
+  /* The state of E, put on F's rendering: the ids differ, the rest
+     of the work is identical, so it is done by the same hand. */
+  function fieldAfterF(S, hold) { fieldAfterE(S, hold); }
+
+  /* ---- the four controls ---- */
+  function chipsHTML_F(ax) {
+    return '<span class="labF__name">' + esc(ax.label) + '</span>' +
+      '<div class="gbdoc-chips" role="radiogroup" aria-label="' + esc(ax.label) + '">' +
+      ax.values.map(function (v) {
+        return '<button class="gbdoc-chips__chip" type="button" role="radio" aria-checked="false"' +
+               ' data-faxis="' + ax.id + '" data-val="' + v[0] + '">' + esc(v[1]) + '</button>';
+      }).join('') + '</div>';
+  }
+  /* PLACEHOLDER UNTIL SWITCH FROM FIGMA — see the file header. The
+     label carries the axis name and the box carries the answer, so
+     nothing prints Yes or No at all. */
+  function boolHTML_F(ax, rowId) {
+    return '<label class="labF__bool" for="labf-' + rowId + '">' +
+      '<input type="checkbox" id="labf-' + rowId + '" data-fbool="' + ax.id + '">' +
+      '<span>' + esc(ax.label) + '</span></label>';
+  }
+  function selectHTML_F(ax, rowId) {
+    return '<gb-field input-id="labf-' + rowId + '" name="labf-' + rowId + '" type="select" optional' +
+      ' label="' + esc(ax.label) + '" options="' +
+      esc(ax.values.map(function (v) { return v[1]; }).join('|')) +
+      '" data-faxis-field="' + ax.id + '"></gb-field>';
+  }
+  function textHTML_F(ax, rowId) {
+    return '<gb-field input-id="labf-' + rowId + '" name="labf-' + rowId + '" type="text" optional' +
+      ' label="' + esc(ax.label) + '" data-faxis-field="' + ax.id + '"></gb-field>';
+  }
+  function controlF(ax, rowId) {
+    if (ax.kind === 'bool') return boolHTML_F(ax, rowId);
+    if (ax.kind === 'text' || ax.kind === 'number') return textHTML_F(ax, rowId);
+    if (ax.values.length >= F.SELECT_FROM) return selectHTML_F(ax, rowId);
+    return chipsHTML_F(ax);
+  }
+
+  /* One pass builds the rail AND the list of rows the painter walks,
+     so a row is never looked up by guessing. The ground is appended
+     as the last axis rather than treated as a thing of its own. */
+  function railHTML_F(schema, rows) {
+    var all = schema.axes.concat([F.GROUND_AXIS]);
+    var html = '';
+    function rowFor(a) {
+      var n = rows.length + 1;
+      rows.push({ n: n, ax: a });
+      return '<div class="labF__row" data-frow="' + n + '">' + controlF(a, n) + '</div>';
+    }
+    F.GROUPS.forEach(function (g) {
+      var plain = all.filter(function (a) { return a.group === g[0] && !a.advanced; });
+      if (!plain.length) return;
+      /* A group of one axis whose name is the group's own name would
+         print STATE over STATE. The air is enough of a group. */
+      var named = g[1] && !(plain.length === 1 && plain[0].label === g[1]);
+      html += '<div class="labF__group">' +
+              (named ? '<span class="labF__gname">' + esc(g[1]) + '</span>' : '') +
+              plain.map(rowFor).join('') + '</div>';
+    });
+    var more = all.filter(function (a) { return a.advanced; });
+    if (more.length) {
+      html += '<details class="lab-fold labF__more"><summary>More</summary>' +
+              more.map(rowFor).join('') + '</details>';
+    }
+    html += '<div class="labF__foot"><button class="labF__reset" type="button" data-reset>Reset</button></div>';
+    return html;
+  }
+
+  var VIEWS = [['preview', 'Preview'], ['code', 'Code']];
+
+  function wireF(root) {
+    var which = root.getAttribute('data-lab-f');
+    var isField = which === 'field';
+    var schema = SCHEMAS_F[which];
+    var rail = root.querySelector('[data-lab-controls]');
+    var viewHost = root.querySelector('[data-lab-view]');
+    var scene = root.querySelector('[data-lab-stage]');
+    var view_ = root.querySelector('.labF__view');
+    var codewrap = root.querySelector('[data-lab-codewrap]');
+    var hold = root.querySelector('[data-lab-hold]');
+    var read = root.querySelector('[data-lab-read]');
+    var code = root.querySelector('[data-lab-code]');
+    var rows = [];
+    var S = {};
+    var view = 'preview';
+
+    function reset() {
+      schema.axes.concat([F.GROUND_AXIS]).forEach(function (a) { S[a.id] = a.def; });
+    }
+    reset();
+
+    rail.innerHTML = railHTML_F(schema, rows);
+    viewHost.innerHTML = VIEWS.map(function (v) {
+      return '<button class="gbdoc-chips__chip" type="button" role="radio" aria-checked="false"' +
+             ' data-fview="' + v[0] + '">' + v[1] + '</button>';
+    }).join('');
+
+    function labelOf(ax, val) {
+      var hit = (ax.values || []).filter(function (v) { return v[0] === val; })[0];
+      return hit ? hit[1] : '';
+    }
+    function valueOf(ax, label) {
+      var hit = (ax.values || []).filter(function (v) { return v[1] === label; })[0];
+      return hit ? hit[0] : ax.def;
+    }
+
+    /* A ruler reads what is standing, not what is stored. While the
+       markup is showing, the specimen is put back into the layout
+       for the length of one measurement and taken out again in the
+       same task, so nothing is painted in between and no number is
+       ever taken off a hidden element. */
+    function measured() {
+      if (!read) return '';
+      var folded = view === 'code';
+      if (folded) { codewrap.hidden = true; scene.hidden = false; }
+      var line = schema.read(hold);
+      if (folded) { codewrap.hidden = false; scene.hidden = true; }
+      return line;
+    }
+
+    function paint() {
+      if (schema.normalise) schema.normalise(S);
+      hold.innerHTML = schema.sample(S, false);
+      if (window.GbIcons) window.GbIcons.mount(hold);
+      if (schema.after) schema.after(S, hold);
+      if (isField) hold.classList.add('lab-hold--block');
+      else hold.classList.toggle('lab-hold--block', S.width === 'block');
+      view_.classList.toggle('is-dark', S.ground === 'dark');
+      if (code) code.textContent = schema.sample(S, true);
+
+      scene.hidden = view === 'code';
+      codewrap.hidden = view !== 'code';
+
+      rows.forEach(function (r) {
+        var el = rail.querySelector('[data-frow="' + r.n + '"]');
+        if (!el) return;
+        el.hidden = !!(r.ax.when && !r.ax.when(S));
+        var box = el.querySelector('[data-fbool]');
+        if (box) { box.checked = S[r.ax.id] === r.ax.on; return; }
+        var f = el.querySelector('[data-faxis-field] select, [data-faxis-field] input');
+        if (!f) return;
+        if (f.tagName === 'SELECT') {
+          f.value = labelOf(r.ax, S[r.ax.id]);
+          Array.prototype.forEach.call(f.options, function (o) {
+            o.disabled = !schema.available(S, r.ax.id, valueOf(r.ax, o.value));
+          });
+        } else if (document.activeElement !== f) {
+          f.value = S[r.ax.id] == null ? '' : S[r.ax.id];
+        }
+      });
+
+      Array.prototype.forEach.call(rail.querySelectorAll('.gbdoc-chips__chip[data-faxis]'), function (c) {
+        var id = c.getAttribute('data-faxis');
+        var val = c.getAttribute('data-val');
+        var on = S[id] === val;
+        var ok = schema.available(S, id, val);
+        c.classList.toggle('is-on', on);
+        c.setAttribute('aria-checked', on ? 'true' : 'false');
+        if (ok) c.removeAttribute('disabled'); else c.setAttribute('disabled', '');
+      });
+      Array.prototype.forEach.call(viewHost.querySelectorAll('[data-fview]'), function (c) {
+        var on = view === c.getAttribute('data-fview');
+        c.classList.toggle('is-on', on);
+        c.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+
+      if (read) read.innerHTML = measured();
+    }
+
+    root.addEventListener('click', function (e) {
+      if (!e.target.closest) return;
+      var chip = e.target.closest('.gbdoc-chips__chip[data-faxis]');
+      if (chip && !chip.hasAttribute('disabled')) {
+        S[chip.getAttribute('data-faxis')] = chip.getAttribute('data-val');
+        paint();
+        return;
+      }
+      var v = e.target.closest('[data-fview]');
+      if (v) { view = v.getAttribute('data-fview'); paint(); return; }
+      if (e.target.closest('[data-reset]')) { reset(); paint(); }
+    });
+    root.addEventListener('change', function (e) {
+      var box = e.target.closest ? e.target.closest('[data-fbool]') : null;
+      if (box) {
+        var bid = box.getAttribute('data-fbool');
+        var bax = rows.filter(function (r) { return r.ax.id === bid; })[0].ax;
+        S[bid] = box.checked ? bax.on : bax.off;
+        paint();
+        return;
+      }
+      var host = e.target.closest ? e.target.closest('[data-faxis-field]') : null;
+      if (!host) return;
+      var id = host.getAttribute('data-faxis-field');
+      var ax = rows.filter(function (r) { return r.ax.id === id; })[0].ax;
+      S[id] = e.target.tagName === 'SELECT' ? valueOf(ax, e.target.value) : e.target.value;
+      paint();
+    });
+    root.addEventListener('input', function (e) {
+      var host = e.target.closest ? e.target.closest('[data-faxis-field]') : null;
+      if (!host || e.target.tagName === 'SELECT') return;
+      S[host.getAttribute('data-faxis-field')] = e.target.value;
+      paint();
+    });
+
+    paint();
+    return paint;
+  }
+
   var painters = Array.prototype.map.call(document.querySelectorAll('[data-lab]'), wire)
     .concat(Array.prototype.map.call(document.querySelectorAll('[data-lab-d]'), wireD))
     .concat(Array.prototype.map.call(document.querySelectorAll('[data-lab-e]'), wireE));
+  Array.prototype.forEach.call(document.querySelectorAll('[data-lab-f]'), function (r) {
+    painters.push(wireF(r));
+  });
 
   /* The copy buttons of the documentation, one line, no component. */
   document.addEventListener('click', function (e) {
