@@ -214,6 +214,48 @@
      have hidden the geometry change inside a second change.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-oro-select-stepper-1 (2026-08-29) — THE LAST TWO CELLS
+     THIS PAGE WAS WAITING ON.
+
+     Two of the four holes the census of 27.08 opened are closed, and
+     both were closed at the OWNER, not here:
+
+       SELECT   .gba-select, the fourth look of the field, in
+                auth.css. The two selects on this page were wearing
+                .gba-input with `appearance: none`, which is to say
+                they had no arrow at all — not a browser arrow, a
+                blank. Now the wrapper holds the chevron from the
+                icon record and the field keeps everything else.
+       STEPPER  system/components/stepper.css and stepper.js. The
+                frame, the well between the buttons, the bounds and
+                the aria. The buttons are still .gb-btn--icon --s
+                --plain, unchanged since 28.08.
+
+     WHAT THIS PAGE KEEPS. Every value stays Alpine's: all four
+     frames carry data-gb-stepper="host", so the component never
+     writes a number here. bumpPool, syncPool, the deferred quantity
+     and the drawer quantity behave exactly as they did, and the
+     totals are recomputed by the same handlers.
+
+     WHAT MOVED, measured before and after at 390 / 1024 / 1280:
+       · the well of the deferred stepper 64 -> 56 wide, one step of
+         the grid, so the page carries two widths instead of three
+         (56 standard, 40 dense in the table row);
+       · the number now rides the FIELD ladder, 14 / 16 from 1280 /
+         18 from 2000, where the page had a flat 16 (and 14 in the
+         table row). Below 1280 every number is therefore one rung
+         smaller than it was, and at 1280 the table row's is one
+         rung larger. Both are in the report.
+       · frame height, hairlines, radius and button geometry:
+         unchanged, number for number.
+
+     WHAT THE PAGE GAINED. At the floor of a stepper the minus goes
+     disabled instead of silently doing nothing, which is the one
+     behaviour the hand-drawn version could not have. Live has no
+     stepper anywhere to copy that from (measured 29.08); by Ton-17
+     it is ours, DECLARED, and live catches up.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-14 (2026-08-27) — THE CONTROLS JOIN THE SYSTEM.
 
      Ton, 27.08: «чекаут это долг прототипа: 91 контрол мимо организма
@@ -268,6 +310,8 @@
        · SELECT. There is no select component; the two selects wear the
          field and lose their chevron. Works, but a select is not a
          text input and the system should say so.
+         CLOSED 29.08 by gbppl-oro-select-stepper-1: .gba-select, the
+         fourth look of the field, in auth.css with the rest of it.
        · ICON-ONLY BUTTON. The row trash, the four qty steppers' minus
          and plus, the two pagination arrows: 12 controls with a glyph
          and no label. The organism has no icon-only cell (and the
@@ -279,6 +323,8 @@
          Ton-5 rule already, and the browser draws the rest.
        · STEPPER. The minus/number/plus trio is one control, not three,
          and nothing in the system describes it.
+         CLOSED 29.08 by gbppl-oro-select-stepper-1: system/components/
+         stepper.css and stepper.js. See the block below.
      And three by measurement, not by gap:
        · the recipient table's inline name cell keeps a compact input.
          The organism's 48 would take the table row from 49 to 65 and
@@ -301,6 +347,7 @@
      ORO-SKILL trap 3) is a no-op here: Tailwind preflight already zeroes every
      border on the page, which is exactly the environment the field was authored for. -->
 <link rel="stylesheet" href="../system/components/auth.css">
+<link rel="stylesheet" href="../system/components/stepper.css">
 <link rel="stylesheet" href="../system/components/footer.css">
 <link rel="stylesheet" href="../system/components/studio-panel.css">
 <!-- Inspect mode (gbppl-inspect-1, gbppl-panel-6). Three stylesheets and
@@ -553,18 +600,19 @@
                 <span class="gb-eyebrow">Gifts</span>
                 <!-- The ring is the pool saying it grew on its own: a personalization row
                      asked for more gifts than the pool held, so the pool came up to meet it. -->
-                <!-- gbppl-checkout-14 / gbppl-icon-consumers-1: the STEPPER still has no cell in
-                     the system — minus, number and plus are one control, not three. The FRAME is
-                     unchanged page markup on tokens (Zinc 300 line, --radius); only the two
-                     buttons inside it moved onto .gb-btn--icon --s --plain. Temporary look until
-                     the Stepper component exists; same for the other three on this page. -->
-                <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[var(--radius)] overflow-hidden transition-colors"
+                <!-- gbppl-oro-select-stepper-1: the temporary look is over. The frame is the
+                     component now (.gb-stepper), the well is .gb-stepper__value, and the two
+                     buttons keep the .gb-btn--icon --s --plain they took on 28.08. The value
+                     stays Alpine's: data-gb-stepper="host" tells the component to leave it
+                     alone and do the half the page never had, bounds and aria. The grown-pool
+                     ring is page state and stays a page class. -->
+                <div class="gb-stepper" data-gb-stepper="host" aria-label="Number of gifts"
                      :class="product.shipments[0] && product.shipments[0].poolGrown ? 'border-blue-600 ring-2 ring-blue-200' : ''">
                   <button @click="bumpPool(product, -1)" type="button" aria-label="Decrease quantity"
-                          :title="poolFloorReason(product)"
-                          class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg></span></button>
-                  <input type="number" min="1" :value="productPool(product)" @input="setPoolValue(product, $event.target.value)" class="w-14 text-center text-base font-medium bg-transparent border-x border-zinc-200 py-2 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
-                  <button @click="bumpPool(product, 1)" type="button" aria-label="Increase quantity" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span></button>
+                          :title="poolFloorReason(product)" data-step="-1"
+                          class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                  <input type="number" min="1" :value="productPool(product)" @input="setPoolValue(product, $event.target.value)" class="gb-stepper__value">
+                  <button @click="bumpPool(product, 1)" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
                 </div>
                 <p class="text-zinc-500 text-sm">
                   <span x-text="product.shipments.length"></span> shipment<span x-show="product.shipments.length > 1">s</span>
@@ -1129,10 +1177,10 @@
                         </td>
                         <!-- Gifts (was Qty, was third from the left) -->
                         <td class="py-3" @click.stop title="How many gifts with this personalization">
-                          <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[var(--radius)] overflow-hidden">
-                            <button @click="recipient.qty > 1 && recipient.qty--" type="button" aria-label="Decrease quantity" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg></span></button>
-                            <input type="number" x-model.number="recipient.qty" min="1" class="w-10 text-center text-sm font-medium bg-transparent border-x border-zinc-200 py-1 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
-                            <button @click="recipient.qty++" type="button" aria-label="Increase quantity" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span></button>
+                          <div class="gb-stepper gb-stepper--dense" data-gb-stepper="host" aria-label="Gifts with this personalization">
+                            <button @click="recipient.qty > 1 && recipient.qty--" type="button" aria-label="Decrease quantity" data-step="-1" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                            <input type="number" x-model.number="recipient.qty" min="1" class="gb-stepper__value">
+                            <button @click="recipient.qty++" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
                           </div>
                         </td>
                         <td class="py-3" @click.stop>
@@ -1204,10 +1252,10 @@
 
                 <div class="flex items-center gap-6">
                   <span class="gb-eyebrow">Number of gifts</span>
-                  <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[var(--radius)] overflow-hidden">
-                    <button @click="shipment.deferQty > 1 && shipment.deferQty--" type="button" aria-label="Decrease quantity" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg></span></button>
-                    <input type="number" x-model.number="shipment.deferQty" min="1" class="w-16 text-center text-base font-medium bg-transparent border-x border-zinc-200 py-2 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
-                    <button @click="shipment.deferQty++" type="button" aria-label="Increase quantity" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span></button>
+                  <div class="gb-stepper" data-gb-stepper="host" aria-label="Number of gifts">
+                    <button @click="shipment.deferQty > 1 && shipment.deferQty--" type="button" aria-label="Decrease quantity" data-step="-1" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                    <input type="number" x-model.number="shipment.deferQty" min="1" class="gb-stepper__value">
+                    <button @click="shipment.deferQty++" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
                   </div>
                   <span class="text-xs text-zinc-500">
                     <span class="font-medium text-zinc-900" x-text="shipmentGifts(shipment)"></span> gift<span x-show="shipmentGifts(shipment) !== 1">s</span>
@@ -1243,11 +1291,14 @@
       <div class="space-y-3">
         <div>
           <p class="gb-eyebrow mb-2">Billing address <span class="text-red-500">*</span></p>
-          <!-- gbppl-checkout-14: THE SYSTEM HAS NO SELECT. This one was a boxed Zinc 50 control
-               and the country select in the address drawer was an underline: two selects on one
-               page disagreeing. Both wear the field now, which is the closest true thing the
-               system owns, and both lose the chevron a select should have. In the report to Ton. -->
-          <select class="gba-input cursor-pointer"><option>Select a billing address</option></select>
+          <!-- gbppl-oro-select-stepper-1: the chevron comes back, and it comes back from the
+               system. .gba-select is the fourth look of the field (auth.css): the underline,
+               the ladder and the states are the field's, and the version adds one thing, the
+               mark that says a list opens here. The list itself is the operating system's. -->
+          <div class="gba-select">
+            <select class="gba-input"><option>Select a billing address</option></select>
+            <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -1500,10 +1551,10 @@
             <p class="gb-eyebrow">Quantity of gifts</p>
             <p class="text-xs text-zinc-500 mt-1">How many gifts with this personalization</p>
           </div>
-          <div class="inline-flex items-center bg-white border border-zinc-300 rounded-[var(--radius)] overflow-hidden">
-            <button @click="drawer.data.qty > 1 && drawer.data.qty--" type="button" aria-label="Decrease quantity" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg></span></button>
-            <input type="number" x-model.number="drawer.data.qty" min="1" class="w-14 text-center text-base font-medium bg-transparent border-x border-zinc-200 py-2 focus:outline-none focus:bg-zinc-50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]">
-            <button @click="drawer.data.qty++" type="button" aria-label="Increase quantity" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span></button>
+          <div class="gb-stepper" data-gb-stepper="host" aria-label="Quantity of gifts">
+            <button @click="drawer.data.qty > 1 && drawer.data.qty--" type="button" aria-label="Decrease quantity" data-step="-1" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+            <input type="number" x-model.number="drawer.data.qty" min="1" class="gb-stepper__value">
+            <button @click="drawer.data.qty++" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
           </div>
         </div>
 
@@ -1666,7 +1717,10 @@
       </div>
       <div class="gba-inputwrap">
         <label class="gb-eyebrow block mb-1">Country <span class="text-red-500">*</span></label>
-        <select x-model="drawer.data.country" class="gba-input cursor-pointer"><option>United States</option><option>Canada</option><option>Italy</option><option>United Kingdom</option><option>Germany</option><option>France</option></select>
+        <div class="gba-select">
+          <select x-model="drawer.data.country" class="gba-input"><option>United States</option><option>Canada</option><option>Italy</option><option>United Kingdom</option><option>Germany</option><option>France</option></select>
+          <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+        </div>
       </div>
     </div>
 
@@ -1864,6 +1918,7 @@
      here. It registers three custom elements and does nothing else, so a
      page that carries none of them is unchanged by it. -->
 <script src="../system/components/auth.js"></script>
+<script src="../system/components/stepper.js"></script>
 <script src="../system/components/footer.js"></script>
 
 <!-- ========== ALPINE STATE / METHODS ========== -->
