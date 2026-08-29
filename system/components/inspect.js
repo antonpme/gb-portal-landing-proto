@@ -1,8 +1,20 @@
 /* ============================================================
    gbppl-inspect-1 / gbppl-oro-icons-1 / gbppl-oro-drawer-1 /
-   gbppl-inspect-scale-1
+   gbppl-inspect-scale-1 / gbppl-oro-props-1
    — INSPECT MODE, THE CORE
    ------------------------------------------------------------
+   gbppl-oro-props-1 (29.08) TOOK THE CLICK BACK OFF THE SPECIMEN.
+   Ton, 12:34, with a screenshot: he could not click a field, and a
+   Select would not open, because the properties drawer opened
+   instead. In View mode the showcase specimen is now a live
+   component and nothing else, and the drawer has its own door: an
+   icon button in the corner of the specimen's box, hung by this
+   file on every slot of every data-inspect region, invisible until
+   the pointer or the keyboard is on that box. Inspect mode is
+   untouched — there the click is still the question, because there
+   nothing on the page is meant to answer it. See THE SHOWCASE
+   REGIONS, AND THE DOOR TO THE PROPERTIES below.
+
    gbppl-inspect-scale-1 (29.08) moved ONE line: the instrument
    reads token values off a hidden probe inside <gb-studio-panel>
    instead of off document.documentElement. Found on the run of the
@@ -1708,32 +1720,81 @@
 
 
   /* ============================================================
-     THE SHOWCASE REGIONS (unchanged behaviour)
+     THE SHOWCASE REGIONS, AND THE DOOR TO THE PROPERTIES
      ------------------------------------------------------------
      A region marked data-inspect="<kind>" hands its specimens to
-     the kind above, in View mode as well as in Inspect: the
-     showcase was clickable before this file existed and stays
-     clickable, and a reader on system\oro\* does not have to turn
-     a mode on to read a specimen.
+     the kind above. In INSPECT mode a click on the specimen opens
+     that reading, exactly as it always has, because in Inspect
+     every click is a question and nothing on the page is meant to
+     answer the pointer itself.
+
+     IN VIEW MODE IT NO LONGER DOES, and that is the whole of
+     gbppl-oro-props-1. Ton, 29.08, 12:34, with a screenshot:
+     «Мне очень не нравится, как работает Properties. Я не могу
+     кликнуть на field, чтобы увидеть, как оно ведёт себя при
+     клике; Select не открывается, потому что вместо этого
+     открывается Properties. Оно должно показываться иначе, не
+     перекрывая действия компонентов: иначе не смогу кликнуть ни
+     на Switch, ни на Checkbox, ни на Radio, ни на Select.»
+
+     He is right, and the mistake is as old as the showcase: the
+     specimen was clickable before this file existed and the click
+     was the only way in. But a specimen is a LIVE COMPONENT —
+     that is the whole reason it stands on a plinth instead of
+     being drawn as a picture — and an instrument that eats its
+     click has taken away the one thing the reader came to try. So
+     in View mode the specimen answers the pointer the way it does
+     in the product, and the properties drawer gets its own door.
+
+     THE DOOR. One quiet icon button in the corner of the
+     specimen's box, invisible until the pointer is on that box or
+     the keyboard is inside it, mounted BY THIS FILE for every slot
+     of every region. Mounted here and not written on the pages,
+     because a door on nine showcases written nine times is nine
+     doors: one of them ends up in the wrong corner, and the next
+     showcase opens without one. The pages carry data-inspect and
+     nothing else, exactly as they did before.
+
+     WHERE THE DOOR STANDS. On the slot, unless the slot stands
+     alone on a stage: a playground centres one specimen on a large
+     ground, and the corner of THAT is a corner nobody is aiming
+     at. Where a slot holds many parts and a single door would have
+     to guess which one the reader means — the type ladder puts six
+     roles in one block — every part gets its own door and there is
+     nothing left to guess.
+
+     WHAT IT IS MADE OF. `.gb-btn--icon --s --ghost --secondary
+     --plain` from button.css with a glyph from the icon record: no
+     new component and no local paint (Тон-6). The glyph is `info`,
+     which the record did not hold, because nothing in the house had
+     ever needed to say «about this»; it was redrawn there from
+     system/icons/circle-info.svg with its provenance written down.
+     A chevron was tried first and stood in the corner meaning
+     «next»: an affordance that has to be guessed is the defect this
+     wave is fixing, not a saving. The door also says «Properties»
+     in its label and in its tooltip.
      ============================================================ */
+  var SLOT_SEL = '.gbdoc-slot, .gbdoc-cell, .gbdoc-hold, .gbdoc-type__live';
+
   function slotOf(target) {
     if (!target || !target.closest) return null;
-    return target.closest('[data-inspect] .gbdoc-slot, [data-inspect] .gbdoc-cell, ' +
-                          '[data-inspect] .gbdoc-hold, [data-inspect] .gbdoc-type__live');
+    var slot = target.closest('[data-inspect] .gbdoc-slot, [data-inspect] .gbdoc-cell, ' +
+                              '[data-inspect] .gbdoc-hold, [data-inspect] .gbdoc-type__live');
+    if (slot) return slot;
+    /* A region with no slots in it is its own slot. The playground
+       bench (system\oro\lab) stands one specimen on a bare stage,
+       and asking it to grow furniture it does not need, only so a
+       door has somewhere to hang, would be the tail wagging the
+       dog. */
+    var region = target.closest('[data-inspect]');
+    return region && !region.querySelector(SLOT_SEL) ? region : null;
   }
 
-  function openShowcase(target) {
-    if (!target || !target.closest) return false;
-    /* Inside the drawer itself: a reader clicking a row of the
-       properties table is reading, not pointing at a specimen.
-       gbppl-oro-drawer-1 carved out the one exception: the drawer
-       card draws a panel IN the page (`.gbdoc-panel`, docs.css) as
-       its own specimen, and that one is exactly what a click means. */
-    if (target.closest('.gbd-panel:not(.gbdoc-panel)')) return false;
-    if (target.closest('[data-axis]')) return false;  /* a control chip, not a specimen */
-    var slot = slotOf(target);
-    if (!slot) return false;
-    var region = slot.closest('[data-inspect]');
+  /* The reading itself, once the slot is known. Both doors lead
+     here: the click in Inspect mode and the button in View. */
+  function openSlot(slot, target) {
+    var region = slot.matches('[data-inspect]') ? slot : slot.closest('[data-inspect]');
+    if (!region) return false;
     var kind = KINDS[region.getAttribute('data-inspect')];
     if (!kind) return false;
     /* gbppl-oro-pages-1. Тон, 28.08: «Показывать плавающую кнопку
@@ -1742,7 +1803,8 @@
        где-либо ещё её быть не должно.» A kind whose region is not a
        shelf of specimens but a catalogue of cards says so once, and
        then a click in View mode belongs to the card: the link under
-       it goes to the component's page. In Inspect mode the region
+       it goes to the component's page. Such a region is given no
+       door either (see mountDoors). In Inspect mode the region
        answers as everything else does, because in Inspect mode the
        question is always «what is this», and the entry is the
        answer. */
@@ -1753,6 +1815,12 @@
        under the pointer. Kinds that do not care ignore it. */
     var el = kind.find(slot, target);
     if (!el) return false;
+    /* A door is not a specimen. Two kinds look for `.gb-btn` and
+       `.gb-btn--icon` and the door is both; it is appended after
+       the specimen, so document order already answers this, and
+       this line answers it for a slot that has nothing else in
+       it. */
+    if (el.classList && el.classList.contains('gbdoc-props')) return false;
     var d = drawerHost();
     if (!d) return false;
 
@@ -1791,10 +1859,138 @@
     return true;
   }
 
+  function openShowcase(target) {
+    if (!target || !target.closest) return false;
+    /* Inside the drawer itself: a reader clicking a row of the
+       properties table is reading, not pointing at a specimen.
+       gbppl-oro-drawer-1 carved out the one exception: the drawer
+       card draws a panel IN the page (`.gbdoc-panel`, docs.css) as
+       its own specimen, and that one is exactly what a click means. */
+    if (target.closest('.gbd-panel:not(.gbdoc-panel)')) return false;
+    if (target.closest('[data-axis]')) return false;  /* a control chip, not a specimen */
+    var slot = slotOf(target);
+    if (!slot) return false;
+    return openSlot(slot, target);
+  }
+
+  /* ---------- the door, and only the door ----------
+     In View mode this is the ONE click that opens the properties
+     drawer on a showcase. Everything else on the page belongs to
+     the page: a button presses, a field takes focus, a select
+     opens its menu, a stepper counts. */
   document.addEventListener('click', function (e) {
     if (MODE === 'inspect') return;   /* Inspect has its own handler, in capture */
-    openShowcase(e.target);
+    var door = e.target.closest ? e.target.closest('.gbdoc-props') : null;
+    if (!door || !door.gbSlot || !door.gbSlot.isConnected) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openSlot(door.gbSlot, door.gbPart || door.gbSlot);
   });
+
+  /* ---------- hanging the doors ----------
+     Idempotent, and run again whenever a region redraws itself: a
+     playground rewrites its hold on every change of an axis, and a
+     door that is not put back is a door that worked once. */
+  var DOOR_CLS = 'gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain gbdoc-props';
+
+  function addDoor(box, slot, part) {
+    if (!box || box.querySelector(':scope > .gbdoc-props')) return;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = DOOR_CLS;
+    b.setAttribute('aria-label', 'Properties');
+    b.setAttribute('title', 'Properties');
+    b.innerHTML = '<span class="gb-btn__icon" aria-hidden="true">' +
+                  window.GbIcons.svg('info') + '</span>';
+    b.gbSlot = slot;
+    b.gbPart = part || null;
+    box.appendChild(b);
+    inkFor(b, box);
+  }
+
+  /* The stage, when it holds this one specimen and nothing else;
+     the slot otherwise. */
+  function boxFor(region, slot) {
+    var stage = slot.closest('.gbdoc-stage');
+    if (stage && region.contains(stage) && stage.querySelectorAll(SLOT_SEL).length === 1) return stage;
+    return slot;
+  }
+
+  function mountDoors() {
+    /* The glyph comes from the record (icon.js). A showcase that has
+       not been given the record gets no door rather than a broken
+       one, and nothing is said out loud: that is a page waiting to
+       be wired, not a fault at the reader's end. */
+    if (!window.GbIcons || !window.GbIcons.has('info')) return;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-inspect]'), function (region) {
+      var kind = KINDS[region.getAttribute('data-inspect')];
+      if (!kind || kind.inViewMode === false) return;
+      var slots = region.querySelectorAll(SLOT_SEL);
+      if (!slots.length) { addDoor(region, region, null); return; }
+      Array.prototype.forEach.call(slots, function (slot) {
+        var parts = kind.parts ? slot.querySelectorAll(kind.parts) : [];
+        if (parts.length > 1) {
+          Array.prototype.forEach.call(parts, function (p) { addDoor(p, slot, p); });
+          return;
+        }
+        addDoor(boxFor(region, slot), slot, null);
+      });
+    });
+  }
+
+  /* WHICH INK, MEASURED RATHER THAN ASSUMED. A stage takes a dark
+     ground on a switch, and the switch belongs to the page. So the
+     door reads the ground it is standing on with the same composite
+     the contrast row uses and wears the colour family that belongs
+     there. No page's class is named here, which is why a dark
+     ground invented tomorrow needs no line in this file. */
+  function inkFor(btn, box) {
+    var dark = lum(groundOf(box).colour) < 0.25;
+    btn.classList.toggle('gb-btn--inverse', dark);
+    btn.classList.toggle('gb-btn--secondary', !dark);
+  }
+
+  /* The ink is settled the moment before the door is seen: the
+     pointer arriving on the box, or the keyboard arriving in it. */
+  function inkOnApproach(e) {
+    var t = e.target;
+    if (!t || !t.closest || !t.closest('[data-inspect]')) return;
+    var n = t;
+    while (n && n.nodeType === 1) {
+      var b = n.querySelector(':scope > .gbdoc-props');
+      if (b) { inkFor(b, n); return; }
+      if (n.hasAttribute('data-inspect')) return;
+      n = n.parentElement;
+    }
+  }
+  document.addEventListener('pointerover', inkOnApproach, { passive: true });
+  document.addEventListener('focusin', inkOnApproach);
+
+  /* A region that redraws itself gets its doors back on the next
+     frame. Our own buttons are ignored, or hanging one would ask
+     for another. */
+  var doorsQueued = false;
+  function queueDoors() {
+    if (doorsQueued) return;
+    doorsQueued = true;
+    requestAnimationFrame(function () { doorsQueued = false; mountDoors(); });
+  }
+  function watchRegions() {
+    if (!window.MutationObserver) return;
+    new MutationObserver(function (list) {
+      for (var i = 0; i < list.length; i++) {
+        var m = list[i];
+        if (!m.target.closest || !m.target.closest('[data-inspect]')) continue;
+        var ours = m.addedNodes.length > 0;
+        Array.prototype.forEach.call(m.addedNodes, function (n) {
+          if (!(n.classList && n.classList.contains('gbdoc-props'))) ours = false;
+        });
+        if (ours) continue;
+        queueDoors();
+        return;
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  }
 
   /* Copy, inside the drawer and anywhere else a snippet is drawn. */
   document.addEventListener('click', function (e) {
@@ -2309,6 +2505,12 @@
     try { saved = sessionStorage.getItem(KEY); } catch (e) { /* private window */ }
     mountSwitch();
     setMode(saved === 'inspect' ? 'inspect' : 'view');
+    /* gbppl-oro-props-1. The doors are hung after the page's own
+       scripts have built their shelves, and re-hung whenever one of
+       them rebuilds. A page with no data-inspect region gets none of
+       this and pays for none of it. */
+    mountDoors();
+    watchRegions();
   }
 
   if (document.readyState === 'loading') {

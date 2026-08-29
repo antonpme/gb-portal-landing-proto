@@ -1,7 +1,16 @@
 /* ============================================================
-   gbppl-docs-1 / gbppl-oro-icons-1 / gbppl-oro-drawer-1
+   gbppl-docs-1 / gbppl-oro-icons-1 / gbppl-oro-drawer-1 /
+   gbppl-oro-props-1
    — THE DOCUMENTATION ATOMS
    ------------------------------------------------------------
+   gbppl-oro-props-1 (29.08) took the corner caption «properties»
+   and `cursor: pointer` off the specimen slots, and put a door in
+   their place: an icon button in the corner of the box, hung by
+   inspect.js, seen on hover and on focus. Ton could not click a
+   field or open a Select, because the caption was the visible half
+   of a click the instrument was eating. See THE DOOR TO THE
+   PROPERTIES below.
+
    gbppl-oro-icons-1 (28.08) added exactly one line: an inline mode
    for the quiet copy button, so it can stand in a table cell
    instead of hanging in the corner of a type row.
@@ -14,17 +23,26 @@
    THE GROUND RULE (gbppl-oro-heads-1, Ton 29.08: «продуманная
    информационная архитектура и осмысленная игра цветами фона...
    светло-серый фон, но не рандомно»):
-   A LIVE SPECIMEN STANDS ON ZINC 50 WITH A ZINC 200 HAIRLINE.
+   A LIVE SPECIMEN STANDS ON GREY WITH A ZINC 200 HAIRLINE.
    EVERYTHING YOU READ OR OPERATE STANDS ON WHITE.
    One value, one meaning: the grey says «this is the product, not
    the document», so a stage, a specimen shelf, a preview tile and a
-   scene are grey, while prose, reading tables, the axis controls and
-   the line under a stage are white. Two thirds of this file already
-   said it (.gbdoc-scene__stage and .gbdoc-regcard__preview were both
-   Zinc 50); the playground said the opposite, grey controls around a
-   white stage, and that is the contradiction Ton was looking at. The
-   only other place Zinc 50 is spent is the header ROW of a reading
-   table, where it tints a row rather than grounding a surface.
+   scene are grey, while prose, reading tables and the axis controls
+   are white.
+
+   TWO GREYS, AND THEY DO NOT DO THE SAME JOB (gbppl-oro-props-1,
+   Ton 12:59: «что-то одно, либо управление, либо превью, должно
+   быть не на белом... блок сливается со страницей»). ZINC 100 is
+   the GROUND A SPECIMEN STANDS ON — stage, shelf, preview tile,
+   scene — and it moved there from Zinc 50 for one reason: at
+   #FAFAFA against #FFFFFF the ground was a rule nobody could see,
+   which is the same as no rule. ZINC 50 is a TINT ON A STRIP
+   INSIDE an object, never a surface of its own: the header row of a
+   reading table, a column head, the cap of a do/avoid pair, and the
+   line under a stage. So a playground block now reads as three
+   parts without being read at all — white controls, grey specimen,
+   quiet closing strip — and the specimen is the darkest and largest
+   thing in it.
    ------------------------------------------------------------
    Ton-10, 26.08: «дизайн-система показывается только системно:
    витрина должна быть образцом системности». The showcase is a
@@ -293,7 +311,7 @@
   height: var(--gbdoc-preview-h);
   padding: var(--space-16);
   overflow: hidden;
-  background: var(--zinc-50);
+  background: var(--zinc-100);   /* the specimen ground, see THE GROUND RULE */
   border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
   cursor: pointer;
@@ -375,19 +393,38 @@
 /* ============================================================
    THE READING TABLE
    ============================================================ */
-.gbdoc-tablewrap { overflow-x: auto; margin-top: var(--space-16); }
+/* A READING TABLE IS AN OBJECT ON THE PAGE (gbppl-oro-props-1, Ton
+   12:59: «таблиц много и они сливаются с полотном»). The outline
+   and the radius belong to the WRAP and not to the table, for a
+   reason that shows the moment a table is wider than the column:
+   the wrap is what scrolls, so a border on the table scrolled away
+   with it and the object lost its right-hand edge exactly when it
+   most needed one. The step of air above it is --space-24, one rung
+   up from the 16 it had, so the table parts from the sentence that
+   introduces it. */
+.gbdoc-tablewrap {
+  overflow-x: auto;
+  margin-top: var(--space-24);
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+}
 .gbdoc-table {
   width: 100%;
   border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
   border-collapse: separate;
   border-spacing: 0;
-  overflow: hidden;
   background: var(--white);
   font-size: 14px;          /* TYPE-SCALE: Small 14 */
   line-height: 1.6;
   color: var(--zinc-700);
 }
+/* Inside a wrap the outline is the wrap's, or the two would draw
+   twice. A table with no wrap — the one inspect.js writes into the
+   drawer, and the two on components.html — keeps its own and reads
+   exactly as it did. */
+.gbdoc-tablewrap > .gbdoc-table { border: 0; border-radius: 0; }
 .gbdoc-table th,
 .gbdoc-table td {
   padding: var(--space-8) var(--space-16);
@@ -476,9 +513,14 @@
   overflow: hidden;
   background: var(--white);
 }
-/* The axes are operated, so they stand on white; the stage under
-   them is the specimen, so it is grey. Until 29.08 it was the other
-   way round and the grey meant nothing. */
+/* THE BLOCK IS THREE PARTS AND HAS TO READ AS THREE (Ton 12:59).
+   The axes are operated, so they stand on white and close with a
+   hairline; the stage under them is the specimen, so it is Zinc 100,
+   the darkest and biggest surface of the block; the line under it is
+   a quiet closing strip on Zinc 50 with a hairline above. Until
+   29.08 the controls were grey around a white stage, which said the
+   opposite; until this wave all three were within one shade of
+   white, which said nothing. */
 .gbdoc-controls {
   padding: var(--space-16) var(--space-24);
   background: var(--white);
@@ -537,7 +579,7 @@
 
 .gbdoc-stage {
   padding: var(--space-24);
-  background: var(--zinc-50);
+  background: var(--zinc-100);   /* the specimen ground, see THE GROUND RULE */
   transition: background-color var(--mo-small) var(--mo-move);
 }
 .gbdoc-stage--center { display: flex; align-items: center; justify-content: center; min-height: 176px; padding: var(--space-32); }
@@ -546,12 +588,20 @@
 .gbdoc-foot {
   margin: 0;
   padding: var(--space-16);
-  background: var(--white);
+  background: var(--zinc-50);
   border-top: 1px solid var(--zinc-200);
   font-size: 14px;
   line-height: 1.7;
   color: var(--zinc-600);
 }
+/* A strip with nothing to say is not drawn. The line under a stage
+   exists for the sentence a reader cannot get from the stage — the
+   combination the system does not hold, the reason a chip went
+   quiet — and Ton-21 already threw out the version of it that
+   repeated the chips above («On the stage: Underline, rest»). An
+   empty foot with a hairline over it would be that sentence's
+   furniture standing without the sentence. */
+.gbdoc-foot:empty { display: none; }
 
 /* ---- A band inside a stage: sizes, then states ---- */
 .gbdoc-band + .gbdoc-band {
@@ -618,7 +668,7 @@
   padding: var(--space-24);
   border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
-  background: var(--zinc-50);
+  background: var(--zinc-100);   /* the specimen ground, see THE GROUND RULE */
 }
 .gbdoc-shelf--cols { align-items: stretch; }
 
@@ -681,61 +731,79 @@
 .gbdoc-cell { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-16); }
 
 /* ============================================================
-   INSPECT: the specimen answers a click
+   THE DOOR TO THE PROPERTIES (gbppl-oro-props-1, 29.08)
    ------------------------------------------------------------
-   Any slot inside a [data-inspect] region opens the properties
-   drawer. The affordance has to be visible or nobody discovers
-   it, and it has to be quiet or it competes with the specimen.
+   Тон, 12:34, со скрином: «Мне очень не нравится, как работает
+   Properties. Я не могу кликнуть на field... Select не
+   открывается, потому что вместо этого открывается Properties.
+   Оно должно показываться иначе, не перекрывая действия
+   компонентов.»
+
+   What stood here was the corner caption «properties» plus
+   `cursor: pointer` on the whole slot, and behind them a click
+   handler that took the click away from the specimen. Both are
+   gone. A specimen is a live component and it answers the pointer
+   the way it does in the product; the drawer is opened by a door
+   of its own, hung by inspect.js on every slot of every region.
+
+   THE DOOR IS THE ICON BUTTON, NOT A NEW ORGANISM: `.gb-btn--icon
+   --s --ghost --secondary --plain` (button.css), which is why
+   nothing here paints it. This file says only where it stands and
+   when it is seen.
+
+   SEEN, NOT PERMANENT. A door standing open on every specimen at
+   once would be forty pieces of furniture competing with the
+   things they belong to. So it fades in when the pointer is on
+   its box, or when the keyboard is anywhere inside it — the
+   second half is what lets it be reached by Tab at all, since it
+   keeps its place in the order while it is invisible and only
+   stops eating clicks.
    ============================================================ */
 [data-inspect] .gbdoc-slot,
 [data-inspect] .gbdoc-cell,
-[data-inspect] .gbdoc-hold {
+[data-inspect] .gbdoc-hold,
+[data-inspect] .gbdoc-type__live {
   position: relative;
-  cursor: pointer;
   border-radius: var(--radius);
 }
-/* Ton 26.08: the 1px ring around the whole block on hover read as a
-   stray outline. The affordance is now a small caption in the corner,
-   the way inspect panels in mature systems do it: it names the action
-   and touches nothing of the specimen. */
-[data-inspect] .gbdoc-slot::after,
-[data-inspect] .gbdoc-cell::after,
-[data-inspect] .gbdoc-hold::after {
-  content: 'properties';
+
+/* The box that carries a door is the box the door is measured
+   from. One rule, and no page and no stage has to remember. */
+[data-inspect]:has(> .gbdoc-props),
+[data-inspect] *:has(> .gbdoc-props) { position: relative; }
+
+.gbdoc-props {
   position: absolute;
-  right: 6px;
-  bottom: 4px;
-  /* The file's own header promises no 10-11px caps; this hint was the last
-     one holding out. Eyebrow floor. */
-  font-size: var(--eyebrow-size);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--blue-600);
+  top: var(--space-8);
+  right: var(--space-8);
+  z-index: 2;
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--mo-micro) var(--mo-move);
 }
-[data-inspect] .gbdoc-slot:hover::after,
-[data-inspect] .gbdoc-cell:hover::after,
-[data-inspect] .gbdoc-hold:hover::after { opacity: 1; }
-.gbdoc-stage--dark [data-inspect] .gbdoc-slot::after,
-[data-inspect] .gbdoc-stage--dark .gbdoc-slot::after,
-[data-inspect] .gbdoc-stage--dark .gbdoc-cell::after { color: var(--blue-400); }
+[data-inspect]:hover > .gbdoc-props,
+[data-inspect]:focus-within > .gbdoc-props,
+[data-inspect] *:hover > .gbdoc-props,
+[data-inspect] *:focus-within > .gbdoc-props {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* INSPECT HAS ITS OWN WAY IN. There the click is the question and
+   every element on the page answers it, so a door would be one
+   more thing standing between the pointer and the page. */
+html.gbi-on .gbdoc-props,
+html.gbc-on .gbdoc-props { display: none; }
 
 /* THE ONE REGION THAT IS NOT A SHELF OF SPECIMENS (gbppl-oro-pages-1).
    Тон, 28.08: «Показывать плавающую кнопку Properties, которая
-   открывает Drawer, на карточках компонентов нужно только внутри самих
-   компонентов. В превью и вообще где-либо ещё её быть не должно.»
-   A tile on the catalogue is a PICTURE OF A COMPONENT, and the thing
-   to do with it is open that component's page, so it must not offer
-   the reading affordance a specimen offers. The caption goes and the
-   pointer goes with it; the card underneath carries the link. Written
-   here, after the block it overrides, because the two selectors weigh
-   the same and the later one has to win. Inspect mode is untouched:
-   there every element on every page answers, tile included. */
-.gbdoc-reg .gbdoc-slot { cursor: default; }
-.gbdoc-reg .gbdoc-slot::after { content: none; }
+   открывает Drawer, на карточках компонентов нужно только внутри
+   самих компонентов. В превью и вообще где-либо ещё её быть не
+   должно.» A tile on the catalogue is a PICTURE OF A COMPONENT and
+   the thing to do with it is open that component's page. It is
+   given no door: the kind says `inViewMode: false` and inspect.js
+   reads that before it hangs one. Nothing is needed here any more —
+   the caption this used to have to cancel no longer exists. */
 
 /* THE WHOLE CARD IS THE WAY IN. The same pattern the studio door uses
    (studio.css): the card is the positioned box, the exit link spreads
@@ -986,23 +1054,9 @@ html.gbc-on .gbdoc-regcard__go[href]::after { pointer-events: none; }
 .gbdoc-pair__body > * { margin: 0; }
 .gbdoc-pair__body > * + * { margin-top: var(--space-8); }
 
-/* ---- The inspect region reaches the type row too ---- */
-[data-inspect] .gbdoc-type__live { position: relative; cursor: pointer; border-radius: var(--radius); }
-[data-inspect] .gbdoc-type__live::after {
-  content: 'properties';
-  position: absolute;
-  right: 6px;
-  bottom: 4px;
-  font-size: var(--eyebrow-size);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--blue-600);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--mo-micro) var(--mo-move);
-}
-[data-inspect] .gbdoc-type__live:hover::after { opacity: 1; }
+/* The type row is a slot like any other now: it is named in the
+   door block above, and its own reading affordance went with the
+   caption (gbppl-oro-props-1). */
 
 /* ============================================================
    gbppl-oro-drawer-1 — A PANEL SHOWN IN THE PAGE, NOT OVER IT
@@ -1089,7 +1143,7 @@ html.gbc-on .gbdoc-regcard__go[href]::after { pointer-events: none; }
   flex-direction: column;
   justify-content: center;
   padding: var(--space-24);
-  background: var(--zinc-50);
+  background: var(--zinc-100);   /* the specimen ground, see THE GROUND RULE */
   border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
 }

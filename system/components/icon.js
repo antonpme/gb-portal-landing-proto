@@ -64,6 +64,19 @@
    thing in the house to ask the record instead of carrying its
    own: it fills an empty .gb-btn__icon from here. Nineteen
    entries became twenty one.
+
+   ------------------------------------------------------------
+   AND ONE MORE, WITH A DIFFERENT PROVENANCE
+   (gbppl-oro-props-1, 29.08)
+   ------------------------------------------------------------
+   `info` is the twenty second, and it is the first entry that no
+   file in the house was already drawing: the properties door of
+   the showcase needed an «about this» mark and there was none.
+   It was redrawn from system/icons/circle-info.svg, one of the
+   Figma exports listed below as pictures, the way the six screens
+   were redrawn from their grid of twenty. The rule the file lives
+   by is unchanged — provenance is said out loud — and the folder
+   of exports is still a wave of its own.
    ============================================================ */
 (function () {
   'use strict';
@@ -162,6 +175,24 @@
     'filters': {
       body: '<path d="M3.5 6.5h17M7 12h10M10.5 17.5h3"/>',
       from: 'catalog.js: the filters toggle',
+      stroke: 1.5
+    },
+    /* THE ONE GLYPH THIS SET DREW FOR ITSELF (gbppl-oro-props-1,
+       29.08). Every other body here was copied out of the file that
+       draws it; this one had no such file, because the door to the
+       properties drawer is the first thing in the house to need an
+       «about this» mark. It is not invented either: it is
+       system/icons/circle-info.svg, the Figma export the portal
+       carries as a picture, redrawn on the 24 grid exactly the way
+       the six screens were redrawn from their grid of twenty. Two
+       things about the export did not come with it — the 0.8 stroke
+       and the #71717A baked into it, which are the two reasons that
+       folder is pictures and not icons — and the serif hook on the
+       stem was dropped because it does not survive 16px. Provenance
+       said out loud, because that is the whole job of this file. */
+    'info': {
+      body: '<circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/>',
+      from: 'system/icons/circle-info.svg, redrawn on the grid for the properties door of the showcase',
       stroke: 1.5
     },
     'mail': {
