@@ -40,7 +40,11 @@
    order, the captions, the pages that exist and the ones that are
    only announced. The table of contents of a page is NOT here: it
    describes that one document, it changes when the document does,
-   and it belongs beside it.
+   and it belongs beside it. Since gbppl-oro-toc-1 it is not
+   anywhere at all as data: the second block of this file reads it
+   off the document, and Ton took it out of this rail entirely
+   («навигацию по странице не нужно смешивать с навигацией по
+   страницам»).
 
    THE CURRENT PAGE IS READ, NOT DECLARED. aria-current comes from
    location, so a page cannot forget to mark itself and cannot
@@ -273,15 +277,129 @@
     );
   }
 
+  /* ============================================================
+     gbppl-oro-toc-1 — THE CONTENTS OF THE PAGE, WRITTEN BY THE PAGE
+     ------------------------------------------------------------
+     Ton, 29.08: «Навигация On this page у нас в левом меню, что
+     неправильно. Навигацию по странице не нужно смешивать с
+     навигацией по страницам.» The block moved out of the rail and
+     to the right of the document (oro.css, THE CONTENTS OF THIS
+     PAGE); this is where its list comes from.
+
+     IT IS READ OFF THE DOCUMENT, NOT WRITTEN BESIDE IT. Ten pages
+     each kept their contents by hand, and two of them (About and
+     Colors) had none at all while carrying four sections apiece. A
+     hand list is a second copy of the page structure, and a second
+     copy drifts: the same argument that took the rail into NAV
+     above, one level down. Here it is stronger, because the list
+     changes every time a section is added, and nobody adds a
+     section thinking about a list in another part of the file.
+
+     WHAT COUNTS AS A SECTION. An element inside the document that
+     carries an id and is either a heading itself (h2, h3, the
+     showcase's .gbdoc-sub and .oro-h2/.oro-h3, the type record's
+     group name, the registry's group eyebrow) or a <section> that
+     holds one. Anything else with an id — a readout span, a control
+     box, a drawer host — is not a place, and is skipped.
+
+     WHAT IT IS CALLED. The heading's own text, unless the section
+     says otherwise with data-toc. The override earns its place on
+     exactly the headings whose text is not a name: a card whose
+     first heading is the word «Overview» is the Button card, and
+     colors.html titles its sections in sentences («Zinc: the only
+     grey in the brand»), which is a good heading and a bad entry.
+     The attribute lives ON the section, so it cannot go missing
+     when the section does.
+
+     RANK IS NESTING, not a class: a section inside a section is one
+     step in. Two steps is the floor, which is all the showcase has
+     ever had.
+
+     WHEN IT RUNS. watchToc() builds before it watches, so the eight
+     pages that already called it at the end of their script keep the
+     one call they had, and typography.html — which draws seven of
+     its own sections at runtime — still gets a list that includes
+     them, because its call already stood after it had drawn them.
+     A page that calls nothing gets the list on DOMContentLoaded. */
+  var HEAD = 'h2, h3, .oro-h2, .oro-h3, .gbdoc-sub, .gbdoc-type__gname, .gbdoc-reg__group';
+  var tocBuilt = false;
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* The name of a place. Status flags and copy buttons ride inside
+     headings and are not part of the name. */
+  function tocLabel(el) {
+    var given = el.getAttribute('data-toc');
+    if (given) return given;
+    var head = el.matches(HEAD) ? el : el.querySelector(HEAD);
+    if (!head) return '';
+    var clone = head.cloneNode(true);
+    Array.prototype.forEach.call(
+      clone.querySelectorAll('.gbdoc-flag, .gbdoc-copybtn, .oro-soon'),
+      function (n) { if (n.parentNode) n.parentNode.removeChild(n); }
+    );
+    return clone.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  function tocEntries() {
+    var main = document.querySelector('.oro-main');
+    if (!main) return [];
+    var found = [];
+    Array.prototype.forEach.call(main.querySelectorAll('[id]'), function (el) {
+      if (el.closest('[data-oro-toc]')) return;
+      var isHead = el.matches(HEAD);
+      var isSection = el.tagName === 'SECTION' && el.querySelector(HEAD);
+      if (!isHead && !isSection) return;
+      var text = tocLabel(el);
+      if (text) found.push({ el: el, id: el.id, text: text });
+    });
+    for (var i = 0; i < found.length; i++) {
+      var lvl = 0;
+      for (var j = 0; j < i; j++) {
+        if (found[j].el !== found[i].el && found[j].el.contains(found[i].el)) lvl++;
+      }
+      found[i].level = lvl > 2 ? 2 : lvl;
+    }
+    return found;
+  }
+
+  /* One section is not a table of contents: the block stays out of
+     the page rather than pointing at the only thing on it. */
+  function buildToc() {
+    tocBuilt = true;
+    var host = document.querySelector('[data-oro-toc]');
+    if (!host) return [];
+    var list = tocEntries();
+    if (list.length < 2) { host.innerHTML = ''; host.hidden = true; return []; }
+
+    var out = '<span class="oro-toc-title gb-eyebrow">On this page</span>' +
+              '<nav class="oro-toc-list" aria-label="On this page">';
+    for (var i = 0; i < list.length; i++) {
+      var mod = list[i].level === 1 ? ' oro-toc-link--sub'
+              : list[i].level === 2 ? ' oro-toc-link--sub2' : '';
+      out += '<a class="oro-toc-link' + mod + '" href="#' + esc(list[i].id) + '">' +
+             esc(list[i].text) + '</a>';
+    }
+    host.innerHTML = out + '</nav>';
+    host.hidden = false;
+    return list;
+  }
+
   /* ---------- the contents follow the reader ----------
-     The links are read ONCE, so a page that builds part of its own
-     contents (typography.html draws a sub link per group) has to
-     call this after it has drawn them, exactly as it did when the
-     two lines lived on the page. The lit entry is the last section
-     whose top has passed 140px, and the scroll is answered 90ms
-     after it stops. Returns the reader, for a page that wants to
-     re-light it on its own account. */
+     The links are read ONCE, after the list has been built, so a
+     page that draws part of its own document (typography.html draws
+     a section per group of the scale) has to call this after it has
+     drawn it, exactly as it did when the two lines lived on the
+     page. The lit entry is the last section whose top has passed
+     140px, and the scroll is answered 90ms after it stops. Returns
+     the reader, for a page that wants to re-light it on its own
+     account. */
   function watchToc() {
+    buildToc();
     var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
     var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
     var spyTimer;
@@ -309,6 +427,18 @@
     widthNow: widthNow,
     copy: copy,
     watchCopy: watchCopy,
+    buildToc: buildToc,
     watchToc: watchToc
   };
+
+  /* The safety net, not the mechanism: a page that says nothing at
+     all still gets its contents. A page that calls watchToc from
+     its own script has already built them by the time this fires,
+     because a classic script at the end of the body runs first. */
+  function autoToc() { if (!tocBuilt) watchToc(); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoToc);
+  } else {
+    autoToc();
+  }
 })();

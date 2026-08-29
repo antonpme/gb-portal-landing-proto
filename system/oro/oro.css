@@ -24,6 +24,15 @@
 
 html { background: var(--white); }
 
+/* gbppl-oro-toc-1 — WHERE A FRAGMENT LANDS. The studio bar is
+   sticky at the top of every showcase page (header.css,
+   .gb-header--studio, position: sticky, top 0, --header-h tall), so
+   a link to #anchor that scrolls the section to 0 puts its first
+   line UNDER the bar. One declaration on the scroller answers every
+   anchor on the page: the bar's own height plus one gutter of air,
+   the same --space-24 the rail and the bar share. */
+html { scroll-padding-top: calc(var(--header-h) + var(--space-24)); }
+
 body {
   margin: 0;
   background: var(--white);
@@ -189,15 +198,11 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--zinc-400);
 }
 
-/* ---- The contents of the page, under the sections ----
-   gbppl-oro-components-3: this lived as page-local CSS on
-   components.html until Ton-10 («витрина должна быть образцом
-   системности») sent it here. It is the shell of a showcase page,
-   like the rail it hangs under, so oro.css is its owner; the
-   documentation atoms went the other way, into
-   ..\components\docs.css. */
-.oro-toc { margin-top: var(--space-32); }
-.oro-toc-title,
+/* The caption over a run of links. It used to be declared together
+   with the title of the page contents, back when the contents hung
+   under the sections in this same rail; gbppl-oro-toc-1 took the
+   contents out of the rail (see THE CONTENTS, further down) and the
+   caption stayed here alone, with the only thing it captions. */
 .oro-navgroup {
   display: block;
   margin-bottom: var(--space-8);
@@ -206,30 +211,6 @@ button { font-family: inherit; cursor: pointer; }
   letter-spacing: var(--eyebrow-tracking);
   text-transform: uppercase;
   color: var(--zinc-400);
-}
-.oro-toc-list { display: flex; flex-direction: column; gap: 1px; }
-.oro-toc-link {
-  display: block;
-  padding: 6px 12px;
-  border-radius: var(--radius);
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--zinc-600);
-  text-decoration: none;
-}
-.oro-toc-link:hover { background: var(--zinc-100); color: var(--zinc-900); }
-.oro-toc-link.is-here { color: var(--blue-600); font-weight: 600; }
-.oro-toc-link--sub { padding-left: var(--space-24); }
-/* gbppl-oro-levels-1: a third rung. The page now has shelves over
-   the cards, so the card sits one step in and the sections inside
-   a card one step further. Both steps are the same --space-24 the
-   first indent already used, added once more. */
-.oro-toc-link--sub2 { padding-left: calc(var(--space-24) * 2); }
-.oro-toc-link--soon { color: var(--zinc-400); }
-@media (max-width: 1023px) {
-  .oro-toc-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
-  .oro-toc-link--sub,
-  .oro-toc-link--sub2 { padding-left: 12px; }
 }
 
 /* ---- The door back ----
@@ -251,6 +232,144 @@ button { font-family: inherit; cursor: pointer; }
 @media (min-width: 1024px) { .oro-main { padding: 64px 40px 0; } }
 @media (min-width: 1600px) { .oro-main { padding: 80px 64px 0; } }
 .oro-col { max-width: 860px; }
+
+/* ============================================================
+   THE CONTENTS OF THIS PAGE (gbppl-oro-toc-1)
+   ------------------------------------------------------------
+   Ton, 29.08: «Навигация On this page у нас в левом меню, что
+   неправильно. Навигацию по странице не нужно смешивать с
+   навигацией по страницам. Если она есть, делать как плавающий
+   sticky navbar справа с table of contents этой страницы.» And,
+   choosing between two drafts the same morning: it is a BLOCK, a
+   card on the ground of the page («грунт Zinc 50 или белый с
+   волоском Zinc 200, --radius, паддинг --space-24, как карточки
+   реестра»), standing beside the document at rest and pinning
+   itself under the bar as the reader goes down. Not a bare list
+   floating in the margin, and no shadow: a card, not a popover.
+
+   WHY THE SURFACE IS .oro-card's. Zinc 50 is already spoken for on
+   this screen: it is the ground of the rail. A second Zinc 50 block
+   on the other side of the text would read as a second rail. White
+   over a Zinc 200 hairline is the quiet card this document already
+   draws on, and reusing it is the rule (Ton-14: the studio reuses
+   its own patterns before it draws a new one). The only value that
+   is not the card's is the padding, --space-24 at every width,
+   because a list of links has no reason to change its gutter.
+
+   THE THIRD COLUMN STARTS AT 1600, MEASURED, NOT FELT. The
+   showcase column today is 921.5 at 1280 and 1180 from 1600 up
+   (headed Chrome, 28.08 build, scrollbar included). A contents
+   card of 240 plus a 24 gutter takes 264 out of the row, so:
+     · 1280 → 921.5 − 264 = 657.5, the document loses a third
+     · 1440 → 1081 − 264 = 817, still under the 1280 reading
+     · 1600 → 1193 − 264 = 929, ABOVE the 1280 reading (921.5)
+     · 1920 → 1513 − 264 = 1249, over the 1180 cap: unchanged
+   1600 is therefore the first width where the card costs the
+   document nothing it did not already have at 1280, and it is a
+   step this file already keeps (the main padding opens up there).
+   Below it the card lies down into a row of chips over the
+   document, which is the same block, the same eyebrow and the same
+   links, laid along instead of down.
+
+   240 IS MEASURED TOO: «Composite components», the longest entry
+   in the showcase, sets at 161.2px in the active weight; the card
+   spends 24 + 24 on its gutters, 1 on the indent hairline, 16 + 8
+   on the link, and 240 leaves 167. The next step up (248) fails
+   the 1600 test above by half a pixel.
+   ============================================================ */
+.oro-toc {
+  margin: 0 0 var(--space-32);
+  padding: var(--space-24);
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  min-width: 0;
+}
+/* The block is written by oro.js and stays out of the page until it
+   has something to say; without this the display above would beat
+   the attribute. */
+.oro-toc[hidden] { display: none; }
+
+.oro-toc-title { flex: 0 0 auto; }
+
+/* Laid along, over the document: the row scrolls INSIDE ITSELF, so
+   a page with fourteen sections never gives the document a
+   horizontal scrollbar of its own. */
+.oro-toc-list {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-16);
+  overflow-x: auto;
+  /* Thin, not hidden: a row that scrolls and does not say so is a
+     row whose last four entries do not exist. */
+  scrollbar-width: thin;
+  min-width: 0;
+}
+.oro-toc-link {
+  flex: 0 0 auto;
+  padding: var(--space-8) 0;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+  color: var(--zinc-600);
+  white-space: nowrap;
+  /* The studio's one way of saying «this one, in a row»: the
+     underline of .gbdoc-seg.is-on, 2px of Blue 600 (docs.css). */
+  border-bottom: 2px solid transparent;
+  transition:
+    color var(--mo-micro) var(--mo-move),
+    border-color var(--mo-micro) var(--mo-move);
+}
+.oro-toc-link:hover { color: var(--zinc-900); }
+.oro-toc-link.is-here { color: var(--blue-600); font-weight: 600; border-bottom-color: var(--blue-600); }
+/* In a row the levels are not indented: an indent along the
+   horizontal reads as a gap, not as a rank. The sub links stay in
+   document order and the rank comes back the moment the block
+   stands up. */
+
+@media (min-width: 1600px) {
+  /* The row of the showcase becomes three: rail, document, contents.
+     Order, not markup order: the block is written FIRST in the page
+     so that below 1600 it lies over the document without any
+     reordering at all, and only here does it move to the right. */
+  .oro-main { display: flex; align-items: flex-start; gap: var(--space-24); }
+  .oro-col { order: 1; flex: 1 1 auto; min-width: 0; }
+  .oro-toc {
+    order: 2;
+    flex: 0 0 calc(var(--space-48) * 5);   /* 240, measured above */
+    margin: 0;
+    position: sticky;
+    /* The bar is 80 and sticky, so the card stops one gutter under
+       it and stays there. */
+    top: calc(var(--header-h) + var(--space-24));
+    max-height: calc(100vh - var(--header-h) - var(--space-24) * 2);
+  }
+  /* Standing up, the list is a column again, and the rank comes
+     back as an indent against a hairline. The active entry lights
+     the hairline beside it in Blue 600 (Ton-5: active is state, and
+     state speaks in the accent) instead of the underline it wears
+     lying down. */
+  .oro-toc-list {
+    flex-direction: column;
+    gap: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  .oro-toc-link {
+    padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16);
+    border-bottom: 0;
+    border-left: 1px solid var(--zinc-200);
+    white-space: normal;
+  }
+  .oro-toc-link:hover { border-left-color: var(--zinc-400); }
+  .oro-toc-link.is-here { border-left-color: var(--blue-600); }
+  .oro-toc-link--sub { padding-left: var(--space-32); }
+  .oro-toc-link--sub2 { padding-left: var(--space-48); }
+}
 
 /* ---- Head of the page ---- */
 .oro-head { padding-bottom: 36px; border-bottom: 1px solid var(--zinc-200); }
