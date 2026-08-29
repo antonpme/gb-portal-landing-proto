@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playground layouts · Oro lab · GildedBox Design Studio</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-oro-heads-1 — THE LAB: THREE PLAYGROUNDS, ONE CHOICE
+     ------------------------------------------------------------
+     Ton, 29.08 12:16: «Нет разделения контролов и превью, непонятно
+     что есть что. Пересмотреть весь лейаут и контролы: 1) выделить
+     контролы и отделить от превью, сейчас шумные и некрасивые;
+     2) для превью обязательно переключение тёмной и светлой темы.
+     Сделать несколько вариантов этого блока и выбрать один.»
+     And 12:18: «контролы влияют на превью, значит идут слева».
+
+     So this page is not a showcase. It is the bench the showcase is
+     chosen on: the SAME six axes of the button, built three ways,
+     one under the other, so the three can be read against each other
+     in one scroll instead of remembered. The showcases keep today's
+     playground until Ton picks one; the winner then moves into
+     docs.css as .gbdoc-frame and every component page changes at
+     once, because a layout that lives on a page is a layout that
+     will drift.
+
+     WHAT IS THE SAME IN ALL THREE, so that only the layout is being
+     judged:
+       · the six axes, in the order button.html has them
+       · the specimen is the live organism, and it answers the axes
+       · a ground switch, Light | Dark, ON THE STAGE
+       · one quiet measured line under the stage (numbers are never a
+         duplicate of what is visible; the old «On the stage: gb-btn
+         gb-btn--l gb-btn--filled» line WAS one, and it is gone from
+         all three)
+       · the markup folded into a <details> called Markup, so the
+         snippet stops pressing on the stage
+
+     Everything here is spent out of tokens.css. The one number that
+     is not a token is the stage height and it is argued for at the
+     rule. The .lab-* classes are deliberately local: nothing in this
+     file is system furniture yet.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../components/shell.css">
+<link rel="stylesheet" href="../../components/header.css">
+<link rel="stylesheet" href="../../components/button.css">
+<link rel="stylesheet" href="../../components/icon.css">
+<link rel="stylesheet" href="../../components/docs.css">
+<link rel="stylesheet" href="../../components/studio-panel.css">
+<link rel="stylesheet" href="../oro.css">
+
+<script src="../../components/studio.js" data-home="../../../index.html"></script>
+
+<style>
+/* ---- the document ---- */
+.lab-main { padding: 40px 16px 0; }
+@media (min-width: 1024px) { .lab-main { padding: 64px 40px 0; } }
+@media (min-width: 1600px) { .lab-main { padding: 80px 64px 0; } }
+.lab-col { max-width: 1180px; }
+.lab-col .oro-lede, .lab-col .oro-p, .lab-col .oro-note { max-width: 860px; }
+
+/* ---- THE STAGE, shared by all three ----
+   HEIGHT: calc(var(--space-64) * 4) = 256. Four steps of the one
+   spacing scale, and it is argued rather than felt: the tallest
+   specimen the button can put on it is XL, 64 tall at 1280 and 72 at
+   2000, and 256 leaves --space-64 of air above and below the 2000
+   case with --space-32 to spare. It also holds the tallest specimen
+   ANY component page will ask for (a textarea at 80 with its caps
+   label at 12 and --space-16 between them is 108), so one height
+   serves every showcase and the stage never resizes under the reader
+   when an axis changes. NO TOKEN: the system has no height scale for
+   surfaces, only for controls. */
+.lab-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--space-64) * 4);
+  padding: var(--space-48) var(--space-24);
+  background: var(--zinc-50);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  transition: background-color var(--mo-small) var(--mo-move);
+}
+.lab-stage.is-dark { background: var(--zinc-950); border-color: var(--zinc-800); }
+.lab-hold { display: flex; justify-content: center; max-width: 100%; }
+.lab-hold--block { width: 100%; max-width: 420px; }
+
+/* The ground switch sits ON the stage, in its corner: it changes the
+   stage and nothing else, so it belongs to the stage and not to the
+   panel of axes that build the specimen. */
+.lab-ground {
+  position: absolute;
+  top: var(--space-8);
+  right: var(--space-16);
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+.lab-stage.is-dark .lab-ground .gbdoc-seg { color: var(--zinc-400); }
+.lab-stage.is-dark .lab-ground .gbdoc-seg:hover { color: var(--zinc-100); }
+.lab-stage.is-dark .lab-ground .gbdoc-seg.is-on { color: var(--blue-400); border-bottom-color: var(--blue-400); }
+
+/* ---- the quiet measured line, one per block ---- */
+.lab-read {
+  margin: var(--space-8) 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--zinc-500);
+}
+.lab-read b { color: var(--zinc-900); font-variant-numeric: tabular-nums; font-weight: 500; }
+
+/* ---- the markup, folded ---- */
+.lab-fold { margin-top: var(--space-16); }
+.lab-fold > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--zinc-600);
+  cursor: pointer;
+  list-style: none;
+}
+.lab-fold > summary::-webkit-details-marker { display: none; }
+.lab-fold > summary::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--mo-micro) var(--mo-move);
+}
+.lab-fold[open] > summary::before { transform: rotate(45deg); }
+.lab-fold > summary:hover { color: var(--zinc-900); }
+.lab-fold .gbdoc-code { margin-top: var(--space-8); }
+
+/* ---- the axis, laid down the column (A and C) ---- */
+.lab-axis + .lab-axis { margin-top: var(--space-24); }
+.lab-axis__name {
+  display: block;
+  margin-bottom: var(--space-8);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.lab-axis__vals { display: flex; flex-wrap: wrap; gap: 0 var(--space-16); }
+.lab-axis__vals .gbdoc-seg { margin-right: 0; }
+
+/* ============================================================
+   A — THE PANEL AND THE STAGE
+   Controls in a narrow column on the LEFT (Ton 12:18: the thing
+   that causes the change stands before the change), stage on the
+   right taking everything else: 1180 − 240 − 24 = 916, which is
+   78% of the column and clears the two thirds asked for.
+   ============================================================ */
+.labA { display: grid; gap: var(--space-24); }
+@media (min-width: 1024px) {
+  /* 240 is the width the contents card already measured for itself in
+     oro.css (calc(--space-48 * 5)); the studio does not carry two
+     narrow-column widths. */
+  .labA { grid-template-columns: calc(var(--space-48) * 5) 1fr; align-items: stretch; }
+  /* The stage is the main thing in the block, so it takes the height
+     the panel of axes needs rather than sitting short beside it. 256
+     stays as the floor for the narrow widths, where the panel lies
+     above it. */
+  .labA > div:last-child { display: flex; flex-direction: column; }
+  .labA .lab-stage { flex: 1 1 auto; }
+}
+.labA__panel {
+  padding: var(--space-24);
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+}
+
+/* ============================================================
+   B — THE STAGE OVER A STRIP
+   The stage is the full width of the document and the six axes lie
+   under it in one strip, each behind its own caps name with a dot
+   between the groups. Reading order is result first, cause second:
+   it breaks the rule the other two keep, and it is here so the rule
+   can be judged rather than assumed.
+   ============================================================ */
+.labB__strip {
+  margin-top: var(--space-16);
+  padding: var(--space-16) var(--space-24);
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-8) var(--space-16);
+}
+.labB__grp { display: flex; align-items: baseline; gap: var(--space-8); }
+.labB__grp .gbdoc-seg { margin-right: 0; }
+.labB__name {
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.labB__dot { color: var(--zinc-300); }
+@media (max-width: 767px) { .labB__dot { display: none; } .labB__grp { flex: 1 1 100%; } }
+
+/* ============================================================
+   C — THE CONSOLE AND THE CANVAS
+   The axes read as one instrument: a Zinc 100 console on the left,
+   240 wide, with the stage beside it under a head bar that names
+   what is standing on it and carries the ground switch. The stage
+   is the canvas and the head is its frame.
+   ============================================================ */
+.labC { display: grid; gap: var(--space-24); }
+@media (min-width: 1024px) {
+  .labC { grid-template-columns: calc(var(--space-48) * 5) 1fr; align-items: stretch; }
+  .labC > div:last-child { display: flex; flex-direction: column; }
+  .labC__frame { flex: 1 1 auto; display: flex; flex-direction: column; }
+  .labC .lab-stage { flex: 1 1 auto; }
+}
+.labC__console {
+  padding: var(--space-24);
+  background: var(--zinc-100);
+  border-radius: var(--radius);
+}
+.labC__frame { border: 1px solid var(--zinc-200); border-radius: var(--radius); overflow: hidden; }
+.labC__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-8) var(--space-16);
+  background: var(--white);
+  border-bottom: 1px solid var(--zinc-200);
+}
+.labC__what { font-size: 14px; line-height: 1.4; color: var(--zinc-600); }
+.labC__what b { color: var(--zinc-900); font-weight: 500; }
+.labC .lab-stage { border: 0; border-radius: 0; }
+.labC .lab-ground { position: static; }
+</style>
+</head>
+<body>
+
+<!-- The studio bar, the same markup every studio page carries. -->
+<header class="gb-header gb-header--studio">
+  <div class="gb-container gbh-bar gbh-bar--studio">
+    <a class="gbh-lock" href="../../../index.html" aria-label="GildedBox Design Studio, home">
+      <img class="gbh-lock__mark" src="../../assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+      <span class="gbh-lock__rule" aria-hidden="true"></span>
+      <span class="gbh-lock__word">Design Studio</span>
+    </a>
+    <nav class="gbh-nav" aria-label="Studio">
+      <a class="gbh-link" href="../../../live/map.html">Live Prototype</a>
+      <a class="gbh-link" href="../../../sandboxes.html">Sandboxes</a>
+      <a class="gbh-link is-active" href="../index.html" aria-current="page">Design System</a>
+    </nav>
+    <div class="gbh-actions">
+      <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-studio-lock>
+        <span class="gb-btn__label">Lock</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="lab-main">
+  <div class="lab-col">
+
+    <header class="oro-head">
+      <span class="gb-eyebrow">Lab</span>
+      <h1 class="oro-h1">Playground layouts</h1>
+      <p class="oro-lede">Three ways to lay out the same block, so one of them can be chosen and the other two thrown away. The axes, the specimen and the ground switch are identical in all three; only the arrangement differs. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
+      <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The specimen is the live button organism at that width.</p>
+    </header>
+
+    <!-- ---- A ---- -->
+    <section class="oro-section">
+      <span class="gb-eyebrow">Variant A</span>
+      <h2 class="oro-h2">The panel and the stage</h2>
+      <p class="oro-note">Axes in a narrow white panel on the left, stage on the right taking the rest. The panel is a list you read down; the stage is the only large surface in the block.</p>
+
+      <div class="labA" data-lab="A">
+        <div class="labA__panel" data-lab-controls></div>
+        <div>
+          <div class="lab-stage" data-lab-stage>
+            <div class="lab-ground" data-lab-ground></div>
+            <div class="lab-hold" data-lab-hold></div>
+          </div>
+          <p class="lab-read" data-lab-read></p>
+          <details class="lab-fold">
+            <summary>Markup</summary>
+            <div class="gbdoc-code">
+              <button class="gbdoc-copy" type="button" data-copy="#codeA">Copy</button>
+              <pre><code id="codeA" data-lab-code></code></pre>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---- B ---- -->
+    <section class="oro-section">
+      <span class="gb-eyebrow">Variant B</span>
+      <h2 class="oro-h2">The stage over a strip</h2>
+      <p class="oro-note">Stage across the full width, axes under it in one strip. It puts the specimen first and the controls second, which is the opposite of the reading order the other two keep, and that is the thing to judge here.</p>
+
+      <div data-lab="B">
+        <div class="lab-stage" data-lab-stage>
+          <div class="lab-ground" data-lab-ground></div>
+          <div class="lab-hold" data-lab-hold></div>
+        </div>
+        <p class="lab-read" data-lab-read></p>
+        <div class="labB__strip" data-lab-controls></div>
+        <details class="lab-fold">
+          <summary>Markup</summary>
+          <div class="gbdoc-code">
+            <button class="gbdoc-copy" type="button" data-copy="#codeB">Copy</button>
+            <pre><code id="codeB" data-lab-code></code></pre>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ---- C ---- -->
+    <section class="oro-section">
+      <span class="gb-eyebrow">Variant C</span>
+      <h2 class="oro-h2">The console and the canvas</h2>
+      <p class="oro-note">The axes are a console: one grey block on the left that reads as an instrument rather than as page text. The stage is framed and wears a head bar that names what is standing on it and holds the ground switch.</p>
+
+      <div class="labC" data-lab="C">
+        <div class="labC__console" data-lab-controls></div>
+        <div>
+          <div class="labC__frame">
+            <div class="labC__head">
+              <span class="labC__what" data-lab-what></span>
+              <span class="lab-ground" data-lab-ground></span>
+            </div>
+            <div class="lab-stage" data-lab-stage>
+              <div class="lab-hold" data-lab-hold></div>
+            </div>
+          </div>
+          <p class="lab-read" data-lab-read></p>
+          <details class="lab-fold">
+            <summary>Markup</summary>
+            <div class="gbdoc-code">
+              <button class="gbdoc-copy" type="button" data-copy="#codeC">Copy</button>
+              <pre><code id="codeC" data-lab-code></code></pre>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <footer class="oro-foot">
+      A bench, not a page of the system: <a class="oro-a" href="../button.html">Button</a> keeps today's playground until one of these three is chosen.
+    </footer>
+
+  </div>
+</main>
+
+<gb-studio-panel data-root="../../../" page="oro"></gb-studio-panel>
+<script src="../../sandbox-registry.js"></script>
+<script src="../../components/studio-panel.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  /* The six axes of the button, in the order button.html states them,
+     plus the ground, which is an axis of the STAGE and is drawn on the
+     stage rather than in the panel. */
+  var AXES = [
+    { id: 'size',   name: 'Size',   vals: [['s','S'],['m','M'],['l','L'],['xl','XL']] },
+    { id: 'type',   name: 'Type',   vals: [['filled','Filled'],['outline','Outline'],['ghost','Ghost']] },
+    { id: 'colour', name: 'Colour', vals: [['primary','Primary'],['secondary','Secondary'],['inverse','Inverse']] },
+    { id: 'icon',   name: 'Icon',   vals: [['none','None'],['before','Before'],['after','After'],['both','Both']] },
+    { id: 'width',  name: 'Width',  vals: [['auto','Auto'],['block','Block']] },
+    { id: 'state',  name: 'State',  vals: [['rest','Rest'],['hover','Hover'],['focus','Focus'],['active','Active'],['disabled','Disabled']] }
+  ];
+  var GROUND = { id: 'ground', name: 'Ground', vals: [['light','Light'],['dark','Dark']] };
+
+  var GLYPH_BEFORE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 8.5h17v12h-17zM3.5 8.5l2-4h13l2 4M12 4.5v16"/></svg>';
+  var GLYPH_AFTER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg>';
+  var STATE_CLASS = { hover: 'is-hover', focus: 'is-focus', active: 'is-active' };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function px(v) { return Math.round(parseFloat(v) * 10) / 10 + 'px'; }
+
+  /* The three rules the ground and the colour agree on, the same three
+     the variant workbench on button.html states: a white cut on white
+     is nothing, black on Zinc 950 is nothing, and no live screen wears
+     a solid white button. */
+  function normalise(S) {
+    if (S.ground === 'light' && S.colour === 'inverse') S.colour = 'secondary';
+    if (S.ground === 'dark' && S.colour === 'secondary') S.colour = 'inverse';
+    if (S.colour === 'inverse' && S.type === 'filled') S.colour = 'primary';
+  }
+  function available(S, axis, val) {
+    if (axis !== 'colour') return true;
+    if (val === 'inverse') return S.ground === 'dark' && S.type !== 'filled';
+    if (val === 'secondary') return S.ground === 'light';
+    return true;
+  }
+
+  function sampleHTML(S, forCode) {
+    var c = ['gb-btn', 'gb-btn--' + S.size, 'gb-btn--' + S.type, 'gb-btn--' + S.colour];
+    if (S.width === 'block') c.push('gb-btn--block');
+    if (!forCode && STATE_CLASS[S.state]) c.push(STATE_CLASS[S.state]);
+    var dis = S.state === 'disabled' ? ' disabled' : '';
+    var nl = forCode ? '\n  ' : '';
+    var inner = '';
+    if (S.icon === 'before' || S.icon === 'both') {
+      inner += nl + '<span class="gb-btn__icon"' + (forCode ? '' : ' aria-hidden="true"') + '>' + (forCode ? '<svg>...</svg>' : GLYPH_BEFORE) + '</span>';
+    }
+    inner += nl + '<span class="gb-btn__label">Book a meeting</span>';
+    if (S.icon === 'after' || S.icon === 'both') {
+      inner += nl + '<span class="gb-btn__icon"' + (forCode ? '' : ' aria-hidden="true"') + '>' + (forCode ? '<svg>...</svg>' : GLYPH_AFTER) + '</span>';
+    }
+    return '<button class="' + c.join(' ') + '" type="button"' + dis + '>' + inner + (forCode ? '\n' : '') + '</button>';
+  }
+
+  function segs(axis) {
+    return axis.vals.map(function (v) {
+      return '<button class="gbdoc-seg" type="button" role="radio" data-axis="' + axis.id + '" data-val="' + v[0] + '">' + esc(v[1]) + '</button>';
+    }).join('');
+  }
+
+  /* Down the column: a caps name over its values. Used by A and C. */
+  function columnHTML() {
+    return AXES.map(function (a) {
+      return '<div class="lab-axis" role="radiogroup" aria-label="' + esc(a.name) + '">' +
+             '<span class="lab-axis__name">' + esc(a.name) + '</span>' +
+             '<div class="lab-axis__vals">' + segs(a) + '</div></div>';
+    }).join('');
+  }
+
+  /* Along a strip: name and values on one baseline, a dot between the
+     groups. Used by B. */
+  function stripHTML() {
+    return AXES.map(function (a) {
+      return '<span class="labB__grp" role="radiogroup" aria-label="' + esc(a.name) + '">' +
+             '<span class="labB__name">' + esc(a.name) + '</span>' + segs(a) + '</span>';
+    }).join('<span class="labB__dot" aria-hidden="true">·</span>');
+  }
+
+  function groundHTML() { return segs(GROUND); }
+
+  function wire(root) {
+    var S = { size: 'l', type: 'filled', colour: 'primary', icon: 'none', width: 'auto', state: 'rest', ground: 'light' };
+    var which = root.getAttribute('data-lab');
+    var controls = root.querySelector('[data-lab-controls]');
+    var groundHost = root.querySelector('[data-lab-ground]');
+    var stage = root.querySelector('[data-lab-stage]');
+    var hold = root.querySelector('[data-lab-hold]');
+    var read = root.querySelector('[data-lab-read]');
+    var code = root.querySelector('[data-lab-code]');
+    var what = root.querySelector('[data-lab-what]');
+
+    controls.innerHTML = which === 'B' ? stripHTML() : columnHTML();
+    groundHost.innerHTML = groundHTML();
+
+    function paint() {
+      normalise(S);
+      hold.innerHTML = sampleHTML(S, false);
+      hold.classList.toggle('lab-hold--block', S.width === 'block');
+      stage.classList.toggle('is-dark', S.ground === 'dark');
+      if (code) code.textContent = sampleHTML(S, true);
+
+      Array.prototype.forEach.call(root.querySelectorAll('.gbdoc-seg[data-axis]'), function (seg) {
+        var axis = seg.getAttribute('data-axis');
+        var val = seg.getAttribute('data-val');
+        var on = S[axis] === val;
+        seg.classList.toggle('is-on', on);
+        seg.classList.toggle('is-unavailable', !available(S, axis, val));
+        seg.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+
+      if (what) {
+        what.innerHTML = '<b>' + esc(S.type + ' ' + S.colour) + '</b>, size ' + esc(S.size.toUpperCase());
+      }
+
+      /* Numbers, and only numbers. What the axes already say out loud
+         is not repeated here: that was the line Ton called a duplicate
+         of what he could already see. */
+      var el = hold.querySelector('.gb-btn');
+      if (el && read) {
+        var cs = getComputedStyle(el);
+        var label = el.querySelector('.gb-btn__label');
+        var ls = label ? getComputedStyle(label) : null;
+        read.innerHTML =
+          'Height <b>' + px(cs.minHeight) + '</b> · padding <b>' + px(cs.paddingTop) + ' / ' + px(cs.paddingLeft) +
+          '</b> · gap <b>' + px(cs.columnGap) + '</b> · label <b>' + (ls ? px(ls.fontSize) + ' / ' + ls.fontWeight : 'none') +
+          '</b> · ground <b>' + cs.backgroundColor + '</b>';
+      }
+    }
+
+    root.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-axis]') : null;
+      if (!chip || chip.classList.contains('is-unavailable')) return;
+      S[chip.getAttribute('data-axis')] = chip.getAttribute('data-val');
+      paint();
+    });
+
+    paint();
+    return paint;
+  }
+
+  var painters = Array.prototype.map.call(document.querySelectorAll('[data-lab]'), wire);
+
+  /* The copy buttons of the documentation, one line, no component. */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.gbdoc-copy[data-copy]') : null;
+    if (!b) return;
+    var src = document.querySelector(b.getAttribute('data-copy'));
+    if (!src || !navigator.clipboard) return;
+    navigator.clipboard.writeText(src.textContent).then(function () {
+      var was = b.textContent;
+      b.textContent = 'Copied';
+      setTimeout(function () { b.textContent = was; }, 1200);
+    });
+  });
+
+  function width() {
+    var el = document.getElementById('wnow');
+    if (el) el.textContent = window.innerWidth + 'px';
+  }
+  width();
+  window.addEventListener('resize', function () {
+    width();
+    painters.forEach(function (p) { p(); });
+  });
+})();
+</script>
+
+</body>
+</html>
