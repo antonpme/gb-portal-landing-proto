@@ -372,6 +372,7 @@
      not the drawer. */
   var OWNERS = [
     [/^gb-btn/, 'system/components/button.css'],
+    [/^gb-toggle/, 'system/components/toggle.css'],
     [/^gb-icon/, 'system/components/icon.css'],
     [/^gbsp-/, 'system/components/studio-panel.css'],
     [/^gbdoc-/, 'system/components/docs.css'],
@@ -496,6 +497,19 @@
         var d = KINDS.button.describe(el);
         return d.type + ' ' + d.colour + ' · ' + SIZE_WORD[d.size] +
                (d.state === 'rest' ? '' : ' · ' + d.state);
+      } },
+
+    /* gbppl-lab-f-2. The item first, the group second, the rule of
+       this table: a person pointing at ONE ADDRESS is pointing at a
+       half of a control, and the half is what is under the cursor.
+       The group carries the reading, so the item's row is a name and
+       nothing else. */
+    { sel: '.gb-toggle__item', name: 'Toggle item', oro: 'components.html#base' },
+    { sel: '.gb-toggle', name: 'Toggle button', kind: 'toggle', oro: 'components.html#base',
+      detail: function (el) {
+        var d = KINDS.toggle.describe(el);
+        return d.count + ' values · ' + (d.chosen || 'nothing chosen') +
+               (d.host ? ' · host driven' : '');
       } },
 
     /* gbppl-oro-select-stepper-1. The stepper stands above the field
@@ -1634,6 +1648,82 @@
       }
     },
 
+    /* ---------- gbppl-lab-f-2: the toggle button ----------
+       One control, two or more halves, and the reading a person
+       wants off it is which half is filled, how many there are, and
+       who owns the answer — because on the checkout the answer is
+       Alpine and a reader who does not know that will wonder why the
+       component is not switching. */
+    toggle: {
+      name: 'Toggle button',
+      owner: 'system/components/toggle.css',
+      find: function (slot) { return slot.querySelector('.gb-toggle'); },
+
+      describe: function (el) {
+        var list = Array.prototype.slice.call(el.querySelectorAll('.gb-toggle__item'));
+        var on = list.filter(function (b) {
+          return b.classList.contains('is-on') ||
+                 b.getAttribute('aria-checked') === 'true' ||
+                 b.getAttribute('aria-pressed') === 'true';
+        })[0];
+        var off = list.filter(function (b) { return b !== on && !b.disabled; })[0];
+        return {
+          count: list.length,
+          chosen: on ? on.textContent.trim() : null,
+          host: el.getAttribute('data-gb-toggle') === 'host',
+          block: /gb-toggle--block/.test(String(el.className)),
+          disabled: list.filter(function (b) { return b.disabled; }).length,
+          list: list, on: on, off: off
+        };
+      },
+
+      title: function (el, d) {
+        return d.count + ' values, ' + (d.chosen ? '«' + d.chosen + '» chosen' : 'nothing chosen');
+      },
+
+      body: function (el, d) {
+        var cs = getComputedStyle(el);
+        var os = d.on ? getComputedStyle(d.on) : null;
+        var fs = d.off ? getComputedStyle(d.off) : null;
+        var box = d.on ? d.on.getBoundingClientRect() : null;
+        var rowsList = [
+          row('Track height', px(cs.height), null,
+              'the item plus the inset twice; no height is set'),
+          row('Track inset', px(cs.paddingTop), null, 'NO TOKEN: half a step of the space scale'),
+          row('Gap', px(cs.columnGap), null, 'the inset again, so the black card sits square'),
+          row('Track ground', cs.backgroundColor, ['--white']),
+          row('Track line', px(cs.borderTopWidth) + ' ' + cs.borderTopColor, ['--zinc-300']),
+          row('Radius', px(cs.borderTopLeftRadius), ['--radius']),
+          row('Item', box ? Math.round(box.width) + ' by ' + Math.round(box.height) : 'none',
+              null, 'padding ' + (os ? px(os.paddingTop) + ' / ' + px(os.paddingLeft) : '')),
+          row('Label', os ? px(os.fontSize) + ' / ' + os.fontWeight + ' / ' + os.letterSpacing : 'none',
+              ['--gb-btn-s-label', '--gb-btn-label-weight', '--gb-btn-label-tracking'],
+              'the button label ladder, uppercase'),
+          row('Pressed', os ? os.backgroundColor + ' on ' + os.color : 'none',
+              ['--zinc-900', '--white']),
+          row('At rest', fs ? fs.color : 'none', ['--zinc-700'], 'ground transparent, hover Zinc 50'),
+          row('Who owns the value', d.host ? 'the host page' : 'the component', null,
+              d.host ? 'data-gb-toggle="host": group, tab stop and arrow keys only'
+                     : 'clicks move the value and fire gbtg:change'),
+          row('Unavailable values', String(d.disabled), null,
+              'a value the system cannot hold fades and stops answering')
+        ];
+        var mods = el.className.split(/\s+/).filter(function (c2) { return c2.indexOf('gb-toggle') === 0; });
+        var NL = String.fromCharCode(10);
+        var first = d.list[0];
+        var code = '<div class="' + el.className + '" role="radiogroup"' +
+          (d.host ? ' data-gb-toggle="host"' : '') + ' aria-label="…">' + NL +
+          (first ? '  <button class="gb-toggle__item' + (d.on === first ? ' is-on' : '') +
+            '" type="button" role="radio"' + NL +
+            '          aria-checked="' + (d.on === first ? 'true' : 'false') + '">' +
+            first.textContent.trim() + '</button>' + NL : '') +
+          '  …' + NL + '</div>';
+        return block('Properties, measured on this specimen', table(rowsList)) +
+          block('Modifiers', chips(mods)) +
+          block('Markup', snippet(code));
+      }
+    },
+
     /* ---------- gbppl-oro-select-stepper-1: the stepper ----------
        Three elements, one control. The reading a person wants off it
        is the frame against its parts: whether the well is the
@@ -2353,7 +2443,7 @@
      one and you get the whole. Hold Alt to switch that off and
      take the exact element under the pointer, which is how a
      developer gets to the label, the glyph or the wrapper. */
-  var SOLID = '.gb-btn, .gb-icon, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
+  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
               '.gbb-slot, .gbs-chip, .gb-eyebrow, .gbh-navitem, .gbh-link';
   function resolveTarget(el, drill) {
     if (drill || !el || !el.closest) return el;

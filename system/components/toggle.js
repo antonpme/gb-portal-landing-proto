@@ -135,6 +135,11 @@
 
   function enhance(group) {
     if (group.__gbtg) return;
+    /* A specimen hidden from the accessibility tree is a PICTURE of
+       the control — a registry tile, a preview plate — and a picture
+       has no tab stop, no arrow keys and no group role to announce.
+       Left exactly as the page wrote it. */
+    if (group.closest('[aria-hidden="true"]')) return;
     group.__gbtg = true;
 
     if (!group.getAttribute('role')) group.setAttribute('role', 'radiogroup');

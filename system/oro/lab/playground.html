@@ -120,14 +120,13 @@
      ten systems read live. F is that report and nothing else:
 
        LAYOUT (recon 2.1, 2.2, 2.6; Mantine and Joy UI)
-         one card, one hairline; the preview is fluid and stands on
-         the specimen ground, the control rail is narrow, fixed and
-         white; the code is a fold in the card's footer band, never
-         inside the rail.
+         one card, one hairline; the preview is fluid, the control
+         rail is narrow and fixed; the code is a fold in the card's
+         footer band, never inside the rail.
        CONTROLS (recon 1b, 2.4; Storybook, Mantine, Joy UI)
-         boolean = switch; two to four values = a quiet segment;
-         five and more = our Select; free text = a field. No
-         exception was found in ten systems, so F takes none.
+         boolean = switch; two to four values = a segment; five and
+         more = our Select; free text = a field. No exception was
+         found in ten systems, so F takes none.
        CONDITIONAL (recon 2.8; Storybook if: {arg})
          an axis that does not apply is REMOVED, never greyed; the
          rare ones live behind one More disc (Ant, Figma).
@@ -150,6 +149,45 @@
      (controlF) changes and the rest of F does not.
      ============================================================ -->
 
+<!-- ============================================================
+     gbppl-lab-f-2 — WHAT TON CHANGED ON F, 29.08 14:55
+     ------------------------------------------------------------
+     "Концепт F нормальный, архитектура нравится, вопросы к
+     исполнению: 1) использованы сторонние компоненты, которых у
+     нас нет: там должны быть toggle buttons, их нужно создать; на
+     прототипе чекаута есть toggle button, его просто нужно сделать
+     системным; 2) перепутаны цвета: панель должна быть серее, а
+     превью белым; 3) вся превью-панель должна выделяться на фоне
+     простыни, возможно добавить elevation."
+
+     Three answers, and the architecture of F is untouched by all
+     three.
+
+     1. THE SEGMENT IS A COMPONENT NOW. .gbdoc-chips was drawn for
+        this bench and owned by nobody, which is the whole of Ton's
+        objection. The ONE / DIFFERENT ADDRESSES control on the
+        checkout was measured at 390 and 1280 and lifted into
+        system/components/toggle.css and toggle.js as .gb-toggle;
+        the rail, the Light | Dark axis and the Preview | Code
+        switch all wear it, and .gbdoc-chips is gone from docs.css.
+        The rail carries it as --block and as data-gb-toggle="host":
+        the bench keeps the state, the component brings the group
+        contract, one tab stop and the arrow keys.
+        It brings its label with it, 11px caps off the button
+        ladder, which is louder than the 14px the chips were
+        lettered at. That is the measurement and it is left as
+        measured; whether a showcase rail may carry 11px caps is a
+        question for Ton and it is in the report.
+     2. THE GROUNDS ARE SWAPPED. Scene white, rail Zinc 100. The
+        one line rule is in the knobs and the reasoning is in the
+        docs.css ground rule, which now carries both halves.
+     3. THE CARD IS LIFTED. --shadow-card, the light one of the
+        three shadows the system has, with the hairline kept.
+
+     Nothing was invented to do any of it: one component measured,
+     two variables swapped, one token spent.
+     ============================================================ -->
+
 <!-- ---- LAB F KNOBS, THE CSS HALF ---- -->
 <style>
 :root {
@@ -170,14 +208,31 @@
      the studio bar, which is 80 at every width on live and is
      sticky on every studio page. 80 = --space-64 + --space-16. */
   --lab-f-scene-stick: calc(var(--space-64) + var(--space-16));
-  /* THE GROUNDS. Specimen ground by the docs.css rule: Zinc 100 with
-     a Zinc 200 hairline; the rail is white because it is read and
-     pressed, not looked at. */
-  --lab-f-ground-light: var(--zinc-100);
+  /* THE GROUNDS, TURNED ROUND BY TON (gbppl-lab-f-2, 29.08 14:55:
+     «перепутаны цвета: панель должна быть серее, а превью белым»).
+     F had the rail white and the scene Zinc 100, on the reading that
+     what you press stands on white. Ton reads the card the other
+     way and he is right about which half is the subject: the
+     specimen is what the page is for, so the SCENE IS WHITE and the
+     RAIL IS ZINC 100, one step of grey that says «this half drives,
+     it is not the thing being looked at». The docs.css ground rule
+     carries the same words for every bench that follows.
+     The dark ground is untouched: it is the specimen's ground, not
+     the card's. */
+  --lab-f-ground-light: var(--white);
   --lab-f-ground-dark: var(--zinc-950);
-  --lab-f-rail-ground: var(--white);
+  --lab-f-rail-ground: var(--zinc-100);
   --lab-f-foot-ground: var(--zinc-50);
   --lab-f-line: var(--zinc-200);
+  /* THE CARD STANDS OFF THE SHEET (Ton, same message: «вся
+     превью-панель должна выделяться на фоне простыни, возможно
+     добавить elevation»). --shadow-card is the system's own,
+     harvested off the live gift card, and it is the light one of
+     the three: --shadow-panel is 8 by 24 at 18 per cent and belongs
+     to things that float over a page (the console, a drawer), which
+     a card sitting IN the page is not. The hairline stays: the
+     shadow gives the lift, the line gives the edge. */
+  --lab-f-lift: var(--shadow-card);
   /* THE RHYTHM of the rail: air between two controls, more air
      between two groups, and the rail's own padding. */
   --lab-f-gap: var(--space-16);
@@ -270,6 +325,8 @@ window.LAB_F = {
 <link rel="stylesheet" href="../../components/header.css">
 <link rel="stylesheet" href="../../components/button.css">
 <link rel="stylesheet" href="../../components/icon.css">
+<!-- gbppl-lab-f-2: the toggle button, measured off the checkout. F's rail wears it. -->
+<link rel="stylesheet" href="../../components/toggle.css">
 <link rel="stylesheet" href="../../components/auth.css">
 <link rel="stylesheet" href="../../components/drawer.css">
 <link rel="stylesheet" href="../../components/docs.css">
@@ -748,9 +805,9 @@ window.LAB_F = {
    area; at 1280 this card gives the preview 858 of 1180 and the
    rail 320, which is 73 per cent to the thing being judged.
 
-   THE PANEL IS QUIET (recon 2.3). White ground, no accent, and the
-   only blue in the whole rail is the browser's own focus ring.
-   Colour belongs to the specimen.
+   THE PANEL IS QUIET (recon 2.3). One step of grey, no accent, and
+   the only blue in the whole rail is the focus ring. Colour belongs
+   to the specimen.
 
    THE CODE IS NOT A CONTROL (recon 2.6). It lives in the card's
    footer band behind a Preview | Code segment, folded by default,
@@ -760,6 +817,7 @@ window.LAB_F = {
   background: var(--white);
   border: 1px solid var(--lab-f-line);
   border-radius: var(--radius);
+  box-shadow: var(--lab-f-lift);
   overflow: hidden;
 }
 .labF__body { display: grid; }
@@ -772,6 +830,8 @@ window.LAB_F = {
 
 /* ---- the left column: the specimen, or its markup ---- */
 /* THE GROUND BELONGS TO THE COLUMN, THE SPECIMEN TO A BAND OF IT.
+   (The ground itself changed hands on 29.08 14:55: this column is
+   WHITE now and the rail is the grey one. See the knobs.)
    Seven axes make a taller rail than one button makes a stage, and
    a stage stretched to meet it puts a small component in the middle
    of a large empty field, which is Ton-21's complaint word for word.
@@ -960,7 +1020,7 @@ window.LAB_F = {
     <header class="oro-head">
       <span class="gb-eyebrow">Lab</span>
       <h1 class="oro-h1">Playground layouts</h1>
-      <p class="oro-lede">Six ways to build the same block, so one of them can be chosen and the rest thrown away. F stands first because it is the only one that was not invented here: it is what ten design systems were found doing when they were read on 29 August, layout and controls both. The five under it are the earlier attempts, kept for comparison. A, B and C hold the axes and the specimen identical and change only the arrangement. D takes A's arrangement and changes the controls instead: its panel is rendered from a schema, and each axis gets the control its shape asks for. E puts C's colours and frame around D's schema and gives every short set a row of buttons instead of a row of words. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
+      <p class="oro-lede">Six ways to build the same block, so one of them can be chosen and the rest thrown away. F stands first because it is the only one that was not invented here: it is what ten design systems were found doing when they were read on 29 August, layout and controls both, and its segments are now the house's own toggle button rather than a control drawn for this bench. The five under it are the earlier attempts, kept for comparison. A, B and C hold the axes and the specimen identical and change only the arrangement. D takes A's arrangement and changes the controls instead: its panel is rendered from a schema, and each axis gets the control its shape asks for. E puts C's colours and frame around D's schema and gives every short set a row of buttons instead of a row of words. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
       <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The specimen is the live button organism at that width.</p>
     </header>
 
@@ -968,7 +1028,7 @@ window.LAB_F = {
     <section class="oro-section">
       <span class="gb-eyebrow">Variant F</span>
       <h2 class="oro-h2">F &middot; the convention: Mantine and Joy UI layout, Storybook controls</h2>
-      <p class="oro-note">Not a sixth idea. This is what ten systems already agree on, read off their live pages on 29 August: one card with the specimen fluid on the left and a narrow white rail of controls on the right, a single hairline between them, and the markup folded into the card's footer band. Every axis gets the control its shape asks for, with no exception anywhere in the ten: a switch for yes and no, a quiet segment for two to four values, our Select from five, a field for free text. An axis that does not apply is removed rather than greyed, the rare ones are behind one More, and Light or Dark is simply the last axis, drawn like the rest. One thing here is on loan: the switch is a plain browser checkbox, because the system has no Switch until one is taken out of Figma and measured.</p>
+      <p class="oro-note">Not a sixth idea. This is what ten systems already agree on, read off their live pages on 29 August: one card, lifted off the sheet by its own shadow, with the specimen fluid on a white stage at the left and a narrow grey rail of controls at the right, a single hairline between them, and the markup folded into the card's footer band. Every axis gets the control its shape asks for, with no exception anywhere in the ten: a switch for yes and no, the toggle button for two to four values, our Select from five, a field for free text. An axis that does not apply is removed rather than greyed, the rare ones are behind one More, and Light or Dark is simply the last axis, drawn like the rest. Every control here is the house's own but one: the switch is a plain browser checkbox, because the system has no Switch until one is taken out of Figma and measured.</p>
 
       <div class="labF" data-lab-f="button">
         <div class="labF__body">
@@ -986,7 +1046,7 @@ window.LAB_F = {
           <div class="labF__rail" data-lab-controls></div>
         </div>
         <div class="labF__bar">
-          <div class="gbdoc-chips" role="radiogroup" aria-label="View" data-lab-view></div>
+          <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-lab-view></div>
           <p class="lab-read" data-lab-read></p>
         </div>
       </div>
@@ -1014,7 +1074,7 @@ window.LAB_F = {
           <div class="labF__rail" data-lab-controls></div>
         </div>
         <div class="labF__bar">
-          <div class="gbdoc-chips" role="radiogroup" aria-label="View" data-lab-view></div>
+          <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-lab-view></div>
           <p class="lab-read" data-lab-read></p>
         </div>
       </div>
@@ -1224,6 +1284,10 @@ window.LAB_F = {
 <script src="../../components/icon.js"></script>
 <script src="../../components/auth.js"></script>
 <script src="../../components/drawer.js"></script>
+<!-- gbppl-lab-f-2: the toggle button's behaviour, which the rail of F borrows
+     for its tab stop and its arrow keys. It runs before the bench builds the
+     rail; the observer in it catches the segments the bench writes later. -->
+<script src="../../components/toggle.js"></script>
 <script src="../../components/studio-panel.js"></script>
 <script src="../../components/inspect.js"></script>
 
@@ -2097,7 +2161,7 @@ window.LAB_F = {
        boolean            a switch. On loan until the real one is
                           measured out of Figma: a native checkbox
                           with our own label, styled by nobody.
-       2..4 values        a quiet segment, .gbdoc-chips
+       2..4 values        the toggle button, .gb-toggle
        5 and more         our Select, .gba-select
        free text          our field, .gba-input
        Light | Dark       the same rule as everything else, which
@@ -2163,11 +2227,20 @@ window.LAB_F = {
   function fieldAfterF(S, hold) { fieldAfterE(S, hold); }
 
   /* ---- the four controls ---- */
+  /* THE SEGMENT IS THE HOUSE'S OWN (gbppl-lab-f-2, Ton 14:55). It
+     was .gbdoc-chips, a control drawn for this bench and owned by
+     nothing; it is now <.gb-toggle>, measured off the checkout and
+     living in system/components/toggle.css. --block because a rail
+     is a column: the track spans it and the items wrap inside.
+     data-gb-toggle="host" because the STATE here is S, the bench's
+     own; the component keeps the group contract, the single tab
+     stop and the arrow keys, and paints nothing. */
   function chipsHTML_F(ax) {
     return '<span class="labF__name">' + esc(ax.label) + '</span>' +
-      '<div class="gbdoc-chips" role="radiogroup" aria-label="' + esc(ax.label) + '">' +
+      '<div class="gb-toggle gb-toggle--block" role="radiogroup" data-gb-toggle="host"' +
+      ' aria-label="' + esc(ax.label) + '">' +
       ax.values.map(function (v) {
-        return '<button class="gbdoc-chips__chip" type="button" role="radio" aria-checked="false"' +
+        return '<button class="gb-toggle__item" type="button" role="radio" aria-checked="false"' +
                ' data-faxis="' + ax.id + '" data-val="' + v[0] + '">' + esc(v[1]) + '</button>';
       }).join('') + '</div>';
   }
@@ -2251,7 +2324,7 @@ window.LAB_F = {
 
     rail.innerHTML = railHTML_F(schema, rows);
     viewHost.innerHTML = VIEWS.map(function (v) {
-      return '<button class="gbdoc-chips__chip" type="button" role="radio" aria-checked="false"' +
+      return '<button class="gb-toggle__item" type="button" role="radio" aria-checked="false"' +
              ' data-fview="' + v[0] + '">' + v[1] + '</button>';
     }).join('');
 
@@ -2309,7 +2382,7 @@ window.LAB_F = {
         }
       });
 
-      Array.prototype.forEach.call(rail.querySelectorAll('.gbdoc-chips__chip[data-faxis]'), function (c) {
+      Array.prototype.forEach.call(rail.querySelectorAll('.gb-toggle__item[data-faxis]'), function (c) {
         var id = c.getAttribute('data-faxis');
         var val = c.getAttribute('data-val');
         var on = S[id] === val;
@@ -2329,7 +2402,7 @@ window.LAB_F = {
 
     root.addEventListener('click', function (e) {
       if (!e.target.closest) return;
-      var chip = e.target.closest('.gbdoc-chips__chip[data-faxis]');
+      var chip = e.target.closest('.gb-toggle__item[data-faxis]');
       if (chip && !chip.hasAttribute('disabled')) {
         S[chip.getAttribute('data-faxis')] = chip.getAttribute('data-val');
         paint();
