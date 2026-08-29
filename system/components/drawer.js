@@ -1,5 +1,6 @@
 /* ============================================================
-   gbppl-drawer-1 / gbppl-drawer-unify-1 / gbppl-drawer-focus-1 — <gb-drawer>
+   gbppl-drawer-1 / gbppl-drawer-unify-1 / gbppl-drawer-focus-1 /
+   gbppl-demo-fixes-1 — <gb-drawer>
    ------------------------------------------------------------
    The element behind drawer.css. One instance per page is enough:
    it is a surface, and the page decides what goes on it.
@@ -46,7 +47,9 @@
      Esc closes it, a click on the scrim closes it, the close
      button closes it.
      Focus moves into the panel on open, STAYS THERE while it is
-     open, and returns to the element that opened it on close.
+     open, and on close returns to the element that opened it — or,
+     when there is no such element, leaves the panel altogether
+     (giveFocusBack below).
      The page behind stops scrolling while it is open.
      Two opens in a row swap the content instead of stacking two
      panels.
@@ -295,6 +298,47 @@
     host.dispatchEvent(new CustomEvent('gbd:open', { bubbles: true }));
   }
 
+  /* ============================================================
+     LEAVING TAKES THE FOCUS WITH IT (gbppl-demo-fixes-1, 29.08)
+     ------------------------------------------------------------
+     Found by the show run: type into the comment thread, press
+     Escape. The panel goes, and the caret stays in a textarea that
+     is now hidden behind it — because the drawer had opened from a
+     click on a heading, `document.activeElement` at that moment was
+     <body>, and `body.focus()` is a no-op that leaves the focus
+     exactly where it was. From there every next Escape reads as
+     «this person is typing» to comments.js, and the only way out of
+     Comment mode is the mouse.
+
+     So the return is a decision, not one line: hand focus back only
+     to an element that can actually take it and is still on the
+     page, and otherwise TAKE IT OFF whatever is inside the panel.
+     Focus never stays under a surface that is no longer there.
+
+     `getClientRects().length` rather than a class or a style: an
+     opener can be hidden by its own media step (the burger button
+     above 1280), removed by a redraw, or replaced with a copy, and a
+     rectangle is what all three have in common. <body> is asked
+     about by name because it is the honest value of activeElement
+     when nothing is focused, and it is never an opener.
+     ============================================================ */
+  function giveFocusBack(host) {
+    var back = host._returnTo;
+    var usable = back && typeof back.focus === 'function' &&
+                 back !== document.body && back !== document.documentElement &&
+                 back.isConnected && back.getClientRects().length > 0 &&
+                 /* A second open swaps the content and remembers whatever
+                    was focused at that moment — a row of the thread, a
+                    control of the body. Returning INTO the panel is the
+                    same trap from the other side. */
+                 !(host._panel && host._panel.contains(back));
+    if (usable) { back.focus({ preventScroll: true }); return; }
+    var here = document.activeElement;
+    if (here && here !== document.body && host._panel && host._panel.contains(here) && here.blur) {
+      here.blur();
+    }
+  }
+
   function closeDrawer() {
     var host = this;
     if (!host._open) return;
@@ -315,7 +359,7 @@
       host._panel.classList.remove('is-out');
     }, CLOSE_MS);
 
-    if (host._returnTo && host._returnTo.focus) host._returnTo.focus({ preventScroll: true });
+    giveFocusBack(host);
     host.dispatchEvent(new CustomEvent('gbd:close', { bubbles: true }));
   }
 
