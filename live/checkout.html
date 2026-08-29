@@ -333,6 +333,33 @@
          field: one glyph, centred, 30px Noto Serif.
        · the dormant date input inside a sentence.
      ============================================================ -->
+
+<!-- ============================================================
+     gbppl-lab-f-2 (29.08) — AND ONE COMPONENT WENT THE OTHER WAY
+     ------------------------------------------------------------
+     Everything above describes the system arriving on this page.
+     This line describes the page arriving in the system.
+
+     Ton 29.08 14:55, looking at the playground bench: «использованы
+     сторонние компоненты, которых у нас нет: там должны быть toggle
+     buttons, их нужно создать; на прототипе чекаута есть toggle
+     button, его просто нужно сделать системным.»
+
+     The ONE ADDRESS / DIFFERENT ADDRESSES segment in the head of
+     every shipment card was that toggle button. It was measured at
+     390 and 1280 with the instrument, moved into system/components/
+     toggle.css and toggle.js, and this page now WEARS it: eleven
+     Tailwind utilities and two inline font declarations became
+     .gb-toggle and two .gb-toggle__item. Geometry before and after
+     is identical to the pixel at both widths.
+
+     WHAT THIS PAGE KEEPS: the value. data-gb-toggle="host" leaves
+     addressMode to Alpine, exactly as the four steppers keep their
+     numbers, because this control does not hold a string here — it
+     opens and closes half a form. The component adds the group
+     contract, one tab stop and the arrow keys, which the hand
+     written segment never had.
+     ============================================================ -->
 <!-- gbppl-gate-2: one code on every page of the studio; the guard runs before paint. -->
 <script src="../system/components/studio.js" data-home="../index.html"></script>
 <link rel="stylesheet" href="../system/assets/tokens.css">
@@ -348,6 +375,8 @@
      border on the page, which is exactly the environment the field was authored for. -->
 <link rel="stylesheet" href="../system/components/auth.css">
 <link rel="stylesheet" href="../system/components/stepper.css">
+<!-- gbppl-lab-f-2: the toggle button, lifted out of this very page into the system. -->
+<link rel="stylesheet" href="../system/components/toggle.css">
 <link rel="stylesheet" href="../system/components/footer.css">
 <link rel="stylesheet" href="../system/components/studio-panel.css">
 <!-- Inspect mode (gbppl-inspect-1, gbppl-panel-6). Three stylesheets and
@@ -645,15 +674,24 @@
                    It wraps now; the wide rhythm (gap 24) is untouched from 1024 up. -->
               <header class="bg-zinc-100/70 border-b border-zinc-200 rounded-t-[var(--radius)] px-6 py-4 flex flex-wrap items-center gap-3 lg:gap-6 min-h-[68px]">
                 <h3 class="font-serif text-2xl leading-none">1. Where should we deliver these gifts?</h3>
-                <!-- Toggle Button, the system component: a white parent with padding, the black
-                     active segment floats INSIDE it with its own 5px corners (Ton, 21.08). -->
-                <div class="inline-flex gap-1 bg-white border border-zinc-300 rounded-[var(--radius)] p-1">
-                  <button @click="shipment.addressMode='same'"
-                          :class="shipment.addressMode==='same' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50'"
-                          class="px-4 py-2 font-semibold uppercase rounded-[var(--radius)] transition-colors" style="font-size:var(--gb-btn-s-label);letter-spacing:var(--gb-btn-label-tracking)">One address</button>
-                  <button @click="shipment.addressMode='different'"
-                          :class="shipment.addressMode==='different' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50'"
-                          class="px-4 py-2 font-semibold uppercase rounded-[var(--radius)] transition-colors" style="font-size:var(--gb-btn-s-label);letter-spacing:var(--gb-btn-label-tracking)">Different addresses</button>
+                <!-- gbppl-lab-f-2: this is where the Toggle Button was BORN. It stood here as
+                     eleven Tailwind utilities and two inline font declarations; Ton 29.08 14:55:
+                     «на прототипе чекаута есть toggle button, его просто нужно сделать
+                     системным». It was measured at 390 and 1280, moved into
+                     system/components/toggle.css without a pixel changing, and the page now wears
+                     the component. data-gb-toggle="host": Alpine still owns addressMode, because
+                     this control does not hold a string, it opens and closes half a form. What
+                     the component adds is the group contract, one tab stop and the arrow keys. -->
+                <div class="gb-toggle" role="radiogroup" data-gb-toggle="host"
+                     aria-label="How these gifts are addressed">
+                  <button class="gb-toggle__item" type="button" role="radio" data-value="same"
+                          @click="shipment.addressMode='same'"
+                          :class="shipment.addressMode==='same' ? 'is-on' : ''"
+                          :aria-checked="shipment.addressMode==='same'">One address</button>
+                  <button class="gb-toggle__item" type="button" role="radio" data-value="different"
+                          @click="shipment.addressMode='different'"
+                          :class="shipment.addressMode==='different' ? 'is-on' : ''"
+                          :aria-checked="shipment.addressMode==='different'">Different addresses</button>
                 </div>
                 <!-- gbppl-checkout-14: was a hand-typed 12px ghost with a red hover. The organism
                      has no danger colour (ORO-SKILL 8, waiting on Ton), so the button takes the
@@ -1919,6 +1957,7 @@
      page that carries none of them is unchanged by it. -->
 <script src="../system/components/auth.js"></script>
 <script src="../system/components/stepper.js"></script>
+<script src="../system/components/toggle.js"></script>
 <script src="../system/components/footer.js"></script>
 
 <!-- ========== ALPINE STATE / METHODS ========== -->

@@ -1,0 +1,211 @@
+/* ============================================================
+   gbppl-lab-f-2 — THE TOGGLE BUTTON
+   ------------------------------------------------------------
+   Ton, 29.08 14:55, on variant F of the playground bench:
+   «использованы сторонние компоненты, которых у нас нет: там
+   должны быть toggle buttons, их нужно создать; на прототипе
+   чекаута есть toggle button, его просто нужно сделать
+   системным.»
+
+   So this file invents nothing. It is the ONE / DIFFERENT
+   ADDRESSES control that has stood in the head of every shipment
+   card on live/checkout.html since 21.08, measured with the
+   instrument at 390 and 1280 on 29.08 and moved out of the page
+   into the system without a pixel changing.
+
+       <div class="gb-toggle" role="radiogroup" aria-label="Addresses">
+         <button class="gb-toggle__item is-on" type="button"
+                 role="radio" aria-checked="true"
+                 data-value="same">One address</button>
+         <button class="gb-toggle__item" type="button"
+                 role="radio" aria-checked="false"
+                 data-value="different">Different addresses</button>
+       </div>
+
+   ------------------------------------------------------------
+   WHERE EVERY NUMBER COMES FROM
+   ------------------------------------------------------------
+   PROVENANCE: LIVE checkout, measured 29.08.2026 (gbppl-lab-f-2),
+   headed Chrome through the harvest playwright, widths 390 and
+   1280, on the address segment of the first shipment card.
+
+     track ground   --white. The parent is the white sheet and the
+                    pressed half is the black card floating in it
+                    (Ton, 21.08). Measured rgb(255,255,255).
+     track line     1px --zinc-300, measured rgb(212,212,216).
+     track radius   --radius, measured 5px.
+     track inset    4px on all four sides, and the gap between two
+                    items is the same 4. NO TOKEN: the space scale
+                    starts at 8 and this is half a step. It is not
+                    promoted to a token by this wave, because one
+                    consumer is not a scale; it is written twice
+                    below as --gbtg-inset so there is one place to
+                    change when a second consumer arrives.
+     item pad       8 by 16 — --space-8 and --space-16, measured.
+     item radius    --radius, measured 5px: the pressed half has
+                    its own corners inside the parent's.
+     item line      none. Measured 0px; the item is a fill, not a
+                    box.
+     label          11 / 600 / 1px tracking / uppercase — exactly
+                    --gb-btn-s-label, --gb-btn-label-weight and
+                    --gb-btn-label-tracking, the button label
+                    ladder, which is what the page was already
+                    spending here by hand.
+     line-height    1.5, measured 16.5px on 11px. NOT the button's
+                    own --gb-btn-label-line-height (normal): the
+                    segment inherits the reading line-height of
+                    the page it stands in, and normal would take
+                    3px off the height of the control. Written as
+                    a number so the height is stated rather than
+                    inherited by luck.
+     height         no height is set. The control is its label
+                    plus 8 above and 8 below: 32.5 on one line at
+                    1280, 49 at 390 where DIFFERENT ADDRESSES
+                    wraps to two. Both measured, both unchanged
+                    after the migration. A fixed height here would
+                    clip the 390 case.
+     pressed        ground --zinc-900, ink --white. Measured
+                    rgb(24,24,27) on rgb(255,255,255).
+     at rest        ground transparent, ink --zinc-700. Measured
+                    rgba(0,0,0,0) on rgb(63,63,70).
+     hover          ground --zinc-50 on the unpressed half only,
+                    ink unchanged. Measured rgb(250,250,250).
+     motion         --mo-micro (160ms) with --mo-move, measured
+                    0.16s cubic-bezier(0.4, 0, 0.2, 1) — the same
+                    pair the page was already rendering.
+
+   DECLARED, AND SAID OUT LOUD (there is no live specimen):
+     focus          the button organism's ring, --gb-btn-focus-ring
+                    2px at 2px offset. The checkout showed the
+                    browser's own hairline outline and nothing
+                    designed; a control a person can Tab into
+                    needs to say where they are, and the house
+                    already has exactly one answer for that.
+     disabled       --gb-btn-disabled-opacity, the one value the
+                    button spends. No segment on live is disabled.
+
+   OPEN TO TON (report of 29.08, gbppl-lab-f-2): the label is 11px
+   caps. The documentation atoms floor at 12 (eyebrow) and read at
+   14, and the 11px caps family is still an open item in section 8
+   of the skill. The measurement was taken as it stands rather than
+   rounded up to 14, because a component lifted out of a page is
+   that page's control or it is a new one. Whether a showcase rail
+   may carry 11px caps is Ton's call, not this wave's.
+
+   ------------------------------------------------------------
+   WHAT THIS FILE DOES NOT DO
+   ------------------------------------------------------------
+   It is not the button organism and does not borrow from it. The
+   two look alike for one line — the label ladder — and differ in
+   everything else: a button performs, a toggle holds a value, and
+   an item of it has no size ladder, no type ladder and no colour
+   ladder to choose from. .gb-btn inside a .gb-toggle would drag
+   four ladders into a control that has one state.
+
+   It is also not .gbdoc-seg, the underlined segment of the
+   documentation furniture. That one is a view switch inside a
+   document; this one is a value of a form.
+   ============================================================ */
+
+.gb-toggle {
+  /* The one number without a rung. See the provenance above. */
+  --gbtg-inset: 4px;
+
+  display: inline-flex;
+  gap: var(--gbtg-inset);
+  padding: var(--gbtg-inset);
+  background: var(--white);
+  border: 1px solid var(--zinc-300);
+  border-radius: var(--radius);
+  /* NEITHER nowrap NOR a fixed track: the items themselves narrow
+     and let their labels wrap, which is measured behaviour and not
+     a choice. At 390 the checkout header is a wrapping flex row,
+     DIFFERENT ADDRESSES takes two lines inside its own item, and
+     the track is 234.79 by 58.77. Pinning the track (flex: 0 0
+     auto) would push it to 314.7 and walk it off a 390 screen —
+     exactly the bug gbppl-checkout-15 fixed on this band. */
+}
+
+.gb-toggle__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: var(--space-8) var(--space-16);
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--gb-btn-s-label);
+  font-weight: var(--gb-btn-label-weight);
+  letter-spacing: var(--gb-btn-label-tracking);
+  line-height: 1.5;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--zinc-700);
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move),
+              background-color var(--mo-micro) var(--mo-move),
+              border-color var(--mo-micro) var(--mo-move);
+}
+
+/* Hover belongs to the half that is NOT pressed: washing the black
+   card would say it can be pressed again, and it cannot. */
+.gb-toggle__item:hover:not(.is-on) { background: var(--zinc-50); }
+
+.gb-toggle__item.is-on,
+.gb-toggle__item[aria-checked="true"],
+.gb-toggle__item[aria-pressed="true"] {
+  background: var(--zinc-900);
+  color: var(--white);
+}
+
+/* DECLARED. Keyboard only, the button organism's ring. */
+.gb-toggle__item:focus-visible,
+.gb-toggle__item.is-focus {
+  outline: var(--gb-btn-focus-ring-width) solid var(--gb-btn-focus-ring);
+  outline-offset: var(--gb-btn-focus-ring-offset);
+}
+
+/* DECLARED. A value the system cannot hold stays readable and
+   stops answering, the way the button fades rather than greys. */
+.gb-toggle__item:disabled,
+.gb-toggle__item[aria-disabled="true"],
+.gb-toggle__item.is-disabled {
+  opacity: var(--gb-btn-disabled-opacity);
+  pointer-events: none;
+  cursor: default;
+}
+.gb-toggle.is-disabled,
+.gb-toggle[aria-disabled="true"] {
+  opacity: var(--gb-btn-disabled-opacity);
+  pointer-events: none;
+}
+
+/* ============================================================
+   THE LABEL RIDES THE BUTTON LADDER
+   ------------------------------------------------------------
+   11 everywhere, 12 from 2000, because that is the one ladder
+   this control's type comes off and a segment lettered 11 beside
+   a button lettered 12 would be two houses. The geometry below
+   2000 is untouched by this rule.
+   ============================================================ */
+@media (min-width: 2000px) {
+  .gb-toggle__item { font-size: var(--gb-btn-s-label-2xl); }
+}
+
+/* ============================================================
+   BLOCK
+   ------------------------------------------------------------
+   One modifier, and it exists for the rail of a showcase: a
+   segment in a 320 column reads as a row of choices across the
+   whole column rather than as a pill floating at its left edge.
+   The TRACK spans and WRAPS; the ITEMS keep every measured number
+   and fall to a second row inside it. Items stretched to an equal
+   share would break SECONDARY across two lines at 320, and the
+   label is the one thing a control may not make unreadable; a
+   track that does not wrap would squeeze four of them to nothing.
+   Wrapping is the modifier's job and not the default, because the
+   default is the checkout, where the measurement says narrow.
+   ============================================================ */
+.gb-toggle--block { display: flex; flex-wrap: wrap; width: 100%; }
