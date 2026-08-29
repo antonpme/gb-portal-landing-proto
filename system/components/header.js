@@ -306,6 +306,11 @@
     return (
       '<header class="gb-header">' +
         '<div class="gb-container gbh-bar">' +
+          /* gbppl-demo-fixes-1: the same burger the auth bar carries,
+             from the same function. It is display:none until 1279, so
+             at 1280 and above this bar is the one measured before the
+             wave, down to the grid track it does not occupy. */
+          BURGER(catalogHref, meetingHref, portalHref) +
           '<a href="' + homeHref + '" class="gbh-brand" aria-label="GildedBox home">' +
             '<img src="' + logoSrc + '" alt="GildedBox">' +
           '</a>' +
@@ -467,7 +472,32 @@
     );
   };
 
-  var BURGER = function (catalogHref, meetingHref) {
+  /* ============================================================
+     ONE BURGER FOR BOTH BARS (gbppl-demo-fixes-1, 2026-08-29)
+     ------------------------------------------------------------
+     The burger was born inside the auth sandbox, and the bar
+     WITHOUT the key was left with nothing at all below 1280: a
+     wordmark, a search dot, and a nav that had simply vanished
+     (trap 17 collapsed it, and only the sandbox grew a place for
+     it to go). On a tablet that is a site with no navigation, and
+     the walk-through of the show stops at «Tablet 768».
+
+     Ton, 28.08: «бургер, лайв подтягивается» — the burger is the
+     answer for both bars, so it is written ONCE and both templates
+     call it. What differs is a single row, and it differs for a
+     reason that lives in the markup rather than in a flag: in the
+     auth bar My Portal stands in the menu under the initials, so it
+     is not here; on Live it is a button of the bar, and below 1024
+     it comes down here to stand beside the neighbour it stood
+     beside upstairs. `portalHref` empty says «this bar carries an
+     account menu», and nothing more.
+
+     THE PAIR OF BUTTONS IS .gbh-menu__actions, the column the
+     Gifts panel already uses for All Gifts / Customize on this very
+     plate: filled primary over outline inverse, 12 between them
+     (LIVE 24.08). Ton-6, question one — the component was there.
+     ============================================================ */
+  var BURGER = function (catalogHref, meetingHref, portalHref) {
     var rows = [
       ['Gifts', catalogHref],
       ['Customize', catalogHref],
@@ -478,6 +508,14 @@
         ? '<a class="gbh-menu__item" role="menuitem" href="' + r[1] + '">' + r[0] + '</a>'
         : '<button class="gbh-menu__item gbh-menu__item--btn" role="menuitem" type="button">' + r[0] + '</button>';
     }).join('');
+    /* First block, and only below 1024, where the bar has let it go. */
+    var cta =
+      '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary gb-btn--block" href="' + meetingHref + '">' +
+        '<span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
+      (portalHref
+        ? '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--inverse gb-btn--block" href="' + portalHref + '">' +
+            '<span class="gb-btn__label" data-pc-section="label">My Portal</span></a>'
+        : '');
     return (
       '<div class="gbh-burger" data-gbh-burger-wrap>' +
         '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-burger__btn" type="button" data-gbh-burger' +
@@ -485,20 +523,57 @@
           '<span class="gb-btn__icon" aria-hidden="true">' + GLYPH_BURGER + '</span>' +
         '</button>' +
         '<div class="gbh-menu gbh-menu--burger" id="gbh-burger-menu" role="menu" aria-label="Menu">' +
-          /* First row, and only below 1024, where the bar has let it go. */
-          '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary gb-btn--block gbh-menu__cta" href="' + meetingHref + '">' +
-            '<span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
+          /* role="none": the buttons are not rows of the menu, the same
+             way the single CTA before them was not a row either. */
+          '<div class="gbh-menu__actions gbh-menu__cta" role="none">' + cta + '</div>' +
           rows +
         '</div>' +
       '</div>'
     );
   };
 
+  /* ---- КЛАВИАТУРА ВЫПАДАШКИ, ОДНА НА СЕМЬЮ .gbh-menu ----------
+     Меню аккаунта и бургер ходят по строкам одинаково, и с
+     gbppl-demo-fixes-1 у них разные хозяева (бургер живёт на обоих
+     барах, аккаунт только на auth). Поэтому три помощника уехали из
+     __wireAuth на уровень файла: один список, один шаг, один
+     обработчик, две панели. Стрелки ходят по строкам, Home и End
+     прыгают; строки — ссылки и кнопки в порядке DOM. */
+  function menuRows(panel) {
+    return [].slice.call(panel.querySelectorAll('.gbh-menu__item'));
+  }
+  function menuWalk(panel, from, step) {
+    var rows = menuRows(panel);
+    if (!rows.length) return;
+    var i = rows.indexOf(from);
+    var next = i < 0 ? (step > 0 ? 0 : rows.length - 1) : (i + step + rows.length) % rows.length;
+    rows[next].focus();
+  }
+  /* Слушаем ОБЁРТКУ, а не панель: стрелка нажимается ещё на
+     кнопке, фокус в этот момент вне панели, и панель события не
+     увидит (поймано прогоном клавиатуры 28.08). */
+  function menuKeys(wrap, panel, opener, close) {
+    wrap.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.stopPropagation(); close(); opener.focus(); return; }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        /* Стрелка на закрытой кнопке — это «покажи список». */
+        if (panel.getAttribute('data-open') !== 'true') opener.click();
+        menuWalk(panel, document.activeElement, e.key === 'ArrowDown' ? 1 : -1);
+        return;
+      }
+      else if (e.key === 'Home') { e.preventDefault(); menuWalk(panel, null, 1); }
+      else if (e.key === 'End') { e.preventDefault(); menuWalk(panel, null, -1); }
+    });
+  }
+
   var TEMPLATE_AUTH = function (logoSrc, catalogHref, portalHref, meetingHref, homeHref) {
     return (
       '<header class="gb-header">' +
         '<div class="gb-container gbh-bar gbh-bar--auth">' +
-          BURGER(catalogHref, meetingHref) +
+          /* No portal row: this bar has an account menu, and My Portal
+             is its first line (Ton-16). */
+          BURGER(catalogHref, meetingHref, null) +
           '<a href="' + homeHref + '" class="gbh-brand" aria-label="GildedBox home">' +
             '<img src="' + logoSrc + '" alt="GildedBox">' +
           '</a>' +
@@ -673,11 +748,13 @@
         meetingHref = withHdr(meetingHref);
         this.innerHTML = TEMPLATE_AUTH(logoSrc, catalogHref, portalHref, meetingHref, homeHref);
         this.__wireMenu();
+        this.__wireBurger();
         this.__wireAuth(portalHref);
         this.__wireCart();
       } else {
         this.innerHTML = TEMPLATE(logoSrc, catalogHref, portalHref, meetingHref, homeHref);
         this.__wireMenu();
+        this.__wireBurger();
         this.__wireCart();
       }
       if (this.getAttribute('variant') === 'transparent-dark') this.__wireTransparent();
@@ -738,13 +815,59 @@
     }
 
     /* ============================================================
+       THE BURGER'S OWN BEHAVIOUR (gbppl-demo-fixes-1, 29.08)
+       ------------------------------------------------------------
+       It used to live inside __wireAuth, together with the account
+       menu and the sign in drawer, because the only bar that had a
+       burger was the auth one. Now both bars have it, and the code
+       that drives it belongs to it rather than to the sandbox that
+       gave birth to it (Ton-6): one method, called from both
+       branches of connectedCallback, and the auth bar keeps exactly
+       the behaviour it had.
+
+       The two dropdowns of the corner still close each other, and
+       they do it through two handles the pair publishes on the
+       element — __burgerClose and __accountClose — rather than
+       through shared closures, because on Live the second one is
+       simply not there.
+       ============================================================ */
+    __wireBurger() {
+      var self = this;
+      var wrap = this.querySelector('[data-gbh-burger-wrap]');
+      var btn = this.querySelector('[data-gbh-burger]');
+      var panel = this.querySelector('.gbh-menu--burger');
+      if (!wrap || !btn || !panel) return;
+
+      /* data-open is the same handle the Gifts item uses; one word
+         for one idea across the whole bar. */
+      var open = function (on) {
+        panel.setAttribute('data-open', on ? 'true' : 'false');
+        btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+        if (on && self.__accountClose) self.__accountClose();
+      };
+      var isOpen = function () { return panel.getAttribute('data-open') === 'true'; };
+
+      menuKeys(wrap, panel, btn, function () { open(false); });
+      btn.addEventListener('click', function () { open(!isOpen()); });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isOpen()) { open(false); btn.focus(); }
+      });
+      document.addEventListener('pointerdown', function (e) {
+        if (isOpen() && !wrap.contains(e.target)) open(false);
+      });
+
+      this.__burgerClose = function () { open(false); };
+    }
+
+    /* ============================================================
        THE AUTH BAR'S OWN BEHAVIOUR (gbppl-header-auth-1)
        ------------------------------------------------------------
-       Three controls and one state. The person opens the sign in
-       drawer; the initials open the account menu; the burger opens
-       the nav. All three menus close on Escape, on a click outside
-       and on each other, and every one of them hands focus back to
-       the button that opened it.
+       Two controls and one state. The person opens the sign in
+       drawer; the initials open the account menu. Both close on
+       Escape, on a click outside and against the burger, and both
+       hand focus back to the button that opened them. The burger
+       itself is wired by __wireBurger above, on either bar.
        ============================================================ */
     __wireAuth(portalHref) {
       var self = this;
@@ -754,9 +877,6 @@
       var wrap = this.querySelector('[data-gbh-account-wrap]');
       var btn = this.querySelector('[data-gbh-account]');
       var menu = this.querySelector('.gbh-menu--account');
-      var burgerWrap = this.querySelector('[data-gbh-burger-wrap]');
-      var burgerBtn = this.querySelector('[data-gbh-burger]');
-      var burgerMenu = this.querySelector('.gbh-menu--burger');
 
       /* --------------------------------------------------------
          MENUS. data-open is the same handle the Gifts item uses;
@@ -766,50 +886,12 @@
         if (!menu) return;
         menu.setAttribute('data-open', on ? 'true' : 'false');
         btn.setAttribute('aria-expanded', on ? 'true' : 'false');
-        if (on) openBurger(false);
+        if (on && self.__burgerClose) self.__burgerClose();
       };
       var menuOpen = function () { return menu && menu.getAttribute('data-open') === 'true'; };
 
-      var openBurger = function (on) {
-        if (!burgerMenu) return;
-        burgerMenu.setAttribute('data-open', on ? 'true' : 'false');
-        burgerBtn.setAttribute('aria-expanded', on ? 'true' : 'false');
-        if (on && menu) { menu.setAttribute('data-open', 'false'); btn.setAttribute('aria-expanded', 'false'); }
-      };
-      var burgerOpen = function () { return burgerMenu && burgerMenu.getAttribute('data-open') === 'true'; };
-
-      /* Arrow keys walk the rows, Home and End jump. The rows are
-         links and buttons in DOM order, so the list is the list. */
-      var rowsOf = function (panel) {
-        return [].slice.call(panel.querySelectorAll('.gbh-menu__item'));
-      };
-      var walk = function (panel, from, step) {
-        var rows = rowsOf(panel);
-        if (!rows.length) return;
-        var i = rows.indexOf(from);
-        var next = i < 0 ? (step > 0 ? 0 : rows.length - 1) : (i + step + rows.length) % rows.length;
-        rows[next].focus();
-      };
-      /* Слушаем ОБЁРТКУ, а не панель: стрелка нажимается ещё на
-         кнопке, фокус в этот момент вне панели, и панель события не
-         увидит (поймано прогоном клавиатуры 28.08). */
-      var keys = function (wrap, panel, opener, close) {
-        wrap.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') { e.stopPropagation(); close(); opener.focus(); return; }
-          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            e.preventDefault();
-            /* Стрелка на закрытой кнопке — это «покажи список». */
-            if (panel.getAttribute('data-open') !== 'true') opener.click();
-            walk(panel, document.activeElement, e.key === 'ArrowDown' ? 1 : -1);
-            return;
-          }
-          else if (e.key === 'Home') { e.preventDefault(); walk(panel, null, 1); }
-          else if (e.key === 'End') { e.preventDefault(); walk(panel, null, -1); }
-        });
-      };
-
       if (menu) {
-        keys(wrap, menu, btn, function () { openMenu(false); });
+        menuKeys(wrap, menu, btn, function () { openMenu(false); });
         menu.addEventListener('click', function (e) {
           if (e.target.closest('[data-gbh-signout]')) {
             e.preventDefault();
@@ -820,7 +902,6 @@
           }
         });
       }
-      if (burgerMenu) keys(burgerWrap, burgerMenu, burgerBtn, function () { openBurger(false); });
 
       /* --------------------------------------------------------
          THE PERSON. Guest: the drawer. Signed in: the menu.
@@ -830,24 +911,23 @@
         if (signedIn()) { openMenu(!menuOpen()); return; }
         /* Дровер накрывает бар целиком: открытая бургер-панель под ним
            не видна, но осталась бы открытой после закрытия. */
-        openBurger(false);
+        if (self.__burgerClose) self.__burgerClose();
         self.__openSignin();
       });
-      if (burgerBtn) {
-        burgerBtn.addEventListener('click', function () { openBurger(!burgerOpen()); });
-      }
 
       document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape') return;
         if (menuOpen()) { openMenu(false); btn.focus(); }
-        if (burgerOpen()) { openBurger(false); burgerBtn.focus(); }
       });
       document.addEventListener('pointerdown', function (e) {
         if (menuOpen() && wrap && !wrap.contains(e.target) && !menu.contains(e.target)) openMenu(false);
-        if (burgerOpen() && burgerWrap && !burgerWrap.contains(e.target)) openBurger(false);
       });
 
-      this.__closeMenus = function () { openMenu(false); openBurger(false); };
+      this.__accountClose = function () { openMenu(false); };
+      this.__closeMenus = function () {
+        openMenu(false);
+        if (self.__burgerClose) self.__burgerClose();
+      };
 
       /* --------------------------------------------------------
          THE STATE. __applyCart already listens for the same two
