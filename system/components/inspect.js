@@ -1,7 +1,18 @@
 /* ============================================================
-   gbppl-inspect-1 / gbppl-oro-icons-1 / gbppl-oro-drawer-1
+   gbppl-inspect-1 / gbppl-oro-icons-1 / gbppl-oro-drawer-1 /
+   gbppl-inspect-scale-1
    — INSPECT MODE, THE CORE
    ------------------------------------------------------------
+   gbppl-inspect-scale-1 (29.08) moved ONE line: the instrument
+   reads token values off a hidden probe inside <gb-studio-panel>
+   instead of off document.documentElement. Found on the run of the
+   show route: on the vendored catalog the instrument was naming
+   the BUILD's tokens, because the build spells --space-8/16/24 as
+   32 / 64 / 96 on :root and our scale is restored only on a list
+   of islands. See WHERE THE SCALE IS READ below. Nothing else in
+   this file moved, and every page without a foreign bundle reads
+   exactly as it did before, word for word.
+
    gbppl-oro-icons-1 (28.08) added two rows to the recognition
    table and two kinds beside them, Icon button and Icon, plus one
    owner prefix. Nothing else in this file moved.
@@ -178,8 +189,49 @@
     }
     return v.replace(/\s+/g, ' ').replace(/rgba\((.+?),\s*1\)/, 'rgb($1)');
   }
+  /* gbppl-inspect-scale-1. WHERE THE SCALE IS READ.
+     The instrument used to ask document.documentElement what a token
+     is worth, and on live/catalog/index.html that is the wrong mouth.
+     The vendored bundle declares --space-8/16/24 on :root as a 4px
+     step INDEX (32 / 64 / 96) under the same three names our scale
+     spends in pixels (ловушка 7б), and live/catalog/oro-ui-override.css
+     hands those three back to the build on :root while restoring ours
+     on a LIST OF ISLANDS — gb-studio-panel among them (ловушки 19 и
+     21). The page really does hold two scales at once, so reading off
+     the html element made the instrument quote the build's: the
+     header Book a meeting printed «Padding 8px 20px · 8 off the
+     scale», a gift card's 24px gap was named --container-pad and the
+     grid's 16px gap --container-pad-narrow — the lookup fell past a
+     --space-24 answering 96px and landed on the next token that
+     happened to measure 24.
+
+     It now reads from a hidden probe inside <gb-studio-panel>, the
+     studio's own island, where our scale is in force on every page.
+     Custom properties are inherited and are computed by substitution
+     alone, so display:none costs the probe nothing and no length is
+     resolved against its font or its box: the pages without a foreign
+     bundle answer exactly what they answered before, word for word.
+     No panel on the page (a bare specimen, a frame) and it falls back
+     to the html element, which is right wherever there is no
+     collision. */
+  var probe = null;
+  function scaleHost() {
+    if (probe && probe.isConnected) return probe;
+    probe = null;
+    var panel = document.querySelector('gb-studio-panel');
+    if (!panel) return root;
+    /* The panel writes its own innerHTML once, in connectedCallback,
+       so the probe is re-hung whenever it has been swept away. */
+    probe = document.createElement('span');
+    probe.className = 'gbi-probe';
+    probe.setAttribute('aria-hidden', 'true');
+    probe.hidden = true;
+    probe.style.display = 'none';
+    panel.appendChild(probe);
+    return probe;
+  }
   function tokenValue(name) {
-    return getComputedStyle(root).getPropertyValue(name).trim();
+    return getComputedStyle(scaleHost()).getPropertyValue(name).trim();
   }
   /* The token whose resolved value is what the browser drew.
      Lengths are compared at whole pixels: a hairline declared as
