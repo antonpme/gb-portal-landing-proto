@@ -434,6 +434,19 @@
                (d.state === 'rest' ? '' : ' · ' + d.state);
       } },
 
+    /* gbppl-oro-select-stepper-1. The stepper stands above the field
+       rows because its well IS an input, and above nothing else: a
+       frame is not a button and does not collide with the rows over
+       it. The two glyph buttons inside it keep reading as icon
+       buttons, which is what they are. */
+    { sel: '.gb-stepper__value', name: 'Stepper value', oro: 'stepper.html#anatomy' },
+    { sel: '.gb-stepper', name: 'Stepper', kind: 'stepper', oro: 'stepper.html#stepper',
+      detail: function (el) {
+        var d = KINDS.stepper.describe(el);
+        return d.size + ' · ' + d.well + (d.host ? ' · host driven' : '') +
+               (d.state === 'rest' ? '' : ' · ' + d.state);
+      } },
+
     /* gbppl-oro-field-2. The four other looks of the field, above the
        plain one because the rule of this table is that the smaller,
        more specific thing comes first. The phone row is also a
@@ -449,6 +462,13 @@
     { sel: '.gbb-phone-trigger', name: 'Country code', oro: 'field.html#phone' },
     { sel: '.gbb-phone', name: 'Phone field', oro: 'field.html#phone' },
     { sel: '.gba-field--floating', name: 'Field, floating label', oro: 'field.html#floating' },
+
+    /* gbppl-oro-select-stepper-1: the fourth look. The control is a
+       <select> wearing .gba-input, so it has to be named before the
+       plain field row or it would answer «Field» forever. */
+    { sel: 'select.gba-input', name: 'Select', kind: 'select', oro: 'select.html#select',
+      detail: function (el) { return KINDS.select.describe(el).state; } },
+    { sel: '.gba-select', name: 'Select', kind: 'select', oro: 'select.html#select' },
 
     { sel: '.gba-textarea', name: 'Field', kind: 'field', oro: 'field.html#fields',
       detail: function () { return 'multi line'; } },
@@ -1482,6 +1502,153 @@
           '          type="' + (d.area ? 'textarea' : (el.type || 'text')) + '" label="' + (lab ? lab.textContent : 'Label') + '"></gb-field>';
         return block('Properties, measured on this specimen', table(rowsList)) +
           block('Classes', chips(mods)) +
+          block('Markup', snippet(code));
+      }
+    },
+
+    /* ---------- gbppl-oro-select-stepper-1: the select ----------
+       A select reads as a field everywhere except in three rows: how
+       much room the chevron takes, what the chevron is doing, and how
+       many options stand behind it. Those three are why it is a kind
+       and not four conditional rows inside the field above. */
+    select: {
+      name: 'Select',
+      owner: 'system/components/auth.css',
+      find: function (slot) { return slot.querySelector('select.gba-input'); },
+
+      describe: function (el) {
+        var wrap = el.closest('.gba-select');
+        return {
+          state: el.disabled ? 'disabled'
+               : el.classList.contains('invalid') ? 'error'
+               : el.classList.contains('is-hover') ? 'hover'
+               : el.classList.contains('is-focus') ? 'focus'
+               : el.selectedIndex > 0 ? 'picked' : 'nothing picked',
+          options: el.options.length,
+          chevron: wrap ? wrap.querySelector('.gb-icon') : null
+        };
+      },
+
+      title: function (el, d) {
+        return d.state + ', ' + d.options + ' option' + (d.options === 1 ? '' : 's');
+      },
+
+      body: function (el, d) {
+        var cs = getComputedStyle(el);
+        var lab = el.id ? document.querySelector('label[for="' + el.id + '"]') : null;
+        var ch = d.chevron ? getComputedStyle(d.chevron) : null;
+        var rowsList = [
+          row('Height', px(cs.minHeight), ['--form-ctl-h', '--form-ctl-h-xl', '--form-ctl-h-2xl']),
+          row('Padding, left', px(cs.paddingLeft), null),
+          row('Padding, right', px(cs.paddingRight), null, 'inset plus glyph plus one space step'),
+          row('Type size', px(cs.fontSize), null),
+          row('Type weight', cs.fontWeight, null),
+          row('Underline', px(cs.borderBottomWidth) + ' ' + cs.borderBottomColor,
+              ['--zinc-400', '--blue-600', '--red-500']),
+          row('Ink', cs.color, ['--zinc-800']),
+          row('Chevron box', ch ? px(ch.width) : 'no glyph',
+              ch ? ['--gb-btn-l-icon-xl'] : null),
+          row('Chevron ink', ch ? ch.color : 'no glyph',
+              ch ? ['--zinc-500', '--blue-600', '--zinc-300'] : null),
+          row('Native arrow', cs.appearance, null, 'appearance none: the browser draws nothing here'),
+          row('Label size', lab ? px(getComputedStyle(lab).fontSize) : 'no label', null),
+          row('The list', 'drawn by the operating system', null, 'not ours, and not measurable')
+        ];
+        var mods = el.className.split(/\s+/).filter(Boolean);
+        var opts = [];
+        for (var i = 0; i < Math.min(el.options.length, 3); i++) opts.push(el.options[i].text);
+        var code = '<div class="gba-inputwrap gba-select">\n' +
+          '  <select class="' + el.className + '">\n' +
+          opts.map(function (o) { return '    <option>' + o + '</option>'; }).join('\n') +
+          (el.options.length > 3 ? '\n    ...' : '') + '\n' +
+          '  </select>\n' +
+          '  <span data-gb-icon="chevron-down" data-gb-icon-size="20"></span>\n' +
+          '</div>';
+        return block('Properties, measured on this specimen', table(rowsList)) +
+          block('Classes', chips(mods)) +
+          block('Markup', snippet(code));
+      }
+    },
+
+    /* ---------- gbppl-oro-select-stepper-1: the stepper ----------
+       Three elements, one control. The reading a person wants off it
+       is the frame against its parts: whether the well is the
+       standard one or the dense one, whether the value is at a bound,
+       and who owns the number, because on the checkout the answer is
+       Alpine and a reader who does not know that will wonder why the
+       component is not counting. */
+    stepper: {
+      name: 'Stepper',
+      owner: 'system/components/stepper.css',
+      find: function (slot) { return slot.querySelector('.gb-stepper'); },
+
+      describe: function (el) {
+        var c = String(el.className);
+        var v = el.querySelector('.gb-stepper__value');
+        var down = el.querySelector('[data-step="-1"]');
+        var up = el.querySelector('[data-step="1"]');
+        var off = /is-disabled/.test(c) || el.getAttribute('aria-disabled') === 'true';
+        return {
+          size: /gb-stepper--m\b/.test(c) ? 'M' : 'S',
+          well: /gb-stepper--dense\b/.test(c) ? 'dense' : 'standard',
+          host: el.getAttribute('data-gb-stepper') === 'host',
+          value: v ? (v.tagName === 'INPUT' ? v.value : v.textContent.trim()) : null,
+          min: v && v.getAttribute ? (v.getAttribute('min') || el.getAttribute('data-min')) : null,
+          max: v && v.getAttribute ? (v.getAttribute('max') || el.getAttribute('data-max')) : null,
+          state: off ? 'disabled'
+               : down && down.disabled ? 'at the floor'
+               : up && up.disabled ? 'at the ceiling'
+               : /is-hover/.test(c) ? 'hover'
+               : /is-focus/.test(c) ? 'focus' : 'rest',
+          v: v, down: down
+        };
+      },
+
+      title: function (el, d) {
+        return 'size ' + d.size + ', ' + d.well + ' well, ' +
+               (d.state === 'rest' ? 'value ' + d.value : d.state);
+      },
+
+      body: function (el, d) {
+        var cs = getComputedStyle(el);
+        var vs = d.v ? getComputedStyle(d.v) : null;
+        var btn = d.down ? d.down.getBoundingClientRect() : null;
+        var glyph = d.down ? d.down.querySelector('.gb-icon, svg') : null;
+        var rowsList = [
+          row('Frame height', px(cs.height), null, 'the button rung plus two hairlines'),
+          row('Button', btn ? Math.round(btn.width) + ' by ' + Math.round(btn.height) : 'none',
+              ['--gb-btn-m-h', '--gb-btn-l-h']),
+          row('Glyph box', glyph ? px(getComputedStyle(glyph).width) : 'none',
+              glyph ? ['--gb-btn-l-icon-xl'] : null),
+          row('Well width', vs ? px(vs.width) : 'none', null,
+              d.well === 'dense' ? 'the button rung' : 'the button rung plus one space step'),
+          row('Number', vs ? px(vs.fontSize) + ' / ' + vs.fontWeight : 'none', null,
+              'the field ladder'),
+          row('Hairline', px(cs.borderTopWidth) + ' ' + cs.borderTopColor,
+              ['--zinc-300', '--blue-600', '--zinc-200']),
+          row('Seam', vs ? px(vs.borderLeftWidth) + ' ' + vs.borderLeftColor : 'none',
+              ['--zinc-200']),
+          row('Radius', px(cs.borderTopLeftRadius), ['--radius']),
+          row('Value', d.value, null,
+              (d.min ? 'floor ' + d.min : 'no floor') +
+              (d.max ? ', ceiling ' + d.max : ', no ceiling')),
+          row('Who owns the number', d.host ? 'the host page' : 'the component', null,
+              d.host ? 'data-gb-stepper="host": bounds and aria only' : 'clicks step the value')
+        ];
+        var mods = el.className.split(/\s+/).filter(function (c2) { return c2.indexOf('gb-stepper') === 0; });
+        var code = '<div class="' + mods.join(' ') + '"' +
+          (d.host ? ' data-gb-stepper="host"' : '') + ' aria-label="Quantity">\n' +
+          '  <button class="gb-btn gb-btn--icon gb-btn--' + d.size.toLowerCase() +
+            ' gb-btn--ghost gb-btn--secondary gb-btn--plain" data-step="-1"\n' +
+          '          aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>\n' +
+          '  <input class="gb-stepper__value" type="number" min="' + (d.min || 1) +
+            '" value="' + d.value + '">\n' +
+          '  <button class="gb-btn gb-btn--icon gb-btn--' + d.size.toLowerCase() +
+            ' gb-btn--ghost gb-btn--secondary gb-btn--plain" data-step="1"\n' +
+          '          aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>\n' +
+          '</div>';
+        return block('Properties, measured on this specimen', table(rowsList)) +
+          block('Modifiers', chips(mods)) +
           block('Markup', snippet(code));
       }
     }

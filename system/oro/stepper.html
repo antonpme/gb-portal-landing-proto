@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stepper · Oro, GildedBox Design System</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-oro-select-stepper-1 — THE STEPPER PAGE
+     ------------------------------------------------------------
+     Skill, section 8, open since 27.08: «STEPPER (минус / число /
+     плюс): компонента НЕТ. Четыре штуки на чекауте. Это ОДИН
+     контрол, а не три, и ничто в системе его не описывает.»
+
+     THE PROVENANCE OF THE WHOLE PAGE, in one paragraph. The live
+     site has no stepper: measured 29.08 across the home page, the
+     catalogue and its filter drawer, a product page in both of its
+     variants, the lead form and the portal door. Quantity is not
+     stepped anywhere on the public site, and the portal's own cart
+     stands behind the sign in, where a wave does not go. So this
+     component is DECLARED under Ton-17 — but not invented: every
+     number on this page is one the checkout was already rendering
+     before the migration, read off the page with the instrument.
+
+     Ton-10: this page is a CONSUMER. Its furniture is the atoms of
+     ..\components\docs.css; its specimens are the component.
+
+     NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../components/shell.css">
+<link rel="stylesheet" href="../components/header.css">
+<link rel="stylesheet" href="../components/button.css">
+<link rel="stylesheet" href="../components/icon.css">
+<link rel="stylesheet" href="../components/auth.css">
+<link rel="stylesheet" href="../components/stepper.css">
+<link rel="stylesheet" href="../components/drawer.css">
+<link rel="stylesheet" href="../components/docs.css">
+<link rel="stylesheet" href="../components/inspect.css">
+<link rel="stylesheet" href="../components/comments.css">
+<link rel="stylesheet" href="../components/studio-panel.css">
+<link rel="stylesheet" href="oro.css">
+
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<style>
+.oro-col { max-width: 1180px; }
+.oro-lede, .oro-p, .oro-note, .gbdoc-card__line { max-width: 860px; }
+</style>
+</head>
+<body>
+
+<!-- The studio bar, the same markup every studio page carries. -->
+<header class="gb-header gb-header--studio">
+  <div class="gb-container gbh-bar gbh-bar--studio">
+    <a class="gbh-lock" href="../../index.html" aria-label="GildedBox Design Studio, home">
+      <img class="gbh-lock__mark" src="../assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+      <span class="gbh-lock__rule" aria-hidden="true"></span>
+      <span class="gbh-lock__word">Design Studio</span>
+    </a>
+    <nav class="gbh-nav" aria-label="Studio">
+      <a class="gbh-link" href="../../live/map.html">Live Prototype</a>
+      <a class="gbh-link" href="../../sandboxes.html">Sandboxes</a>
+      <a class="gbh-link is-active" href="index.html" aria-current="page">Design System</a>
+    </nav>
+    <div class="gbh-actions">
+      <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-studio-lock>
+        <span class="gb-btn__label" data-pc-section="label">Lock</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="oro">
+
+  <nav class="oro-rail" aria-label="Design system sections">
+    <!-- gbppl-oro-pages-1. The rail is rendered from the page table in
+         oro.js, one copy for the whole showcase; aria-current is read
+         off location. -->
+    <div data-oro-rail></div>
+  </nav>
+  <script src="oro.js"></script>
+
+  <main class="oro-main">
+
+    <!-- gbppl-oro-toc-1. The contents of this page, written off the
+         document itself so it cannot disagree with what is on it. -->
+    <aside class="oro-toc" data-oro-toc hidden></aside>
+    <div class="oro-col">
+
+      <header class="oro-head">
+        <span class="gb-eyebrow">Base component</span>
+        <h1 class="oro-h1">Stepper <span class="gbdoc-flag gbdoc-flag--declared gbdoc-status">Declared</span></h1>
+        <p class="oro-lede">Minus, a number and plus. One control, not three: it knows its own floor, and at the floor it says so instead of letting a click fall into nothing.</p>
+        <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. Every number in the tables below is read off a specimen at that width.</p>
+      </header>
+
+      <section class="gbdoc-card" id="stepper" data-toc="Stepper">
+
+        <!-- ---- OVERVIEW ---- -->
+        <span class="gbdoc-sub">Overview</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Owner</td><td><code>system/components/stepper.css</code> and <code>stepper.js</code></td></tr>
+            <tr><td>Class</td><td><code>.gb-stepper</code> on the frame, <code>.gb-stepper__value</code> on the well between the buttons</td></tr>
+            <tr><td>Made of</td><td>Two <code>.gb-btn--icon --s --plain</code> from the button organism, and minus and plus from the icon record</td></tr>
+            <tr><td>Worn by</td><td>Four controls on the checkout: the gift pool, a personalization row, the deferred order and the personalization drawer</td></tr>
+            <tr><td>Defaults</td><td>40 tall plus two hairlines, a 56 well, the field ladder for the number, floor at whatever <code>min</code> says</td></tr>
+            <tr><td>Status</td><td>Declared 29 August. Live steps a quantity nowhere, so the control is ours under Ton-17 and live catches up</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- PLAYGROUND ---- -->
+        <span class="gbdoc-sub" id="playground">Playground</span>
+        <h3 class="oro-h3">Build a stepper and count with it</h3>
+        <p class="oro-p">Set the axes and the one specimen on the stage rebuilds itself. It is a real control: press the buttons, hold the arrow keys, walk it down to its floor and watch the minus go out. The readout under it is measured, not described.</p>
+
+        <div class="gbdoc-frame">
+          <div class="gbdoc-controls" id="pgControls">
+            <div class="gbdoc-axis" role="radiogroup" data-axis="size">
+              <span class="gbdoc-axis__name">Size</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="s">S · 40</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="m">M · 48</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="well">
+              <span class="gbdoc-axis__name">Well</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="standard">Standard</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="dense">Dense</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="value">
+              <span class="gbdoc-axis__name">Value</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="floor">At the floor</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="mid">In the middle</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="ceiling">At the ceiling</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="state">
+              <span class="gbdoc-axis__name">State</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="rest">Rest</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="hover">Hover</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="focus">Focus</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="disabled">Disabled</button>
+            </div>
+          </div>
+          <div class="gbdoc-stage gbdoc-stage--center" id="pgStage" data-inspect="stepper">
+            <div class="gbdoc-hold" id="pgHold"></div>
+          </div>
+        </div>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
+          <pre><code id="pgCode"></code></pre>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Measured on the sample</th><th>Value</th><th>Measured on the sample</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Frame</td><td class="gbdoc-num" id="pgBox"></td><td>Well</td><td class="gbdoc-num" id="pgWell"></td></tr>
+            <tr><td>Button</td><td class="gbdoc-num" id="pgBtn"></td><td>Glyph</td><td class="gbdoc-num" id="pgGlyph"></td></tr>
+            <tr><td>Hairline</td><td class="gbdoc-num" id="pgLine"></td><td>Seam</td><td class="gbdoc-num" id="pgSeam"></td></tr>
+            <tr><td>Number</td><td class="gbdoc-num" id="pgFont"></td><td>Radius</td><td class="gbdoc-num" id="pgRadius"></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- VARIANTS ---- -->
+        <span class="gbdoc-sub" id="variants">Variants</span>
+        <h3 class="oro-h3">Two sizes, two wells, and who wears which</h3>
+        <p class="oro-p">The frame does not have a ladder of its own: it is exactly as tall as the two buttons inside it, which is the only way the two can never disagree. What varies is which rung of the icon button it is built from, and how wide the number's well is.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Variant</th><th>What it is for</th><th>Where it stands today</th></tr></thead>
+          <tbody>
+            <tr><td>Standard</td><td>A quantity that is the subject of its block: a card, a drawer, a row of its own</td><td>Three of the four on the checkout</td></tr>
+            <tr><td><code>--dense</code></td><td>The same control in a table row, where the well holds one or two digits and the row is short of width. Only the well narrows: the buttons keep their target</td><td>The personalization table on the checkout</td></tr>
+            <tr><td><code>--m</code></td><td>A stepper that is the one action of its panel, built on the 48 rung of the icon button</td><td>Nowhere yet. Offered because the icon button has the rung, not because a screen asked</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="gbdoc-shelf" data-inspect="stepper">
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>Standard</b> <b data-m="std">measuring</b></span>
+            <div class="gb-stepper" id="sp-std" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>
+              <input class="gb-stepper__value" type="number" min="1" max="99" value="3" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>
+            </div>
+          </div>
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>Dense</b> <b data-m="dense">measuring</b></span>
+            <div class="gb-stepper gb-stepper--dense" id="sp-dense" aria-label="Quantity, dense">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>
+              <input class="gb-stepper__value" type="number" min="1" max="99" value="3" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>
+            </div>
+          </div>
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>Size M</b> <b data-m="m">measuring</b></span>
+            <div class="gb-stepper gb-stepper--m" id="sp-m" aria-label="Quantity, size M">
+              <button class="gb-btn gb-btn--icon gb-btn--m gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>
+              <input class="gb-stepper__value" type="number" min="1" max="99" value="3" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--m gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---- STATES ---- -->
+        <span class="gbdoc-sub" id="states">States</span>
+        <h3 class="oro-h3">Four states, and the two that belong to the range</h3>
+        <p class="oro-p">Rest, hover and focus belong to the frame; at the floor and at the ceiling the state belongs to the number, and it is the button that shows it. A stepper that hides the minus at its floor moves the plus under the pointer, and the next click adds a gift nobody asked for; so the minus stays where it is and goes out.</p>
+
+        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="stepper" id="stateShelf">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Rest</b> a real control</span>
+            <div class="gb-stepper" id="st-rest" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>
+              <input class="gb-stepper__value" type="number" min="1" max="99" value="4" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Hover</b> held still</span>
+            <div class="gb-stepper is-hover" id="st-hover" aria-label="Quantity, hover">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>
+              <input class="gb-stepper__value" type="number" min="1" max="99" value="4" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Focus</b> held still</span>
+            <div class="gb-stepper is-focus" id="st-focus" aria-label="Quantity, focus">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>
+              <input class="gb-stepper__value" type="number" min="1" max="99" value="4" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>At the floor</b> minus is out</span>
+            <div class="gb-stepper" id="st-floor" aria-label="Quantity, at the floor">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>
+              <input class="gb-stepper__value" type="number" min="1" max="99" value="1" aria-label="Quantity">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Whole control off</b></span>
+            <div class="gb-stepper is-disabled" id="st-off" aria-disabled="true" aria-label="Quantity, disabled">
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity" disabled><span class="gb-btn__icon"></span></button>
+              <input class="gb-stepper__value" type="number" min="1" max="99" value="4" aria-label="Quantity" disabled>
+              <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity" disabled><span class="gb-btn__icon"></span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>State</th><th>Frame line</th><th>Well ground</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Rest</td><td class="gbdoc-num" id="sRestLine"></td><td class="gbdoc-num" id="sRestBg"></td><td><span class="gbdoc-flag">Measured</span> the checkout frame, before the migration</td></tr>
+            <tr><td>Hover</td><td class="gbdoc-num" id="sHoverLine"></td><td class="gbdoc-num" id="sHoverBg"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the field's blue, because blue is state</td></tr>
+            <tr><td>Focus within</td><td class="gbdoc-num" id="sFocusLine"></td><td class="gbdoc-num" id="sFocusBg"></td><td><span class="gbdoc-flag">Measured</span> the well washed Zinc 50 on the checkout already</td></tr>
+            <tr><td>At the floor</td><td class="gbdoc-num" id="sFloorLine"></td><td class="gbdoc-num" id="sFloorBg"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the button organism's own disabled opacity</td></tr>
+            <tr><td>Off</td><td class="gbdoc-num" id="sOffLine"></td><td class="gbdoc-num" id="sOffBg"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the line steps back one rung to Zinc 200</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Hover and focus above are held still by <code>.is-hover</code> and <code>.is-focus</code>, the two demo names the button and the field already declare. The floor state is not a class: it is the real <code>disabled</code> that stepper.js sets from the <code>min</code> of the number.</p>
+
+        <!-- ---- SIZES ---- -->
+        <span class="gbdoc-sub" id="sizes">Sizes</span>
+        <h3 class="oro-h3">The frame is as tall as its buttons</h3>
+        <p class="oro-p">A circle carries no label, so the icon button does not ride the label ladder: its rungs are 40, 48 and 56 at every width. The stepper inherits exactly that, and the only thing on it that steps with the window is the number, which rides the field ladder because it is read and typed like a field value.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Part</th><th>Base</th><th>From 1280</th><th>From 2000</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Frame height</td><td class="gbdoc-num">42</td><td class="gbdoc-num">42</td><td class="gbdoc-num">42</td><td><span class="gbdoc-flag">Measured</span> 40 of the button plus two hairlines</td></tr>
+            <tr><td>Button</td><td class="gbdoc-num">40</td><td class="gbdoc-num">40</td><td class="gbdoc-num">40</td><td><span class="gbdoc-flag">Live</span> the rung under the live 44 circle</td></tr>
+            <tr><td>Glyph</td><td class="gbdoc-num">20</td><td class="gbdoc-num">20</td><td class="gbdoc-num">20</td><td><span class="gbdoc-flag">Live</span> the icon record's 20 rung</td></tr>
+            <tr><td>Number</td><td class="gbdoc-num">14</td><td class="gbdoc-num">16</td><td class="gbdoc-num">18</td><td><span class="gbdoc-flag">Live</span> the field ladder</td></tr>
+            <tr><td>Well</td><td class="gbdoc-num">56</td><td class="gbdoc-num">56</td><td class="gbdoc-num">56</td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> 40 of the button plus one space step; 40 in dense</td></tr>
+            <tr><td>Right now</td><td class="gbdoc-num" id="szFrame"></td><td class="gbdoc-num" id="szBtn"></td><td class="gbdoc-num" id="szNum"></td><td>read off the rest specimen above</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- ANATOMY ---- -->
+        <span class="gbdoc-sub" id="anatomy">Anatomy</span>
+        <h3 class="oro-h3">Five parts, three of them borrowed</h3>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Part</th><th>What it is</th><th>Measured</th></tr></thead>
+          <tbody>
+            <tr><td>Frame</td><td><code>.gb-stepper</code>: a hairline, a radius and a clip. It sets no height of its own</td><td class="gbdoc-num" id="anFrame"></td></tr>
+            <tr><td>Minus and plus</td><td><code>.gb-btn--icon --s --plain</code>, the button organism. The stepper restyles neither</td><td class="gbdoc-num" id="anBtn"></td></tr>
+            <tr><td>Glyphs</td><td><code>minus</code> and <code>plus</code> from the icon record, filled in by stepper.js when the markup leaves the box empty</td><td class="gbdoc-num" id="anGlyph"></td></tr>
+            <tr><td>Well</td><td><code>.gb-stepper__value</code>: a cell between two seams. An <code>&lt;input type="number"&gt;</code>, or a <code>&lt;span&gt;</code> where nothing is typed</td><td class="gbdoc-num" id="anWell"></td></tr>
+            <tr><td>Seams</td><td>Zinc 200 inside a Zinc 300 frame: the outer line is the control, the inner ones are a join within it</td><td class="gbdoc-num" id="anSeam"></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- PROPERTIES ---- -->
+        <span class="gbdoc-sub" id="properties">Properties</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Name</th><th>Where it goes</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>.gb-stepper</code></td><td>the frame</td><td>The whole control: hairline, radius, clip, hover and focus</td></tr>
+            <tr><td><code>--dense</code></td><td>the frame</td><td>Narrows the well to the button's own width, for a table row</td></tr>
+            <tr><td><code>--m</code></td><td>the frame</td><td>The 48 rung. The two buttons take <code>--m</code> with it</td></tr>
+            <tr><td><code>.is-disabled</code> / <code>aria-disabled</code></td><td>the frame</td><td>The whole control off: the line steps back and both buttons go out</td></tr>
+            <tr><td><code>data-step="-1"</code> / <code>"1"</code></td><td>the two buttons</td><td>How the component finds them, and by how much each one moves</td></tr>
+            <tr><td><code>data-gb-stepper="host"</code></td><td>the frame</td><td>The host owns the value. The component stops writing numbers and does bounds and aria only. The checkout's four wear this</td></tr>
+            <tr><td><code>min</code> / <code>max</code></td><td>the number</td><td>The floor and the ceiling. On a span well they are <code>data-min</code> and <code>data-max</code> on the frame</td></tr>
+            <tr><td><code>data-step-by</code></td><td>the frame</td><td>How much one press is worth, when it is not one</td></tr>
+            <tr><td><code>gbst:change</code></td><td>event, from the frame</td><td>Fired after the component moves a value: <code>{ value, min, max }</code></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="oro-note">Click any specimen on this page to read its properties in the drawer. The table is read whole; the drawer answers about one control.</p>
+
+        <!-- ---- USAGE ---- -->
+        <span class="gbdoc-sub" id="usage">Usage</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Do</th><th>Do not</th></tr></thead>
+          <tbody>
+            <tr><td>Use a stepper where the number is small and changed by one or two at a time</td><td>Use it where the number is typed in full. Past two digits a person types, and a field is the control for typing</td></tr>
+            <tr><td>Give it a floor, and let the minus go out when it is reached</td><td>Hide the minus at the floor. The plus slides under the pointer and the next click counts something nobody asked for</td></tr>
+            <tr><td>Say what is being counted, in a label beside it or on the frame</td><td>Leave a bare number in a row and trust the column heading to explain it</td></tr>
+            <tr><td>Leave the well typeable when a person may jump to a bigger number</td><td>Make the well read only and then set a ceiling far away, so the only route to it is thirty clicks</td></tr>
+            <tr><td>Let the host own the value when the number means more than itself: a pool, a total, a recount</td><td>Wire a host handler and leave the component driving as well. Two owners count twice</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- ACCESSIBILITY ---- -->
+        <span class="gbdoc-sub" id="a11y">Accessibility</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Grouping</td><td>The frame is <code>role="group"</code> with a name, so the two buttons and the number are announced as one thing</td></tr>
+            <tr><td>Keyboard</td><td>Tab reaches the minus, the number and the plus. On a number input the arrows are the browser's own and they already honour <code>min</code> and <code>max</code>; on a span well the component gives the same two keys and the whole spinbutton contract with them</td></tr>
+            <tr><td>The buttons</td><td>Each carries its own <code>aria-label</code>, because a glyph is not a name. Both glyphs are <code>aria-hidden</code></td></tr>
+            <tr><td>Bounds</td><td>Real <code>disabled</code>, not a grey paint: at the floor the minus is out of the tab order and out of the accessibility tree's action list</td></tr>
+            <tr><td>Target size</td><td>40 by 40 per button at the S rung, 48 at M. Nothing in the control goes under 40</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- CODE ---- -->
+        <span class="gbdoc-sub" id="code">Code</span>
+        <p class="oro-p">The frame, two buttons and a well. Leave the glyph boxes empty and the component fills them from the icon record; write a glyph in by hand and it is left alone.</p>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeBasics">Copy</button>
+          <pre><code id="codeBasics">&lt;!-- the component owns the value --&gt;
+&lt;div class="gb-stepper" aria-label="Quantity"&gt;
+  &lt;button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"
+          type="button" data-step="-1" aria-label="Decrease quantity"&gt;
+    &lt;span class="gb-btn__icon"&gt;&lt;/span&gt;
+  &lt;/button&gt;
+  &lt;input class="gb-stepper__value" type="number" min="1" value="1" aria-label="Quantity"&gt;
+  &lt;button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain"
+          type="button" data-step="1" aria-label="Increase quantity"&gt;
+    &lt;span class="gb-btn__icon"&gt;&lt;/span&gt;
+  &lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- the host owns the value: bounds and aria only --&gt;
+&lt;div class="gb-stepper gb-stepper--dense" data-gb-stepper="host" aria-label="Gifts"&gt;
+  ...
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- ---- CHANGELOG ---- -->
+        <span class="gbdoc-sub" id="changelog">Changelog</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>When</th><th>What</th></tr></thead>
+          <tbody>
+            <tr><td>27 August</td><td>The checkout census named the hole: four hand-drawn frames, minus and plus with no cell in the system</td></tr>
+            <tr><td>28 August</td><td>The eight glyph buttons moved onto <code>.gb-btn--icon --s --plain</code>. The frames stayed page markup, called a temporary look out loud</td></tr>
+            <tr><td>29 August</td><td>The component. The frame, the well, the bounds and the aria; minus and plus join the icon record; all four checkout carriers wear it, and every value on that page stays Alpine's</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub">Related</span>
+        <p class="oro-p"><a href="icons.html#iconbutton">Icon button</a>, which the two glyphs are, <a href="field.html">Field</a>, whose ladder the number rides, and <a href="select.html">Select</a>, the other control the checkout was waiting on.</p>
+      </section>
+
+      <footer class="oro-foot">
+        Sources: <a href="../components/stepper.css">stepper.css</a>, <a href="../components/button.css">button.css</a>, <a href="../components/icon.css">icon.css</a>, <a href="../components/docs.css">docs.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- The properties drawer. One per page; the inspector fills it. -->
+<gb-drawer id="propsDrawer"></gb-drawer>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/stepper.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+<script>
+/* ============================================================
+   gbppl-oro-select-stepper-1 — THE STEPPER READOUT
+   ------------------------------------------------------------
+   px, txt, the width readout, the clipboard and the contents come
+   from window.GbOro (oro.js). What is here is the playground and
+   the tables that are filled by measuring specimens on this page.
+
+   NOTHING HERE PRINTS A NUMBER THAT WAS TYPED.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
+
+  var STATE = { size: 's', well: 'standard', value: 'mid', state: 'rest' };
+  var controls = document.getElementById('pgControls');
+  var hold = document.getElementById('pgHold');
+
+  function build() {
+    var cls = 'gb-stepper';
+    if (STATE.size === 'm') cls += ' gb-stepper--m';
+    if (STATE.well === 'dense') cls += ' gb-stepper--dense';
+    if (STATE.state === 'hover') cls += ' is-hover';
+    if (STATE.state === 'focus') cls += ' is-focus';
+    if (STATE.state === 'disabled') cls += ' is-disabled';
+
+    var btn = 'gb-btn gb-btn--icon gb-btn--' + (STATE.size === 'm' ? 'm' : 's') +
+              ' gb-btn--ghost gb-btn--secondary gb-btn--plain';
+    var value = STATE.value === 'floor' ? 1 : STATE.value === 'ceiling' ? 9 : 4;
+    var off = STATE.state === 'disabled';
+
+    hold.innerHTML =
+      '<div class="' + cls + '" id="pgStepper" aria-label="Quantity"' +
+        (off ? ' aria-disabled="true"' : '') + '>' +
+        '<button class="' + btn + '" type="button" data-step="-1" aria-label="Decrease quantity"' +
+          (off ? ' disabled' : '') + '><span class="gb-btn__icon"></span></button>' +
+        '<input class="gb-stepper__value" type="number" min="1" max="9" value="' + value + '"' +
+          (off ? ' disabled' : '') + ' aria-label="Quantity">' +
+        '<button class="' + btn + '" type="button" data-step="1" aria-label="Increase quantity"' +
+          (off ? ' disabled' : '') + '><span class="gb-btn__icon"></span></button>' +
+      '</div>';
+
+    /* The component enhances what arrives: it fills the two glyphs
+       from the record and reads the bounds off the number. */
+    if (window.GbStepper) window.GbStepper.boot(hold);
+
+    txt('pgCode',
+      '<div class="' + cls + '" aria-label="Quantity">\n' +
+      '  <button class="' + btn + '" data-step="-1" aria-label="Decrease quantity">\n' +
+      '    <span class="gb-btn__icon"></span>\n' +
+      '  </button>\n' +
+      '  <input class="gb-stepper__value" type="number" min="1" max="9" value="' + value + '">\n' +
+      '  <button class="' + btn + '" data-step="1" aria-label="Increase quantity">\n' +
+      '    <span class="gb-btn__icon"></span>\n' +
+      '  </button>\n' +
+      '</div>');
+
+    paintPlayground();
+  }
+
+  function read(frame) {
+    if (!frame) return null;
+    var cs = getComputedStyle(frame);
+    var r = frame.getBoundingClientRect();
+    var v = frame.querySelector('.gb-stepper__value');
+    var vs = getComputedStyle(v);
+    var vr = v.getBoundingClientRect();
+    var b = frame.querySelector('[data-step="-1"]');
+    var br = b.getBoundingClientRect();
+    var g = b.querySelector('.gb-icon') || b.querySelector('svg');
+    var gr = g ? g.getBoundingClientRect() : null;
+    return { cs: cs, r: r, vs: vs, vr: vr, br: br, gr: gr };
+  }
+
+  function paintPlayground() {
+    var m = read(document.getElementById('pgStepper'));
+    if (!m) return;
+    txt('pgBox', Math.round(m.r.width) + ' by ' + Math.round(m.r.height));
+    txt('pgWell', Math.round(m.vr.width) + ' by ' + Math.round(m.vr.height));
+    txt('pgBtn', Math.round(m.br.width) + ' by ' + Math.round(m.br.height));
+    txt('pgGlyph', m.gr ? Math.round(m.gr.width) + ' by ' + Math.round(m.gr.height) : 'no glyph');
+    txt('pgLine', px(m.cs.borderTopWidth) + ' ' + m.cs.borderTopColor);
+    txt('pgSeam', px(m.vs.borderLeftWidth) + ' ' + m.vs.borderLeftColor);
+    txt('pgFont', px(m.vs.fontSize) + ' / ' + m.vs.fontWeight);
+    txt('pgRadius', px(m.cs.borderTopLeftRadius));
+  }
+
+  function paintAxes() {
+    Array.prototype.forEach.call(controls.querySelectorAll('.gbdoc-axis'), function (row) {
+      var axis = row.getAttribute('data-axis');
+      Array.prototype.forEach.call(row.querySelectorAll('.gbdoc-seg'), function (seg) {
+        var on = seg.getAttribute('data-val') === STATE[axis];
+        seg.classList.toggle('is-on', on);
+        seg.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+    });
+  }
+
+  controls.addEventListener('click', function (e) {
+    var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-val]') : null;
+    if (!chip) return;
+    STATE[chip.parentNode.getAttribute('data-axis')] = chip.getAttribute('data-val');
+    paintAxes();
+    build();
+  });
+
+  /* ---------- the three variant captions ---------- */
+  function paintVariants() {
+    [['std', 'sp-std'], ['dense', 'sp-dense'], ['m', 'sp-m']].forEach(function (pair) {
+      var m = read(document.getElementById(pair[1]));
+      if (!m) return;
+      var cap = document.querySelector('[data-m="' + pair[0] + '"]');
+      if (cap) cap.textContent = Math.round(m.r.width) + ' by ' + Math.round(m.r.height) +
+        ', well ' + Math.round(m.vr.width);
+    });
+  }
+
+  /* ---------- the states table ---------- */
+  function paintStates() {
+    [['rest', 'sRest'], ['hover', 'sHover'], ['focus', 'sFocus'],
+     ['floor', 'sFloor'], ['off', 'sOff']].forEach(function (pair) {
+      var frame = document.getElementById('st-' + pair[0]);
+      if (!frame) return;
+      var cs = getComputedStyle(frame);
+      var v = frame.querySelector('.gb-stepper__value');
+      txt(pair[1] + 'Line', px(cs.borderTopWidth) + ' ' + cs.borderTopColor);
+      txt(pair[1] + 'Bg', getComputedStyle(v).backgroundColor === 'rgba(0, 0, 0, 0)'
+        ? 'transparent' : getComputedStyle(v).backgroundColor);
+    });
+  }
+
+  function paintAnatomy() {
+    var m = read(document.getElementById('st-rest'));
+    if (!m) return;
+    txt('szFrame', Math.round(m.r.height));
+    txt('szBtn', Math.round(m.br.height));
+    txt('szNum', px(m.vs.fontSize));
+
+    txt('anFrame', Math.round(m.r.width) + ' by ' + Math.round(m.r.height) +
+      ', radius ' + px(m.cs.borderTopLeftRadius));
+    txt('anBtn', Math.round(m.br.width) + ' by ' + Math.round(m.br.height));
+    txt('anGlyph', m.gr ? Math.round(m.gr.width) + ' by ' + Math.round(m.gr.height) : 'no glyph');
+    txt('anWell', Math.round(m.vr.width) + ' by ' + Math.round(m.vr.height) +
+      ', ' + px(m.vs.fontSize) + ' / ' + m.vs.fontWeight);
+    txt('anSeam', px(m.vs.borderLeftWidth) + ' ' + m.vs.borderLeftColor +
+      ' inside ' + px(m.cs.borderTopWidth) + ' ' + m.cs.borderTopColor);
+
+    ORO.widthNow('wnow');
+  }
+
+  function paintAll() { paintVariants(); paintStates(); paintAnatomy(); paintPlayground(); }
+
+  /* The glyph arrives with icon.js, which mounts on DOMContentLoaded,
+     and this script runs while the document is still parsing. Painting
+     now would print «no glyph» into a table that is describing a page
+     that has one, so the first pass waits for the document. */
+  function start() {
+    paintAxes();
+    build();
+    paintAll();
+    ORO.watchCopy();
+    ORO.watchToc();
+    /* TRAP 11 OF THE SKILL, caught here by measurement: a specimen
+       that wears a demo state class at load is still INSIDE its own
+       colour transition on the first frame, and a colour read there
+       is a colour that stands on no screen (hover printed Zinc 500
+       while the page was drawing Blue 600). So the tables are read
+       again once the longest transition on a specimen has run out.
+       The wait is not typed either: it is read off the specimen. */
+    var ms = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-shelf *'), function (el) {
+      var d = getComputedStyle(el).transitionDuration.split(',');
+      d.forEach(function (one) {
+        var n = parseFloat(one);
+        if (!isNaN(n)) ms = Math.max(ms, /ms$/.test(one.trim()) ? n : n * 1000);
+      });
+    });
+    if (ms) setTimeout(paintAll, ms + 40);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  /* The specimens on the shelves are real: stepping one has to move
+     the numbers in the tables that describe it. */
+  document.addEventListener('gbst:change', function () { paintAll(); });
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(paintAll, 120);
+  });
+})();
+</script>
+
+<gb-studio-panel data-root="../../" page="oro"></gb-studio-panel>
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>

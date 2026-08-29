@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Select · Oro, GildedBox Design System</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-oro-select-stepper-1 — THE SELECT PAGE
+     ------------------------------------------------------------
+     Skill, section 8, open since 27.08: «SELECT: компонента НЕТ...
+     Поле и селект это не одно и то же, и система обязана это
+     сказать.» This page is the system saying it.
+
+     WHAT IS MEASURED AND WHAT IS DECLARED, said once here and
+     again in the provenance column of every table below. The live
+     site has NO select: measured 29.08 across the home page, the
+     catalogue and its filter drawer, a product page in both of its
+     variants, the lead form and the portal door. Not one native
+     <select>, not one PrimeVue dropdown. The only list-opening
+     control the site owns is the country picker of a third party
+     phone library, and its arrow is a text glyph (U+25BC) at
+     9.6px / 12.8px in #666, on the LEFT of the field.
+
+     So the ladder, the underline, the ink and both state colours
+     are the FIELD's, measured on the live sign in and already
+     documented on field.html; the chevron is DECLARED under
+     Ton-17, drawn from the icon record at the 20 rung.
+
+     Ton-10: this page is a CONSUMER. Its card, tables, shelves,
+     chips and code blocks are the atoms of ..\components\docs.css;
+     its specimens are the component itself.
+
+     NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
+     measurement is read back out of the rendered page.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../components/shell.css">
+<link rel="stylesheet" href="../components/header.css">
+<link rel="stylesheet" href="../components/button.css">
+<link rel="stylesheet" href="../components/icon.css">
+<link rel="stylesheet" href="../components/auth.css">
+<link rel="stylesheet" href="../components/drawer.css">
+<link rel="stylesheet" href="../components/docs.css">
+<link rel="stylesheet" href="../components/inspect.css">
+<link rel="stylesheet" href="../components/comments.css">
+<link rel="stylesheet" href="../components/studio-panel.css">
+<link rel="stylesheet" href="oro.css">
+
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<style>
+.oro-col { max-width: 1180px; }
+.oro-lede, .oro-p, .oro-note, .gbdoc-card__line { max-width: 860px; }
+
+/* ANTIDOTE, documented where it stands (trap 3 of the skill).
+   auth.css reproduces the live preflight INSIDE the scope of
+   gb-guest-header and gb-auth-flow, and a specimen standing on a
+   showcase page is inside neither, so the browser's own select
+   border would draw a box around a control that is an underline. */
+.oro-col select.gba-input { border-style: solid; border-top-width: 0; border-right-width: 0; border-left-width: 0; }
+</style>
+</head>
+<body>
+
+<!-- The studio bar, the same markup every studio page carries. -->
+<header class="gb-header gb-header--studio">
+  <div class="gb-container gbh-bar gbh-bar--studio">
+    <a class="gbh-lock" href="../../index.html" aria-label="GildedBox Design Studio, home">
+      <img class="gbh-lock__mark" src="../assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+      <span class="gbh-lock__rule" aria-hidden="true"></span>
+      <span class="gbh-lock__word">Design Studio</span>
+    </a>
+    <nav class="gbh-nav" aria-label="Studio">
+      <a class="gbh-link" href="../../live/map.html">Live Prototype</a>
+      <a class="gbh-link" href="../../sandboxes.html">Sandboxes</a>
+      <a class="gbh-link is-active" href="index.html" aria-current="page">Design System</a>
+    </nav>
+    <div class="gbh-actions">
+      <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-studio-lock>
+        <span class="gb-btn__label" data-pc-section="label">Lock</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="oro">
+
+  <nav class="oro-rail" aria-label="Design system sections">
+    <!-- gbppl-oro-pages-1. The rail is rendered from the page table in
+         oro.js, one copy for the whole showcase; aria-current is read
+         off location. The contents of THIS page are written beside the
+         document by the same file. -->
+    <div data-oro-rail></div>
+  </nav>
+  <script src="oro.js"></script>
+
+  <main class="oro-main">
+
+    <!-- gbppl-oro-toc-1. The contents of this page, written off the
+         document itself so it cannot disagree with what is on it. -->
+    <aside class="oro-toc" data-oro-toc hidden></aside>
+    <div class="oro-col">
+
+      <header class="oro-head">
+        <span class="gb-eyebrow">Base component</span>
+        <h1 class="oro-h1">Select <span class="gbdoc-flag gbdoc-flag--declared gbdoc-status">Declared</span></h1>
+        <p class="oro-lede">A field that opens a list. The underline, the ladder and both states are the field's, to the pixel; the version adds one thing, the mark that says there is more here than typing.</p>
+        <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. Every number in the tables below is read off a specimen at that width.</p>
+      </header>
+
+      <section class="gbdoc-card" id="select" data-toc="Select">
+
+        <!-- ---- OVERVIEW ---- -->
+        <span class="gbdoc-sub">Overview</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Owner</td><td><code>system/components/auth.css</code>, the file that owns the field</td></tr>
+            <tr><td>Class</td><td><code>.gba-select</code> on the wrapper, <code>.gba-input</code> on the native <code>&lt;select&gt;</code> inside it</td></tr>
+            <tr><td>Element</td><td><code>&lt;gb-field type="select" options="A|B|C"&gt;</code> writes the whole thing, wrapper and glyph included</td></tr>
+            <tr><td>Worn by</td><td>Two controls on the checkout: the billing address and the country of an address</td></tr>
+            <tr><td>Defaults</td><td>The field ladder 48 / 56 from 1280 / 64 from 2000, Inter 300, Zinc 400 underline, chevron at the 20 rung</td></tr>
+            <tr><td>Status</td><td>Declared 29 August. Live has no select of its own to copy, so the version is ours under Ton-17 and live catches up</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">A select is not a text input, and the system said so for the first time on 29 August. Before that the two on the checkout wore <code>.gba-input</code> alone, which sets <code>appearance: none</code>: they did not have a browser arrow, they had nothing at all.</p>
+
+        <!-- ---- PLAYGROUND ---- -->
+        <span class="gbdoc-sub" id="playground">Playground</span>
+        <h3 class="oro-h3">Build a select and read it back</h3>
+        <p class="oro-p">Set the axes and the one specimen on the stage rebuilds itself; the markup and the measurements below follow it. Rest is a real control: open it, and the list you see is the operating system's, which is the point of the whole component.</p>
+
+        <div class="gbdoc-frame">
+          <div class="gbdoc-controls" id="pgControls">
+            <div class="gbdoc-axis" role="radiogroup" data-axis="state">
+              <span class="gbdoc-axis__name">State</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="rest">Rest</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="hover">Hover</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="focus">Focus</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="error">Error</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="disabled">Disabled</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="label">
+              <span class="gbdoc-axis__name">Label</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="caps">Caps label</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="none">None</button>
+            </div>
+            <div class="gbdoc-axis" role="radiogroup" data-axis="value">
+              <span class="gbdoc-axis__name">Value</span>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="placeholder">Nothing picked</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="picked">Picked</button>
+              <button class="gbdoc-seg" type="button" role="radio" data-val="long">A long one</button>
+            </div>
+          </div>
+          <div class="gbdoc-stage gbdoc-stage--center" id="pgStage" data-inspect="select">
+            <div class="gbdoc-hold" id="pgHold"></div>
+          </div>
+        </div>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
+          <pre><code id="pgCode"></code></pre>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Measured on the sample</th><th>Value</th><th>Measured on the sample</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Height</td><td class="gbdoc-num" id="pgH"></td><td>Type</td><td class="gbdoc-num" id="pgFont"></td></tr>
+            <tr><td>Padding, left</td><td class="gbdoc-num" id="pgPadL"></td><td>Padding, right</td><td class="gbdoc-num" id="pgPadR"></td></tr>
+            <tr><td>Underline</td><td class="gbdoc-num" id="pgLine"></td><td>Ink</td><td class="gbdoc-num" id="pgInk"></td></tr>
+            <tr><td>Chevron box</td><td class="gbdoc-num" id="pgChev"></td><td>Chevron ink</td><td class="gbdoc-num" id="pgChevInk"></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- VARIANTS ---- -->
+        <span class="gbdoc-sub" id="variants">Variants</span>
+        <h3 class="oro-h3">One look, and the family it belongs to</h3>
+        <p class="oro-p">The select has no variants of its own: it is itself a variant, the fourth look of one field. The table names all four so a reader who arrives here can see which one they actually want, and the shelf under it stands the select beside the plain field it is made of.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Look</th><th>What it is for</th><th>Where it stands today</th></tr></thead>
+          <tbody>
+            <tr><td>Field, single line</td><td>Typed text of one line</td><td>The gate, the sign in, the checkout, the portal composer</td></tr>
+            <tr><td>Field, multi line</td><td>Typed text of several lines, growing with what is written</td><td>The lead form, the comment drawer</td></tr>
+            <tr><td>Field, floating label</td><td>A form that reproduces the live lead form, where the label rides inside the control</td><td>Booking step one, the comment drawer</td></tr>
+            <tr><td><b>Select</b></td><td>One value out of a known, closed list. Nothing is typed</td><td>The checkout: billing address, country</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="gbdoc-shelf" data-inspect="select">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>The field</b> typed</span>
+            <div class="gba-field">
+              <label class="gba-label" for="v-text">Company</label>
+              <div class="gba-inputwrap"><input class="gba-input" id="v-text" type="text" placeholder="GildedBox"></div>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>The select</b> picked</span>
+            <div class="gba-field">
+              <label class="gba-label" for="v-select">Country</label>
+              <div class="gba-inputwrap gba-select">
+                <select class="gba-input" id="v-select">
+                  <option>United States</option><option>Canada</option><option>Italy</option>
+                </select>
+                <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---- STATES ---- -->
+        <span class="gbdoc-sub" id="states">States</span>
+        <h3 class="oro-h3">Five states, four of them the field's own</h3>
+        <p class="oro-p">Hover, focus and error are the field's, unchanged and measured live; the chevron follows the line into blue because the line and the mark are one control to the person looking at it. Disabled is the only state the field has never had a measurement for, and it is written down as such rather than invented.</p>
+
+        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="select" id="stateShelf">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Rest</b> hover it, tab to it</span>
+            <div class="gba-inputwrap gba-select">
+              <select class="gba-input" id="st-rest"><option>Select a billing address</option><option>12 Park Ave, New York</option></select>
+              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Hover</b> held still</span>
+            <div class="gba-inputwrap gba-select is-hover">
+              <select class="gba-input is-hover" id="st-hover"><option>Select a billing address</option></select>
+              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Focus</b> held still</span>
+            <div class="gba-inputwrap gba-select is-focus">
+              <select class="gba-input is-focus" id="st-focus"><option>Select a billing address</option></select>
+              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Error</b> after a submit</span>
+            <div class="gba-inputwrap gba-select">
+              <select class="gba-input invalid" id="st-error"><option>Select a billing address</option></select>
+              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Disabled</b> real, not a class</span>
+            <div class="gba-inputwrap gba-select">
+              <select class="gba-input" id="st-disabled" disabled><option>Select a billing address</option></select>
+              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>State</th><th>Underline</th><th>Chevron ink</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Rest</td><td class="gbdoc-num" id="sRestLine"></td><td class="gbdoc-num" id="sRestChev"></td><td><span class="gbdoc-flag">Live</span> Zinc 400, the sign in field</td></tr>
+            <tr><td>Hover</td><td class="gbdoc-num" id="sHoverLine"></td><td class="gbdoc-num" id="sHoverChev"></td><td><span class="gbdoc-flag">Live</span> Blue 600, measured on the one live control that opens a list</td></tr>
+            <tr><td>Focus</td><td class="gbdoc-num" id="sFocusLine"></td><td class="gbdoc-num" id="sFocusChev"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the field's focus, taken from its hover on 28.08</td></tr>
+            <tr><td>Error</td><td class="gbdoc-num" id="sErrorLine"></td><td class="gbdoc-num" id="sErrorChev"></td><td><span class="gbdoc-flag">Live</span> Red 500, the sign in submit</td></tr>
+            <tr><td>Disabled</td><td class="gbdoc-num" id="sDisLine"></td><td class="gbdoc-num" id="sDisChev"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the chevron quiets to Zinc 300; the control itself is the browser's own disabled, which the field has never measured either</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Hover and focus above are held still by <code>.is-hover</code> and <code>.is-focus</code>, the same two demo names the button and the field declare. They exist so five states can stand on one screen, and no product page may wear them.</p>
+
+        <!-- ---- SIZES ---- -->
+        <span class="gbdoc-sub" id="sizes">Sizes</span>
+        <h3 class="oro-h3">The control family, not a ladder of its own</h3>
+        <p class="oro-p">A select climbs with the window exactly as a field does, because it is one: three rungs, and the type steps with them. There is no S or L to pick. The heights below are read off the specimen in the states shelf at the width this browser is rendering right now.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>From</th><th>Height</th><th>Type</th><th>Padding</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Base</td><td class="gbdoc-num">48</td><td class="gbdoc-num">14</td><td class="gbdoc-num">0 12</td><td><span class="gbdoc-flag">Live</span> the sign in, 18.08</td></tr>
+            <tr><td>1280</td><td class="gbdoc-num">56</td><td class="gbdoc-num">16</td><td class="gbdoc-num">0 12</td><td><span class="gbdoc-flag">Live</span> the sign in, 18.08</td></tr>
+            <tr><td>2000</td><td class="gbdoc-num">64</td><td class="gbdoc-num">18</td><td class="gbdoc-num">0 16</td><td><span class="gbdoc-flag">Live</span> the sign in, 18.08</td></tr>
+            <tr><td>Right now</td><td class="gbdoc-num" id="szH"></td><td class="gbdoc-num" id="szFont"></td><td class="gbdoc-num" id="szPad"></td><td>read off the specimen above</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- ANATOMY ---- -->
+        <span class="gbdoc-sub" id="anatomy">Anatomy</span>
+        <h3 class="oro-h3">Four parts, and the one that is not ours</h3>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Part</th><th>What it is</th><th>Measured</th></tr></thead>
+          <tbody>
+            <tr><td>Wrapper</td><td><code>.gba-select</code>: position only. It draws nothing and exists so the glyph has something to stand in</td><td class="gbdoc-num" id="anWrap"></td></tr>
+            <tr><td>Control</td><td>The native <code>&lt;select&gt;</code> wearing <code>.gba-input</code>: the underline, the ladder, the ink, every state</td><td class="gbdoc-num" id="anCtl"></td></tr>
+            <tr><td>Chevron</td><td><code>.gb-icon</code> at the 20 rung, <code>chevron-down</code> from the icon record, <code>pointer-events: none</code> so a click on it opens the list</td><td class="gbdoc-num" id="anChev"></td></tr>
+            <tr><td>Room for the chevron</td><td>Padding on the right: the field's own inset, plus the glyph, plus one step of the space scale</td><td class="gbdoc-num" id="anRoom"></td></tr>
+            <tr><td>The list</td><td>Not ours. The operating system draws it, and that is a decision, not a gap</td><td>not measurable</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- PROPERTIES ---- -->
+        <span class="gbdoc-sub" id="properties">Properties</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Name</th><th>Where it goes</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>.gba-select</code></td><td>the wrapper</td><td>Makes room for the glyph and positions it. Sits beside <code>.gba-inputwrap</code> or replaces it</td></tr>
+            <tr><td><code>.gba-input</code></td><td>the <code>&lt;select&gt;</code></td><td>Everything else: ladder, type, underline, states</td></tr>
+            <tr><td><code>.invalid</code></td><td>the <code>&lt;select&gt;</code></td><td>The error line, set by the form after a submit</td></tr>
+            <tr><td><code>disabled</code></td><td>the <code>&lt;select&gt;</code></td><td>Real, not a class. The chevron quiets with it</td></tr>
+            <tr><td><code>type="select"</code></td><td><code>&lt;gb-field&gt;</code></td><td>Writes the whole thing: wrapper, control, glyph, label</td></tr>
+            <tr><td><code>options="A|B|C"</code></td><td><code>&lt;gb-field&gt;</code></td><td>The list. A vertical bar separates, because a comma lives inside addresses and company names</td></tr>
+            <tr><td><code>placeholder</code></td><td><code>&lt;gb-field&gt;</code></td><td>The first row, disabled and selected: the "pick one" line a select has instead of a placeholder</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="oro-note">Click any specimen on this page to read its properties in the drawer. The table is for reading the whole thing at once; the drawer answers about one control.</p>
+
+        <!-- ---- USAGE ---- -->
+        <span class="gbdoc-sub" id="usage">Usage</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Do</th><th>Do not</th></tr></thead>
+          <tbody>
+            <tr><td>Use a select when the list is closed, short and known in advance, and one value out of it is the answer</td><td>Use it for a list nobody can hold in their head. Past a few dozen rows the person wants to search, and that is a different control</td></tr>
+            <tr><td>Give the first row a "pick one" line when nothing is chosen yet, disabled so it cannot be chosen back</td><td>Leave the first real value pre-selected as if it were a default. A pre-chosen value is an answer given on the person's behalf</td></tr>
+            <tr><td>Keep the label above the control, in the one caps voice of the system</td><td>Replace the label with the pick-one line. It disappears the moment a value is chosen, and the field goes nameless</td></tr>
+            <tr><td>Let the operating system draw the list</td><td>Build a menu to make the list look like the page. The cost is the phone, the keyboard and the focus trap, and the gain is a rounded corner</td></tr>
+            <tr><td>Sort the options the way the person thinks: most likely first, or plainly alphabetical</td><td>Sort them the way the database returns them</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- ACCESSIBILITY ---- -->
+        <span class="gbdoc-sub" id="a11y">Accessibility</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Keyboard</td><td>Everything a native select does, because it is one: Tab to it, arrows or first letter to move, Enter or Space to open, Escape to leave it as it was. None of it is written by us and none of it can be broken by us</td></tr>
+            <tr><td>Name</td><td>The caps label carries <code>for</code> and the control carries <code>id</code>. A select with no label has no name, and the pick-one row is not one</td></tr>
+            <tr><td>The glyph</td><td><code>aria-hidden="true"</code> and no pointer events: it is a mark, not a control, and the control it marks is already announced as a listbox</td></tr>
+            <tr><td>Disabled</td><td>Real <code>disabled</code>. The chevron quiets so the state is visible as well as announced</td></tr>
+            <tr><td>Target size</td><td>48 at the smallest rung, the same as every control in the family</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ---- CODE ---- -->
+        <span class="gbdoc-sub" id="code">Code</span>
+        <p class="oro-p">Two ways in. The element writes the whole thing; the classes are for a page that already owns its markup, which is how the checkout carries both of its selects.</p>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeBasics">Copy</button>
+          <pre><code id="codeBasics">&lt;!-- the element: label, wrapper, control and glyph --&gt;
+&lt;gb-field input-id="country" name="country" label="Country"
+          type="select" placeholder="Select a country"
+          options="United States|Canada|Italy"&gt;&lt;/gb-field&gt;
+
+&lt;!-- by hand, where the page owns its own markup --&gt;
+&lt;div class="gba-inputwrap gba-select"&gt;
+  &lt;select class="gba-input" id="country"&gt;
+    &lt;option&gt;United States&lt;/option&gt;
+    &lt;option&gt;Canada&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"&gt;&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- ---- CHANGELOG ---- -->
+        <span class="gbdoc-sub" id="changelog">Changelog</span>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>When</th><th>What</th></tr></thead>
+          <tbody>
+            <tr><td>27 August</td><td>The checkout census put both selects on <code>.gba-input</code>, the nearest true thing the system had, and wrote down what that cost: a select that looks exactly like a text input</td></tr>
+            <tr><td>29 August</td><td><code>.gba-select</code>, the fourth look of the field. Both checkout selects wear it; the chevron comes from the icon record; the page is written</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <span class="gbdoc-sub">Related</span>
+        <p class="oro-p"><a href="field.html">Field</a>, which this is a look of, <a href="icons.html">Icons</a>, where the chevron is drawn, and <a href="stepper.html">Stepper</a>, the other control the checkout was waiting on.</p>
+      </section>
+
+      <footer class="oro-foot">
+        Sources: <a href="../components/auth.css">auth.css</a>, <a href="../components/icon.css">icon.css</a>, <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- The properties drawer. One per page; the inspector fills it. -->
+<gb-drawer id="propsDrawer"></gb-drawer>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+<script>
+/* ============================================================
+   gbppl-oro-select-stepper-1 — THE SELECT READOUT
+   ------------------------------------------------------------
+   Five small scripts of the showcase template come from oro.js
+   (window.GbOro): px, txt, the width readout, the clipboard and
+   the contents. What is here is the playground and the two tables
+   that are filled by measuring specimens on this page.
+
+   NOTHING HERE PRINTS A NUMBER THAT WAS TYPED.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
+
+  /* ---------- the playground ---------- */
+  var STATE = { state: 'rest', label: 'caps', value: 'placeholder' };
+  var controls = document.getElementById('pgControls');
+  var hold = document.getElementById('pgHold');
+
+  var VALUES = {
+    placeholder: ['Select a billing address', '12 Park Ave, New York', '5 Bay St, San Francisco'],
+    picked: ['12 Park Ave, New York', 'Select a billing address'],
+    long: ['Hauptstrasse 118, 10827 Berlin, Germany, attention of the office manager', 'Select a billing address']
+  };
+
+  function build() {
+    var opts = VALUES[STATE.value];
+    var body = '';
+    for (var i = 0; i < opts.length; i++) body += '<option>' + opts[i] + '</option>';
+
+    var cls = 'gba-input';
+    if (STATE.state === 'hover') cls += ' is-hover';
+    if (STATE.state === 'focus') cls += ' is-focus';
+    if (STATE.state === 'error') cls += ' invalid';
+
+    var label = STATE.label === 'caps'
+      ? '<label class="gba-label" for="pgSelect">Billing address</label>' : '';
+
+    hold.innerHTML =
+      '<div class="gba-field" style="width:min(360px,100%)">' + label +
+        '<div class="gba-inputwrap gba-select">' +
+          '<select class="' + cls + '" id="pgSelect"' +
+            (STATE.state === 'disabled' ? ' disabled' : '') + '>' + body + '</select>' +
+          (window.GbIcons ? window.GbIcons.html('chevron-down', 20) : '') +
+        '</div>' +
+      '</div>';
+
+    var code = '<div class="gba-inputwrap gba-select">\n' +
+      '  <select class="' + cls + '"' + (STATE.state === 'disabled' ? ' disabled' : '') + '>\n' +
+      '    <option>' + opts[0] + '</option>\n' +
+      '  </select>\n' +
+      '  <span data-gb-icon="chevron-down" data-gb-icon-size="20"></span>\n' +
+      '</div>';
+    txt('pgCode', code);
+
+    paintPlayground();
+  }
+
+  function paintPlayground() {
+    var el = document.getElementById('pgSelect');
+    if (!el) return;
+    var cs = getComputedStyle(el);
+    var chev = el.parentNode.querySelector('.gb-icon');
+    var ccs = chev ? getComputedStyle(chev) : null;
+    var cr = chev ? chev.getBoundingClientRect() : null;
+    txt('pgH', px(cs.minHeight));
+    txt('pgFont', px(cs.fontSize) + ' / ' + cs.fontWeight);
+    txt('pgPadL', px(cs.paddingLeft));
+    txt('pgPadR', px(cs.paddingRight));
+    txt('pgLine', px(cs.borderBottomWidth) + ' ' + cs.borderBottomColor);
+    txt('pgInk', cs.color);
+    txt('pgChev', cr ? Math.round(cr.width) + ' by ' + Math.round(cr.height) : 'no glyph');
+    txt('pgChevInk', ccs ? ccs.color : 'no glyph');
+  }
+
+  function paintAxes() {
+    Array.prototype.forEach.call(controls.querySelectorAll('.gbdoc-axis'), function (row) {
+      var axis = row.getAttribute('data-axis');
+      Array.prototype.forEach.call(row.querySelectorAll('.gbdoc-seg'), function (seg) {
+        var on = seg.getAttribute('data-val') === STATE[axis];
+        seg.classList.toggle('is-on', on);
+        seg.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+    });
+  }
+
+  controls.addEventListener('click', function (e) {
+    var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-val]') : null;
+    if (!chip) return;
+    var axis = chip.parentNode.getAttribute('data-axis');
+    STATE[axis] = chip.getAttribute('data-val');
+    paintAxes();
+    build();
+  });
+
+  /* ---------- the states table ----------
+     Every row is read off the specimen that stands above it, so a
+     row cannot describe a rule the page is not rendering. */
+  function paintStates() {
+    [['rest', 'sRest'], ['hover', 'sHover'], ['focus', 'sFocus'],
+     ['error', 'sError'], ['disabled', 'sDis']].forEach(function (pair) {
+      var el = document.getElementById('st-' + pair[0]);
+      if (!el) return;
+      var cs = getComputedStyle(el);
+      var chev = el.parentNode.querySelector('.gb-icon');
+      txt(pair[1] + 'Line', px(cs.borderBottomWidth) + ' ' + cs.borderBottomColor);
+      txt(pair[1] + 'Chev', chev ? getComputedStyle(chev).color : 'no glyph');
+    });
+  }
+
+  /* ---------- sizes and anatomy ---------- */
+  function paintAnatomy() {
+    var el = document.getElementById('st-rest');
+    if (!el) return;
+    var wrap = el.parentNode;
+    var chev = wrap.querySelector('.gb-icon');
+    var cs = getComputedStyle(el);
+    var r = el.getBoundingClientRect();
+    var wr = wrap.getBoundingClientRect();
+    var cr = chev ? chev.getBoundingClientRect() : null;
+
+    txt('szH', px(cs.minHeight));
+    txt('szFont', px(cs.fontSize));
+    txt('szPad', px(cs.paddingTop) + ' ' + px(cs.paddingLeft));
+
+    txt('anWrap', Math.round(wr.width) + ' by ' + Math.round(wr.height));
+    txt('anCtl', Math.round(r.width) + ' by ' + Math.round(r.height));
+    txt('anChev', cr ? Math.round(cr.width) + ' by ' + Math.round(cr.height) +
+        ', ' + Math.round(r.right - cr.right) + ' from the right edge' : 'no glyph');
+    txt('anRoom', px(cs.paddingRight));
+
+    ORO.widthNow('wnow');
+  }
+
+  function paintAll() { paintStates(); paintAnatomy(); paintPlayground(); }
+
+  /* The glyph arrives with icon.js, which mounts on DOMContentLoaded,
+     and this script runs while the document is still parsing. Painting
+     now would print «no glyph» into a table that is describing a page
+     that has one, so the first pass waits for the document. */
+  function start() {
+    paintAxes();
+    build();
+    paintAll();
+    ORO.watchCopy();
+    ORO.watchToc();
+    /* TRAP 11 OF THE SKILL, caught here by measurement: a specimen
+       that wears a demo state class at load is still INSIDE its own
+       colour transition on the first frame, and a colour read there
+       is a colour that stands on no screen (hover printed Zinc 500
+       while the page was drawing Blue 600). So the tables are read
+       again once the longest transition on a specimen has run out.
+       The wait is not typed either: it is read off the specimen. */
+    var ms = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-shelf *'), function (el) {
+      var d = getComputedStyle(el).transitionDuration.split(',');
+      d.forEach(function (one) {
+        var n = parseFloat(one);
+        if (!isNaN(n)) ms = Math.max(ms, /ms$/.test(one.trim()) ? n : n * 1000);
+      });
+    });
+    if (ms) setTimeout(paintAll, ms + 40);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(paintAll, 120);
+  });
+})();
+</script>
+
+<gb-studio-panel data-root="../../" page="oro"></gb-studio-panel>
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>

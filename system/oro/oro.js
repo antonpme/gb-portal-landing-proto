@@ -84,6 +84,8 @@
     { href: 'eyebrow.html', label: 'Eyebrow' },
     { href: 'field.html', label: 'Field' },
     { href: 'icons.html#iconbutton', label: 'Icon button' },
+    { href: 'select.html', label: 'Select' },
+    { href: 'stepper.html', label: 'Stepper' },
 
     { group: 'Composite', sub: true },
     { href: 'drawer.html', label: 'Drawer' }
