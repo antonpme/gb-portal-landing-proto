@@ -452,8 +452,10 @@ button { font-family: inherit; cursor: pointer; }
    the title, with no markup change at all. One declaration, two names,
    so the bridge cannot drift from what it bridges to. */
 .oro-h2,
-.gbdoc-sub + .oro-h3 {
+.gbdoc-sub + .oro-h3,
+.gbdoc-sub:not(:has(+ .oro-h3)) {
   margin: 12px 0 0;
+  text-transform: none;
   font-family: var(--font-serif);
   font-size: 24px;
   font-weight: 500;
@@ -463,8 +465,26 @@ button { font-family: inherit; cursor: pointer; }
 }
 @media (min-width: 1280px) {
   .oro-h2,
-  .gbdoc-sub + .oro-h3 { font-size: 28px; }
+  .gbdoc-sub + .oro-h3,
+  .gbdoc-sub:not(:has(+ .oro-h3)) { font-size: 28px; }
 }
+/* A caption with nothing under it was never a caption: it was the
+   section's only name. So a lone .gbdoc-sub IS the title and reads as
+   one, and it keeps the boundary docs.css gave it (the shorthand margin
+   above would have taken it away). A .gbdoc-sub that does have a title
+   under it stays the eyebrow it should be. Two pages are held up by
+   these two rules while another wave has them open; when their markup
+   is rewritten, both selectors go. */
+.gbdoc-sub:not(:has(+ .oro-h3)) {
+  margin-top: var(--space-64);
+  padding-top: var(--space-32);
+  border-top: 1px solid var(--zinc-200);
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) {
+  .gbdoc-sub:not(:has(+ .oro-h3)) { padding-top: var(--space-48); }
+}
+.gbdoc-card > .gbdoc-sub:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .oro-h3 {
   margin: 0;
   font-size: 15px;
