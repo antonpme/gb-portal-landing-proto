@@ -1,0 +1,199 @@
+/* ============================================================
+   gbppl-oro-select-stepper-1 — THE STEPPER
+   ------------------------------------------------------------
+   Ton, skill section 8, open since 27.08 (gbppl-checkout-14):
+   «STEPPER (минус / число / плюс): компонента НЕТ. Четыре штуки
+   на чекауте. Это ОДИН контрол, а не три, и ничто в системе его
+   не описывает; заодно он тянет за собой icon-only.»
+
+   Icon-only was closed on 28.08. This file closes the rest: the
+   frame that was page markup on the checkout, the well the number
+   stands in, and the one behaviour a stepper has that a pair of
+   buttons does not — it knows its own floor and says so.
+
+       <div class="gb-stepper">
+         <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost
+                        gb-btn--secondary gb-btn--plain"
+                 type="button" data-step="-1"
+                 aria-label="Decrease quantity">
+           <span class="gb-btn__icon"></span>
+         </button>
+         <input class="gb-stepper__value" type="number" min="1" value="1">
+         <button ... data-step="1" aria-label="Increase quantity">
+           <span class="gb-btn__icon"></span>
+         </button>
+       </div>
+
+   ------------------------------------------------------------
+   WHERE EVERY NUMBER COMES FROM
+   ------------------------------------------------------------
+   DECLARED, AND THE REASON IS WRITTEN DOWN. The live site has no
+   stepper: measured 29.08 with the instrument across the home
+   page, contact us, book a meeting, the catalogue and a product
+   page. Quantity on the live catalogue is not stepped at all, and
+   the portal's own cart stands behind the sign in, where a wave
+   is not allowed to go. So there is no live specimen to copy, and
+   Ton-17 covers exactly this case: what live does not have, we
+   build by the system and live catches up.
+
+   Nothing here is invented on top of that, though. Every value is
+   one this house already renders on the checkout, read off the
+   page before the migration:
+
+     height       40 + 2 hairlines = 42, because the two glyph
+                  buttons are .gb-btn--icon --s and that rung is
+                  40 (--gb-btn-m-h). The frame does not set a
+                  height of its own: it is as tall as its buttons,
+                  which is the only way the two can never disagree.
+     hairline     1px Zinc 300 around the frame, 1px Zinc 200
+                  between the cells. The outer line is the control,
+                  the inner ones are a seam inside it, so the seam
+                  is one step quieter. Both measured on the
+                  checkout frame, both already tokens.
+     radius       --radius, the one brand radius.
+     ground       --white. A stepper stands in cards and in table
+                  rows, and its well has to read as an editable
+                  cell on both.
+     the number   the FIELD ladder, 14 / 16 from 1280 / 18 from
+                  2000, because the number is typed into and read
+                  back like any other field value; weight 500,
+                  which is what the checkout has rendered since
+                  20.08 and what tells a value apart from prose.
+     the well     40 + --space-16 = 56 wide by default, and 40 in
+                  --dense. Both are checkout widths; the third the
+                  page had (64) folds into 56, one step of the
+                  grid, and the change is recorded in the report.
+
+   NO TOKEN, and why not: the value width is not a length the
+   system has a scale for — it is «wide enough for three digits
+   and a caret» — so it is written as a calc off the button rung
+   and the space scale rather than as a new number. The day a
+   fourth digit is real, the calc is where it is changed.
+
+   ------------------------------------------------------------
+   WHAT THIS FILE DOES NOT DO
+   ------------------------------------------------------------
+   It does not draw the buttons. They are .gb-btn--icon --s
+   --plain from the button organism, exactly as the checkout has
+   worn them since 28.08, and a stepper that restyled them would
+   be a second button ladder in the house (Ton-6). What the frame
+   adds is the shape they stand in and the well between them.
+
+   It does not draw the glyphs either. minus and plus live in the
+   icon record (icon.js), and stepper.js fills an empty
+   .gb-btn__icon from it; markup that carries its own SVG keeps it.
+   ============================================================ */
+
+.gb-stepper {
+  /* ---- the slots, all three off existing scales ---- */
+  --gbst-h:        var(--gb-btn-m-h);                        /* 40, the rung the icon button --s stands on */
+  --gbst-value-w:  calc(var(--gbst-h) + var(--space-16));    /* 56: the well is one space step wider than tall */
+  --gbst-value:    14px;                                     /* the field ladder, see the media queries below */
+
+  display: inline-flex;
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--zinc-300);
+  border-radius: var(--radius);
+  /* The two round buttons are square corners as far as the frame
+     is concerned: the circle of --icon is a background, and it is
+     the frame that clips. */
+  overflow: hidden;
+  /* A frame in a table cell or a card row is not the thing that
+     gives way when the row is tight. */
+  flex: 0 0 auto;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* THE WELL. A cell between two seams, not a boxed input: the box
+   is the frame around all three. The number is centred because it
+   is read at a glance and because it grows in both directions. */
+.gb-stepper__value {
+  width: var(--gbst-value-w);
+  height: var(--gbst-h);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-inline: 1px solid var(--zinc-200);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--gbst-value);
+  font-weight: 500;
+  line-height: var(--gbst-h);
+  text-align: center;
+  color: var(--zinc-900);
+  appearance: textfield;      /* the browser's own spinner is a second stepper */
+  outline: none;
+  /* A span value is not focusable furniture; an input one is, and
+     both have to sit on the same baseline. */
+  display: inline-block;
+  box-sizing: border-box;
+}
+.gb-stepper__value::-webkit-inner-spin-button,
+.gb-stepper__value::-webkit-outer-spin-button { appearance: none; margin: 0; }
+
+/* Focus is a wash, not a ring: the frame is already a box, and a
+   ring inside a box reads as a second control. Zinc 50 is the
+   quietest ground the scale has, and it is what the checkout well
+   has answered focus with since it was written. */
+.gb-stepper__value:focus { background: var(--zinc-50); }
+
+/* The frame answers the pointer the way a field does, in the one
+   colour that means state (Ton-5). Hover on the frame rather than
+   on the buttons: the target a reader aims at is the control. */
+.gb-stepper:hover { border-color: var(--blue-600); }
+.gb-stepper:focus-within { border-color: var(--blue-600); }
+
+/* DEMO ONLY, the same two names the button and the field declare.
+   They exist so a showcase can stand rest and hover side by side;
+   no product page wears them. */
+.gb-stepper.is-hover { border-color: var(--blue-600); }
+.gb-stepper.is-focus { border-color: var(--blue-600); }
+.gb-stepper.is-focus .gb-stepper__value { background: var(--zinc-50); }
+
+/* ============================================================
+   THE NUMBER FOLLOWS THE FIELD LADDER
+   ------------------------------------------------------------
+   14 / 16 from 1280 / 18 from 2000, the same three rungs
+   .gba-input spends. The FRAME does not grow with them: its
+   height is the icon button's rung, and that rung is 40 at every
+   width by measurement (the circle carries no label, so it does
+   not ride the label ladder).
+   ============================================================ */
+@media (min-width: 1280px) { .gb-stepper { --gbst-value: 16px; } }
+@media (min-width: 2000px) { .gb-stepper { --gbst-value: 18px; } }
+
+/* ============================================================
+   SIZES
+   ------------------------------------------------------------
+   Two, and each one is the frame agreeing with the button inside
+   it. A consumer that writes --m on the frame writes --m on its
+   two buttons; the frame cannot read them, so it is told.
+   ============================================================ */
+.gb-stepper--m { --gbst-h: var(--gb-btn-l-h); }   /* 48, the icon button --m rung */
+
+/* DENSE. The same control in a table row, where the well holds one
+   or two digits and the row is the thing that is short of width.
+   Only the well narrows: the buttons keep their target. */
+.gb-stepper--dense { --gbst-value-w: var(--gbst-h); }
+
+/* ============================================================
+   DISABLED
+   ------------------------------------------------------------
+   At the floor the minus is disabled, not hidden: a control that
+   disappears at the bottom of its range moves the plus under the
+   pointer and the next click adds a gift nobody asked for. The
+   opacity is the button organism's own --gb-btn-disabled-opacity;
+   nothing is added here.
+
+   A whole stepper can be disabled too, and then the frame goes
+   the colour of a line that is not answering.
+   ============================================================ */
+.gb-stepper.is-disabled,
+.gb-stepper[aria-disabled="true"] { border-color: var(--zinc-200); }
+.gb-stepper.is-disabled .gb-stepper__value,
+.gb-stepper[aria-disabled="true"] .gb-stepper__value { color: var(--zinc-400); }
+.gb-stepper.is-disabled:hover,
+.gb-stepper[aria-disabled="true"]:hover { border-color: var(--zinc-200); }
+.gb-stepper__value:disabled { color: var(--zinc-400); cursor: not-allowed; }

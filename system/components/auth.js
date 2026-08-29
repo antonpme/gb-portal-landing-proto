@@ -214,7 +214,37 @@
       ' name="' + esc(opts.name) + '" id="' + esc(opts.id) + '"' +
       ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' +
       ' placeholder="' + esc(placeholder) + '"';
-    var control = isArea
+    /* gbppl-oro-select-stepper-1: ЧЕТВЁРТОЕ РАСШИРЕНИЕ, type=select.
+       Тот же аргумент, что у textarea (Тон-6, шаг 2): не второе
+       поле, а облик существующего. Опции приходят строкой через
+       вертикальную черту — запятая живёт внутри адресов и названий
+       компаний, черта не живёт нигде. Плейсхолдер у селекта не
+       плейсхолдер, а первая невыбираемая строка: так его рисует
+       живой чекаут («Select a billing address») и так его умеет
+       любой браузер. Шеврон = глиф из записи (icon.js); если
+       записи на странице нет, остаётся атрибут, и место под глиф
+       всё равно держит CSS. */
+    var isSelect = opts.type === 'select';
+    var chev = window.GbIcons
+      ? window.GbIcons.html('chevron-down', 20)
+      : '<span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>';
+    var options = '';
+    if (isSelect) {
+      if (opts.placeholder) {
+        options += '<option value="" disabled' + (opts.value ? '' : ' selected') + '>' +
+                   esc(opts.placeholder) + '</option>';
+      }
+      String(opts.options || '').split('|').forEach(function (o) {
+        var v = o.trim();
+        if (!v) return;
+        options += '<option' + (v === opts.value ? ' selected' : '') + '>' + esc(v) + '</option>';
+      });
+    }
+    var control = isSelect
+      ? '<select name="' + esc(opts.name) + '" id="' + esc(opts.id) + '"' +
+          ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' +
+          ' class="valid browser-default gba-input">' + options + '</select>' + chev
+      : isArea
       ? '<textarea' + common + ' rows="3" class="valid browser-default gba-input gba-textarea">' +
           esc(opts.value) + '</textarea>'
       : '<input type="' + esc(opts.type) + '"' + common +
@@ -222,13 +252,13 @@
           ' class="valid browser-default gba-input">';
     var label =
       '<label for="' + esc(opts.id) + '" class="active gba-label">' + esc(opts.label) + '</label>';
-    var inside = floating && !isArea;
+    var inside = floating && !isArea && !isSelect;
     return (
       '<div class="input-field col active s12 m12 l12 staticLabel ' +
           (opts.optional ? '' : 'required ') + 'gba-field ' +
           (floating ? 'gba-field--floating ' : '') + (opts.wrapMod || '') + '">' +
         (inside ? '' : label) +
-        '<div class="relative gba-inputwrap">' +
+        '<div class="relative gba-inputwrap' + (isSelect ? ' gba-select' : '') + '">' +
           control +
           eye +
           (inside ? label : '') +
@@ -251,6 +281,7 @@
         value: this.getAttribute('value') || '',
         wrapMod: this.getAttribute('wrap-mod') || '',
         labelStyle: this.getAttribute('label-style') || '',
+        options: this.getAttribute('options') || '',
         eye: this.hasAttribute('eye'),
         optional: this.hasAttribute('optional'),
       });
@@ -263,8 +294,9 @@
       }
     }
     /* Контрол поля, чем бы он ни был: у type=textarea это
-       <textarea>, у всех остальных <input> (gbppl-booking-1). */
-    get input() { return this.querySelector('input, textarea'); }
+       <textarea>, у type=select это <select> (gbppl-oro-select-
+       stepper-1), у всех остальных <input> (gbppl-booking-1). */
+    get input() { return this.querySelector('input, textarea, select'); }
     setError(message) {
       this.clearError();
       this.input.classList.remove('valid');

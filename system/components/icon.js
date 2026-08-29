@@ -54,6 +54,16 @@
    A page that shows the console therefore needs icon.css and
    icon.js, and icon.js must run BEFORE studio-panel.js, because
    the console writes its segments in connectedCallback.
+
+   ------------------------------------------------------------
+   TWO MORE, AND THE SECOND CONSUMER
+   (gbppl-oro-select-stepper-1, 29.08)
+   ------------------------------------------------------------
+   minus and plus arrive with the stepper, copied out of the four
+   pairs the checkout drew by hand, and stepper.js is the second
+   thing in the house to ask the record instead of carrying its
+   own: it fills an empty .gb-btn__icon from here. Nineteen
+   entries became twenty one.
    ============================================================ */
 (function () {
   'use strict';
@@ -164,6 +174,21 @@
       from: 'header.js: the burger below 1280',
       stroke: 1.5
     },
+    /* gbppl-oro-select-stepper-1: the two glyphs of the stepper.
+       Copied character for character out of the checkout, where
+       four pairs of them were drawn by hand before this record
+       existed. The checkout drew them at 2.5; inside .gb-icon they
+       come out at the house 1.5, like every other entry here. */
+    'minus': {
+      body: '<path d="M19.5 12h-15"/>',
+      from: 'checkout.html: the four quantity steppers',
+      stroke: 2.5
+    },
+    'plus': {
+      body: '<path d="M12 4.5v15m7.5-7.5h-15"/>',
+      from: 'checkout.html: the four quantity steppers',
+      stroke: 2.5
+    },
     'search': {
       body: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
       from: 'header.js, auth.js: the magnifier of the bar',
@@ -199,17 +224,19 @@
   /* Markup written by hand stays markup written by hand; this is
      for the pages that would rather name the glyph than paste it.
        <span data-gb-icon="close" data-gb-icon-size="20"></span> */
+  function fill(node) {
+    var name = node.getAttribute('data-gb-icon');
+    if (!SET[name]) return;
+    var size = node.getAttribute('data-gb-icon-size');
+    node.className = 'gb-icon' + (size ? ' gb-icon--' + size : '');
+    node.setAttribute('aria-hidden', 'true');
+    node.innerHTML = svg(name);
+  }
+
   function mount(root) {
     var scope = root || document;
-    var nodes = scope.querySelectorAll('[data-gb-icon]');
-    Array.prototype.forEach.call(nodes, function (node) {
-      var name = node.getAttribute('data-gb-icon');
-      if (!SET[name]) return;
-      var size = node.getAttribute('data-gb-icon-size');
-      node.className = 'gb-icon' + (size ? ' gb-icon--' + size : '');
-      node.setAttribute('aria-hidden', 'true');
-      node.innerHTML = svg(name);
-    });
+    if (scope.matches && scope.matches('[data-gb-icon]')) fill(scope);
+    Array.prototype.forEach.call(scope.querySelectorAll('[data-gb-icon]'), fill);
   }
 
   window.GbIcons = {
@@ -222,9 +249,36 @@
     mount: mount
   };
 
+  /* gbppl-oro-select-stepper-1: A GLYPH CAN ARRIVE LATE.
+     mount() sweeps the document once, and the content of a
+     <template> is not in the document: the checkout keeps its four
+     drawer bodies there and hands them to <gb-drawer> on open, so
+     the chevron of the country select was written, swept past and
+     never drawn. Measured, not guessed — the probe came back with
+     a select that had no glyph beside it.
+
+     So the record watches for arrivals, the way stepper.js watches
+     for its frames. It mounts only nodes that ask, by the same
+     attribute, and a node that has already been mounted is left
+     alone: mount() rewrites innerHTML, and rewriting it twice on a
+     glyph that is already right is work nobody asked for. */
+  function watch() {
+    if (!window.MutationObserver) return;
+    new MutationObserver(function (records) {
+      records.forEach(function (rec) {
+        Array.prototype.forEach.call(rec.addedNodes, function (node) {
+          if (node.nodeType !== 1) return;
+          if (node.matches && node.matches('[data-gb-icon]') && !node.firstElementChild) fill(node);
+          else if (node.querySelector && node.querySelector('[data-gb-icon]')) mount(node);
+        });
+      });
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { mount(); });
+    document.addEventListener('DOMContentLoaded', function () { mount(); watch(); });
   } else {
     mount();
+    watch();
   }
 })();
