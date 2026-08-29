@@ -328,20 +328,13 @@
        THE RAIL, and under it the contents of this page
        ============================================================ -->
   <nav class="oro-rail" aria-label="Design system sections">
-    <!-- gbppl-oro-pages-1. The rail is rendered from the page table in
-         oro.js, one copy for the whole showcase; aria-current is read
-         off location. The contents of THIS page stay below, in the
-         markup, because they describe this document and nothing else. -->
+    <!-- gbppl-oro-pages-1 / gbppl-oro-toc-1. The rail is rendered from
+         the page table in oro.js, one copy for the whole showcase;
+         aria-current is read off location. It lists PAGES and nothing
+         else: the contents of THIS page stand beside the document, in
+         the block below (Ton, 29.08: «навигацию по странице не нужно
+         смешивать с навигацией по страницам»). -->
     <div data-oro-rail></div>
-
-    <div class="oro-toc">
-      <span class="oro-toc-title">On this page</span>
-      <div class="oro-toc-list">
-        <a class="oro-toc-link" href="#foundations">Foundations</a>
-        <a class="oro-toc-link" href="#base">Base components</a>
-        <a class="oro-toc-link" href="#composite">Composite components</a>
-      </div>
-    </div>
   </nav>
   <script src="oro.js"></script>
 
@@ -349,6 +342,13 @@
        THE COLUMN
        ============================================================ -->
   <main class="oro-main">
+
+    <!-- gbppl-oro-toc-1. The contents of this page: a card beside the
+         document from 1600 up, a row of chips over it below that.
+         oro.js writes it off the document itself, so it cannot
+         disagree with what is on the page; it stays empty and hidden
+         until there are two places to point at. -->
+    <aside class="oro-toc" data-oro-toc hidden></aside>
     <div class="oro-col">
 
       <header class="oro-head">
@@ -799,9 +799,16 @@
    The readout, the playground and the variant workbench went to
    button.html with the card they measured; the field, eyebrow and
    badge readouts went to their own pages the same way. What an
-   opening page needs is two lines: the width it is being read at,
-   and a contents list that follows the reader. The registry tiles
-   have their own script below, and it did not move.
+   opening page needs is one line: the width it is being read at.
+
+   gbppl-oro-toc-1 took the second one away. This page still carried
+   its own copy of the contents reader — the same eleven lines
+   gbppl-oro-cleanup-1 had already lifted off the other eight, missed
+   here because this page kept them in a script of its own rather
+   than beside a playground. They are gone: oro.js writes the
+   contents off the document and follows the reader through them, and
+   a page that says nothing gets both on DOMContentLoaded. The
+   registry tiles have their own script below, and it did not move.
    ============================================================ */
 (function () {
   'use strict';
@@ -811,30 +818,13 @@
     if (el) el.textContent = window.innerWidth + 'px';
   }
 
-  /* ---------- the contents follow the reader ---------- */
-  var links = Array.prototype.slice.call(document.querySelectorAll('.oro-toc-link'));
-  var marks = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
-  var spyTimer;
-  function spy() {
-    var best = 0;
-    for (var i = 0; i < marks.length; i++) {
-      if (marks[i] && marks[i].getBoundingClientRect().top <= 140) best = i;
-    }
-    links.forEach(function (a, i) { a.classList.toggle('is-here', i === best); });
-  }
-
   paintWidth();
-  spy();
 
   var resizeTimer;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(paintWidth, 120);
   });
-  window.addEventListener('scroll', function () {
-    clearTimeout(spyTimer);
-    spyTimer = setTimeout(spy, 90);
-  }, { passive: true });
 })();
 </script>
 
