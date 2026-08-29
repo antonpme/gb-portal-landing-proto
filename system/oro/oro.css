@@ -392,6 +392,47 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--zinc-500);
 }
 
+/* ============================================================
+   SECTIONS AND THEIR HEADS (gbppl-oro-heads-1, Ton 29.08)
+   ------------------------------------------------------------
+   Ton, third time on the same place: «Заголовки секций внутри
+   страницы (Overview, Playground) я вообще не вижу. Ты сделал их
+   eyebrow, а это не должно быть eyebrow. Я не понимаю, где одна
+   секция заканчивается и где начинается другая. Eyebrow никогда не
+   может быть заголовком; он может идти вместе с заголовком, чтобы
+   его объяснить.»
+
+   So a section on every showcase page is now one shape:
+
+     <section id data-toc>
+       <span class="gb-eyebrow">Playground</span>   the caption
+       <h2 class="oro-h2">Build a button...</h2>    the name
+       ...
+     </section>
+
+   The eyebrow explains, the serif names. Nothing on these pages
+   uses the eyebrow role alone to open a section any more.
+
+   THE BOUNDARY IS DRAWN, NOT FELT. A reader must not have to read
+   two headings to find out that one section ended. Every section
+   after the first carries a Zinc 200 hairline with --space-64 of
+   air above it and --space-32 below (--space-48 from 1280, where
+   the title itself steps 24 to 28). The air is deliberately NOT
+   symmetric around the rule: the rule belongs to the head under it,
+   the way the page head's own hairline belongs to the first section.
+   The first section of a page draws no rule of its own, because
+   .oro-head already ended in one.
+   ============================================================ */
+.oro-section {
+  margin-top: var(--space-64);
+  padding: var(--space-32) 0 0;
+  border-top: 1px solid var(--zinc-200);
+}
+@media (min-width: 1280px) { .oro-section { padding-top: var(--space-48); } }
+/* The page head ends in the hairline this section would otherwise
+   draw: two rules --space-32 apart is a mistake, not a rhythm. */
+.oro-head + .oro-section { margin-top: 0; border-top: 0; }
+
 /* ---- The shelf is gone (gbppl-oro-cards-1, 28.08) ----
    .oro-shelf and .oro-shelf__line held the three level shelves of
    gbppl-oro-levels-1: a hairline, 64 of air, an Eyebrow over an
@@ -402,10 +443,16 @@ button { font-family: inherit; cursor: pointer; }
    (.gbdoc-reg__group in docs.css), the paragraphs are gone, and both
    rules went with their only consumer rather than staying here dead.
 
-   ---- Sections ---- */
-.oro-section { padding: 48px 0 0; }
-@media (min-width: 1280px) { .oro-section { padding-top: 64px; } }
-.oro-h2 {
+   ---- Sections ---- (the rule itself now stands above, with the
+   paragraph that explains it) */
+/* .oro-h2 IS the section title of a showcase. .gbdoc-sub + .oro-h3 is
+   the same title on a page this wave has not rewritten yet (select and
+   stepper are being written by another wave at this hour): the old
+   caption keeps its place as the eyebrow and the line under it becomes
+   the title, with no markup change at all. One declaration, two names,
+   so the bridge cannot drift from what it bridges to. */
+.oro-h2,
+.gbdoc-sub + .oro-h3 {
   margin: 12px 0 0;
   font-family: var(--font-serif);
   font-size: 24px;
@@ -414,7 +461,10 @@ button { font-family: inherit; cursor: pointer; }
   letter-spacing: -0.025em;
   color: var(--zinc-900);
 }
-@media (min-width: 1280px) { .oro-h2 { font-size: 28px; } }
+@media (min-width: 1280px) {
+  .oro-h2,
+  .gbdoc-sub + .oro-h3 { font-size: 28px; }
+}
 .oro-h3 {
   margin: 0;
   font-size: 15px;

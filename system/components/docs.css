@@ -45,8 +45,19 @@
 /* ============================================================
    THE CARD: one shape, repeated per component
    ============================================================ */
-.gbdoc-card { padding: var(--space-48) 0 0; }
-@media (min-width: 1280px) { .gbdoc-card { padding-top: var(--space-64); } }
+/* gbppl-oro-heads-1, Ton 29.08. A card is a section of a document and
+   opens the way every other section opens: --space-64 of air, a Zinc 200
+   hairline, --space-32 under it (--space-48 from 1280). Same three lines
+   as .oro-section in oro.css, because on a page like Typography the two
+   stand in one run and must not step differently. The first card on a
+   page draws no rule: .oro-head already ended in one. */
+.gbdoc-card {
+  margin-top: var(--space-64);
+  padding: var(--space-32) 0 0;
+  border-top: 1px solid var(--zinc-200);
+}
+@media (min-width: 1280px) { .gbdoc-card { padding-top: var(--space-48); } }
+.oro-head + .gbdoc-card { margin-top: 0; border-top: 0; }
 
 .gbdoc-card__head { padding-bottom: var(--space-8); }
 /* gbppl-oro-pages-1. A card that stands ALONE on its own page has no
@@ -57,18 +68,27 @@
    which reads as a gap rather than a rhythm. Zeroed once, here at the
    owner, so every component page starts at the same distance from the
    rule as a card with a head does. */
-.gbdoc-card > .gbdoc-sub:first-child { margin-top: 0; }
+.gbdoc-card > .gbdoc-sub:first-child,
+.gbdoc-card > .oro-section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .gbdoc-card__line {
   margin: var(--space-8) 0 0;
   font-size: var(--font-size-root);
   line-height: 1.6;
   color: var(--zinc-600);
 }
-/* The section label inside a card. Eyebrow role, one size for
-   every caption on the page. */
+/* THE CAPTION OVER A SECTION TITLE (gbppl-oro-heads-1, Ton 29.08:
+   «Eyebrow никогда не может быть заголовком; он может идти вместе с
+   заголовком, чтобы его объяснить»). It is still the eyebrow role and
+   still one size for every caption on the page; what changed is that it
+   no longer stands alone. On a page this wave rewrote, the caption is
+   .gb-eyebrow inside a <section> and this class is gone; on a page it
+   has not reached yet, the class survives and carries the section
+   boundary itself, so the two kinds of page read the same. */
 .gbdoc-sub {
   display: block;
-  margin: var(--space-32) 0 0;
+  margin: var(--space-64) 0 0;
+  padding-top: var(--space-32);
+  border-top: 1px solid var(--zinc-200);
   font-size: var(--eyebrow-size);
   font-weight: var(--eyebrow-weight);
   letter-spacing: var(--eyebrow-tracking);
@@ -76,6 +96,11 @@
   text-transform: uppercase;
   color: var(--zinc-400);
 }
+@media (min-width: 1280px) { .gbdoc-sub { padding-top: var(--space-48); } }
+/* The two places a caption is a caption and not a section head: the
+   table view of the type scale, where the section is the card around it,
+   and any run where it labels a block inside a section. */
+.gbdoc-sub--plain { margin-top: var(--space-32); padding-top: 0; border-top: 0; }
 
 /* ---- The plaque: provenance, status, a flag on a value.
    Zinc, never colour: a provenance is a fact about the value, not
@@ -179,12 +204,21 @@
    the name of a level is a caption, not a title. 48 is the step on
    the scale that reads as «a new group» beside a 16 gap between
    cards; the first one takes no air, the grid has its own. */
-.gbdoc-reg__group {
+/* gbppl-oro-heads-1. The level was an <h2> wearing the eyebrow role,
+   which is the one thing Ton ruled out on 29.08: it now wears .oro-h2
+   in the markup and opens its run of cards the way a section opens
+   anywhere else on the showcase, hairline and all. The pair of
+   selectors is two classes deep on purpose: oro.css loads after this
+   file, so a single class would lose its margin to .oro-h2's own. */
+.gbdoc-reg > .gbdoc-reg__group {
   grid-column: 1 / -1;
-  margin: var(--space-48) 0 0;
+  margin: var(--space-64) 0 0;
+  padding-top: var(--space-32);
+  border-top: 1px solid var(--zinc-200);
   scroll-margin-top: var(--space-24);
 }
-.gbdoc-reg__group:first-child { margin-top: 0; }
+@media (min-width: 1280px) { .gbdoc-reg > .gbdoc-reg__group { padding-top: var(--space-48); } }
+.gbdoc-reg > .gbdoc-reg__group:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .gbdoc-regcard {
   display: flex;
   flex-direction: column;
@@ -808,14 +842,12 @@ html.gbc-on .gbdoc-regcard__go[href]::after { pointer-events: none; }
 }
 .gbdoc-type__group { padding: var(--space-24); }
 .gbdoc-type__group + .gbdoc-type__group { border-top: 1px solid var(--zinc-200); }
-.gbdoc-type__gname {
-  display: block;
-  font-size: var(--eyebrow-size);
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  text-transform: uppercase;
-  color: var(--zinc-500);
-}
+/* gbppl-oro-heads-1. The name of a group in the scale is a heading and
+   is now written as one (.oro-h3 in the markup that draws it); all this
+   class still owns is that a span has to be told to be a block. It used
+   to carry the eyebrow role, and a group name in caps was the same
+   mistake as a section caption in caps. */
+.gbdoc-type__gname { display: block; }
 .gbdoc-type__gline { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: var(--zinc-500); }
 
 .gbdoc-type__row { display: grid; gap: var(--space-8); padding: var(--space-24) 0 0; }
