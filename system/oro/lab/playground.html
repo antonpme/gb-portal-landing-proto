@@ -7,7 +7,8 @@
 <link rel="icon" href="data:," />
 
 <!-- ============================================================
-     gbppl-oro-heads-1 — THE LAB: THREE PLAYGROUNDS, ONE CHOICE
+     gbppl-oro-heads-1 / gbppl-oro-props-1
+     — THE LAB: FOUR PLAYGROUNDS, ONE CHOICE
      ------------------------------------------------------------
      Ton, 29.08 12:16: «Нет разделения контролов и превью, непонятно
      что есть что. Пересмотреть весь лейаут и контролы: 1) выделить
@@ -41,6 +42,29 @@
      is not a token is the stage height and it is argued for at the
      rule. The .lab-* classes are deliberately local: nothing in this
      file is system furniture yet.
+
+     ------------------------------------------------------------
+     AND A FOURTH, ABOUT THE CONTROLS RATHER THAN THE LAYOUT
+     (gbppl-oro-props-1, 29.08)
+     ------------------------------------------------------------
+     Ton, 13:02: «ужасно не нравится делать всё управление табами,
+     вырвиглазно». 13:04: «очень серьёзно продумать логику
+     управления, не хаотично: масштабируемость от простого до
+     сложного, conditional-логика (не показывать всё сразу),
+     отсутствие визуального шума».
+
+     D wears A's layout on purpose, so the two can be read against
+     each other with only the panel changing. Its panel is rendered
+     from a SCHEMA, and the control is chosen by rule rather than by
+     taste (studio\docs\PLAYGROUND-CONTROLS-SPEC.md). It is shown
+     twice, on the button and on the field, because a schema that
+     serves one component proves nothing.
+
+     Two more things came with this wave: the properties drawer is
+     opened by the door in the corner of the stage, the same one
+     every showcase now carries, and the stage stands on Zinc 100,
+     the specimen ground the showcases moved to on the same
+     afternoon.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,7 +76,10 @@
 <link rel="stylesheet" href="../../components/header.css">
 <link rel="stylesheet" href="../../components/button.css">
 <link rel="stylesheet" href="../../components/icon.css">
+<link rel="stylesheet" href="../../components/auth.css">
+<link rel="stylesheet" href="../../components/drawer.css">
 <link rel="stylesheet" href="../../components/docs.css">
+<link rel="stylesheet" href="../../components/inspect.css">
 <link rel="stylesheet" href="../../components/studio-panel.css">
 <link rel="stylesheet" href="../oro.css">
 
@@ -84,22 +111,41 @@
   justify-content: center;
   min-height: calc(var(--space-64) * 4);
   padding: var(--space-48) var(--space-24);
-  background: var(--zinc-50);
+  /* The specimen ground of gbppl-oro-props-1: Zinc 100, because at
+     Zinc 50 against white the ground was a rule nobody could see.
+     Same value the showcases now stand on (docs.css). */
+  background: var(--zinc-100);
   border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
   transition: background-color var(--mo-small) var(--mo-move);
 }
 .lab-stage.is-dark { background: var(--zinc-950); border-color: var(--zinc-800); }
 .lab-hold { display: flex; justify-content: center; max-width: 100%; }
+/* TRAP 3, the local antidote. auth.css names a border COLOUR on four
+   sides and a WIDTH on one, and leans on the live bundle's preflight
+   for «solid, zero» on the other three; off that page the browser
+   default comes back and a field is drawn as a full inset box. These
+   are the same three lines docs.css spends on every specimen surface,
+   for the two surfaces of this bench that are not .gbdoc-*. */
+.lab-hold .gba-input,
+.labD__row .gba-input {
+  border-style: solid;
+  border-width: 0;
+  border-bottom-width: 1px;
+}
 .lab-hold--block { width: 100%; max-width: 420px; }
 
 /* The ground switch sits ON the stage, in its corner: it changes the
    stage and nothing else, so it belongs to the stage and not to the
    panel of axes that build the specimen. */
+/* The right corner now holds two things: the door to the properties
+   (inspect.js hangs it on every data-inspect region) and this switch.
+   The door is 40 wide and sits --space-8 in, so the switch stands
+   clear of it rather than under it. */
 .lab-ground {
   position: absolute;
   top: var(--space-8);
-  right: var(--space-16);
+  right: calc(var(--space-48) + var(--space-16));
   display: flex;
   align-items: center;
   gap: var(--space-8);
@@ -249,6 +295,104 @@
 .labC__what b { color: var(--zinc-900); font-weight: 500; }
 .labC .lab-stage { border: 0; border-radius: 0; }
 .labC .lab-ground { position: static; }
+
+/* ============================================================
+   D — THE PANEL BUILT BY RULE (gbppl-oro-props-1, Ton 13:02:
+   «ужасно не нравится делать всё управление табами, вырвиглазно»,
+   and 13:04: масштабируемость, conditional-логика, отсутствие
+   визуального шума)
+   ------------------------------------------------------------
+   Same arrangement as A — 240 of panel on the left, stage on the
+   right, Light | Dark on the stage — so that what is being judged
+   here is the CONTROLS and not the layout twice.
+
+   The panel is not written by hand. It is rendered from a schema
+   (studio\docs\PLAYGROUND-CONTROLS-SPEC.md, §1) and the control is
+   chosen BY RULE, not by taste: an axis of two or three values is a
+   segment, an axis of four or more is our Select, a boolean is a
+   segment of two until the system grows a Switch. That is the whole
+   answer to «не всё табами»: a row of thirty underlined words
+   becomes five rows of one control each.
+
+   Three more things the schema does and a hand-written panel
+   cannot. Axes are GROUPED (shape / state / content), so a panel
+   of seven controls reads as three short lists. An axis can say
+   WHEN it applies — Icon position is not drawn at all until there
+   is an icon — so nothing is shown that cannot be used. And an axis
+   can be ADVANCED, which puts it under More, so the simple case
+   stays five rows and the complete one is one click away.
+
+   The rows are never rebuilt, only hidden and re-synced: a select
+   that is redrawn while its menu is open loses the menu, and a
+   panel that flickers on every change is the visual noise this
+   variant exists to remove.
+   ============================================================ */
+.labD { display: grid; gap: var(--space-24); }
+@media (min-width: 1024px) {
+  .labD { grid-template-columns: calc(var(--space-48) * 5) 1fr; align-items: stretch; }
+  .labD > div:last-child { display: flex; flex-direction: column; }
+  .labD .lab-stage { flex: 1 1 auto; }
+}
+.labD__panel {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-24);
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+}
+.labD__group + .labD__group {
+  margin-top: var(--space-24);
+  padding-top: var(--space-24);
+  border-top: 1px solid var(--zinc-200);
+}
+/* The group is a name over a short list, at the reading size and not
+   in caps: the console names its groups the same way, and an eyebrow
+   here would be a second caps line arguing with the axis names under
+   it (Ton-21: an eyebrow is never a heading). */
+.labD__gname {
+  display: block;
+  margin-bottom: var(--space-16);
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--zinc-500);
+}
+.labD__row + .labD__row { margin-top: var(--space-16); }
+.labD__row[hidden] { display: none; }
+.labD__name {
+  display: block;
+  margin-bottom: var(--space-8);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--zinc-500);
+}
+.labD__vals { display: flex; flex-wrap: wrap; gap: 0 var(--space-16); }
+.labD__vals .gbdoc-seg { margin-right: 0; }
+/* A field inside the panel is a control of the panel, so it carries
+   no margin of its own and no asterisk: none of these is required,
+   because every one of them already has a value. */
+.labD__row .gba-field { margin: 0; }
+.labD__more { margin-top: var(--space-24); }
+.labD__foot {
+  margin-top: var(--space-24);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--zinc-200);
+}
+.labD__reset {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--zinc-500);
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.labD__reset:hover { color: var(--zinc-900); }
+.labD__reset:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -280,7 +424,7 @@
     <header class="oro-head">
       <span class="gb-eyebrow">Lab</span>
       <h1 class="oro-h1">Playground layouts</h1>
-      <p class="oro-lede">Three ways to lay out the same block, so one of them can be chosen and the other two thrown away. The axes, the specimen and the ground switch are identical in all three; only the arrangement differs. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
+      <p class="oro-lede">Four ways to build the same block, so one of them can be chosen and the rest thrown away. A, B and C hold the axes and the specimen identical and change only the arrangement. D takes A's arrangement and changes the controls instead: its panel is rendered from a schema, and each axis gets the control its shape asks for. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
       <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The specimen is the live button organism at that width.</p>
     </header>
 
@@ -293,7 +437,7 @@
       <div class="labA" data-lab="A">
         <div class="labA__panel" data-lab-controls></div>
         <div>
-          <div class="lab-stage" data-lab-stage>
+          <div class="lab-stage" data-lab-stage data-inspect="button">
             <div class="lab-ground" data-lab-ground></div>
             <div class="lab-hold" data-lab-hold></div>
           </div>
@@ -316,7 +460,7 @@
       <p class="oro-note">Stage across the full width, axes under it in one strip. It puts the specimen first and the controls second, which is the opposite of the reading order the other two keep, and that is the thing to judge here.</p>
 
       <div data-lab="B">
-        <div class="lab-stage" data-lab-stage>
+        <div class="lab-stage" data-lab-stage data-inspect="button">
           <div class="lab-ground" data-lab-ground></div>
           <div class="lab-hold" data-lab-hold></div>
         </div>
@@ -346,7 +490,7 @@
               <span class="labC__what" data-lab-what></span>
               <span class="lab-ground" data-lab-ground></span>
             </div>
-            <div class="lab-stage" data-lab-stage>
+            <div class="lab-stage" data-lab-stage data-inspect="button">
               <div class="lab-hold" data-lab-hold></div>
             </div>
           </div>
@@ -362,16 +506,74 @@
       </div>
     </section>
 
+    <!-- ---- D, on the button: five rows and a More ---- -->
+    <section class="oro-section">
+      <span class="gb-eyebrow">Variant D</span>
+      <h2 class="oro-h2">The panel built by rule</h2>
+      <p class="oro-note">Variant A again, so the layout is not what is being compared: the difference is that the panel is rendered from a schema and each axis gets the control its shape asks for. Two or three values are a segment, four or more are a Select, a boolean is a segment of two. Icon position is not drawn until there is an icon, and the two axes nobody sets first are under More.</p>
+
+      <div class="labD" data-lab-d="button">
+        <div class="labD__panel" data-lab-controls></div>
+        <div>
+          <div class="lab-stage" data-lab-stage data-inspect="button">
+            <div class="lab-ground" data-lab-ground></div>
+            <div class="lab-hold" data-lab-hold></div>
+          </div>
+          <p class="lab-read" data-lab-read></p>
+          <details class="lab-fold">
+            <summary>Markup</summary>
+            <div class="gbdoc-code">
+              <button class="gbdoc-copy" type="button" data-copy="#codeD">Copy</button>
+              <pre><code id="codeD" data-lab-code></code></pre>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---- D, on the field: the same panel, a different component ---- -->
+    <section class="oro-section">
+      <span class="gb-eyebrow">Variant D, second component</span>
+      <h2 class="oro-h2">The same panel, on a field</h2>
+      <p class="oro-note">The same renderer and the same rules, given the field instead of the button, which is the point of a schema: a showcase describes its component and gets a panel. Label style is only drawn for the three looks that have one, so the phone, the one time code and the password never offer a choice that does not exist.</p>
+
+      <div class="labD" data-lab-d="field">
+        <div class="labD__panel" data-lab-controls></div>
+        <div>
+          <div class="lab-stage" data-lab-stage data-inspect="field">
+            <div class="lab-ground" data-lab-ground></div>
+            <div class="lab-hold lab-hold--block" data-lab-hold></div>
+          </div>
+          <p class="lab-read" data-lab-read></p>
+          <details class="lab-fold">
+            <summary>Markup</summary>
+            <div class="gbdoc-code">
+              <button class="gbdoc-copy" type="button" data-copy="#codeDF">Copy</button>
+              <pre><code id="codeDF" data-lab-code></code></pre>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
     <footer class="oro-foot">
-      A bench, not a page of the system: <a class="oro-a" href="../button.html">Button</a> keeps today's playground until one of these three is chosen.
+      A bench, not a page of the system: <a class="oro-a" href="../button.html">Button</a> keeps today's playground until one of these four is chosen.
     </footer>
 
   </div>
 </main>
 
+<!-- The properties drawer. One per page; the inspector fills it. -->
+<gb-drawer id="propsDrawer"></gb-drawer>
+
 <gb-studio-panel data-root="../../../" page="oro"></gb-studio-panel>
 <script src="../../sandbox-registry.js"></script>
+<script src="../../type-scale.js"></script>
+<script src="../../components/icon.js"></script>
+<script src="../../components/auth.js"></script>
+<script src="../../components/drawer.js"></script>
 <script src="../../components/studio-panel.js"></script>
+<script src="../../components/inspect.js"></script>
 
 <script>
 (function () {
@@ -425,7 +627,7 @@
     if (S.icon === 'before' || S.icon === 'both') {
       inner += nl + '<span class="gb-btn__icon"' + (forCode ? '' : ' aria-hidden="true"') + '>' + (forCode ? '<svg>...</svg>' : GLYPH_BEFORE) + '</span>';
     }
-    inner += nl + '<span class="gb-btn__label">Book a meeting</span>';
+    inner += nl + '<span class="gb-btn__label">' + esc(S.label || 'Book a meeting') + '</span>';
     if (S.icon === 'after' || S.icon === 'both') {
       inner += nl + '<span class="gb-btn__icon"' + (forCode ? '' : ' aria-hidden="true"') + '>' + (forCode ? '<svg>...</svg>' : GLYPH_AFTER) + '</span>';
     }
@@ -518,7 +720,260 @@
     return paint;
   }
 
-  var painters = Array.prototype.map.call(document.querySelectorAll('[data-lab]'), wire);
+  /* ============================================================
+     VARIANT D — ONE RENDERER, TWO COMPONENTS
+     ------------------------------------------------------------
+     A prototype of GbOro.controls (spec §5), kept local to the
+     bench: nothing here is in the system until Ton picks a layout.
+     A schema names the axes; the renderer decides the control by
+     the rule in §2, groups by §1 and hides by `when`.
+     ============================================================ */
+  var SCHEMAS = {
+    button: {
+      inspect: 'button',
+      axes: [
+        { id: 'size',   label: 'Size',   group: 'shape',   def: 'l',
+          values: [['s', 'S'], ['m', 'M'], ['l', 'L'], ['xl', 'XL']] },
+        { id: 'type',   label: 'Type',   group: 'shape',   def: 'filled',
+          values: [['filled', 'Filled'], ['outline', 'Outline'], ['ghost', 'Ghost']] },
+        { id: 'colour', label: 'Colour', group: 'shape',   def: 'primary',
+          values: [['primary', 'Primary'], ['secondary', 'Secondary'], ['inverse', 'Inverse']] },
+        { id: 'state',  label: 'State',  group: 'state',   def: 'rest',
+          values: [['rest', 'Rest'], ['hover', 'Hover'], ['focus', 'Focus'],
+                   ['active', 'Active'], ['disabled', 'Disabled']] },
+        { id: 'icon',   label: 'Icon',   group: 'content', def: 'no', kind: 'bool',
+          values: [['no', 'No'], ['yes', 'Yes']] },
+        { id: 'iconPos', label: 'Icon position', group: 'content', def: 'before',
+          values: [['before', 'Before'], ['after', 'After'], ['both', 'Both']],
+          when: function (S) { return S.icon === 'yes'; } },
+        { id: 'width',  label: 'Width',  group: 'content', def: 'auto', kind: 'bool', advanced: true,
+          values: [['auto', 'Auto'], ['block', 'Block']] },
+        { id: 'label',  label: 'Label',  group: 'content', def: 'Book a meeting', kind: 'text',
+          advanced: true }
+      ],
+      normalise: normalise,
+      available: available,
+      sample: function (S, forCode) {
+        return sampleHTML({
+          size: S.size, type: S.type, colour: S.colour, ground: S.ground,
+          width: S.width, state: S.state,
+          icon: S.icon === 'yes' ? S.iconPos : 'none',
+          label: S.label
+        }, forCode);
+      },
+      read: function (hold) {
+        var el = hold.querySelector('.gb-btn');
+        if (!el) return '';
+        var cs = getComputedStyle(el);
+        var lab = el.querySelector('.gb-btn__label');
+        var ls = lab ? getComputedStyle(lab) : null;
+        return 'Height <b>' + px(cs.minHeight) + '</b> · padding <b>' + px(cs.paddingTop) + ' / ' +
+               px(cs.paddingLeft) + '</b> · gap <b>' + px(cs.columnGap) + '</b> · label <b>' +
+               (ls ? px(ls.fontSize) + ' / ' + ls.fontWeight : 'none') + '</b>';
+      }
+    },
+
+    field: {
+      inspect: 'field',
+      axes: [
+        { id: 'type',  label: 'Type',  group: 'shape', def: 'email',
+          values: [['text', 'Text'], ['email', 'Email'], ['textarea', 'Textarea'],
+                   ['phone', 'Phone'], ['code', 'One time code'], ['password', 'Password']] },
+        { id: 'look',  label: 'Label style', group: 'shape', def: 'underline',
+          values: [['underline', 'Underline'], ['floating', 'Floating']],
+          /* THE CONDITIONAL AXIS. The phone, the code and the password
+             each own their label: only the three plain looks have a
+             choice to make, so only they are asked (spec §4). */
+          when: function (S) { return S.type === 'text' || S.type === 'email' || S.type === 'textarea'; } },
+        { id: 'state', label: 'State', group: 'state', def: 'rest',
+          values: [['rest', 'Rest'], ['hover', 'Hover'], ['focus', 'Focus'],
+                   ['filled', 'Filled'], ['error', 'Error'], ['disabled', 'Disabled']] },
+        { id: 'required', label: 'Required', group: 'content', def: 'yes', kind: 'bool',
+          values: [['yes', 'Yes'], ['no', 'No']] }
+      ],
+      normalise: function (S) { if (S.type === 'phone' || S.type === 'code') S.look = 'underline'; },
+      available: function () { return true; },
+      sample: function (S, forCode) {
+        var TYPE = { text: 'text', email: 'email', textarea: 'textarea',
+                     phone: 'tel', code: 'text', password: 'password' };
+        var LAB = { text: 'Full name', email: 'Work email', textarea: 'Your message',
+                    phone: 'Phone', code: 'One time code', password: 'Password' };
+        var attrs = ' input-id="labd-field" name="labd" type="' + TYPE[S.type] + '"' +
+                    ' label="' + LAB[S.type] + '" placeholder="' +
+                    (S.type === 'email' ? 'you@company.com' : '') + '"' +
+                    (S.look === 'floating' ? ' label-style="floating"' : '') +
+                    (S.required === 'no' ? ' optional' : '') +
+                    (S.type === 'password' ? ' eye' : '');
+        return '<gb-field' + attrs + '></gb-field>';
+      },
+      /* The demo classes the field showcase uses, put on the control
+         after the organism has written itself. */
+      after: function (S, hold) {
+        var el = hold.querySelector('input, textarea, select');
+        if (!el) return;
+        if (S.state === 'hover') el.classList.add('is-hover');
+        if (S.state === 'focus') el.classList.add('is-focus');
+        if (S.state === 'error') el.classList.add('invalid');
+        if (S.state === 'filled') el.value = S.type === 'email' ? 'anna@gildedbox.com' : 'Anna Whitfield';
+        if (S.state === 'disabled') el.disabled = true;
+      },
+      read: function (hold) {
+        var el = hold.querySelector('input, textarea, select');
+        if (!el) return '';
+        var cs = getComputedStyle(el);
+        var lab = hold.querySelector('.gba-label');
+        var ls = lab ? getComputedStyle(lab) : null;
+        return 'Height <b>' + px(cs.height) + '</b> · type <b>' + px(cs.fontSize) + ' / ' +
+               cs.fontWeight + '</b> · line <b>' + px(cs.borderBottomWidth) + '</b> · label <b>' +
+               (ls ? px(ls.fontSize) + ' / ' + ls.fontWeight : 'none') + '</b>';
+      }
+    }
+  };
+
+  var GROUPS = [['shape', 'Shape'], ['state', 'State'], ['content', 'Content']];
+
+  /* THE RULE, AND NOTHING BUT THE RULE (spec §2). Two or three
+     values are all visible at once; four or more hide behind our
+     Select; a boolean is a segment of two until the house has a
+     Switch; free text is a field. */
+  function controlHTML(ax) {
+    if (ax.kind === 'text') {
+      return '<gb-field input-id="labd-' + ax.id + '" name="labd-' + ax.id + '" type="text" optional' +
+             ' label="' + esc(ax.label) + '" value="' + esc(ax.def) + '" data-axis-field="' + ax.id + '"></gb-field>';
+    }
+    if (ax.kind !== 'bool' && ax.values.length >= 4) {
+      return '<gb-field input-id="labd-' + ax.id + '" name="labd-' + ax.id + '" type="select" optional' +
+             ' label="' + esc(ax.label) + '" options="' +
+             esc(ax.values.map(function (v) { return v[1]; }).join('|')) +
+             '" data-axis-field="' + ax.id + '"></gb-field>';
+    }
+    return '<span class="labD__name">' + esc(ax.label) + '</span>' +
+           '<div class="labD__vals" role="radiogroup" aria-label="' + esc(ax.label) + '">' +
+           ax.values.map(function (v) {
+             return '<button class="gbdoc-seg" type="button" role="radio" data-axis="' + ax.id +
+                    '" data-val="' + v[0] + '">' + esc(v[1]) + '</button>';
+           }).join('') + '</div>';
+  }
+
+  function rowHTML(ax) {
+    return '<div class="labD__row" data-row="' + ax.id + '">' + controlHTML(ax) + '</div>';
+  }
+
+  function panelHTML(schema) {
+    var html = '';
+    GROUPS.forEach(function (g) {
+      var plain = schema.axes.filter(function (a) { return a.group === g[0] && !a.advanced; });
+      if (!plain.length) return;
+      /* A group of one axis whose name is the group's own name would
+         print State over STATE. The hairline is enough of a group. */
+      var named = !(plain.length === 1 && plain[0].label === g[1]);
+      html += '<div class="labD__group">' +
+              (named ? '<span class="labD__gname">' + g[1] + '</span>' : '') +
+              plain.map(rowHTML).join('') + '</div>';
+    });
+    var more = schema.axes.filter(function (a) { return a.advanced; });
+    if (more.length) {
+      html += '<details class="lab-fold labD__more"><summary>More</summary>' +
+              more.map(rowHTML).join('') + '</details>';
+    }
+    html += '<div class="labD__foot"><button class="labD__reset" type="button" data-reset>Reset</button></div>';
+    return html;
+  }
+
+  function wireD(root) {
+    var schema = SCHEMAS[root.getAttribute('data-lab-d')];
+    var controls = root.querySelector('[data-lab-controls]');
+    var groundHost = root.querySelector('[data-lab-ground]');
+    var stage = root.querySelector('[data-lab-stage]');
+    var hold = root.querySelector('[data-lab-hold]');
+    var read = root.querySelector('[data-lab-read]');
+    var code = root.querySelector('[data-lab-code]');
+    var S = {};
+    var reset = function () {
+      schema.axes.forEach(function (a) { S[a.id] = a.def; });
+      S.ground = 'light';
+    };
+    reset();
+
+    controls.innerHTML = panelHTML(schema);
+    groundHost.innerHTML = groundHTML();
+
+    /* The label of a select is the word a reader sees, and the value
+       is the word the schema thinks in. One map, both ways. */
+    function labelOf(ax, val) {
+      var hit = ax.values.filter(function (v) { return v[0] === val; })[0];
+      return hit ? hit[1] : '';
+    }
+    function valueOf(ax, label) {
+      var hit = ax.values.filter(function (v) { return v[1] === label; })[0];
+      return hit ? hit[0] : ax.def;
+    }
+
+    function paint() {
+      if (schema.normalise) schema.normalise(S);
+      hold.innerHTML = schema.sample(S, false);
+      if (window.GbIcons) window.GbIcons.mount(hold);
+      if (schema.after) schema.after(S, hold);
+      hold.classList.toggle('lab-hold--block', S.width === 'block');
+      stage.classList.toggle('is-dark', S.ground === 'dark');
+      if (code) code.textContent = schema.sample(S, true);
+
+      /* Rows are hidden and re-synced, never rebuilt. */
+      schema.axes.forEach(function (ax) {
+        var row = controls.querySelector('[data-row="' + ax.id + '"]');
+        if (!row) return;
+        row.hidden = !!(ax.when && !ax.when(S));
+        var f = row.querySelector('[data-axis-field] select, [data-axis-field] input');
+        if (f && f.tagName === 'SELECT') f.value = labelOf(ax, S[ax.id]);
+        else if (f) { if (document.activeElement !== f) f.value = S[ax.id]; }
+      });
+      Array.prototype.forEach.call(controls.querySelectorAll('.gbdoc-seg[data-axis]'), function (seg) {
+        var axis = seg.getAttribute('data-axis');
+        var val = seg.getAttribute('data-val');
+        var on = S[axis] === val;
+        seg.classList.toggle('is-on', on);
+        seg.classList.toggle('is-unavailable', !schema.available(S, axis, val));
+        seg.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      Array.prototype.forEach.call(root.querySelectorAll('.lab-ground .gbdoc-seg'), function (seg) {
+        var on = S.ground === seg.getAttribute('data-val');
+        seg.classList.toggle('is-on', on);
+        seg.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+
+      if (read) read.innerHTML = schema.read(hold);
+    }
+
+    root.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-axis]') : null;
+      if (chip && !chip.classList.contains('is-unavailable')) {
+        S[chip.getAttribute('data-axis')] = chip.getAttribute('data-val');
+        paint();
+        return;
+      }
+      if (e.target.closest && e.target.closest('[data-reset]')) { reset(); paint(); }
+    });
+    root.addEventListener('change', function (e) {
+      var host = e.target.closest ? e.target.closest('[data-axis-field]') : null;
+      if (!host) return;
+      var id = host.getAttribute('data-axis-field');
+      var ax = schema.axes.filter(function (a) { return a.id === id; })[0];
+      S[id] = e.target.tagName === 'SELECT' ? valueOf(ax, e.target.value) : e.target.value;
+      paint();
+    });
+    root.addEventListener('input', function (e) {
+      var host = e.target.closest ? e.target.closest('[data-axis-field]') : null;
+      if (!host || e.target.tagName === 'SELECT') return;
+      S[host.getAttribute('data-axis-field')] = e.target.value;
+      paint();
+    });
+
+    paint();
+    return paint;
+  }
+
+  var painters = Array.prototype.map.call(document.querySelectorAll('[data-lab]'), wire)
+    .concat(Array.prototype.map.call(document.querySelectorAll('[data-lab-d]'), wireD));
 
   /* The copy buttons of the documentation, one line, no component. */
   document.addEventListener('click', function (e) {

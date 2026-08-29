@@ -1925,15 +1925,31 @@
     Array.prototype.forEach.call(document.querySelectorAll('[data-inspect]'), function (region) {
       var kind = KINDS[region.getAttribute('data-inspect')];
       if (!kind || kind.inViewMode === false) return;
+      /* A DOOR IS HUNG ONLY WHERE THERE IS SOMETHING BEHIND IT. The
+         kind is asked first, and where it finds no specimen there is
+         no button: select.html stands a plain typed field beside its
+         select to compare them, and the select kind has nothing to
+         say about an input. A door that opens on nothing is worse
+         than no door, because a button is a promise. A slot whose
+         specimen has not been drawn yet gets its door on the next
+         pass, which the observer below is for. */
+      var hangable = function (slot, part) {
+        return !!kind.find(slot, part || slot);
+      };
       var slots = region.querySelectorAll(SLOT_SEL);
-      if (!slots.length) { addDoor(region, region, null); return; }
+      if (!slots.length) {
+        if (hangable(region, null)) addDoor(region, region, null);
+        return;
+      }
       Array.prototype.forEach.call(slots, function (slot) {
         var parts = kind.parts ? slot.querySelectorAll(kind.parts) : [];
         if (parts.length > 1) {
-          Array.prototype.forEach.call(parts, function (p) { addDoor(p, slot, p); });
+          Array.prototype.forEach.call(parts, function (p) {
+            if (hangable(slot, p)) addDoor(p, slot, p);
+          });
           return;
         }
-        addDoor(boxFor(region, slot), slot, null);
+        if (hangable(slot, null)) addDoor(boxFor(region, slot), slot, null);
       });
     });
   }
