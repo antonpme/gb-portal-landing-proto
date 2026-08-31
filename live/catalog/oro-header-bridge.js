@@ -180,6 +180,11 @@
   }
 
   function start() {
+    /* gbppl-catalog-mark-1: on ?nav=mark there is no bar of ours to bridge to
+       -- the wrapper removed it -- and the build's own account and search are
+       exactly where they belong. Nothing to move, and no ten second observer
+       hunting for a slot that will never arrive. */
+    if (document.documentElement.classList.contains('gbppl-nav-native')) return;
     if (bridge()) return;
     var started = Date.now();
     var observer = new MutationObserver(function () {

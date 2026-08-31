@@ -4,6 +4,45 @@
     <meta charset="UTF-8" />
     <!-- gbppl-gate-2: one code on every page of the studio; the guard runs before the bundle paints. -->
     <script src="../../system/components/studio.js" data-home="../../index.html"></script>
+    <!--
+      gbppl-catalog-mark-1 (2026-08-31) — ?nav=mark, THE PROTOTYPE'S OWN MENU.
+
+      Ton, 31.08: «должна быть версия-прототип страницы категорий GIFTS, где
+      меню переделано как просил Марк; её нет ни на live, ни в прототипе, это
+      проблема».
+
+      He is right that it is nowhere, and the reason is this page. The bundle
+      under #root IS the July prototype Mark reviewed, and its own bar already
+      answers three of the four things he asked for on 27.07: no CUSTOMIZE and
+      no EXPLORE in the chrome, Portal folded into the person glyph, the
+      concierge floating. Since gbppl-catalog-header-1 that bar has been hidden
+      on every address we have, and what stands in its place is the SITE's bar,
+      which carries GIFTS · CUSTOMIZE · PORTAL · EXPLORE — the menu Mark
+      objected to, item for item. So the version he asked for was not missing:
+      it was underneath.
+
+      This key uncovers it. With ?nav=mark the five organisms this wrapper adds
+      come out of the DOM below, every rule of the swap in oro-ui-override.css
+      stands down, and the page is the prototype as reviewed. Without it
+      nothing changes by a pixel.
+
+      WHAT IT DOES NOT DO, and the report says so out loud: it does not build
+      the fourth point. Categories are still the secondary row and Gifts still
+      opens a mega menu. Uncovering is not redesigning, and the redesign is
+      Ton's to order.
+
+      The class goes on <html> before the first stylesheet, so nothing flashes.
+      The key is `nav`, which header.js already carries in GB_KEEP.content, so
+      it rides along the wrapper's internal links on its own.
+    -->
+    <script>
+      (function () {
+        try {
+          if (new URLSearchParams(location.search).get('nav') !== 'mark') return;
+          document.documentElement.classList.add('gbppl-nav-native');
+        } catch (e) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
@@ -354,6 +393,28 @@
       })();
     </script>
     <gb-site-footer></gb-site-footer>
+    <!--
+      gbppl-catalog-mark-1 — and the other half of the key, one line per
+      organism. Under ?nav=mark the five elements this wrapper adds are taken
+      out of the DOM entirely rather than hidden: none of them is defined yet
+      (their scripts are below), so removed here they never upgrade, the bar
+      never becomes sticky, and the header bridge finds nothing to move and
+      says so itself. display:none would have left five custom elements alive
+      in the page for the console and Dev mode to name.
+
+      The studio's own layer is untouched: the panel below, the guard in the
+      head, the gate and Dev mode are on both views.
+    -->
+    <script>
+      (function () {
+        if (!document.documentElement.classList.contains('gbppl-nav-native')) return;
+        ['gb-site-header', 'gb-catalog-hero', 'gb-banner-conversation', 'gb-advantages', 'gb-site-footer']
+          .forEach(function (name) {
+            var el = document.querySelector(name);
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+          });
+      })();
+    </script>
     <!-- The way back to the studio, same tab and same four doors as every
          other page. page="catalog" is what draws the "Sandbox · this page"
          section out of the registry (none registered yet, and the panel says

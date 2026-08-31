@@ -119,12 +119,36 @@ html.is-embed .icon-button--count > span {
  * 80px now come from.
  * =========================================================================== */
 
-#root header.site-header { display: none; }
+/* ---------------------------------------------------------------------------
+ * gbppl-catalog-mark-1 (2026-08-31) — AND THE ONE ADDRESS WHERE IT DOES NOT.
+ *
+ * Ton, 31.08: «должна быть версия-прототип страницы категорий GIFTS, где меню
+ * переделано как просил Марк; её нет ни на live, ни в прототипе, это
+ * проблема».
+ *
+ * The chrome swap below is the whole reason nobody can see the prototype's own
+ * menu any more: the build's bar is the one Mark reviewed on 27.07, and it is
+ * hidden on every address we have. So the swap now answers to one key. With
+ * ?nav=mark the wrapper drops our five organisms out of the DOM (index.html)
+ * and every rule of this swap stands down, so the page is the July prototype
+ * as it was reviewed: its own bar, its own hero, its own bands, its own page
+ * measure. Without the key nothing changes by a pixel — the selectors below
+ * are the same ones, with html:not(.gbppl-nav-native) in front.
+ *
+ * The class is set on <html> by a four line script at the top of index.html,
+ * before the first stylesheet paints, so nothing flashes.
+ *
+ * The studio's own layer is NOT part of the swap and does not stand down: the
+ * guard, the console, the gate and Dev mode are on both views. What we hand
+ * back is the SITE's chrome, not the studio's.
+ * ------------------------------------------------------------------------- */
+
+html:not(.gbppl-nav-native) #root header.site-header { display: none; }
 
 /* The one number the build derived from its own bar. It sets the height of
  * the hidden bar (dead) and the resting top of the expanded Chat with us
  * panel (alive), which has to clear OUR bar now: 96 -> --header-h 80. */
-:root { --site-header-height: 80px; }
+html:not(.gbppl-nav-native) { --site-header-height: 80px; }
 
 /* The sticky category row keeps sticking, one bar lower. Its z-index is 30
  * against our bar's 31, so it passes underneath rather than through; the
@@ -137,11 +161,47 @@ html.is-embed .icon-button--count > span {
    header's place. Both pin at top 0; the row sits one layer above the bar, so
    the moment it arrives it covers the header instead of stacking under it. */
 gb-site-header .gb-header { position: sticky; top: 0; z-index: 31; }
-.category-nav { position: sticky; top: 0; z-index: 32; min-height: var(--header-h); height: var(--header-h); box-sizing: border-box; display: flex; align-items: center; }
+html:not(.gbppl-nav-native) .category-nav { position: sticky; top: 0; z-index: 32; min-height: var(--header-h); height: var(--header-h); box-sizing: border-box; display: flex; align-items: center; }
+
+/* ---------------------------------------------------------------------------
+ * gbppl-catalog-mark-1 — THE HAIRLINE OVER THE CATEGORY ROW.
+ *
+ * Ton, 31.08: «у secondary navigation (полоса категорий) верхний divider почти
+ * невидим; в изначальном прототипе он был правильного цвета, чуть темнее; либо
+ * убрать, либо сделать заметнее».
+ *
+ * Measured before touching anything, 1280, one pixel column read off the
+ * screenshot (declared value and painted value are two different answers here):
+ *
+ *   place                     declared                      painted   contrast
+ *   ours, live view           1px #dedee2 (the build's)      #eaeaed   1.201:1
+ *   the prototype, untouched  1px #dedee2 (the same rule)    #e4e4e8   1.268:1
+ *   gildedbox.com/catalog     no border: a 1px gap showing
+ *                             the section ground underneath  #f4f4f5   1.099:1
+ *
+ * So THE OVERLAY NEVER RECOLOURED IT. Both views declare the build's own
+ * --color-border-default, and the client's live page is fainter than either.
+ * What our chrome did change is where the row stands: 319.97 instead of 359.87,
+ * a different sub-pixel phase for the same 0.885px of border, and the same grey
+ * washes out over two device rows instead of landing on one. There is nothing
+ * to restore, and no darker line anywhere to copy — which leaves Ton's second
+ * option, "сделать заметнее", and one step down our own grey scale.
+ *
+ * Zinc 300 is that step. It is not a new value: it is the line the system
+ * already draws round a box (stepper, toggle), it is the next rung under Zinc
+ * 200, and it reads at 1.47:1 against white — quiet furniture, still not a
+ * rule. Zinc 200 #e4e4e7 was measured too and is the same lightness as the
+ * build's #dedee2, i.e. no answer at all.
+ *
+ * TOP EDGE ONLY. The bottom border of the row meets the grid's Zinc 100 ground
+ * and reads there already; recolouring it would darken a line nobody asked
+ * about. And on ?nav=mark the row keeps the build's own hairline, because that
+ * view exists to show the prototype and not our corrections. */
+html:not(.gbppl-nav-native) .category-nav { border-top-color: var(--zinc-300); }
 
 /* Anchors and the skip link land under the bar, not behind it. The build
  * cleared its own 96; we clear ours. */
-html { scroll-padding-top: var(--header-h); }
+html:not(.gbppl-nav-native) { scroll-padding-top: var(--header-h); }
 
 /* gbppl-container-2 (Ton 27.08): the bar no longer borrows the build's
    --content-width. The system container IS the live measure (16 / 24 from
@@ -157,25 +217,28 @@ html { scroll-padding-top: var(--header-h); }
    titles and the grid on another: 48 vs 24 between 1280 and 1600, 48 vs 94
    at 2026. One measure now: the build reads the system container tokens.
    html:root outranks the build's :root without touching the bundle. */
-html:root {
+   gbppl-catalog-mark-1: and one ruler is one ruler only while both sides are
+   on the page. On ?nav=mark none of our organisms is, so the build measures
+   itself with its own gutters again, exactly as the prototype does. */
+html:root:not(.gbppl-nav-native) {
   --page-gutter: var(--container-pad-narrow);                       /* 16 */
   --content-width: calc(100% - var(--page-gutter) * 2);
 }
 @media (min-width: 768px) {
-  html:root { --page-gutter: var(--container-pad); }                /* 24 */
+  html:root:not(.gbppl-nav-native) { --page-gutter: var(--container-pad); }                /* 24 */
 }
 @media (min-width: 1600px) {
-  html:root { --content-width: min(calc(100% - var(--page-gutter) * 2), calc(var(--container-max-lg) - var(--container-pad) * 2)); }        /* 1552 */
+  html:root:not(.gbppl-nav-native) { --content-width: min(calc(100% - var(--page-gutter) * 2), calc(var(--container-max-lg) - var(--container-pad) * 2)); }        /* 1552 */
 }
 @media (min-width: 1920px) {
-  html:root {
+  html:root:not(.gbppl-nav-native) {
     --page-gutter: var(--container-pad-wide);                       /* 48 */
     --content-width: min(calc(100% - var(--page-gutter) * 2), calc(var(--container-max-xl) - var(--container-pad-wide) * 2));  /* 1824 */
   }
 }
 
 /* The site footer replaces the build's, one floor down, same argument. */
-#root footer.footer { display: none; }
+html:not(.gbppl-nav-native) #root footer.footer { display: none; }
 
 /* One Back to Top, and it is the build's. The footer component ends with a
  * quiet "Back to Top" link in its right corner, which is exactly where this
@@ -287,7 +350,7 @@ gb-drawer,
  * .category-nav, NOT the floating Chat with us. (.category-hero was on that
  * list until 27.08; it is hidden now too, one block down.) */
 
-#root section.experience { display: none; }
+html:not(.gbppl-nav-native) #root section.experience { display: none; }
 
 /* ===========================================================================
  * gbppl-catalog-hero-1 (2026-08-27) — AND THE HERO BAND.
@@ -322,7 +385,7 @@ gb-drawer,
  * Nothing else moves. .category-nav keeps its sticky top 0 and its 80px, the
  * handoff with our bar is untouched, and the hero is in normal flow above it. */
 
-#root section.category-hero { display: none; }
+html:not(.gbppl-nav-native) #root section.category-hero { display: none; }
 
 /* ===========================================================================
  * gbppl-catalog-prefooter-1 — THE MISSING LIGHT SERIF
@@ -364,8 +427,12 @@ gb-drawer,
    wear .gb-btn (React owns the markup), so the overlay dresses this one
    node in the S ladder's own tokens: geometry, label, paint, hover. The
    glyph goes; the header button carries none.
+
+   gbppl-catalog-mark-1: gated with the rest of the swap. On ?nav=mark the
+   row wears the build's own .button--small, calendar glyph and all,
+   because that is the button Mark reviewed.
    ============================================================ */
-.category-nav .sticky-book-meeting {
+html:not(.gbppl-nav-native) .category-nav .sticky-book-meeting {
   min-height: var(--gb-btn-s-h);
   padding: 0 var(--gb-btn-s-pad-x);
   gap: 0;
@@ -379,11 +446,11 @@ gb-drawer,
   text-transform: uppercase;
   transition: background-color var(--gb-btn-duration, 200ms) var(--gb-btn-easing, ease);
 }
-.category-nav .sticky-book-meeting:hover { background: var(--gb-btn-fill-primary-hover); }
-.category-nav .sticky-book-meeting svg { display: none; }
+html:not(.gbppl-nav-native) .category-nav .sticky-book-meeting:hover { background: var(--gb-btn-fill-primary-hover); }
+html:not(.gbppl-nav-native) .category-nav .sticky-book-meeting svg { display: none; }
 @media (min-width: 1280px) {
-  .category-nav .sticky-book-meeting { min-height: var(--gb-btn-s-h-xl); padding: 0 var(--gb-btn-s-pad-x-xl); }
+  html:not(.gbppl-nav-native) .category-nav .sticky-book-meeting { min-height: var(--gb-btn-s-h-xl); padding: 0 var(--gb-btn-s-pad-x-xl); }
 }
 @media (min-width: 2000px) {
-  .category-nav .sticky-book-meeting { min-height: var(--gb-btn-s-h-2xl); font-size: var(--gb-btn-s-label-2xl); }
+  html:not(.gbppl-nav-native) .category-nav .sticky-book-meeting { min-height: var(--gb-btn-s-h-2xl); font-size: var(--gb-btn-s-label-2xl); }
 }
