@@ -1247,3 +1247,321 @@ html.gbc-on .gbdoc-regcard__go[href]::after { pointer-events: none; }
    block's removal also takes off the track it had accidentally
    drawn around them since yesterday.
    ============================================================ */
+
+/* ============================================================
+   gbppl-oro-canon-1 — THE PLAYGROUND BLOCK, .gbdoc-pg
+   ------------------------------------------------------------
+   Ton, 31.08 13:17, on variant F of the bench and the canon of
+   axes under it: «окей, давай попробуем так». So the layout the
+   bench proved moves out of the bench and becomes furniture of
+   the documentation, the way the card, the stage and the reading
+   table did before it. The class was .labF-* on the bench and it
+   is .gbdoc-pg-* here: the bench keeps no copy, it wears these.
+
+   WHAT THE BLOCK IS, and every line of it points at a line of
+   studio\docs\RECON-PREVIEW-CONTROLS-2026-08-29.md, ten systems
+   read live rather than remembered:
+
+     ONE CARD, ONE HAIRLINE (recon 2.2). Preview and controls
+     inside one frame with a single line between them, so the
+     panel never reads as a second block of the page. The card
+     owns the border and the lift; nothing inside it draws
+     another.
+     THE RAIL IS A RAIL (recon 2.1). Fixed width, the preview
+     takes the rest; at 1280 the specimen keeps 73 per cent of
+     the card. Below 1024 the rail goes under the preview at full
+     width and the hairline turns with it.
+     THE PANEL IS QUIET (recon 2.3). One step of grey, no accent,
+     and the only blue in the rail is the focus ring.
+     THE CODE IS NOT A CONTROL (recon 2.6). It lives in the
+     card's footer band behind a Preview | Code toggle, folded by
+     default, never inside the rail.
+     THE GROUND STANDS ON THE STAGE IT CHANGES (spec v0.3 §1 and
+     §3). Light | Dark is not an axis of the component — the
+     button is the same button on either ground — so it floats in
+     the corner of the scene rather than as a fourth toggle in a
+     column of toggles.
+
+   THE GROUNDS ARE THE ONES TON TURNED ROUND (gbppl-lab-f-2,
+   29.08 14:55: «панель должна быть серее, а превью белым; вся
+   превью-панель должна выделяться на фоне простыни, возможно
+   добавить elevation»). Scene white, rail Zinc 100, footer strip
+   Zinc 50, card lifted with --shadow-card and its hairline kept.
+   The argument is written in full in THE GROUND RULE at the head
+   of this file; this block is its one exception and its scope.
+
+   THE KNOBS ARE ALL IN THE :root BLOCK BELOW. One place for the
+   rail's width, the scene's floor, the grounds, the rhythm and
+   the two label sizes; the rules under it only spend them.
+   Whoever moves the rail moves the number in oro.js too, where
+   the control rule costs a label against it (GbOro.controls,
+   BUDGET.RAIL), and the run-time probe says out loud when the
+   two have drifted.
+   ============================================================ */
+:root {
+  /* THE RAIL. 320 = --space-64 * 5. The recon puts the convention
+     at 250..360 (Mantine 250, Joy 300, Radix 360, Figma 300). 280
+     was measured and rejected: at 280 the rail holds 231 and three
+     rows wrap; at 320 it holds 271. */
+  --gbdoc-pg-rail: calc(var(--space-64) * 5);
+  /* THE SCENE, its floor rather than its height: it grows to
+     whatever the rail needs, because one card with two columns of
+     different heights is not one card. */
+  --gbdoc-pg-scene-min: calc(var(--space-64) * 5);
+  --gbdoc-pg-scene-pad: var(--space-48);
+  /* Where the specimen stops when it follows the scroll: clear of
+     the studio bar, 80 at every width. 80 = --space-64 + --space-16. */
+  --gbdoc-pg-scene-stick: calc(var(--space-64) + var(--space-16));
+  --gbdoc-pg-ground-light: var(--white);
+  --gbdoc-pg-ground-dark: var(--zinc-950);
+  --gbdoc-pg-rail-ground: var(--zinc-100);
+  --gbdoc-pg-foot-ground: var(--zinc-50);
+  --gbdoc-pg-line: var(--zinc-200);
+  /* --shadow-card, the light one of the system's three: --shadow-panel
+     belongs to things that float over a page, which a card sitting IN
+     the page is not. */
+  --gbdoc-pg-lift: var(--shadow-card);
+  /* THE RHYTHM of the rail: air between two controls, more air
+     between two groups, and the rail's own padding. */
+  --gbdoc-pg-gap: var(--space-16);
+  --gbdoc-pg-group-gap: var(--space-24);
+  --gbdoc-pg-pad: var(--space-24);
+  /* THE TYPE. The axis name is the eyebrow of the system, which is
+     also what gb-field prints over its own control, so a Select and
+     a toggle carry the same label; the label beside a checkbox is
+     the reading size, the way Joy UI and Mantine letter a switch. */
+  --gbdoc-pg-axis-size: var(--eyebrow-size);
+  --gbdoc-pg-axis-ink: var(--zinc-500);
+  --gbdoc-pg-bool-size: 14px;
+}
+
+.gbdoc-pg {
+  background: var(--white);
+  border: 1px solid var(--gbdoc-pg-line);
+  border-radius: var(--radius);
+  box-shadow: var(--gbdoc-pg-lift);
+  overflow: hidden;
+}
+.gbdoc-pg__body { display: grid; }
+@media (min-width: 1024px) {
+  .gbdoc-pg__body { grid-template-columns: minmax(0, 1fr) var(--gbdoc-pg-rail); }
+}
+
+/* ---- the left column: the specimen, or its markup ----
+   THE GROUND BELONGS TO THE COLUMN, THE SPECIMEN TO A BAND OF IT.
+   Seven axes make a taller rail than one button makes a stage, and
+   a stage stretched to meet it puts a small component in the middle
+   of a large empty field, which is Ton-21's complaint word for word.
+   So the whole column carries the specimen ground and the specimen
+   stands in a band of --gbdoc-pg-scene-min at the top of it, which
+   STICKS: scroll down the rail and the specimen comes along, the way
+   a canvas stays put in Storybook and in Figma while the panel
+   moves. To stop it following, delete the position: sticky line. */
+.gbdoc-pg__view {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--gbdoc-pg-ground-light);
+  transition: background-color var(--mo-small) var(--mo-move);
+}
+.gbdoc-pg__view.is-dark { background: var(--gbdoc-pg-ground-dark); }
+.gbdoc-pg__scene {
+  position: sticky;            /* and relative: the door hangs here */
+  top: var(--gbdoc-pg-scene-stick);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--gbdoc-pg-scene-min);
+  padding: var(--gbdoc-pg-scene-pad) var(--space-24);
+}
+/* The corner of the stage holds two things: the door to the
+   properties, which inspect.js hangs at --space-8 in a 40 wide box
+   on every [data-inspect] region, and this switch standing clear of
+   it. No eyebrow over it: Light and Dark say what they are. */
+.gbdoc-pg__ground {
+  position: absolute;
+  top: var(--space-8);
+  right: calc(var(--space-48) + var(--space-16));
+  z-index: 1;
+}
+/* The markup, in the specimen's PLACE rather than under it: the two
+   are one thing seen two ways, and a code block that pushes the
+   stage down is the noise this block exists to remove. */
+.gbdoc-pg__code {
+  position: sticky;
+  top: var(--gbdoc-pg-scene-stick);
+  flex: 0 0 auto;
+  display: flex;
+  min-width: 0;
+  padding: var(--gbdoc-pg-scene-pad) var(--space-24);
+}
+.gbdoc-pg__code .gbdoc-code { flex: 1 1 auto; margin: 0; }
+.gbdoc-pg [hidden] { display: none !important; }
+/* Trap 3, the local antidote: auth.css names a border colour on four
+   sides and a width on one, and a field standing in the rail needs
+   the other three said out loud. The same three lines every specimen
+   surface in this file spends. */
+.gbdoc-pg__row .gba-input {
+  border-style: solid;
+  border-width: 0;
+  border-bottom-width: 1px;
+}
+
+/* ---- the right column: the rail ---- */
+.gbdoc-pg__rail {
+  padding: var(--gbdoc-pg-pad);
+  background: var(--gbdoc-pg-rail-ground);
+  border-top: 1px solid var(--gbdoc-pg-line);
+}
+@media (min-width: 1024px) {
+  .gbdoc-pg__rail { border-top: 0; border-left: 1px solid var(--gbdoc-pg-line); }
+}
+/* Air between groups, and no rules between axes: the recon found
+   headings in the panels with more than ten axes and hairlines in
+   none of the small ones (2.5). */
+.gbdoc-pg__group + .gbdoc-pg__group { margin-top: var(--gbdoc-pg-group-gap); }
+/* THE TWO LABEL LEVELS ARE THE SAME SIZE AND DIFFERENT INK. Both the
+   group name and the axis name are the eyebrow of the system, which
+   is also what gb-field prints over its own Select. The group is
+   Zinc 900 and the axis Zinc 500: the hierarchy is carried by ink
+   rather than by a second size, because a second size here would be
+   a heading, and an eyebrow is never a heading (Ton-21). */
+.gbdoc-pg__gname {
+  display: block;
+  margin-bottom: var(--space-16);
+  font-size: var(--gbdoc-pg-axis-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--zinc-900);
+}
+.gbdoc-pg__row + .gbdoc-pg__row { margin-top: var(--gbdoc-pg-gap); }
+.gbdoc-pg__row[hidden] { display: none; }
+.gbdoc-pg__name {
+  display: block;
+  margin-bottom: var(--space-8);
+  font-size: var(--gbdoc-pg-axis-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--gbdoc-pg-axis-ink);
+}
+/* A field inside the rail is a control of the rail: no margin of its
+   own and no required asterisk, because every axis already has a
+   value. */
+.gbdoc-pg__row .gba-field { margin: 0; }
+/* THE BOOLEAN, ON LOAN. A native checkbox with our own label beside
+   it and not one line of styling on the box: the system has no
+   Switch until one is measured out of Figma (Ton 29.08 13:33, a
+   component comes from a measurement or it does not get built), and
+   a thing that is obviously on loan reads better than a hand drawn
+   toggle that would have to be unlearned. Joy UI and Mantine both
+   letter a switch this way, with the name at the reading size on the
+   same baseline rather than as an eyebrow above it. */
+.gbdoc-pg__bool {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--space-32);
+  font-size: var(--gbdoc-pg-bool-size);
+  line-height: 1.4;
+  color: var(--zinc-900);
+  cursor: pointer;
+}
+/* The one line of styling the borrowed box gets, and it is not a
+   style: a checked native checkbox is blue everywhere, and the rail
+   holds no blue but the focus ring (Ton-5: blue is state, and this
+   panel is not the specimen). */
+.gbdoc-pg__bool input { accent-color: var(--zinc-900); }
+/* THE SMOKE ALARM'S ROOM. The budget in oro.js decides; this box
+   only checks the decision afterwards. One absolutely positioned,
+   aria-hidden node per rail, parked off the sheet and clipped by the
+   card's own overflow, into which a track already standing in the
+   rail is re-rendered at its natural one-row width. It sits INSIDE
+   the rail so it inherits the rail's face and size rather than the
+   document's, and nothing in it is ever painted. */
+.gbdoc-pg__probe {
+  position: absolute;
+  top: 0;
+  left: -9999px;
+  width: max-content;
+  visibility: hidden;
+  pointer-events: none;
+}
+.gbdoc-pg__probe .gb-toggle { display: inline-flex; flex-wrap: nowrap; width: auto; }
+/* The probe letters its items the way the RAIL letters them, which
+   means the fill padding: the alarm has to measure the same item the
+   budget costed, or it reports a drift of its own making. */
+.gbdoc-pg__probe .gb-toggle__item { white-space: nowrap; padding-inline: var(--space-8); }
+
+/* ---- the rare axes, behind one More ---- */
+.gbdoc-pg__more { margin-top: var(--gbdoc-pg-group-gap); }
+.gbdoc-pg__more > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--zinc-600);
+  cursor: pointer;
+  list-style: none;
+}
+.gbdoc-pg__more > summary::-webkit-details-marker { display: none; }
+.gbdoc-pg__more > summary::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--mo-micro) var(--mo-move);
+}
+.gbdoc-pg__more[open] > summary::before { transform: rotate(45deg); }
+.gbdoc-pg__more > summary:hover { color: var(--zinc-900); }
+
+.gbdoc-pg__foot {
+  margin-top: var(--gbdoc-pg-group-gap);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--gbdoc-pg-line);
+}
+.gbdoc-pg__reset {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--zinc-500);
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.gbdoc-pg__reset:hover { color: var(--zinc-900); }
+.gbdoc-pg__reset:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; border-radius: 2px; }
+
+/* ---- the footer band of the card ----
+   Zinc 50 is allowed here and only here: a strip inside an object,
+   the same permission the table head and the block foot have in THE
+   GROUND RULE at the top of this file. It carries the view switch on
+   the left and the one measured line on the right. The line says only
+   what a ruler says: nothing on it repeats what the specimen shows
+   (recon 2.10). */
+.gbdoc-pg__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8) var(--space-16);
+  padding: var(--space-8) var(--space-16);
+  background: var(--gbdoc-pg-foot-ground);
+  border-top: 1px solid var(--gbdoc-pg-line);
+}
+.gbdoc-pg__read {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--zinc-500);
+}
+.gbdoc-pg__read b { color: var(--zinc-900); font-variant-numeric: tabular-nums; font-weight: 500; }

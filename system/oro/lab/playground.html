@@ -99,20 +99,43 @@
      ============================================================ -->
 
 <!-- ============================================================
-     gbppl-lab-f-1 — VARIANT F, AND HOW TO TURN ITS KNOBS
+     gbppl-oro-canon-1 — F WON, AND F LEFT THE BENCH
      ------------------------------------------------------------
-     TO CHANGE F BY HAND, five lines:
-       1. Sizes, grounds, gaps and label sizes: the :root block
-          named LAB F KNOBS a few lines below. One place, all CSS.
-       2. Which axes the button and the field have, in what order,
-          and what group they sit in: window.LAB_F in the script
-          right under it. One place, all controls.
-       3. Group order and group names: LAB_F.GROUPS. An axis with
-          advanced:true goes under More; an axis with when(S) is
-          hidden until its condition is true.
+     Ton, 31.08 13:17, on the padding, the Select by name and the
+     renames: «окей, давай попробуем так». So the mechanics of F
+     went into the system and the bench became its first consumer
+     instead of its owner:
+
+       the card, the rail, the scene, the ground in its corner,
+       the More fold, the Reset and the footer band
+                        -> .gbdoc-pg-* in components/docs.css,
+                           knobs and all
+       the canon of axes -> window.ORO_AXES in system/oro/oro.js
+       the rule, the budget, the probe and the whole renderer
+                        -> GbOro.controls in the same file
+
+     WHAT IS STILL HERE, and it is all a consumer ever writes: the
+     markup of the two cards, window.LAB_F with the axes of the
+     button and of the field, the two sample functions and two
+     calls. The six blocks below are the HISTORY of how the rule
+     was arrived at, kept because the reasoning is not repeated in
+     oro.js; where they name a file or a class, the names are the
+     ones the bench used at the time.
+
+     TO CHANGE F BY HAND, now:
+       1. Sizes, grounds, gaps and label sizes: the :root block at
+          the head of components/docs.css.
+       2. Which axes the button and the field have, in what order
+          and in what group: window.LAB_F below.
+       3. Group order and group names: ORO_AXES.GROUP_ORDER and
+          GROUP_LABELS. An axis with advanced:true goes under More;
+          an axis with when(S) is hidden until it is true.
        4. Where the rail moves under the preview: the 1024 in the
-          two media queries of the F block (search "labF__body").
+          two media queries of .gbdoc-pg__body, and BUDGET
+          .RAIL_FIXED_FROM in oro.js, which have to agree.
        5. Nothing else in this file belongs to F. A..E are untouched.
+     ------------------------------------------------------------
+     gbppl-lab-f-1 — VARIANT F, AS IT WAS FIRST BUILT
      ------------------------------------------------------------
      WHAT F IS. Ton rejected C (underlined tabs as value switches)
      and E (rows of product buttons as controls) and asked for the
@@ -470,292 +493,15 @@
         today, and it is written with nothing of the bench in it.
      ============================================================ -->
 
-<!-- ---- LAB F KNOBS, THE CSS HALF ---- -->
-<style>
-:root {
-  /* THE RAIL. 320 = --space-64 * 5. The recon puts the convention at
-     250..360 (Mantine 250, Joy 300, Radix 360, Figma 300). 280 was
-     tried first and measured: at 280 the rail holds 231 of content
-     and the Colour row, the Type row and the Icon position row each
-     wrap to two lines; at 320 it holds 271 and only Colour and the
-     four glyphs wrap. No label breaks at either width, so this is a
-     choice about rows, not about words. */
-  --lab-f-rail: calc(var(--space-64) * 5);
-  /* THE SCENE, its floor rather than its height: 320 = --space-64 * 5
-     again, and it grows to whatever the rail needs, because one card
-     with two columns of different heights is not one card. */
-  --lab-f-scene-min: calc(var(--space-64) * 5);
-  --lab-f-scene-pad: var(--space-48);
-  /* Where the specimen stops when it follows the scroll: clear of
-     the studio bar, which is 80 at every width on live and is
-     sticky on every studio page. 80 = --space-64 + --space-16. */
-  --lab-f-scene-stick: calc(var(--space-64) + var(--space-16));
-  /* THE GROUNDS, TURNED ROUND BY TON (gbppl-lab-f-2, 29.08 14:55:
-     «перепутаны цвета: панель должна быть серее, а превью белым»).
-     F had the rail white and the scene Zinc 100, on the reading that
-     what you press stands on white. Ton reads the card the other
-     way and he is right about which half is the subject: the
-     specimen is what the page is for, so the SCENE IS WHITE and the
-     RAIL IS ZINC 100, one step of grey that says «this half drives,
-     it is not the thing being looked at». The docs.css ground rule
-     carries the same words for every bench that follows.
-     The dark ground is untouched: it is the specimen's ground, not
-     the card's. */
-  --lab-f-ground-light: var(--white);
-  --lab-f-ground-dark: var(--zinc-950);
-  --lab-f-rail-ground: var(--zinc-100);
-  --lab-f-foot-ground: var(--zinc-50);
-  --lab-f-line: var(--zinc-200);
-  /* THE CARD STANDS OFF THE SHEET (Ton, same message: «вся
-     превью-панель должна выделяться на фоне простыни, возможно
-     добавить elevation»). --shadow-card is the system's own,
-     harvested off the live gift card, and it is the light one of
-     the three: --shadow-panel is 8 by 24 at 18 per cent and belongs
-     to things that float over a page (the console, a drawer), which
-     a card sitting IN the page is not. The hairline stays: the
-     shadow gives the lift, the line gives the edge. */
-  --lab-f-lift: var(--shadow-card);
-  /* THE RHYTHM of the rail: air between two controls, more air
-     between two groups, and the rail's own padding. */
-  --lab-f-gap: var(--space-16);
-  --lab-f-group-gap: var(--space-24);
-  --lab-f-pad: var(--space-24);
-  /* THE TYPE. The axis name is the eyebrow of the system, which is
-     also exactly what gb-field prints over its own control, so a
-     Select and a segment carry the same label; the label beside a
-     checkbox is the reading size, the way Joy UI and Mantine letter
-     a switch. */
-  --lab-f-axis-size: var(--eyebrow-size);
-  --lab-f-axis-ink: var(--zinc-500);
-  --lab-f-bool-size: 14px;
-}
-</style>
-
-<!-- ---- THE CANON OF AXES, SHARED BY EVERY SHOWCASE ---- -->
-<script>
-/* ============================================================
-   ORO_AXES — ONE AXIS, ONE NAME, ONE CONTROL, EVERY COMPONENT
-   ------------------------------------------------------------
-   Ton, 31.08 12:27: «да, и при этом мы должны учесть все
-   компоненты; посмотреть, какие компоненты какие оси имеют, и
-   стандартизировать look and feel осей.»
-
-   The rule of f-3 and f-4 answers «what shape is this axis», and
-   it answers it one axis at a time. That is enough to keep a
-   single panel honest and not enough to keep TWO panels the same:
-   Size could come out a toggle on the button and a Select on the
-   stepper on a day the words happened to be longer, and a reader
-   who learned one showcase would have to learn the next.
-
-   So the axes that recur across the system are named and settled
-   HERE, once, and every bench asks this object before it asks the
-   rule. What is in the canon is decided; what is not in the canon
-   still goes through nature, count and budget, and says so in the
-   console so that the canon can grow on evidence rather than on
-   memory.
-
-   THIS OBJECT MOVES TO oro.js when the showcases are converted
-   (spec section 5, GbOro.controls). It lives in the bench for
-   exactly as long as the bench is the only consumer, and it is
-   written as if it were already shared: no id, label or default of
-   this page is in it.
-   ============================================================ */
-window.ORO_AXES = {
-  /* The order of the groups, one for every panel in the house. A
-     component with no axis in a group simply skips it; nobody
-     re-orders. Ground is last and stands on the scene, because it
-     dresses the stage rather than the specimen (spec v0.2 §1). */
-  GROUP_ORDER: ['shape', 'state', 'content', 'ground'],
-
-  /* Names that mean the same axis and must print the same word.
-     A schema may also name its axis outright with canon: 'type'.
-     The list is not imagined: it is the census of 31.08 over the
-     nine showcases, the six variants of this bench and every
-     modifier in system/components (the table is in
-     studio\docs\PLAYGROUND-CONTROLS-SPEC.md section 4). */
-  ALIASES: {
-    color: 'colour', tone: 'colour', palette: 'colour',
-    kind: 'type', style: 'type', emphasis: 'type', fill: 'type',
-    appearance: 'look', face: 'look', labelstyle: 'look',
-    theme: 'ground', background: 'ground', surface: 'ground',
-    screen: 'device', well: 'density', backing: 'wash',
-    iconposition: 'iconpos'
-  },
-
-  /* SIX WORDS THAT MEANT TWO THINGS EACH, and what each one is
-     called from now on. Every entry here is a collision the census
-     found standing in the house today, not a preference: a reader
-     who learns one showcase must not be taught a second dialect on
-     the next one. The showcases are corrected as they are
-     converted; this object is what they are corrected TO. */
-  RENAMES: {
-    'icons.html · Ground (Washed | Plain)': 'Wash. Ground is the stage, and this is the component\'s own backing.',
-    'icons.html · Surface (Light | Dark)': 'Ground. One word for the stage, everywhere.',
-    'field.html · Label (Required | Optional)': 'Required, and it is a boolean, so it is the switch.',
-    'select.html · Label (Caps label | None)': 'Required as well: a label that is not there is a label not asked for.',
-    'D · Label style (Underline | Floating)': 'Look. Same axis, same word, on every field.',
-    'stepper.html · Well (Standard | Dense)': 'Density. The axis is the plainer word, not the anatomy part.',
-    'icons.html · Size (40 | 44 live | 48 | 56)': 'Size in rungs, S / M / L / XL, with the pixel in the note. A label is a rung, never a measurement.',
-    'select.html vs stepper.html · Value': 'Two axes, two names: Value is what is chosen, Position is where the number stands on its scale.'
-  },
-
-  AXES: {
-    /* THE LADDER. Always a toggle: it is short, it is ordered, and
-       it is the one axis a person compares rather than picks. Four
-       rungs at most anywhere in the system (S / M / L / XL). */
-    size:    { label: 'Size', group: 'shape', control: 'toggle',
-               note: 'the height ladder, at most four rungs' },
-
-    /* THE SHAPE OF THE THING. Toggle up to four; a component that
-       grows a fifth type is telling you the axis is really two
-       (spec v0.2 §2 and the note below), and the answer is to
-       SPLIT IT rather than to hide it in a menu. Until it is
-       split, five or more is a Select like any other long set. */
-    type:    { label: 'Type', group: 'shape', control: 'toggle', upTo: 4,
-               note: 'five types is a signal to split the axis, not to grow the control' },
-    variant: { label: 'Variant', group: 'shape', control: 'toggle', upTo: 4,
-               note: 'the same axis as Type under a composite name; one word, one control' },
-
-    /* THE FIVE FACES OF THE FIELD, AND WHY THEY ARE A SELECT.
-       Look is not a short scale: underline, floating, phone, one
-       time code and password are five DIFFERENT COMPONENTS wearing
-       one control, their names are long, and they are picked once
-       rather than compared. Both halves of line 3 of the rule
-       point the same way, so Look is a Select by name and not by
-       arithmetic. If a look is ever added or removed, it stays a
-       Select: that is the point of naming it here. */
-    look:    { label: 'Look', group: 'shape', control: 'select',
-               note: 'looks are separate faces, not rungs; picked once, named at length' },
-
-    /* NEVER A TOGGLE. States are five and six everywhere they are
-       drawn (rest, hover, focus, active, filled, error, disabled),
-       they are read down a list rather than compared side by side,
-       and half of them are unavailable on any given specimen. */
-    state:   { label: 'State', group: 'state', control: 'select',
-               note: 'always a Select: the set is long and half of it is usually unavailable' },
-
-    /* NEVER A TOGGLE EITHER, and this one is a measurement rather
-       than a taste: PRIMARY, SECONDARY, INVERSE are the longest
-       words any panel spends, they cost more than a share of any
-       rail we draw, and the family grows with every ground the
-       system learns. Ton photographed the wrapped version. */
-    colour:  { label: 'Colour', group: 'shape', control: 'select',
-               note: 'always a Select: the longest words in the house, and the set grows' },
-
-    /* THE STAGE, NOT THE SPECIMEN. Two short values, a toggle, and
-       it stands in the corner of the scene it changes rather than
-       in the rail (spec v0.2 §1). A hug, not a fill: it floats. */
-    ground:  { label: 'Ground', group: 'ground', control: 'toggle', where: 'scene',
-               note: 'Light | Dark, on the stage, hugging its two words' },
-
-    /* THE COMPONENT'S OWN BACKING, which the icon button calls
-       Ground today and which is not the stage at all: two short
-       words, a toggle. Renamed rather than re-controlled. */
-    wash:    { label: 'Wash', group: 'shape', control: 'toggle',
-               note: 'the control\'s own backing, never the stage' },
-
-    /* HOW TIGHT, not how big. Two or three rungs everywhere it is
-       drawn, so a toggle; the stepper calls it Well today. */
-    density: { label: 'Density', group: 'shape', control: 'toggle', upTo: 4,
-               note: 'standard or dense; the plain word, not the anatomy part' },
-
-    /* WHERE THE GLYPH STANDS, three short words, always a toggle;
-       and WHICH GLYPH, which is a Select wherever it appears: the
-       icon set has 13 names today and grows, and the names are as
-       long as words get in a rail. */
-    iconpos: { label: 'Icon position', group: 'content', control: 'toggle',
-               note: 'before, after or both' },
-    glyph:   { label: 'Glyph', group: 'content', control: 'select',
-               note: 'a list out of the icon set; it grows, and the names are long' },
-
-    /* THE VIEWING APPARATUS, not a property of any component: the
-       console already spends these two and they are long lists of
-       numbers. Named here so a showcase never draws them as rows
-       of buttons. */
-    device:  { label: 'Device', group: 'content', control: 'select',
-               note: 'a list of presets, and it belongs to the console' },
-    preset:  { label: 'Width preset', group: 'content', control: 'select',
-               note: 'numbers in a list; the same answer as Device' }
-  },
-
-  /* Yes and no is a Switch and free text is a field WHATEVER the
-     axis is called, so booleans and text are settled by their
-     nature and never appear above. Icon, Required, Block width,
-     Signed in: all one control, and today that control is on loan
-     (see the file header). */
-  BY_NATURE: { bool: 'switch', text: 'field', number: 'field' }
-};
-</script>
-
 <!-- ---- LAB F KNOBS, THE SCHEMA HALF ---- -->
+<!-- gbppl-oro-canon-1: THE RULE AND THE CANON LEFT THIS FILE. The four
+     branches, both thresholds and the whole BUDGET table now live in
+     system/oro/oro.js beside the renderer that reads them, and the canon
+     of axes is window.ORO_AXES there; the bench states only WHAT ITS TWO
+     COMPONENTS HAVE, which is all a consumer of GbOro.controls ever
+     states. -->
 <script>
 window.LAB_F = {
-  /* The order the groups of the RAIL are drawn in, and what each is
-     called. Ground is not among them any more: it moved to the scene
-     with gbppl-lab-f-3, because it dresses the stage and not the
-     specimen (spec v0.2 section 1). */
-  GROUPS: [['shape', 'Shape'], ['state', 'State'], ['content', 'Content']],
-
-  /* ---- THE RULE, spec v0.2 section 2, approved by Ton 31.08 ----
-     Four branches by the NATURE of the axis, and this object is the
-     only place any of them is written down: controlF reads it and
-     decides nothing of its own. BOOL says checkbox today because the
-     Switch has not been measured yet (see the header); change this
-     one word on the day it is, and the rail follows.
-     TOGGLE_TO and SELECT_FROM are one boundary written from both
-     sides, so they are checked against each other below. */
-  RULE: {
-    BOOL: 'checkbox',   /* 1. true or false -> Switch. PLACEHOLDER: native checkbox. */
-    TOGGLE_TO: 4,       /* 2. one of 2..4 short values -> .gb-toggle */
-    TEXT: 'field',      /* 4. free text or number -> .gba-input */
-
-    /* ---- FACTOR 3, THE BUDGET (gbppl-lab-f-4, Ton 31.08 12:07;
-       re-done as a SHARE by gbppl-lab-f-5, Ton 31.08 12:23) ----
-       A set of 2..4 short values is a toggle only if the track it
-       would draw can be PAID FOR on one row of the rail. The cost
-       is computed from the schema's own strings and the constants
-       below, before anything is rendered; over budget goes to the
-       Select. Every number here is the value the CSS spends, and
-       the comment names which declaration it is copied from, so a
-       drift between the two is a thing a reader can find. The
-       run-time probe (see the header) exists to say out loud when
-       they have drifted; it never overrides this table.
-       SINCE f-5 the track in the rail wears .gb-toggle--fill and
-       the items split it in equal shares, so the question is no
-       longer «does the SUM of the labels fit the room» but «does
-       the WIDEST label fit one share of it». The parts are the
-       same parts; the arithmetic is in shareOf and costItem. */
-    BUDGET: {
-      /* .gb-toggle__item type — the button label ladder */
-      LABEL_SIZE: 11,          /* --gb-btn-s-label */
-      LABEL_SIZE_2XL: 12,      /* --gb-btn-s-label-2xl, from 2000 */
-      LABEL_2XL_FROM: 2000,    /* the toggle.css media query */
-      LABEL_WEIGHT: 600,       /* --gb-btn-label-weight */
-      LABEL_TRACKING: 1,       /* --gb-btn-label-tracking, per character */
-      LABEL_CAPS: true,        /* text-transform: uppercase */
-      LABEL_FACE: '--font-sans',   /* read from the token, not retyped */
-      /* .gb-toggle__item box */
-      ITEM_PAD: 16,            /* --space-16, each side, on a HUG track */
-      /* The rail's tracks are .gb-toggle--fill, and there the item
-         pays --space-8 each side: in a share the padding is the
-         wrap threshold and not the air (f-5, and the argument is
-         written where the modifier is, in toggle.css). */
-      ITEM_PAD_FILL: 8,        /* --space-8, each side, on a FILL track */
-      /* .gb-toggle box */
-      GAP: 4,                  /* --gbtg-inset, between two items */
-      INSET: 4,                /* --gbtg-inset, each side of the row */
-      BORDER: 1,               /* the 1px --zinc-300 hairline, each side */
-      /* the room, at the width where the rail is a fixed rail */
-      RAIL: 320,               /* --lab-f-rail = --space-64 * 5 */
-      RAIL_PAD: 24,            /* --lab-f-pad, each side */
-      RAIL_BORDER: 1,          /* the hairline between rail and scene */
-      RAIL_FIXED_FROM: 1024    /* below this the rail spans the card */
-    }
-  },
-  /* 3. one of 5 or more values, or long words (an axis may also say
-     long:true and come here under the count) -> .gba-select */
-  SELECT_FROM: 5,
-
   /* THE GROUND. Still an axis with a default and a reset like the
      rest, still last, but it is drawn on the scene rather than in
      the rail (spec v0.2 sections 1 and 3): what it changes is the
@@ -813,13 +559,10 @@ window.LAB_F = {
   ]
 };
 
-/* One boundary, written from both sides, so it is read from both
-   sides once on load. Four and five have to meet with nothing
-   between them; if they ever stop meeting, the console says so
-   before anyone counts controls on a screenshot. */
-if (window.LAB_F.SELECT_FROM !== window.LAB_F.RULE.TOGGLE_TO + 1) {
-  console.warn('LAB_F: TOGGLE_TO and SELECT_FROM leave a gap; the rule has a hole in it.');
-}
+/* The boundary check that stood here moved with the rule it checks:
+   GbOro.controls reads TOGGLE_TO and SELECT_FROM off one table in
+   oro.js and compares them there, once per page rather than once per
+   bench. */
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1293,247 +1036,15 @@ if (window.LAB_F.SELECT_FROM !== window.LAB_F.RULE.TOGGLE_TO + 1) {
 .labE__twin { display: block; margin-top: var(--space-8); font-size: 14px; line-height: 1.4; color: var(--zinc-500); }
 
 /* ============================================================
-   F — THE CONVENTION (gbppl-lab-f-1, 29.08)
+   F — THE CONVENTION: ITS CSS LEFT THIS FILE (gbppl-oro-canon-1)
    ------------------------------------------------------------
-   Nothing here is invented. Every rule below points at a line of
-   studio\docs\RECON-PREVIEW-CONTROLS-2026-08-29.md, which read ten
-   systems live rather than from memory. The knobs are all in the
-   :root block at the top of this file; these rules only spend them.
-
-   ONE CARD, ONE HAIRLINE (recon 2.2). Mantine, Joy UI and the
-   Carbon site all put the preview and the controls inside one
-   frame with a single line between them, so the panel never reads
-   as a second block of the page. The card owns the border; nothing
-   inside it draws another.
-
-   THE RAIL IS A RAIL (recon 2.1). Fixed width, the preview takes
-   the rest. In no system do the controls outweigh the specimen by
-   area; at 1280 this card gives the preview 858 of 1180 and the
-   rail 320, which is 73 per cent to the thing being judged.
-
-   THE PANEL IS QUIET (recon 2.3). One step of grey, no accent, and
-   the only blue in the whole rail is the focus ring. Colour belongs
-   to the specimen.
-
-   THE CODE IS NOT A CONTROL (recon 2.6). It lives in the card's
-   footer band behind a Preview | Code segment, folded by default,
-   and never inside the rail.
+   Ton chose F on 31.08 13:17 («окей, давай попробуем так»), so the
+   card, the rail, the scene, the ground in its corner, the More
+   fold, the Reset and the footer band became furniture of the
+   documentation: .gbdoc-pg-* in system/components/docs.css, knobs
+   and all. The bench wears them like any showcase does and keeps
+   no copy — a layout described twice is two layouts.
    ============================================================ */
-.labF {
-  background: var(--white);
-  border: 1px solid var(--lab-f-line);
-  border-radius: var(--radius);
-  box-shadow: var(--lab-f-lift);
-  overflow: hidden;
-}
-.labF__body { display: grid; }
-@media (min-width: 1024px) {
-  /* The preview is fluid, the rail is fixed. Below 1024 the rail
-     goes UNDER the preview at full width, which is what Mantine and
-     Joy UI do at 390 (recon 2.9), and the hairline turns with it. */
-  .labF__body { grid-template-columns: minmax(0, 1fr) var(--lab-f-rail); }
-}
-
-/* ---- the left column: the specimen, or its markup ---- */
-/* THE GROUND BELONGS TO THE COLUMN, THE SPECIMEN TO A BAND OF IT.
-   (The ground itself changed hands on 29.08 14:55: this column is
-   WHITE now and the rail is the grey one. See the knobs.)
-   Seven axes make a taller rail than one button makes a stage, and
-   a stage stretched to meet it puts a small component in the middle
-   of a large empty field, which is Ton-21's complaint word for word.
-   So the whole column carries the specimen ground (one card, no
-   white gap beside the rail) and the specimen stands in a band of
-   --lab-f-scene-min at the top of it, which STICKS: scroll down the
-   rail and the specimen comes along, the way a canvas stays put in
-   Storybook and in Figma while the panel moves. To stop it
-   following, delete the position: sticky line below. */
-.labF__view {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  background: var(--lab-f-ground-light);
-  transition: background-color var(--mo-small) var(--mo-move);
-}
-.labF__view.is-dark { background: var(--lab-f-ground-dark); }
-.labF__scene {
-  position: sticky;            /* and relative: the door hangs here */
-  top: var(--lab-f-scene-stick);
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--lab-f-scene-min);
-  padding: var(--lab-f-scene-pad) var(--space-24);
-}
-/* THE GROUND STANDS ON THE STAGE IT CHANGES (gbppl-lab-f-3, spec
-   v0.2 sections 1 and 3). It was the last row of the rail, and it
-   was the fourth toggle in a column of toggles, which is half of why
-   the rail read as one element. It is not an axis of the component:
-   the button is the same button on either ground. So it sits in the
-   scene's corner, the same corner and the same two offsets the other
-   five variants of this bench give it, clear of the properties door
-   that inspect.js hangs at --space-8 in a 40 wide box. No eyebrow
-   over it: Light and Dark say what they are. */
-.labF__ground {
-  position: absolute;
-  top: var(--space-8);
-  right: calc(var(--space-48) + var(--space-16));
-  z-index: 1;
-}
-/* Trap 3, the local antidote, the same three lines every surface off
-   the live bundle spends: auth.css names a border colour on four
-   sides and a width on one. */
-.labF .lab-hold .gba-input,
-.labF__row .gba-input {
-  border-style: solid;
-  border-width: 0;
-  border-bottom-width: 1px;
-}
-/* The markup, in the specimen's PLACE rather than under it: the two
-   are one thing seen two ways, and a code block that pushes the
-   stage down is the noise this bench exists to remove. It stands on
-   the same ground, in the same band, with the same air around it,
-   and it is as tall as the markup is: a plate of black the height of
-   the column would be the loudest thing on the page. */
-.labF__code {
-  position: sticky;
-  top: var(--lab-f-scene-stick);
-  flex: 0 0 auto;
-  display: flex;
-  min-width: 0;
-  padding: var(--lab-f-scene-pad) var(--space-24);
-}
-.labF__code .gbdoc-code { flex: 1 1 auto; margin: 0; }
-.labF [hidden] { display: none !important; }
-
-/* ---- the right column: the rail ---- */
-.labF__rail {
-  padding: var(--lab-f-pad);
-  background: var(--lab-f-rail-ground);
-  border-top: 1px solid var(--lab-f-line);
-}
-@media (min-width: 1024px) {
-  .labF__rail { border-top: 0; border-left: 1px solid var(--lab-f-line); }
-}
-/* Air between groups, and no rules between axes: the recon found
-   headings in the panels that have more than ten axes and hairlines
-   in none of the small ones (2.5). */
-.labF__group + .labF__group { margin-top: var(--lab-f-group-gap); }
-/* THE TWO LABEL LEVELS ARE THE SAME SIZE AND DIFFERENT INK. Both the
-   group name and the axis name are the eyebrow of the system, which
-   is also what gb-field prints over its own Select, so a segment and
-   a Select are lettered identically. The group is Zinc 900 and the
-   axis Zinc 500: the hierarchy is carried by ink rather than by a
-   second size, because a second size here would be a heading, and an
-   eyebrow is never a heading (Ton-21). */
-.labF__gname {
-  display: block;
-  margin-bottom: var(--space-16);
-  font-size: var(--lab-f-axis-size);
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  line-height: 1.5;
-  text-transform: uppercase;
-  color: var(--zinc-900);
-}
-.labF__row + .labF__row { margin-top: var(--lab-f-gap); }
-.labF__row[hidden] { display: none; }
-.labF__name {
-  display: block;
-  margin-bottom: var(--space-8);
-  font-size: var(--lab-f-axis-size);
-  font-weight: var(--eyebrow-weight);
-  letter-spacing: var(--eyebrow-tracking);
-  line-height: 1.5;
-  text-transform: uppercase;
-  color: var(--lab-f-axis-ink);
-}
-/* A field inside the rail is a control of the rail: no margin of its
-   own and no required asterisk, because every axis already has a
-   value. */
-.labF__row .gba-field { margin: 0; }
-/* THE BOOLEAN, ON LOAN. A native checkbox with our own label beside
-   it, and not one line of styling on the box: see the note in the
-   file header. Joy UI and Mantine both letter a switch this way,
-   with the name at the reading size on the same baseline rather
-   than as an eyebrow above it. */
-.labF__bool {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  min-height: var(--space-32);
-  font-size: var(--lab-f-bool-size);
-  line-height: 1.4;
-  color: var(--zinc-900);
-  cursor: pointer;
-}
-/* The one line of styling the borrowed box gets, and it is not a
-   style: a checked native checkbox is blue everywhere, and the rail
-   holds no blue but the focus ring (Ton-5, blue is state and this
-   panel is not the specimen). accent-color leaves the browser its
-   own control and only says which ink to use. */
-.labF__bool input { accent-color: var(--zinc-900); }
-/* THE SMOKE ALARM'S ROOM (gbppl-lab-f-4). The budget decides; this
-   box only checks the decision afterwards. One absolutely
-   positioned, aria-hidden node per rail, parked off the sheet and
-   clipped by the card's own overflow, into which a track already
-   standing in the rail is re-rendered at its natural one-row width:
-   max-content so nothing is squeezed, nowrap in both places so
-   nothing folds, and it sits INSIDE the rail so it inherits the
-   rail's face and size rather than the document's. Whatever comes
-   back is compared with the room and, if it is over, said out loud
-   in the console. Nothing here is ever painted. */
-.labF__probe {
-  position: absolute;
-  top: 0;
-  left: -9999px;
-  width: max-content;
-  visibility: hidden;
-  pointer-events: none;
-}
-.labF__probe .gb-toggle { display: inline-flex; flex-wrap: nowrap; width: auto; }
-/* The probe letters its items the way the RAIL letters them, which
-   since f-5 means the fill padding: the alarm has to measure the
-   same item the budget costed, or it would report a drift of its
-   own making. --space-8, the same rung .gb-toggle--fill spends. */
-.labF__probe .gb-toggle__item { white-space: nowrap; padding-inline: var(--space-8); }
-.labF__more { margin-top: var(--lab-f-group-gap); }
-.labF__foot {
-  margin-top: var(--lab-f-group-gap);
-  padding-top: var(--space-16);
-  border-top: 1px solid var(--lab-f-line);
-}
-.labF__reset {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--zinc-500);
-  cursor: pointer;
-  transition: color var(--mo-micro) var(--mo-move);
-}
-.labF__reset:hover { color: var(--zinc-900); }
-.labF__reset:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; border-radius: 2px; }
-
-/* ---- the footer band of the card ---- */
-/* Zinc 50 is allowed here and only here: a strip inside an object,
-   the same permission the table head and the block foot have in the
-   docs.css ground rule. It carries the view switch on the left and
-   the one measured line on the right. The line says only what a
-   ruler says: nothing on it repeats what the specimen shows
-   (recon 2.10). */
-.labF__bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-8) var(--space-16);
-  padding: var(--space-8) var(--space-16);
-  background: var(--lab-f-foot-ground);
-  border-top: 1px solid var(--lab-f-line);
-}
-.labF__bar .lab-read { margin: 0; }
 </style>
 </head>
 <body>
@@ -1575,25 +1086,28 @@ if (window.LAB_F.SELECT_FROM !== window.LAB_F.RULE.TOGGLE_TO + 1) {
       <h2 class="oro-h2">F &middot; the unified rule: one canon of axes, a switch for yes and no, a select from five, and a toggle that fills its rail in equal shares when the labels fit</h2>
       <p class="oro-note">The layout is what ten systems already agree on, read off their live pages on 29 August: one card, lifted off the sheet by its own shadow, with the specimen fluid on a white stage at the left and a narrow grey rail of controls at the right, a single hairline between them, and the markup folded into the card's footer band. The rule over the controls is the one approved on 31 August and it now weighs three things about an axis, in this order. Its nature: yes or no is a switch, free text is a field. Its count: five values or more is our Select, because that is more than a person reads at a glance. And its budget: a set of two to four values is the toggle button only if the track it would draw can be paid for on one row of the rail at the width the rail has. Since 31 August the tracks in the rail fill it: every control spans the column and its halves split that column in equal shares, so a rail reads as one stack of lines instead of a stack of pills adrift at the left edge. Equal shares change the sum into a division. The room is spent first on the track's own furniture, the hairline twice, the inset twice and a gap between every pair, and what is left is divided by the number of values; the axis stays a toggle when its longest label, plus the padding on both sides, fits one of those shares. It is costed from the schema's own strings before anything is rendered, and costed again whenever the rail changes width. Above all of that sits the canon: the axes the system keeps meeting are named and settled once, so Size is a toggle and State and Colour are Selects on every component, and the arithmetic is only asked about the axes the canon has not met yet. An axis that does not apply is removed rather than greyed, the rare ones are behind one More, and Light or Dark left the rail for the stage it changes. One control here is a placeholder: the switch is a plain browser checkbox, because the system has no Switch until one is taken out of Figma and measured, and Figma is not open to us yet.</p>
 
-      <div class="labF" data-lab-f="button">
-        <div class="labF__body">
-          <div class="labF__view">
-            <div class="labF__scene" data-lab-stage data-inspect="button">
-              <div class="labF__ground" data-lab-fground></div>
-              <div class="lab-hold" data-lab-hold></div>
+      <!-- gbppl-oro-canon-1: the block is .gbdoc-pg out of docs.css and the
+           panel is GbOro.controls out of oro.js. What is left on the page is
+           this markup and the schema. -->
+      <div class="gbdoc-pg" data-pg="button">
+        <div class="gbdoc-pg__body">
+          <div class="gbdoc-pg__view">
+            <div class="gbdoc-pg__scene" data-pg-scene data-inspect="button">
+              <div class="gbdoc-pg__ground" data-pg-ground></div>
+              <div class="lab-hold" data-pg-hold></div>
             </div>
-            <div class="labF__code" data-lab-codewrap hidden>
+            <div class="gbdoc-pg__code" data-pg-codewrap hidden>
               <div class="gbdoc-code">
                 <button class="gbdoc-copy" type="button" data-copy="#codeF">Copy</button>
-                <pre><code id="codeF" data-lab-code></code></pre>
+                <pre><code id="codeF" data-pg-code></code></pre>
               </div>
             </div>
           </div>
-          <div class="labF__rail" data-lab-controls></div>
+          <div class="gbdoc-pg__rail" data-pg-rail></div>
         </div>
-        <div class="labF__bar">
-          <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-lab-view></div>
-          <p class="lab-read" data-lab-read></p>
+        <div class="gbdoc-pg__bar">
+          <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-pg-view></div>
+          <p class="gbdoc-pg__read" data-pg-read></p>
         </div>
       </div>
     </section>
@@ -1604,25 +1118,28 @@ if (window.LAB_F.SELECT_FROM !== window.LAB_F.RULE.TOGGLE_TO + 1) {
       <h2 class="oro-h2">The same card, on a field</h2>
       <p class="oro-note">The same renderer given the field, because a rule that serves one component proves nothing. Look and State are Selects by the canon: five looks of a field are five faces picked once rather than a short scale, and states are read down a list rather than compared. Type has three values, so the canon makes it a toggle and the budget checks that its longest word, textarea, fits a share of the rail: it is only asked of the two looks that have a choice to make. Required is yes or no, so it is the placeholder switch. The error text exists only while the state is Error. Nothing else changes: the card, the rail, the rule and the footer band are the ones above.</p>
 
-      <div class="labF" data-lab-f="field">
-        <div class="labF__body">
-          <div class="labF__view">
-            <div class="labF__scene" data-lab-stage data-inspect="field">
-              <div class="labF__ground" data-lab-fground></div>
-              <div class="lab-hold lab-hold--block" data-lab-hold></div>
+      <!-- gbppl-oro-canon-1: the block is .gbdoc-pg out of docs.css and the
+           panel is GbOro.controls out of oro.js. What is left on the page is
+           this markup and the schema. -->
+      <div class="gbdoc-pg" data-pg="field">
+        <div class="gbdoc-pg__body">
+          <div class="gbdoc-pg__view">
+            <div class="gbdoc-pg__scene" data-pg-scene data-inspect="field">
+              <div class="gbdoc-pg__ground" data-pg-ground></div>
+              <div class="lab-hold lab-hold--block" data-pg-hold></div>
             </div>
-            <div class="labF__code" data-lab-codewrap hidden>
+            <div class="gbdoc-pg__code" data-pg-codewrap hidden>
               <div class="gbdoc-code">
                 <button class="gbdoc-copy" type="button" data-copy="#codeFF">Copy</button>
-                <pre><code id="codeFF" data-lab-code></code></pre>
+                <pre><code id="codeFF" data-pg-code></code></pre>
               </div>
             </div>
           </div>
-          <div class="labF__rail" data-lab-controls></div>
+          <div class="gbdoc-pg__rail" data-pg-rail></div>
         </div>
-        <div class="labF__bar">
-          <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-lab-view></div>
-          <p class="lab-read" data-lab-read></p>
+        <div class="gbdoc-pg__bar">
+          <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-pg-view></div>
+          <p class="gbdoc-pg__read" data-pg-read></p>
         </div>
       </div>
     </section>
@@ -1837,6 +1354,11 @@ if (window.LAB_F.SELECT_FROM !== window.LAB_F.RULE.TOGGLE_TO + 1) {
 <script src="../../components/toggle.js"></script>
 <script src="../../components/studio-panel.js"></script>
 <script src="../../components/inspect.js"></script>
+<!-- gbppl-oro-canon-1: the canon of axes and the panel renderer left this
+     bench and became system/oro/oro.js, so F is now the same code every
+     showcase runs. The bench reads them from there and keeps no copy: two
+     copies of a canon are two canons. -->
+<script src="../oro.js"></script>
 
 <script>
 (function () {
@@ -2778,495 +2300,47 @@ if (window.LAB_F.SELECT_FROM !== window.LAB_F.RULE.TOGGLE_TO + 1) {
      of the work is identical, so it is done by the same hand. */
   function fieldAfterF(S, hold) { fieldAfterE(S, hold); }
 
-  /* ---- the four controls of the rule ---- */
-  /* THE TOGGLE IS THE HOUSE'S OWN (gbppl-lab-f-2, Ton 14:55). It
-     was .gbdoc-chips, a control drawn for this bench and owned by
-     nothing; it is now <.gb-toggle>, measured off the checkout and
-     living in system/components/toggle.css. --fill since f-5 and
-     Ton's 12:23 (it was --block, which spanned the track and left
-     the items huddled at its left edge): in the rail the track
-     spans the column AND the items split it in equal shares, so a
-     row of controls has one left edge and one right edge like
-     every other row. The wrap that --block carries is not in
-     --fill at all, and does not need to be: since gbppl-lab-f-4 an
-     axis only gets here if it was costed against the rail's room
-     and came in under it, so a toggle in the rail is a toggle on
-     one row by construction.
-     The third argument is the modifier, and the ONE caller that
-     passes it is the scene's ground, which passes the empty string
-     because a control floating over a stage hugs its two words.
-     data-gb-toggle="host" because the STATE here is
-     S, the bench's own; the component keeps the group contract, the
-     single tab stop and the arrow keys, and paints nothing.
-     named=false is the scene's ground: two words that say what they
-     are need no eyebrow over them, and a rail row always has one. */
-  function toggleHTML_F(ax, named, mod) {
-    return (named === false ? '' : '<span class="labF__name">' + esc(ax.label) + '</span>') +
-      '<div class="' + ('gb-toggle ' + (mod == null ? 'gb-toggle--fill' : mod)).replace(/\s+$/, '') +
-      '" role="radiogroup" data-gb-toggle="host"' +
-      ' aria-label="' + esc(ax.label) + '">' +
-      ax.values.map(function (v) {
-        return '<button class="gb-toggle__item" type="button" role="radio" aria-checked="false"' +
-               ' data-faxis="' + ax.id + '" data-val="' + v[0] + '">' + esc(v[1]) + '</button>';
-      }).join('') + '</div>';
-  }
-  /* PLACEHOLDER UNTIL SWITCH FROM FIGMA — see the file header. The
-     label carries the axis name and the box carries the answer, so
-     nothing prints Yes or No at all. */
-  function boolHTML_F(ax, rowId) {
-    return '<label class="labF__bool" for="labf-' + rowId + '">' +
-      '<input type="checkbox" id="labf-' + rowId + '" data-fbool="' + ax.id + '">' +
-      '<span>' + esc(ax.label) + '</span></label>';
-  }
-  function selectHTML_F(ax, rowId) {
-    return '<gb-field input-id="labf-' + rowId + '" name="labf-' + rowId + '" type="select" optional' +
-      ' label="' + esc(ax.label) + '" options="' +
-      esc(ax.values.map(function (v) { return v[1]; }).join('|')) +
-      '" data-faxis-field="' + ax.id + '"></gb-field>';
-  }
-  function textHTML_F(ax, rowId) {
-    return '<gb-field input-id="labf-' + rowId + '" name="labf-' + rowId + '" type="text" optional' +
-      ' label="' + esc(ax.label) + '" data-faxis-field="' + ax.id + '"></gb-field>';
-  }
-  /* ============================================================
-     FACTOR 3: THE LABEL BUDGET (gbppl-lab-f-4)
-     ------------------------------------------------------------
-     What a track WOULD cost, computed from the schema's strings
-     and LAB_F.RULE.BUDGET, with nothing rendered and no DOM node
-     read. Canvas is the text engine asked for a width without a
-     layout, which is the whole difference between costing a
-     string and measuring a control.
-     ============================================================ */
-  var COST_CTX = null;
-  var COST_SEEN = {};   /* string + font -> width. The strings are a schema, so they repeat. */
-
-  /* The face is the token's, read from where the token lives rather
-     than retyped into the budget. */
-  function budgetFont() {
-    var B = F.RULE.BUDGET;
-    var size = window.innerWidth >= B.LABEL_2XL_FROM ? B.LABEL_SIZE_2XL : B.LABEL_SIZE;
-    var face = getComputedStyle(document.documentElement)
-                 .getPropertyValue(B.LABEL_FACE).trim() || 'sans-serif';
-    return B.LABEL_WEIGHT + ' ' + size + 'px ' + face;
-  }
-
-  /* CSS letter-spacing puts the tracking after EVERY character, the
-     last one included, and so does canvas letterSpacing where the
-     browser has it. Where it does not, the same sum is added by
-     hand, which is the definition rather than an approximation of
-     it. */
-  function costText(str, font) {
-    var B = F.RULE.BUDGET;
-    var key = font + '|' + str;
-    if (COST_SEEN[key] != null) return COST_SEEN[key];
-    if (!COST_CTX) COST_CTX = document.createElement('canvas').getContext('2d');
-    var spaced = 'letterSpacing' in COST_CTX;
-    COST_CTX.letterSpacing = spaced ? B.LABEL_TRACKING + 'px' : '0px';
-    COST_CTX.font = font;
-    var w = COST_CTX.measureText(str).width;
-    if (!spaced) w += str.length * B.LABEL_TRACKING;
-    COST_SEEN[key] = w;
-    return w;
-  }
-
-  /* WHAT ONE ITEM GETS (gbppl-lab-f-5). The track fills the rail
-     and the items split it in equal shares, so the room is spent
-     first on the track's own furniture, the hairline twice, the
-     inset twice and a gap between every pair, and what is left is
-     divided by the number of items. */
-  function shareOf(ax, room) {
-    var B = F.RULE.BUDGET;
-    var n = ax.values.length;
-    return (room - 2 * B.BORDER - 2 * B.INSET - (n - 1) * B.GAP) / n;
-  }
-
-  /* WHAT ONE ITEM COSTS. Equal shares are paid for by the LONGEST
-     label, not by the sum of all of them: every item is as wide as
-     every other, so the widest word decides whether any of them
-     wrap. Padding is the fill padding, both sides. */
-  function costItem(ax) {
-    var B = F.RULE.BUDGET;
-    var font = budgetFont();
-    var widest = 0;
-    ax.values.forEach(function (v) {
-      var label = B.LABEL_CAPS ? String(v[1]).toUpperCase() : String(v[1]);
-      var w = costText(label, font);
-      if (w > widest) widest = w;
-    });
-    return widest + 2 * B.ITEM_PAD_FILL;
-  }
-
-  /* The room to spend it in. Constants where the rail is the fixed
-     rail; below RAIL_FIXED_FROM the rail spans the card and no
-     constant knows how wide a card is, so the CONTAINER — never a
-     candidate — is read there. */
-  function railRoom(rail) {
-    var B = F.RULE.BUDGET;
-    if (window.innerWidth >= B.RAIL_FIXED_FROM) {
-      return B.RAIL - B.RAIL_BORDER - 2 * B.RAIL_PAD;
-    }
-    if (!rail) return B.RAIL - B.RAIL_BORDER - 2 * B.RAIL_PAD;
-    var cs = getComputedStyle(rail);
-    return rail.getBoundingClientRect().width
-         - parseFloat(cs.borderLeftWidth) - parseFloat(cs.borderRightWidth)
-         - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-  }
-
-  /* THE CANON, ASKED FIRST (gbppl-lab-f-5, Ton 12:27). An axis the
-     system has already settled wears the same control on every
-     bench, and the arithmetic is not consulted about it: that is
-     the whole of «стандартизировать look and feel осей». The key
-     is the axis's own canon: property if it has one, otherwise its
-     id, run through the aliases so that Kind, Style and Type are
-     one axis and not three. */
-  function canonFor(ax) {
-    var C = window.ORO_AXES;
-    if (!C || !C.AXES) return null;
-    var key = String(ax.canon || ax.id || '').toLowerCase();
-    key = C.ALIASES[key] || key;
-    return C.AXES[key] || null;
-  }
-
-  /* Said once per axis per load, and said as information rather
-     than as a fault: an axis outside the canon is not a bug, it is
-     a component-specific choice that the rule still has to make.
-     The list is the evidence the canon grows on. */
-  var OFF_CANON = {};
-  function noteOffCanon(ax) {
-    if (OFF_CANON[ax.id]) return;
-    OFF_CANON[ax.id] = true;
-    console.info('LAB_F: axis ' + ax.id + ' is not in the canon; ' +
-                 'nature, count and budget decide its control.');
-  }
-
-  /* THE RULE, READ RATHER THAN RETYPED (gbppl-lab-f-3), ON THREE
-     FACTORS (gbppl-lab-f-4), UNDER THE CANON (gbppl-lab-f-5). The
-     order is nature, canon, count, budget. Nature comes before the
-     canon because yes-or-no and free text are settled by what they
-     ARE, whatever they are called. The canon comes before the
-     count because it is a decision and the count is a heuristic.
-     The budget survives the canon only as a VETO on a toggle that
-     would not fit, because a wrapped label is the defect this
-     whole rule exists to prevent, and when it fires it says so.
-     Nothing here looks at the page: `room` is a number the caller
-     already has. */
-  function ruleFor(ax, room) {
-    if (ax.kind === 'bool') return F.RULE.BOOL;                          /* 1 nature */
-    if (ax.kind === 'text' || ax.kind === 'number') return F.RULE.TEXT;  /* 1 nature */
-    var canon = canonFor(ax);
-    if (canon) {                                                         /* 2 canon */
-      if (canon.control !== 'toggle') return canon.control;
-      if (canon.upTo && ax.values.length > canon.upTo) return 'select';
-      if (room != null && costItem(ax) > shareOf(ax, room)) {
-        console.warn('LAB_F: canonical toggle ' + ax.id + ' does not fit its share at this width (' +
-                     Math.round(costItem(ax) * 10) / 10 + ' against ' +
-                     Math.round(shareOf(ax, room) * 10) / 10 +
-                     'px); drawn as a select. The rail or the labels have to change.');
-        return 'select';
-      }
-      return 'toggle';
-    }
-    noteOffCanon(ax);
-    if (ax.long || ax.values.length >= F.SELECT_FROM) return 'select';   /* 3 count */
-    if (ax.values.length > F.RULE.TOGGLE_TO) return 'select';            /* 3 count */
-    if (room != null && costItem(ax) > shareOf(ax, room)) return 'select';  /* 4 budget */
-    return 'toggle';
-  }
-  var BUILD_F = {
-    checkbox: boolHTML_F,   /* the placeholder the Switch replaces */
-    switch: boolHTML_F,
-    field: textHTML_F,
-    select: selectHTML_F,
-    toggle: function (ax) { return toggleHTML_F(ax); }
-  };
-  function controlF(ax, rowId, plan) {
-    var kind = (plan && plan[ax.id]) || ruleFor(ax, null);
-    return (BUILD_F[kind] || BUILD_F.toggle)(ax, rowId);
-  }
-
-  /* THE SMOKE ALARM (gbppl-lab-f-4, Ton 12:07: the run-time reading
-     is the fallback check, not the rule). Every toggle the budget
-     let through is re-rendered at its natural one-row width in the
-     rail's own probe and compared with the same room the budget
-     spent. It repairs nothing: if this prints, factor 3 has drifted
-     from the CSS, and factor 3 is what gets fixed. */
-  function probeOf(rail) {
-    var p = rail.__labFProbe;
-    if (!p) {
-      p = document.createElement('div');
-      p.className = 'labF__probe';
-      p.setAttribute('aria-hidden', 'true');   /* toggle.js leaves it alone */
-      rail.__labFProbe = p;
-    }
-    if (p.parentNode !== rail) rail.appendChild(p);
-    return p;
-  }
-  function auditRail(rail, rows, plan, room) {
-    var p = null;
-    rows.forEach(function (r) {
-      if (plan[r.ax.id] !== 'toggle') return;
-      if (!p) p = probeOf(rail);
-      /* f-5: the item, not the track. In the rail the track is
-         always exactly as wide as the room, so its width says
-         nothing; what can still go wrong is one label too wide for
-         one share. The probe letters its items at the FILL padding
-         (see the probe's CSS) and the widest of them is compared
-         with the same share the budget divided. */
-      p.innerHTML = '<div class="gb-toggle">' + r.ax.values.map(function (v) {
-        return '<span class="gb-toggle__item">' + esc(v[1]) + '</span>';
-      }).join('') + '</div>';
-      var widest = 0;
-      Array.prototype.forEach.call(p.firstChild.children, function (it) {
-        var w = it.getBoundingClientRect().width;
-        if (w > widest) widest = w;
-      });
-      var share = shareOf(r.ax, room);
-      if (widest > share) {
-        console.warn('LAB_F: axis ' + r.ax.id + ' exceeded its share at ' +
-                     Math.round(widest * 10) / 10 + 'px against ' + Math.round(share * 10) / 10 +
-                     'px; the schema should have sent it to a select.');
-      }
-    });
-    if (p) p.innerHTML = '';
-  }
-
-  /* One pass builds the rail AND the list of rows the painter walks,
-     so a row is never looked up by guessing. The ground is NOT here
-     since gbppl-lab-f-3: it is drawn on the scene by groundHTML_F,
-     and it keeps its default and its place in reset() all the same. */
-  function railHTML_F(schema, rows, plan) {
-    var all = schema.axes;
-    var html = '';
-    function rowFor(a) {
-      var n = rows.length + 1;
-      rows.push({ n: n, ax: a });
-      return '<div class="labF__row" data-frow="' + n + '">' + controlF(a, n, plan) + '</div>';
-    }
-    F.GROUPS.forEach(function (g) {
-      var plain = all.filter(function (a) { return a.group === g[0] && !a.advanced; });
-      if (!plain.length) return;
-      /* A group of one axis whose name is the group's own name would
-         print STATE over STATE. The air is enough of a group. */
-      var named = g[1] && !(plain.length === 1 && plain[0].label === g[1]);
-      html += '<div class="labF__group">' +
-              (named ? '<span class="labF__gname">' + esc(g[1]) + '</span>' : '') +
-              plain.map(rowFor).join('') + '</div>';
-    });
-    var more = all.filter(function (a) { return a.advanced; });
-    if (more.length) {
-      html += '<details class="lab-fold labF__more"><summary>More</summary>' +
-              more.map(rowFor).join('') + '</details>';
-    }
-    html += '<div class="labF__foot"><button class="labF__reset" type="button" data-reset>Reset</button></div>';
-    return html;
-  }
-
-  /* The ground, drawn on the stage it changes. Same axis, same rule,
-     same component: two short values are a toggle wherever they
-     stand, and this one stands on the scene (gbppl-lab-f-3). NO
-     MODIFIER since f-5: a control floating in the corner of a
-     stage has no column to fill and no neighbour to line up with,
-     so it hugs its two words. The canon says the same thing in one
-     word, ORO_AXES.AXES.ground.where = 'scene'. */
-  function groundHTML_F() { return toggleHTML_F(F.GROUND_AXIS, false, ''); }
-
-  var VIEWS = [['preview', 'Preview'], ['code', 'Code']];
-
-  function wireF(root) {
-    var which = root.getAttribute('data-lab-f');
-    var isField = which === 'field';
+  /* ---- THE RENDERER LEFT THE BENCH (gbppl-oro-canon-1) ----
+     Four hundred and sixty lines stood here: the four controls of
+     the rule, the budget costed off a canvas, the canon lookup, the
+     smoke alarm, the rail builder and wireF. Ton chose F on 31.08
+     («окей, давай попробуем так»), so all of it is
+     GbOro.controls in system/oro/oro.js and the bench is its first
+     consumer instead of its owner. What the bench still says is
+     what its two components ARE, above; what it says here is two
+     calls. Resize and the late web face are answered by the
+     renderer for every panel on the page, so F is not in the
+     painters list below. */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-pg]'), function (r) {
+    var which = r.getAttribute('data-pg');
     var schema = SCHEMAS_F[which];
-    var rail = root.querySelector('[data-lab-controls]');
-    var viewHost = root.querySelector('[data-lab-view]');
-    var scene = root.querySelector('[data-lab-stage]');
-    var view_ = root.querySelector('.labF__view');
-    var codewrap = root.querySelector('[data-lab-codewrap]');
-    var hold = root.querySelector('[data-lab-hold]');
-    var read = root.querySelector('[data-lab-read]');
-    var code = root.querySelector('[data-lab-code]');
-    var groundHost = root.querySelector('[data-lab-fground]');
-    var rows = [];
-    var S = {};
-    var view = 'preview';
-    var plan = null;      /* axis id -> the name of the control drawn for it */
-    var planRoom = -1;    /* the room the current plan was costed against */
-
-    function reset() {
-      schema.axes.concat([F.GROUND_AXIS]).forEach(function (a) { S[a.id] = a.def; });
-    }
-    reset();
-
-    /* THE PLAN, AND WHEN IT IS REDRAWN (gbppl-lab-f-4). Every axis
-       is put through ruleFor with the room the rail has right now.
-       The rail is rebuilt ONLY when some axis changes its answer:
-       a Select redrawn under an open menu loses the menu, and a
-       resize that does not move the rail must cost nothing but one
-       read. The room is the cache key, because it is the only page
-       fact any of the three factors depends on. */
-    function replan(force) {
-      var room = railRoom(rail);
-      if (!force && Math.abs(room - planRoom) < 0.5) return false;
-      var next = {};
-      var moved = !plan;
-      schema.axes.forEach(function (a) {
-        next[a.id] = ruleFor(a, room);
-        if (plan && plan[a.id] !== next[a.id]) moved = true;
-      });
-      planRoom = room;
-      if (!moved) return false;
-      plan = next;
-      rows.length = 0;
-      rail.innerHTML = railHTML_F(schema, rows, plan);
-      auditRail(rail, rows, plan, room);
-      return true;
-    }
-    replan(true);
-    if (groundHost) groundHost.innerHTML = groundHTML_F();
-    viewHost.innerHTML = VIEWS.map(function (v) {
-      return '<button class="gb-toggle__item" type="button" role="radio" aria-checked="false"' +
-             ' data-fview="' + v[0] + '">' + v[1] + '</button>';
-    }).join('');
-
-    function labelOf(ax, val) {
-      var hit = (ax.values || []).filter(function (v) { return v[0] === val; })[0];
-      return hit ? hit[1] : '';
-    }
-    function valueOf(ax, label) {
-      var hit = (ax.values || []).filter(function (v) { return v[1] === label; })[0];
-      return hit ? hit[0] : ax.def;
-    }
-
-    /* A ruler reads what is standing, not what is stored. While the
-       markup is showing, the specimen is put back into the layout
-       for the length of one measurement and taken out again in the
-       same task, so nothing is painted in between and no number is
-       ever taken off a hidden element. */
-    function measured() {
-      if (!read) return '';
-      var folded = view === 'code';
-      if (folded) { codewrap.hidden = true; scene.hidden = false; }
-      var line = schema.read(hold);
-      if (folded) { codewrap.hidden = false; scene.hidden = true; }
-      return line;
-    }
-
-    function paint(recost) {
-      /* The rule runs before the panel is synced, because at a new
-         width the panel may not be the same panel (gbppl-lab-f-4).
-         recost is true only when the strings have to be costed
-         again although the rail has not moved: the web face
-         arriving is the one case there is. */
-      replan(recost === true);
-      if (schema.normalise) schema.normalise(S);
-      hold.innerHTML = schema.sample(S, false);
-      if (window.GbIcons) window.GbIcons.mount(hold);
-      if (schema.after) schema.after(S, hold);
-      if (isField) hold.classList.add('lab-hold--block');
-      else hold.classList.toggle('lab-hold--block', S.width === 'block');
-      view_.classList.toggle('is-dark', S.ground === 'dark');
-      if (code) code.textContent = schema.sample(S, true);
-
-      scene.hidden = view === 'code';
-      codewrap.hidden = view !== 'code';
-
-      rows.forEach(function (r) {
-        var el = rail.querySelector('[data-frow="' + r.n + '"]');
-        if (!el) return;
-        el.hidden = !!(r.ax.when && !r.ax.when(S));
-        var box = el.querySelector('[data-fbool]');
-        if (box) { box.checked = S[r.ax.id] === r.ax.on; return; }
-        var f = el.querySelector('[data-faxis-field] select, [data-faxis-field] input');
-        if (!f) return;
-        if (f.tagName === 'SELECT') {
-          f.value = labelOf(r.ax, S[r.ax.id]);
-          Array.prototype.forEach.call(f.options, function (o) {
-            o.disabled = !schema.available(S, r.ax.id, valueOf(r.ax, o.value));
-          });
-        } else if (document.activeElement !== f) {
-          f.value = S[r.ax.id] == null ? '' : S[r.ax.id];
-        }
-      });
-
-      /* root, not rail: since gbppl-lab-f-3 one of these toggles
-         stands on the scene, and the painter walks every axis
-         toggle of the card wherever it is drawn. */
-      Array.prototype.forEach.call(root.querySelectorAll('.gb-toggle__item[data-faxis]'), function (c) {
-        var id = c.getAttribute('data-faxis');
-        var val = c.getAttribute('data-val');
-        var on = S[id] === val;
-        var ok = schema.available(S, id, val);
-        c.classList.toggle('is-on', on);
-        c.setAttribute('aria-checked', on ? 'true' : 'false');
-        if (ok) c.removeAttribute('disabled'); else c.setAttribute('disabled', '');
-      });
-      Array.prototype.forEach.call(viewHost.querySelectorAll('[data-fview]'), function (c) {
-        var on = view === c.getAttribute('data-fview');
-        c.classList.toggle('is-on', on);
-        c.setAttribute('aria-checked', on ? 'true' : 'false');
-      });
-
-      if (read) read.innerHTML = measured();
-    }
-
-    root.addEventListener('click', function (e) {
-      if (!e.target.closest) return;
-      var chip = e.target.closest('.gb-toggle__item[data-faxis]');
-      if (chip && !chip.hasAttribute('disabled')) {
-        S[chip.getAttribute('data-faxis')] = chip.getAttribute('data-val');
-        paint();
-        return;
-      }
-      var v = e.target.closest('[data-fview]');
-      if (v) { view = v.getAttribute('data-fview'); paint(); return; }
-      if (e.target.closest('[data-reset]')) { reset(); paint(); }
+    if (!schema || !window.GbOro || !window.GbOro.controls) return;
+    window.GbOro.controls({
+      root: r,
+      axes: schema.axes,
+      ground: F.GROUND_AXIS,
+      normalise: schema.normalise,
+      available: schema.available,
+      sample: schema.sample,
+      after: schema.after,
+      read: schema.read,
+      /* The field is always block on this bench, and it says so in
+         the markup; the button says it with an axis. */
+      blockClass: which === 'button' ? 'lab-hold--block' : null,
+      block: function (S) { return S.width === 'block'; }
     });
-    root.addEventListener('change', function (e) {
-      var box = e.target.closest ? e.target.closest('[data-fbool]') : null;
-      if (box) {
-        var bid = box.getAttribute('data-fbool');
-        var bax = rows.filter(function (r) { return r.ax.id === bid; })[0].ax;
-        S[bid] = box.checked ? bax.on : bax.off;
-        paint();
-        return;
-      }
-      var host = e.target.closest ? e.target.closest('[data-faxis-field]') : null;
-      if (!host) return;
-      var id = host.getAttribute('data-faxis-field');
-      var ax = rows.filter(function (r) { return r.ax.id === id; })[0].ax;
-      S[id] = e.target.tagName === 'SELECT' ? valueOf(ax, e.target.value) : e.target.value;
-      paint();
-    });
-    root.addEventListener('input', function (e) {
-      var host = e.target.closest ? e.target.closest('[data-faxis-field]') : null;
-      if (!host || e.target.tagName === 'SELECT') return;
-      S[host.getAttribute('data-faxis-field')] = e.target.value;
-      paint();
-    });
+  });
 
-    paint();
-    return paint;
-  }
 
   var painters = Array.prototype.map.call(document.querySelectorAll('[data-lab]'), wire)
     .concat(Array.prototype.map.call(document.querySelectorAll('[data-lab-d]'), wireD))
     .concat(Array.prototype.map.call(document.querySelectorAll('[data-lab-e]'), wireE));
-  Array.prototype.forEach.call(document.querySelectorAll('[data-lab-f]'), function (r) {
-    painters.push(wireF(r));
-  });
 
-  /* THE FACE ARRIVES LATE (gbppl-lab-f-4). Inter is a web font, and
-     a label costed in the fallback face is costed in the wrong
-     face: the budget would be spent on somebody else's letters. So
-     the cache of costed strings is emptied and every panel is asked
-     the three questions again the moment the real face is ready.
-     Almost always the answers are the same, and then nothing is
-     rebuilt, because replan only rebuilds when an answer moves. */
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function () {
-      COST_SEEN = {};
-      painters.forEach(function (p) { p(true); });
-    });
-  }
+  /* THE FACE ARRIVES LATE, and it is the renderer's business now
+     (gbppl-oro-canon-1). Inter is a web font, and a label costed in
+     the fallback face is costed in the wrong face; GbOro.controls
+     empties its own cache on document.fonts.ready and re-asks its
+     own panels. A..E cost nothing, so nothing here waits for it. */
 
   /* The copy buttons of the documentation, one line, no component. */
   document.addEventListener('click', function (e) {
