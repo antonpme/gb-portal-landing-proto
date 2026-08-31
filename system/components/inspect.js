@@ -607,6 +607,12 @@
     { sel: 'gb-banner-conversation', name: 'Conversation banner' },
     { sel: 'gb-advantages', name: 'Advantages' },
 
+    /* gbppl-sandbox-md-1: the rail of projects on the shelf. Above
+       .gbs-door on purpose, by the rule of this table (the smaller
+       part stands above the whole), even though the two do not nest
+       today: the day a rail item lands inside a card, the answer is
+       already right. */
+    { sel: '.gbs-plink', name: 'Project rail item' },
     { sel: '.gbs-door', name: 'Studio door' },
     { sel: '.gbs-stop', name: 'Door stop' },
     { sel: '.gbs-shelf', name: 'Sandbox shelf' },
