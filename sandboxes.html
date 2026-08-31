@@ -6,6 +6,48 @@
 <title>Sandboxes · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-sandbox-projects-1 — ONE CARD PER PAGE, PROTOTYPES INSIDE
+     ------------------------------------------------------------
+     Ton, 31.08, from a screenshot of this shelf: «Прототипы
+     дублируются: Checkout, Checkout, Category, Category — бред. Дат
+     создания не видно (updated есть, created нет; дата должна быть
+     вверху справа, где Proposal, только справа). Вариации одного
+     прототипа мы показываем отдельными карточками? Мы работаем как
+     Figma: проект, внутри которого прототипы? Мне кажется, здесь
+     что-то упущено.»
+
+     It was. The card used to be a VARIANT, so eight variants of five
+     pages made eight cards under five names, two of them printed
+     twice. Now the card is the PAGE (the project) and the variants
+     stand as rows inside it (the prototypes): five cards, no name
+     repeated, and the shelf reads the way Figma reads.
+
+     WHAT MOVED, AND WHERE.
+       card head    page name in the serif, and on the right nothing
+                    but a quiet count. A project has as many dates as
+                    it has prototypes, so no date belongs up there.
+       row          prototype name with the arrow, one description
+                    clamped to two lines, then status chip on the
+                    left and dates on the right, which is the place
+                    Ton pointed at. The row is the link; the card is
+                    not, because a page with two prototypes has no
+                    single address.
+       tags         one row at the foot of the card, the unique tags
+                    of all its prototypes. Per row they would have
+                    turned a list into a field of chips.
+       Group        hidden in Cards. The card IS the page, so
+                    grouping by page has already happened, and
+                    grouping by status or tag would hand back the
+                    flat variant cards Ton just refused. The value is
+                    remembered, not reset: List is one click away and
+                    still groups four ways.
+       filter/sort  work on PROTOTYPES. A card whose prototypes all
+                    fall out of the filter disappears with them, and
+                    the order of the cards follows the order of their
+                    first prototype under the current sort.
+       List         untouched. Six columns, the page first, exactly
+                    as it was measured on 1100 and on 390.
+     ------------------------------------------------------------
      gbppl-sandboxes-4 — THE SANDBOXES PAGE, A PROJECT MANAGER
      ------------------------------------------------------------
      Ton, 28.08: «что если страница Sandboxes будет выполнять роль
@@ -211,16 +253,20 @@
    So the two names swapped places. The serif line, the loudest thing
    on the card, now says WHERE you land; the line under it says WHICH
    of that page's tries this one is, and the description says what the
-   try changes. The page badge in the top row went with the swap: the
-   heading is the page now, and a chip repeating it would be the page
-   twice in three centimetres. The top row keeps the status alone.
+   try changes.
 
-   GROUPED BY PAGE, THE CARD LEADS WITH THE VARIANT. The eyebrow of
-   the group already said the page, and a group of three cards all
-   titled «Checkout page» under a heading reading «Checkout page» is
-   the same word four times. Inside a page group the card and the row
-   drop the page line and promote the variant into the serif; the list
-   drops its first column with it (.gbs-list--ingroup / .gbs-grid).
+   AND THEN THE CARD STOPPED BEING A VARIANT AT ALL
+   (gbppl-sandbox-projects-1, the same day, the next screenshot): the
+   card is the page, the variants are rows inside it. The serif line
+   is still the page; what used to be the second line of the card is
+   now the first line of a row. Grouping by page went with it, for
+   cards only: the header of this file has the full account.
+
+   GROUPED BY PAGE, THE LIST ROW LEADS WITH THE VARIANT. The eyebrow
+   of the group already said the page, and a group of three rows all
+   starting with «Checkout page» under a heading reading «Checkout
+   page» is the same word four times. Inside a page group the row
+   drops its first column (.gbs-list--ingroup).
 
    TAGS ARE CHIPS IN TWO PLACES AND TEXT IN A THIRD. On the card a tag
    is a label, in the filter row it is a target; in the list row it is
@@ -272,7 +318,8 @@
     page.variants.forEach(function (v, varIndex) {
       items.push({
         label: v.label, desc: v.desc, status: v.status, ready: v.ready,
-        href: v.href, tags: v.tags || [], updated: v.updated || '',
+        href: v.href, tags: v.tags || [],
+        created: v.created || '', updated: v.updated || '',
         /* Порядок В РЕЕСТРЕ, а не по алфавиту: варианты одной
            страницы стоят там в том порядке, в каком их поставил
            автор (сегодняшний поток раньше предложенного), и при
@@ -323,6 +370,19 @@
   function absolute(s) {
     var d = parseDay(s);
     return d ? d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear() : 'not recorded';
+  }
+  /* Дата рождения печатается АБСОЛЮТНО, а не «6 дней назад»: на
+     вопрос «сколько это здесь стоит» отвечает день, а не расстояние
+     до сегодня, и в отличие от updated он больше никогда не
+     сдвинется. Год опускается, пока он текущий: «26 Aug» в строке
+     из шести предметов, «26 Aug 2025», когда прототип пережил год.
+     Полная дата стоит в title у обеих. */
+  function shortDay(s) {
+    var d = parseDay(s);
+    if (!d) return '';
+    var y = d.getFullYear();
+    return d.getDate() + ' ' + MONTHS[d.getMonth()] +
+           (y === today().getFullYear() ? '' : ' ' + y);
   }
 
   function statusWord(s) { return String(s).replace(/-/g, ' '); }
@@ -431,6 +491,23 @@
     return keys.map(function (k) { return { label: k, items: bucket[k] }; });
   }
 
+  /* Проекты для вида Cards. Группировкой это не является и на
+     контролы не смотрит: карточка ПО ОПРЕДЕЛЕНИЮ страница. Порядок
+     проектов = порядок, в котором их прототипы встретились в уже
+     отсортированном списке, поэтому Sort работает и здесь: при «last
+     active» первым стоит проект с самым свежим прототипом, при
+     «name» — первый по алфавиту, при «status» — тот, у кого есть
+     самый ранний по объявленному порядку статус. Внутри карточки
+     прототипы идут в том же порядке, что и в списке. */
+  function projects(list) {
+    var bucket = {}, order = [];
+    list.forEach(function (it) {
+      if (!bucket[it.page]) { bucket[it.page] = []; order.push(it.page); }
+      bucket[it.page].push(it);
+    });
+    return order.map(function (k) { return { label: k, items: bucket[k] }; });
+  }
+
   /* ---- Drawing ---- */
   var step = 0;
   /* Каскад: шаг 40ms объявлен в studio.css, здесь только номер по
@@ -438,46 +515,64 @@
      дольше, чем человек на неё смотрит. */
   function stamp() { return ' style="--gbs-step: ' + Math.min(step++, 14) + '"'; }
 
-  /* Верхний ряд карточки: ОДИН бейдж, статус. Имя страницы ушло из
-     него в заголовок (gbppl-sandbox-names-1), и ряд остался тем же
-     однострочным рядом, каким был: заголовки шести карточек по-
-     прежнему встают на одной высоте (замер и скрин 28.08, см.
-     studio.css). Теги идут отдельным рядом внизу по той же причине. */
-  function badges(it) {
-    return '<span class="gbs-badges">' +
-             '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
-           '</span>';
-  }
-
-  function tagBadges(it) {
-    if (!it.tags.length) return '';
-    return '<span class="gbs-badges gbs-badges--tags">' + it.tags.map(function (t) {
+  /* Уникальные теги всех прототипов проекта, в порядке первого
+     появления: карточка отвечает на вопрос «чего эта страница
+     касается» один раз за всю страницу, а не по разу за прототип. */
+  function tagBadges(tags) {
+    if (!tags.length) return '';
+    return '<span class="gbs-badges gbs-badges--tags">' + tags.map(function (t) {
       return '<span class="gbs-chip gbs-chip--tag">' + esc(t) + '</span>';
     }).join('') + '</span>';
   }
 
   /* Полка сгруппирована страницей — значит страницу уже назвали
-     сверху, и карточка ведёт вариантом. Один вопрос, один ответ на
-     обе одежды (карточка и строка), поэтому он живёт здесь, а не в
-     каждой из них. */
+     сверху, и строка списка ведёт вариантом. Вопрос остался только у
+     списка: у карточек группировки больше нет вовсе (см. render). */
   function inPageGroup() { return state.group === 'page'; }
 
-  function card(it) {
-    var lead = inPageGroup() ? it.label : it.page;
+  /* ---- Строка прототипа внутри карточки-проекта ----
+     Имя со стрелкой, под ним описание в две строки, под ним ряд
+     «статус слева, даты справа» — место, на которое Тон показал
+     пальцем: «дата должна быть вверху справа, где Proposal, только
+     справа». Кликается строка целиком; проект ссылкой быть перестал,
+     потому что у страницы с двумя прототипами нет одного адреса. */
+  function proto(it) {
     var body =
-      badges(it) +
-      '<h3 class="gbs-door-title">' + esc(lead) + '</h3>' +
-      (inPageGroup() ? '' :
-        '<p class="gbs-door-variant">' + esc(it.label) + '</p>') +
-      '<p class="gbs-door-desc">' + esc(it.desc) + '</p>' +
-      tagBadges(it) +
-      '<span class="gbs-door-foot">' +
-        '<span class="gbs-door-updated" title="' + esc(absolute(it.updated)) + '">updated ' +
+      '<span class="gbs-proto__name">' + esc(it.label) + '</span>' +
+      (it.ready ? ARROW : '<span class="gbs-proto__note">not open yet</span>') +
+      '<span class="gbs-proto__desc" title="' + esc(it.desc) + '">' + esc(it.desc) + '</span>' +
+      '<span class="gbs-proto__meta">' +
+        '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
+        '<span class="gbs-proto__created" title="created ' + esc(absolute(it.created)) + '">created ' +
+        esc(shortDay(it.created) || 'not recorded') + '</span>' +
+        '<span class="gbs-proto__updated" title="updated ' + esc(absolute(it.updated)) + '">updated ' +
         esc(relative(it.updated) || 'not recorded') + '</span>' +
-        (it.ready ? ARROW : '<span class="gbs-door-note">Not open yet</span>') +
       '</span>';
-    if (!it.ready) return '<div class="gbs-door gbs-door--box gbs-door--coming"' + stamp() + '>' + body + '</div>';
-    return '<a class="gbs-door gbs-door--box" href="' + esc(it.href) + '"' + stamp() + '>' + body + '</a>';
+    if (!it.ready) return '<div class="gbs-proto gbs-proto--coming">' + body + '</div>';
+    return '<a class="gbs-proto" href="' + esc(it.href) + '">' + body + '</a>';
+  }
+
+  /* ---- Карточка = ПРОЕКТ (gbppl-sandbox-projects-1, Тон 31.08) ----
+     «Прототипы дублируются: Checkout, Checkout, Category, Category —
+     бред... Мы работаем как Figma: проект, внутри которого
+     прототипы?» Да. Заголовок — имя страницы, справа тихий счётчик,
+     дальше строки прототипов, внизу теги всех прототипов сразу.
+     Даты в шапку не поднимаются: у проекта их столько, сколько
+     прототипов, и любая из них наверху была бы датой не того. */
+  function projectCard(p) {
+    var tags = [];
+    p.items.forEach(function (it) {
+      it.tags.forEach(function (t) { if (tags.indexOf(t) < 0) tags.push(t); });
+    });
+    var n = p.items.length;
+    return '<div class="gbs-door gbs-door--box gbs-door--project"' + stamp() + '>' +
+             '<div class="gbs-proj__head">' +
+               '<h3 class="gbs-door-title">' + esc(p.label) + '</h3>' +
+               '<span class="gbs-proj__count">' + n + (n === 1 ? ' prototype' : ' prototypes') + '</span>' +
+             '</div>' +
+             '<div class="gbs-protos">' + p.items.map(proto).join('') + '</div>' +
+             tagBadges(tags) +
+           '</div>';
   }
 
   function row(it) {
@@ -501,7 +596,14 @@
       /* Дата и стрелка стоят СНАРУЖИ меты: на узком экране они
          поднимаются к имени, а мета уходит под них целой строкой,
          и порядок переставляет CSS через order. */
-      '<span class="gbs-row__updated" title="' + esc(absolute(it.updated)) + '">' +
+      /* Строка списка осталась ровно той, что была: шесть колонок,
+         поверенные на 1100 и на 390. День рождения в седьмую колонку
+         не вставлен, он въехал в подсказку рядом с датой правки —
+         список отвечает на вопрос «что шевелилось последним», а
+         возраст прототипа читается на его карточке
+         (gbppl-sandbox-projects-1). */
+      '<span class="gbs-row__updated" title="created ' + esc(absolute(it.created)) +
+      ' · updated ' + esc(absolute(it.updated)) + '">' +
       esc(relative(it.updated) || 'not recorded') + '</span>' +
       (it.ready ? ARROW : '');
     if (!it.ready) return '<div class="gbs-row gbs-row--coming"' + stamp() + '>' + body + '</div>';
@@ -510,6 +612,14 @@
 
   function paintControls() {
     if (!controls) return;
+    /* GROUP ПРЯЧЕТСЯ В CARDS (gbppl-sandbox-projects-1). Карточка
+       теперь и есть страница, то есть группировка по странице уже
+       произошла и отменить её нечем; предлагать Status или Tag —
+       предлагать вернуться к плоским карточкам-вариантам, от которых
+       Тон и отказался. Значение оси не сбрасывается, только ось не
+       показывается: List стоит в одном клике и вспоминает её. */
+    var groupAxis = controls.querySelector('[data-axis="group"]');
+    if (groupAxis) groupAxis.hidden = state.view === 'cards';
     Object.keys(AXES).forEach(function (name) {
       var axis = controls.querySelector('[data-axis="' + name + '"]');
       if (!axis) return;
@@ -535,16 +645,17 @@
       mount.innerHTML = '<p class="gbs-empty">None yet.</p>';
     } else if (!list.length) {
       mount.innerHTML = '<p class="gbs-empty">No sandbox carries these tags. Turn one off to widen the shelf.</p>';
+    } else if (state.view === 'cards') {
+      /* Карточки не группируются ничем: проект и есть группа. */
+      mount.innerHTML = '<div class="gbs-grid">' +
+                        projects(list).map(projectCard).join('') + '</div>';
     } else {
-      /* Модификатор один на обе одежды: он говорит «страница уже
-         названа сверху», и колонку страницы в списке убирает CSS
-         (сетка строки объявлена на контейнере), а на карточке —
-         разметка выше. */
+      /* Модификатор говорит «страница уже названа сверху», и колонку
+         страницы в строке убирает CSS (сетка строки объявлена на
+         контейнере). Группировка осталась вопросом СПИСКА. */
       var ing = inPageGroup() ? ' gbs-list--ingroup' : '';
       mount.innerHTML = groups(list).map(function (g) {
-        var inner = state.view === 'list'
-          ? '<div class="gbs-list' + ing + '">' + g.items.map(row).join('') + '</div>'
-          : '<div class="gbs-grid">' + g.items.map(card).join('') + '</div>';
+        var inner = '<div class="gbs-list' + ing + '">' + g.items.map(row).join('') + '</div>';
         if (!g.label) return inner;
         return '<div class="gbs-room">' +
                  '<span class="gb-eyebrow">' + esc(g.label) + ' · ' + g.items.length + '</span>' +
