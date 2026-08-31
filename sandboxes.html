@@ -6,6 +6,48 @@
 <title>Sandboxes · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-sandbox-md-1 — PROJECTS ON THE LEFT, PROTOTYPES ON THE RIGHT
+     ------------------------------------------------------------
+     Ton, 31.08, 17:53, on the shelf he had rebuilt six hours earlier:
+     «Пересмотреть, как показываем проекты: проекты списком слева,
+     нажимаешь на проект, справа его прототипы карточками. Фильтры
+     сейчас как основной контент, слишком шумно: свернуть по дефолту
+     (по умолчанию показывается всё), или открывать в дровере:
+     подумать, что лучше.»
+
+     TWO HALVES.
+       left       a rail of PROJECTS: the page name and the number of
+                  prototypes behind it, one line each. The selected
+                  one wears the active pair of the Oro rail (Blue 50
+                  on a Blue 200 hairline, Blue 700 ink) — the same
+                  declaration .oro-link carries, because Ton-5 names
+                  «активный пункт» by name and state speaks in the
+                  accent. Below 1024 the rail lies down as a row of
+                  chips that scrolls inside itself, the way the
+                  showcase's own contents do.
+       right      the prototypes of that project, as cards. The card
+                  is .gbs-door--box, the very object a variant was
+                  until this morning: name in the serif, description
+                  whole, the row of «status left, dates right» Ton
+                  pointed at, tags at the foot.
+       address    ?project=<id>, written with replaceState. A page
+                  key, not prototype context, so it is not in the
+                  KEEP list of header.js (trap 20 of the skill).
+
+     THE FILTERS FOLDED, AND THEY DID NOT GO INTO A DRAWER. Sort stays
+     out, because sorting hides nothing; everything that HIDES
+     prototypes went behind one «Filters» button that opens in place.
+     A drawer costs a surface of 520px with its own head, backdrop and
+     focus trap, and paying that for nine chips is taking the person
+     off the page to tick a box. While the shelf is folded the active
+     tags stand in a line of their own with a cross each, so nobody
+     wonders why the shelf is short.
+
+     GROUP IS GONE. The rail groups by page permanently, and grouping
+     the one or two prototypes of a single project by status or tag is
+     a control with nothing to control. Its key is dropped from the
+     address on the next write.
+     ------------------------------------------------------------
      gbppl-sandbox-projects-1 — ONE CARD PER PAGE, PROTOTYPES INSIDE
      ------------------------------------------------------------
      Ton, 31.08, from a screenshot of this shelf: «Прототипы
@@ -192,29 +234,51 @@
                workbench in system/oro/button.html already uses:
                a radiogroup per axis, a radio per option. Nothing new
                was drawn for them (Ton-6). The tag row is filled from
-               the registry, because tags are data. -->
+               the registry, because tags are data.
+
+               THE SHELF IS FOLDED NOW (gbppl-sandbox-md-1, Ton 31.08:
+               «Фильтры сейчас как основной контент, слишком шумно»).
+               One quiet line stays out: Sort on the left, a Filters
+               button on the right. Everything that HIDES prototypes
+               lives behind it, and while it is folded the active tags
+               stand in a small line of their own with a cross each.
+               Group went with the fold and is not coming back: the
+               rail on the left groups by page permanently, and
+               grouping the two prototypes of one project by status or
+               tag is a control with nothing to control. -->
           <div class="gbs-controls" id="gbsControls">
-            <div class="gbdoc-axis" role="radiogroup" aria-label="View" data-axis="view">
-              <span class="gbdoc-axis__name">View</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="cards">Cards</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="list">List</button>
+            <div class="gbs-controls__bar">
+              <div class="gbdoc-axis" role="radiogroup" aria-label="Sort" data-axis="sort">
+                <span class="gbdoc-axis__name">Sort</span>
+                <button class="gbdoc-seg" type="button" role="radio" data-val="last-active">Last active</button>
+                <button class="gbdoc-seg" type="button" role="radio" data-val="name">Name</button>
+                <button class="gbdoc-seg" type="button" role="radio" data-val="status">Status</button>
+              </div>
+              <!-- The chevron is the record's own 'chevron-down'
+                   (icon.js), pasted rather than mounted: data-gb-icon
+                   rewrites the className of the node it fills, and
+                   inside a button the box belongs to .gb-btn__icon. -->
+              <button class="gb-btn gb-btn--s gb-btn--ghost gb-btn--secondary gbs-filters"
+                      type="button" id="gbsFiltersBtn"
+                      aria-expanded="false" aria-controls="gbsFiltersPanel">
+                <span class="gb-btn__label">Filters</span>
+                <span class="gbs-chip gbs-chip--on" id="gbsFiltersCount" hidden>0</span>
+                <span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span>
+              </button>
             </div>
-            <div class="gbdoc-axis" role="radiogroup" aria-label="Group" data-axis="group">
-              <span class="gbdoc-axis__name">Group</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="none">None</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="page">Page</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="status">Status</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="tag">Tag</button>
+
+            <div class="gbs-controls__panel" id="gbsFiltersPanel" hidden>
+              <div class="gbdoc-axis" role="radiogroup" aria-label="View" data-axis="view">
+                <span class="gbdoc-axis__name">View</span>
+                <button class="gbdoc-seg" type="button" role="radio" data-val="cards">Cards</button>
+                <button class="gbdoc-seg" type="button" role="radio" data-val="list">List</button>
+              </div>
+              <div class="gbdoc-axis" aria-label="Filter by tag" data-axis="tags" id="gbsTagAxis">
+                <span class="gbdoc-axis__name">Tags</span>
+              </div>
             </div>
-            <div class="gbdoc-axis" role="radiogroup" aria-label="Sort" data-axis="sort">
-              <span class="gbdoc-axis__name">Sort</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="last-active">Last active</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="name">Name</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="status">Status</button>
-            </div>
-            <div class="gbdoc-axis" aria-label="Filter by tag" data-axis="tags" id="gbsTagAxis">
-              <span class="gbdoc-axis__name">Tags</span>
-            </div>
+
+            <p class="gbs-filtered" id="gbsFiltered" hidden></p>
           </div>
 
           <div class="gbs-rooms" id="gbsRooms"></div>
@@ -237,7 +301,15 @@
 /* ---- The shelf, painted from the registry (gbppl-sandboxes-4).
    Three questions the visitor arrives with, and the page answers all
    three from one list: what moved last (Sort), what belongs together
-   (Group), what is about the thing I care about (Tags).
+   (the rail of projects), what is about the thing I care about (Tags).
+
+   MASTER AND DETAIL (gbppl-sandbox-md-1, Ton 31.08, evening): «проекты
+   списком слева, нажимаешь на проект, справа его прототипы
+   карточками». So the flat shelf became two halves. The left one is a
+   rail of PROJECTS, one line each, with the count of prototypes
+   behind it; the right one is the prototypes of the selected project,
+   as cards. Which project you are looking at is an address, so it
+   rides in ?project=<id> and a link to it opens there.
 
    THE CARD IS THE ONE THAT STOOD HERE (gbppl-sandboxes-3), plus a row
    of badges and a line of date. THE LIST is new, and it is the only
@@ -280,6 +352,10 @@
   var mount    = document.getElementById('gbsRooms');
   var controls = document.getElementById('gbsControls');
   var tagAxis  = document.getElementById('gbsTagAxis');
+  var fpanel   = document.getElementById('gbsFiltersPanel');
+  var fbtn     = document.getElementById('gbsFiltersBtn');
+  var fcount   = document.getElementById('gbsFiltersCount');
+  var fline    = document.getElementById('gbsFiltered');
   var reg = window.GB_SANDBOXES;
   if (!mount || !reg) return;
 
@@ -294,12 +370,18 @@
                     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* ---- The three segment axes: what is legal, what is default and
-     which key remembers it. Tags are the fourth axis and are kept
-     apart: they are a multiple choice, not a toggle. ---- */
+  /* ---- The two segment axes: what is legal, what is default and
+     which key remembers it. Tags are the third axis and are kept
+     apart: they are a multiple choice, not a toggle. The fourth key,
+     the selected project, is NOT here on purpose: see readState.
+
+     GROUP IS GONE (gbppl-sandbox-md-1). Grouping by page is what the
+     rail on the left does now, permanently and by construction, and
+     grouping the one or two prototypes of a single project by status
+     or by tag is a control with nothing left to control. Its
+     localStorage key is simply no longer read. ---- */
   var AXES = {
     view:  { key: 'gbppl-sandboxes-view',  def: 'cards',       ok: ['cards', 'list'] },
-    group: { key: 'gbppl-sandboxes-group', def: 'none',        ok: ['none', 'page', 'status', 'tag'] },
     sort:  { key: 'gbppl-sandboxes-sort',  def: 'last-active', ok: ['last-active', 'name', 'status'] }
   };
   var TAGS_KEY = 'gbppl-sandboxes-tags';
@@ -327,7 +409,8 @@
            Алфавит остаётся у Sort · Name, где его и просят
            (gbppl-sandbox-names-1: имена перестали начинаться с
            «V1 ·» и «V2 ·», и алфавит перевернул пару чекаута). */
-        page: page.label, pageIndex: pageIndex, varIndex: varIndex
+        page: page.label, pageId: page.id,
+        pageIndex: pageIndex, varIndex: varIndex
       });
     });
   });
@@ -395,7 +478,7 @@
      query string carries a view you want to send to somebody, and the
      query string wins on load. Written with replaceState, so Back
      still means the previous page. ---- */
-  var state = { view: '', group: '', sort: '', tags: [] };
+  var state = { view: '', sort: '', tags: [], project: '' };
 
   function readState() {
     var q = new URLSearchParams(location.search);
@@ -414,6 +497,17 @@
     state.tags = q.has('tag')
       ? q.getAll('tag').filter(known)
       : (lsGet(TAGS_KEY) || '').split(',').filter(known);
+
+    /* THE PROJECT COMES FROM THE URL AND FROM NOWHERE ELSE
+       (gbppl-sandbox-md-1). The other three keys describe HOW you
+       look at the shelf, and remembering them is a kindness. This one
+       describes WHERE you are, and a page that reopens three days
+       later on the room you happened to leave is not a default, it is
+       a surprise. Without the key the shelf opens on the first
+       project under the current sort. A value naming a project that
+       the filter has emptied is dropped in render(), not here: what
+       is legal depends on the tags, and they are read above. */
+    state.project = q.get('project') || '';
   }
 
   function writeState() {
@@ -427,8 +521,38 @@
     });
     q.delete('tag');
     state.tags.forEach(function (t) { q.append('tag', t); });
+    /* Проект пишется ВСЕГДА, даже когда он первый по сортировке:
+       дефолт здесь не постоянная величина, он зависит от сортировки и
+       от фильтра, и адрес, который сегодня открывает чекаут, а завтра
+       главную, не адрес. Ключ страничный, в KEEP хедера он не входит
+       (ловушка 20). */
+    q.delete('project');
+    if (state.project) q.set('project', state.project);
+    /* Ключ снятой оси не остаётся в адресе жить своей жизнью:
+       ?group=page, скопированный кем-то на прошлой неделе, теперь не
+       значит ничего и молча уезжает (gbppl-sandbox-md-1). */
+    q.delete('group');
     var s = q.toString();
     history.replaceState(null, '', location.pathname + (s ? '?' + s : '') + location.hash);
+  }
+
+  /* Адрес пункта рельсы: сегодняшний запрос, в котором подменён один
+     ключ. Ссылка настоящая, поэтому её можно скопировать и открыть в
+     новой вкладке; клик по ней страницу не перезагружает. */
+  function projectHref(id) {
+    var q = new URLSearchParams(location.search);
+    q.set('project', id);
+    return location.pathname + '?' + q.toString();
+  }
+
+  /* Тот же запрос БЕЗ ключа проекта. По нему рельса решает, надо ли
+     её пересобирать: смена проекта меняет только один атрибут в уже
+     стоящих пунктах, а вот смена сортировки или тега меняет и состав,
+     и адреса. */
+  function queryWithoutProject() {
+    var q = new URLSearchParams(location.search);
+    q.delete('project');
+    return q.toString();
   }
 
   /* ---- Filter, sort, group ---- */
@@ -464,48 +588,22 @@
     });
   }
 
-  function groups(list) {
-    if (state.group === 'none') return [{ label: '', items: list }];
-
-    var bucket = {}, keys = [];
-    list.forEach(function (it) {
-      /* По тегу песочница попадает в НЕСКОЛЬКО групп, и это не
-         ошибка: у варианта столько областей, сколько он трогает. */
-      var ks = state.group === 'page'   ? [it.page]
-             : state.group === 'status' ? [statusWord(it.status)]
-             : (it.tags.length ? it.tags.slice() : ['no tags']);
-      ks.forEach(function (k) {
-        if (!bucket[k]) { bucket[k] = []; keys.push(k); }
-        bucket[k].push(it);
-      });
-    });
-
-    if (state.group === 'page') {
-      keys.sort(function (a, b) { return bucket[a][0].pageIndex - bucket[b][0].pageIndex; });
-    } else if (state.group === 'status') {
-      keys.sort(function (a, b) { return statusRank(a) - statusRank(b); });
-    } else {
-      keys.sort(function (a, b) { return (bucket[b].length - bucket[a].length) || a.localeCompare(b); });
-    }
-
-    return keys.map(function (k) { return { label: k, items: bucket[k] }; });
-  }
-
-  /* Проекты для вида Cards. Группировкой это не является и на
-     контролы не смотрит: карточка ПО ОПРЕДЕЛЕНИЮ страница. Порядок
-     проектов = порядок, в котором их прототипы встретились в уже
-     отсортированном списке, поэтому Sort работает и здесь: при «last
-     active» первым стоит проект с самым свежим прототипом, при
-     «name» — первый по алфавиту, при «status» — тот, у кого есть
-     самый ранний по объявленному порядку статус. Внутри карточки
-     прототипы идут в том же порядке, что и в списке. */
-  function projects(list) {
+  /* Проекты. Группировкой это не является и на контролы не смотрит:
+     проект ПО ОПРЕДЕЛЕНИЮ страница, и рельса слева и есть та самая
+     группировка по странице, которую раньше приходилось включать
+     руками. Порядок проектов = порядок, в котором их прототипы
+     встретились в уже отсортированном списке, поэтому Sort работает
+     и здесь: при «last active» первым стоит проект с самым свежим
+     прототипом, при «name» — первый по алфавиту, при «status» — тот,
+     у кого есть самый ранний по объявленному порядку статус. Внутри
+     проекта прототипы идут в том же порядке, что и в списке. */
+  function projectsOf(list) {
     var bucket = {}, order = [];
     list.forEach(function (it) {
-      if (!bucket[it.page]) { bucket[it.page] = []; order.push(it.page); }
-      bucket[it.page].push(it);
+      if (!bucket[it.pageId]) { bucket[it.pageId] = { id: it.pageId, label: it.page, items: [] }; order.push(it.pageId); }
+      bucket[it.pageId].items.push(it);
     });
-    return order.map(function (k) { return { label: k, items: bucket[k] }; });
+    return order.map(function (k) { return bucket[k]; });
   }
 
   /* ---- Drawing ---- */
@@ -525,70 +623,56 @@
     }).join('') + '</span>';
   }
 
-  /* Полка сгруппирована страницей — значит страницу уже назвали
-     сверху, и строка списка ведёт вариантом. Вопрос остался только у
-     списка: у карточек группировки больше нет вовсе (см. render). */
-  function inPageGroup() { return state.group === 'page'; }
+  function plural(n) { return n + (n === 1 ? ' prototype' : ' prototypes'); }
 
-  /* ---- Строка прототипа внутри карточки-проекта ----
-     Имя со стрелкой, под ним описание в две строки, под ним ряд
-     «статус слева, даты справа» — место, на которое Тон показал
-     пальцем: «дата должна быть вверху справа, где Proposal, только
-     справа». Кликается строка целиком; проект ссылкой быть перестал,
-     потому что у страницы с двумя прототипами нет одного адреса. */
-  function proto(it) {
+  /* ---- КАРТОЧКА = ПРОТОТИП (gbppl-sandbox-md-1, Тон 31.08) ----
+     «Нажимаешь на проект, справа его прототипы карточками». Имя
+     проекта звучит один раз, в шапке правой половины, поэтому
+     карточке остаётся то, чем прототип отличается от соседа: своё
+     имя серифом, описание целиком (в строке оно было обрезано двумя
+     строками, в карточке места хватает), ряд «статус слева, даты
+     справа» — тот самый, на который Тон показал утром, — и теги
+     внизу.
+
+     Это .gbs-door--box, то есть та же малая дверь, которой вариант и
+     был до утра: волна ничего не рисовала заново, она вернула
+     карточке содержимое, которое один день прожило строкой. */
+  function pcard(it) {
     var body =
-      '<span class="gbs-proto__name">' + esc(it.label) + '</span>' +
-      (it.ready ? ARROW : '<span class="gbs-proto__note">not open yet</span>') +
-      '<span class="gbs-proto__desc" title="' + esc(it.desc) + '">' + esc(it.desc) + '</span>' +
-      '<span class="gbs-proto__meta">' +
+      '<span class="gbs-pcard__head">' +
+        '<h4 class="gbs-door-title">' + esc(it.label) + '</h4>' +
+        (it.ready ? ARROW : '<span class="gbs-pcard__note">not open yet</span>') +
+      '</span>' +
+      '<p class="gbs-door-desc">' + esc(it.desc) + '</p>' +
+      '<span class="gbs-pcard__meta">' +
         '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
-        '<span class="gbs-proto__created" title="created ' + esc(absolute(it.created)) + '">created ' +
+        '<span class="gbs-pcard__created" title="created ' + esc(absolute(it.created)) + '">created ' +
         esc(shortDay(it.created) || 'not recorded') + '</span>' +
-        '<span class="gbs-proto__updated" title="updated ' + esc(absolute(it.updated)) + '">updated ' +
+        '<span class="gbs-pcard__updated" title="updated ' + esc(absolute(it.updated)) + '">updated ' +
         esc(relative(it.updated) || 'not recorded') + '</span>' +
-      '</span>';
-    if (!it.ready) return '<div class="gbs-proto gbs-proto--coming">' + body + '</div>';
-    return '<a class="gbs-proto" href="' + esc(it.href) + '">' + body + '</a>';
-  }
-
-  /* ---- Карточка = ПРОЕКТ (gbppl-sandbox-projects-1, Тон 31.08) ----
-     «Прототипы дублируются: Checkout, Checkout, Category, Category —
-     бред... Мы работаем как Figma: проект, внутри которого
-     прототипы?» Да. Заголовок — имя страницы, справа тихий счётчик,
-     дальше строки прототипов, внизу теги всех прототипов сразу.
-     Даты в шапку не поднимаются: у проекта их столько, сколько
-     прототипов, и любая из них наверху была бы датой не того. */
-  function projectCard(p) {
-    var tags = [];
-    p.items.forEach(function (it) {
-      it.tags.forEach(function (t) { if (tags.indexOf(t) < 0) tags.push(t); });
-    });
-    var n = p.items.length;
-    return '<div class="gbs-door gbs-door--box gbs-door--project"' + stamp() + '>' +
-             '<div class="gbs-proj__head">' +
-               '<h3 class="gbs-door-title">' + esc(p.label) + '</h3>' +
-               '<span class="gbs-proj__count">' + n + (n === 1 ? ' prototype' : ' prototypes') + '</span>' +
-             '</div>' +
-             '<div class="gbs-protos">' + p.items.map(proto).join('') + '</div>' +
-             tagBadges(tags) +
-           '</div>';
+      '</span>' +
+      tagBadges(it.tags);
+    if (!it.ready) {
+      return '<div class="gbs-door gbs-door--box gbs-door--proto gbs-door--coming"' + stamp() + '>' +
+             body + '</div>';
+    }
+    return '<a class="gbs-door gbs-door--box gbs-door--proto" href="' + esc(it.href) + '"' +
+           stamp() + '>' + body + '</a>';
   }
 
   function row(it) {
     var tags = it.tags.join(', ');
-    /* Первая колонка — страница, вторая — вариант, тот же порядок,
-       что на карточке. В группе по странице первой колонки нет, и
-       имя варианта занимает её место (класс на .gbs-list).
-       «Not open yet» ходит за ИМЕНЕМ ВАРИАНТА, в какой бы колонке
-       оно ни стояло: комнаты нет у варианта, а не у страницы. */
+    /* СТРОКА ВЕДЁТ ИМЕНЕМ ПРОТОТИПА, ВСЕГДА (gbppl-sandbox-md-1).
+       Колонка страницы жила в строке, пока список был плоским; в
+       мастер-детали страница названа шапкой над списком, и печатать
+       её в каждой строке значило бы сказать одно слово пять раз.
+       Модификатор .gbs-list--ingroup, который раньше включался
+       группировкой по странице, теперь стоит постоянно, и колонок в
+       сетке пять. «Not open yet» ходит за именем: комнаты нет у
+       прототипа, а не у страницы. */
     var note = it.ready ? '' : '<span class="gbs-row__note">· not open yet</span>';
     var body =
-      '<span class="gbs-row__name">' + esc(inPageGroup() ? it.label : it.page) +
-        (inPageGroup() ? note : '') +
-      '</span>' +
-      (inPageGroup() ? '' :
-        '<span class="gbs-row__variant">' + esc(it.label) + note + '</span>') +
+      '<span class="gbs-row__name">' + esc(it.label) + note + '</span>' +
       '<span class="gbs-row__meta">' +
         '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
         '<span class="gbs-row__tags" title="' + esc(tags) + '">' + esc(tags) + '</span>' +
@@ -596,12 +680,10 @@
       /* Дата и стрелка стоят СНАРУЖИ меты: на узком экране они
          поднимаются к имени, а мета уходит под них целой строкой,
          и порядок переставляет CSS через order. */
-      /* Строка списка осталась ровно той, что была: шесть колонок,
-         поверенные на 1100 и на 390. День рождения в седьмую колонку
-         не вставлен, он въехал в подсказку рядом с датой правки —
-         список отвечает на вопрос «что шевелилось последним», а
-         возраст прототипа читается на его карточке
-         (gbppl-sandbox-projects-1). */
+      /* День рождения в свою колонку не вставлен, он въехал в
+         подсказку рядом с датой правки — список отвечает на вопрос
+         «что шевелилось последним», а возраст прототипа читается на
+         его карточке (gbppl-sandbox-projects-1). */
       '<span class="gbs-row__updated" title="created ' + esc(absolute(it.created)) +
       ' · updated ' + esc(absolute(it.updated)) + '">' +
       esc(relative(it.updated) || 'not recorded') + '</span>' +
@@ -612,14 +694,6 @@
 
   function paintControls() {
     if (!controls) return;
-    /* GROUP ПРЯЧЕТСЯ В CARDS (gbppl-sandbox-projects-1). Карточка
-       теперь и есть страница, то есть группировка по странице уже
-       произошла и отменить её нечем; предлагать Status или Tag —
-       предлагать вернуться к плоским карточкам-вариантам, от которых
-       Тон и отказался. Значение оси не сбрасывается, только ось не
-       показывается: List стоит в одном клике и вспоминает её. */
-    var groupAxis = controls.querySelector('[data-axis="group"]');
-    if (groupAxis) groupAxis.hidden = state.view === 'cards';
     Object.keys(AXES).forEach(function (name) {
       var axis = controls.querySelector('[data-axis="' + name + '"]');
       if (!axis) return;
@@ -629,40 +703,123 @@
         b.setAttribute('aria-checked', on ? 'true' : 'false');
       });
     });
-    if (!tagAxis) return;
-    Array.prototype.forEach.call(tagAxis.querySelectorAll('.gbs-tagbtn'), function (b) {
-      var on = state.tags.indexOf(b.getAttribute('data-tag')) > -1;
-      b.classList.toggle('is-on', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (tagAxis) {
+      Array.prototype.forEach.call(tagAxis.querySelectorAll('.gbs-tagbtn'), function (b) {
+        var on = state.tags.indexOf(b.getAttribute('data-tag')) > -1;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    /* Счёт на кнопке считает ТЕГИ, а не всё, что стоит в панели: вид
+       ничего со страницы не убирает, а «Filters · 2» рядом с
+       выбранным видом обещало бы, что убирает. */
+    var n = state.tags.length;
+    if (fcount) { fcount.textContent = String(n); fcount.hidden = !n; }
+
+    /* Строка активных фильтров стоит только при свёрнутой панели:
+       развёрнутая показывает те же теги зажжёнными в своём ряду. */
+    if (fline) {
+      var open = fpanel && !fpanel.hidden;
+      fline.hidden = !n || open;
+      if (!fline.hidden) {
+        fline.innerHTML = 'Filtered by: ' + state.tags.map(function (t) {
+          return '<button class="gbs-chip gbs-tagbtn is-on" type="button" data-tag="' +
+                 esc(t) + '" aria-label="Remove the ' + esc(t) + ' filter">' +
+                 esc(t) + ' ×</button>';
+        }).join('');
+      }
+    }
+  }
+
+  /* ---- Левая половина ----
+     Рельса перерисовывается ТОЛЬКО когда меняется её состав или
+     адреса пунктов; при переключении проекта меняется один атрибут.
+     Иначе клик с клавиатуры терял бы фокус вместе с элементом,
+     который его получил, а список из пяти строк перестраивался бы,
+     ничего не меняя. */
+  var masterSig = '';
+  function paintMaster(host, projs) {
+    var sig = projs.map(function (p) { return p.id + ':' + p.items.length; }).join('|') +
+              '#' + queryWithoutProject();
+    if (sig !== masterSig || !host.children.length) {
+      masterSig = sig;
+      host.innerHTML = projs.map(function (p) {
+        return '<a class="gbs-plink" href="' + esc(projectHref(p.id)) + '" data-project="' + esc(p.id) + '">' +
+                 '<span class="gbs-plink__name">' + esc(p.label) + '</span>' +
+                 '<span class="gbs-plink__count">' + p.items.length + '</span>' +
+               '</a>';
+      }).join('');
+    }
+    Array.prototype.forEach.call(host.querySelectorAll('.gbs-plink'), function (a) {
+      var on = a.getAttribute('data-project') === state.project;
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+
+    /* Лёжа рельса прокручивается внутри себя, и пятый проект стоит за
+       краем. Прямая ссылка на него открыла бы страницу с подсвеченным
+       пунктом, которого не видно. Двигаем ровно настолько, насколько
+       нужно, и только по горизонтали: scrollIntoView увёз бы вместе с
+       рельсой весь документ. */
+    var on = host.querySelector('.gbs-plink[aria-current="page"]');
+    if (!on || host.scrollWidth <= host.clientWidth) return;
+    var left = on.offsetLeft, right = left + on.offsetWidth;
+    if (left < host.scrollLeft) host.scrollLeft = left;
+    else if (right > host.scrollLeft + host.clientWidth) host.scrollLeft = right - host.clientWidth;
+  }
+
+  /* ---- Правая половина ---- */
+  function paintDetail(host, proj) {
+    step = 0;
+    var n = proj.items.length;
+    var head =
+      '<div class="gbs-proj__head">' +
+        '<h3 class="gbs-door-title">' + esc(proj.label) + '</h3>' +
+        '<span class="gbs-proj__count">' + plural(n) + '</span>' +
+      '</div>';
+    var body = state.view === 'cards'
+      ? '<div class="gbs-grid">' + proj.items.map(pcard).join('') + '</div>'
+      : '<div class="gbs-list gbs-list--ingroup">' + proj.items.map(row).join('') + '</div>';
+    host.innerHTML = head + body;
   }
 
   function render() {
-    step = 0;
     var list = sortItems(visible());
+    var projs = projectsOf(list);
 
     if (!items.length) {
       mount.innerHTML = '<p class="gbs-empty">None yet.</p>';
-    } else if (!list.length) {
-      mount.innerHTML = '<p class="gbs-empty">No sandbox carries these tags. Turn one off to widen the shelf.</p>';
-    } else if (state.view === 'cards') {
-      /* Карточки не группируются ничем: проект и есть группа. */
-      mount.innerHTML = '<div class="gbs-grid">' +
-                        projects(list).map(projectCard).join('') + '</div>';
-    } else {
-      /* Модификатор говорит «страница уже названа сверху», и колонку
-         страницы в строке убирает CSS (сетка строки объявлена на
-         контейнере). Группировка осталась вопросом СПИСКА. */
-      var ing = inPageGroup() ? ' gbs-list--ingroup' : '';
-      mount.innerHTML = groups(list).map(function (g) {
-        var inner = '<div class="gbs-list' + ing + '">' + g.items.map(row).join('') + '</div>';
-        if (!g.label) return inner;
-        return '<div class="gbs-room">' +
-                 '<span class="gb-eyebrow">' + esc(g.label) + ' · ' + g.items.length + '</span>' +
-                 inner +
-               '</div>';
-      }).join('');
+      paintControls();
+      writeState();
+      return;
     }
+    if (!projs.length) {
+      mount.innerHTML = '<p class="gbs-empty">No sandbox carries these tags. Turn one off to widen the shelf.</p>';
+      paintControls();
+      writeState();
+      return;
+    }
+
+    /* Выбранный проект держится, пока он есть в списке; фильтр,
+       опустошивший его, передаёт выбор первому по сортировке. */
+    var chosen = null;
+    projs.forEach(function (p) { if (p.id === state.project) chosen = p; });
+    if (!chosen) { chosen = projs[0]; state.project = chosen.id; }
+
+    /* Адрес переписывается ПЕРВЫМ: пункты рельсы строят свои href из
+       сегодняшнего запроса, и рельса, собранная до записи, несла бы
+       вчерашние ключи. */
+    writeState();
+
+    if (!mount.querySelector('.gbs-md')) {
+      mount.innerHTML =
+        '<div class="gbs-md">' +
+          '<nav class="gbs-md__master" id="gbsMaster" aria-label="Projects"></nav>' +
+          '<div class="gbs-md__detail" id="gbsDetail"></div>' +
+        '</div>';
+    }
+    paintMaster(document.getElementById('gbsMaster'), projs);
+    paintDetail(document.getElementById('gbsDetail'), chosen);
     paintControls();
   }
 
@@ -686,22 +843,52 @@
       if (seg && seg.parentNode) {
         var axis = seg.parentNode.getAttribute('data-axis');
         var val  = seg.getAttribute('data-val');
-        if (AXES[axis] && state[axis] !== val) { state[axis] = val; writeState(); render(); }
+        if (AXES[axis] && state[axis] !== val) { state[axis] = val; render(); }
         return;
       }
+      /* Один обработчик на оба места, где тег кликается: ряд чипов в
+         развёрнутой панели и строка «Filtered by» под свёрнутой. */
       var chip = el.closest('.gbs-tagbtn');
       if (chip) {
         var t = chip.getAttribute('data-tag');
         var i = state.tags.indexOf(t);
         if (i > -1) state.tags.splice(i, 1); else state.tags.push(t);
-        writeState();
         render();
       }
     });
   }
 
+  /* Разворот полки. Состояние живёт ровно столько, сколько открыта
+     вкладка, и НЕ ЗАПОМИНАЕТСЯ: свёрнуто по умолчанию — это и есть
+     заказ («свернуть по дефолту»), а полка, открытая на прошлой
+     неделе и встречающая тебя развёрнутой, отменяет его. */
+  if (fbtn && fpanel) {
+    fbtn.addEventListener('click', function () {
+      var open = fpanel.hidden;
+      fpanel.hidden = !open;
+      fbtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      paintControls();
+    });
+  }
+
+  /* Клик по проекту не перезагружает страницу, но пункт остаётся
+     настоящей ссылкой: её можно скопировать, открыть в новой вкладке
+     и прислать. Перехватывается только простой левый клик — с
+     модификатором браузер делает своё дело сам. */
+  mount.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var el = e.target;
+    if (!el || !el.closest) return;
+    var link = el.closest('.gbs-plink');
+    if (!link) return;
+    e.preventDefault();
+    var id = link.getAttribute('data-project');
+    if (id === state.project) return;
+    state.project = id;
+    render();
+  });
+
   readState();
-  writeState();
   render();
 })();
 </script>
