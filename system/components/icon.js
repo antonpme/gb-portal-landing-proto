@@ -59,8 +59,8 @@
    TWO MORE, AND THE SECOND CONSUMER
    (gbppl-oro-select-stepper-1, 29.08)
    ------------------------------------------------------------
-   minus and plus arrive with the stepper, copied out of the four
-   pairs the checkout drew by hand, and stepper.js is the second
+   minus and plus arrive with the input number, copied out of the four
+   pairs the checkout drew by hand, and inputnumber.js is the second
    thing in the house to ask the record instead of carrying its
    own: it fills an empty .gb-btn__icon from here. Nineteen
    entries became twenty one.
@@ -205,19 +205,19 @@
       from: 'header.js: the burger below 1280',
       stroke: 1.5
     },
-    /* gbppl-oro-select-stepper-1: the two glyphs of the stepper.
+    /* gbppl-oro-select-stepper-1: the two glyphs of the input number.
        Copied character for character out of the checkout, where
        four pairs of them were drawn by hand before this record
        existed. The checkout drew them at 2.5; inside .gb-icon they
        come out at the house 1.5, like every other entry here. */
     'minus': {
       body: '<path d="M19.5 12h-15"/>',
-      from: 'checkout.html: the four quantity steppers',
+      from: 'checkout.html: the four quantity input numbers',
       stroke: 2.5
     },
     'plus': {
       body: '<path d="M12 4.5v15m7.5-7.5h-15"/>',
-      from: 'checkout.html: the four quantity steppers',
+      from: 'checkout.html: the four quantity input numbers',
       stroke: 2.5
     },
     'search': {
@@ -288,7 +288,7 @@
      never drawn. Measured, not guessed — the probe came back with
      a select that had no glyph beside it.
 
-     So the record watches for arrivals, the way stepper.js watches
+     So the record watches for arrivals, the way inputnumber.js watches
      for its frames. It mounts only nodes that ask, by the same
      attribute, and a node that has already been mounted is left
      alone: mount() rewrites innerHTML, and rewriting it twice on a

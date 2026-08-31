@@ -373,6 +373,10 @@
   var OWNERS = [
     [/^gb-btn/, 'system/components/button.css'],
     [/^gb-toggle/, 'system/components/toggle.css'],
+    /* gbppl-inputnumber-1. The frame had no deed of its own and read
+       its owner off an ancestor; the rename is the moment to write
+       the купчая down, one prefix like every other row. */
+    [/^gb-inputnumber/, 'system/components/inputnumber.css'],
     [/^gb-icon/, 'system/components/icon.css'],
     [/^gbsp-/, 'system/components/studio-panel.css'],
     [/^gbdoc-/, 'system/components/docs.css'],
@@ -512,15 +516,15 @@
                (d.host ? ' · host driven' : '');
       } },
 
-    /* gbppl-oro-select-stepper-1. The stepper stands above the field
+    /* gbppl-oro-select-stepper-1. The input number stands above the field
        rows because its well IS an input, and above nothing else: a
        frame is not a button and does not collide with the rows over
        it. The two glyph buttons inside it keep reading as icon
        buttons, which is what they are. */
-    { sel: '.gb-stepper__value', name: 'Stepper value', oro: 'stepper.html#anatomy' },
-    { sel: '.gb-stepper', name: 'Stepper', kind: 'stepper', oro: 'stepper.html#stepper',
+    { sel: '.gb-inputnumber__value', name: 'Input number value', oro: 'inputnumber.html#anatomy' },
+    { sel: '.gb-inputnumber', name: 'Input number', kind: 'inputnumber', oro: 'inputnumber.html#inputnumber',
       detail: function (el) {
-        var d = KINDS.stepper.describe(el);
+        var d = KINDS.inputnumber.describe(el);
         return d.size + ' · ' + d.well + (d.host ? ' · host driven' : '') +
                (d.state === 'rest' ? '' : ' · ' + d.state);
       } },
@@ -1724,28 +1728,28 @@
       }
     },
 
-    /* ---------- gbppl-oro-select-stepper-1: the stepper ----------
+    /* ---------- gbppl-oro-select-stepper-1: the input number ----------
        Three elements, one control. The reading a person wants off it
        is the frame against its parts: whether the well is the
        standard one or the dense one, whether the value is at a bound,
        and who owns the number, because on the checkout the answer is
        Alpine and a reader who does not know that will wonder why the
        component is not counting. */
-    stepper: {
-      name: 'Stepper',
-      owner: 'system/components/stepper.css',
-      find: function (slot) { return slot.querySelector('.gb-stepper'); },
+    inputnumber: {
+      name: 'Input number',
+      owner: 'system/components/inputnumber.css',
+      find: function (slot) { return slot.querySelector('.gb-inputnumber'); },
 
       describe: function (el) {
         var c = String(el.className);
-        var v = el.querySelector('.gb-stepper__value');
+        var v = el.querySelector('.gb-inputnumber__value');
         var down = el.querySelector('[data-step="-1"]');
         var up = el.querySelector('[data-step="1"]');
         var off = /is-disabled/.test(c) || el.getAttribute('aria-disabled') === 'true';
         return {
-          size: /gb-stepper--m\b/.test(c) ? 'M' : 'S',
-          well: /gb-stepper--dense\b/.test(c) ? 'dense' : 'standard',
-          host: el.getAttribute('data-gb-stepper') === 'host',
+          size: /gb-inputnumber--m\b/.test(c) ? 'M' : 'S',
+          well: /gb-inputnumber--dense\b/.test(c) ? 'dense' : 'standard',
+          host: el.getAttribute('data-gb-inputnumber') === 'host',
           value: v ? (v.tagName === 'INPUT' ? v.value : v.textContent.trim()) : null,
           min: v && v.getAttribute ? (v.getAttribute('min') || el.getAttribute('data-min')) : null,
           max: v && v.getAttribute ? (v.getAttribute('max') || el.getAttribute('data-max')) : null,
@@ -1787,15 +1791,15 @@
               (d.min ? 'floor ' + d.min : 'no floor') +
               (d.max ? ', ceiling ' + d.max : ', no ceiling')),
           row('Who owns the number', d.host ? 'the host page' : 'the component', null,
-              d.host ? 'data-gb-stepper="host": bounds and aria only' : 'clicks step the value')
+              d.host ? 'data-gb-inputnumber="host": bounds and aria only' : 'clicks step the value')
         ];
-        var mods = el.className.split(/\s+/).filter(function (c2) { return c2.indexOf('gb-stepper') === 0; });
+        var mods = el.className.split(/\s+/).filter(function (c2) { return c2.indexOf('gb-inputnumber') === 0; });
         var code = '<div class="' + mods.join(' ') + '"' +
-          (d.host ? ' data-gb-stepper="host"' : '') + ' aria-label="Quantity">\n' +
+          (d.host ? ' data-gb-inputnumber="host"' : '') + ' aria-label="Quantity">\n' +
           '  <button class="gb-btn gb-btn--icon gb-btn--' + d.size.toLowerCase() +
             ' gb-btn--ghost gb-btn--secondary gb-btn--plain" data-step="-1"\n' +
           '          aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>\n' +
-          '  <input class="gb-stepper__value" type="number" min="' + (d.min || 1) +
+          '  <input class="gb-inputnumber__value" type="number" min="' + (d.min || 1) +
             '" value="' + d.value + '">\n' +
           '  <button class="gb-btn gb-btn--icon gb-btn--' + d.size.toLowerCase() +
             ' gb-btn--ghost gb-btn--secondary gb-btn--plain" data-step="1"\n' +
@@ -1967,7 +1971,7 @@
      In View mode this is the ONE click that opens the properties
      drawer on a showcase. Everything else on the page belongs to
      the page: a button presses, a field takes focus, a select
-     opens its menu, a stepper counts. */
+     opens its menu, an input number counts. */
   document.addEventListener('click', function (e) {
     if (MODE === 'inspect') return;   /* Inspect has its own handler, in capture */
     var door = e.target.closest ? e.target.closest('.gbdoc-props') : null;

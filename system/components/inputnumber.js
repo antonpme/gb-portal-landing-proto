@@ -1,7 +1,13 @@
 /* ============================================================
-   gbppl-oro-select-stepper-1 — WHAT THE STEPPER KNOWS
+   gbppl-inputnumber-1 — WHAT THE INPUT NUMBER KNOWS
    ------------------------------------------------------------
-   The look is stepper.css. This is the one thing a stepper does
+   It was called the stepper until 31.08. PrimeVue, the client's
+   stack, keeps that word for a wizard of steps and calls this one
+   InputNumber, so the two swapped back to the names their readers
+   already use. The rename story is in the head of inputnumber.css;
+   what is below is the same behaviour, renamed and not rewritten.
+
+   The look is inputnumber.css. This is the one thing an input number does
    that a frame around two buttons cannot: it knows its floor and
    its ceiling, and it says so out loud — on the buttons, which go
    disabled, and to a screen reader, which is told the number.
@@ -12,12 +18,12 @@
                     it, the input and change events fire the way
                     they do when a person types, so an x-model or
                     a listener upstream sees exactly what it would
-                    have seen anyway, and `gbst:change` carries
+                    have seen anyway, and `gbin:change` carries
                     the reading for anyone who wants it named.
 
-     data-gb-stepper="host"
+     data-gb-inputnumber="host"
                     the HOST owns the value. The checkout is the
-                    reason: its four steppers do not increment a
+                    reason: its four input numbers do not increment a
                     number, they grow a pool, sync personalisation
                     rows and recount an order, and that logic is
                     Alpine's. Here the component keeps its hands
@@ -27,7 +33,7 @@
 
    The default is the component driving, because a control that
    does nothing until it is wired is not a component. The opt out
-   is a word rather than a guess, because a stepper that guesses
+   is a word rather than a guess, because an input number that guesses
    wrong counts twice, and counting twice is the one failure a
    quantity control must not have.
 
@@ -45,14 +51,14 @@
    answers the arrow keys itself, so nothing is layered on top of
    it: a hand-written aria-valuenow beside a native value is a
    second source of truth, and the instrument's rule («прибор не
-   выдумывает») is the same rule here. A stepper whose value is a
+   выдумывает») is the same rule here. An input number whose value is a
    <span> gets the whole spinbutton contract instead, because
    nothing else is going to give it one.
    ============================================================ */
 (function () {
   'use strict';
 
-  var FRAME = '.gb-stepper';
+  var FRAME = '.gb-inputnumber';
 
   function num(v, fallback) {
     var n = parseFloat(v);
@@ -60,13 +66,13 @@
   }
 
   /* The three parts. Written once, because every function below
-     asks the same question of the DOM and a stepper whose parts
-     were found two different ways is two steppers. */
+     asks the same question of the DOM and an input number whose parts
+     were found two different ways is two input numbers. */
   function parts(frame) {
     return {
       down: frame.querySelector('[data-step="-1"]'),
       up: frame.querySelector('[data-step="1"]'),
-      value: frame.querySelector('.gb-stepper__value')
+      value: frame.querySelector('.gb-inputnumber__value')
     };
   }
 
@@ -131,7 +137,7 @@
       p.value.textContent = String(next);
     }
     sync(frame);
-    frame.dispatchEvent(new CustomEvent('gbst:change', {
+    frame.dispatchEvent(new CustomEvent('gbin:change', {
       bubbles: true,
       detail: { value: next, min: r.min, max: r.max }
     }));
@@ -156,8 +162,8 @@
   }
 
   function enhance(frame) {
-    if (frame.__gbst) return;
-    frame.__gbst = true;
+    if (frame.__gbin) return;
+    frame.__gbin = true;
 
     var p = parts(frame);
     if (!p.value) return;
@@ -177,7 +183,7 @@
       });
     }
 
-    if (frame.getAttribute('data-gb-stepper') !== 'host') {
+    if (frame.getAttribute('data-gb-inputnumber') !== 'host') {
       frame.addEventListener('click', function (e) {
         var btn = e.target.closest ? e.target.closest('[data-step]') : null;
         if (!btn || btn.disabled || !frame.contains(btn)) return;
@@ -198,7 +204,7 @@
 
   /* Rows arrive and leave while the page is open: a table renders
      its recipients, a drawer draws its body. The observer is what
-     keeps a stepper that was written by a template as complete as
+     keeps an input number that was written by a template as complete as
      one that was in the HTML. */
   function watch() {
     if (!window.MutationObserver) return;
@@ -224,7 +230,7 @@
     requestAnimationFrame(function () { syncAll(); });
   }, true);
 
-  window.GbStepper = { enhance: enhance, sync: sync, syncAll: syncAll, boot: boot };
+  window.GbInputNumber = { enhance: enhance, sync: sync, syncAll: syncAll, boot: boot };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { boot(); watch(); });

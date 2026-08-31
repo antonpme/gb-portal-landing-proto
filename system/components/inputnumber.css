@@ -1,24 +1,41 @@
 /* ============================================================
-   gbppl-oro-select-stepper-1 — THE STEPPER
+   gbppl-inputnumber-1 — THE INPUT NUMBER
    ------------------------------------------------------------
-   Ton, skill section 8, open since 27.08 (gbppl-checkout-14):
+   THE NAME CHANGED ON 31.08, AND THE REASON IS A DICTIONARY.
+   Ton, on the showcase page: «на странице компонента stepper
+   показывается совершенно не stepper, а select плюс-минус
+   (забыл, как этот input называется)». The client's stack is
+   PrimeVue, and in PrimeVue a Stepper is a WIZARD OF STEPS — the
+   rail our booking flow draws (Details / Pick a time / Confirmed).
+   The minus-number-plus control is called InputNumber there. We
+   had the two words crossed, so the control took the name its
+   readers already know and Stepper went back to meaning steps.
+   Renamed whole: file, class, modifiers, data attribute, event.
+   No alias is left behind (the house migrates its consumers, it
+   does not keep two spellings alive).
+
+   ------------------------------------------------------------
+   gbppl-oro-select-stepper-1 (2026-08-29) — WHERE IT CAME FROM
+   ------------------------------------------------------------
+   Ton, skill section 8, open since 27.08 (gbppl-checkout-14),
+   quoted in the words of that day:
    «STEPPER (минус / число / плюс): компонента НЕТ. Четыре штуки
    на чекауте. Это ОДИН контрол, а не три, и ничто в системе его
    не описывает; заодно он тянет за собой icon-only.»
 
    Icon-only was closed on 28.08. This file closes the rest: the
    frame that was page markup on the checkout, the well the number
-   stands in, and the one behaviour a stepper has that a pair of
+   stands in, and the one behaviour an input number has that a pair of
    buttons does not — it knows its own floor and says so.
 
-       <div class="gb-stepper">
+       <div class="gb-inputnumber">
          <button class="gb-btn gb-btn--icon gb-btn--s gb-btn--ghost
                         gb-btn--secondary gb-btn--plain"
                  type="button" data-step="-1"
                  aria-label="Decrease quantity">
            <span class="gb-btn__icon"></span>
          </button>
-         <input class="gb-stepper__value" type="number" min="1" value="1">
+         <input class="gb-inputnumber__value" type="number" min="1" value="1">
          <button ... data-step="1" aria-label="Increase quantity">
            <span class="gb-btn__icon"></span>
          </button>
@@ -28,7 +45,7 @@
    WHERE EVERY NUMBER COMES FROM
    ------------------------------------------------------------
    DECLARED, AND THE REASON IS WRITTEN DOWN. The live site has no
-   stepper: measured 29.08 with the instrument across the home
+   input number: measured 29.08 with the instrument across the home
    page, contact us, book a meeting, the catalogue and a product
    page. Quantity on the live catalogue is not stepped at all, and
    the portal's own cart stands behind the sign in, where a wave
@@ -51,7 +68,7 @@
                   is one step quieter. Both measured on the
                   checkout frame, both already tokens.
      radius       --radius, the one brand radius.
-     ground       --white. A stepper stands in cards and in table
+     ground       --white. An input number stands in cards and in table
                   rows, and its well has to read as an editable
                   cell on both.
      the number   the FIELD ladder, 14 / 16 from 1280 / 18 from
@@ -75,20 +92,20 @@
    ------------------------------------------------------------
    It does not draw the buttons. They are .gb-btn--icon --s
    --plain from the button organism, exactly as the checkout has
-   worn them since 28.08, and a stepper that restyled them would
+   worn them since 28.08, and an input number that restyled them would
    be a second button ladder in the house (Ton-6). What the frame
    adds is the shape they stand in and the well between them.
 
    It does not draw the glyphs either. minus and plus live in the
-   icon record (icon.js), and stepper.js fills an empty
+   icon record (icon.js), and inputnumber.js fills an empty
    .gb-btn__icon from it; markup that carries its own SVG keeps it.
    ============================================================ */
 
-.gb-stepper {
+.gb-inputnumber {
   /* ---- the slots, all three off existing scales ---- */
-  --gbst-h:        var(--gb-btn-m-h);                        /* 40, the rung the icon button --s stands on */
-  --gbst-value-w:  calc(var(--gbst-h) + var(--space-16));    /* 56: the well is one space step wider than tall */
-  --gbst-value:    14px;                                     /* the field ladder, see the media queries below */
+  --gbin-h:        var(--gb-btn-m-h);                        /* 40, the rung the icon button --s stands on */
+  --gbin-value-w:  calc(var(--gbin-h) + var(--space-16));    /* 56: the well is one space step wider than tall */
+  --gbin-value:    14px;                                     /* the field ladder, see the media queries below */
 
   display: inline-flex;
   align-items: center;
@@ -108,9 +125,9 @@
 /* THE WELL. A cell between two seams, not a boxed input: the box
    is the frame around all three. The number is centred because it
    is read at a glance and because it grows in both directions. */
-.gb-stepper__value {
-  width: var(--gbst-value-w);
-  height: var(--gbst-h);
+.gb-inputnumber__value {
+  width: var(--gbin-value-w);
+  height: var(--gbin-h);
   margin: 0;
   padding: 0;
   border: 0;
@@ -118,39 +135,39 @@
   border-radius: 0;
   background: transparent;
   font-family: var(--font-sans);
-  font-size: var(--gbst-value);
+  font-size: var(--gbin-value);
   font-weight: 500;
-  line-height: var(--gbst-h);
+  line-height: var(--gbin-h);
   text-align: center;
   color: var(--zinc-900);
-  appearance: textfield;      /* the browser's own spinner is a second stepper */
+  appearance: textfield;      /* the browser's own spinner is a second input number */
   outline: none;
   /* A span value is not focusable furniture; an input one is, and
      both have to sit on the same baseline. */
   display: inline-block;
   box-sizing: border-box;
 }
-.gb-stepper__value::-webkit-inner-spin-button,
-.gb-stepper__value::-webkit-outer-spin-button { appearance: none; margin: 0; }
+.gb-inputnumber__value::-webkit-inner-spin-button,
+.gb-inputnumber__value::-webkit-outer-spin-button { appearance: none; margin: 0; }
 
 /* Focus is a wash, not a ring: the frame is already a box, and a
    ring inside a box reads as a second control. Zinc 50 is the
    quietest ground the scale has, and it is what the checkout well
    has answered focus with since it was written. */
-.gb-stepper__value:focus { background: var(--zinc-50); }
+.gb-inputnumber__value:focus { background: var(--zinc-50); }
 
 /* The frame answers the pointer the way a field does, in the one
    colour that means state (Ton-5). Hover on the frame rather than
    on the buttons: the target a reader aims at is the control. */
-.gb-stepper:hover { border-color: var(--blue-600); }
-.gb-stepper:focus-within { border-color: var(--blue-600); }
+.gb-inputnumber:hover { border-color: var(--blue-600); }
+.gb-inputnumber:focus-within { border-color: var(--blue-600); }
 
 /* DEMO ONLY, the same two names the button and the field declare.
    They exist so a showcase can stand rest and hover side by side;
    no product page wears them. */
-.gb-stepper.is-hover { border-color: var(--blue-600); }
-.gb-stepper.is-focus { border-color: var(--blue-600); }
-.gb-stepper.is-focus .gb-stepper__value { background: var(--zinc-50); }
+.gb-inputnumber.is-hover { border-color: var(--blue-600); }
+.gb-inputnumber.is-focus { border-color: var(--blue-600); }
+.gb-inputnumber.is-focus .gb-inputnumber__value { background: var(--zinc-50); }
 
 /* ============================================================
    THE NUMBER FOLLOWS THE FIELD LADDER
@@ -161,8 +178,8 @@
    width by measurement (the circle carries no label, so it does
    not ride the label ladder).
    ============================================================ */
-@media (min-width: 1280px) { .gb-stepper { --gbst-value: 16px; } }
-@media (min-width: 2000px) { .gb-stepper { --gbst-value: 18px; } }
+@media (min-width: 1280px) { .gb-inputnumber { --gbin-value: 16px; } }
+@media (min-width: 2000px) { .gb-inputnumber { --gbin-value: 18px; } }
 
 /* ============================================================
    SIZES
@@ -171,12 +188,12 @@
    it. A consumer that writes --m on the frame writes --m on its
    two buttons; the frame cannot read them, so it is told.
    ============================================================ */
-.gb-stepper--m { --gbst-h: var(--gb-btn-l-h); }   /* 48, the icon button --m rung */
+.gb-inputnumber--m { --gbin-h: var(--gb-btn-l-h); }   /* 48, the icon button --m rung */
 
 /* DENSE. The same control in a table row, where the well holds one
    or two digits and the row is the thing that is short of width.
    Only the well narrows: the buttons keep their target. */
-.gb-stepper--dense { --gbst-value-w: var(--gbst-h); }
+.gb-inputnumber--dense { --gbin-value-w: var(--gbin-h); }
 
 /* ============================================================
    DISABLED
@@ -187,13 +204,13 @@
    opacity is the button organism's own --gb-btn-disabled-opacity;
    nothing is added here.
 
-   A whole stepper can be disabled too, and then the frame goes
+   A whole input number can be disabled too, and then the frame goes
    the colour of a line that is not answering.
    ============================================================ */
-.gb-stepper.is-disabled,
-.gb-stepper[aria-disabled="true"] { border-color: var(--zinc-200); }
-.gb-stepper.is-disabled .gb-stepper__value,
-.gb-stepper[aria-disabled="true"] .gb-stepper__value { color: var(--zinc-400); }
-.gb-stepper.is-disabled:hover,
-.gb-stepper[aria-disabled="true"]:hover { border-color: var(--zinc-200); }
-.gb-stepper__value:disabled { color: var(--zinc-400); cursor: not-allowed; }
+.gb-inputnumber.is-disabled,
+.gb-inputnumber[aria-disabled="true"] { border-color: var(--zinc-200); }
+.gb-inputnumber.is-disabled .gb-inputnumber__value,
+.gb-inputnumber[aria-disabled="true"] .gb-inputnumber__value { color: var(--zinc-400); }
+.gb-inputnumber.is-disabled:hover,
+.gb-inputnumber[aria-disabled="true"]:hover { border-color: var(--zinc-200); }
+.gb-inputnumber__value:disabled { color: var(--zinc-400); cursor: not-allowed; }

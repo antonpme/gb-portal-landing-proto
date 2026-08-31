@@ -6,7 +6,7 @@
    say which one out loud to the accessibility tree, and answer
    the arrow keys the way a radio group is expected to.
 
-   THE TWO MODES, the same pair the stepper declares, and for the
+   THE TWO MODES, the same pair the input number declares, and for the
    same reason.
 
      default        the component owns the value. A click moves
@@ -81,7 +81,7 @@
      owns the value owns everything that says the value out loud,
      class and aria alike; a component writing aria-checked beside
      an x-bind writing aria-checked is the second source of truth
-     the stepper's header warns about. And a group where nothing
+     the input number's header warns about. And a group where nothing
      is pressed yet is left as it is rather than being given a
      first pressed item it never had. */
   function sync(group) {
