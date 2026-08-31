@@ -198,10 +198,29 @@
    (Group), what is about the thing I care about (Tags).
 
    THE CARD IS THE ONE THAT STOOD HERE (gbppl-sandboxes-3), plus a row
-   of badges and a line of date. The page's name moved out of the foot
-   and into a badge: it was printed once either way, and the foot was
-   the only place the date could stand without pushing the description
-   around. THE LIST is new, and it is the only new object.
+   of badges and a line of date. THE LIST is new, and it is the only
+   new object.
+
+   THE TITLE IS THE PAGE, NOT THE VARIANT (gbppl-sandbox-names-1, Ton
+   31.08, from a screenshot of this shelf): «Самый большой хаос здесь.
+   Я не пойму, какой прототип что означает. Что такое Light Pre-Footer?
+   Что такое V2 Shared Pool? Прототипы должны называться по странице:
+   Checkout Page, Home Page, Category Page, Sign-in / Sign-up Form,
+   Book a Meeting Form. Я не понимаю, что нажимать и куда ведёт.»
+
+   So the two names swapped places. The serif line, the loudest thing
+   on the card, now says WHERE you land; the line under it says WHICH
+   of that page's tries this one is, and the description says what the
+   try changes. The page badge in the top row went with the swap: the
+   heading is the page now, and a chip repeating it would be the page
+   twice in three centimetres. The top row keeps the status alone.
+
+   GROUPED BY PAGE, THE CARD LEADS WITH THE VARIANT. The eyebrow of
+   the group already said the page, and a group of three cards all
+   titled «Checkout page» under a heading reading «Checkout page» is
+   the same word four times. Inside a page group the card and the row
+   drop the page line and promote the variant into the serif; the list
+   drops its first column with it (.gbs-list--ingroup / .gbs-grid).
 
    TAGS ARE CHIPS IN TWO PLACES AND TEXT IN A THIRD. On the card a tag
    is a label, in the filter row it is a target; in the list row it is
@@ -250,11 +269,18 @@
   /* ---- The registry, flattened: one row per sandbox ---- */
   var items = [];
   reg.rooms('').forEach(function (page, pageIndex) {
-    page.variants.forEach(function (v) {
+    page.variants.forEach(function (v, varIndex) {
       items.push({
         label: v.label, desc: v.desc, status: v.status, ready: v.ready,
         href: v.href, tags: v.tags || [], updated: v.updated || '',
-        page: page.label, pageIndex: pageIndex
+        /* Порядок В РЕЕСТРЕ, а не по алфавиту: варианты одной
+           страницы стоят там в том порядке, в каком их поставил
+           автор (сегодняшний поток раньше предложенного), и при
+           равных датах это лучший ответ, чем первая буква имени.
+           Алфавит остаётся у Sort · Name, где его и просят
+           (gbppl-sandbox-names-1: имена перестали начинаться с
+           «V1 ·» и «V2 ·», и алфавит перевернул пару чекаута). */
+        page: page.label, pageIndex: pageIndex, varIndex: varIndex
       });
     });
   });
@@ -358,15 +384,23 @@
   function sortItems(list) {
     var by = state.sort;
     return list.slice().sort(function (a, b) {
-      var byName = a.label.localeCompare(b.label);
-      var byPage = a.pageIndex - b.pageIndex;
+      /* Имя = то, что стоит на карточке ПЕРВЫМ, то есть страница, а
+         потом уже вариант (gbppl-sandbox-names-1). Внутри группы по
+         странице первый ключ одинаков у всех и сортировка сама
+         сваливается на вариант — ровно то, что там и нужно. */
+      var byName = a.page.localeCompare(b.page) || a.label.localeCompare(b.label);
+      /* Порядок реестра целиком: страница, потом вариант внутри неё. */
+      var byReg = (a.pageIndex - b.pageIndex) || (a.varIndex - b.varIndex);
       if (by === 'name') return byName;
-      if (by === 'status') return (statusRank(a.status) - statusRank(b.status)) || byPage || byName;
+      if (by === 'status') return (statusRank(a.status) - statusRank(b.status)) || byReg;
       /* Last active: свежее сверху. Даты ISO, поэтому сравниваются
-         строками. Ничья разводится порядком страниц в реестре, потом
-         именем, и в первый день это ничья у всех шести. */
+         строками. Ничья разводится ПОРЯДКОМ РЕЕСТРА (страница, затем
+         вариант), и 31.08 это ничья у всех восьми: волна имён тронула
+         копию каждого. Именем ничья больше не разводится: алфавит
+         ставил «Shared quantity pool» впереди «Today’s flow», а в
+         реестре сегодняшний поток стоит первым не случайно. */
       var byDate = a.updated === b.updated ? 0 : (a.updated < b.updated ? 1 : -1);
-      return byDate || byPage || byName;
+      return byDate || byReg;
     });
   }
 
@@ -404,13 +438,13 @@
      дольше, чем человек на неё смотрит. */
   function stamp() { return ' style="--gbs-step: ' + Math.min(step++, 14) + '"'; }
 
-  /* Верхний ряд карточки: страница и статус, всегда ровно два бейджа
-     и всегда одна строка. Теги идут отдельным рядом внизу, иначе
-     заголовки шести карточек встают на разных высотах (замер и скрин
-     28.08, см. studio.css). */
+  /* Верхний ряд карточки: ОДИН бейдж, статус. Имя страницы ушло из
+     него в заголовок (gbppl-sandbox-names-1), и ряд остался тем же
+     однострочным рядом, каким был: заголовки шести карточек по-
+     прежнему встают на одной высоте (замер и скрин 28.08, см.
+     studio.css). Теги идут отдельным рядом внизу по той же причине. */
   function badges(it) {
     return '<span class="gbs-badges">' +
-             '<span class="gbs-chip gbs-chip--page">' + esc(it.page) + '</span>' +
              '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
            '</span>';
   }
@@ -422,10 +456,19 @@
     }).join('') + '</span>';
   }
 
+  /* Полка сгруппирована страницей — значит страницу уже назвали
+     сверху, и карточка ведёт вариантом. Один вопрос, один ответ на
+     обе одежды (карточка и строка), поэтому он живёт здесь, а не в
+     каждой из них. */
+  function inPageGroup() { return state.group === 'page'; }
+
   function card(it) {
+    var lead = inPageGroup() ? it.label : it.page;
     var body =
       badges(it) +
-      '<h3 class="gbs-door-title">' + esc(it.label) + '</h3>' +
+      '<h3 class="gbs-door-title">' + esc(lead) + '</h3>' +
+      (inPageGroup() ? '' :
+        '<p class="gbs-door-variant">' + esc(it.label) + '</p>') +
       '<p class="gbs-door-desc">' + esc(it.desc) + '</p>' +
       tagBadges(it) +
       '<span class="gbs-door-foot">' +
@@ -439,12 +482,19 @@
 
   function row(it) {
     var tags = it.tags.join(', ');
+    /* Первая колонка — страница, вторая — вариант, тот же порядок,
+       что на карточке. В группе по странице первой колонки нет, и
+       имя варианта занимает её место (класс на .gbs-list).
+       «Not open yet» ходит за ИМЕНЕМ ВАРИАНТА, в какой бы колонке
+       оно ни стояло: комнаты нет у варианта, а не у страницы. */
+    var note = it.ready ? '' : '<span class="gbs-row__note">· not open yet</span>';
     var body =
-      '<span class="gbs-row__name">' + esc(it.label) +
-        (it.ready ? '' : '<span class="gbs-row__note">· not open yet</span>') +
+      '<span class="gbs-row__name">' + esc(inPageGroup() ? it.label : it.page) +
+        (inPageGroup() ? note : '') +
       '</span>' +
+      (inPageGroup() ? '' :
+        '<span class="gbs-row__variant">' + esc(it.label) + note + '</span>') +
       '<span class="gbs-row__meta">' +
-        '<span class="gbs-chip gbs-chip--page">' + esc(it.page) + '</span>' +
         '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
         '<span class="gbs-row__tags" title="' + esc(tags) + '">' + esc(tags) + '</span>' +
       '</span>' +
@@ -486,9 +536,14 @@
     } else if (!list.length) {
       mount.innerHTML = '<p class="gbs-empty">No sandbox carries these tags. Turn one off to widen the shelf.</p>';
     } else {
+      /* Модификатор один на обе одежды: он говорит «страница уже
+         названа сверху», и колонку страницы в списке убирает CSS
+         (сетка строки объявлена на контейнере), а на карточке —
+         разметка выше. */
+      var ing = inPageGroup() ? ' gbs-list--ingroup' : '';
       mount.innerHTML = groups(list).map(function (g) {
         var inner = state.view === 'list'
-          ? '<div class="gbs-list">' + g.items.map(row).join('') + '</div>'
+          ? '<div class="gbs-list' + ing + '">' + g.items.map(row).join('') + '</div>'
           : '<div class="gbs-grid">' + g.items.map(card).join('') + '</div>';
         if (!g.label) return inner;
         return '<div class="gbs-room">' +

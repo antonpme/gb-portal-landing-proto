@@ -326,11 +326,21 @@
     'index.html':                 'Hub homepage',
     'sandboxes.html':             'Sandboxes',
     'live/map.html':              'Page map',
-    'live/index.html':            'Home',
-    'live/catalog/index.html':    'Gifts catalog',
-    'live/checkout.html':         'Checkout',
-    'live/portal.html':           'Portal',
-    'live/book-a-meeting.html':   'Book a meeting',
+    /* ПЯТЬ СТРОК LIVE ЗВУЧАТ СЛОВАМИ РЕЕСТРА (gbppl-sandbox-names-1,
+       Тон 31.08: «Прототипы должны называться по странице: Checkout
+       Page, Home Page, Category Page... Я не понимаю, что нажимать и
+       куда ведёт»). Полка песочниц печатает имя страницы заголовком
+       карточки, и если консоль НА ТОЙ ЖЕ странице зовёт её иначе,
+       человек считает их двумя местами. Источник имени —
+       system\sandbox-registry.js, PAGES[id].label; здесь стоит его
+       копия, потому что таблица длиннее реестра (страницы Oro и
+       мерочные в нём не заведены) и потому что консоль обязана
+       называть место даже там, где реестра рядом нет. */
+    'live/index.html':            'Home page',
+    'live/catalog/index.html':    'Category page',
+    'live/checkout.html':         'Checkout page',
+    'live/portal.html':           'Portal page',
+    'live/book-a-meeting.html':   'Book a meeting form',
     'system/oro/index.html':      'About Oro',
     'system/oro/typography.html': 'Typography',
     'system/oro/colors.html':     'Colors',
