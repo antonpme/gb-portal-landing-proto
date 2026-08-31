@@ -94,8 +94,10 @@
     { href: 'eyebrow.html', label: 'Eyebrow' },
     { href: 'field.html', label: 'Field' },
     { href: 'icons.html#iconbutton', label: 'Icon button' },
+    /* gbppl-inputnumber-1. It stood last as Stepper; the rail is
+       alphabetical, so under its own name it stands here. */
+    { href: 'inputnumber.html', label: 'Input number' },
     { href: 'select.html', label: 'Select' },
-    { href: 'stepper.html', label: 'Stepper' },
 
     { group: 'Composite', sub: true },
     { href: 'drawer.html', label: 'Drawer' }
@@ -468,7 +470,7 @@
    axis», and it answers it one axis at a time. That is enough to
    keep a single panel honest and not enough to keep TWO panels the
    same: Size could come out a toggle on the button and a Select on
-   the stepper on a day the words happened to be longer, and a
+   the input number on a day the words happened to be longer, and a
    reader who learned one showcase would have to learn the next.
 
    So the axes that recur across the system are named and settled
@@ -525,9 +527,9 @@ window.ORO_AXES = {
     'field.html · Label (Required | Optional)': 'Required, and it is a boolean, so it is the switch.',
     'select.html · Label (Caps label | None)': 'Required as well: a label that is not there is a label not asked for.',
     'D · Label style (Underline | Floating)': 'Look. Same axis, same word, on every field.',
-    'stepper.html · Well (Standard | Dense)': 'Density. The axis is the plainer word, not the anatomy part.',
+    'inputnumber.html · Well (Standard | Dense)': 'Density. The axis is the plainer word, not the anatomy part.',
     'icons.html · Size (40 | 44 live | 48 | 56)': 'Size in rungs, S / M / L / XL, with the pixel in the note. A label is a rung, never a measurement.',
-    'select.html vs stepper.html · Value': 'Two axes, two names: Value is what is chosen, Position is where the number stands on its scale.'
+    'select.html vs inputnumber.html · Value': 'Two axes, two names: Value is what is chosen, Position is where the number stands on its scale.'
   },
 
   AXES: {
@@ -585,7 +587,7 @@ window.ORO_AXES = {
                note: 'the control\'s own backing, never the stage' },
 
     /* HOW TIGHT, not how big. Two or three rungs everywhere it is
-       drawn, so a toggle; the stepper calls it Well today. */
+       drawn, so a toggle; the input number calls it Well today. */
     density: { label: 'Density', group: 'shape', control: 'toggle', upTo: 4,
                note: 'standard or dense; the plain word, not the anatomy part' },
 
