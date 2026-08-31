@@ -31,15 +31,37 @@
    из неё свой срез. Тон-8 в чистом виде — данные живут в system,
    а live, хаб и витрина только носят их.
 
+   ИМЕНА (gbppl-sandbox-names-1, Тон 2026-08-31, по скрину полки
+   Sandboxes): «Самый большой хаос здесь. Я не пойму, какой прототип
+   что означает. Что такое Light Pre-Footer? Что такое V2 Shared Pool?
+   Прототипы должны называться по странице: Checkout Page, Home Page,
+   Category Page, Sign-in / Sign-up Form, Book a Meeting Form. Я не
+   понимаю, что нажимать и куда ведёт.»
+
+   Отсюда два правила имени, и оба живут ЗДЕСЬ, потому что реестр —
+   один источник:
+   1. PAGES[id].label — имя СТРАНИЦЫ в словах Тона, и оно у страницы
+      ОДНО на всю студию. Полка песочниц печатает его заголовком
+      карточки, консоль повторяет его в таблице PLACES (studio-panel.js),
+      карта — в узле дерева. Три места, одна строка; расходятся они
+      только через чью-то правку, и правка начинается отсюда.
+   2. variant.label — имя ВАРИАНТА простыми словами. Ни кодов версии
+      («V1 ·», «V2 ·»), ни жаргона файлов («pre-footer», «pth»):
+      карточку читают снаружи команды, и «Shared quantity pool»
+      говорит то же, что говорил «V2 · Shared pool», не требуя знать,
+      что такое V2. Внутренние ключи остались в id и в href, ссылки
+      не двигались.
+
    ЧТО ЗДЕСЬ ЛЕЖИТ
    PAGES[id] = {
-     label     имя страницы человеку (sentence case)
+     label     имя страницы человеку (sentence case), словами Тона:
+               «Category page», «Checkout page», «Book a meeting form»
      live      адрес живой версии ОТ КОРНЯ СТУДИИ (без query)
      variants  [] массив снимков решений, может быть пустым
    }
    variant = {
-     id      стабильный ключ внутри страницы
-     label   имя варианта («V2 · Pool»)
+     id      стабильный ключ внутри страницы (внутренний: v1, v2, pth)
+     label   имя варианта простыми словами («Shared quantity pool»)
      desc    одна строка: что этот вариант решает. ЧЕЛОВЕЧЕСКИМ
              языком, sentence case, без em dash и без внутренних
              ссылок на тикеты (gbppl-sandboxes-3, 26.08: карточки
@@ -53,12 +75,16 @@
      tags    [] области, которых вариант касается. Короткие строки
              в sentence case, ТОЛЬКО реальные по смыслу desc и по
              истории волн в шапке файла варианта: 'header',
-             'navigation', 'hero', 'pre-footer', 'flow',
+             'navigation', 'hero', 'closing banner', 'flow',
              'shipping', 'personalization', 'copy', 'colour',
-             'client feedback'. СТРАНИЦУ И СТАТУС В ТЕГИ НЕ
-             ПИШЕМ: и то и другое страница песочниц печатает
-             бейджем сама, из PAGES[id].label и из status, и
-             повтор превратил бы фильтр в шум.
+             'client feedback'. Тег 'pre-footer' переименован в
+             'closing banner' (gbppl-sandbox-names-1): тег стоит
+             чипом НА КАРТОЧКЕ и мишенью в фильтре, его читают те же
+             глаза, что и имя, а «pre-footer» — имя места в вёрстке,
+             не имя того, что человек видит.
+             СТРАНИЦУ И СТАТУС В ТЕГИ НЕ ПИШЕМ: статус страница
+             песочниц печатает бейджем сама, имя страницы — своим
+             заголовком, и повтор превратил бы фильтр в шум.
      updated 'YYYY-MM-DD', день последнего изменения варианта.
              Провенанс первичных значений ниже.
    }
@@ -83,7 +109,16 @@
    портал), и файл страницы у всех шести сдвинулся в один день.
    Поэтому в первый день «last active» — ничья, и сортировка
    разводит её вторым ключом (порядок страниц в реестре, потом
-   имя). Со следующей волны поле расходится. Вопрос Тону: не
+   имя).
+
+   И ничья повторилась 31.08: gbppl-sandbox-names-1 переписала имя
+   каждого варианта, то есть тронула копию каждого, и по правилу выше
+   все восемь получили 2026-08-31. Полка в этот день пишет «updated
+   today» везде и разводит ничью тем же вторым ключом. Это не сбой
+   поля, а тот же вопрос Тону во второй раз: дата варианта — про его
+   РЕШЕНИЕ или про любую правку его строки.
+
+   Со следующей волны поле расходится. Вопрос Тону: не
    правильнее ли считать датой варианта день, когда двигалось ЕГО
    собственное решение (строка в реестре: 25 и 26.08), а не день,
    когда кто-то трогал общий файл страницы.
@@ -102,7 +137,7 @@
 
   var PAGES = {
     home: {
-      label: 'Home',
+      label: 'Home page',
       live: 'live/index.html',
       variants: [
         {
@@ -116,24 +151,28 @@
              внутренним ссылкам); дверь ведёт на главную, потому что
              там бар прозрачный и обе его земли видно сразу. */
           id: 'header-auth',
-          label: 'Sign in by the account icon',
-          desc: 'One blue button and a row of glyphs. The person opens a sign in drawer, then becomes your initials with the cart beside them.',
+          /* Тон 31.08 зовёт этот прототип «Sign-in / Sign-up Form».
+             Одна форма делает и то и другое (тот же e-mail, тот же
+             код), поэтому имя одно: вторая половина названия обещала
+             бы второй экран, которого нет. */
+          label: 'Sign in form',
+          desc: 'Sign in from the account icon in the header, in a drawer. The person then becomes your initials, with the cart beside them.',
           status: 'proposal',
           href: 'live/index.html?hdr=auth',
           ready: true,
           tags: ['header', 'flow'],
-          updated: '2026-08-28'
+          updated: '2026-08-31'
         }
       ]
     },
 
     catalog: {
-      /* gbppl-panel-10: «Gifts catalog», как в консоли (PLACES в
-         studio-panel.js) и на карте страниц. Одно имя у одной
-         страницы: имя отсюда печатают полка песочниц и карточка
-         комнаты, и «Catalog» рядом с «Gifts catalog» читалось как
-         две разные страницы. */
-      label: 'Gifts catalog',
+      /* gbppl-panel-10: одно имя у одной страницы, и его печатают
+         полка песочниц, консоль (PLACES в studio-panel.js) и карта.
+         gbppl-sandbox-names-1: имя стало «Category page» — слово
+         Тона о ней («страница категорий GIFTS», 31.08). Согласовано
+         во всех трёх местах в этой же волне. */
+      label: 'Category page',
       live: 'live/catalog/index.html',
       variants: [
         {
@@ -143,15 +182,19 @@
              светлые». The two modifiers live in home.css; the page reads
              ?prefooter= and names them. */
           id: 'prefooter-light',
-          label: 'Light pre-footer',
+          /* Было «Light pre-footer». Тон 31.08: «Что такое Light
+             Pre-Footer?» — pre-footer это имя МЕСТА в вёрстке, а не
+             того, что человек увидит; увидит он закрывающий баннер и
+             ленту преимуществ. */
+          label: 'Light closing banner',
           desc: 'The closing banner and the advantages in light ink, tighter, no gradient.',
           status: 'proposal',
           href: 'live/catalog/index.html?prefooter=light',
           ready: true,
           /* Джулия и Рассел на живой странице категорий, отсюда
              'client feedback'; правка цветовая и по высоте лент. */
-          tags: ['pre-footer', 'colour', 'client feedback'],
-          updated: '2026-08-27'
+          tags: ['closing banner', 'colour', 'client feedback'],
+          updated: '2026-08-31'
         },
         {
           /* Ton 31.08: «должна быть версия-прототип страницы категорий
@@ -178,7 +221,7 @@
     },
 
     checkout: {
-      label: 'Checkout',
+      label: 'Checkout page',
       live: 'live/checkout.html',
       variants: [
         {
@@ -186,7 +229,9 @@
              versions are still candidates in front of the team, so
              V1 stands here as a room of its own, not only as Live. */
           id: 'v1',
-          label: 'V1 · Today’s flow',
+          /* Было «V1 · Today’s flow». Тон 31.08: код версии не имя,
+             его знают только внутри. Ключ v1 остался в id и в href. */
+          label: 'Today’s flow',
           desc: "Today's checkout with the agreed quick fixes: one address or a different address per gift, the steps renamed, bulk personalize and edit selected.",
           status: 'in-progress',
           href: 'live/checkout.html?v=1',
@@ -194,50 +239,54 @@
           /* Адрес на подарок = 'shipping', bulk personalize =
              'personalization', переименованные шаги = 'copy'. */
           tags: ['flow', 'shipping', 'personalization', 'copy'],
-          updated: '2026-08-27'
+          updated: '2026-08-31'
         },
         {
           id: 'v2',
-          label: 'V2 · Shared pool',
+          /* Было «V2 · Shared pool». Тон 31.08: «Что такое V2 Shared
+             Pool?» — теперь имя говорит, ЧТО общее: количество. */
+          label: 'Shared quantity pool',
           desc: 'Gifts are not personalized by default. Quantity is a pool on the gift, and personalization is an add-on behind a choice of two doors.',
           status: 'in-progress',
           href: 'live/checkout.html?v=2',
           ready: true,
           tags: ['flow', 'personalization'],
-          updated: '2026-08-27'
+          updated: '2026-08-31'
         }
       ]
     },
 
     portal: {
-      label: 'Portal',
+      label: 'Portal page',
       live: 'live/portal.html',
       variants: [
         {
           id: 'pth',
-          label: 'Portal header',
-          desc: "The portal's own bar instead of the website's: the GildedBox | Portal lock, and the utilities ordered out to the edge.",
+          /* Было «Portal header» рядом с ключом pth. Ключ остался в
+             href, а имя теперь говорит, ЧЕЙ это хедер. */
+          label: 'The portal’s own header',
+          desc: "Instead of the website's bar: the GildedBox | Portal lock, and the utilities ordered out to the edge.",
           status: 'in-progress',
           href: 'live/portal.html?pth=1',
           ready: true,
           tags: ['header', 'navigation'],
-          updated: '2026-08-27'
+          updated: '2026-08-31'
         },
         {
           id: 'hero-start',
-          label: 'Start Gifting layouts',
+          label: 'Start gifting hero',
           desc: 'The hero of the portal landing rebuilt around the Start Gifting entry, with the greeting kept out of its way.',
           status: 'in-progress',
           href: 'live/portal.html?hero=start',
           ready: true,
           tags: ['hero', 'flow'],
-          updated: '2026-08-27'
+          updated: '2026-08-31'
         }
       ]
     },
 
     booking: {
-      label: 'Book a meeting',
+      label: 'Book a meeting form',
       live: 'live/book-a-meeting.html',
       variants: [
         {
@@ -247,13 +296,13 @@
              того, чтобы вести в ссылку, которая молча откроет
              сегодняшнюю страницу. */
           id: 'proposition',
-          label: 'Proposition',
+          label: 'Led by the proposition',
           desc: 'The meeting page led by the proposition: what the call is for, said before the calendar asks for a day.',
           status: 'in-progress',
           href: 'live/book-a-meeting.html?v=proposition',
           ready: false,
           tags: ['copy', 'flow'],
-          updated: '2026-08-27'
+          updated: '2026-08-31'
         }
       ]
     },
@@ -261,7 +310,12 @@
     /* Страницы без живого двойника. У них live указывает на саму
        мерочную страницу: она и есть эталон, с которым сверяются. */
     auth: {
-      label: 'Auth',
+      /* Четыре записи ниже без вариантов: на полку они не выходят
+         (rooms() пропускает пустые), но имя у страницы одно, и оно
+         здесь совпадает с тем, что печатает консоль в PLACES —
+         иначе первая же песочница на такой странице привезла бы на
+         полку второе имя (gbppl-sandbox-names-1). */
+      label: 'Sign in, measured',
       live: 'system/pages/auth.html',
       variants: []
     },
@@ -273,13 +327,13 @@
     },
 
     oro: {
-      label: 'Design system',
+      label: 'About Oro',
       live: 'system/oro/index.html',
       variants: []
     },
 
     hub: {
-      label: 'Hub',
+      label: 'Hub homepage',
       live: 'index.html',
       variants: []
     }
