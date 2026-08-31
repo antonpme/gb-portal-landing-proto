@@ -22,7 +22,9 @@
      same ids: #buttons on the card, and #variants, #states,
      #sizes, #icons, #properties, #usage inside it. Nothing was
      rewritten, nothing was dropped, and the workbench and the
-     playground are the same scripts. Two things changed and both
+     playground were the same scripts (the playground became
+     GbOro.controls on 31.08, gbppl-oro-canon-1: see the script at
+     the foot of the page). Two things changed and both
      are structure, not content: the card head became the crumb at
      the top of the page, because a page about one component says
      its name once; and the five sections that had no id got one,
@@ -70,6 +72,11 @@
 <link rel="stylesheet" href="../components/header.css">
 <link rel="stylesheet" href="../components/button.css">
 <link rel="stylesheet" href="../components/icon.css">
+<!-- gbppl-oro-canon-1: the toggle button and the field, because the
+     playground rail is built out of components and not out of markup of
+     its own. .gb-toggle is every two-to-four-value axis and the Light |
+     Dark switch; .gba-select and .gba-input out of auth.css are the rest. -->
+<link rel="stylesheet" href="../components/toggle.css">
 <link rel="stylesheet" href="../components/auth.css">
 <link rel="stylesheet" href="../components/drawer.css">
 <link rel="stylesheet" href="../components/docs.css">
@@ -160,58 +167,42 @@
         <section class="oro-section" id="playground" data-toc="Playground">
         <span class="gb-eyebrow">Playground</span>
         <h2 class="oro-h2">Build a button and read it back</h2>
-        <p class="oro-p">Set the axes on the left panel and the one button on the stage rebuilds itself; the markup and the measurements below follow it. The controls are deliberately not buttons, so the stage holds the only button on the screen.</p>
+        <p class="oro-p">Set the axes on the rail at the right and the one button on the stage rebuilds itself; the markup behind the Code fold and the measurements below follow it. Which control an axis gets is not a choice made here: the rule of <code>GbOro.controls</code> reads the canon of axes, then the count, then what a track would cost against the width the rail has, so Size and Type are toggle buttons, Colour and State are Selects, and yes or no is a switch. An axis that does not apply is removed rather than greyed, the rare three are behind More, and Light or Dark dresses the stage rather than the button, so it stands on the stage.</p>
 
-        <div class="gbdoc-frame">
-          <div class="gbdoc-controls" id="pgControls">
-            <div class="gbdoc-axis" role="radiogroup" data-axis="size">
-              <span class="gbdoc-axis__name">Size</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="s">S</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="m">M</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="l">L</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="xl">XL</button>
-            </div>
-            <div class="gbdoc-axis" role="radiogroup" data-axis="type">
-              <span class="gbdoc-axis__name">Type</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="filled">Filled</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="outline">Outline</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="ghost">Ghost</button>
-            </div>
-            <div class="gbdoc-axis" role="radiogroup" data-axis="colour">
-              <span class="gbdoc-axis__name">Colour</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="primary">Primary</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="secondary">Secondary</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="inverse">Inverse</button>
-            </div>
-            <div class="gbdoc-axis" role="radiogroup" data-axis="icon">
-              <span class="gbdoc-axis__name">Icon</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="none">None</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="before">Before</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="after">After</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="both">Both</button>
-            </div>
-            <div class="gbdoc-axis" role="radiogroup" data-axis="width">
-              <span class="gbdoc-axis__name">Width</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="auto">Auto</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="block">Block</button>
-            </div>
-            <div class="gbdoc-axis" role="radiogroup" data-axis="state">
-              <span class="gbdoc-axis__name">State</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="rest">Rest</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="hover">Hover</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="focus">Focus</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="active">Active</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="disabled">Disabled</button>
-            </div>
-          </div>
-          <div class="gbdoc-stage gbdoc-stage--center" id="pgStage" data-inspect="button">
-            <div class="gbdoc-hold" id="pgHold"></div>
-          </div>
-        </div>
+        <!-- gbppl-oro-canon-1. THE BLOCK IS FURNITURE NOW: .gbdoc-pg out of
+             components/docs.css, and the panel inside it is GbOro.controls
+             out of oro.js, rendered from the schema in the script at the
+             foot of this page. What used to stand here was six hand written
+             rows of .gbdoc-seg, one control for every axis whatever the axis
+             was; the rule Ton approved on 31.08 («окей, давай попробуем
+             так») is the whole reason they are gone.
 
-        <div class="gbdoc-code">
-          <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
-          <pre><code id="pgCode"></code></pre>
+             ONE DEVIATION FROM THE BENCH'S CARD, AND IT IS DELIBERATE: the
+             footer band carries the Preview | Code switch and no measured
+             line. The bench prints one because it has nothing else; this
+             page already reads eight values off the same specimen in the
+             table right under the card, and a second line repeating four of
+             them is the readout duplicate Ton threw out on 29.08. The band
+             is where the switch lives, not where a number has to be. -->
+        <div class="gbdoc-pg" data-pg="button">
+          <div class="gbdoc-pg__body">
+            <div class="gbdoc-pg__view">
+              <div class="gbdoc-pg__scene" data-pg-scene id="pgStage" data-inspect="button">
+                <div class="gbdoc-pg__ground" data-pg-ground></div>
+                <div class="gbdoc-hold" id="pgHold" data-pg-hold></div>
+              </div>
+              <div class="gbdoc-pg__code" data-pg-codewrap hidden>
+                <div class="gbdoc-code">
+                  <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
+                  <pre><code id="pgCode" data-pg-code></code></pre>
+                </div>
+              </div>
+            </div>
+            <div class="gbdoc-pg__rail" data-pg-rail></div>
+          </div>
+          <div class="gbdoc-pg__bar">
+            <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-pg-view></div>
+          </div>
         </div>
 
         <div class="gbdoc-tablewrap">
@@ -554,6 +545,12 @@
 
 <script src="../type-scale.js"></script>
 <script src="../components/icon.js"></script>
+<!-- gbppl-oro-canon-1: gb-field (the Select and the text field of the
+     rail) and the toggle button's own behaviour, its one tab stop and its
+     arrow keys. Both run before the panel is built; the observer in
+     toggle.js catches the tracks the panel writes later. -->
+<script src="../components/auth.js"></script>
+<script src="../components/toggle.js"></script>
 <script src="../components/drawer.js"></script>
 <script src="../components/inspect.js"></script>
 <script src="../components/comments.js"></script>
@@ -578,10 +575,13 @@
    THE READOUT fills the anatomy tables from four probe buttons
    standing off screen in the four sizes.
 
-   THE PLAYGROUND is six axes of chips over one live sample. The
-   chips are .gb-btn themselves, and the snippet is generated from
-   the same state as the specimen, so the code cannot drift from
-   the thing above it.
+   THE PLAYGROUND is a schema handed to GbOro.controls
+   (gbppl-oro-canon-1): this page says what the button HAS and how
+   one is drawn out of a state object, and oro.js draws the rail,
+   picks a control per axis by the rule, hides what does not apply
+   and folds the markup into the card. The snippet is generated
+   from the same state as the specimen, so the code cannot drift
+   from the thing beside it.
 
    THE WORKBENCH shows ONE variant: the chips choose it, the top
    band renders it in the four sizes and the band below in the
@@ -669,85 +669,140 @@
     ORO.widthNow('wnow', 'wnow2');
   }
 
-  /* ---------- the playground ---------- */
-  var STATE = { size: 'l', type: 'filled', colour: 'primary', icon: 'none', width: 'auto', state: 'rest' };
-  var GLYPH_BEFORE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 8.5h17v12h-17zM3.5 8.5l2-4h13l2 4M12 4.5v16"/></svg>';
-  var GLYPH_AFTER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg>';
+  /* ---------- the playground ----------
+     gbppl-oro-canon-1. The panel is not here any more. This page hands
+     GbOro.controls a SCHEMA — what the button has, in what group, with
+     what default — and a function that draws one button out of a state
+     object; the rail, the rule that picks each control, the conditional
+     rows, the More fold, the Reset, the ground on the stage and the
+     Preview | Code fold all belong to the renderer in oro.js and are the
+     same on every showcase after this one.
+
+     THE AXES, AND THE CONTROL THE RULE GIVES EACH (canon in ORO_AXES):
+       Size          toggle, always: a short ordered ladder is compared
+       Type          toggle up to four; a fifth type splits the axis
+       Colour        Select, always: the longest words in the house
+       State         Select, always: five values, half unavailable
+       Icon          switch (a native checkbox until Figma is opened)
+       Icon position toggle, and only while Icon is on
+       Block width   switch, under More
+       Label         field, under More
+       Glyph         Select, under More, and only while Icon is on
+
+     WHAT CHANGED IN WHAT THE PANEL CAN SAY. The old six rows had one
+     Icon axis of four values (None / Before / After / Both); the canon
+     splits it, because «is there a glyph» and «where does it stand» are
+     two questions and the first one is a boolean. And Ground arrived:
+     the old playground darkened the stage when the colour was inverse,
+     which made a property of the stage a side effect of a property of
+     the button. Now the stage has its own switch, and the three rules
+     the variant workbench below states hold here too — a white cut on
+     white is nothing, black on Zinc 950 is nothing, and no live screen
+     wears a solid white button — said once in normalise and available. */
+  var GLYPHS = {
+    box:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 8.5h17v12h-17zM3.5 8.5l2-4h13l2 4M12 4.5v16"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h14M12.5 6l6 6-6 6"/></svg>',
+    plus:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m4.5 12.5 5 5 10-11"/></svg>'
+  };
   var STATE_CLASS = { hover: 'is-hover', focus: 'is-focus', active: 'is-active' };
 
-  var controls = document.getElementById('pgControls');
-  var hold = document.getElementById('pgHold');
-  var stage = document.getElementById('pgStage');
-  var codeEl = document.getElementById('pgCode');
+  function escHTML(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
-  function sampleHTML(forCode) {
-    var c = ['gb-btn', 'gb-btn--' + STATE.size, 'gb-btn--' + STATE.type, 'gb-btn--' + STATE.colour];
-    if (STATE.width === 'block') c.push('gb-btn--block');
-    if (!forCode && STATE_CLASS[STATE.state]) c.push(STATE_CLASS[STATE.state]);
-    var dis = STATE.state === 'disabled' ? ' disabled' : '';
+  var PG_AXES = [
+    { id: 'size',    label: 'Size',   group: 'shape', def: 'l',
+      values: [['s', 'S'], ['m', 'M'], ['l', 'L'], ['xl', 'XL']] },
+    { id: 'type',    label: 'Type',   group: 'shape', def: 'filled',
+      values: [['filled', 'Filled'], ['outline', 'Outline'], ['ghost', 'Ghost']] },
+    { id: 'colour',  label: 'Colour', group: 'shape', def: 'primary',
+      values: [['primary', 'Primary'], ['secondary', 'Secondary'], ['inverse', 'Inverse']] },
+    { id: 'state',   label: 'State',  group: 'state', def: 'rest',
+      values: [['rest', 'Rest'], ['hover', 'Hover'], ['focus', 'Focus'],
+               ['active', 'Active'], ['disabled', 'Disabled']] },
+    { id: 'icon',    label: 'Icon',   group: 'content', kind: 'bool',
+      on: 'yes', off: 'no', def: 'no' },
+    { id: 'iconPos', label: 'Icon position', group: 'content', def: 'before',
+      values: [['before', 'Before'], ['after', 'After'], ['both', 'Both']],
+      when: function (S) { return S.icon === 'yes'; } },
+    { id: 'width',   label: 'Block width', group: 'content', kind: 'bool', advanced: true,
+      on: 'block', off: 'auto', def: 'auto' },
+    { id: 'label',   label: 'Label', group: 'content', kind: 'text', advanced: true,
+      def: 'Book a meeting' },
+    { id: 'glyph',   label: 'Glyph', group: 'content', def: 'box', advanced: true,
+      values: [['box', 'Box'], ['arrow', 'Arrow'], ['plus', 'Plus'], ['check', 'Check']],
+      when: function (S) { return S.icon === 'yes'; } }
+  ];
+
+  function pgSample(S, forCode) {
+    var c = ['gb-btn', 'gb-btn--' + S.size, 'gb-btn--' + S.type, 'gb-btn--' + S.colour];
+    if (S.width === 'block') c.push('gb-btn--block');
+    if (!forCode && STATE_CLASS[S.state]) c.push(STATE_CLASS[S.state]);
+    var dis = S.state === 'disabled' ? ' disabled' : '';
     var nl = forCode ? '\n  ' : '';
+    var g = forCode ? '<svg>...</svg>' : (GLYPHS[S.glyph] || GLYPHS.box);
+    var pos = S.icon === 'yes' ? S.iconPos : 'none';
     var inner = '';
-    if (STATE.icon === 'before' || STATE.icon === 'both') {
-      inner += nl + '<span class="gb-btn__icon"' + (forCode ? '' : ' aria-hidden="true"') + '>' +
-               (forCode ? '<svg>...</svg>' : GLYPH_BEFORE) + '</span>';
+    if (pos === 'before' || pos === 'both') {
+      inner += nl + '<span class="gb-btn__icon"' + (forCode ? '' : ' aria-hidden="true"') + '>' + g + '</span>';
     }
-    inner += nl + '<span class="gb-btn__label">Book a meeting</span>';
-    if (STATE.icon === 'after' || STATE.icon === 'both') {
-      inner += nl + '<span class="gb-btn__icon"' + (forCode ? '' : ' aria-hidden="true"') + '>' +
-               (forCode ? '<svg>...</svg>' : GLYPH_AFTER) + '</span>';
+    inner += nl + '<span class="gb-btn__label">' + escHTML(S.label || 'Book a meeting') + '</span>';
+    if (pos === 'after' || pos === 'both') {
+      inner += nl + '<span class="gb-btn__icon"' + (forCode ? '' : ' aria-hidden="true"') + '>' + g + '</span>';
     }
-    return '<button class="' + c.join(' ') + '" type="button"' + dis + '>' + inner + (forCode ? '\n' : '') + '</button>';
+    return '<button class="' + c.join(' ') + '" type="button"' + dis + '>' +
+           inner + (forCode ? '\n' : '') + '</button>';
   }
 
-  function lightChips(row, chosen) {
-    /* Controls are not buttons (Ton 26.08: «the top buttons work as a
-       showcase while they are meant to build the button below»). A
-       segment is quiet text with a blue underline when chosen: the
-       instrument must not look like the thing it builds. */
-    Array.prototype.forEach.call(row.querySelectorAll('.gbdoc-seg'), function (seg) {
-      var on = seg.getAttribute('data-val') === chosen;
-      seg.classList.toggle('is-on', on);
-      seg.setAttribute('aria-checked', on ? 'true' : 'false');
-    });
-  }
-
-  function paintPlayground() {
-    if (!hold) return;
-    hold.innerHTML = sampleHTML(false);
-    hold.classList.toggle('gbdoc-hold--block', STATE.width === 'block');
-    stage.classList.toggle('gbdoc-stage--dark', STATE.colour === 'inverse');
-    if (codeEl) codeEl.textContent = sampleHTML(true);
-
-    Array.prototype.forEach.call(controls.querySelectorAll('.gbdoc-axis'), function (row) {
-      lightChips(row, STATE[row.getAttribute('data-axis')]);
-    });
-
+  /* The eight measured values under the card, read off the specimen the
+     panel has just mounted. This is the readout of the playground and
+     the only one it has: the footer band carries the view switch and no
+     second copy of these numbers. */
+  function pgReadout(S, hold) {
     var el = hold.querySelector('.gb-btn');
-    if (el) {
-      var d = readBtn(el);
-      txt('pgH', d.h);
-      txt('pgPad', d.py + ' / ' + d.px);
-      txt('pgGap', d.gap);
-      txt('pgLabel', d.label);
-      txt('pgIcon', d.icon);
-      txt('pgFont', d.font);
-      txt('pgBg', d.bg);
-      txt('pgInk', d.ink);
-    }
+    if (!el) return;
+    var d = readBtn(el);
+    txt('pgH', d.h);
+    txt('pgPad', d.py + ' / ' + d.px);
+    txt('pgGap', d.gap);
+    txt('pgLabel', d.label);
+    txt('pgIcon', d.icon);
+    txt('pgFont', d.font);
+    txt('pgBg', d.bg);
+    txt('pgInk', d.ink);
   }
 
-  if (controls) {
-    controls.addEventListener('click', function (e) {
-      var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-val]') : null;
-      if (!chip) return;
-      var axis = chip.parentNode.getAttribute('data-axis');
-      if (!axis) return;
-      STATE[axis] = chip.getAttribute('data-val');
-      paintPlayground();
+  if (window.GbOro && window.GbOro.controls) {
+    window.GbOro.controls({
+      root: document.querySelector('[data-pg="button"]'),
+      axes: PG_AXES,
+      sample: pgSample,
+      after: pgReadout,
+      normalise: function (S) {
+        if (S.ground === 'light' && S.colour === 'inverse') S.colour = 'secondary';
+        if (S.ground === 'dark' && S.colour === 'secondary') S.colour = 'inverse';
+        if (S.colour === 'inverse' && S.type === 'filled') S.colour = 'primary';
+      },
+      available: function (S, axis, val) {
+        if (axis !== 'colour') return true;
+        if (val === 'inverse') return S.ground === 'dark' && S.type !== 'filled';
+        if (val === 'secondary') return S.ground === 'light';
+        return true;
+      },
+      blockClass: 'gbdoc-hold--block',
+      block: function (S) { return S.width === 'block'; }
     });
   }
 
-  /* ---------- the variant workbench ---------- */
+  /* ---------- the variant workbench ----------
+     Still on .gbdoc-seg, and deliberately: the workbench chooses which
+     VARIANT the two bands below are drawn in, which is navigation of a
+     document rather than the building of a specimen, and the playground
+     above is the one block Ton chose the new rule for. One showcase per
+     wave (spec section 5); the workbench follows on its own. */
   var WB = { type: 'filled', colour: 'primary', ground: 'light' };
   var WB_SIZES = [['s', 'S', 'chrome'], ['m', 'M', 'panels'], ['l', 'L', 'forms'], ['xl', 'XL', 'committing']];
   var WB_STATES = [
@@ -776,6 +831,18 @@
   var wbStates = document.getElementById('wbStates');
   var wbFoot = document.getElementById('wbFoot');
   var stBody = document.getElementById('stBody');
+
+  /* Controls are not buttons (Ton 26.08: «the top buttons work as a
+     showcase while they are meant to build the button below»). A segment
+     is quiet text with a blue underline when chosen: the instrument must
+     not look like the thing it builds. */
+  function lightChips(row, chosen) {
+    Array.prototype.forEach.call(row.querySelectorAll('.gbdoc-seg'), function (seg) {
+      var on = seg.getAttribute('data-val') === chosen;
+      seg.classList.toggle('is-on', on);
+      seg.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  }
 
   function wbLabel() { return WB_LABEL[WB.type + ' ' + WB.colour] || 'Continue'; }
   function wbStateSize() { return WB.ground === 'dark' ? 's' : 'l'; }
@@ -934,8 +1001,10 @@
      called where the reader used to be built, not earlier. */
   ORO.watchCopy();
 
+  /* The playground paints itself: GbOro.controls draws it on the call
+     above and answers resize and the late web face for every panel on
+     the page, so it is not in either list here. */
   paintAnatomy();
-  paintPlayground();
   paintWorkbench();
   paintContrastOnce();
   ORO.watchToc();
@@ -943,7 +1012,7 @@
   var resizeTimer;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () { paintAnatomy(); paintPlayground(); paintWorkbench(); }, 120);
+    resizeTimer = setTimeout(function () { paintAnatomy(); paintWorkbench(); }, 120);
   });
 })();
 </script>
