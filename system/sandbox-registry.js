@@ -152,6 +152,27 @@
              'client feedback'; правка цветовая и по высоте лент. */
           tags: ['pre-footer', 'colour', 'client feedback'],
           updated: '2026-08-27'
+        },
+        {
+          /* Ton 31.08: «должна быть версия-прототип страницы категорий
+             GIFTS, где меню переделано как просил Марк; её нет ни на
+             live, ни в прототипе, это проблема». Она была, но под нашей
+             накладкой: бар бандла и есть тот, который Марк смотрел
+             27.07, и три его пункта из четырёх в нём уже стоят (ни
+             CUSTOMIZE, ни EXPLORE в хроме, Portal за человечком,
+             консьерж плавающий). Ключ снимает подмену хрома целиком и
+             показывает страницу такой, какой он её видел. Четвёртый
+             пункт (категории вместо мега-меню Gifts) здесь НЕ
+             построен: открыть не значит перерисовать, и перерисовку
+             заказывает Тон. gbppl-catalog-mark-1. */
+          id: 'nav-mark',
+          label: 'The prototype’s own menu',
+          desc: 'The July bar Mark reviewed: no Customize, no Explore, Portal behind the person glyph.',
+          status: 'proposal',
+          href: 'live/catalog/index.html?nav=mark',
+          ready: true,
+          tags: ['header', 'navigation', 'client feedback'],
+          updated: '2026-08-31'
         }
       ]
     },
