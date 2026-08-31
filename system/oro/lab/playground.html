@@ -188,6 +188,59 @@
      two variables swapped, one token spent.
      ============================================================ -->
 
+<!-- ============================================================
+     gbppl-lab-f-3 — THE RULE IS APPROVED, AND IT IS A CONSTANT NOW
+     ------------------------------------------------------------
+     Ton, 30.08 on the rail as it stood: «когда всё одним элементом,
+     это мегауебанское». Ton, 31.08 on the rule that answers it:
+     «погнали». The rule itself is section 2 of
+     studio\docs\PLAYGROUND-CONTROLS-SPEC.md v0.2, and it is four
+     lines about the NATURE of an axis, not about a component:
+
+       1 true or false          Switch
+       2 one of 2..4, short     Toggle button (.gb-toggle)
+       3 one of 5+, or long     Select (.gba-select)
+       4 free text or number    Field (.gba-input)
+
+     WHY THE RAIL LOOKED MONOTONOUS AND WHAT ACTUALLY CHANGED. The
+     mapping F already drew on 29.08 was the right one: State was a
+     Select, Icon and Block width were checkboxes. What made the rail
+     read as one element was the COUNT of toggles standing together,
+     and one of the four was not an axis of the component at all:
+     Ground was rendered as the last row of the rail. Spec v0.2
+     section 1 puts it where it belongs, ON THE SCENE, because it
+     changes the stage and not the specimen. So the rail lost a
+     toggle it should never have carried, and the three kinds it
+     keeps are visible without scrolling: toggle, Select, checkbox.
+
+     THE RULE IS READ, NOT RETYPED. controlF used to test
+     values.length against one number. It now asks LAB_F.RULE, which
+     names all four branches and both thresholds, and TOGGLE_TO and
+     SELECT_FROM are checked against each other on load: 4 and 5 are
+     one boundary written twice, and a boundary written twice drifts.
+     An axis may also say long:true and go to a Select under the
+     count, which is the second half of line 3 of the rule.
+
+     THE SWITCH IS STILL ON LOAN. Figma has the Switch Ton linked on
+     29.08 and Figma is not authorised for us yet, so there is
+     nothing to measure and nothing gets drawn from memory (Ton
+     13:33: a component comes from a measurement or it does not get
+     built). Every boolean axis is a NATIVE <input type="checkbox">
+     with our own 14px label beside it and no styling of ours on the
+     box. The rail header says placeholder in as many words. The day
+     the Switch is measured, LAB_F.RULE.BOOL changes from the word
+     checkbox to the word switch and one function follows it.
+
+     COLOUR WRAPS ITS TRACK AT 320, AND THAT IS ALLOWED. Primary,
+     Secondary and Inverse measure 89.2 + 110 + 86 = 285.2 against
+     264 of usable track, so the third item takes a second line. That
+     is the TRACK wrapping, not a label: every item still reads on
+     one line, which is exactly what the same component does on the
+     checkout at 390. Widening the rail would need 344, past the
+     recon's 250..360 middle and paid for out of the specimen's 73
+     per cent, to spare one row. The rail stays at 320.
+     ============================================================ -->
+
 <!-- ---- LAB F KNOBS, THE CSS HALF ---- -->
 <style>
 :root {
@@ -252,17 +305,34 @@
 <!-- ---- LAB F KNOBS, THE SCHEMA HALF ---- -->
 <script>
 window.LAB_F = {
-  /* The order the groups are drawn in, and what each is called. The
-     last one is deliberately unnamed: a group of one axis whose name
-     is the group's own name prints Ground over GROUND. */
-  GROUPS: [['shape', 'Shape'], ['state', 'State'], ['content', 'Content'], ['ground', '']],
+  /* The order the groups of the RAIL are drawn in, and what each is
+     called. Ground is not among them any more: it moved to the scene
+     with gbppl-lab-f-3, because it dresses the stage and not the
+     specimen (spec v0.2 section 1). */
+  GROUPS: [['shape', 'Shape'], ['state', 'State'], ['content', 'Content']],
 
-  /* The one number in the control rule: from this many values an
-     axis becomes a Select. Below it, a segment of chips. */
+  /* ---- THE RULE, spec v0.2 section 2, approved by Ton 31.08 ----
+     Four branches by the NATURE of the axis, and this object is the
+     only place any of them is written down: controlF reads it and
+     decides nothing of its own. BOOL says checkbox today because the
+     Switch has not been measured yet (see the header); change this
+     one word on the day it is, and the rail follows.
+     TOGGLE_TO and SELECT_FROM are one boundary written from both
+     sides, so they are checked against each other below. */
+  RULE: {
+    BOOL: 'checkbox',   /* 1. true or false -> Switch. PLACEHOLDER: native checkbox. */
+    TOGGLE_TO: 4,       /* 2. one of 2..4 short values -> .gb-toggle */
+    TEXT: 'field'       /* 4. free text or number -> .gba-input */
+  },
+  /* 3. one of 5 or more values, or long words (an axis may also say
+     long:true and come here under the count) -> .gba-select */
   SELECT_FROM: 5,
 
-  /* THE GROUND, an axis like any other and always last (recon 2.7,
-     Carbon draws the theme as one more control in the row). */
+  /* THE GROUND. Still an axis with a default and a reset like the
+     rest, still last, but it is drawn on the scene rather than in
+     the rail (spec v0.2 sections 1 and 3): what it changes is the
+     stage the specimen stands on. Two short values, so by line 2 of
+     the rule it is a toggle wherever it stands. */
   GROUND_AXIS: { id: 'ground', label: 'Ground', group: 'ground', def: 'light',
                  values: [['light', 'Light'], ['dark', 'Dark']] },
 
@@ -314,6 +384,14 @@ window.LAB_F = {
     { id: 'label',    label: 'Label', group: 'content', kind: 'text', advanced: true, def: '' }
   ]
 };
+
+/* One boundary, written from both sides, so it is read from both
+   sides once on load. Four and five have to meet with nothing
+   between them; if they ever stop meeting, the console says so
+   before anyone counts controls on a screenshot. */
+if (window.LAB_F.SELECT_FROM !== window.LAB_F.RULE.TOGGLE_TO + 1) {
+  console.warn('LAB_F: TOGGLE_TO and SELECT_FROM leave a gap; the rule has a hole in it.');
+}
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -859,6 +937,21 @@ window.LAB_F = {
   min-height: var(--lab-f-scene-min);
   padding: var(--lab-f-scene-pad) var(--space-24);
 }
+/* THE GROUND STANDS ON THE STAGE IT CHANGES (gbppl-lab-f-3, spec
+   v0.2 sections 1 and 3). It was the last row of the rail, and it
+   was the fourth toggle in a column of toggles, which is half of why
+   the rail read as one element. It is not an axis of the component:
+   the button is the same button on either ground. So it sits in the
+   scene's corner, the same corner and the same two offsets the other
+   five variants of this bench give it, clear of the properties door
+   that inspect.js hangs at --space-8 in a 40 wide box. No eyebrow
+   over it: Light and Dark say what they are. */
+.labF__ground {
+  position: absolute;
+  top: var(--space-8);
+  right: calc(var(--space-48) + var(--space-16));
+  z-index: 1;
+}
 /* Trap 3, the local antidote, the same three lines every surface off
    the live bundle spends: auth.css names a border colour on four
    sides and a width on one. */
@@ -1020,20 +1113,21 @@ window.LAB_F = {
     <header class="oro-head">
       <span class="gb-eyebrow">Lab</span>
       <h1 class="oro-h1">Playground layouts</h1>
-      <p class="oro-lede">Six ways to build the same block, so one of them can be chosen and the rest thrown away. F stands first because it is the only one that was not invented here: it is what ten design systems were found doing when they were read on 29 August, layout and controls both, and its segments are now the house's own toggle button rather than a control drawn for this bench. The five under it are the earlier attempts, kept for comparison. A, B and C hold the axes and the specimen identical and change only the arrangement. D takes A's arrangement and changes the controls instead: its panel is rendered from a schema, and each axis gets the control its shape asks for. E puts C's colours and frame around D's schema and gives every short set a row of buttons instead of a row of words. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
+      <p class="oro-lede">Six ways to build the same block, so one of them can be chosen and the rest thrown away. F stands first because it is the only one that was not invented here: it is what ten design systems were found doing when they were read on 29 August, layout and controls both, and it now carries the control rule approved on 31 August, read out of one object rather than typed into the renderer. The five under it are the earlier attempts, kept for comparison. A, B and C hold the axes and the specimen identical and change only the arrangement. D takes A's arrangement and changes the controls instead: its panel is rendered from a schema, and each axis gets the control its shape asks for. E puts C's colours and frame around D's schema and gives every short set a row of buttons instead of a row of words. Nothing on this page is in the system yet, and no showcase wears any of it.</p>
       <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The specimen is the live button organism at that width.</p>
     </header>
 
     <!-- ---- F, on the button ---- -->
     <section class="oro-section">
       <span class="gb-eyebrow">Variant F</span>
-      <h2 class="oro-h2">F &middot; the convention: Mantine and Joy UI layout, Storybook controls</h2>
-      <p class="oro-note">Not a sixth idea. This is what ten systems already agree on, read off their live pages on 29 August: one card, lifted off the sheet by its own shadow, with the specimen fluid on a white stage at the left and a narrow grey rail of controls at the right, a single hairline between them, and the markup folded into the card's footer band. Every axis gets the control its shape asks for, with no exception anywhere in the ten: a switch for yes and no, the toggle button for two to four values, our Select from five, a field for free text. An axis that does not apply is removed rather than greyed, the rare ones are behind one More, and Light or Dark is simply the last axis, drawn like the rest. Every control here is the house's own but one: the switch is a plain browser checkbox, because the system has no Switch until one is taken out of Figma and measured.</p>
+      <h2 class="oro-h2">F &middot; the unified rule: switch for yes and no, toggle to four, select from five</h2>
+      <p class="oro-note">The layout is what ten systems already agree on, read off their live pages on 29 August: one card, lifted off the sheet by its own shadow, with the specimen fluid on a white stage at the left and a narrow grey rail of controls at the right, a single hairline between them, and the markup folded into the card's footer band. The rule over the controls is the one approved on 31 August, and it is about the nature of the axis, not about the component: yes or no is a switch, one of two to four short words is the toggle button, one of five or more is our Select, free text is a field. Read the rail down and it is three kinds of control, because these axes are three kinds of question. An axis that does not apply is removed rather than greyed, the rare ones are behind one More, and Light or Dark left the rail for the stage it changes. One control here is a placeholder: the switch is a plain browser checkbox, because the system has no Switch until one is taken out of Figma and measured, and Figma is not open to us yet.</p>
 
       <div class="labF" data-lab-f="button">
         <div class="labF__body">
           <div class="labF__view">
             <div class="labF__scene" data-lab-stage data-inspect="button">
+              <div class="labF__ground" data-lab-fground></div>
               <div class="lab-hold" data-lab-hold></div>
             </div>
             <div class="labF__code" data-lab-codewrap hidden>
@@ -1056,12 +1150,13 @@ window.LAB_F = {
     <section class="oro-section">
       <span class="gb-eyebrow">Variant F, second component</span>
       <h2 class="oro-h2">The same card, on a field</h2>
-      <p class="oro-note">The same renderer given the field, because a panel that serves one component proves nothing. Look has five values and State has six, so both are our Select; Type has three and is a segment, and it is only asked of the two looks that have a choice to make. The error text exists only while the state is Error. Nothing else changes: the card, the rail, the rule and the footer band are the ones above.</p>
+      <p class="oro-note">The same renderer given the field, because a rule that serves one component proves nothing. Look has five values and State has six, so both are our Select; Type has three and is a toggle, and it is only asked of the two looks that have a choice to make. Required is yes or no, so it is the placeholder switch. The error text exists only while the state is Error. Nothing else changes: the card, the rail, the rule and the footer band are the ones above.</p>
 
       <div class="labF" data-lab-f="field">
         <div class="labF__body">
           <div class="labF__view">
             <div class="labF__scene" data-lab-stage data-inspect="field">
+              <div class="labF__ground" data-lab-fground></div>
               <div class="lab-hold lab-hold--block" data-lab-hold></div>
             </div>
             <div class="labF__code" data-lab-codewrap hidden>
@@ -2226,17 +2321,20 @@ window.LAB_F = {
      of the work is identical, so it is done by the same hand. */
   function fieldAfterF(S, hold) { fieldAfterE(S, hold); }
 
-  /* ---- the four controls ---- */
-  /* THE SEGMENT IS THE HOUSE'S OWN (gbppl-lab-f-2, Ton 14:55). It
+  /* ---- the four controls of the rule ---- */
+  /* THE TOGGLE IS THE HOUSE'S OWN (gbppl-lab-f-2, Ton 14:55). It
      was .gbdoc-chips, a control drawn for this bench and owned by
      nothing; it is now <.gb-toggle>, measured off the checkout and
      living in system/components/toggle.css. --block because a rail
-     is a column: the track spans it and the items wrap inside.
-     data-gb-toggle="host" because the STATE here is S, the bench's
-     own; the component keeps the group contract, the single tab
-     stop and the arrow keys, and paints nothing. */
-  function chipsHTML_F(ax) {
-    return '<span class="labF__name">' + esc(ax.label) + '</span>' +
+     is a column: the track spans it and the items wrap inside, and
+     the wrap is the track's, never a label's (see the header on
+     Colour at 320). data-gb-toggle="host" because the STATE here is
+     S, the bench's own; the component keeps the group contract, the
+     single tab stop and the arrow keys, and paints nothing.
+     named=false is the scene's ground: two words that say what they
+     are need no eyebrow over them, and a rail row always has one. */
+  function toggleHTML_F(ax, named) {
+    return (named === false ? '' : '<span class="labF__name">' + esc(ax.label) + '</span>') +
       '<div class="gb-toggle gb-toggle--block" role="radiogroup" data-gb-toggle="host"' +
       ' aria-label="' + esc(ax.label) + '">' +
       ax.values.map(function (v) {
@@ -2262,18 +2360,37 @@ window.LAB_F = {
     return '<gb-field input-id="labf-' + rowId + '" name="labf-' + rowId + '" type="text" optional' +
       ' label="' + esc(ax.label) + '" data-faxis-field="' + ax.id + '"></gb-field>';
   }
+  /* THE RULE, READ RATHER THAN RETYPED (gbppl-lab-f-3). This asks
+     LAB_F.RULE and LAB_F.SELECT_FROM the four questions of spec v0.2
+     section 2 in their own order and answers with the NAME of a
+     control; controlF then hands that name its builder. Two
+     functions instead of one, and the reason is that the rule is now
+     legible on its own: nothing here counts values except against a
+     constant, and nothing decides anything the object does not say. */
+  function ruleFor(ax) {
+    if (ax.kind === 'bool') return F.RULE.BOOL;                     /* 1 */
+    if (ax.kind === 'text' || ax.kind === 'number') return F.RULE.TEXT;  /* 4 */
+    if (ax.long || ax.values.length >= F.SELECT_FROM) return 'select';   /* 3 */
+    if (ax.values.length <= F.RULE.TOGGLE_TO) return 'toggle';           /* 2 */
+    return 'select';
+  }
+  var BUILD_F = {
+    checkbox: boolHTML_F,   /* the placeholder the Switch replaces */
+    switch: boolHTML_F,
+    field: textHTML_F,
+    select: selectHTML_F,
+    toggle: function (ax) { return toggleHTML_F(ax); }
+  };
   function controlF(ax, rowId) {
-    if (ax.kind === 'bool') return boolHTML_F(ax, rowId);
-    if (ax.kind === 'text' || ax.kind === 'number') return textHTML_F(ax, rowId);
-    if (ax.values.length >= F.SELECT_FROM) return selectHTML_F(ax, rowId);
-    return chipsHTML_F(ax);
+    return (BUILD_F[ruleFor(ax)] || BUILD_F.toggle)(ax, rowId);
   }
 
   /* One pass builds the rail AND the list of rows the painter walks,
-     so a row is never looked up by guessing. The ground is appended
-     as the last axis rather than treated as a thing of its own. */
+     so a row is never looked up by guessing. The ground is NOT here
+     since gbppl-lab-f-3: it is drawn on the scene by groundHTML_F,
+     and it keeps its default and its place in reset() all the same. */
   function railHTML_F(schema, rows) {
-    var all = schema.axes.concat([F.GROUND_AXIS]);
+    var all = schema.axes;
     var html = '';
     function rowFor(a) {
       var n = rows.length + 1;
@@ -2299,6 +2416,11 @@ window.LAB_F = {
     return html;
   }
 
+  /* The ground, drawn on the stage it changes. Same axis, same rule,
+     same component: two short values are a toggle wherever they
+     stand, and this one stands on the scene (gbppl-lab-f-3). */
+  function groundHTML_F() { return toggleHTML_F(F.GROUND_AXIS, false); }
+
   var VIEWS = [['preview', 'Preview'], ['code', 'Code']];
 
   function wireF(root) {
@@ -2313,6 +2435,7 @@ window.LAB_F = {
     var hold = root.querySelector('[data-lab-hold]');
     var read = root.querySelector('[data-lab-read]');
     var code = root.querySelector('[data-lab-code]');
+    var groundHost = root.querySelector('[data-lab-fground]');
     var rows = [];
     var S = {};
     var view = 'preview';
@@ -2323,6 +2446,7 @@ window.LAB_F = {
     reset();
 
     rail.innerHTML = railHTML_F(schema, rows);
+    if (groundHost) groundHost.innerHTML = groundHTML_F();
     viewHost.innerHTML = VIEWS.map(function (v) {
       return '<button class="gb-toggle__item" type="button" role="radio" aria-checked="false"' +
              ' data-fview="' + v[0] + '">' + v[1] + '</button>';
@@ -2382,7 +2506,10 @@ window.LAB_F = {
         }
       });
 
-      Array.prototype.forEach.call(rail.querySelectorAll('.gb-toggle__item[data-faxis]'), function (c) {
+      /* root, not rail: since gbppl-lab-f-3 one of these toggles
+         stands on the scene, and the painter walks every axis
+         toggle of the card wherever it is drawn. */
+      Array.prototype.forEach.call(root.querySelectorAll('.gb-toggle__item[data-faxis]'), function (c) {
         var id = c.getAttribute('data-faxis');
         var val = c.getAttribute('data-val');
         var on = S[id] === val;
