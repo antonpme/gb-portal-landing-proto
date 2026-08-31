@@ -184,8 +184,11 @@
              так сделать на сэндбоксе и посмотрим, как оно будет
              выглядеть». Ключ читает <gb-site-header>, поэтому та же
              комната открывается и на каталоге (?hdr=auth едет по
-             внутренним ссылкам); дверь ведёт на главную, потому что
-             там бар прозрачный и обе его земли видно сразу. */
+             внутренним ссылкам); дверь ведёт на букинг (Тон 31.08:
+             «прототип Sign In form должен открывать эту страницу
+             сразу, а не просто главную»): там бар в твёрдой земле и
+             иконка аккаунта на виду, а не спрятана за прозрачным
+             героем. */
           id: 'header-auth',
           /* Тон 31.08 зовёт этот прототип «Sign-in / Sign-up Form».
              Одна форма делает и то и другое (тот же e-mail, тот же
@@ -194,7 +197,7 @@
           label: 'Sign in form',
           desc: 'Sign in from the account icon in the header, in a drawer. The person then becomes your initials, with the cart beside them.',
           status: 'proposal',
-          href: 'live/index.html?hdr=auth',
+          href: 'live/book-a-meeting.html?hdr=auth',
           ready: true,
           tags: ['header', 'flow'],
           created: '2026-08-28',
