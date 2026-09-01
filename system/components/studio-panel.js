@@ -8,7 +8,8 @@
    gbppl-panel-layers-1 2026-09-01, модель прототипа
    gbppl-proto-model-1 2026-09-01, тумблер вместо табов
    gbppl-panel-mode-toggle-1 2026-09-01, потолок и флип дока
-   gbppl-panel-dock-1 2026-09-01)
+   gbppl-panel-dock-1 2026-09-01, сворачиваемые секции и Demo внутри
+   прототипа gbppl-panel-sections-1 2026-09-01)
    ------------------------------------------------------------
    ОДИН ПУЛЬТ. Тон 26.08, дословно: «обязательно свести язык к
    Studio, одной волной», и следом «нужно просто унифицировать всё
@@ -63,8 +64,10 @@
    Sandboxes / Design System), чтобы у одного и того же места не
    было двух имён.
 
-   СЕКЦИЯ DEMO, БЫВШАЯ «THIS PAGE» (gbppl-panel-4, словарь
-   gbppl-proto-model-1). Здесь остаётся только ДЕМОНСТРАЦИЯ: сценарий
+   DEMO, БЫВШАЯ СЕКЦИЯ «THIS PAGE» (gbppl-panel-4, словарь
+   gbppl-proto-model-1; с gbppl-panel-sections-1 это не полка, а строка
+   в конце секции Prototype и слой за ней — правила словаря те же).
+   Здесь остаётся только ДЕМОНСТРАЦИЯ: сценарий
    подставных данных, команды над ними и записка-статус. Варианты
    элементов (шапка портала, раскладка стартового блока, сайдбар)
    ушли отсюда в реестр и рисуются секцией Prototype. Страница
@@ -373,7 +376,9 @@
    инструментов по тому же доводу, по которому там стояла версия
    страницы (gbppl-panel-8): сначала «что смотрю», потом «чем».
    Demo последней намеренно: подставные данные — не предмет решения,
-   их крутят, когда с обликом уже разобрались.
+   их крутят, когда с обликом уже разобрались. С gbppl-panel-sections-1
+   она и вовсе не полка: последняя строка Prototype и слой за ней, но
+   место в порядке чтения то же.
 
    ИМЕНА СЕКЦИЙ РАБОЧИЕ. Тон их не утверждал (вопрос задан 01.09),
    поэтому каждое стоит ОДНОЙ строкой-константой ниже: переименование
@@ -491,6 +496,80 @@
    видна, иначе первый же снятый is-embedded показал бы другую
    консоль. Мирится с кадром и сцена: поле под язычок меняет сторону
    вместе с ящиком, и кадр по-прежнему стоит по центру оставшегося.
+
+   ------------------------------------------------------------
+   ПОЛКИ СКЛАДЫВАЮТСЯ, DEMO УХОДИТ В ПРОТОТИП
+   (gbppl-panel-sections-1, 2026-09-01)
+   ------------------------------------------------------------
+   Тон вечером того же дня, три решения. Дословно:
+
+   1. «Самое главное, нужно сделать секции сворачиваемыми».
+   2. «Demo должно относиться к прототипу, а не быть отдельной
+      секцией. Это должен быть отдельный пункт, который открывает
+      следующий уровень, в котором производишь действия. Мы экономим
+      вертикальное пространство».
+   3. «Нужно начинать с того, что сквозное. Версия — это вообще самое
+      важное, потом сквозной header, а всё, что не сквозное, идёт
+      дальше. Нужно добиваться постоянства».
+
+   СЕКЦИЯ СКЛАДЫВАЕТСЯ ЗА СВОЙ АЙБРАУ. Айбрау перестал быть надписью и
+   стал кнопкой: слово слева, шеврон справа, вся строка кликается.
+   Языка не прибавилось — так уже открывается слой (строка выбора) и
+   так же разворачивается записка («More»); складывание — тот же жест
+   «показать больше или меньше», только вниз, поэтому глиф
+   chevron-down, повёрнутый вправо в свёрнутом виде: он смотрит туда,
+   куда поедет содержимое, ровно как шеврон язычка.
+
+   ПАМЯТЬ — localStorage `gbppl-folds`, ПО ОБРАЗЦУ ДОКА. Какие полки
+   человек держит закрытыми, это настройка рабочего места, а не
+   состояние работы: решается один раз и переживает вкладку. В KEEP и в
+   Copy link ключ НЕ входит по той же причине, по которой туда не входит
+   сторона дока: ссылка описывает ВИД прототипа, а не устройство чужого
+   пульта. Дефолт — всё развёрнуто: сегодняшний ящик никому не меняется
+   без его собственного клика.
+
+   СВЁРНУТАЯ ПОЛКА ОСТАВЛЯЕТ СЛЕД, И СЛЕД — ЕЁ СОБСТВЕННЫЙ ОТВЕТ, а не
+   счётчик строк. Счётчик сказал бы «здесь четыре строки», а это не
+   ответ ни на один вопрос человека. Полка «you are in» отвечает
+   «Portal page», полка Prototype — «Live · Sign in form»: ровно то, что
+   она и печатала, только одной строкой. Складывание не имеет права
+   ПРЯТАТЬ СОСТОЯНИЕ: страница с выбранным Suggested-хедером обязана
+   говорить это и со сложенной полкой, иначе консоль умалчивает о том,
+   что человек видит на экране. Полка, у которой одного ответа нет
+   (список комментариев), следа не оставляет: ей нечего сказать
+   строкой, и врать счётом она не будет. Владелец полки может дать след
+   сам — addSection({ trace }) и sec.setTrace(text).
+
+   СЕКЦИЯ ИНСТРУМЕНТОВ (Mode и Device) НЕ СКЛАДЫВАЕТСЯ, и это решение,
+   а не пропуск. У неё нет айбрау вовсе (тумблер занимает полосу
+   целиком, замер gbppl-panel-mode-toggle-1), и завести его ради
+   складывания значило бы добавить постоянную строку высотой 16 там,
+   где свернуть можно 26px ряда девайсов. Плюс довод сильнее
+   арифметического: Mode — главный контрол пульта, и режим, спрятанный
+   за клик, стоит дороже сэкономленной строки. Вопрос Тона «сворачивать
+   ли строку режимов вообще» отвечен так; разного дефолта у полок не
+   заводится по правилу «одна логика на всех».
+
+   DEMO БОЛЬШЕ НЕ ПОЛКА, А СТРОКА ПРОТОТИПА. Секция .gbsp-sec--page
+   умерла: её содержимое (сценарий, команды, записка) целиком переехало
+   на слой, а в конце секции Prototype встала обычная строка выбора
+   «Demo ›». Ни одна страница не переписана: addGroup, setActive,
+   setText и словарь трёх типов те же до подписи, меняется только дом,
+   в который панель кладёт группы. Значение строки — имя сценария, если
+   выбор на странице ОДИН (чекаут: «Demo · From the customizer»); там,
+   где выбора нет вовсе (портал: две команды и записка), значение пусто,
+   и строка честно обещает только дверь.
+
+   СЛОИ СТАЛИ СТОПКОЙ. Сценарий внутри слоя Demo открывает свой слой,
+   значит закрытий стало три: сценарий → Demo → корень → ящик. Esc
+   снимает по одному, стрелка назад тоже: лестница та же, просто
+   ступеней на одну больше.
+
+   ПОРЯДОК СТРОК ЧИТАЕТСЯ ИЗ РЕЕСТРА. Версия первой (она про всю
+   страницу), за ней сквозные элементы (scope 'site'), за ними
+   локальные (scope 'page'), внутри групп — порядок реестра. Раскладка
+   считается по полю scope, а не по списку имён в консоли: новый
+   сквозной элемент встаёт на своё место сам.
    ============================================================ */
 (function () {
   'use strict';
@@ -598,7 +677,9 @@
     if (window.GbIcons && window.GbIcons.has && window.GbIcons.has(name)) {
       return window.GbIcons.html(name, size);
     }
-    var d = name === 'chevron-left' ? 'M8.5 3 4.5 7l4 4' : 'M5.5 3 9.5 7l-4 4';
+    var d = name === 'chevron-left' ? 'M8.5 3 4.5 7l4 4'
+          : name === 'chevron-down' ? 'M3 5.5 7 9.5l4-4'
+          : 'M5.5 3 9.5 7l-4 4';
     return '<span class="gb-icon gb-icon--' + (size || 16) + '" aria-hidden="true">' +
            '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" ' +
            'stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"/></svg></span>';
@@ -669,6 +750,147 @@
          ящик тем же нажатием, не разыскивая его глазами на новой
          стороне. */
       btn.focus();
+    });
+  }
+
+  /* ============================================================
+     СКЛАДНЫЕ ПОЛКИ (gbppl-panel-sections-1, Тон 01.09: «самое главное,
+     нужно сделать секции сворачиваемыми»)
+     ------------------------------------------------------------
+     Одно значение на полку, память на origin, как у стороны дока: что
+     держать закрытым — настройка рабочего места, и решается она один
+     раз. Ключ читается при отрисовке (полка приезжает сразу свёрнутой,
+     без мигания) и переписывается на клик.
+
+     Ключ НЕ ходит в KEEP и в Copy link: ссылка описывает вид
+     прототипа, а не устройство пульта у того, кто её прислал.
+     ============================================================ */
+  var FOLD_KEY = 'gbppl-folds';
+
+  function readFolds() {
+    try {
+      var o = JSON.parse(localStorage.getItem(FOLD_KEY) || '{}');
+      return (o && typeof o === 'object') ? o : {};
+    } catch (e) { return {}; }
+  }
+
+  function isFolded(id) { return !!readFolds()[id]; }
+
+  function writeFold(id, folded) {
+    try {
+      var f = readFolds();
+      if (folded) f[id] = 1; else delete f[id];
+      localStorage.setItem(FOLD_KEY, JSON.stringify(f));
+    } catch (e) {}
+  }
+
+  /* ШАПКА ПОЛКИ. Айбрау остаётся айбрау — тот же класс, тот же голос,
+     — но живёт внутри кнопки: слово слева, след справа (виден только у
+     свёрнутой), шеврон в хвосте. Второго капса и второго кегля здесь
+     не заводится (Тон-6). */
+  function foldHead(id, title) {
+    var off = isFolded(id);
+    return (
+      '<button class="gbsp-fold" type="button" data-fold="' + esc(id) + '"' +
+        ' aria-expanded="' + (off ? 'false' : 'true') + '"' +
+        ' aria-controls="gbsp-body-' + esc(id) + '">' +
+        '<span class="gbsp-eyebrow">' + esc(title) + '</span>' +
+        '<span class="gbsp-fold__trace"' + (off ? '' : ' hidden') + '></span>' +
+        '<span class="gbsp-fold__chev">' + glyph('chevron-down', 16) + '</span>' +
+      '</button>'
+    );
+  }
+
+  /* Полка целиком: шапка плюс тело под своим id. Тело — тот же
+     .gbsp-secbody, что addSection завёл для чужих полок
+     (gbppl-comments-b): у ящика одна анатомия секции, а не две. */
+  function foldSec(id, title, body, cls, rank) {
+    return (
+      '<div class="gbsp-sec ' + cls + (isFolded(id) ? ' is-folded' : '') + '"' +
+        ' data-fold-id="' + esc(id) + '"' +
+        (rank ? ' data-rank="' + rank + '"' : '') + '>' +
+        foldHead(id, title) +
+        '<div class="gbsp-secbody" id="gbsp-body-' + esc(id) + '">' + body + '</div>' +
+      '</div>'
+    );
+  }
+
+  /* СЛЕД СВЁРНУТОЙ ПОЛКИ. Считается на месте и только когда полка
+     закрыта: у открытой он был бы вторым голосом того же ответа.
+     Функцию следа полка носит на себе (__trace), потому что ответ у
+     каждой свой: у навигации — где ты, у прототипа — что собрано, у
+     чужой полки — то, что её владелец сказал сам. */
+  function traceNav(sec) {
+    var here = sec.querySelector('.gbsp-here');
+    if (here && here.textContent.trim()) return here.textContent.trim();
+    var on = sec.querySelector('.gbsp-link.is-active');
+    return on ? on.textContent.trim() : '';
+  }
+
+  /* СЛЕД НАЗЫВАЕТ ВЕРСИЮ И ТО, ЧТО ОТ LIVE ОТЛИЧАЕТСЯ. Версия стоит
+     всегда: она про всю страницу, и «на какой версии я стою» — первый
+     вопрос к прототипу (Тон 01.09). Элементы попадают в след, только
+     когда они НЕ на Live: страница с четырьмя живыми элементами
+     сказала бы «Live · Live · Live · Live» и не сообщила бы ничего, а
+     страница с выбранным Suggested-хедером обязана сказать это и
+     свёрнутой. Строка Demo не в счёт: полка отвечает за то, что
+     СОБРАНО, а подставные данные — не сборка. */
+  function traceProto(sec) {
+    var out = [];
+    var ver = sec.querySelector('.gbsp-pick[data-slot="version"] .gbsp-pick__val');
+    if (ver && ver.textContent.trim()) out.push(ver.textContent.trim());
+    var rows = sec.querySelectorAll('.gbsp-pick[data-slot^="el:"]');
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].getAttribute('data-live') === '1') continue;
+      var t = rows[i].querySelector('.gbsp-pick__val');
+      if (t && t.textContent.trim()) out.push(t.textContent.trim());
+    }
+    return out.join(' · ');
+  }
+
+  function paintTraces(host) {
+    var secs = host.querySelectorAll('.gbsp-sec[data-fold-id]');
+    for (var i = 0; i < secs.length; i++) {
+      var sec = secs[i];
+      var slot = sec.querySelector('.gbsp-fold__trace');
+      if (!slot) continue;
+      var folded = sec.classList.contains('is-folded');
+      var text = '';
+      if (folded && typeof sec.__trace === 'function') {
+        try { text = sec.__trace(sec) || ''; } catch (e) { text = ''; }
+      }
+      slot.textContent = text;
+      slot.hidden = !folded || !text;
+    }
+  }
+
+  function setFold(host, sec, folded) {
+    sec.classList.toggle('is-folded', folded);
+    var btn = sec.querySelector('.gbsp-fold');
+    if (btn) btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
+    var body = sec.querySelector('.gbsp-secbody');
+    /* Возвращается полка тем же коротким проявлением, что полки
+       гардероба (gbppl-panel-11): открытие — шаг, а не дверь. Ухода
+       нет: то, что убрали, исчезает сразу. */
+    if (body && !folded) {
+      body.classList.remove('is-arriving');
+      void body.offsetWidth;
+      body.classList.add('is-arriving');
+    }
+    var id = sec.getAttribute('data-fold-id');
+    if (id) writeFold(id, folded);
+    paintTraces(host);
+  }
+
+  function wireFolds(host) {
+    var panel = host.querySelector('.gbsp-panel');
+    if (!panel) return;
+    panel.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.gbsp-fold') : null;
+      if (!b || !panel.contains(b)) return;
+      var sec = b.closest('.gbsp-sec');
+      if (!sec) return;
+      setFold(host, sec, !sec.classList.contains('is-folded'));
     });
   }
 
@@ -800,15 +1022,15 @@
       return row(k[0], k[1], k[2], true);
     }).join('');
 
-    return (
-      '<div class="gbsp-sec gbsp-sec--nav">' +
-        '<span class="gbsp-eyebrow">you are in</span>' +
-        '<ul class="gbsp-list">' +
-          row(NAV_ROOT[0], NAV_ROOT[1], 'index.html', false) +
-          '<li><ul class="gbsp-list gbsp-sub">' + kids + '</ul></li>' +
-        '</ul>' +
-      '</div>'
-    );
+    /* gbppl-panel-sections-1: полка складывается за свой айбрау, и
+       свёрнутая называет место, в котором стоишь, — единственный
+       ответ, ради которого её и читают. */
+    return foldSec('nav', 'you are in',
+      '<ul class="gbsp-list">' +
+        row(NAV_ROOT[0], NAV_ROOT[1], 'index.html', false) +
+        '<li><ul class="gbsp-list gbsp-sub">' + kids + '</ul></li>' +
+      '</ul>',
+      'gbsp-sec--nav');
   }
 
   /* ============================================================
@@ -821,12 +1043,16 @@
      которому синеет активная строка навигации; имя тихое, 14 Zinc 400,
      тот же голос, что был у .gbsp-group__title.
      ============================================================ */
-  function pickRow(name, value, slot) {
+  function pickRow(name, value, slot, live) {
     return (
       /* aria-haspopup, но НЕ aria-expanded: строка не раскрывается на
          месте, она уводит на слой, и «expanded» было бы неправдой. */
       '<button class="gbsp-pick" type="button" aria-haspopup="true"' +
-        (slot ? ' data-slot="' + esc(slot) + '"' : '') + '>' +
+        (slot ? ' data-slot="' + esc(slot) + '"' : '') +
+        /* gbppl-panel-sections-1: стоит ли строка на Live. Читает это
+           только след свёрнутой полки: ему важно назвать то, что от
+           Live ОТЛИЧАЕТСЯ, а не пересказать четыре одинаковых слова. */
+        (live ? ' data-live="1"' : '') + '>' +
         '<span class="gbsp-pick__name">' + esc(name) + '</span>' +
         '<span class="gbsp-pick__val">' + esc(value) + '</span>' +
         '<span class="gbsp-pick__chev">' + glyph('chevron-right', 16) + '</span>' +
@@ -899,7 +1125,24 @@
   function elementSlices(pageId, root) {
     var reg = window.GB_SANDBOXES;
     if (!reg || typeof reg.elementsHere !== 'function') return [];
-    return reg.elementsHere(pageId || '', root);
+    return sortByScope(reg.elementsHere(pageId || '', root));
+  }
+
+  /* СНАЧАЛА СКВОЗНОЕ (gbppl-panel-sections-1, Тон 01.09: «нужно
+     начинать с того, что сквозное. Версия — это вообще самое важное,
+     потом сквозной header, а всё, что не сквозное, идёт дальше. Нужно
+     добиваться постоянства»).
+
+     Раскладка считается по полю scope РЕЕСТРА, а не по списку имён:
+     новый сквозной элемент встанет на своё место сам, и ни одна волна
+     не будет держать порядок руками. Внутри групп порядок реестра
+     сохраняется — фильтр стабильный. */
+  function sortByScope(list) {
+    var site = [], page = [];
+    list.forEach(function (el) {
+      (el.scope === 'site' ? site : page).push(el);
+    });
+    return site.concat(page);
   }
 
   function elementOptions(el) {
@@ -945,20 +1188,50 @@
     }
     elementSlices(pageId, root).forEach(function (el) {
       var eo = chosen(elementOptions(el));
-      html += pickRow(el.label, eo.label, 'el:' + el.id);
+      html += pickRow(el.label, eo.label, 'el:' + el.id, !eo.value);
     });
     if (!html) return '';
-    return (
-      '<div class="gbsp-sec gbsp-sec--proto">' +
-        '<span class="gbsp-eyebrow">' + esc(NAME_PROTOTYPE) + '</span>' +
-        html +
-      '</div>'
-    );
+    /* gbppl-panel-sections-1: ранг у полки теперь есть и в шаблоне —
+       Demo уехал в её же тело, и полка может родиться позже секции
+       инструментов (страница без реестра, но с демо-данными). Пять,
+       потому что инструменты 10: «что собрано» стоит выше «чем
+       смотрю» (gbppl-panel-8). */
+    return foldSec('proto', NAME_PROTOTYPE, html, 'gbsp-sec--proto', 5);
+  }
+
+  /* Полка Prototype, живая. В шаблоне её может не быть вовсе (нечего
+     собирать), а строка Demo обязана куда-то встать: страница с
+     подставными данными и без реестра — обычное дело (мерочные). */
+  function protoSectionEl(host) {
+    var sec = host.querySelector('.gbsp-sec--proto');
+    if (sec) return sec;
+    var box = document.createElement('div');
+    box.innerHTML = foldSec('proto', NAME_PROTOTYPE, '', 'gbsp-sec--proto');
+    sec = box.firstChild;
+    sec.__trace = traceProto;
+    placeSection(host, sec, 5);
+    return sec;
+  }
+
+  function protoRow(host, slot) {
+    return host.querySelector('.gbsp-sec--proto .gbsp-pick[data-slot="' + slot + '"]');
   }
 
   function protoRowVal(host, slot) {
-    var row = host.querySelector('.gbsp-sec--proto .gbsp-pick[data-slot="' + slot + '"]');
+    var row = protoRow(host, slot);
     return row ? row.querySelector('.gbsp-pick__val') : null;
+  }
+
+  /* Значение строки и её отношение к Live переписываются вместе: след
+     свёрнутой полки читает второе, и разъехаться им нельзя. */
+  function sayRow(host, slot, label, live) {
+    var row = protoRow(host, slot);
+    if (!row) return;
+    var val = row.querySelector('.gbsp-pick__val');
+    if (val) val.textContent = label;
+    if (live) row.setAttribute('data-live', '1');
+    else row.removeAttribute('data-live');
+    paintTraces(host);
   }
 
   /* ВЫБОР ВАРИАНТА = ПЕРЕКЛЮЧЕНИЕ КЛЮЧА. Что ставится в адрес, знает
@@ -975,8 +1248,9 @@
     var bind = host.__elBinds && host.__elBinds[el.key];
     if (typeof bind === 'function') {
       try { history.replaceState(null, '', url); } catch (e) {}
-      var val = protoRowVal(host, 'el:' + el.id);
-      if (val) val.textContent = o.label;
+      /* Свёрнутая полка обязана сказать то же, что сказала бы
+         открытая (gbppl-panel-sections-1). */
+      sayRow(host, 'el:' + el.id, o.label, !o.value);
       bind(o.value, o.variant || null);
       /* Кадр девайса — отдельный документ, и живое переключение до
          него не доходит: адрес у него свой. Перечитываем. */
@@ -989,6 +1263,7 @@
   function wireProto(host, root) {
     var sec = host.querySelector('.gbsp-sec--proto');
     if (!sec) return;
+    sec.__trace = traceProto;
     var pageId = host.getAttribute('page');
 
     var ver = sec.querySelector('button.gbsp-pick[data-slot="version"]');
@@ -1041,20 +1316,35 @@
      ============================================================ */
   function panelBox(host) { return host.querySelector('.gbsp-panel'); }
 
+  /* СТОПКА, А НЕ ОДИН СЛОЙ (gbppl-panel-sections-1). Сценарий Demo
+     живёт на слое внутри слоя, поэтому у ящика теперь стопка: верхний
+     виден, нижние ждут под ним (is-under). Esc и стрелка снимают ровно
+     один, и лестница остаётся честной: сценарий → Demo → корень →
+     ящик. */
+  function topLayer(box) {
+    var all = box.querySelectorAll('.gbsp-layer');
+    return all.length ? all[all.length - 1] : null;
+  }
+
   function closeLayer(host, giveFocus) {
     var box = panelBox(host);
-    var lay = box && box.querySelector('.gbsp-layer');
+    var lay = box && topLayer(box);
     if (!lay) return false;
     var opener = lay.__opener;
     lay.remove();
-    var shell = host.querySelector('.gbsp');
-    if (shell) shell.classList.remove('is-layered');
+    var under = topLayer(box);
+    if (under) {
+      under.classList.remove('is-under');
+    } else {
+      var shell = host.querySelector('.gbsp');
+      if (shell) shell.classList.remove('is-layered');
+      /* Возвращение корня — та же короткая ступень, что у полок
+         гардероба: переключение слоя это шаг, а не дверь. */
+      box.classList.remove('is-back');
+      void box.offsetWidth;
+      box.classList.add('is-back');
+    }
     box.scrollTop = 0;
-    /* Возвращение корня — та же короткая ступень, что у полок
-       гардероба: переключение слоя это шаг, а не дверь. */
-    box.classList.remove('is-back');
-    void box.offsetWidth;
-    box.classList.add('is-back');
     if (giveFocus && opener && document.contains(opener)) opener.focus();
     return true;
   }
@@ -1121,13 +1411,17 @@
   }
 
   /* spec: { title, build() -> [{label, desc, current, href, off, status}],
-             onPick(option) } */
+             onPick(option) }
+     или { title, node } — готовый узел вместо списка вариантов
+     (gbppl-panel-sections-1: слой Demo показывает собственные группы
+     страницы, а не список). */
   function openLayer(host, spec, opener) {
     var box = panelBox(host);
     if (!box) return;
-    closeLayer(host, false);
+    var under = topLayer(box);
+    if (under) under.classList.add('is-under');
 
-    var options = spec.build() || [];
+    var options = (spec.node ? [] : spec.build()) || [];
     var items = options.map(function (o, i) {
       /* ПОДВАЛ ВАРИАНТА (gbppl-proto-model-1): статус-слово и
          провенанс одной тихой строкой под запиской. У Live ни того,
@@ -1167,7 +1461,12 @@
         '</button>' +
         '<span class="gbsp-title">' + esc(spec.title || '') + '</span>' +
       '</div>' +
-      '<ul class="gbsp-list gbsp-layerlist">' + items + '</ul>';
+      (spec.node ? '' : '<ul class="gbsp-list gbsp-layerlist">' + items + '</ul>');
+    /* Узел приезжает живым: у групп Demo уже висят свои обработчики, и
+       перерисовывать их значило бы забрать у страницы её ручки
+       (setActive, setText). Слой закрылся — узел уехал вместе с ним и
+       ждёт следующего открытия в поле host.__demo. */
+    if (spec.node) lay.appendChild(spec.node);
 
     box.appendChild(lay);
     var shell = host.querySelector('.gbsp');
@@ -1260,30 +1559,54 @@
   }
 
   /* ============================================================
-     СЕКЦИЯ «THIS PAGE» (gbppl-panel-4)
+     DEMO: СТРОКА В ПРОТОТИПЕ И СЛОЙ ЗА НЕЙ (gbppl-panel-sections-1)
      ------------------------------------------------------------
-     Секции нет в шаблоне: она рождается по первому addGroup и не
-     появляется вовсе там, где странице нечего переключать. Место
-     у неё одно и то же на всех страницах — под Sandbox, последней,
-     потому что двери и песочницы отвечают «куда пойти», а эта
-     секция — «что здесь покрутить», и вопрос она задаёт уже про
-     то место, где стоишь.
+     Тон 01.09: «Demo должно относиться к прототипу, а не быть
+     отдельной секцией. Это должен быть отдельный пункт, который
+     открывает следующий уровень, в котором производишь действия. Мы
+     экономим вертикальное пространство».
+
+     Полки .gbsp-sec--page (айбрау «Demo», группы под ним) больше нет.
+     Группы страницы складываются в один узел, узел показывает слой, а
+     в корне от всего этого остаётся ОДНА строка выбора в конце секции
+     Prototype. Страница про переезд не знает: addGroup, setActive,
+     setText и жёсткий словарь трёх типов не изменились ни подписью.
      ============================================================ */
-  function pageSection(host) {
-    var sec = host.querySelector('.gbsp-sec--page');
-    if (sec) return sec;
-    sec = document.createElement('div');
-    sec.className = 'gbsp-sec gbsp-sec--page';
-    /* Айбрау был «This page» и умер вместе с ней (gbppl-proto-model-1):
-       «эта страница» — не ответ на вопрос, что здесь стоит. Половина
-       её содержимого была прототипом (варианты элементов) и уехала
-       наверх в реестр, вторая половина — демонстрационные данные, и
-       она называет себя своим именем. */
-    sec.innerHTML = '<span class="gbsp-eyebrow">' + esc(NAME_DEMO) + '</span>';
-    /* gbppl-panel-8: не в самый конец, а перед хвостом — подвал ящика
-       стоит последним всегда. gbppl-comments-b: место теперь считает
-       общий рангоукладчик, число то же самое (последней из секций). */
-    return placeSection(host, sec, 90);
+  function demoBox(host) {
+    if (host.__demo) return host.__demo;
+    var box = document.createElement('div');
+    box.className = 'gbsp-demo';
+    host.__demo = box;
+    host.__demoPicks = [];
+    demoRow(host);
+    return box;
+  }
+
+  /* Строка Demo стоит ПОСЛЕДНЕЙ в теле Prototype: версия и элементы
+     отвечают «что собрано», демонстрация — «что покрутить», и порядок
+     чтения между ними тот же, каким он был между секциями. */
+  function demoRow(host) {
+    var body = protoSectionEl(host).querySelector('.gbsp-secbody');
+    body.insertAdjacentHTML('beforeend', pickRow(NAME_DEMO, '', 'demo'));
+    var row = body.querySelector('.gbsp-pick[data-slot="demo"]');
+    row.addEventListener('click', function () {
+      openLayer(host, { title: NAME_DEMO, node: demoBox(host) }, row);
+    });
+    return row;
+  }
+
+  /* ЗНАЧЕНИЕ СТРОКИ — ИМЯ СЦЕНАРИЯ, КОГДА ВЫБОР ОДИН. Тогда строка
+     отвечает на тот же вопрос, что и остальные строки прототипа
+     («Demo · From the customizer»). Выборов несколько или нет вовсе —
+     значения нет: перечислять два сценария в одной строке значило бы
+     соврать про то, какой из них главный, а придумывать слово вроде
+     «Open» на месте значения значило бы поставить кнопку туда, где у
+     всех остальных строк стоит состояние. */
+  function paintDemoRow(host) {
+    var val = protoRowVal(host, 'demo');
+    if (!val) return;
+    var picks = host.__demoPicks || [];
+    val.textContent = picks.length === 1 ? (picks[0]() || '') : '';
   }
 
   /* ============================================================
@@ -1380,6 +1703,10 @@
 
     function paint() {
       if (valEl) valEl.textContent = labelFor(current);
+      /* gbppl-panel-sections-1: строка Demo в корне повторяет
+         единственный сценарий, значит она обновляется тем же
+         движением, что и сама группа. */
+      paintDemoRow(host);
       if (!noteEl) return;
       noteEl.textContent = line;
       noteEl.hidden = !line;
@@ -1411,7 +1738,14 @@
       if (ai !== null && typeof actions[+ai].onClick === 'function') actions[+ai].onClick();
     });
 
-    pageSection(host).appendChild(group);
+    /* Дом группы — узел слоя Demo, а не полка ящика
+       (gbppl-panel-sections-1). Узел рождается по первому вызову и
+       тогда же ставит строку в конец Prototype. */
+    var box = demoBox(host);
+    if (type === 'choice') {
+      host.__demoPicks.push(function () { return labelFor(current); });
+    }
+    box.appendChild(group);
     paint();
 
     var handle = {
@@ -2435,8 +2769,7 @@
       var want  = (value === null || value === undefined) ? '' : String(value);
       var label = el.live.label;
       el.variants.forEach(function (v) { if (String(v.id) === want) label = v.label; });
-      var val = protoRowVal(this, 'el:' + el.id);
-      if (val) val.textContent = label;
+      sayRow(this, 'el:' + el.id, label, !want);
       return this;
     }
 
@@ -2474,17 +2807,36 @@
     addSection(spec) {
       if (!this.__rendered) this.connectedCallback();
       spec = spec || {};
-      var sec = document.createElement('div');
-      sec.className = 'gbsp-sec' + (spec.className ? ' ' + spec.className : '');
-      sec.innerHTML = '<span class="gbsp-eyebrow">' + esc(spec.title || '') + '</span>' +
-                      '<div class="gbsp-secbody"></div>';
+      /* ЧУЖАЯ ПОЛКА СКЛАДЫВАЕТСЯ ТАК ЖЕ (gbppl-panel-sections-1): ни
+         одной строки у владельца, потому что шапку полки и раньше
+         рисовала панель. Id для памяти берётся из класса полки, а не
+         из заголовка: заголовок это копия, её переписывают, а
+         .gbsp-sec--comments — имя вещи. */
+      var id = (spec.className || '').replace(/^.*gbsp-sec--/, '') ||
+               String(spec.title || 'section').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      var box = document.createElement('div');
+      box.innerHTML = foldSec(id, spec.title || '', '', spec.className || '');
+      var sec = box.firstChild;
+      /* След свёрнутой полки владелец даёт сам: панель не знает, что у
+         неё внутри, и выдумывать за неё счётчик не станет. */
+      if (typeof spec.trace === 'function') sec.__trace = spec.trace;
+      else if (spec.trace) sec.__trace = function () { return String(spec.trace); };
       /* gbppl-panel-11: полка может жить не во всех режимах. Спросили
          — панель гасит её сама, по событиям режима; не спросили —
          стоит всегда, как стояла. */
       if (spec.when) sec.setAttribute('data-when', spec.when);
       placeSection(this, sec, typeof spec.rank === 'number' ? spec.rank : 50);
       dress();
-      return { element: sec, body: sec.querySelector('.gbsp-secbody') };
+      var host = this;
+      return {
+        element: sec,
+        body: sec.querySelector('.gbsp-secbody'),
+        setTrace: function (text) {
+          sec.__trace = function () { return text ? String(text) : ''; };
+          paintTraces(host);
+          return this;
+        }
+      };
     }
 
     /* СЧЁТ НА ЯРЛЫКЕ (gbppl-panel-12). Тон, 28.08: «думаю можно счёт
@@ -2538,10 +2890,19 @@
          смениться, пока ящик открыт. */
       wireProto(this, root);
 
+      /* СКЛАДНЫЕ ПОЛКИ (gbppl-panel-sections-1). Свёрнутость приезжает
+         вместе с разметкой (foldSec читает память), здесь остаётся
+         повесить один делегат на клик и напечатать следы. */
+      var navSec = this.querySelector('.gbsp-sec--nav');
+      if (navSec) navSec.__trace = traceNav;
+      wireFolds(this);
+      paintTraces(this);
+
       function setOpen(open) {
         /* Закрытый ящик всегда открывается корнем: слой это шаг
-           внутри одного разговора, а не место, куда возвращаются. */
-        if (!open) closeLayer(host, false);
+           внутри одного разговора, а не место, куда возвращаются.
+           Стопка снимается целиком (gbppl-panel-sections-1). */
+        if (!open) { while (closeLayer(host, false)) {} }
         shell.classList.toggle('is-collapsed', !open);
         tab.setAttribute('aria-expanded', String(open));
         tab.setAttribute('aria-label',
