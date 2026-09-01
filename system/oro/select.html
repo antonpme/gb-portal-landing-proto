@@ -34,6 +34,56 @@
 
      NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
      measurement is read back out of the rendered page.
+
+     ------------------------------------------------------------
+     gbppl-showcase-canon-1, 01.09 — THE PLAYGROUND BECAME THE
+     CANON CARD
+     ------------------------------------------------------------
+     Тон, 01.09: «Компонент Select: там до сих пор вообще старое
+     отображение, нет даже последней версии: панель выбора сверху,
+     а не справа. Из-за этого мне тяжело показывать работу людям.»
+
+     So the playground of this page is now the same object as the
+     one on button.html: .gbdoc-pg out of components/docs.css with
+     GbOro.controls out of oro.js inside it. The page hands over a
+     SCHEMA and gets the rail on the right, the rule that picks one
+     control per axis, the Light | Dark switch on the stage and the
+     Preview | Code band in the footer. What stood here before was
+     three hand written rows of .gbdoc-seg over the specimen, one
+     control shape for every axis whatever the axis was.
+
+     WHAT THE THREE OLD ROWS BECAME, one by one:
+       State (five segments)   a Select. The canon says State is
+                               never a toggle: the set is long and
+                               half of it is usually unavailable.
+       Value (three segments)  a Select. The canon names Value and
+                               names it a Select, because what is
+                               chosen is a phrase and not a rung.
+       Required (Yes | No)     the switch. It was called Label and
+                               its two values were «Caps label» and
+                               «None»; ORO_AXES.RENAMES settles that
+                               («a label that is not there is a
+                               label not asked for»), and this page
+                               now spends the FIELD'S OWN meaning of
+                               the word: Required off is the
+                               `optional` attribute, the label stays
+                               and the gold asterisk goes. A select
+                               with no label at all is the one thing
+                               Usage and Accessibility below both
+                               forbid, so the panel no longer offers
+                               to build it.
+
+     AND THE SPECIMEN IS NOW THE ELEMENT. The old panel wrote the
+     wrapper, the control and the glyph by hand; the schema hands
+     `<gb-field type="select">` to the stage, which is what the
+     Overview table says the element does and what a consumer
+     actually writes. The by-hand markup did not disappear: it is
+     the second half of the Code section, where it always was.
+
+     ONE DEVIATION FROM THE BENCH'S CARD, THE SAME ONE BUTTON MAKES:
+     the footer band carries the view switch and no measured line,
+     because the eight measured values already stand in the table
+     directly under the card.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,7 +103,11 @@
 <!-- gbppl-comments-dress-1. toggle.css and toggle.js come with
      comments.css for the same reason auth.css does: the kind switch of the
      thread drawer (Note | Suggest text) is the system Toggle button. The file
-     is scoped to .gb-toggle*, so a page without one is unchanged by it. -->
+     is scoped to .gb-toggle*, so a page without one is unchanged by it.
+     gbppl-showcase-canon-1: it has a second consumer here now. The playground
+     rail is built out of components and not out of markup of its own, and
+     .gb-toggle is the Light | Dark switch on the stage and the Preview | Code
+     switch in the footer band. -->
 <link rel="stylesheet" href="../components/toggle.css">
 <link rel="stylesheet" href="../components/studio-panel.css">
 <link rel="stylesheet" href="oro.css">
@@ -142,43 +196,36 @@
         <!-- ---- PLAYGROUND ---- -->
         <span class="gbdoc-sub" id="playground">Playground</span>
         <h3 class="oro-h3">Build a select and read it back</h3>
-        <p class="oro-p">Set the axes and the one specimen on the stage rebuilds itself; the markup and the measurements below follow it. Rest is a real control: open it, and the list you see is the operating system's, which is the point of the whole component.</p>
+        <p class="oro-p">Set the axes on the rail at the right and the one specimen on the stage rebuilds itself; the markup behind the Code fold and the measurements below follow it. Which control an axis gets is not a choice made here: the rule of <code>GbOro.controls</code> reads the canon of axes, then the count, then what a track would cost against the width the rail has, so State and Value are Selects and Required is a switch. Light or Dark dresses the stage rather than the control, so it stands on the stage. Rest is a real control: open it, and the list you see is the operating system's, which is the point of the whole component.</p>
 
-        <div class="gbdoc-frame">
-          <div class="gbdoc-controls" id="pgControls">
-            <div class="gbdoc-axis" role="radiogroup" data-axis="state">
-              <span class="gbdoc-axis__name">State</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="rest">Rest</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="hover">Hover</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="focus">Focus</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="error">Error</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="disabled">Disabled</button>
+        <!-- gbppl-showcase-canon-1. THE BLOCK IS FURNITURE: .gbdoc-pg out of
+             components/docs.css, and the panel inside it is GbOro.controls out
+             of oro.js, rendered from the schema in the script at the foot of
+             this page. The stage carries the element the Overview table names;
+             the rail carries three axes and the ground switch stands on the
+             stage it changes. -->
+        <div class="gbdoc-pg" data-pg="select">
+          <div class="gbdoc-pg__body">
+            <div class="gbdoc-pg__view">
+              <div class="gbdoc-pg__scene" data-pg-scene id="pgStage" data-inspect="select">
+                <div class="gbdoc-pg__ground" data-pg-ground></div>
+                <div class="gbdoc-hold gbdoc-hold--block" id="pgHold" data-pg-hold></div>
+              </div>
+              <div class="gbdoc-pg__code" data-pg-codewrap hidden>
+                <div class="gbdoc-code">
+                  <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
+                  <pre><code id="pgCode" data-pg-code></code></pre>
+                </div>
+              </div>
             </div>
-            <div class="gbdoc-axis" role="radiogroup" data-axis="label">
-              <!-- gbppl-oro-canon-1, spec 4.2: Required, like field.html. A
-                   label that is not there is a label nobody asked for, so
-                   the axis is the obligation and the values are yes and no.
-                   The switch arrives with the conversion of this page. -->
-              <span class="gbdoc-axis__name">Required</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="caps">Yes</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="none">No</button>
-            </div>
-            <div class="gbdoc-axis" role="radiogroup" data-axis="value">
-              <span class="gbdoc-axis__name">Value</span>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="placeholder">Nothing picked</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="picked">Picked</button>
-              <button class="gbdoc-seg" type="button" role="radio" data-val="long">A long one</button>
-            </div>
+            <div class="gbdoc-pg__rail" data-pg-rail></div>
           </div>
-          <div class="gbdoc-stage gbdoc-stage--center" id="pgStage" data-inspect="select">
-            <div class="gbdoc-hold" id="pgHold"></div>
+          <div class="gbdoc-pg__bar">
+            <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-pg-view></div>
           </div>
         </div>
 
-        <div class="gbdoc-code">
-          <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
-          <pre><code id="pgCode"></code></pre>
-        </div>
+        <p class="oro-note">The field family has no inverse look yet, so on a dark ground the control keeps its underline, its glyph and its quiet label and the chosen value goes dark on dark. That is a gap of the system rather than a setting of this page, and it is written down here rather than hidden by taking the switch away.</p>
 
         <div class="gbdoc-tablewrap">
         <table class="gbdoc-table">
@@ -398,6 +445,7 @@
           <tbody>
             <tr><td>27 August</td><td>The checkout census put both selects on <code>.gba-input</code>, the nearest true thing the system had, and wrote down what that cost: a select that looks exactly like a text input</td></tr>
             <tr><td>29 August</td><td><code>.gba-select</code>, the fourth look of the field. Both checkout selects wear it; the chevron comes from the icon record; the page is written</td></tr>
+            <tr><td>1 September</td><td>The playground became the canon card: the rail moved to the right of the stage, the three rows of segments became a Select for State, a Select for Value and a switch for Required, the ground switch arrived on the stage and the markup moved behind a Preview | Code fold. The axis that used to add and remove the label is now the field's own Required, and the specimen is <code>&lt;gb-field type="select"&gt;</code> rather than markup this page wrote by hand</td></tr>
           </tbody>
         </table>
         </div>
@@ -407,7 +455,7 @@
       </section>
 
       <footer class="oro-foot">
-        Sources: <a href="../components/auth.css">auth.css</a>, <a href="../components/icon.css">icon.css</a>, <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
+        Sources: <a href="../components/auth.css">auth.css</a>, <a href="../components/icon.css">icon.css</a>, <a href="../components/toggle.css">toggle.css</a>, <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
       </footer>
 
     </div>
@@ -448,47 +496,75 @@
   var px = ORO.px;
   var txt = ORO.txt;
 
-  /* ---------- the playground ---------- */
-  var STATE = { state: 'rest', label: 'caps', value: 'placeholder' };
-  var controls = document.getElementById('pgControls');
-  var hold = document.getElementById('pgHold');
+  /* ---------- the playground ----------
+     gbppl-showcase-canon-1. The panel is not written here any more. This
+     page hands GbOro.controls a SCHEMA — what a select HAS, in what group,
+     with what default — and a function that draws one out of a state
+     object; the rail, the rule that picks each control, the More fold, the
+     Reset, the ground on the stage and the Preview | Code fold all belong
+     to the renderer in oro.js and are the same on every showcase.
 
-  var VALUES = {
-    placeholder: ['Select a billing address', '12 Park Ave, New York', '5 Bay St, San Francisco'],
-    picked: ['12 Park Ave, New York', 'Select a billing address'],
-    long: ['Hauptstrasse 118, 10827 Berlin, Germany, attention of the office manager', 'Select a billing address']
-  };
+     THE THREE AXES, AND THE CONTROL THE RULE GIVES EACH (canon in
+     ORO_AXES):
+       State     a Select, always: the set is long and half of it is
+                 usually unavailable on any one specimen
+       Value     a Select, because what is chosen is a phrase
+       Required  the switch, by nature: yes and no is never a track
 
-  function build() {
-    var opts = VALUES[STATE.value];
-    var body = '';
-    for (var i = 0; i < opts.length; i++) body += '<option>' + opts[i] + '</option>';
+     The specimen is the ELEMENT, not markup written by this page: the
+     Overview table says gb-field writes the wrapper, the control and the
+     glyph, and a playground that wrote them itself would be describing
+     something a consumer never types. */
+  var OPTIONS = ['12 Park Ave, New York', '5 Bay St, San Francisco',
+                 'Hauptstrasse 118, 10827 Berlin, Germany, attention of the office manager'];
+  /* Nothing picked leaves the value empty, so the element selects its own
+     disabled first row; the other two name one of the options above. */
+  var VALUES = { placeholder: '', picked: OPTIONS[0], long: OPTIONS[2] };
+  var STATE_CLASS = { hover: 'is-hover', focus: 'is-focus' };
 
-    var cls = 'gba-input';
-    if (STATE.state === 'hover') cls += ' is-hover';
-    if (STATE.state === 'focus') cls += ' is-focus';
-    if (STATE.state === 'error') cls += ' invalid';
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
-    var label = STATE.label === 'caps'
-      ? '<label class="gba-label" for="pgSelect">Billing address</label>' : '';
+  var PG_AXES = [
+    { id: 'state', label: 'State', group: 'state', def: 'rest',
+      values: [['rest', 'Rest'], ['hover', 'Hover'], ['focus', 'Focus'],
+               ['error', 'Error'], ['disabled', 'Disabled']] },
+    { id: 'value', label: 'Value', group: 'content', def: 'placeholder',
+      values: [['placeholder', 'Nothing picked'], ['picked', 'Picked'],
+               ['long', 'A long one']] },
+    { id: 'required', label: 'Required', group: 'content', kind: 'bool',
+      on: 'yes', off: 'no', def: 'yes' }
+  ];
 
-    hold.innerHTML =
-      '<div class="gba-field" style="width:min(360px,100%)">' + label +
-        '<div class="gba-inputwrap gba-select">' +
-          '<select class="' + cls + '" id="pgSelect"' +
-            (STATE.state === 'disabled' ? ' disabled' : '') + '>' + body + '</select>' +
-          (window.GbIcons ? window.GbIcons.html('chevron-down', 20) : '') +
-        '</div>' +
-      '</div>';
+  function pgSample(S, forCode) {
+    var nl = forCode ? '\n          ' : ' ';
+    return '<gb-field input-id="pgSelect" name="billing" type="select"' + nl +
+           'label="Billing address"' + nl +
+           'placeholder="Select a billing address"' + nl +
+           'options="' + esc(OPTIONS.join('|')) + '"' +
+           (VALUES[S.value] ? nl + 'value="' + esc(VALUES[S.value]) + '"' : '') +
+           (S.required === 'no' ? nl + 'optional' : '') +
+           '></gb-field>';
+  }
 
-    var code = '<div class="gba-inputwrap gba-select">\n' +
-      '  <select class="' + cls + '"' + (STATE.state === 'disabled' ? ' disabled' : '') + '>\n' +
-      '    <option>' + opts[0] + '</option>\n' +
-      '  </select>\n' +
-      '  <span data-gb-icon="chevron-down" data-gb-icon-size="20"></span>\n' +
-      '</div>';
-    txt('pgCode', code);
-
+  /* The state is put on the rendered control the way a consumer would: the
+     browser's own disabled, the invalid class the form sets after a submit,
+     and the two demo names auth.css declares. Hover and focus are read on
+     the WRAPPER for the glyph and on the control for the underline, because
+     that is where auth.css declares each of them. */
+  function pgAfter(S, hold) {
+    var el = hold.querySelector('select');
+    if (!el) return;
+    var wrap = el.closest('.gba-select');
+    if (STATE_CLASS[S.state]) {
+      el.classList.add(STATE_CLASS[S.state]);
+      if (wrap) wrap.classList.add(STATE_CLASS[S.state]);
+    }
+    if (S.state === 'error') { el.classList.remove('valid'); el.classList.add('invalid'); }
+    if (S.state === 'disabled') el.disabled = true;
     paintPlayground();
   }
 
@@ -508,26 +584,6 @@
     txt('pgChev', cr ? Math.round(cr.width) + ' by ' + Math.round(cr.height) : 'no glyph');
     txt('pgChevInk', ccs ? ccs.color : 'no glyph');
   }
-
-  function paintAxes() {
-    Array.prototype.forEach.call(controls.querySelectorAll('.gbdoc-axis'), function (row) {
-      var axis = row.getAttribute('data-axis');
-      Array.prototype.forEach.call(row.querySelectorAll('.gbdoc-seg'), function (seg) {
-        var on = seg.getAttribute('data-val') === STATE[axis];
-        seg.classList.toggle('is-on', on);
-        seg.setAttribute('aria-checked', on ? 'true' : 'false');
-      });
-    });
-  }
-
-  controls.addEventListener('click', function (e) {
-    var chip = e.target.closest ? e.target.closest('.gbdoc-seg[data-val]') : null;
-    if (!chip) return;
-    var axis = chip.parentNode.getAttribute('data-axis');
-    STATE[axis] = chip.getAttribute('data-val');
-    paintAxes();
-    build();
-  });
 
   /* ---------- the states table ----------
      Every row is read off the specimen that stands above it, so a
@@ -568,15 +624,23 @@
     ORO.widthNow('wnow');
   }
 
-  function paintAll() { paintStates(); paintAnatomy(); paintPlayground(); }
+  /* The playground is not in here: GbOro.controls answers resize for every
+     panel on the page itself, and it repaints the readout through after(). */
+  function paintAll() { paintStates(); paintAnatomy(); }
 
   /* The glyph arrives with icon.js, which mounts on DOMContentLoaded,
      and this script runs while the document is still parsing. Painting
      now would print «no glyph» into a table that is describing a page
      that has one, so the first pass waits for the document. */
   function start() {
-    paintAxes();
-    build();
+    if (window.GbOro && window.GbOro.controls) {
+      window.GbOro.controls({
+        root: document.querySelector('[data-pg="select"]'),
+        axes: PG_AXES,
+        sample: pgSample,
+        after: pgAfter
+      });
+    }
     paintAll();
     ORO.watchCopy();
     ORO.watchToc();
