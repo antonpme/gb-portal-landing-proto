@@ -405,7 +405,13 @@
     var head = '<header class="oro-head">\n' +
       (spec.eyebrow ? '<span class="gb-eyebrow">' + esc(spec.eyebrow) + '</span>\n' : '') +
       '<h1 class="oro-h1">' + esc(spec.name) + flag + '</h1>\n' +
-      (spec.lede ? '<p class="oro-lede">' + spec.lede + '</p>\n' : '') +
+      /* A lede may be two paragraphs. Input number spends the second
+         one on why it is not called Stepper any more, which is a
+         thing a reader arriving from the old name needs before
+         anything else on the page. */
+      [].concat(spec.lede || []).map(function (l) {
+        return '<p class="oro-lede">' + l + '</p>\n';
+      }).join('') +
       (spec.readout ? '<p class="gbdoc-readout">' + spec.readout + '</p>\n' : '') +
       '</header>';
 
