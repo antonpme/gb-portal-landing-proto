@@ -1,5 +1,29 @@
 /* ============================================================
-   gbppl-lab-f-2 — THE TOGGLE BUTTON
+   gbppl-lab-f-2 / gbppl-toggle-hover-1 / gbppl-toggle-family-1
+   THE TOGGLE BUTTON
+   ------------------------------------------------------------
+   THE FAMILY (gbppl-toggle-family-1, 01.09). Ton: «Toggle, как и
+   обычная кнопка, должен быть в разных вариантах. То есть
+   фактически мы берем кнопку и чуть трансформируем ее, сохраняя
+   стейты и прочее. Даже, наверное, иконки там нужны, поэтому
+   компонент нужно допилить. И нужно создать отдельную страницу
+   под компонент.»
+
+   So the file grew three rungs, a glyph and a page, and it grew
+   them by SPENDING THE BUTTON rather than by drawing beside it:
+   the ladder architecture is button.css's, the pads and the labels
+   of M and L are the button's own M and L tokens, the focus ring
+   and the disabled fade were already its. What did NOT come across
+   is written down where it is missing — no colour family, no fill
+   or outline, no press state, no XL — each with the reason at the
+   rule that would have carried it. The showcase is
+   system/oro/toggle.html.
+
+   WHAT THE CHECKOUT SEES OF ALL THIS: one pixel of the label, and
+   nothing else. Every rung above S is a modifier the page does not
+   wear, and the one change to the default is the optical lift of
+   the caps under --gbtg-cap-lift, which Ton asked for in the same
+   breath and which leaves the box to the pixel.
    ------------------------------------------------------------
    Ton, 29.08 14:55, on variant F of the playground bench:
    «использованы сторонние компоненты, которых у нас нет: там
@@ -101,21 +125,120 @@
    ------------------------------------------------------------
    WHAT THIS FILE DOES NOT DO
    ------------------------------------------------------------
-   It is not the button organism and does not borrow from it. The
-   two look alike for one line — the label ladder — and differ in
-   everything else: a button performs, a toggle holds a value, and
-   an item of it has no size ladder, no type ladder and no colour
-   ladder to choose from. .gb-btn inside a .gb-toggle would drag
-   four ladders into a control that has one state.
+   It said here, from 29.08 until 01.09, that this file «is not the
+   button organism and does not borrow from it», because an item of
+   a toggle «has no size ladder to choose from». SUPERSEDED by Ton,
+   01.09 — see THE FAMILY further down. The half that still stands
+   is the second half: a button PERFORMS and a toggle HOLDS A
+   VALUE, so what the two share is the ladder of the box and the
+   ladder of the label, and what they do not share is the colour
+   family and the press. .gb-btn inside a .gb-toggle is still
+   wrong: it would drag a fill, an outline and three palettes into
+   a control whose whole paint is «this half, not that one».
 
    It is also not .gbdoc-seg, the underlined segment of the
    documentation furniture. That one is a view switch inside a
    document; this one is a value of a form.
+
+   AND IT IS NOT WHAT PRIMEVUE CALLS A ToggleButton. Checked on
+   primevue.dev on 01.09, because the client's stack is the
+   client's dictionary and we got this wrong once already with the
+   input number: PrimeVue's ToggleButton «is used to select a
+   boolean value using a button» — ONE button with two faces — and
+   the control this file draws, a row of buttons holding one value
+   between them, is their SelectButton («used to choose single or
+   multiple items from a list using buttons»). The house name is
+   still Toggle button, the showcase says the finding out loud, and
+   the rename is Ton's call: it would move a class the checkout
+   wears, and the checkout is not this wave's to touch.
    ============================================================ */
 
 .gb-toggle {
   /* The one number without a rung. See the provenance above. */
   --gbtg-inset: 4px;
+
+  /* ---- THE THREE LADDERS, all present, all at their base step ----
+     The architecture is the button organism's, one ladder short: every
+     rung is declared on the element and the size modifier only chooses
+     which one the two geometry slots point at, so a media query moves
+     all three at once and no modifier can lose a specificity race to
+     the default. Nothing outside this file should set a --gbtg- slot.
+
+     S IS THE CHECKOUT AND IT IS MEASURED. Its pad is flat at every
+     width because that is what the instrument reads on the checkout at
+     390, 1280 and 2258 alike: 8 by 16, three widths, one number. The
+     button's own S pad-x steps to 20 at 1280; the toggle's does not,
+     and the ladder below is written so the difference is a missing
+     line rather than an override.
+
+     M AND L ARE DECLARED, and neither invents a number: pad-y is a
+     flat 8 on all four button ladders, so it is flat here too, and
+     pad-x and the label are the button's own M and L rungs spent
+     through its tokens rather than retyped. */
+  --gbtg-s-pad-y: var(--space-8);           /* LIVE checkout 29.08 */
+  --gbtg-s-pad-x: var(--space-16);          /* LIVE checkout 29.08, flat */
+  --gbtg-s-label: var(--gb-btn-s-label);    /* LIVE 11, 12 from 2000 */
+
+  --gbtg-m-pad-y: var(--space-8);           /* DECLARED, the flat 8 */
+  --gbtg-m-pad-x: var(--gb-btn-m-pad-x);    /* DECLARED 20 */
+  --gbtg-m-label: var(--gb-btn-m-label);    /* DECLARED 12 */
+
+  --gbtg-l-pad-y: var(--space-8);           /* DECLARED, the flat 8 */
+  --gbtg-l-pad-x: var(--gb-btn-l-pad-x);    /* LIVE 24 */
+  --gbtg-l-label: var(--gb-btn-l-label);    /* LIVE 14 */
+
+  /* ---- the slots, pointed at S: the default size ---- */
+  --gbtg-pad-y: var(--gbtg-s-pad-y);
+  --gbtg-pad-x: var(--gbtg-s-pad-x);
+  --gbtg-label: var(--gbtg-s-label);
+
+  /* ---- the glyph's air ----
+     DECLARED --space-8. The button's own gaps are LIVE numbers taken
+     off a header button with a 14px word and a 16px glyph, and this is
+     not that control; where live has measured nothing the house falls
+     back to the proportion formula of 17.08, and the formula says the
+     gap is the vertical pad. That is a flat 8 on every rung, so the
+     gap is a flat 8 too: one number, one argument, on the scale. */
+  --gbtg-gap: var(--space-8);
+
+  /* ---- THE LABEL SITS HALF A PIXEL HIGH, AND A WHOLE ONE FIXES IT ----
+     Ton, 01.09: «в тогле текст внутри чуть вверх сдвинут визуально».
+     He is right, and the amount was scanned rather than guessed
+     (scratchpad optic-scan.js: the pressed half shot at eight device
+     pixels to the css pixel, the black card's own edges and the white
+     ink found in the same image so no clip rounding can be mistaken
+     for the effect). On the checkout at 1280:
+
+       card        32.63 tall        cap ink   8.25 tall
+       above ink   11.25             below ink 13.13
+       so the ink sits 0.94 above the optical centre.
+
+     THE CAUSE IS THE CAPS, not the padding. A line box is balanced
+     around the FONT box, ascent over descent, and Inter reserves 5.13
+     under the baseline against 3.25 between the cap and the top of its
+     em box. An all-caps label has no descender to put in that space:
+     every letter stops at the baseline, and the empty descender pushes
+     the ink up by half the difference. Nothing is asymmetric in the
+     CSS; the asymmetry is in the alphabet.
+
+     SO THE BOX IS UNBALANCED BY EXACTLY AS MUCH AS THE ALPHABET IS.
+     One device pixel down, taken off the top pad and given to the
+     bottom one, so the SUM IS UNTOUCHED and the half, the track and
+     every rect on the checkout stay to the pixel. 1px rather than the
+     measured 0.94 because a whole device pixel is a value the renderer
+     can hit exactly and a reader can count; the residue is six
+     hundredths of a pixel. It holds across the ladder: the same
+     arithmetic at the L label of 14 asks for 1.19 and at 16 for 1.36,
+     and one whole pixel is the nearest answer to all three.
+
+     NO TOKEN, and it should not become one: this is not a length off
+     the space scale, it is an optical correction the size of a
+     hairline, and the scale's smallest step is eight of it.
+
+     DECLARED under Ton-17. The checkout rendered the label high and we
+     read it as measurement for three days; an obvious shortfall of the
+     source is repaired at the owner rather than carried forward. */
+  --gbtg-cap-lift: 1px;
 
   display: inline-flex;
   gap: var(--gbtg-inset);
@@ -136,13 +259,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* The glyph's air. A half with nothing but a word in it has no
+     second flex item and spends nothing, which is why the checkout
+     is untouched by this line. */
+  gap: var(--gbtg-gap);
   margin: 0;
-  padding: var(--space-8) var(--space-16);
+  /* Written as the two logical properties rather than the shorthand
+     because the vertical pair is deliberately uneven: see
+     --gbtg-cap-lift above. The sum is 2 * --gbtg-pad-y, so the half
+     is exactly as tall as it was. */
+  padding-block: calc(var(--gbtg-pad-y) + var(--gbtg-cap-lift))
+                 calc(var(--gbtg-pad-y) - var(--gbtg-cap-lift));
+  padding-inline: var(--gbtg-pad-x);
   border: 0;
   border-radius: var(--radius);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: var(--gb-btn-s-label);
+  font-size: var(--gbtg-label);
   font-weight: var(--gb-btn-label-weight);
   letter-spacing: var(--gb-btn-label-tracking);
   line-height: 1.5;
@@ -153,6 +286,113 @@
   transition: color var(--mo-micro) var(--mo-move),
               background-color var(--mo-micro) var(--mo-move),
               border-color var(--mo-micro) var(--mo-move);
+}
+
+/* ============================================================
+   THE TWO SLOTS
+   ------------------------------------------------------------
+   BOTH ARE OPTIONAL, and that is the difference from the button,
+   whose label span is required. The checkout writes its two words
+   as bare text nodes and will go on doing so; a half with only a
+   word in it needs no span, and every rule above reaches a text
+   node through the flex box just as well.
+
+   THE LABEL, when a half has a glyph beside it and the markup
+   would rather name its parts. It carries NO type of its own: the
+   ladder is on the half, so a span here cannot drift from a text
+   node there. And unlike .gb-btn__label it does NOT say nowrap —
+   the label of a toggle is the one in this house that is allowed
+   to break, because at 390 DIFFERENT ADDRESSES takes two lines
+   inside its own half and that is measured behaviour.
+
+   THE GLYPH IS NOT A SLOT OF THIS FILE AT ALL. It is .gb-icon
+   --16 out of icon.css, written inside the half beside the word:
+   a mark that does not answer the pointer is an icon and not a
+   button shape (icon.css, THE LINE BETWEEN THEM), and the half
+   itself is the control. 16 is the rung, flat, at every size and
+   every width, because that is what the button family already
+   spends beside a label of 11 to 14 — its S ladder carries a flat
+   16 glyph at every width, and its L ladder pairs 16 with 14 at
+   base. Nothing new is named.
+   ============================================================ */
+.gb-toggle__label {
+  /* The floor of a flex item is its longest word unless it is told
+     otherwise, and a long word would hold the half wider than its
+     share inside --fill. */
+  min-width: 0;
+}
+
+/* ============================================================
+   SIZE: which ladder the two geometry slots point at
+   ------------------------------------------------------------
+   Ton, 01.09: «Toggle, как и обычная кнопка, должен быть в разных
+   вариантах. То есть фактически мы берем кнопку и чуть
+   трансформируем ее, сохраняя стейты и прочее.»
+
+   THREE RUNGS AND NOT FOUR. S is the checkout, measured; M and L
+   are the button's own M and L, declared. There is no XL, and the
+   omission is the argument: XL is the ladder of the ONE COMMITTING
+   ACTION of a template — Place Order, Continue — and a toggle
+   never commits anything. It holds a value while somebody decides.
+
+   AND THE HEIGHT IS NOT ON THE GRID, WHICH IS SAID OUT LOUD RATHER
+   THAN CORRECTED. Every other control in the house stands on the
+   72 / 64 / 56 / 48 / 40 / 36 grid because it DECLARES a height.
+   This one declares none: the track is its label plus its air, and
+   it comes out at 42.5 on the S rung, 44 on M and 47 on L, none of
+   which is a rung of the grid. Pinning it would be the one change
+   this component cannot take — at 390 the checkout's second label
+   wraps to two lines inside its own half and a fixed height would
+   clip it, which is the bug gbppl-checkout-15 fixed on this very
+   band. So the size axis moves the LABEL and the AIR, and the
+   height follows from them. The showcase prints all three
+   measured, next to the grid, so nobody has to discover this.
+   ============================================================ */
+.gb-toggle--s {
+  --gbtg-pad-y: var(--gbtg-s-pad-y);
+  --gbtg-pad-x: var(--gbtg-s-pad-x);
+  --gbtg-label: var(--gbtg-s-label);
+}
+.gb-toggle--m {
+  --gbtg-pad-y: var(--gbtg-m-pad-y);
+  --gbtg-pad-x: var(--gbtg-m-pad-x);
+  --gbtg-label: var(--gbtg-m-label);
+}
+.gb-toggle--l {
+  --gbtg-pad-y: var(--gbtg-l-pad-y);
+  --gbtg-pad-x: var(--gbtg-l-pad-x);
+  --gbtg-label: var(--gbtg-l-label);
+}
+
+/* ============================================================
+   THE LADDERS CLIMB
+   ------------------------------------------------------------
+   One rule per threshold, all three ladders moved together, and
+   every step is the button's own token so a toggle lettered 12
+   never stands beside a button lettered 14.
+
+   THE S RUNG IS THE ONE THAT DOES NOT CLIMB AT 1280, and the
+   missing line is the point: its 8 by 16 is measured on the
+   checkout at 390, 1280 and 2258, and live wins over the family.
+   Its label still takes the 12 of 2000, which the same instrument
+   read on the same page.
+   ============================================================ */
+@media (min-width: 640px) {
+  .gb-toggle { --gbtg-l-label: var(--gb-btn-l-label-sm); }      /* 15 */
+}
+@media (min-width: 1280px) {
+  .gb-toggle {
+    --gbtg-m-pad-x: var(--gb-btn-m-pad-x-xl);                   /* 24 */
+    --gbtg-m-label: var(--gb-btn-m-label-xl);                   /* 14 */
+    --gbtg-l-pad-x: var(--gb-btn-l-pad-x-xl);                   /* 32 */
+  }
+}
+@media (min-width: 2000px) {
+  .gb-toggle {
+    --gbtg-s-label: var(--gb-btn-s-label-2xl);                  /* 12, LIVE */
+    --gbtg-m-label: var(--gb-btn-m-label-2xl);                  /* 15 */
+    --gbtg-l-label: var(--gb-btn-l-label-2xl);                  /* 16 */
+  }
 }
 
 /* ============================================================
@@ -258,16 +498,21 @@
   pointer-events: none;
 }
 
-/* ============================================================
-   THE LABEL RIDES THE BUTTON LADDER
-   ------------------------------------------------------------
-   11 everywhere, 12 from 2000, because that is the one ladder
-   this control's type comes off and a segment lettered 11 beside
-   a button lettered 12 would be two houses. The geometry below
-   2000 is untouched by this rule.
-   ============================================================ */
-@media (min-width: 2000px) {
-  .gb-toggle__item { font-size: var(--gb-btn-s-label-2xl); }
+/* TWO FADES ARE NOT TWICE AS OFF (gbppl-toggle-family-1, 01.09).
+   A group turned off for the pointer still owes the keyboard a real
+   `disabled` on each half — pointer-events cannot take a button out
+   of the tab order — so the correct markup wears both markers at
+   once. Opacity multiplies, and 0.6 inside 0.6 is 0.36: the control
+   would go twice as pale as anything else the house switches off,
+   for writing the accessible version of the same state. The group
+   owns the fade; a half inside it just stops answering. Found on
+   the showcase's own «all out» specimen, which is the reason the
+   showcase draws states rather than describing them. */
+.gb-toggle.is-disabled .gb-toggle__item:disabled,
+.gb-toggle.is-disabled .gb-toggle__item.is-disabled,
+.gb-toggle[aria-disabled="true"] .gb-toggle__item:disabled,
+.gb-toggle[aria-disabled="true"] .gb-toggle__item.is-disabled {
+  opacity: 1;
 }
 
 /* ============================================================
@@ -327,11 +572,16 @@
                    centred label and its own edge: at 16 that floor
                    turns away labels that would sit with fifteen
                    pixels of calm on either side. So it is
-                   --space-8, one rung down, and nothing visible
-                   moves: in fill the item is as wide as its share
-                   and never as wide as its padding. Vertical
-                   padding, height, ink, ground, radius, motion and
-                   the label ladder are untouched.
+                   --space-8, and nothing visible moves: in fill
+                   the item is as wide as its share and never as
+                   wide as its padding. Flat 8 on all three size
+                   rungs, and not one step under each of them, for
+                   the same reason — a floor is a floor whatever
+                   the letters are, and an L half whose share is
+                   240 wide does not need 32 of guaranteed calm to
+                   keep its word off the edge. Vertical padding,
+                   height, ink, ground, radius, motion and the
+                   label ladder are untouched.
 
    No wrap here, unlike --block: shares that fit never fold, and
    shares that do not fit are a schema that should not have asked
