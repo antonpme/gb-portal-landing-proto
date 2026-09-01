@@ -98,6 +98,12 @@
        alphabetical, so under its own name it stands here. */
     { href: 'inputnumber.html', label: 'Input number' },
     { href: 'select.html', label: 'Select' },
+    /* gbppl-toggle-family-1. Last of the Base list under its own
+       name, and the name is the house's: PrimeVue would call this
+       control a SelectButton and keep ToggleButton for the single
+       boolean one, which the page says out loud. Renaming it moves
+       a class the checkout wears, so it waits on Ton. */
+    { href: 'toggle.html', label: 'Toggle button' },
 
     { group: 'Composite', sub: true },
     { href: 'drawer.html', label: 'Drawer' }

@@ -508,8 +508,10 @@
        half of a control, and the half is what is under the cursor.
        The group carries the reading, so the item's row is a name and
        nothing else. */
-    { sel: '.gb-toggle__item', name: 'Toggle item', oro: 'components.html#base' },
-    { sel: '.gb-toggle', name: 'Toggle button', kind: 'toggle', oro: 'components.html#base',
+    /* gbppl-toggle-family-1: the control has a page of its own now, so
+       both rows point at it instead of at the shelf it stood on. */
+    { sel: '.gb-toggle__item', name: 'Toggle item', oro: 'toggle.html#anatomy' },
+    { sel: '.gb-toggle', name: 'Toggle button', kind: 'toggle', oro: 'toggle.html#toggle',
       detail: function (el) {
         var d = KINDS.toggle.describe(el);
         return d.count + ' values · ' + (d.chosen || 'nothing chosen') +
@@ -1711,7 +1713,14 @@
               'the button label ladder, uppercase'),
           row('Pressed', os ? os.backgroundColor + ' on ' + os.color : 'none',
               ['--zinc-900', '--white']),
-          row('At rest', fs ? fs.color : 'none', ['--zinc-700'], 'ground transparent, hover Zinc 50'),
+          /* gbppl-toggle-family-1: the hover moved off Zinc 50 on 01.09
+             and the note went with it, and the pad is now read as the
+             uneven pair it is, so a reader who measures the two numbers
+             is not left wondering which of them is wrong. */
+          row('At rest', fs ? fs.color : 'none', ['--zinc-700'],
+              'ground transparent; hover washes --gb-btn-wash-ink-hover and inks Zinc 900'),
+          row('Pad, top and bottom', os ? px(os.paddingTop) + ' / ' + px(os.paddingBottom) : 'none',
+              null, 'one device pixel of optical lift: caps have no descender to fill the space under the baseline'),
           row('Who owns the value', d.host ? 'the host page' : 'the component', null,
               d.host ? 'data-gb-toggle="host": group, tab stop and arrow keys only'
                      : 'clicks move the value and fire gbtg:change'),

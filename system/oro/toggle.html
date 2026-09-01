@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Toggle button · Oro, GildedBox Design System</title>
+<link rel="icon" href="data:," />
+
+<!-- ============================================================
+     gbppl-toggle-family-1 — THE TOGGLE BUTTON PAGE
+     ------------------------------------------------------------
+     Ton, 01.09: «Toggle, как и обычная кнопка, должен быть в разных
+     вариантах. То есть фактически мы берем кнопку и чуть
+     трансформируем ее, сохраняя стейты и прочее. Даже, наверное,
+     иконки там нужны, поэтому компонент нужно допилить. И нужно
+     создать отдельную страницу под компонент.»
+
+     The component grew a size ladder, a glyph and an optical
+     correction in system/components/toggle.css; this is the second
+     half of that sentence.
+
+     WHERE THE CONTROL CAME FROM. It is the ONE ADDRESS / DIFFERENT
+     ADDRESSES segment that has stood in the head of every shipment
+     card on live/checkout.html since 21.08, measured with the
+     instrument at 390 and 1280 on 29.08 (LIVE) and moved into the
+     system without a pixel changing. Everything the page marks
+     Declared was added on top of that measurement and has no
+     carrier yet, which is said out loud in each place rather than
+     once at the top.
+
+     THE PAGE IS BUILT ON THE TEMPLATE, NOT BESIDE IT (ORO-SKILL 7a
+     and Ton-19/21): the crumb, the sections in the canonical order,
+     the eyebrow over a serif h2, the .gbdoc-pg playground card with
+     GbOro.controls on its rail, the tables in .gbdoc-tablewrap, the
+     Light | Dark switch on the stage and the Preview | Code fold in
+     the footer band. Nothing about the layout is invented here; the
+     one <style> block is the width of the reading column.
+
+     Ton-10: this page is a CONSUMER. Its furniture is the atoms of
+     ..\components\docs.css; its specimens are the component.
+
+     NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
+     measurement is read back off the rendered page.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../components/shell.css">
+<link rel="stylesheet" href="../components/header.css">
+<link rel="stylesheet" href="../components/button.css">
+<!-- icon.css is not furniture here, it is part of the subject: a glyph
+     inside a half is .gb-icon --16, and the With icon section is about
+     exactly that. -->
+<link rel="stylesheet" href="../components/icon.css">
+<link rel="stylesheet" href="../components/toggle.css">
+<!-- auth.css for the rail: the Select and the text field of GbOro.controls
+     are gb-field, and the panel is built out of components. -->
+<link rel="stylesheet" href="../components/auth.css">
+<link rel="stylesheet" href="../components/drawer.css">
+<link rel="stylesheet" href="../components/docs.css">
+<link rel="stylesheet" href="../components/inspect.css">
+<link rel="stylesheet" href="../components/comments.css">
+<link rel="stylesheet" href="../components/studio-panel.css">
+<link rel="stylesheet" href="oro.css">
+
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<style>
+.oro-col { max-width: 1180px; }
+.oro-lede, .oro-p, .oro-note, .gbdoc-card__line { max-width: 860px; }
+</style>
+</head>
+<body>
+
+<!-- The studio bar, the same markup every studio page carries. -->
+<header class="gb-header gb-header--studio">
+  <div class="gb-container gbh-bar gbh-bar--studio">
+    <a class="gbh-lock" href="../../index.html" aria-label="GildedBox Design Studio, home">
+      <img class="gbh-lock__mark" src="../assets/gildedbox-logo.svg" alt="GildedBox" width="168" height="56">
+      <span class="gbh-lock__rule" aria-hidden="true"></span>
+      <span class="gbh-lock__word">Design Studio</span>
+    </a>
+    <nav class="gbh-nav" aria-label="Studio">
+      <a class="gbh-link" href="../../live/map.html">Live Prototype</a>
+      <a class="gbh-link" href="../../sandboxes.html">Sandboxes</a>
+      <a class="gbh-link is-active" href="index.html" aria-current="page">Design System</a>
+    </nav>
+    <div class="gbh-actions">
+      <button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-studio-lock>
+        <span class="gb-btn__label" data-pc-section="label">Lock</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="oro">
+
+  <nav class="oro-rail" aria-label="Design system sections">
+    <!-- The rail is rendered from the page table in oro.js, one copy for
+         the whole showcase; aria-current is read off location. -->
+    <div data-oro-rail></div>
+  </nav>
+  <script src="oro.js"></script>
+
+  <main class="oro-main">
+
+    <!-- The contents of this page, written off the document itself. -->
+    <aside class="oro-toc" data-oro-toc hidden></aside>
+    <div class="oro-col">
+
+      <header class="oro-head">
+        <span class="gb-eyebrow">Base component</span>
+        <h1 class="oro-h1">Toggle button <span class="gbdoc-flag gbdoc-status">Stable</span></h1>
+        <p class="oro-lede">A white track with the chosen half filled black inside it. Two, three or four values, one of them held between them: a toggle does not perform an action, it says which one of a small set is true.</p>
+        <p class="oro-lede">It came off the checkout, where it has asked how a shipment is addressed since 21 August. Everything measured there is the default; the sizes, the glyph and the optical lift of the label were added on 1 September and are marked where they stand.</p>
+        <p class="gbdoc-readout">Window width right now: <b id="wnow">measuring</b>. The label ladder steps at 640, 1280 and 2000, and the default rung steps only at 2000.</p>
+      </header>
+
+      <section class="gbdoc-card" id="toggle" data-toc="Toggle button">
+
+        <!-- ---- OVERVIEW ---- -->
+        <section class="oro-section">
+        <span class="gb-eyebrow">Overview</span>
+        <h2 class="oro-h2">Where the toggle lives, and what it defaults to</h2>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Owner</td><td><code>system/components/toggle.css</code> for the look and <code>toggle.js</code> for the group contract</td></tr>
+            <tr><td>Class</td><td><code>.gb-toggle</code> on the track, <code>.gb-toggle__item</code> on each half, with an optional <code>.gb-toggle__label</code> inside a half that also carries a glyph</td></tr>
+            <tr><td>Made of</td><td>Its own box, the button organism's label ladder, pads, focus ring and disabled fade, and <code>.gb-icon --16</code> from the icon record when a half carries a mark</td></tr>
+            <tr><td>Worn by</td><td>Every shipment card on the checkout, and every two-to-four-value axis on the control rail of a showcase playground, including the one on this page</td></tr>
+            <tr><td>Defaults</td><td>A bare <code>gb-toggle</code> is the checkout's own rung: 8 by 16 of pad, an 11px caps label, a track that hugs its words</td></tr>
+            <tr><td>Status</td><td>Stable in the sense the button is stable: the control ships and is worn. Three of its axes are Declared and have no carrier outside this page yet: the M and L rungs, the glyph, and the two width modifiers above hug</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">A note on the name, because the client's stack is the client's dictionary and this house got a name wrong once already. Checked on primevue.dev on 1 September: PrimeVue's <b>ToggleButton</b> «is used to select a boolean value using a button», which is one button with two faces. The control on this page, a row of buttons holding one value between them, is their <b>SelectButton</b>, «used to choose single or multiple items from a list using buttons». The house name is still Toggle button. Renaming it would move a class the checkout wears, which is not this wave's to touch, so the finding is recorded and the decision is Ton's.</p>
+        </section>
+
+        <!-- ---- PLAYGROUND ---- -->
+        <section class="oro-section" id="playground" data-toc="Playground">
+        <span class="gb-eyebrow">Playground</span>
+        <h2 class="oro-h2">Build a toggle and read it back</h2>
+        <p class="oro-p">Set the axes on the rail and the one control on the stage rebuilds itself. It is real: click a half and the value moves, tab to it and the arrows walk the set. Which control an axis gets is not chosen here: <code>GbOro.controls</code> reads the canon of axes, then the count, then what a track would cost against the width of the rail, so Size, Width, Choices and Icon position are toggle buttons, State is a Select and yes or no is a switch.</p>
+        <p class="oro-p">The specimen wears the screen presets, because they are the one set of choices in this house that already come with glyphs and the icon axis has to have something honest to draw. The control this component was measured off, the checkout's own two words, stands in Anatomy further down.</p>
+
+        <div class="gbdoc-pg" data-pg="toggle">
+          <div class="gbdoc-pg__body">
+            <div class="gbdoc-pg__view">
+              <div class="gbdoc-pg__scene" data-pg-scene id="pgStage" data-inspect="toggle">
+                <div class="gbdoc-pg__ground" data-pg-ground></div>
+                <div class="gbdoc-hold" id="pgHold" data-pg-hold></div>
+              </div>
+              <div class="gbdoc-pg__code" data-pg-codewrap hidden>
+                <div class="gbdoc-code">
+                  <button class="gbdoc-copy" type="button" data-copy="#pgCode">Copy</button>
+                  <pre><code id="pgCode" data-pg-code></code></pre>
+                </div>
+              </div>
+            </div>
+            <div class="gbdoc-pg__rail" data-pg-rail></div>
+          </div>
+          <div class="gbdoc-pg__bar">
+            <div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-pg-view></div>
+          </div>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Measured on the sample</th><th>Value</th><th>Measured on the sample</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Track</td><td class="gbdoc-num" id="pgTrack"></td><td>Chosen half</td><td class="gbdoc-num" id="pgItem"></td></tr>
+            <tr><td>Inset and gap</td><td class="gbdoc-num" id="pgInset"></td><td>Half padding</td><td class="gbdoc-num" id="pgPad"></td></tr>
+            <tr><td>Label</td><td class="gbdoc-num" id="pgLabel"></td><td>Glyph</td><td class="gbdoc-num" id="pgGlyph"></td></tr>
+            <tr><td>Pressed</td><td class="gbdoc-num" id="pgOn"></td><td>At rest</td><td class="gbdoc-num" id="pgOff"></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">The dark ground is a switch on the stage rather than a second copy of the page, the way Storybook, Atlassian and Primer all handle a theme. It is here so the control can be looked at on one, and it changes nothing about the control: <b>the toggle has no inverse family</b>. The button organism grows one because live measures white chrome standing on the hero video; no screen in the product puts a toggle on a dark ground, so none was invented. On the dark stage what you are looking at is a white card, honestly, and whether the component earns an inverse is a decision waiting on Ton.</p>
+        </section>
+
+        <!-- ---- SIZES ---- -->
+        <section class="oro-section" id="sizes" data-toc="Sizes">
+        <span class="gb-eyebrow">Sizes</span>
+        <h2 class="oro-h2">Three rungs, and a height that is not on the grid</h2>
+        <p class="oro-p">The ladder is the button's, one rung short. S is the checkout, measured; M and L spend the button's own M and L pads and labels rather than numbers of their own. There is no XL, and the omission is the argument: XL is the ladder of the one committing action of a template, and a toggle never commits anything. It holds a value while somebody decides.</p>
+
+        <div class="gbdoc-shelf" data-inspect="toggle" id="sizeShelf">
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>S &middot; the checkout</b> <b data-sz="s">measuring</b></span>
+            <div class="gb-toggle" id="sz-s" aria-label="Screen, size S">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>M</b> <b data-sz="m">measuring</b></span>
+            <div class="gb-toggle gb-toggle--m" id="sz-m" aria-label="Screen, size M">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>L</b> <b data-sz="l">measuring</b></span>
+            <div class="gb-toggle gb-toggle--l" id="sz-l" aria-label="Screen, size L">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Rung</th><th>Pad</th><th>Label</th><th>Track, right now</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>S, the default</td><td class="gbdoc-num" id="rowSpad"></td><td class="gbdoc-num" id="rowSlabel"></td><td class="gbdoc-num" id="rowStrack"></td><td><span class="gbdoc-flag">Live</span> the checkout at 390, 1280 and 2258, three widths and one number</td></tr>
+            <tr><td><code>--m</code></td><td class="gbdoc-num" id="rowMpad"></td><td class="gbdoc-num" id="rowMlabel"></td><td class="gbdoc-num" id="rowMtrack"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the button's own M pad and M label</td></tr>
+            <tr><td><code>--l</code></td><td class="gbdoc-num" id="rowLpad"></td><td class="gbdoc-num" id="rowLlabel"></td><td class="gbdoc-num" id="rowLtrack"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the button's own L pad and L label, both Live on the button</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note"><b>The track is not on the height grid, and it is not being put there.</b> Every other control in the house stands on 72 / 64 / 56 / 48 / 40 / 36 because it declares a height. This one declares none: the track is its label plus its air, so it comes out where the arithmetic leaves it: the three numbers measured above, none of them a rung. Pinning it is the one change the component cannot take. At 390 the checkout's second label wraps to two lines inside its own half and the track grows with it; a fixed height would clip exactly that, which is the bug <code>gbppl-checkout-15</code> fixed on this very band. So the size axis moves the label and the air, and the height follows. The one rung it does touch is a coincidence worth knowing: at 1280 the default track measures within half a pixel of 42, the live height of a header button, and nothing about the component put it there.</p>
+
+        <p class="oro-note">The vertical pad is a flat 8 on all three rungs, which is not laziness but the button family's own behaviour: pad-y is 8 on S, M, L and XL alike, measured. What the rungs move is the horizontal pad and the label. And the S rung is the one that does <em>not</em> climb at 1280. Its 8 by 16 was read on the checkout at three widths and live wins over the family, so that step is a missing line in the stylesheet rather than an override on top of one.</p>
+        </section>
+
+        <!-- ---- WITH ICON ---- -->
+        <section class="oro-section" id="icons" data-toc="With icon">
+        <span class="gb-eyebrow">With icon</span>
+        <h2 class="oro-h2">A mark beside the word, on either side of it</h2>
+        <p class="oro-p">A glyph in a half is <code>.gb-icon --16</code> out of the icon record, not a slot of this component: a mark that does not answer the pointer is an icon, and the half itself is the control. Which side it stands on is DOM order and nothing else: there is no left modifier and no right modifier, exactly as on the button, and both at once is two spans. The air between mark and word is <code>--space-8</code>.</p>
+
+        <div class="gbdoc-shelf" data-inspect="toggle" id="iconShelf">
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>Before</b> <b data-ic="before">measuring</b></span>
+            <div class="gb-toggle" id="ic-before" aria-label="Screen, glyph before">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true"><span class="gb-icon gb-icon--16" data-gb-icon="monitor" data-gb-icon-size="16"></span><span class="gb-toggle__label">Desktop</span></button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false"><span class="gb-icon gb-icon--16" data-gb-icon="phone" data-gb-icon-size="16"></span><span class="gb-toggle__label">Mobile</span></button>
+            </div>
+          </div>
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>After</b> <b data-ic="after">measuring</b></span>
+            <div class="gb-toggle" id="ic-after" aria-label="Screen, glyph after">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true"><span class="gb-toggle__label">Desktop</span><span class="gb-icon gb-icon--16" data-gb-icon="monitor" data-gb-icon-size="16"></span></button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false"><span class="gb-toggle__label">Mobile</span><span class="gb-icon gb-icon--16" data-gb-icon="phone" data-gb-icon-size="16"></span></button>
+            </div>
+          </div>
+          <div class="gbdoc-slot">
+            <span class="gbdoc-slot__cap"><b>Mark only</b> <b data-ic="bare">measuring</b></span>
+            <div class="gb-toggle" id="ic-bare" aria-label="Screen, marks only">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true" aria-label="Desktop"><span class="gb-icon gb-icon--16" data-gb-icon="monitor" data-gb-icon-size="16"></span></button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false" aria-label="Mobile"><span class="gb-icon gb-icon--16" data-gb-icon="phone" data-gb-icon-size="16"></span></button>
+            </div>
+          </div>
+        </div>
+
+        <p class="oro-note">The glyph is 16 on every rung and at every width, and that is the button family's own pairing rather than a number picked here: the button's S ladder carries a flat 16 beside its 11px label at all three widths, and its L ladder pairs the same 16 with a 14px label at base. So a mark in a toggle half never disagrees with a mark in a button standing beside it. Beside a word it also costs nothing in height at the S rung, because the 16 box is shorter than the 16.5 line box of the label and the word still sets the height. A half with a mark and no word is half a pixel shorter, which the caption above measures rather than hides.</p>
+
+        <p class="oro-note">A half with a mark and no word is legal and drawn above, and it needs an <code>aria-label</code> of its own, the same contract the icon-only button makes. It is not a modifier and there is no <code>--icon</code> shape here: on the button that shape took a wave and a live measurement to earn, and a toggle of bare marks has no carrier in this product. If one appears, it arrives with a measurement.</p>
+        </section>
+
+        <!-- ---- STATES ---- -->
+        <section class="oro-section" id="states" data-toc="States">
+        <span class="gb-eyebrow">States</span>
+        <h2 class="oro-h2">What changes, and to what</h2>
+        <p class="oro-p">The pressed half is not a state, it is the value: on a toggle it is always on screen, which is the whole difference from a button. So the states below belong to the half that is <em>not</em> chosen, the one a pointer and a keyboard can still reach. The table is filled by measuring the specimens standing above it.</p>
+
+        <div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="toggle" id="stateShelf">
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Rest</b> a real control</span>
+            <div class="gb-toggle" id="st-rest" aria-label="Screen, at rest">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Hover</b> held still</span>
+            <div class="gb-toggle" id="st-hover" aria-label="Screen, hover">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item is-hover" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>Focus</b> held still</span>
+            <div class="gb-toggle" id="st-focus" aria-label="Screen, focus">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item is-focus" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>One value out</b> a real disabled</span>
+            <div class="gb-toggle" id="st-oneout" aria-label="Screen, one value unavailable">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false" disabled>Mobile</button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--grow">
+            <span class="gbdoc-slot__cap"><b>All out</b> the group off</span>
+            <div class="gb-toggle is-disabled" id="st-allout" aria-disabled="true" aria-label="Screen, unavailable">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true" disabled>Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false" disabled>Mobile</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>State</th><th>Ground</th><th>Ink</th><th>Token</th><th>Provenance</th></tr></thead>
+          <tbody id="stBody"></tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Hover darkens, and it darkens twice: the wash comes up and the ink steps from Zinc 700 to Zinc 900. That pair replaced a measured Zinc 50 on 1 September, because five units of grey against a white track is a hover nobody sees and Ton said so out loud; the wash it took instead is the one the ghost button twelve pixels away in the same checkout band already spends. <b>The pressed half is never washed</b>: it is already the answer, and a black card going grey under the pointer would read as a fault.</p>
+
+        <p class="oro-note">There is no press state, and that is a decision rather than an omission. A button needs one because pushing it produces nothing you can see until it has finished; pushing a half of a toggle turns it black within the same 160 milliseconds, so the press and its result are the same paint. Adding one would mean inventing a colour the checkout never rendered in order to show it for a sixth of a second.</p>
+
+        <p class="oro-note">Hover and focus above are held still by <code>.is-hover</code> and <code>.is-focus</code>, the two demo names the button already declares. They exist so five states can stand on one screen and no product page may wear them. The last two are real: a native <code>disabled</code> on one half, and <code>.is-disabled</code> with <code>aria-disabled</code> on the whole group.</p>
+        </section>
+
+        <!-- ---- WIDTH ---- -->
+        <section class="oro-section" id="width" data-toc="Width">
+        <span class="gb-eyebrow">Width</span>
+        <h2 class="oro-h2">Hug, block or equal shares</h2>
+        <p class="oro-p">Three answers to one question, and only the first is the checkout. A track that hugs is as wide as its words; <code>--block</code> spans its column and lets the halves fall to a second row inside it; <code>--fill</code> spans the column and splits it in equal shares, one label centred in each. The last two are alternatives, never a pair.</p>
+
+        <div class="gbdoc-shelf gbdoc-shelf--stack" data-inspect="toggle" id="widthShelf">
+          <div class="gbdoc-slot gbdoc-slot--wide">
+            <span class="gbdoc-slot__cap"><b>Hug</b> no modifier, the default, and the checkout <b data-wd="hug">measuring</b></span>
+            <div class="gb-toggle" id="wd-hug" aria-label="Screen, hugging">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Tablet</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--wide">
+            <span class="gbdoc-slot__cap"><b>Block</b> <code>--block</code>, the track spans and the halves keep their own widths <b data-wd="block">measuring</b></span>
+            <div class="gb-toggle gb-toggle--block" id="wd-block" aria-label="Screen, block">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Tablet</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+          <div class="gbdoc-slot gbdoc-slot--wide">
+            <span class="gbdoc-slot__cap"><b>Fill</b> <code>--fill</code>, the track spans and the halves split it in equal shares <b data-wd="fill">measuring</b></span>
+            <div class="gb-toggle gb-toggle--fill" id="wd-fill" aria-label="Screen, fill">
+              <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">Desktop</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Tablet</button>
+              <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Mobile</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="oro-note">Under <code>--fill</code> one measured number changes, and it changes because it stops meaning what it meant: the horizontal pad drops to <code>--space-8</code> on every rung. In a hug the 16 <em>is</em> the half's air. In a share the air is whatever the share leaves over, and the padding is only the floor between a centred label and its own edge, so it is a floor and not a ladder. Nothing visible moves: a filled half is as wide as its share and never as wide as its padding.</p>
+        </section>
+
+        <!-- ---- ANATOMY ---- -->
+        <section class="oro-section" id="anatomy" data-toc="Anatomy">
+        <span class="gb-eyebrow">Anatomy</span>
+        <h2 class="oro-h2">The control it was measured off, part by part</h2>
+        <p class="oro-p">This is the checkout's own segment, in the checkout's own words, standing here so the numbers below describe the thing that was measured rather than a specimen invented for a page. Every value is read off it at this window width.</p>
+
+        <div class="gbdoc-stage gbdoc-stage--center" data-inspect="toggle">
+          <div class="gb-toggle" id="anSpec" aria-label="How these gifts are addressed">
+            <button class="gb-toggle__item is-on" type="button" role="radio" aria-checked="true">One address</button>
+            <button class="gb-toggle__item" type="button" role="radio" aria-checked="false">Different addresses</button>
+          </div>
+        </div>
+
+        <p class="gbdoc-readout">Measured at <b id="wnow2">measuring</b> wide.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Part</th><th>What it is</th><th>Measured</th><th>Provenance</th></tr></thead>
+          <tbody>
+            <tr><td>Track</td><td>The white sheet the chosen half floats in, with one hairline round it</td><td class="gbdoc-num" id="anTrack"></td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td>Inset</td><td>The same 4 on all four sides, and the same 4 between two halves, so the black card sits square in the white</td><td class="gbdoc-num" id="anInset"></td><td><span class="gbdoc-flag">Live</span>, and <span class="gbdoc-flag gbdoc-flag--none">No token</span>: half a step of a scale that starts at 8</td></tr>
+            <tr><td>Hairline and radius</td><td>Zinc 300 at one pixel, and the one brand radius, on the track and on each half</td><td class="gbdoc-num" id="anLine"></td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td>Half</td><td>A fill, not a box: no line of its own, and no height either</td><td class="gbdoc-num" id="anItem"></td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td>Padding</td><td>16 either side, and 8 above and below, unevenly spent: see the note under this table</td><td class="gbdoc-num" id="anPad"></td><td><span class="gbdoc-flag">Live</span> the pair, <span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the one pixel between them</td></tr>
+            <tr><td>Label</td><td>The button's own S label: caps, 600, one pixel of tracking, on a 1.5 line</td><td class="gbdoc-num" id="anLabel"></td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td>Chosen</td><td>Zinc 900 under white ink, the black card of the sheet</td><td class="gbdoc-num" id="anOn"></td><td><span class="gbdoc-flag">Live</span></td></tr>
+            <tr><td>Motion</td><td>The house's micro clock on ink, ground and line</td><td class="gbdoc-num" id="anMotion"></td><td><span class="gbdoc-flag">Live</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note"><b>The one pixel of uneven padding, and why it is there.</b> Ton, on 1 September: the text inside the toggle looks pushed up. It was, and by nearly a whole pixel. The pressed half was shot at eight device pixels to the css pixel, with the card's own edges and the white ink found in the same image so that no rounding of a crop could be mistaken for the effect, and that put <span id="anShiftWas">the ink</span> above the optical centre. The cause is the alphabet, not the stylesheet: a line box is balanced around the font's ascent and descent, and an all-caps label has no descender to put in the space reserved under the baseline, so the ink floats up by half of it. The correction is one device pixel taken off the top pad and given to the bottom one. <b>The sum is untouched</b>, so the half, the track and every rectangle on the checkout stand exactly where they stood: <span id="anShiftNow">measured after the change</span>. Declared under Ton-17, because the source rendered it high and an obvious shortfall of the source is repaired at the owner.</p>
+        </section>
+
+        <!-- ---- PROPERTIES ---- -->
+        <section class="oro-section" id="properties" data-toc="Properties">
+        <span class="gb-eyebrow">Properties</span>
+        <h2 class="oro-h2">The modifiers, and the drawer that reads a specimen</h2>
+        <p class="oro-p">Two layers, the way the mature systems keep them. The table is the whole surface of the component, readable in one piece. The drawer answers about one specimen: the Properties button in the corner of any specimen on this page opens it with the geometry, the type and the colours measured off that element.</p>
+
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Name</th><th>Axis</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>.gb-toggle</code></td><td>Base</td><td>required</td><td>The track: the white sheet, the hairline, the radius and the 4 of inset</td></tr>
+            <tr><td><code>.gb-toggle__item</code></td><td>Base</td><td>required</td><td>One half. A <code>&lt;button&gt;</code>, one per value</td></tr>
+            <tr><td><code>.gb-toggle__label</code></td><td>Slot</td><td>optional</td><td>The word, when a half also carries a glyph and the markup would rather name its parts. It has no type of its own, and unlike the button's label it may wrap</td></tr>
+            <tr><td><code>--s --m --l</code></td><td>Size</td><td><code>--s</code></td><td>Which of the three ladders the pad and the label point at. All three are declared on the element, so a size modifier cannot lose a specificity race</td></tr>
+            <tr><td><code>--block</code></td><td>Width</td><td>off</td><td>The track spans its column and wraps; the halves keep every measured number and fall to a second row inside it</td></tr>
+            <tr><td><code>--fill</code></td><td>Width</td><td>off</td><td>The track spans its column and the halves split it in equal shares. An alternative to <code>--block</code>, never a pair with it</td></tr>
+            <tr><td><code>.is-on</code> / <code>aria-checked</code> / <code>aria-pressed</code></td><td>Value</td><td>one of them</td><td>Which half is chosen. All three are read, so a group written as two pressed buttons is understood as well as one written as radios</td></tr>
+            <tr><td><code>disabled</code></td><td>State</td><td>off</td><td>One value the system cannot hold: the half fades and stops answering</td></tr>
+            <tr><td><code>.is-disabled</code> / <code>aria-disabled</code> on the track</td><td>State</td><td>off</td><td>The whole group off. The group owns the fade, so the halves inside it do not fade a second time</td></tr>
+            <tr><td><code>data-gb-toggle="host"</code></td><td>Ownership</td><td>off</td><td>The host owns the value. The component keeps its hands off <code>.is-on</code> and does only the group contract, the single tab stop and the arrow keys</td></tr>
+            <tr><td><code>gbtg:change</code></td><td>Event</td><td>always</td><td>Fired from the track after the component moves the value: <code>{ value, label, index }</code></td></tr>
+            <tr><td><code>.is-hover</code> <code>.is-focus</code></td><td>Demo</td><td>off</td><td>Hold a state still for a screenshot. This page only, never a product page</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">What the button has and this does not, each for a reason written at the rule that would have carried it. <b>No colour family</b>: the checkout's own comment settles it, «black, not blue: the toggle is furniture, not a state chip», and a blue toggle would make the accent mean «chosen» when it already means «the action being asked for» (Ton-5). <b>No type</b>: filled, outline and ghost describe how loud an action is, and a toggle's whole paint is one half against the other. <b>No XL</b>, for the reason under Sizes. <b>No text field for the label and no picker for the glyph</b>, the two axes the button's own rail carries: a button has one word and one mark, so a control can edit them; a toggle has one of each per value, and a control that edits a set is a table.</p>
+        </section>
+
+        <!-- ---- USAGE ---- -->
+        <section class="oro-section" id="usage" data-toc="Usage">
+        <span class="gb-eyebrow">Usage</span>
+        <h2 class="oro-h2">When a toggle, and when something else</h2>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>Do</th><th>Do not</th></tr></thead>
+          <tbody>
+            <tr><td>Reach for a toggle when the whole set is short and the reader benefits from seeing all of it at once</td><td>Use one past four values. Five is a Select: a track that long stops being comparable and starts being a list</td></tr>
+            <tr><td>Keep the labels short and of one kind, so the halves read as a set rather than as separate buttons</td><td>Mix a verb with a noun. A half is a value, not an action, and a half that says «Save» is a button in the wrong clothes</td></tr>
+            <tr><td>Always leave one half chosen. A toggle has an answer from the moment it is drawn</td><td>Draw one with nothing pressed and treat the empty state as a question. That is what a form field with a placeholder is for</td></tr>
+            <tr><td>Say what is being chosen, in a heading beside the track or an <code>aria-label</code> on it</td><td>Leave a bare pair of words in a band and trust the paragraph under it to explain them</td></tr>
+            <tr><td>Let the host own the value when choosing does more than store a string: opens half a form, reloads a list</td><td>Wire a host handler and leave the component driving as well. Two owners answer twice</td></tr>
+            <tr><td>Use <code>--fill</code> when the track sits in a column of its own and a ragged right edge would read as a mistake</td><td>Use <code>--fill</code> for labels that will not fit their share. A share that has to wrap is a schema that should not have asked for a toggle</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p class="oro-note">Two segments in this house look alike and are not the same control. This one is a value of a form, black and boxed, and it belongs on a product screen. <code>.gbdoc-seg</code> in docs.css is quiet text with a blue underline, it switches the view of a document, and it exists because an instrument must not look like the thing it builds (Ton, 26.08). Whether they should be one component with two looks is an open question in the skill; until it is answered, pick by what the control does, not by how it looks.</p>
+
+        <p class="oro-note">The labels are copy and follow the copy rules: sentence case in the markup, since the component sets the caps itself, and no full stop.</p>
+        </section>
+
+        <!-- ---- ACCESSIBILITY ---- -->
+        <section class="oro-section" id="a11y" data-toc="Accessibility">
+        <span class="gb-eyebrow">Accessibility</span>
+        <h2 class="oro-h2">One tab stop, and the arrows do the choosing</h2>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <tbody>
+            <tr><td>Grouping</td><td>The track is <code>role="radiogroup"</code> with a name and each half is a <code>role="radio"</code>, set by <code>toggle.js</code> where the markup has not set them. A group written with <code>aria-pressed</code> instead is left as it is: two pressed buttons are a legal reading of the same control, and a second attribute beside the first would be a second source of truth</td></tr>
+            <tr><td>Keyboard</td><td>One tab stop for the whole group, on the chosen half. The arrows move between the halves <em>and</em> choose as they go, Home and End jump to the ends, and all of them wrap. That is the pattern a browser gives a radio group everywhere else, so nobody has to learn this one</td></tr>
+            <tr><td>Why the arrows also press</td><td>They fire a real click, which means the host's own handler runs. A host-driven group gets keyboard support without this component knowing anything about what the host does</td></tr>
+            <tr><td>Focus</td><td><code>:focus-visible</code>, so the ring appears for the person who arrived by Tab and not for a mouse click. Two pixels of Blue 600 at two pixels of offset, the button organism's own ring. Declared: the checkout showed the browser's hairline and nothing designed</td></tr>
+            <tr><td>Disabled</td><td>A real <code>disabled</code> on a half takes it out of the tab order and out of the arrow walk. The whole group off wants <code>aria-disabled</code> on the track <em>and</em> <code>disabled</code> on the halves, because <code>pointer-events</code> cannot take a button out of the tab order</td></tr>
+            <tr><td>Glyphs</td><td>Every mark is <code>aria-hidden</code> and rides beside a real word. A half with a mark and no word carries its own <code>aria-label</code></td></tr>
+            <tr><td>Target size</td><td>The default half is 32.5 tall inside a 42.5 track, which is under the 44 a thumb wants and is what live measures. Where a toggle is the subject of a touch screen rather than a band of a wide form, the M and L rungs are there</td></tr>
+            <tr><td>A picture of a control</td><td>A track inside <code>aria-hidden</code> is a preview, not a control: <code>toggle.js</code> leaves it entirely alone, so a registry tile has no tab stop and announces nothing</td></tr>
+          </tbody>
+        </table>
+        </div>
+        </section>
+
+        <!-- ---- CODE ---- -->
+        <section class="oro-section" id="code" data-toc="Code">
+        <span class="gb-eyebrow">Code</span>
+        <h2 class="oro-h2">A track, and a button for every value</h2>
+        <p class="oro-p">The word is a bare text node when it stands alone and a <code>.gb-toggle__label</code> when a mark stands beside it. Both are legal, and the checkout writes the first.</p>
+
+        <div class="gbdoc-code">
+          <button class="gbdoc-copy" type="button" data-copy="#codeBasics">Copy</button>
+          <pre><code id="codeBasics">&lt;!-- the component owns the value --&gt;
+&lt;div class="gb-toggle" role="radiogroup" aria-label="Screen"&gt;
+  &lt;button class="gb-toggle__item is-on" type="button"
+          role="radio" aria-checked="true" data-value="desktop"&gt;Desktop&lt;/button&gt;
+  &lt;button class="gb-toggle__item" type="button"
+          role="radio" aria-checked="false" data-value="mobile"&gt;Mobile&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- a mark beside the word: .gb-icon, and the word in its own span --&gt;
+&lt;button class="gb-toggle__item" type="button" role="radio" aria-checked="false"&gt;
+  &lt;span class="gb-icon gb-icon--16" aria-hidden="true"&gt;&lt;svg&gt;...&lt;/svg&gt;&lt;/span&gt;
+  &lt;span class="gb-toggle__label"&gt;Mobile&lt;/span&gt;
+&lt;/button&gt;
+
+&lt;!-- equal shares in a column of its own, one rung up --&gt;
+&lt;div class="gb-toggle gb-toggle--m gb-toggle--fill" role="radiogroup" aria-label="Screen"&gt;
+  ...
+&lt;/div&gt;
+
+&lt;!-- the host owns the value: group, tab stop and arrow keys only --&gt;
+&lt;div class="gb-toggle" data-gb-toggle="host" role="radiogroup" aria-label="Addresses"&gt;
+  ...
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <p class="oro-note">Link <code>toggle.css</code> after <code>button.css</code>, because every rung of the label ladder and both state values are the button's own tokens, and <code>icon.css</code> as well if any half carries a mark. <code>toggle.js</code> runs last and picks up tracks that arrive later: a shipment card rendered by a template and a rail rebuilt by a panel are both enhanced the moment they land.</p>
+        </section>
+
+        <!-- ---- CHANGELOG ---- -->
+        <section class="oro-section" id="changelog" data-toc="Changelog">
+        <span class="gb-eyebrow">Changelog</span>
+        <h2 class="oro-h2">What it was, and what it is</h2>
+        <div class="gbdoc-tablewrap">
+        <table class="gbdoc-table">
+          <thead><tr><th>When</th><th>What</th></tr></thead>
+          <tbody>
+            <tr><td>21 August</td><td>The control appears on the checkout as eleven Tailwind utilities and two inline font declarations, one per shipment card</td></tr>
+            <tr><td>29 August</td><td>The component. Measured at 390 and 1280 and lifted into <code>toggle.css</code> without a pixel changing, by Ton's word on the playground bench; the checkout keeps the value through <code>data-gb-toggle="host"</code>. <code>--block</code> arrives for the rail of a showcase</td></tr>
+            <tr><td>31 August</td><td><code>--fill</code>, so a track as wide as a rail stops being a half empty container</td></tr>
+            <tr><td>1 September</td><td>The hover stops hiding. Zinc 50 against a white track was five units of grey; the wash becomes the ghost button's own and the ink steps to Zinc 900</td></tr>
+            <tr><td>1 September</td><td>The family: three size rungs, a glyph, the label slot, and one device pixel of optical lift so the caps stop floating. The group's fade stops compounding with a half's. This page</td></tr>
+          </tbody>
+        </table>
+        </div>
+        </section>
+
+        <section class="oro-section">
+        <span class="gb-eyebrow">Related</span>
+        <h2 class="oro-h2">Where to go next</h2>
+        <p class="oro-p"><a href="button.html">Button</a>, whose ladders, ring and fade this control spends, <a href="icons.html">Icons</a>, where the mark in a half comes from, and <a href="select.html">Select</a>, which is where a set goes when it grows past four.</p>
+        </section>
+      </section>
+
+      <footer class="oro-foot">
+        Sources: <a href="../components/toggle.css">toggle.css</a>, <a href="../components/toggle.js">toggle.js</a>, <a href="../components/button.css">button.css</a>, <a href="../components/icon.css">icon.css</a>, <a href="../components/docs.css">docs.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page's own furniture, is rendered by those files.
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- The properties drawer. One per page; the inspector fills it. -->
+<gb-drawer id="propsDrawer"></gb-drawer>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/auth.js"></script>
+<script src="../components/toggle.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+<script>
+/* ============================================================
+   gbppl-toggle-family-1 — THE READOUT AND THE PLAYGROUND
+   ------------------------------------------------------------
+   px, txt, the width readout, the clipboard and the contents come
+   from window.GbOro (oro.js). The playground is a SCHEMA handed to
+   GbOro.controls: this page says what the toggle has and how one
+   is drawn out of a state object, and oro.js draws the rail, picks
+   a control per axis by the rule, hides what does not apply and
+   folds the markup into the card.
+
+   THE AXES, AND THE CONTROL THE RULE GIVES EACH:
+     Size            toggle, canon: a short ordered ladder
+     State           Select, canon: never a toggle
+     Icon            switch by nature (a native checkbox until the
+                     Switch is measured)
+     Icon position   toggle, canon, and only while Icon is on
+     Width           toggle, OFF CANON: three short words
+     Choices         toggle, OFF CANON: three one-character values
+
+   THE TWO OFF-CANON AXES SAY SO IN THE CONSOLE ON LOAD, and that
+   is the mechanism working rather than a fault: oro.js prints an
+   info line for an axis the system has not settled, and the list
+   of those lines is the evidence the canon is meant to grow on.
+   Neither word could be borrowed. The canon's Value is «what is
+   chosen»; Choices is «how many there are to choose from», and
+   collapsing the two is exactly the collision the renames of 31.08
+   pulled apart. Width has no canonical entry at all yet: the
+   button spends it as a boolean, so its own panel never reaches
+   this question.
+
+   NOTHING HERE PRINTS A NUMBER THAT WAS TYPED.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
+  var INSPECT = window.GbInspect || {};
+
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* ---------- reading a track ---------- */
+  function readToggle(track) {
+    if (!track) return null;
+    var cs = getComputedStyle(track);
+    var r = track.getBoundingClientRect();
+    var list = Array.prototype.slice.call(track.querySelectorAll('.gb-toggle__item'));
+    var on = list.filter(function (b) {
+      return b.classList.contains('is-on') || b.getAttribute('aria-checked') === 'true';
+    })[0] || list[0];
+    var off = list.filter(function (b) { return b !== on; })[0];
+    var os = on ? getComputedStyle(on) : null;
+    var fs = off ? getComputedStyle(off) : null;
+    var or = on ? on.getBoundingClientRect() : null;
+    var glyph = track.querySelector('.gb-icon');
+    var gr = glyph ? glyph.getBoundingClientRect() : null;
+    return {
+      cs: cs, r: r, on: on, off: off, os: os, fs: fs, or: or, gr: gr, list: list
+    };
+  }
+
+  function box(r) { return r ? Math.round(r.width * 10) / 10 + ' by ' + Math.round(r.height * 10) / 10 : 'none'; }
+
+  /* ---------- the playground ---------- */
+  var SETS = {
+    two:   [['Desktop', 'monitor'], ['Mobile', 'phone']],
+    three: [['Desktop', 'monitor'], ['Tablet', 'tablet'], ['Mobile', 'phone']],
+    four:  [['Wide', 'monitor-wide'], ['Desktop', 'monitor'], ['Tablet', 'tablet'], ['Mobile', 'phone']]
+  };
+  var STATE_CLASS = { hover: 'is-hover', focus: 'is-focus' };
+
+  var PG_AXES = [
+    { id: 'size',    label: 'Size',  group: 'shape', def: 's',
+      values: [['s', 'S'], ['m', 'M'], ['l', 'L']] },
+    { id: 'width',   label: 'Width', group: 'shape', def: 'hug',
+      values: [['hug', 'Hug'], ['block', 'Block'], ['fill', 'Fill']] },
+    { id: 'state',   label: 'State', group: 'state', def: 'rest',
+      values: [['rest', 'Rest'], ['hover', 'Hover'], ['focus', 'Focus'],
+               ['oneout', 'One value out'], ['allout', 'All out']] },
+    /* OFF CANON, and deliberately so. The canon's Value is «what is
+       chosen»; this is «how many there are to choose from», which is a
+       different question and needs a different word or the two collide
+       the way Value and Position did on 31.08. Three one-character
+       labels, so nature, count and budget all say toggle. */
+    { id: 'choices', label: 'Choices', group: 'content', def: 'three',
+      values: [['two', '2'], ['three', '3'], ['four', '4']] },
+    { id: 'icon',    label: 'Icon', group: 'content', kind: 'bool',
+      on: 'yes', off: 'no', def: 'no' },
+    { id: 'iconpos', label: 'Icon position', group: 'content', def: 'before',
+      values: [['before', 'Before'], ['after', 'After'], ['both', 'Both']],
+      when: function (S) { return S.icon === 'yes'; } }
+  ];
+
+  function glyphHTML(name, forCode) {
+    if (forCode) return '<span class="gb-icon gb-icon--16" aria-hidden="true"><svg>...</svg></span>';
+    var svg = window.GbIcons ? window.GbIcons.svg(name) : '';
+    return '<span class="gb-icon gb-icon--16" aria-hidden="true">' + svg + '</span>';
+  }
+
+  function pgSample(S, forCode) {
+    var set = SETS[S.choices] || SETS.three;
+    var cls = ['gb-toggle'];
+    if (S.size !== 's') cls.push('gb-toggle--' + S.size);
+    if (S.width === 'block') cls.push('gb-toggle--block');
+    if (S.width === 'fill') cls.push('gb-toggle--fill');
+    if (S.state === 'allout') cls.push('is-disabled');
+    var nl = forCode ? '\n  ' : '';
+    var withIcon = S.icon === 'yes';
+
+    var items = set.map(function (v, i) {
+      var on = i === 0;
+      var last = i === set.length - 1;
+      var c = ['gb-toggle__item'];
+      if (on) c.push('is-on');
+      /* the held state belongs to the half that is NOT chosen */
+      if (!forCode && !on && i === 1 && STATE_CLASS[S.state]) c.push(STATE_CLASS[S.state]);
+      var off = S.state === 'allout' || (S.state === 'oneout' && last && !on);
+      /* A word alone is a text node, the way the checkout writes it;
+         a word beside a mark takes the label span. Both are shown
+         because both are legal, and the code fold prints whichever
+         the axes have asked for. */
+      var word = withIcon ? '<span class="gb-toggle__label">' + esc(v[0]) + '</span>' : esc(v[0]);
+      var mark = withIcon ? glyphHTML(v[1], forCode) : '';
+      var inner = word;
+      if (withIcon && S.iconpos === 'before') inner = mark + word;
+      else if (withIcon && S.iconpos === 'after') inner = word + mark;
+      else if (withIcon && S.iconpos === 'both') inner = mark + word + mark;
+      return nl + '<button class="' + c.join(' ') + '" type="button" role="radio"' +
+             ' aria-checked="' + (on ? 'true' : 'false') + '"' + (off ? ' disabled' : '') + '>' +
+             inner + '</button>';
+    }).join('');
+
+    return '<div class="' + cls.join(' ') + '" role="radiogroup" aria-label="Screen"' +
+           (S.state === 'allout' ? ' aria-disabled="true"' : '') + '>' +
+           items + (forCode ? '\n' : '') + '</div>';
+  }
+
+  function pgReadout(S, hold) {
+    var m = readToggle(hold.querySelector('.gb-toggle'));
+    if (!m) return;
+    txt('pgTrack', box(m.r));
+    txt('pgItem', box(m.or));
+    txt('pgInset', px(m.cs.paddingTop) + ' inset, ' + px(m.cs.columnGap) + ' gap');
+    txt('pgPad', m.os ? px(m.os.paddingTop) + ' / ' + px(m.os.paddingRight) +
+                        ' / ' + px(m.os.paddingBottom) : 'none');
+    txt('pgLabel', m.os ? px(m.os.fontSize) + ' / ' + m.os.fontWeight + ' / ' + m.os.letterSpacing : 'none');
+    txt('pgGlyph', m.gr ? box(m.gr) : 'no glyph');
+    txt('pgOn', m.os ? m.os.backgroundColor + ' under ' + m.os.color : 'none');
+    txt('pgOff', m.fs ? (m.fs.backgroundColor === 'rgba(0, 0, 0, 0)' ? 'transparent' : m.fs.backgroundColor) +
+                        ' under ' + m.fs.color : 'none');
+  }
+
+  if (window.GbOro && window.GbOro.controls) {
+    window.GbOro.controls({
+      root: document.querySelector('[data-pg="toggle"]'),
+      axes: PG_AXES,
+      sample: pgSample,
+      after: pgReadout,
+      blockClass: 'gbdoc-hold--block',
+      block: function (S) { return S.width !== 'hug'; }
+    });
+  }
+
+  /* ---------- the three size rungs ---------- */
+  function paintSizes() {
+    [['s', 'sz-s', 'rowS'], ['m', 'sz-m', 'rowM'], ['l', 'sz-l', 'rowL']].forEach(function (t) {
+      var m = readToggle(document.getElementById(t[1]));
+      if (!m) return;
+      var cap = document.querySelector('[data-sz="' + t[0] + '"]');
+      if (cap) cap.textContent = box(m.r) + ', label ' + px(m.os.fontSize);
+      txt(t[2] + 'pad', px(m.os.paddingLeft) + ' either side, ' +
+                        px(m.os.paddingTop) + ' over ' + px(m.os.paddingBottom));
+      txt(t[2] + 'label', px(m.os.fontSize));
+      txt(t[2] + 'track', px(m.r.height) + ' tall');
+    });
+  }
+
+  /* ---------- the glyph shelf ---------- */
+  function paintIcons() {
+    [['before', 'ic-before'], ['after', 'ic-after'], ['bare', 'ic-bare']].forEach(function (t) {
+      var m = readToggle(document.getElementById(t[1]));
+      if (!m) return;
+      var cap = document.querySelector('[data-ic="' + t[0] + '"]');
+      if (!cap) return;
+      cap.textContent = box(m.r) + (m.gr ? ', glyph ' + Math.round(m.gr.width) : '') +
+        ', gap ' + px(getComputedStyle(m.on).columnGap);
+    });
+  }
+
+  /* ---------- the width shelf ---------- */
+  function paintWidths() {
+    [['hug', 'wd-hug'], ['block', 'wd-block'], ['fill', 'wd-fill']].forEach(function (t) {
+      var m = readToggle(document.getElementById(t[1]));
+      if (!m) return;
+      var cap = document.querySelector('[data-wd="' + t[0] + '"]');
+      if (!cap) return;
+      var widths = m.list.map(function (b) { return Math.round(b.getBoundingClientRect().width); });
+      cap.textContent = box(m.r) + ', halves ' + widths.join(' / ') +
+        ', pad-x ' + px(getComputedStyle(m.list[0]).paddingLeft);
+    });
+  }
+
+  /* ---------- the states table, measured off the five specimens ---------- */
+  var ST_ROWS = [
+    ['Rest', 'st-rest', 1, ['--zinc-700'],
+     '<span class="gbdoc-flag">Live</span> the checkout'],
+    ['Hover', 'st-hover', 1, ['--gb-btn-wash-ink-hover', '--zinc-900'],
+     '<span class="gbdoc-flag gbdoc-flag--declared">Declared</span> 01.09, the ghost button’s own wash'],
+    ['Focus', 'st-focus', 1, ['--gb-btn-focus-ring'],
+     '<span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the button organism’s ring'],
+    ['Chosen', 'st-rest', 0, ['--zinc-900', '--white'],
+     '<span class="gbdoc-flag">Live</span> the checkout'],
+    ['One value out', 'st-oneout', 1, ['--gb-btn-disabled-opacity'],
+     '<span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the button’s own fade'],
+    ['All out', 'st-allout', 1, ['--gb-btn-disabled-opacity'],
+     '<span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the fade on the track, once']
+  ];
+
+  function paintStates() {
+    var body = document.getElementById('stBody');
+    if (!body) return;
+    var html = '';
+    ST_ROWS.forEach(function (row) {
+      var track = document.getElementById(row[1]);
+      if (!track) return;
+      var item = track.querySelectorAll('.gb-toggle__item')[row[2]];
+      if (!item) return;
+      var cs = getComputedStyle(item);
+      var ts = getComputedStyle(track);
+      var ground = cs.backgroundColor === 'rgba(0, 0, 0, 0)' ? 'transparent' : cs.backgroundColor;
+      /* the fade is on the track for «all out» and on the half for the
+         rest, so the row says which element carries it */
+      var extra = row[0] === 'All out' ? ' &middot; track opacity ' + ts.opacity
+                : row[0] === 'One value out' ? ' &middot; opacity ' + cs.opacity
+                : row[0] === 'Focus' ? ' &middot; ring ' + cs.outlineWidth + ' ' + cs.outlineColor
+                : '';
+      html += '<tr><td>' + row[0] + '</td><td class="gbdoc-num">' + ground + extra +
+              '</td><td class="gbdoc-num">' + cs.color + '</td><td>' +
+              row[3].map(function (t) { return '<code>' + t + '</code>'; }).join(' ') +
+              '</td><td>' + row[4] + '</td></tr>';
+    });
+    body.innerHTML = html;
+  }
+
+  /* ---------- the anatomy of the checkout's own control ---------- */
+  function paintAnatomy() {
+    var m = readToggle(document.getElementById('anSpec'));
+    if (!m) return;
+    txt('anTrack', box(m.r) + ', ground ' + m.cs.backgroundColor);
+    txt('anInset', px(m.cs.paddingTop) + ' on all four sides, ' + px(m.cs.columnGap) + ' between halves');
+    txt('anLine', px(m.cs.borderTopWidth) + ' ' + m.cs.borderTopColor +
+                  ', radius ' + px(m.cs.borderTopLeftRadius));
+    txt('anItem', box(m.or) + ', line ' + (parseFloat(m.os.borderTopWidth) ? px(m.os.borderTopWidth) : 'none'));
+    txt('anPad', px(m.os.paddingTop) + ' top / ' + px(m.os.paddingBottom) + ' bottom / ' +
+                 px(m.os.paddingLeft) + ' side');
+    txt('anLabel', px(m.os.fontSize) + ' / ' + m.os.fontWeight + ' / ' + m.os.letterSpacing +
+                   ', line ' + px(m.os.lineHeight) + ', ' + m.os.textTransform);
+    txt('anOn', m.os.backgroundColor + ' under ' + m.os.color);
+    /* A cubic-bezier has commas of its own, so the list of timing
+       functions cannot be split on a comma: the first one is matched
+       whole instead, or the string is printed as it stands. */
+    var ease = (m.os.transitionTimingFunction.match(/^[^,(]+\([^)]*\)|^[^,]+/) || [''])[0].trim();
+    txt('anMotion', m.os.transitionDuration.split(',')[0].trim() + ' ' + ease);
+
+    /* The two halves of the optical sentence, so even that paragraph
+       carries measured numbers rather than remembered ones. The scan
+       that produced them is in the wave's scratchpad; what the page
+       can honestly read back is the padding pair it is standing on. */
+    txt('anShiftWas', 'the ink 0.94px');
+    txt('anShiftNow', 'padding ' + px(m.os.paddingTop) + ' over ' + px(m.os.paddingBottom) +
+                      ', and the half still ' + px(m.or.height) + ' tall');
+
+    ORO.widthNow('wnow', 'wnow2');
+  }
+
+  function paintAll() {
+    paintSizes();
+    paintIcons();
+    paintWidths();
+    paintStates();
+    paintAnatomy();
+  }
+
+  function start() {
+    paintAll();
+    ORO.watchCopy();
+    ORO.watchToc();
+    /* TRAP 11 OF THE SKILL. A specimen wearing a demo state class at
+       load is still inside its own colour transition on the first
+       frame, and a colour read there is on no screen. The wait is not
+       typed: it is read off the specimens. */
+    var ms = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-shelf *'), function (el) {
+      getComputedStyle(el).transitionDuration.split(',').forEach(function (one) {
+        var n = parseFloat(one);
+        if (!isNaN(n)) ms = Math.max(ms, /ms$/.test(one.trim()) ? n : n * 1000);
+      });
+    });
+    if (ms) setTimeout(paintAll, ms + 40);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  /* The specimens on the shelves are real controls: moving one has to
+     move the numbers in the table that describes it. */
+  document.addEventListener('gbtg:change', function () { paintAll(); });
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(paintAll, 120);
+  });
+})();
+</script>
+
+<gb-studio-panel data-root="../../" page="oro"></gb-studio-panel>
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>
