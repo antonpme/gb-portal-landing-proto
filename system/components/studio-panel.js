@@ -9,7 +9,8 @@
    gbppl-proto-model-1 2026-09-01, тумблер вместо табов
    gbppl-panel-mode-toggle-1 2026-09-01, потолок и флип дока
    gbppl-panel-dock-1 2026-09-01, сворачиваемые секции и Demo внутри
-   прототипа gbppl-panel-sections-1 2026-09-01)
+   прототипа gbppl-panel-sections-1 2026-09-01, отрыв от края и плоская
+   полоса gbppl-panel-float-2 2026-09-01)
    ------------------------------------------------------------
    ОДИН ПУЛЬТ. Тон 26.08, дословно: «обязательно свести язык к
    Studio, одной волной», и следом «нужно просто унифицировать всё
@@ -570,6 +571,97 @@
    локальные (scope 'page'), внутри групп — порядок реестра. Раскладка
    считается по полю scope, а не по списку имён в консоли: новый
    сквозной элемент встаёт на своё место сам.
+
+   ------------------------------------------------------------
+   ЯЩИК ОТРЫВАЕТСЯ ОТ КРАЯ И СКЛАДЫВАЕТСЯ В ПОЛОСУ
+   (gbppl-panel-float-2, 2026-09-01)
+   ------------------------------------------------------------
+   Тон в тот же день, два предложения. Дословно:
+
+   1. «Ты добавил панели свойство переноситься влево-вправо, но не
+      добавил свойство детачить её, чтобы можно было просто таскать
+      руками».
+   2. «Нужно ещё одно свойство: сворачивать её в одну плоскую
+      горизонтальную панель Design Studio».
+
+   ТРЕТЬЕ МЕСТО, А НЕ ТРЕТИЙ ОБЪЕКТ. У ящика было два места (правый
+   край и левый), стало три: правый, левый и любая точка экрана. Ни
+   одного нового узла ради этого не родилось — те же .gbsp и
+   .gbsp-panel, тот же атрибут data-dock, у которого прибавилось третье
+   значение `float`. Сторона при этом не забывается: `gbppl-dock`
+   по-прежнему помнит, к какому краю ящик вернётся, а `gbppl-float`
+   помнит, где он висит сейчас. Ушёл float — сторона ждёт на месте.
+
+   РУЧКА — ШАПКА, И ЭТО НЕ ВЫБОР ИЗ ДВУХ. Тон назвал титул: «просто
+   таскать руками». Шапка у поверхности одна, она уже несёт имя
+   DESIGN STUDIO и стоит на одном месте в любом состоянии ящика; вторая
+   ручка (кромка, угол, отдельная полоска) была бы новым паттерном
+   взаимодействия, а их не заводят молча (закон 0a.4). Слой берёт то же
+   правило: .gbsp-layerhead тоже ручка, иначе жест пропадал бы на
+   втором уровне.
+
+   ЧЕТЫРЕ ПРАВИЛА ТАСКАНИЯ, И ВСЕ ЧЕТЫРЕ ЧЕСТНЫЕ:
+   · ПОРОГ. Отрыв начинается после --space-8 движения. Меньше — это
+     клик по шапке, и он не имеет права уронить ящик с места.
+   · БЕЗ ПРЫЖКА. Ящик становится плавающим ровно там, где стоял:
+     координата берётся из его же прямоугольника, курсор держит ту же
+     точку шапки, за которую взялся.
+   · КЛАМП. Коробка не выпускается за поля --space-16 с четырёх сторон,
+     и это единственное, что стережёт низ: у плавающего ящика нет
+     якоря, от которого считался геометрический член потолка
+     (gbppl-panel-dock-1), поэтому потолок остался долей 80vh, а
+     обещание «не уходит за viewport» держит кламп. Он же срабатывает
+     на ресайзе окна: уменьшили окно — ящик подобрался, а не остался
+     за кромкой.
+   · ПРИМАГНИЧИВАНИЕ. Ручка в зоне --space-48 от левой или правой
+     кромки — у этой кромки загорается контур посадочного места, и
+     отпускание СТЫКУЕТ ящик туда (сторона запоминается, координата
+     стирается). Так возвращение к краю делается тем же жестом, что и
+     отрыв, а кнопка в шапке остаётся коротким путём для тех, кто не
+     хочет тащить.
+
+   КНОПКА ФЛИПА ЖИВА И У ОТОРВАННОГО, но говорит другое: пристыкованный
+   ящик она переносит на противоположный край, плавающий — возвращает к
+   ЗАПОМНЕННОЙ стороне. Глиф в обоих случаях показывает результат
+   нажатия («ящик будет там»), и это то же правило, по которому смотрит
+   шеврон язычка. Второго знака в шапке не появилось.
+
+   НИЖЕ 1024 ОТРЫВА НЕТ, и это не лень, а замер. Ящик берёт
+   min(320, 100vw - 48): на 390 это 342 из 390, на 768 — 320 из 768 при
+   странице, которая на этой ширине уже мобильная. Двигать его там
+   некуда, а сенсорное таскание — отдельный жест со своей войной против
+   прокрутки, и заводить его молча нельзя (тот же закон 0a.4). Порог
+   1024 не новый: на нём же хедер прячет Book a meeting в бургер.
+   Память при этом не стирается: узкое окно просто не пускает ящик в
+   плавание, а широкое возвращает его туда, где он висел.
+
+   ПОЛОСА. Свёрнутый плавающий ящик — это его собственная шапка и
+   больше ничего: одна горизонтальная плита с титулом DESIGN STUDIO,
+   ростом в строку управления. Почему полоса досталась именно
+   плавающему, а язычок остался пристыкованному, разобрано в
+   studio-panel.css у правил .gbsp.is-collapsed: коротко — жест один
+   (клик по контролу сворачивания), фигур две, и фигуру выбирает место.
+   Состояние открытости при этом ОДНО И ТО ЖЕ (`gbppl-panel-open`,
+   память вкладки): свернул у края, оторвал — приедет свёрнутым, и
+   наоборот. Своего ключа полоса не заводит. Кликается полоса ЦЕЛИКОМ,
+   как язычок: нажатие по шапке без движения разворачивает ящик (порог
+   отрыва уже отличает клик от жеста), а тем же нажатием по РАЗВЁРНУТОЙ
+   шапке не происходит ничего — там шапка просто шапка.
+
+   ЧТО ПОЙМАЛ ПРОГОН И ЧЕГО БЕЗ НЕГО НЕ БЫЛО БЫ ВИДНО (float-2):
+   · СТОРОЖ ОТМЕНЯЛ ОТРЫВ. Смена дока меняет рамку с трёх сторон на
+     четыре, content-box коробки съезжает на пиксель, ResizeObserver в
+     watchFloat будит settleFloat, а тот видит пустую запись места
+     (координата пишется только на отпускании) и честно возвращает ящик
+     к краю. На 1024x600 ящик не отрывался вовсе: data-dock оставался
+     `right` весь жест, и коробка прыгала на место лишь в момент
+     отпускания. Лечится флагом «рука держит» (host.__dragging), а не
+     чтением памяти на каждом кадре: пока идёт жест, место у ящика одно
+     и оно под курсором.
+   · ESC ТЕРЯЛ ФОКУС. Свернув оторванный ящик, Esc отдавал фокус
+     язычку, которого у плавающего нет вовсе (display:none), и
+     клавиатура оказывалась в начале страницы. Фокус уходит на ту
+     кнопку, которая видна (openerBtn).
    ============================================================ */
 (function () {
   'use strict';
@@ -715,6 +807,80 @@
     catch (e) { return 'right'; }
   }
 
+  /* ------------------------------------------------------------
+     ТРЕТЬЕ МЕСТО: КООРДИНАТА (gbppl-panel-float-2)
+     ------------------------------------------------------------
+     Ключ `gbppl-float` хранит {x, y} и ОДНИМ СВОИМ НАЛИЧИЕМ значит
+     «ящик оторван». Второго флага не заводится: место и есть ответ на
+     вопрос, где ящик стоит. Тот же localStorage и по тому же доводу,
+     что сторона (gbppl-panel-dock-1): куда человек поставил пульт —
+     настройка рабочего места, а не состояние работы, и в KEEP с Copy
+     link она не ходит.
+
+     ПОРОГ 1024 — ГРАНИЦА СУЩЕСТВОВАНИЯ, А НЕ ЗАПРЕТ НА ЖЕСТ. Ниже него
+     запись остаётся лежать, но не читается: узкое окно возвращает ящик
+     к краю, широкое — снова поднимает в воздух. Стирать чужую
+     настройку из-за одного поворота планшета консоль не станет. */
+  var FLOAT_KEY = 'gbppl-float';
+  var FLOAT_MIN = 1024;                    /* та же ступень, на которой хедер прячет Book a meeting */
+  var DRAG_MIN  = 8;                       /* --space-8: меньше — это клик по шапке */
+  var SNAP_ZONE = 48;                      /* --space-48: зона примагничивания к кромке */
+  var EDGE_PAD  = 16;                      /* --space-16: поле, за которое ящик не выпускают */
+
+  function readFloat() {
+    try {
+      var o = JSON.parse(localStorage.getItem(FLOAT_KEY) || 'null');
+      if (!o || typeof o !== 'object') return null;
+      var x = parseFloat(o.x), y = parseFloat(o.y);
+      if (!isFinite(x) || !isFinite(y)) return null;
+      return { x: x, y: y };
+    } catch (e) { return null; }
+  }
+
+  function writeFloat(pos) {
+    try {
+      if (pos) localStorage.setItem(FLOAT_KEY, JSON.stringify({ x: Math.round(pos.x), y: Math.round(pos.y) }));
+      else localStorage.removeItem(FLOAT_KEY);
+    } catch (e) {}
+  }
+
+  /* Оторван ли ящик ПРЯМО СЕЙЧАС: запись плюс ширина окна. Одно место
+     решения на весь файл, чтобы порог не разъехался по трём проверкам. */
+  function floatNow() {
+    var fl = readFloat();
+    return (fl && window.innerWidth >= FLOAT_MIN) ? fl : null;
+  }
+
+  /* Координата приходит в CSS инлайновой парой. Через свойства, а не
+     через style.left/top напрямую, потому что место ящика описано
+     правилом каскада (gb-studio-panel[data-dock="float"] .gbsp), и
+     скрипту принадлежит ЧИСЛО, а не раскладка. */
+  function placeFloat(host, x, y) {
+    var shell = host.querySelector('.gbsp');
+    if (!shell) return;
+    if (x === null || y === null) {
+      shell.style.removeProperty('--gbsp-x');
+      shell.style.removeProperty('--gbsp-y');
+      return;
+    }
+    shell.style.setProperty('--gbsp-x', Math.round(x) + 'px');
+    shell.style.setProperty('--gbsp-y', Math.round(y) + 'px');
+  }
+
+  /* Кламп по живому прямоугольнику коробки: высота ящика меняется от
+     содержимого, от свёрнутости и от потолка, и объявлять её числом
+     значило бы врать на первой же странице. */
+  function clampFloat(host, x, y) {
+    var box = host.querySelector('.gbsp-panel');
+    var r = box ? box.getBoundingClientRect() : { width: 0, height: 0 };
+    var maxX = Math.max(EDGE_PAD, window.innerWidth  - r.width  - EDGE_PAD);
+    var maxY = Math.max(EDGE_PAD, window.innerHeight - r.height - EDGE_PAD);
+    return {
+      x: Math.min(Math.max(x, EDGE_PAD), maxX),
+      y: Math.min(Math.max(y, EDGE_PAD), maxY)
+    };
+  }
+
   /* Полоса пульта у левой (9) или правой (15) трети окна. Числа —
      координаты рисунка на сетке 24, не размеры интерфейса. */
   function dockIcon(side) {
@@ -726,31 +892,232 @@
            '<path d="' + line + '"/></svg></span>';
   }
 
-  /* Ставит сторону на хозяина и переписывает кнопку. Кнопка называет
+  /* Ставит МЕСТО на хозяина и переписывает кнопку. Кнопка называет
      ДЕЙСТВИЕ («Move the panel to the left»), а не положение: она и
-     есть действие, а положение видно глазами. */
+     есть действие, а положение видно глазами.
+
+     gbppl-panel-float-2: мест стало три, и кнопка отвечает на них
+     двумя разными обещаниями. Пристыкованный ящик она ПЕРЕНОСИТ на
+     противоположный край; оторванный — ВОЗВРАЩАЕТ к запомненной
+     стороне. Глиф в обоих случаях один и тот же и показывает, где
+     ящик окажется. */
   function paintDock(host, side) {
-    host.setAttribute('data-dock', side);
+    var fl = floatNow();
+    host.setAttribute('data-dock', fl ? 'float' : side);
+    /* Координата снимается вместе с полётом (gbppl-panel-float-2):
+       пристыкованный ящик её не читает, но оставленная инлайном пара
+       врала бы прибору про место, которого больше нет. */
+    if (fl) placeFloat(host, fl.x, fl.y);
+    else placeFloat(host, null, null);
     var btn = host.querySelector('.gbsp-dock');
     if (!btn) return;
-    var to = side === 'left' ? 'right' : 'left';
+    var to   = fl ? side : (side === 'left' ? 'right' : 'left');
+    var word = fl ? 'Dock the panel on the ' + to : 'Move the panel to the ' + to;
     btn.innerHTML = dockIcon(to);
-    btn.setAttribute('aria-label', 'Move the panel to the ' + to);
-    btn.setAttribute('title', 'Move the panel to the ' + to);
+    btn.setAttribute('aria-label', word);
+    btn.setAttribute('title', word);
+    /* СМЕНА МЕСТА ПЕРЕСАЖИВАЕТ СЧЁТ. У пристыкованного он живёт на
+       язычке, у оторванного — на полосе, и решает это ровно тот
+       атрибут, который здесь и ставится. Без этой строки бейдж
+       оставался в шапке после возвращения к краю и пропадал вместе с
+       ней (поймано прогоном). */
+    paintTabBadge(host);
   }
 
   function wireDock(host) {
     var btn = host.querySelector('.gbsp-dock');
     if (!btn) return;
     btn.addEventListener('click', function () {
-      var side = readDock() === 'left' ? 'right' : 'left';
-      try { localStorage.setItem(DOCK_KEY, side); } catch (e) {}
+      var side;
+      if (floatNow()) {
+        /* Оторванный возвращается туда, откуда уходил: сторона всё это
+           время лежала нетронутой. */
+        side = readDock();
+        writeFloat(null);
+      } else {
+        side = readDock() === 'left' ? 'right' : 'left';
+        try { localStorage.setItem(DOCK_KEY, side); } catch (e) {}
+      }
       paintDock(host, side);
       /* Фокус остаётся на кнопке: человек может передумать и вернуть
          ящик тем же нажатием, не разыскивая его глазами на новой
          стороне. */
       btn.focus();
     });
+  }
+
+  /* ------------------------------------------------------------
+     ТАСКАНИЕ ЗА ШАПКУ (gbppl-panel-float-2)
+     ------------------------------------------------------------
+     Один слушатель на коробке, ручка опознаётся по цели: .gbsp-head в
+     корне, .gbsp-layerhead на слое. Кнопки внутри шапки таскания не
+     начинают — они кнопки.
+
+     Указатель захватывается ручкой (setPointerCapture), поэтому
+     движение не теряется, когда курсор обгоняет ящик или уходит на
+     чужой iframe: события продолжают приходить туда же и всплывают до
+     коробки. Отпускание и отмена сходятся в одну дверь. */
+  function wireDrag(host) {
+    var shell = host.querySelector('.gbsp');
+    var box   = host.querySelector('.gbsp-panel');
+    if (!shell || !box) return;
+
+    var drag = null;
+
+    function armSnap(pos) {
+      var w = box.getBoundingClientRect().width;
+      var side = '';
+      if (pos.x - EDGE_PAD <= SNAP_ZONE) side = 'left';
+      else if (window.innerWidth - (pos.x + w) - EDGE_PAD <= SNAP_ZONE) side = 'right';
+      if (drag) drag.snap = side;
+      paintSnap(host, side);
+    }
+
+    box.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0 || drag) return;
+      if (window.innerWidth < FLOAT_MIN) return;
+      if (!e.target || !e.target.closest) return;
+      var head = e.target.closest('.gbsp-head, .gbsp-layerhead');
+      if (!head || !box.contains(head)) return;
+      if (e.target.closest('button')) return;
+      var r = box.getBoundingClientRect();
+      drag = {
+        id: e.pointerId, head: head, live: false, snap: '',
+        dx: e.clientX - r.left, dy: e.clientY - r.top,
+        x0: e.clientX, y0: e.clientY,
+        pos: { x: r.left, y: r.top }
+      };
+      try { head.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+
+    box.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.live) {
+        if (Math.abs(e.clientX - drag.x0) < DRAG_MIN &&
+            Math.abs(e.clientY - drag.y0) < DRAG_MIN) return;
+        drag.live = true;
+        /* РУКА ДЕРЖИТ ЯЩИК — СТОРОЖ МОЛЧИТ (gbppl-panel-float-2). Флаг
+           читает settleFloat, и без него отрыв не доживал до второго
+           кадра: смена дока меняет рамку с трёх сторон на четыре,
+           content-box коробки съезжает на пиксель, ResizeObserver в
+           watchFloat будит settleFloat, а тот видит ПУСТУЮ запись места
+           (координата пишется только на отпускании) и честно возвращает
+           ящик к краю. Замер 1024x600: data-dock оставался `right` на
+           всём протяжении жеста, ящик стоял у кромки и прыгал на место
+           только в момент отпускания. */
+        host.__dragging = true;
+        shell.classList.add('is-dragging');
+        /* ОТРЫВ БЕЗ ПРЫЖКА: место ставится ДО смены атрибута, поэтому
+           между пристыкованным и плавающим кадром ящик не мигает у
+           другого края. */
+        placeFloat(host, drag.pos.x, drag.pos.y);
+        host.setAttribute('data-dock', 'float');
+      }
+      e.preventDefault();
+      var p = clampFloat(host, e.clientX - drag.dx, e.clientY - drag.dy);
+      placeFloat(host, p.x, p.y);
+      drag.pos = p;
+      armSnap(p);
+    });
+
+    function drop(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var d = drag;
+      drag = null;
+      host.__dragging = false;
+      try { d.head.releasePointerCapture(d.id); } catch (err) {}
+      if (!d.live) {
+        /* НАЖАЛИ И ОТПУСТИЛИ, НЕ СДВИНУВ. На развёрнутом ящике это
+           ничего не значит: шапка там просто шапка. На СВЁРНУТОЙ ПОЛОСЕ
+           значит «разверни» — у язычка вся фигура кликается целиком, и
+           полоса, стоящая на его месте, обязана вести себя так же
+           (gbppl-panel-float-2). Второго обработчика не заводим: жмём ту
+           же кнопку, что стоит в полосе. */
+        if (shell.classList.contains('is-collapsed') &&
+            host.getAttribute('data-dock') === 'float') {
+          var min = shell.querySelector('.gbsp-min');
+          if (min) min.click();
+        }
+        return;
+      }
+      shell.classList.remove('is-dragging');
+      paintSnap(host, '');
+      if (d.snap) {
+        try { localStorage.setItem(DOCK_KEY, d.snap); } catch (err) {}
+        writeFloat(null);
+        paintDock(host, d.snap);
+      } else {
+        writeFloat(d.pos);
+        paintDock(host, readDock());
+      }
+    }
+
+    box.addEventListener('pointerup', drop);
+    box.addEventListener('pointercancel', drop);
+  }
+
+  /* КОНТУР ПОСАДОЧНОГО МЕСТА. Живёт ВНУТРИ <gb-studio-panel>
+     (ловушка 19/21): слой, подвешенный в document.body, читал бы
+     --space-* вендорного бандла на каталоге. Рождается на первый намёк
+     и уходит вместе с ним: постоянного узла ради полусекунды не
+     держим. */
+  function paintSnap(host, side) {
+    var shell = host.querySelector('.gbsp');
+    if (!side) {
+      if (host.__snap) { host.__snap.remove(); host.__snap = null; }
+      if (shell) shell.classList.remove('is-snapping');
+      return;
+    }
+    var g = host.__snap;
+    if (!g) {
+      g = document.createElement('div');
+      g.className = 'gbsp-snap';
+      g.setAttribute('aria-hidden', 'true');
+      host.__snap = g;
+      host.appendChild(g);
+    }
+    g.setAttribute('data-side', side);
+    if (shell) shell.classList.add('is-snapping');
+  }
+
+  /* ЯЩИК ОСТАЁТСЯ В КАДРЕ САМ. Зовётся после отрисовки, после каждого
+     открытия-закрытия (высота меняется) и на ресайз окна. Три вопроса
+     по порядку: положено ли ему сейчас плавать, не уехал ли он за
+     кромку, и не пора ли вернуть его к краю, потому что окно стало уже
+     порога. */
+  function settleFloat(host) {
+    /* Пока ящик в руке, место у него одно — под курсором, и никакая
+       запись в памяти об этом ещё не знает (gbppl-panel-float-2). */
+    if (host.__dragging) return;
+    var fl   = floatNow();
+    var want = fl ? 'float' : readDock();
+    if (host.getAttribute('data-dock') !== want) paintDock(host, readDock());
+    if (!fl) return;
+    var p = clampFloat(host, fl.x, fl.y);
+    if (p.x !== fl.x || p.y !== fl.y) writeFloat(p);
+    placeFloat(host, p.x, p.y);
+  }
+
+  function watchFloat(host) {
+    var queued = false;
+    var poke = function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; settleFloat(host); });
+    };
+    window.addEventListener('resize', poke);
+    /* ЯЩИК РАСТЁТ ПОСЛЕ ОТРИСОВКИ, и высота, замеренная в
+       connectedCallback, ещё не окончательная: секции Mode и Device
+       дописывает inspect.js, полку комментариев — comments.js, строки
+       Demo — сама страница. Прогон 1280x720 поймал ровно это: ящик,
+       приехавший из памяти на y 200, вырастал до 550 и уходил на 30px
+       за нижнюю кромку. Сторож смотрит на КОРОБКУ, а не гадает, кто и
+       когда её дополнит; петли нет, потому что кламп двигает место, а
+       не размер (потолок плавающего ящика — доля окна). */
+    try {
+      var box = host.querySelector('.gbsp-panel');
+      if (box && window.ResizeObserver) new ResizeObserver(poke).observe(box);
+    } catch (e) {}
   }
 
   /* ============================================================
@@ -1521,9 +1888,16 @@
           /* ШАПКА ЯЩИКА (gbppl-panel-dock-1): титул и одна тихая
              кнопка справа. Глиф и метку кнопке ставит paintDock, потому
              что они зависят от стороны, а сторона читается из памяти
-             уже на живом элементе. */
+             уже на живом элементе.
+             gbppl-panel-float-2: и вторая тихая кнопка перед ней —
+             сворачивание, которое видно только у оторванного ящика (у
+             пристыкованного эту работу делает язычок). Сама шапка с
+             этой волны ещё и ручка: за неё ящик таскают. */
           '<div class="gbsp-head">' +
             '<span class="gbsp-title">Design Studio</span>' +
+            '<button class="gbsp-min" type="button" aria-controls="gbsp-panel">' +
+              glyph('chevron-down', 16) +
+            '</button>' +
             '<button class="gbsp-dock" type="button"></button>' +
           '</div>' +
           body +
@@ -2872,6 +3246,11 @@
          не рисует, поэтому левый ящик не мигает справа. */
       paintDock(this, readDock());
       wireDock(this);
+      /* gbppl-panel-float-2: ручка и сторож кадра. Ставятся здесь же,
+         рядом с доком, потому что это одно свойство ящика — где он
+         стоит, — просто с тремя ответами вместо двух. */
+      wireDrag(this);
+      watchFloat(this);
 
       /* gbppl-panel-7. В кадре пульта нет: он стоит снаружи и
          управляет кадром оттуда. Разметка остаётся на месте, гасится
@@ -2905,8 +3284,23 @@
         if (!open) { while (closeLayer(host, false)) {} }
         shell.classList.toggle('is-collapsed', !open);
         tab.setAttribute('aria-expanded', String(open));
-        tab.setAttribute('aria-label',
-          open ? 'Close the Design Studio panel' : 'Open the Design Studio panel');
+        tab.setAttribute('aria-label', openerWord(false, open));
+        /* gbppl-panel-float-2. У оторванного ящика тот же жест делает
+           другая кнопка, и говорит она о другой фигуре: не «закрыть
+           панель», а «сложить в полосу». Метка ставится всегда, даже
+           когда кнопки не видно: сторона может смениться, пока ящик
+           открыт, и переписывать метки во второй раз незачем. */
+        var min = host.querySelector('.gbsp-min');
+        if (min) {
+          var word = openerWord(true, open);
+          min.setAttribute('aria-expanded', String(open));
+          min.setAttribute('aria-label', word);
+          min.setAttribute('title', word);
+        }
+        /* Высота изменилась, значит плавающий ящик мог оказаться ниже
+           кромки: разворот на низком окне ловится тем же клампом, что
+           таскание. */
+        settleFloat(host);
         /* Ящик помнится между страницами (gbppl-panel-8): за один
            проход по прототипу консоль открывают по десять раз, и
            каждый раз она встречает закрытой. Память вкладки, не
@@ -2923,10 +3317,25 @@
         setOpen(shell.classList.contains('is-collapsed'));
       });
 
+      /* gbppl-panel-float-2: тот же самый setOpen, второй контрол.
+         Состояние одно на обе фигуры (ключ OKEY), поэтому свёрнутый у
+         края ящик приезжает свёрнутым и в воздух. */
+      var min = this.querySelector('.gbsp-min');
+      if (min) {
+        min.addEventListener('click', function () {
+          setOpen(shell.classList.contains('is-collapsed'));
+          min.focus();
+        });
+      }
+
       var saved = null;
       try { saved = sessionStorage.getItem(OKEY); } catch (e) {}
       if (saved === '1') setOpen(true);
+      else setOpen(false);
       watchTab(shell);
+      /* Окно могло измениться, пока страницы не было на экране: место
+         из памяти проверяется живой мерой, а не принимается на веру. */
+      settleFloat(this);
 
       /* Escape закрывает — тот же жест, что у меню хедера. Очередь
          честная: сначала дровер пропертиз, потом ящик
@@ -2945,7 +3354,13 @@
         if (e.stopImmediatePropagation) e.stopImmediatePropagation();
         if (closeLayer(host, true)) return;
         setOpen(false);
-        tab.focus();
+        /* ФОКУС УХОДИТ НА ТУ КНОПКУ, КОТОРАЯ ОСТАЛАСЬ ВИДНА
+           (gbppl-panel-float-2). У пристыкованного ящика это язычок, у
+           оторванного его нет вовсе, и фокус на display:none просто
+           терялся в body: клавиатура после Esc оказывалась в начале
+           страницы, а не на свёрнутой полосе. */
+        var back = openerBtn(host);
+        if (back) back.focus();
       });
 
       wireFoot(this);
@@ -3007,20 +3422,66 @@
      Число сюда приносит владелец режима тем же вызовом, что красит
      сегмент. Панель не знает, что считать новым, и не заводит своего
      счёта. */
+  /* МЕТКА КОНТРОЛА СВОРАЧИВАНИЯ, ОДНА ЗАПИСЬ НА ДВЕ ФИГУРЫ
+     (gbppl-panel-float-2). Слова живут здесь, а не в трёх местах, где
+     их ставят: язычок и полоса делают одно и то же, но называется это
+     по-разному, и расхождение между setOpen и кистью счёта было бы
+     слышно только в скринридере, то есть никем не замечено. */
+  function openerWord(floating, open) {
+    if (floating) {
+      return open ? 'Fold the Design Studio panel into a bar'
+                  : 'Unfold the Design Studio panel';
+    }
+    return open ? 'Close the Design Studio panel' : 'Open the Design Studio panel';
+  }
+
+  /* И ТОТ ЖЕ ВЫБОР ФИГУРОЙ, НО ДЛЯ РУК (gbppl-panel-float-2): какая из
+     двух кнопок сейчас на экране. Спрашивают трое — Esc, кисть счёта и
+     метки, — и спрашивать порознь значило бы завести три разных ответа
+     на один вопрос. */
+  function openerBtn(host) {
+    var shell = host.querySelector('.gbsp');
+    var min   = shell && shell.querySelector('.gbsp-min');
+    if (host.getAttribute('data-dock') === 'float' && min) return min;
+    return shell && shell.querySelector('.gbsp-tab');
+  }
+
   function paintTabBadge(host) {
     var shell = host.querySelector('.gbsp');
     var tab   = shell && shell.querySelector('.gbsp-tab');
     if (!shell || !tab || shell.classList.contains('is-embedded')) return;
 
+    /* ЧЕТВЁРТОЕ ПРАВИЛО, ОТ ТОГО ЖЕ МЕСТА (gbppl-panel-float-2): у
+       оторванного ящика ярлыка нет, значит счёт садится на ту фигуру,
+       которая у него вместо ярлыка, — на плоскую полосу, и говорит
+       вслух меткой её кнопки. Правило «один счёт за раз» от этого не
+       меняется: старая посадка снимается перед новой. */
+    var floating = host.getAttribute('data-dock') === 'float';
+    var head   = shell.querySelector('.gbsp-head');
+    var seat   = floating ? head : tab;
+    var voice  = openerBtn(host);
+    if (!seat || !voice) return;
+
     var n    = host.__tabCount || 0;
-    var show = n > 0 && shell.classList.contains('is-collapsed');
-    var b    = tab.querySelector('.gbsp-badge');
+    var open = !shell.classList.contains('is-collapsed');
+    var show = n > 0 && !open;
+
+    /* Обе метки возвращаются к базовым словам ПЕРЕД тем, как счёт
+       допишет свою: иначе на контроле, с которого счёт только что
+       уехал, оставался бы вчерашний хвост «, 3 unread comments». */
+    tab.setAttribute('aria-label', openerWord(false, open));
+    var minBtn = shell.querySelector('.gbsp-min');
+    if (minBtn) minBtn.setAttribute('aria-label', openerWord(true, open));
 
     shell.classList.toggle('has-tab-badge', show);
-    if (!show) {
-      if (b) b.remove();
-      return;
+
+    var was = shell.querySelectorAll('.gbsp-badge--tab');
+    for (var i = 0; i < was.length; i++) {
+      if (!show || was[i].parentNode !== seat) was[i].remove();
     }
+    if (!show) return;
+
+    var b = seat.querySelector('.gbsp-badge--tab');
     if (!b) {
       b = document.createElement('span');
       b.className = 'gbsp-badge gbsp-badge--tab';
@@ -3028,11 +3489,11 @@
          ниоткуда — то же правило, что у бейджа сегмента и у
          .gbh-count корзины. */
       b.setAttribute('aria-hidden', 'true');
-      tab.insertBefore(b, tab.firstChild);
+      seat.insertBefore(b, seat.firstChild);
     }
     b.textContent = n > 99 ? '99+' : String(n);
-    tab.setAttribute('aria-label',
-      'Open the Design Studio panel, ' + n + ' unread ' +
+    voice.setAttribute('aria-label',
+      openerWord(floating, open) + ', ' + n + ' unread ' +
       (n === 1 ? 'comment' : 'comments'));
   }
 
