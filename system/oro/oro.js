@@ -162,9 +162,19 @@
     if (host) render(host);
   }
 
-  /* The script tag stands right after the rail, so the host is
-     already parsed and the menu is there before the first paint.
-     The listener is the safety net for a page that moves the tag. */
+  /* gbppl-oro-engine-1. The rail is published, because a page built
+     by GbOro.page does not exist yet when this file loads: the
+     engine writes the host and then asks for the menu outright. The
+     call is idempotent — render() takes the marker attribute off the
+     host, so a second boot finds nothing to do. */
+  window.GbOro = window.GbOro || {};
+  window.GbOro.rail = boot;
+
+  /* On a page written out by hand the script tag stands right after
+     the rail, so the host is already parsed and the menu is there
+     before the first paint. The listener is the safety net for a
+     page that moves the tag, and the mechanism for one whose body
+     the engine writes later. */
   if (document.querySelector('[data-oro-rail]')) boot();
   else document.addEventListener('DOMContentLoaded', boot);
 })();
@@ -441,15 +451,18 @@
     return spy;
   }
 
-  window.GbOro = {
-    px: px,
-    txt: txt,
-    widthNow: widthNow,
-    copy: copy,
-    watchCopy: watchCopy,
-    buildToc: buildToc,
-    watchToc: watchToc
-  };
+  /* gbppl-oro-engine-1: added to, never replaced. oro-page.js may
+     have put GbOro.head and GbOro.page here already — it is loaded
+     from the <head>, where it has to be to write the links — and an
+     assignment would take them away again. */
+  var O = window.GbOro = window.GbOro || {};
+  O.px = px;
+  O.txt = txt;
+  O.widthNow = widthNow;
+  O.copy = copy;
+  O.watchCopy = watchCopy;
+  O.buildToc = buildToc;
+  O.watchToc = watchToc;
 
   /* The safety net, not the mechanism: a page that says nothing at
      all still gets its contents. A page that calls watchToc from
