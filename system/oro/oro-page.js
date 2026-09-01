@@ -347,6 +347,11 @@
       '</div>\n</div>\n</div>\n' +
       '<div class="gbdoc-pg__rail" data-pg-rail></div>\n' +
       '</div>\n' +
+      /* The one line under the card that the page's own script
+         writes: which specimen is standing, and why a value is out.
+         Icons has one; the pages whose readout is a table beside the
+         card do not, and say so in their own words. */
+      (pg.foot ? '<p class="gbdoc-foot" id="' + esc(pg.foot) + '"></p>\n' : '') +
       '<div class="gbdoc-pg__bar">\n' +
       (pg.action || '') +
       '<div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-pg-view></div>\n' +
