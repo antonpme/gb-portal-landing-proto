@@ -557,6 +557,16 @@
     var slice = reg.forPage(pageId, '../');
     if (!slice) return '';
     var n = slice.variants.length;
+    /* И варианты элементов (gbppl-proto-model-1): с 01.09 у страницы
+       бывают прототипы, которые подменяют одну её деталь, а не
+       собирают её заново, и покрытие они дают такое же. Считаются по
+       дому элемента: сквозной хедер стоит у той страницы, на которой
+       его показывают. */
+    if (typeof reg.elements === 'function') {
+      reg.elements('../').forEach(function (el) {
+        if (el.home === pageId) n += el.variants.length;
+      });
+    }
     if (!n) return '';
     return n + (n === 1 ? ' sandbox' : ' sandboxes');
   }

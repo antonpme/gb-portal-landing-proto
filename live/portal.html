@@ -29,6 +29,11 @@
      collapse handler alike; the switches it held are declared to
      <gb-studio-panel> through panel.addGroup(), and the panel draws
      them in the studio's language under the eyebrow "This page".
+     (gbppl-proto-model-1, 01.09: that eyebrow is gone. Three of those
+     four groups are variants of ELEMENTS of this page and are
+     declared once in system\sandbox-registry.js, where the console
+     reads them under Prototype; what stays here is the demo data,
+     under Demo. The functions below did not move.)
      Nothing they DO changed: the same setNav / setBlock / setPth,
      the same body attributes, the same ?nav= ?hero= ?layout= ?pth=
      ?lock= parameters, so every link ever shared still opens the
@@ -4134,7 +4139,10 @@
      old internal keys, so every link that was ever shared still
      opens the view it always opened. */
   var panel     = document.querySelector('gb-studio-panel');
-  var navGroup, blockGroup, pthGroup, cartGroup;
+  /* gbppl-proto-model-1: три ручки групп ушли вместе с группами —
+     строки элементов рисует консоль из реестра, и отмечать их снаружи
+     теперь panel.setElement. Осталась ручка записки. */
+  var cartNote;
 
   var BAR_TEXT = {
     a: 'Start Gifting: Gift Campaigns, Events, Onboardings, Milestones',
@@ -4248,8 +4256,8 @@
     /* --- the readout the console prints back. The PROTO panel said
        "empty" / "bar sticky" beside the group label; the same fact,
        said in words, is the group's note line now. --- */
-    if (cartGroup) {
-      cartGroup.setNote(count === 0
+    if (cartNote) {
+      cartNote.setText(count === 0
         ? 'The dashboard is empty.'
         : 'The Start Gifting bar is sticky.');
     }
@@ -4382,7 +4390,9 @@
     // live restores verbatim
     applyOrder(accountMenu, s === 'ton' ? accTon : (s === 'russell' ? accRussell : accLive));
     applyOrder(adminMenu, s === 'ton' ? admTon : (s === 'russell' ? admRussell : admLive));
-    if (navGroup) navGroup.setActive(n);
+    if (panel && typeof panel.setElement === 'function') {
+      panel.setElement('nav', n === 'live' ? '' : n);
+    }
     // The catalog overlay and the page metablock belong to nav=ton only
     if (s !== 'ton') closeCatalog();
     updatePageMeta();
@@ -4404,7 +4414,9 @@
       if (!document.body.getAttribute('data-grid')) document.body.setAttribute('data-grid', 'weight');
       document.body.setAttribute('data-layout', mode);
     }
-    if (blockGroup) blockGroup.setActive(mode);
+    if (panel && typeof panel.setElement === 'function') {
+      panel.setElement('layout', mode === 'classic' ? '' : mode);
+    }
   }
 
   /* ---- Portal header toggle (gbppl-mark-triple, feedback M via T
@@ -4430,64 +4442,61 @@
       document.body.removeAttribute('data-pth-lock');
     }
     if (portalLock) portalLock.classList.toggle('gbh-lock--stack', lock === 'stack');
-    if (pthGroup) {
-      pthGroup.setActive(lock === 'divider' || lock === 'stack' ? lock : 'off');
+    if (panel && typeof panel.setElement === 'function') {
+      panel.setElement('lock', lock === 'divider' || lock === 'stack' ? lock : '');
     }
   }
 
-  /* ---- THE GROUPS THEMSELVES (gbppl-portal-console-1) ----
-     Declared once, here, after every function they call is defined
-     and before the URL initialiser at the foot runs any of them, so
-     the first setNav / setBlock / setPth of the page already finds a
-     group to light up. Human labels, internal values (Ton 26.08: the
-     panel is read by people, not by the query string). */
+  /* ---- WHAT THIS PAGE STILL TELLS THE CONSOLE (gbppl-proto-model-1)
+     ----
+     Ton, 01.09: «Страница остаётся страницей, варианты страницы —
+     вариантами страницы, а элементы переключаются отдельно... Ничего
+     рукописного в страницах: страницы объявляют только demo-контролы».
+
+     THREE OF THE FOUR GROUPS THAT STOOD HERE ARE GONE FROM THIS FILE.
+     Sidebar labels, Start block and the choice of header are VARIANTS
+     OF ELEMENTS of this page, and they are declared once, in
+     system\sandbox-registry.js (ELEMENTS), with the note that says
+     what each one changes against Live and the commits it was built
+     in. The console draws them from there, in the section Prototype,
+     in the same row shape every page uses. Until today the same three
+     switches were described twice — here for the console and in the
+     registry for the shelf — and the two copies were already saying
+     different words.
+
+     WHAT STAYS HERE IS BEHAVIOUR, NOT UI. The page owns setNav /
+     setBlock / setPth: they apply the variant IN PLACE, with no
+     reload, which is the whole point of four sidebars you compare by
+     clicking. bindElement hands each of them to the console, keyed by
+     the URL key the registry names; the console rewrites the address
+     with replaceState, so Copy link still describes the assembly.
+     setElement is the way back: when the URL initialiser or any other
+     caller changes the view, the row in the console is told.
+
+     Gifts on the dashboard stays, because it IS the demo: it adds and
+     clears made up data. Its readout became the third type of Demo
+     row, a note of its own. */
+  if (panel && typeof panel.bindElement === 'function') {
+    /* Live is the empty value of the key in the registry, and 'live' /
+       'classic' / 'off' are this page's own words for the same thing.
+       The translation lives here, at the edge, and neither side has to
+       learn the other's vocabulary. */
+    panel.bindElement('nav',    function (value) { setNav(value || 'live'); });
+    panel.bindElement('layout', function (value) { setBlock(value || 'classic'); });
+    panel.bindElement('lock',   function (value) { setPth(value || 'off'); });
+  }
+
   if (panel && typeof panel.addGroup === 'function') {
-    navGroup = panel.addGroup({
-      title: 'Sidebar labels',
-      value: 'live',
-      options: [
-        { label: 'Live',    value: 'live',
-          note: 'The sidebar as the portal ships it today.' },
-        { label: 'Russell', value: 'russell',
-          note: "Russell's naming and his two sections." },
-        { label: 'Anton',   value: 'ton',
-          note: 'The validated order: the gift lifecycle first, the account after it.' },
-        { label: 'Ren',     value: 'ren',
-          note: "Anton's order in the editorial skin." }
-      ],
-      onChange: setNav
-    });
-
-    blockGroup = panel.addGroup({
-      title: 'Start block',
-      value: 'classic',
-      options: [
-        { label: 'Classic', value: 'classic', note: 'The approved two button zone.' },
-        { label: 'Grid',    value: 'grid',    note: 'Four cells behind a hairline cross.' },
-        { label: 'Split',   value: 'split',   note: 'Two halves, buttons beside the cells.' },
-        { label: 'Band',    value: 'band',    note: 'One ribbon, the arrangement Russell picked.' }
-      ],
-      onChange: setBlock
-    });
-
-    pthGroup = panel.addGroup({
-      title: 'Header',
-      value: 'off',
-      options: [
-        { label: 'Website',          value: 'off',     note: "The site header, as gildedbox.com renders it." },
-        { label: 'Portal',           value: 'divider', note: 'The portal bar, name and section on one line.' },
-        { label: 'Portal, stacked',  value: 'stack',   note: 'The portal bar, section under the name.' }
-      ],
-      onChange: setPth
-    });
-
-    cartGroup = panel.addGroup({
+    panel.addGroup({
+      type: 'actions',
       title: 'Gifts on the dashboard',
       actions: [
         { label: 'Add a gift',  onClick: addGift },
         { label: 'Clear the dashboard', onClick: clearGifts }
       ]
     });
+
+    cartNote = panel.addGroup({ type: 'note' });
   }
 
   /* ---- Catalog overlay (Ton's brainstorm 2026-08-12) ----

@@ -1,6 +1,6 @@
 /* ============================================================
    SYSTEM COMPONENT: STUDIO PANEL, JS-шаблон (gbppl-panel-4,
-   Тон 2026-08-24, секция Sandbox 2026-08-25, секция This page
+   Тон 2026-08-24, секция Sandbox 2026-08-25, секция страницы
    2026-08-26, Mode 2026-08-26, Device gbppl-panel-7 2026-08-27,
    вторая компоновка gbppl-panel-8 2026-08-27, Classic снят
    gbppl-panel-10 2026-08-27, гардероб и счёт gbppl-panel-11
@@ -14,7 +14,7 @@
    live\portal.html и live\checkout.html. Решение 12.08 «PROTO не
    должен читаться как дизайн» ЭТИМ СНЯТО: пульт один, говорит
    голосом студии, и страничные переключатели переехали в него —
-   секция «This page» ниже. Второго языка у консоли больше нет.
+   секция страницы (сегодня Demo) ниже. Второго языка у консоли нет.
 
    Регистрирует <gb-studio-panel>: плавающий язычок у правого края,
    раскрывающийся в маленькую панель с дорогой домой, списком
@@ -59,40 +59,48 @@
    Sandboxes / Design System), чтобы у одного и того же места не
    было двух имён.
 
-   СЕКЦИЯ «THIS PAGE» (gbppl-panel-4). Переключатели, которые
-   принадлежат ОДНОЙ странице и никому больше: сценарий чекаута,
-   шапка портала, раскладка стартового блока. Панель не знает о них
-   ничего заранее — страница объявляет группы сама, через API:
+   СЕКЦИЯ DEMO, БЫВШАЯ «THIS PAGE» (gbppl-panel-4, словарь
+   gbppl-proto-model-1). Здесь остаётся только ДЕМОНСТРАЦИЯ: сценарий
+   подставных данных, команды над ними и записка-статус. Варианты
+   элементов (шапка портала, раскладка стартового блока, сайдбар)
+   ушли отсюда в реестр и рисуются секцией Prototype. Страница
+   объявляет строки сама, но словарь жёсткий — три типа:
 
      var panel = document.querySelector('gb-studio-panel');
+
      var g = panel.addGroup({
-       title:   'Scenario',            // подпись группы
-       note:    'Одна строка подсказки',   // необязательно
-       value:   'portalEmpty',         // что выбрано сейчас
+       type:    'choice',
+       title:   'Scenario',
+       value:   'portalEmpty',
        options: [
-         { label: 'Empty cart',  value: 'portalEmpty', note: '...' },
+         { label: 'Empty cart',  value: 'portalEmpty', note: 'Описание на слое' },
          { label: 'Loaded cart', value: 'portalLoaded' }
        ],
-       onChange: function (value) { app.setScenario(value); },
-       actions: [                      // необязательно: команды, не выбор
-         { label: 'Reset the demo', onClick: function () { app.resetDemo(); } }
-       ]
+       onChange: function (value) { app.setScenario(value); }
      });
      g.setActive('portalLoaded');   // отметить снаружи, без onChange
-     g.setNote('The cart is empty.');
+
+     panel.addGroup({
+       type:  'actions',
+       title: 'Demo data',
+       actions: [{ label: 'Start over', onClick: function () { app.resetDemo(); } }]
+     });
+
+     var say = panel.addGroup({ type: 'note', text: 'The dashboard is empty.' });
+     say.setText('The Start Gifting bar is sticky.');
 
    Правила секции:
-   · подписи ЧЕЛОВЕЧЕСКИЕ. Не v1/v2/pth/hero/ren — «Portal header»,
-     «From the customizer», «Ren». Внутренние значения остаются
-     внутренними: value уходит в onChange, на экран не попадает.
-   · опции — тихие строки того же .gbsp-link, что двери и песочницы
+   · подписи ЧЕЛОВЕЧЕСКИЕ. Не v1/v2/pth/hero/ren — «Empty cart»,
+     «From the customizer». Внутренние значения остаются внутренними:
+     value уходит в onChange, на экран не попадает.
+   · команды — тихие строки того же .gbsp-link, что двери и песочницы
      (Тон-6: второго языка для списка заводить незачем; docs.css,
      26.08: «контролы не кнопки, инструмент не должен выглядеть как
-     предмет»). Выбранная синяя, Blue 400 на Zinc 950 (Тон-5).
-   · подсказка — ОДНА строка под группой. Строка группы стоит всегда,
-     строка опции показывается, когда опция выбрана.
-   · порядок секций один на всех страницах: двери → Sandbox →
-     This page.
+     предмет»).
+   · описания вариантов живут на втором слое, не в корне
+     (gbppl-panel-layers-1).
+   · тип не из словаря или строка, которую не прочесть ни как выбор,
+     ни как команды, не рисуется и говорит об этом в консоль браузера.
 
    ПОРЯДОК ПОДКЛЮЧЕНИЯ. addGroup зовётся ПОСЛЕ studio-panel.js: до
    апгрейда элемента метода на нём ещё нет. Панель к этому моменту
@@ -101,10 +109,10 @@
    СЕКЦИЯ MODE (gbppl-panel-6, заказ Тона 26.08: «переключать
    режимы View / Inspect... наводишь, и оверлей поверх показывает
    отступы»). Первая секция панели, ВЫШЕ дверей: двери отвечают
-   «куда пойти», Sandbox «что тут есть», This page «что покрутить»,
+   «куда пойти», Prototype «что собрано», Demo «что покрутить»,
    а Mode отвечает «как сейчас работает страница» — и это надо
    видеть раньше всего остального. Порядок секций теперь один на
-   всех: Mode → двери → Sandbox → This page.
+   всех: двери → Prototype → Mode → Comments → Demo.
 
    Панель ВЛАДЕЕТ видом и местом тумблера, а не его поведением:
    что делают View и Inspect, знает system\components\inspect.js,
@@ -173,7 +181,7 @@
       Inspect.
    2. addSection({ title, rank }) — своя полка ящика для того, что не
       является переключателем страницы. Ранги секций: Mode и Device
-      10, Comments 20, This page 90; подвал последний всегда.
+      10, Comments 20, Demo 90; подвал последний всегда.
    3. ПРОВОД В КАДР. Тот же, что у режима прибора: событие gbc:mode
       наружу пересылается внутрь как postMessage {gbsp:'cmode'},
       изнутри наружу как {gbsp:'cmode-up'}, и обе стороны сравнивают
@@ -209,7 +217,7 @@
       пишет это в data-when и гасит лишнее классом is-away по
       событиям gbi:mode и gbc:mode — без перерисовки ящика, с
       коротким --mo-small на возвращении. Кто ничего не объявил,
-      стоит всегда: Mode, навигация, версия страницы, This page,
+      стоит всегда: Mode, навигация, секция Prototype, Demo,
       подвал.
    2. БЕЙДЖ НА СЕГМЕНТЕ. Ручка addSegments получила setBadge(value,
       n): маленький счёт на позиции тумблера. Это ТОТ ЖЕ бейдж, что у
@@ -326,6 +334,60 @@
    КРОМКУ (688 при 720 высоты: 80px консоли были недостижимы). Обе
    вещи чинятся здесь: якорь поднимается на низком окне, потолок
    считается от якоря, а корень худеет на строках выбора.
+
+   ------------------------------------------------------------
+   МОДЕЛЬ ПРОТОТИПА: PROTOTYPE И DEMO (gbppl-proto-model-1,
+   2026-09-01, спека studio\docs\PROTOTYPE-MODEL-SPEC.md)
+   ------------------------------------------------------------
+   Тон, 01.09: «Панель, кроме навигации, инспектора и комментов, —
+   это сам прототип. В режиме прототипа важно видеть: на какой версии
+   страницы я нахожусь и какие есть контролы прототипа: варианты
+   элементов. Хедер из Live или Suggested прямо на Live-странице,
+   чтобы не создавать отдельный прототип ради хедера. Рассел берёт
+   Live-главную, переключает хедер на Suggested, смотрит, аппрувит. У
+   Suggested-варианта где-то на втором уровне заметки: что поменялось,
+   чем отличается от Live».
+
+   ДВЕ СЕКЦИИ ВМЕСТО ОДНОЙ «THIS PAGE», И ГРАНИЦА МЕЖДУ НИМИ СМЫСЛОВАЯ.
+
+     PROTOTYPE  что СОБРАНО на экране: версия страницы плюс по строке
+                на каждый элемент, который на этой странице реально
+                стоит. Строится ЦЕЛИКОМ ИЗ РЕЕСТРА
+                (system\sandbox-registry.js, ELEMENTS), страницы здесь
+                не пишут ни строки. Раньше портал объявлял три своих
+                выбора руками через addGroup, и один и тот же вариант
+                был описан дважды: в реестре для полки и в разметке
+                для консоли.
+     DEMO       что ПОКРУТИТЬ в демонстрации: сценарий данных, команды
+                над ними, строка состояния. Это единственное, что
+                страница объявляет сама, и словарь у неё теперь
+                ЖЁСТКИЙ (три типа строк, ниже).
+
+   ПОРЯДОК СЕКЦИЙ ПО ЧТЕНИЮ: где я (навигация) → что собрано
+   (Prototype) → чем смотрю (Mode и Device) → что здесь сказано
+   (Comments) → что покрутить (Demo) → подвал. Prototype стоит выше
+   инструментов по тому же доводу, по которому там стояла версия
+   страницы (gbppl-panel-8): сначала «что смотрю», потом «чем».
+   Demo последней намеренно: подставные данные — не предмет решения,
+   их крутят, когда с обликом уже разобрались.
+
+   ИМЕНА СЕКЦИЙ РАБОЧИЕ. Тон их не утверждал (вопрос задан 01.09),
+   поэтому каждое стоит ОДНОЙ строкой-константой ниже: переименование
+   = правка одной строки, а не обхода по файлам.
+
+   ВЫБОР ВАРИАНТА ЭЛЕМЕНТА = ПЕРЕКЛЮЧЕНИЕ KEEP-КЛЮЧА, и ничего
+   больше. Что именно ставится в адрес, знает реестр
+   (GB_SANDBOXES.elementSearch, одно правило на консоль и на полку);
+   консоль правит СЕГОДНЯШНИЙ адрес, поэтому версия страницы, экран и
+   чужие ключи остаются на месте. Дальше две дороги:
+     · страница объявила живой переключатель (panel.bindElement) —
+       ключ переписывается replaceState, вариант применяется на
+       месте, ничего не перезагружается. Так живут три выбора
+       портала, которые до этой волны работали мгновенно, и терять
+       это ради единообразия было бы обменом хорошего на ровное;
+     · не объявила — обычный переход по адресу. Так живут ?hdr=auth и
+       ?nav=mark: их читают при загрузке, и честнее уйти по ссылке,
+       чем делать вид, что мы умеем переключить их на лету.
 
    ПОДПИСЬ ДЕВАЙСА БОЛЬШЕ НЕ ТОЛКАЕТ (пункт 4). Слот .gbsp-cap под
    рядом иконок держал min-height 17px, а строка 12/1.45 занимает
@@ -495,6 +557,44 @@
   }
 
   /* ============================================================
+     ИМЕНА СЕКЦИЙ (gbppl-proto-model-1)
+     ------------------------------------------------------------
+     РАБОЧИЕ: Тон 01.09 их ещё не подтвердил (вопрос задан вместе со
+     спекой). Каждое имя стоит здесь одной строкой и больше нигде,
+     поэтому переименование стоит одну правку.
+     ============================================================ */
+  var NAME_PROTOTYPE = 'Prototype';
+  var NAME_DEMO      = 'Demo';
+
+  /* ---- ПРОВЕНАНС ОДНОЙ ТИХОЙ СТРОКОЙ (gbppl-proto-model-1) ----
+     Тон: «Всё должно работать через коммиты: привязка страницы и
+     прототипа к версиям, версинг обязателен». На слое это одна
+     строка под запиской: когда вариант появился, когда его трогали
+     последний раз, и хеш последнего коммита-носителя. Год печатается
+     только когда он не текущий — та же манера, что у дат на полке
+     песочниц. Ничего не выдумывается: нет дат в реестре — нет
+     строки. */
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function dayWord(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+    if (!m) return '';
+    return (+m[3]) + ' ' + MONTHS[+m[2] - 1] +
+           (+m[1] === new Date().getFullYear() ? '' : ' ' + m[1]);
+  }
+  function provLine(o) {
+    var line = '';
+    if (o.created) line = 'Added ' + dayWord(o.created);
+    if (o.updated && o.updated !== o.created) {
+      line += line ? ', last change ' + dayWord(o.updated)
+                   : 'Last change ' + dayWord(o.updated);
+    }
+    var refs = o.refs || [];
+    if (refs.length) line += (line ? ' ' : '') + '(' + refs[refs.length - 1] + ')';
+    return line;
+  }
+
+  /* ============================================================
      СЕКЦИЯ НАВИГАЦИИ (gbppl-panel-9)
      ------------------------------------------------------------
      Тон: «Первому блоку не хватает понятной подписи: не сразу ясно,
@@ -558,11 +658,12 @@
      которому синеет активная строка навигации; имя тихое, 14 Zinc 400,
      тот же голос, что был у .gbsp-group__title.
      ============================================================ */
-  function pickRow(name, value) {
+  function pickRow(name, value, slot) {
     return (
       /* aria-haspopup, но НЕ aria-expanded: строка не раскрывается на
          месте, она уводит на слой, и «expanded» было бы неправдой. */
-      '<button class="gbsp-pick" type="button" aria-haspopup="true">' +
+      '<button class="gbsp-pick" type="button" aria-haspopup="true"' +
+        (slot ? ' data-slot="' + esc(slot) + '"' : '') + '>' +
         '<span class="gbsp-pick__name">' + esc(name) + '</span>' +
         '<span class="gbsp-pick__val">' + esc(value) + '</span>' +
         '<span class="gbsp-pick__chev">' + glyph('chevron-right', 16) + '</span>' +
@@ -575,9 +676,9 @@
      остаётся (пустота тоже ответ, Тон 25.08), но перестаёт быть
      кнопкой: курсор ничего не обещает — то же правило, по которому
      неготовый вариант не ссылка. */
-  function loneRow(name, value) {
+  function loneRow(name, value, slot) {
     return (
-      '<div class="gbsp-pick is-lone">' +
+      '<div class="gbsp-pick is-lone"' + (slot ? ' data-slot="' + esc(slot) + '"' : '') + '>' +
         '<span class="gbsp-pick__name">' + esc(name) + '</span>' +
         '<span class="gbsp-pick__val">' + esc(value) + '</span>' +
       '</div>'
@@ -612,21 +713,144 @@
         current: v.current,
         desc: v.desc || '',
         off: !v.ready,
-        status: statusWord(v.status)
+        status: statusWord(v.status),
+        /* Версия страницы провенанса в коммитах не носит (реестр
+           хранит у неё только дни), и строка честно печатает то, что
+           есть: без хеша (gbppl-proto-model-1). */
+        prov: provLine(v)
       });
     });
     return out;
   }
 
-  function versionSection(pageId, root) {
+  /* ============================================================
+     ЭЛЕМЕНТЫ ЭТОЙ СТРАНИЦЫ (gbppl-proto-model-1)
+     ------------------------------------------------------------
+     Срез считает реестр: локальные — по id страницы, сквозные —
+     везде, и все только там, где носитель реально стоит. Консоль
+     здесь ничего не решает, она рисует.
+     ============================================================ */
+  function elementSlices(pageId, root) {
+    var reg = window.GB_SANDBOXES;
+    if (!reg || typeof reg.elementsHere !== 'function') return [];
+    return reg.elementsHere(pageId || '', root);
+  }
+
+  function elementOptions(el) {
+    var out = [{
+      label: el.live.label,
+      desc: el.live.note,
+      current: el.live.current,
+      value: ''
+    }];
+    el.variants.forEach(function (v) {
+      out.push({
+        label: v.label,
+        desc: v.note,
+        current: v.current,
+        value: v.id,
+        variant: v,
+        off: !v.ready,
+        status: statusWord(v.status),
+        prov: provLine(v)
+      });
+    });
+    return out;
+  }
+
+  function chosen(opts) {
+    return opts.filter(function (o) { return o.current; })[0] || opts[0];
+  }
+
+  /* ============================================================
+     СЕКЦИЯ PROTOTYPE (gbppl-proto-model-1)
+     ------------------------------------------------------------
+     Что собрано на экране: версия страницы и по строке на элемент.
+     Ни одна строка не приходит со страницы — всё из реестра.
+     Секции нет вовсе там, где нечего собрать (полка песочниц, карта):
+     пустой заголовок был бы обещанием без содержимого.
+     ============================================================ */
+  function protoSection(pageId, root) {
+    var html = '';
     var opts = versionOptions(pageId, root);
-    if (!opts) return '';
-    var on = opts.filter(function (o) { return o.current; })[0] || opts[0];
+    if (opts) {
+      var on = chosen(opts);
+      html += (opts.length > 1 ? pickRow : loneRow)('Version', on.label, 'version');
+    }
+    elementSlices(pageId, root).forEach(function (el) {
+      var eo = chosen(elementOptions(el));
+      html += (el.variants.length ? pickRow : loneRow)(el.label, eo.label, 'el:' + el.id);
+    });
+    if (!html) return '';
     return (
-      '<div class="gbsp-sec gbsp-sec--ver">' +
-        (opts.length > 1 ? pickRow('Version', on.label) : loneRow('Version', on.label)) +
+      '<div class="gbsp-sec gbsp-sec--proto">' +
+        '<span class="gbsp-eyebrow">' + esc(NAME_PROTOTYPE) + '</span>' +
+        html +
       '</div>'
     );
+  }
+
+  function protoRowVal(host, slot) {
+    var row = host.querySelector('.gbsp-sec--proto .gbsp-pick[data-slot="' + slot + '"]');
+    return row ? row.querySelector('.gbsp-pick__val') : null;
+  }
+
+  /* ВЫБОР ВАРИАНТА = ПЕРЕКЛЮЧЕНИЕ КЛЮЧА. Что ставится в адрес, знает
+     реестр; консоль правит СЕГОДНЯШНИЙ адрес, поэтому версия, экран и
+     чужие ключи остаются на месте. Страница, объявившая живой
+     переключатель (bindElement), получает вариант без перезагрузки, и
+     адрес всё равно переписывается — иначе Copy link соврал бы про
+     сборку. */
+  function pickElement(host, el, o) {
+    var reg = window.GB_SANDBOXES;
+    if (!reg || typeof reg.elementSearch !== 'function') return;
+    var q   = reg.elementSearch(location.search, el, o.variant || null);
+    var url = location.pathname + (q ? '?' + q : '') + location.hash;
+    var bind = host.__elBinds && host.__elBinds[el.key];
+    if (typeof bind === 'function') {
+      try { history.replaceState(null, '', url); } catch (e) {}
+      var val = protoRowVal(host, 'el:' + el.id);
+      if (val) val.textContent = o.label;
+      bind(o.value, o.variant || null);
+      /* Кадр девайса — отдельный документ, и живое переключение до
+         него не доходит: адрес у него свой. Перечитываем. */
+      if (host.__device && typeof host.__device.reload === 'function') host.__device.reload();
+      return;
+    }
+    location.href = url;
+  }
+
+  function wireProto(host, root) {
+    var sec = host.querySelector('.gbsp-sec--proto');
+    if (!sec) return;
+    var pageId = host.getAttribute('page');
+
+    var ver = sec.querySelector('button.gbsp-pick[data-slot="version"]');
+    if (ver) {
+      ver.addEventListener('click', function () {
+        openLayer(host, {
+          title: 'Version of this page',
+          build: function () { return versionOptions(pageId, root) || []; }
+        }, ver);
+      });
+    }
+
+    elementSlices(pageId, root).forEach(function (el) {
+      var row = sec.querySelector('button.gbsp-pick[data-slot="el:' + el.id + '"]');
+      if (!row) return;
+      row.addEventListener('click', function () {
+        openLayer(host, {
+          title: el.label,
+          build: function () {
+            var fresh = elementSlices(pageId, root).filter(function (e) {
+              return e.id === el.id;
+            })[0] || el;
+            return elementOptions(fresh);
+          },
+          onPick: function (o) { pickElement(host, el, o); }
+        }, row);
+      });
+    });
   }
 
   /* ============================================================
@@ -678,12 +902,23 @@
 
     var options = spec.build() || [];
     var items = options.map(function (o, i) {
+      /* ПОДВАЛ ВАРИАНТА (gbppl-proto-model-1): статус-слово и
+         провенанс одной тихой строкой под запиской. У Live ни того,
+         ни другого нет: он не вариант, а точка отсчёта, и статус ему
+         приписывать не за что. */
+      var flag = o.status ? statusWord(o.status) + (o.off ? ' · not open yet' : '') :
+                 (o.off ? 'not open yet' : '');
+      var foot = (flag || o.prov)
+        ? '<span class="gbsp-opt__foot">' +
+            (flag ? '<span class="gbsp-opt__flag">' + esc(flag) + '</span>' : '') +
+            (o.prov ? '<span class="gbsp-opt__prov">' + esc(o.prov) + '</span>' : '') +
+          '</span>'
+        : '';
       var body = '<span class="gbsp-opt__name">' + esc(o.label) + '</span>' +
-                 (o.desc ? '<span class="gbsp-opt__desc">' + esc(o.desc) + '</span>' : '');
+                 (o.desc ? '<span class="gbsp-opt__desc">' + esc(o.desc) + '</span>' : '') +
+                 foot;
       if (o.off) {
-        return '<li><span class="gbsp-opt is-off">' + body +
-               '<span class="gbsp-opt__flag">' + esc(o.status || 'in progress') + '</span>' +
-               '</span></li>';
+        return '<li><span class="gbsp-opt is-off">' + body + '</span></li>';
       }
       if (o.href) {
         return '<li><a class="gbsp-opt' + (o.current ? ' is-on' : '') + '" href="' + esc(o.href) + '"' +
@@ -730,7 +965,7 @@
 
   /* ПОДВАЛ (gbppl-panel-8): строка состояния и копия ссылки. Держится
      одним узлом, потому что все секции, которые страница дописывает
-     позже (Mode, Device, This page), встают ПЕРЕД ним. Сегмент Layout
+     позже (Mode, Device, Demo), встают ПЕРЕД ним. Сегмент Layout
      стоял здесь же и ушёл с Classic (gbppl-panel-10). */
   function footHtml() {
     return (
@@ -743,7 +978,7 @@
 
   var TEMPLATE = function (root, pageId) {
     var body = navSection(root) +
-               versionSection(pageId, root) +
+               protoSection(pageId, root) +
                footHtml();
     return (
       '<div class="gbsp gbsp--v2 is-collapsed">' +
@@ -770,9 +1005,10 @@
      То же правило, по которому внутри секции стоят группы сегментов
      (gbppl-panel-7): кто объявляется раньше, зависит от порядка
      скриптов и от промисов, а порядок на экране обязан быть один на
-     всех страницах. Ранги: Mode и Device 10, Comments 20, This page
-     90 — сначала «чем смотрю», потом «что здесь сказано», потом «что
-     покрутить». Подвал остаётся последним всегда. */
+     всех страницах. Ранги: Mode и Device 10, Comments 20, Demo 90 —
+     сначала «чем смотрю», потом «что здесь сказано», потом «что
+     покрутить»; секция Prototype стоит выше их всех, в шаблоне.
+     Подвал остаётся последним всегда. */
   function placeSection(host, sec, rank) {
     sec.setAttribute('data-rank', String(rank));
     var panel = host.querySelector('.gbsp-panel');
@@ -800,69 +1036,113 @@
     if (sec) return sec;
     sec = document.createElement('div');
     sec.className = 'gbsp-sec gbsp-sec--page';
-    sec.innerHTML = '<span class="gbsp-eyebrow">This page</span>';
+    /* Айбрау был «This page» и умер вместе с ней (gbppl-proto-model-1):
+       «эта страница» — не ответ на вопрос, что здесь стоит. Половина
+       её содержимого была прототипом (варианты элементов) и уехала
+       наверх в реестр, вторая половина — демонстрационные данные, и
+       она называет себя своим именем. */
+    sec.innerHTML = '<span class="gbsp-eyebrow">' + esc(NAME_DEMO) + '</span>';
     /* gbppl-panel-8: не в самый конец, а перед хвостом — подвал ящика
        стоит последним всегда. gbppl-comments-b: место теперь считает
        общий рангоукладчик, число то же самое (последней из секций). */
     return placeSection(host, sec, 90);
   }
 
-  /* Одна группа: подпись, строки выбора, строки-команды, подсказка.
-     Возвращает ручку — страница держит её и отмечает выбранное
-     снаружи, когда состояние сменилось не кликом по панели (адрес
-     в строке браузера, Alpine, свой код). */
+  /* ============================================================
+     СЛОВАРЬ СЕКЦИИ DEMO (gbppl-proto-model-1)
+     ------------------------------------------------------------
+     Тон 01.09: «Жёсткий словарь addGroup: три типа строк (выбор /
+     действия / записка), свободной самодеятельности нет».
+
+       choice   { type:'choice', title, value, options:[{label,value,
+                  note}], onChange } — строка «имя | значение ›»,
+                  описания вариантов на втором слое.
+       actions  { type:'actions', title, actions:[{label,onClick}] } —
+                  подпись слева, тихие команды справа.
+       note     { type:'note', text } — записка-статус одним слотом,
+                  которую страница переписывает по ходу демонстрации
+                  (setText).
+
+     Старая подпись (без type) МАППИТСЯ, пока она однозначна: есть
+     options — это выбор, есть только actions — это команды. Всё
+     остальное больше не рисуется молча, а говорит об этом в консоль
+     браузера: секция Demo должна выглядеть одинаково на всех
+     страницах, и «почти группа» ломает это тише всего.
+     ============================================================ */
+  var DEMO_TYPES = ['choice', 'actions', 'note'];
+
+  function demoType(spec) {
+    if (spec.type) {
+      if (DEMO_TYPES.indexOf(spec.type) > -1) return spec.type;
+      console.warn('gb-studio-panel: Demo row type "' + spec.type +
+                   '" is not one of choice, actions, note. The row is not drawn.');
+      return '';
+    }
+    if ((spec.options || []).length) return 'choice';
+    if ((spec.actions || []).length) return 'actions';
+    console.warn('gb-studio-panel: a Demo row needs a type (choice, actions or note) ' +
+                 'or options / actions to be read as one. The row is not drawn.');
+    return '';
+  }
+
+  /* Одна строка секции Demo. Возвращает ручку — страница держит её и
+     отмечает выбранное снаружи, когда состояние сменилось не кликом
+     по панели (адрес в строке браузера, Alpine, свой код). */
   function makeGroup(host, spec) {
     spec = spec || {};
     var options = spec.options || [];
     var actions = spec.actions || [];
+    var type = demoType(spec);
+    if (!type) {
+      /* Мёртвая ручка: страница, объявившая строку не по словарю, не
+         должна падать на первом же setActive. */
+      var dead = function () { return dead; };
+      return { element: null, setActive: dead, setNote: dead, setText: dead };
+    }
 
     var group = document.createElement('div');
     var current = spec.value;
-    var forced = null;   /* setNote перебивает подсказку группы */
 
     function labelFor(v) {
       for (var i = 0; i < options.length; i++) if (options[i].value === v) return options[i].label;
       return options.length ? options[0].label : '';
     }
 
-    /* ДВА ОБЛИКА ГРУППЫ (gbppl-panel-layers-1). Группа с выбором —
-       ОДНА строка выбора: имя слева, выбранное справа, описания
-       вариантов на втором слое (Тон 01.09: «описания нужно показывать,
-       но на отдельном уровне»). Группа без выбора — команды, а команде
-       нечего рассказывать о себе, поэтому она остаётся строкой ящика
-       рядом со своим именем.
+    /* ТРИ ОБЛИКА, ПО ОДНОМУ НА ТИП. Выбор — ОДНА строка: имя слева,
+       выбранное справа, описания вариантов на втором слое (Тон 01.09:
+       «описания нужно показывать, но на отдельном уровне»). Команды —
+       имя слева, тихие кнопки справа. Записка — один абзац.
 
-       Замер до правки: три сценария чекаута с абзацами занимали в
-       корне 357.6px, четыре группы портала — 837.9px. */
+       Замер до panel-layers-1: три сценария чекаута с абзацами
+       занимали в корне 357.6px, четыре группы портала — 837.9px. */
     var html = '';
-    if (options.length) {
+    if (type === 'choice') {
       group.className = 'gbsp-group gbsp-group--pick';
       html += (options.length > 1 ? pickRow : loneRow)(spec.title || '', labelFor(current));
-    } else {
+    } else if (type === 'actions') {
       group.className = 'gbsp-group gbsp-group--acts';
       if (spec.title) {
         html += '<span class="gbsp-group__title">' + esc(spec.title) + '</span>';
       }
-      if (actions.length) {
-        html += '<ul class="gbsp-list gbsp-acts">';
-        actions.forEach(function (a, i) {
-          html += '<li><button class="gbsp-link" type="button" data-act="' + i + '">' +
-                  esc(a.label) + '</button></li>';
-        });
-        html += '</ul>';
-      }
+      html += '<ul class="gbsp-list gbsp-acts">';
+      actions.forEach(function (a, i) {
+        html += '<li><button class="gbsp-link" type="button" data-act="' + i + '">' +
+                esc(a.label) + '</button></li>';
+      });
+      html += '</ul>';
+    } else {
+      group.className = 'gbsp-group gbsp-group--note';
       html += '<p class="gbsp-note"></p>';
     }
     group.innerHTML = html;
 
     var valEl  = group.querySelector('.gbsp-pick__val');
     var noteEl = group.querySelector('.gbsp-note');
+    var line   = spec.text || '';
 
     function paint() {
       if (valEl) valEl.textContent = labelFor(current);
       if (!noteEl) return;
-      var line = forced;
-      if (line === null || line === undefined) line = spec.note || '';
       noteEl.textContent = line;
       noteEl.hidden = !line;
     }
@@ -896,16 +1176,28 @@
     pageSection(host).appendChild(group);
     paint();
 
-    return {
+    var handle = {
       element: group,
-      setActive: function (value) { current = value; forced = null; paint(); },
-      /* Подсказка принадлежит группе КОМАНД: у группы с выбором
-         описания переехали на слой, и подпись под строкой была бы тем
-         самым абзацем, который Тон просил убрать из корня. Значение
-         всё равно запоминается: страница вправе позвать setNote до
-         того, как узнает, какой у группы облик. */
-      setNote: function (text) { forced = (text === null || text === undefined) ? null : String(text); paint(); }
+      setActive: function (value) { current = value; paint(); return handle; },
+      /* Записка — СВОЯ строка словаря, и переписывает её setText. У
+         выбора описания живут на слое, у команд их нет вовсе: подпись
+         под ними была бы тем самым абзацем в корне, который Тон
+         просил убрать. */
+      setText: function (text) {
+        if (!noteEl) {
+          console.warn('gb-studio-panel: setText belongs to a Demo row of type note.');
+          return handle;
+        }
+        line = (text === null || text === undefined) ? '' : String(text);
+        paint();
+        return handle;
+      }
     };
+    /* Прежнее имя того же движения. Живёт как псевдоним, чтобы старая
+       страница не падала, и говорит вслух, если её позвали у строки,
+       которой нечего печатать. */
+    handle.setNote = handle.setText;
+    return handle;
   }
 
   /* ============================================================
@@ -1307,7 +1599,7 @@
      говорит одно и то же дважды. Вместо них ОДНА строка внизу ящика:
      она отвечает не «что делает эта кнопка», а «что у меня сейчас
      включено», и это единственный вопрос, который читают каждый раз.
-     Абзацы секции This page остаются: они говорят про сценарий
+     Записка секции Demo остаётся: она говорит про сценарий
      страницы, чего строка состояния сказать не может.
      ============================================================ */
   var STATE = { mode: 'view', device: 'full', comment: false, commentsDown: '',
@@ -1736,7 +2028,19 @@
     });
 
     apply(current, false);
-    return { apply: apply, value: function () { return current; } };
+    return {
+      apply: apply,
+      value: function () { return current; },
+      /* КАДР ПЕРЕЧИТЫВАЕТ АДРЕС (gbppl-proto-model-1). Вариант,
+         применённый НА МЕСТЕ (bindElement), меняет наружную страницу,
+         а она лежит под сценой, и её не видно; в кадре стоит отдельный
+         документ, который о выборе не знает. Переход по ссылке
+         перезагружает всё сам, живому переключателю нужна эта строка.
+         Сцены нет — метод молчит. */
+      reload: function () {
+        if (screen) screen.src = frameSrc();
+      }
+    };
   }
 
   /* ============================================================
@@ -1798,6 +2102,45 @@
       return makeGroup(this, spec);
     }
 
+    /* ============================================================
+       ЖИВОЙ ПЕРЕКЛЮЧАТЕЛЬ ЭЛЕМЕНТА (gbppl-proto-model-1)
+       ------------------------------------------------------------
+       Строку элемента рисует консоль из реестра, и страница на её вид
+       не влияет. Но некоторые варианты страница умеет применить НА
+       МЕСТЕ, без перезагрузки (портал так живёт с 12.08: сравнивать
+       четыре сайдбара мгновенным переключением — весь смысл этих
+       вариантов). Такая страница объявляет ОДНО:
+
+         panel.bindElement('nav', function (value) { setNav(value || 'live'); });
+         panel.setElement('nav', 'russell');   // отметить снаружи
+
+       value — значение ключа, пустая строка = Live. Не объявила —
+       консоль просто уходит по адресу, и это тоже правильный ответ:
+       ?hdr=auth и ?nav=mark читаются при загрузке.
+       ============================================================ */
+    bindElement(key, apply) {
+      if (!this.__rendered) this.connectedCallback();
+      if (typeof apply !== 'function') return this;
+      this.__elBinds = this.__elBinds || {};
+      this.__elBinds[key] = apply;
+      return this;
+    }
+
+    setElement(key, value) {
+      if (!this.__rendered) this.connectedCallback();
+      var root = this.getAttribute('data-root') || '';
+      var el = elementSlices(this.getAttribute('page'), root).filter(function (e) {
+        return e.key === key;
+      })[0];
+      if (!el) return this;
+      var want  = (value === null || value === undefined) ? '' : String(value);
+      var label = el.live.label;
+      el.variants.forEach(function (v) { if (String(v.id) === want) label = v.label; });
+      var val = protoRowVal(this, 'el:' + el.id);
+      if (val) val.textContent = label;
+      return this;
+    }
+
     /* Тумблер режима: сегменты первой секцией (gbppl-panel-6). */
     addSegments(spec) {
       if (!this.__rendered) this.connectedCallback();
@@ -1805,7 +2148,7 @@
     }
 
     /* СВОЯ ПОЛКА ЯЩИКА (gbppl-comments-b). addGroup кладёт группу в
-       секцию «This page», и это правильное место для переключателей
+       секцию Demo, и это правильное место для переключателей
        страницы: сценарий чекаута, шапка портала. Список комментариев
        страницы — не переключатель, у него свой заголовок и своё место
        в порядке чтения ящика, поэтому владелец режима просит СЕКЦИЮ, а
@@ -1882,22 +2225,13 @@
       wireKeys(this.__device);
       wireEmbedded();
 
-      /* ВЕРСИЯ УХОДИТ НА СЛОЙ (gbppl-panel-layers-1). Строка стоит в
-         шаблоне, потому что её содержимое известно из реестра ещё до
-         первого addGroup; список строится заново на каждом открытии —
-         текущей версией бывает и песочница, а адрес страницы может
+      /* ВЕРСИЯ УХОДИТ НА СЛОЙ (gbppl-panel-layers-1), А РЯДОМ С НЕЙ
+         ЭЛЕМЕНТЫ (gbppl-proto-model-1). Строки стоят в шаблоне,
+         потому что их содержимое известно из реестра ещё до первого
+         addGroup; списки строятся заново на каждом открытии — текущим
+         бывает и песочница, и вариант элемента, а адрес может
          смениться, пока ящик открыт. */
-      var verPick = this.querySelector('.gbsp-sec--ver button.gbsp-pick');
-      if (verPick) {
-        verPick.addEventListener('click', function () {
-          openLayer(host, {
-            title: 'Version of this page',
-            build: function () {
-              return versionOptions(host.getAttribute('page'), root) || [];
-            }
-          }, verPick);
-        });
-      }
+      wireProto(this, root);
 
       function setOpen(open) {
         /* Закрытый ящик всегда открывается корнем: слой это шаг

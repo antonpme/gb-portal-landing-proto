@@ -389,14 +389,35 @@
   /* Порядок статусов ОБЪЯВЛЕН, а не алфавитный: что движется, что
      предложено, что решено. Он же порядок групп при Group · Status и
      тайбрейк при Sort · Status. */
-  var STATUS_ORDER = ['in-progress', 'proposal', 'approved'];
+  var STATUS_ORDER = ['in-progress', 'suggested', 'approved'];
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* приватное окно */ } }
 
-  /* ---- The registry, flattened: one row per sandbox ---- */
+  /* ---- The registry, flattened: one row per prototype ----
+     TWO CATALOGUES, ONE SHELF (gbppl-proto-model-1, Ton 01.09). The
+     registry now holds versions of pages (PAGES) and variants of
+     elements (ELEMENTS), and a person looking for «what is being
+     tried on the portal» wants both: the header a page wears is as
+     much a prototype as a second checkout flow. So the shelf reads
+     both and puts them in the same card.
+
+     A variant of an element files itself under the page it is shown
+     on, and says whose it is on its own line: a site-wide element
+     says «Site element», a local one names its page. Without that
+     line the sign in form would look like a prototype of the
+     category page, which it is not: it rides every page with a bar. */
   var items = [];
-  reg.rooms('').forEach(function (page, pageIndex) {
+  /* Порядок проектов — порядок реестра, а не порядок непустых страниц:
+     теперь у страницы могут быть варианты элементов и ни одной версии
+     (портал), и два списка обязаны укладываться в одну шкалу. */
+  var pageOrder = Object.keys(reg.pages);
+  function orderOf(id) {
+    var i = pageOrder.indexOf(id);
+    return i < 0 ? pageOrder.length : i;
+  }
+
+  reg.rooms('').forEach(function (page) {
     page.variants.forEach(function (v, varIndex) {
       items.push({
         label: v.label, desc: v.desc, status: v.status, ready: v.ready,
@@ -410,7 +431,28 @@
            (gbppl-sandbox-names-1: имена перестали начинаться с
            «V1 ·» и «V2 ·», и алфавит перевернул пару чекаута). */
         page: page.label, pageId: page.id,
-        pageIndex: pageIndex, varIndex: varIndex
+        pageIndex: orderOf(page.id), varIndex: varIndex
+      });
+    });
+  });
+
+  (typeof reg.elements === 'function' ? reg.elements('') : []).forEach(function (el, elIndex) {
+    var home = reg.pages[el.home];
+    if (!home) return;
+    el.variants.forEach(function (v, i) {
+      items.push({
+        label: v.label, desc: v.note, status: v.status, ready: v.ready,
+        href: v.href, tags: v.tags || [],
+        created: v.created || '', updated: v.updated || '',
+        page: home.label, pageId: el.home,
+        /* Две вещи, которых нет у версии страницы: имя элемента и
+           слово о том, чей он. Печатаются одной тихой строкой. */
+        element: el.label, owner: el.owner,
+        pageIndex: orderOf(el.home),
+        /* Варианты элементов стоят ПОСЛЕ версий страницы внутри
+           проекта: сначала «какая это страница целиком», потом «чем
+           на ней подменили деталь». */
+        varIndex: 100 + elIndex * 10 + i
       });
     });
   });
@@ -638,11 +680,28 @@
      был до утра: волна ничего не рисовала заново, она вернула
      карточке содержимое, которое один день прожило строкой. */
   function pcard(it) {
+    /* Чья это деталь (gbppl-proto-model-1): имя элемента одной тихой
+       строкой под именем варианта. У версии страницы этой строки нет:
+       она и есть страница.
+
+       ОБЛАСТЬ ДЕЙСТВИЯ ГОВОРИТСЯ ТОЛЬКО У СКВОЗНОГО. Локальный
+       элемент стоит в пане своей страницы, и её имя уже написано
+       заголовком над карточками; печатать «· Portal page» на восьми
+       карточках под заголовком «Portal page» — ровно то, на что Тон
+       сказал 31.08 «Прототипы дублируются: Checkout, Checkout,
+       Category, Category — бред». А «Site element» сказать
+       обязательно: иначе форма входа читалась бы прототипом страницы
+       категорий, хотя она едет на любой странице с баром. */
+    var owner = it.element
+      ? '<span class="gbs-pcard__owner">' + esc(it.element) +
+        (it.owner === 'Site element' ? ' · ' + esc(it.owner) : '') + '</span>'
+      : '';
     var body =
       '<span class="gbs-pcard__head">' +
         '<h4 class="gbs-door-title">' + esc(it.label) + '</h4>' +
         (it.ready ? ARROW : '<span class="gbs-pcard__note">not open yet</span>') +
       '</span>' +
+      owner +
       '<p class="gbs-door-desc">' + esc(it.desc) + '</p>' +
       '<span class="gbs-pcard__meta">' +
         '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
@@ -671,8 +730,12 @@
        сетке пять. «Not open yet» ходит за именем: комнаты нет у
        прототипа, а не у страницы. */
     var note = it.ready ? '' : '<span class="gbs-row__note">· not open yet</span>';
+    /* В строке имя элемента идёт тем же тихим суффиксом, что и «not
+       open yet»: колонки под него в сетке из пяти нет, а вопрос «чья
+       это деталь» в списке задаётся так же часто, как в карточках. */
+    var own = it.element ? '<span class="gbs-row__note">· ' + esc(it.element) + '</span>' : '';
     var body =
-      '<span class="gbs-row__name">' + esc(it.label) + note + '</span>' +
+      '<span class="gbs-row__name">' + esc(it.label) + own + note + '</span>' +
       '<span class="gbs-row__meta">' +
         '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
         '<span class="gbs-row__tags" title="' + esc(tags) + '">' + esc(tags) + '</span>' +

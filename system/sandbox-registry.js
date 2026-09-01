@@ -3,7 +3,27 @@
    Тон 2026-08-25, копи-правка 2026-08-26; теги и дата последней
    активности gbppl-sandboxes-4, Тон 2026-08-28; имена по странице
    gbppl-sandbox-names-1 и день рождения варианта
-   gbppl-sandbox-projects-1, Тон 2026-08-31)
+   gbppl-sandbox-projects-1, Тон 2026-08-31; ЭЛЕМЕНТЫ И ИХ ВАРИАНТЫ
+   gbppl-proto-model-1, Тон 2026-09-01)
+   ------------------------------------------------------------
+   ДВА КАТАЛОГА В ОДНОМ ФАЙЛЕ (gbppl-proto-model-1). Постановка Тона
+   01.09 (спека studio\docs\PROTOTYPE-MODEL-SPEC.md) развела то, что
+   до сих пор лежало одной кучей:
+
+     PAGES     ВЕРСИИ СТРАНИЦЫ: страница, собранная целиком иначе
+               (Today's flow против Shared quantity pool). Носитель —
+               ключ ?v= и ему подобные, выбор один на страницу.
+     ELEMENTS  ЭЛЕМЕНТЫ И ИХ ВАРИАНТЫ: именованная ЧАСТЬ страницы,
+               которую можно подменить, не заводя ради неё второй
+               страницы. Тон: «хедер из Live или Suggested прямо на
+               Live-странице, чтобы не создавать отдельный прототип
+               ради хедера. Рассел берёт Live-главную, переключает
+               хедер на Suggested, смотрит, аппрувит».
+
+   Элементы бывают СКВОЗНЫЕ (scope 'site': хедер, ключ едет по
+   внутренним ссылкам — withHdr в header.js) и ЛОКАЛЬНЫЕ (scope
+   'page': ключ живёт на своей странице). Оба каталога читают консоль
+   (секции Prototype и Demo), полка sandboxes.html и карта.
    ------------------------------------------------------------
    КАК ЗАРЕГИСТРИРОВАТЬ НОВУЮ ПЕСОЧНИЦУ (три строки):
    1. Найди страницу по её id в PAGES (или заведи новую запись:
@@ -68,7 +88,20 @@
              языком, sentence case, без em dash и без внутренних
              ссылок на тикеты (gbppl-sandboxes-3, 26.08: карточки
              читают снаружи команды)
-     status  'in-progress' | 'proposal' | 'approved'
+     status  'in-progress' | 'suggested' | 'approved'
+             (gbppl-proto-model-1: слово 'proposal' снято ВЕЗДЕ.
+             Тон говорит Suggested — «хедер из Live или Suggested
+             (новая версия на рассмотрении)», — и полка, карта и
+             консоль обязаны говорить одно слово. Ключ статуса и
+             есть то слово, которое печатается человеку, поэтому
+             переименован он сам, а не подпись поверх него.
+             `updated` при этом НЕ ДВИНУТ ни у одного варианта:
+             правило gbppl-sandboxes-4 говорит про правку варианта,
+             а здесь двинулось наше СЛОВО для одного и того же
+             состояния. Решение варианта не шевелилось, и полка,
+             сказавшая бы «updated today» про восемь чужих
+             прототипов, соврала бы ровно так, как этого правила
+             боялись.)
      href    адрес ОТ КОРНЯ СТУДИИ, вместе с query
      ready   умеет ли страница этот параметр СЕГОДНЯ. false =
              решение принято, кода ещё нет: показывается серым с
@@ -175,35 +208,12 @@
     home: {
       label: 'Home page',
       live: 'live/index.html',
-      variants: [
-        {
-          /* Ton-16, 28.08: «Сейчас на лайве отвратительное решение:
-             кнопка Start Gifting фактически даёт авторизацию и
-             отправляет на портал... Это единственное, что мы точно не
-             хотим повторять за текущим лайвом», и там же: «Попробуем
-             так сделать на сэндбоксе и посмотрим, как оно будет
-             выглядеть». Ключ читает <gb-site-header>, поэтому та же
-             комната открывается и на каталоге (?hdr=auth едет по
-             внутренним ссылкам); дверь ведёт на букинг (Тон 31.08:
-             «прототип Sign In form должен открывать эту страницу
-             сразу, а не просто главную»): там бар в твёрдой земле и
-             иконка аккаунта на виду, а не спрятана за прозрачным
-             героем. */
-          id: 'header-auth',
-          /* Тон 31.08 зовёт этот прототип «Sign-in / Sign-up Form».
-             Одна форма делает и то и другое (тот же e-mail, тот же
-             код), поэтому имя одно: вторая половина названия обещала
-             бы второй экран, которого нет. */
-          label: 'Sign in form',
-          desc: 'Sign in from the account icon in the header, in a drawer. The person then becomes your initials, with the cart beside them.',
-          status: 'proposal',
-          href: 'live/book-a-meeting.html?hdr=auth',
-          ready: true,
-          tags: ['header', 'flow'],
-          created: '2026-08-28',
-          updated: '2026-08-31'
-        }
-      ]
+      /* Пусто с 01.09 (gbppl-proto-model-1): «Sign in form» стояла
+         здесь версией страницы, а на самом деле это ВАРИАНТ ХЕДЕРА —
+         сквозного элемента, который живёт на любой странице с баром.
+         Она переехала в ELEMENTS ниже и с полки никуда не делась:
+         полка читает оба каталога. */
+      variants: []
     },
 
     catalog: {
@@ -228,7 +238,7 @@
              ленту преимуществ. */
           label: 'Light closing banner',
           desc: 'The closing banner and the advantages in light ink, tighter, no gradient.',
-          status: 'proposal',
+          status: 'suggested',
           href: 'live/catalog/index.html?prefooter=light',
           ready: true,
           /* Джулия и Рассел на живой странице категорий, отсюда
@@ -236,29 +246,12 @@
           tags: ['closing banner', 'colour', 'client feedback'],
           created: '2026-08-26',
           updated: '2026-08-31'
-        },
-        {
-          /* Ton 31.08: «должна быть версия-прототип страницы категорий
-             GIFTS, где меню переделано как просил Марк; её нет ни на
-             live, ни в прототипе, это проблема». Она была, но под нашей
-             накладкой: бар бандла и есть тот, который Марк смотрел
-             27.07, и три его пункта из четырёх в нём уже стоят (ни
-             CUSTOMIZE, ни EXPLORE в хроме, Portal за человечком,
-             консьерж плавающий). Ключ снимает подмену хрома целиком и
-             показывает страницу такой, какой он её видел. Четвёртый
-             пункт (категории вместо мега-меню Gifts) здесь НЕ
-             построен: открыть не значит перерисовать, и перерисовку
-             заказывает Тон. gbppl-catalog-mark-1. */
-          id: 'nav-mark',
-          label: 'The prototype’s own menu',
-          desc: 'The July bar Mark reviewed: no Customize, no Explore, Portal behind the person glyph.',
-          status: 'proposal',
-          href: 'live/catalog/index.html?nav=mark',
-          ready: true,
-          tags: ['header', 'navigation', 'client feedback'],
-          created: '2026-08-31',
-          updated: '2026-08-31'
         }
+        /* «The prototype’s own menu» (?nav=mark) стояла здесь второй
+           строкой и уехала в ELEMENTS 01.09 (gbppl-proto-model-1): она
+           подменяет НАВИГАЦИЮ страницы, а не собирает страницу заново,
+           то есть это вариант локального элемента. На полке она
+           осталась на месте. */
       ]
     },
 
@@ -303,32 +296,15 @@
     portal: {
       label: 'Portal page',
       live: 'live/portal.html',
-      variants: [
-        {
-          id: 'pth',
-          /* Было «Portal header» рядом с ключом pth. Ключ остался в
-             href, а имя теперь говорит, ЧЕЙ это хедер. */
-          label: 'The portal’s own header',
-          desc: "Instead of the website's bar: the GildedBox | Portal lock, and the utilities ordered out to the edge.",
-          status: 'in-progress',
-          href: 'live/portal.html?pth=1',
-          ready: true,
-          tags: ['header', 'navigation'],
-          created: '2026-08-25',
-          updated: '2026-08-31'
-        },
-        {
-          id: 'hero-start',
-          label: 'Start gifting hero',
-          desc: 'The hero of the portal landing rebuilt around the Start Gifting entry, with the greeting kept out of its way.',
-          status: 'in-progress',
-          href: 'live/portal.html?hero=start',
-          ready: true,
-          tags: ['hero', 'flow'],
-          created: '2026-08-25',
-          updated: '2026-08-31'
-        }
-      ]
+      /* Пусто с 01.09 (gbppl-proto-model-1). Обе строки, что стояли
+         здесь, — «The portal’s own header» (?pth=1) и «Start gifting
+         hero» (?hero=start) — подменяют по одной ЧАСТИ страницы, а не
+         собирают страницу заново, и обе к тому же объявлялись второй
+         раз руками в live\portal.html через addGroup. Теперь они
+         варианты локальных элементов портала (ELEMENTS ниже),
+         объявлены ОДИН раз, и консоль показывает их той же строкой
+         выбора, что и всё остальное. */
+      variants: []
     },
 
     booking: {
@@ -385,6 +361,274 @@
       variants: []
     }
   };
+
+  /* ============================================================
+     ELEMENTS — ЭЛЕМЕНТЫ И ИХ ВАРИАНТЫ (gbppl-proto-model-1,
+     постановка Тона 2026-09-01, спека
+     studio\docs\PROTOTYPE-MODEL-SPEC.md)
+     ------------------------------------------------------------
+     Тон, дословно: «Страница остаётся страницей, варианты страницы —
+     вариантами страницы, а элементы переключаются отдельно. Элементы
+     бывают сквозные (хедер, влияет на всё) и локальные (принадлежат
+     странице)... У Suggested-варианта где-то на втором/третьем уровне
+     заметки: что поменялось, чем отличается от Live».
+
+     Все пять элементов ниже СУЩЕСТВОВАЛИ и до этой волны — ключами в
+     адресе (?hdr, ?nav, ?hero+?layout, ?pth+?lock) и рукописными
+     addGroup в live\portal.html. Ни одного нового переключателя здесь
+     не заведено: волна дала им общее описание и один дом.
+
+     ЗАПИСЬ ЭЛЕМЕНТА
+       id      внутренний ключ записи
+       label   имя элемента ЧЕЛОВЕКУ: так его зовёт строка консоли
+       scope   'site'  — сквозной, ключ едет по внутренним ссылкам
+                         (withHdr в header.js);
+               'page'  — локальный, живёт на своей странице
+       page    id страницы в PAGES (только у локальных)
+       probe   CSS-селектор носителя. Консоль показывает элемент
+               ТОЛЬКО там, где носитель реально стоит: у сквозного
+               хедера это gb-site-header, и на полке песочниц или на
+               карте, где бара нет, строка не появится. Прибор не
+               предлагает переключить то, чего на странице нет.
+       home    id страницы, на которой вариант ПОКАЗЫВАЮТ: от него
+               собирается адрес карточки на полке. У локального
+               элемента это его собственная страница и поле не нужно.
+       live    { note } — что значит Live ИМЕННО для этого элемента.
+               Строки статуса у Live нет: он не вариант, он точка
+               отсчёта.
+       variants[]
+         id       ЗНАЧЕНИЕ КЛЮЧА (?hdr=auth → id 'auth')
+         label    имя варианта простыми словами
+         also     {ключ: значение} второй оси, если вариант её
+                  требует: ?hero=start у раскладок стартового блока,
+                  ?pth=1 у портального бара. Live снимает и их.
+         status   'suggested' | 'approved' (словарь Тона)
+         note     ЧТО ИЗМЕНИЛОСЬ ПРОТИВ LIVE, человеческим языком,
+                  1-3 предложения. Второй слой консоли печатает его
+                  под именем варианта. Пишется по провенанс-комментам
+                  файлов-носителей, не по памяти.
+         created  день первого появления, НЕПОДВИЖНЫЙ
+         updated  день последнего коммита-носителя. У ЭЛЕМЕНТА даты
+                  считаются ПО КОММИТАМ, а не по правкам строки в
+                  этом файле: у варианта элемента есть код, который
+                  его делает, и честнее спросить его, чем реестр.
+                  Отсюда и расхождение с полкой до 01.09: «Sign in
+                  form» стояла с updated 31.08 (в тот день волна имён
+                  переписала её строку), а сама форма последний раз
+                  менялась 29.08, и теперь так и написано.
+         refs     коммиты-носители, короткими хешами
+         tags     те же теги, что у песочниц: полка фильтрует одним
+                  рядом чипов оба каталога
+         ready    умеет ли страница этот вариант сегодня (по умолчанию
+                  да)
+
+     ПРОВЕНАНС (снято 2026-09-01, `git log -S` по файлам-носителям;
+     записывается один раз, дальше ведут волны):
+
+       элемент · вариант        коммиты                    дни
+       header · auth            1b8e6c0 e7dc772 7bf13e4    28.08
+                                e6f47e6                    29.08
+       catalog-nav · mark       11daa0a                    31.08
+       portal-sidebar · russell 7c36c66 050a4af ce4b90f    12.08
+       portal-sidebar · ton     7162cab 8615f82 3a09c59    12→17.08
+       portal-sidebar · ren     ef1beea e10b225 e23bd22    17→19.08
+       portal-start · grid      833bbc1 e6afff0            18.08
+       portal-start · split     e6afff0                    18.08
+       portal-start · band      e6afff0 34e8dfd            18.08
+       portal-bar · divider     dd08ee5 6cc9124 8e7ade7    19→25.08
+       portal-bar · stack       dd08ee5 6cc9124 8e7ade7    19→25.08
+     ============================================================ */
+  var ELEMENTS = [
+    {
+      id: 'header',
+      label: 'Header',
+      scope: 'site',
+      key: 'hdr',
+      probe: 'gb-site-header',
+      /* ГДЕ ЕГО ПОКАЗЫВАТЬ. Тон 31.08: «прототип Sign In form должен
+         открывать эту страницу сразу, а не просто главную», и
+         причина, записанная тогда же: «там бар в твёрдой земле и
+         иконка аккаунта на виду, а не спрятана за прозрачным героем».
+         Дверь тогда поставили на live\book-a-meeting.html, а у той
+         страницы БАРА НЕТ ВОВСЕ (замер 01.09: ни gb-site-header, ни
+         header.js в файле), то есть ключ там не значит ничего.
+         Страница, которая отвечает его причине, — категории: белый
+         бар в твёрдой земле, человечек на виду, и это публичная
+         страница сайта, а не касса. Вопрос Тону в отчёте волны. */
+      home: 'catalog',
+      live: { note: 'The bar the site ships today. There is no way into an account from it: Start Gifting signs you in and walks you to the portal.' },
+      variants: [
+        {
+          id: 'auth',
+          /* Тон 31.08 зовёт этот прототип «Sign-in / Sign-up Form».
+             Одна форма делает и то и другое (тот же e-mail, тот же
+             код), поэтому имя одно. */
+          label: 'Sign in form',
+          status: 'suggested',
+          /* Записка по провенансу header.js (gbppl-header-auth-1/2,
+             Ton-16 28.08: «Сейчас на лайве отвратительное решение:
+             кнопка Start Gifting фактически даёт авторизацию и
+             отправляет на портал»). */
+          note: 'The person glyph in the bar opens a drawer with the sign in form, so signing in no longer means being walked to the portal by Start Gifting. Once you are through, the glyph becomes your initials and the cart appears beside it.',
+          created: '2026-08-28',
+          updated: '2026-08-29',
+          refs: ['1b8e6c0', 'e7dc772', '7bf13e4', 'e6f47e6'],
+          tags: ['header', 'flow']
+        }
+      ]
+    },
+
+    {
+      id: 'catalog-nav',
+      label: 'Navigation',
+      scope: 'page',
+      page: 'catalog',
+      key: 'nav',
+      live: { note: 'The site bar over the build: Gifts, Customize, Portal and Explore, with our hero and our closing bands.' },
+      variants: [
+        {
+          id: 'mark',
+          label: 'The prototype’s own menu',
+          status: 'suggested',
+          /* По провенансу live\catalog\index.html и
+             oro-ui-override.css (gbppl-catalog-mark-1, 31.08). */
+          note: 'The July prototype Mark reviewed, uncovered: our five organisms step out of the page, so the build wears its own bar again, with no Customize and no Explore and the Portal folded into the person glyph. Categories are still the secondary row: this key uncovers the menu, it does not redraw it.',
+          created: '2026-08-31',
+          updated: '2026-08-31',
+          refs: ['11daa0a'],
+          tags: ['header', 'navigation', 'client feedback']
+        }
+      ]
+    },
+
+    {
+      id: 'portal-sidebar',
+      label: 'Sidebar labels',
+      scope: 'page',
+      page: 'portal',
+      key: 'nav',
+      live: { note: 'The sidebar as the portal ships it today.' },
+      variants: [
+        {
+          id: 'russell',
+          label: 'Russell',
+          status: 'suggested',
+          note: "Russell's naming and his two sections: the account list keeps the live order, and My Teams moves up to open the admin one.",
+          created: '2026-08-12',
+          updated: '2026-08-12',
+          refs: ['7c36c66', '050a4af', 'ce4b90f'],
+          tags: ['navigation', 'copy']
+        },
+        {
+          id: 'ton',
+          label: 'Anton',
+          status: 'suggested',
+          note: 'The validated order: the gift lifecycle first (catalog, design, send, history), the account after it, with Log out last of the visible items.',
+          created: '2026-08-12',
+          updated: '2026-08-17',
+          refs: ['7162cab', '8615f82', '3a09c59'],
+          tags: ['navigation', 'copy']
+        },
+        {
+          id: 'ren',
+          label: 'Ren',
+          status: 'suggested',
+          note: "Anton's order in the editorial skin: the same items and the same sections, with the hairlines dissolved and the active item speaking in colour alone.",
+          created: '2026-08-17',
+          updated: '2026-08-19',
+          refs: ['ef1beea', 'e10b225', 'e23bd22'],
+          tags: ['navigation', 'colour']
+        }
+      ]
+    },
+
+    {
+      id: 'portal-start',
+      label: 'Start block',
+      scope: 'page',
+      page: 'portal',
+      /* ДВЕ ОСИ ОДНОГО ЭЛЕМЕНТА. ?hero=start поднимает блок, ?layout=
+         выбирает его раскладку, и вторая без первой не значит ничего.
+         Носитель выбора — layout, hero едет с ним в also. Live
+         (Classic) снимает оба. */
+      key: 'layout',
+      live: { note: 'The approved two button zone: Start with us beside Gift on your own.' },
+      variants: [
+        {
+          id: 'grid',
+          label: 'Grid',
+          also: { hero: 'start' },
+          status: 'suggested',
+          note: 'The two buttons become one Start Gifting zone: four promises in four cells behind a hairline cross, with the greeting stepped back out of its way.',
+          created: '2026-08-18',
+          updated: '2026-08-18',
+          refs: ['833bbc1', 'e6afff0'],
+          tags: ['hero', 'flow']
+        },
+        {
+          id: 'split',
+          label: 'Split',
+          also: { hero: 'start' },
+          status: 'suggested',
+          note: 'The same four promises in two halves, with the buttons standing beside the cells instead of under them.',
+          created: '2026-08-18',
+          updated: '2026-08-18',
+          refs: ['e6afff0'],
+          tags: ['hero', 'flow']
+        },
+        {
+          id: 'band',
+          label: 'Band',
+          also: { hero: 'start' },
+          status: 'suggested',
+          /* Рассел выбрал ленту из трёх, которые ему показали
+             (18.08, gbppl-start-panel) — это ЗАПИСАННЫЙ ВЫБОР, но не
+             аппрув через наш круг, поэтому статус тот же. Перевод в
+             approved — слово Тона. */
+          note: 'The same four promises in one ribbon, the arrangement Russell picked of the three he was shown.',
+          created: '2026-08-18',
+          updated: '2026-08-18',
+          refs: ['e6afff0', '34e8dfd'],
+          tags: ['hero', 'flow', 'client feedback']
+        }
+      ]
+    },
+
+    {
+      id: 'portal-bar',
+      label: 'Header on this page',
+      scope: 'page',
+      page: 'portal',
+      /* Носитель — lock (какой замок стоит), ?pth=1 едет с ним: без
+         него бар не поднимается вовсе. */
+      key: 'lock',
+      live: { note: "The site header, as gildedbox.com renders it, with the portal borrowing the website's chrome." },
+      variants: [
+        {
+          id: 'divider',
+          label: 'Portal bar',
+          also: { pth: '1' },
+          status: 'suggested',
+          note: "The portal stops borrowing the site bar and puts up its own: the GildedBox | Portal lock on one line, and the utilities ordered out to the edge.",
+          created: '2026-08-19',
+          updated: '2026-08-25',
+          refs: ['dd08ee5', '6cc9124', '8e7ade7'],
+          tags: ['header', 'navigation']
+        },
+        {
+          id: 'stack',
+          label: 'Portal bar, stacked',
+          also: { pth: '1' },
+          status: 'suggested',
+          note: 'The same portal bar with the other lock: the section name stands under the wordmark instead of beside it.',
+          created: '2026-08-19',
+          updated: '2026-08-25',
+          refs: ['dd08ee5', '6cc9124', '8e7ade7'],
+          tags: ['header', 'navigation']
+        }
+      ]
+    }
+  ];
 
   /* ---- Адреса и опознание текущего места -------------------
      Разрешает адрес сам браузер (пустой <a href>), поэтому
@@ -458,6 +702,115 @@
     };
   }
 
+  /* ============================================================
+     ЭЛЕМЕНТЫ: АДРЕС, ОПОЗНАНИЕ, СРЕЗ (gbppl-proto-model-1)
+     ------------------------------------------------------------
+     Что значит «выбрать вариант элемента», записано РОВНО ОДИН РАЗ,
+     в elementSearch: снять все ключи элемента и поставить ключи
+     выбранного варианта. Полка собирает адрес от чистой страницы
+     носителя, консоль — от сегодняшнего адреса (иначе выбор хедера
+     сбросил бы версию страницы и экран), и обе зовут одну функцию.
+     ============================================================ */
+  function elementKeys(el) {
+    var keys = [el.key];
+    (el.variants || []).forEach(function (v) {
+      Object.keys(v.also || {}).forEach(function (k) {
+        if (keys.indexOf(k) < 0) keys.push(k);
+      });
+    });
+    return keys;
+  }
+
+  /* Принимает и запись элемента, и её срез (у среза список ключей уже
+     посчитан): консоль держит в руках срез, полка — запись, а правило
+     на обоих одно. */
+  function elementSearch(search, el, v) {
+    var q = new URLSearchParams(search || '');
+    (el.keys || elementKeys(el)).forEach(function (k) { q.delete(k); });
+    if (v) {
+      q.set(el.key, v.id);
+      var also = v.also || {};
+      Object.keys(also).forEach(function (k) { q.set(k, also[k]); });
+    }
+    return q.toString();
+  }
+
+  /* Вариант стоит на экране, если его ключ И каждая его вторая ось
+     совпали. Путь не проверяется: сквозной элемент на то и сквозной,
+     что читается на любой странице, а локальный панель показывает
+     только своей странице. */
+  function variantOn(el, v) {
+    var q = new URLSearchParams(location.search);
+    if (q.get(el.key) !== String(v.id)) return false;
+    var also = v.also || {};
+    return Object.keys(also).every(function (k) { return q.get(k) === String(also[k]); });
+  }
+
+  /* measured = смотреть ли на сегодняшний адрес. Полка и карта
+     перечисляют то, ЧТО ЕСТЬ в студии (measured false), консоль —
+     то, что стоит ЗДЕСЬ И СЕЙЧАС (measured true). */
+  function sliceElement(el, root, measured) {
+    root = root || '';
+    var home = el.page || el.home || '';
+    var page = PAGES[home];
+    var base = page ? page.live : '';
+
+    var variants = (el.variants || []).map(function (v) {
+      var q = elementSearch('', el, v);
+      return {
+        id: v.id,
+        label: v.label,
+        status: v.status || 'suggested',
+        note: v.note || '',
+        also: v.also ? JSON.parse(JSON.stringify(v.also)) : null,
+        ready: v.ready !== false,
+        tags: (v.tags || []).slice(),
+        created: v.created || '',
+        updated: v.updated || '',
+        refs: (v.refs || []).slice(),
+        href: root + base + (q ? '?' + q : ''),
+        current: measured ? variantOn(el, v) : false
+      };
+    });
+
+    var anyCurrent = variants.some(function (v) { return v.current; });
+
+    return {
+      id: el.id,
+      label: el.label,
+      scope: el.scope,
+      /* Кому карточка принадлежит по словам полки: сквозной говорит
+         это вслух, локальный называет свою страницу. */
+      owner: el.scope === 'site' ? 'Site element' : (page ? page.label : ''),
+      home: home,
+      key: el.key,
+      keys: elementKeys(el),
+      live: {
+        label: 'Live',
+        note: (el.live && el.live.note) || '',
+        href: root + base,
+        current: measured && !anyCurrent
+      },
+      variants: variants
+    };
+  }
+
+  /* Элементы ЭТОЙ страницы: локальные по своей странице, сквозные
+     везде, и все — только там, где носитель реально стоит (probe).
+     Прибор не предлагает переключить то, чего на странице нет. */
+  function elementsHere(pageId, root) {
+    return ELEMENTS.filter(function (el) {
+      if (el.scope === 'page' && el.page !== pageId) return false;
+      if (el.probe && !document.querySelector(el.probe)) return false;
+      return true;
+    }).map(function (el) { return sliceElement(el, root, true); });
+  }
+
+  /* Все элементы студии подряд: полка и карта. */
+  function elements(root) {
+    return ELEMENTS.map(function (el) { return sliceElement(el, root, false); });
+  }
+
   /* Все комнаты подряд, страница за страницей, пустые опущены:
      это то, что рисует sandboxes.html и что считает хаб. */
   function rooms(root) {
@@ -470,15 +823,25 @@
     return out;
   }
 
+  /* Сколько всего прототипов в студии: версии страниц ПЛЮС варианты
+     элементов (gbppl-proto-model-1). Вариант хедера — такой же
+     прототип, как версия чекаута, и считать его вторым сортом
+     значило бы вернуть тот же разнобой, ради которого волна и
+     сводила два списка в один. */
   function count() {
     var n = 0;
     Object.keys(PAGES).forEach(function (id) { n += PAGES[id].variants.length; });
+    ELEMENTS.forEach(function (el) { n += (el.variants || []).length; });
     return n;
   }
 
   window.GB_SANDBOXES = {
     pages: PAGES,
+    elementList: ELEMENTS,
     forPage: forPage,
+    elements: elements,
+    elementsHere: elementsHere,
+    elementSearch: elementSearch,
     rooms: rooms,
     count: count,
     matches: matches
