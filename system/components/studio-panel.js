@@ -269,6 +269,71 @@
       группами сегментов, и шесть иконок вместо шести чисел — имя и
       размер живут в title, во всплывающей подписи под строкой и в
       полосе над кадром.
+
+   ------------------------------------------------------------
+   ЯЩИК СТАЛ МНОГОСЛОЙНЫМ (gbppl-panel-layers-1, 2026-09-01)
+   ------------------------------------------------------------
+   Тон утром 01.09, четыре пункта. Дословно:
+
+   1. «Компактность и адаптивность. Наша панель не на всех экранах
+      помещается: на маленьких она начинает скроллиться. Нужно
+      продумать модульность и переключатели, чтобы всё оставалось
+      компактным и влезало на любом экране».
+   2. «У нас есть LIVE, today's flow, и затем, например, выбранный
+      shared quantity pool, который мы помечаем как current. С current
+      возникает путаница (кажется, будто это "текущий"), так что лучше
+      делать просто select или вообще убрать этот current. Кроме того,
+      переключение модов табами выглядит точно так же, как выбор этих
+      версий: создаётся ощущение, что везде одни табы, и прототип
+      бывает очень перегружен».
+   3. «Описания сценариев тоже стоит переделать. Их нужно показывать,
+      но, возможно, на отдельном уровне. Саму панель можно сделать
+      многослойной: чуть шире при открытии; навигация как в дровере:
+      переход на второй слой с возможностью вернуться назад;
+      продумать отображение секций, чтобы они не мешали друг другу».
+   4. «При наведении на девайсы появляется текст с размерами под
+      иконкой, из-за чего контент ниже начинает танцевать».
+
+   Что из этого следует, по порядку.
+
+   ВЫБОР БОЛЬШЕ НЕ ТАБЫ. Версия страницы и любая группа страницы
+   (Scenario, Sidebar labels, Header) стоят в корне ОДНОЙ ТИХОЙ
+   СТРОКОЙ: имя слева, выбранное значение справа, шеврон. Кликнул —
+   консоль ушла на второй слой, где у каждого варианта есть имя И его
+   описание; выбрал — вернулась. Табовый облик (.gbsp-seg с
+   подчёркиванием) остался РОВНО У ОДНОГО переключателя — Mode, — и
+   перегруз, о котором говорит пункт 2, уходит вместе с ним. Суффикс
+   «· current» снят совсем: у строки выбора значение и есть ответ на
+   вопрос «что сейчас», второе слово тому же ответу не нужно.
+
+   ОПИСАНИЯ УЕХАЛИ НА СЛОЙ, А НЕ ИСЧЕЗЛИ (пункт 3, «показывать, но на
+   отдельном уровне»). Три абзаца сценариев чекаута занимали в корне
+   357px из 688 доступных; теперь они живут там, где их читают, — на
+   слое выбора, рядом со своим вариантом.
+
+   СЛОЙ ГОВОРИТ ЯЗЫКОМ ДРОВЕРА (Тон-18, gb-drawer): шапка, слева
+   стрелка назад, заголовок сразу за ней по левому краю, тело ниже.
+   Компонент не берётся целиком — дровер это отдельная поверхность
+   поверх страницы, а слой живёт ВНУТРИ ящика, — берётся его язык:
+   тот же глиф chevron-left, что носит .gbd-slot, то же правило «одна
+   шапка, один заголовок» (титул DESIGN STUDIO на слое уступает место
+   имени слоя, как в дровере), тот же порядок «назад слева».
+
+   КОМПАКТНОСТЬ СЧИТАНА, А НЕ ОБЪЯВЛЕНА. Замер 1280x720 до правки:
+   чекаут 997px содержимого при 687 видимых, портал 1511 при 687 —
+   обе страницы прокручивались внутри ящика. Плюс ящик, стоя на якоре
+   112, отдавал max-height 100vh-32 и на низком окне УХОДИЛ ЗА НИЖНЮЮ
+   КРОМКУ (688 при 720 высоты: 80px консоли были недостижимы). Обе
+   вещи чинятся здесь: якорь поднимается на низком окне, потолок
+   считается от якоря, а корень худеет на строках выбора.
+
+   ПОДПИСЬ ДЕВАЙСА БОЛЬШЕ НЕ ТОЛКАЕТ (пункт 4). Слот .gbsp-cap под
+   рядом иконок держал min-height 17px, а строка 12/1.45 занимает
+   17.4: наведение растило ящик на 0.4px, и на экране с масштабом всё
+   ниже сдвигалось на пиксель (замер: footTop 1019.61 → 1020.01).
+   Строка снята совсем, имя и размер называет СТРОКА СОСТОЯНИЯ внизу
+   ящика — то самое место, которое и так отвечает «что у меня
+   включено», и высоты у него ровно одна строка при любом ответе.
    ============================================================ */
 (function () {
   'use strict';
@@ -365,6 +430,22 @@
     '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" ' +
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M5.5 3 9.5 7l-4 4"/></svg>';
+
+  /* ГЛИФ ИЗ ЗАПИСИ НАБОРА, С ЗАПАСНЫМ ВАРИАНТОМ (gbppl-panel-layers-1).
+     Тот же приём, что у deviceIcon ниже: консоль просит имя, а рисунок
+     и его коробку даёт system\components\icon.js. Если записи рядом
+     нет (страница подключила консоль без набора), рисуется тот же
+     шеврон, что носит язычок: пропавшая картинка не имеет права
+     утащить за собой строку выбора. */
+  function glyph(name, size) {
+    if (window.GbIcons && window.GbIcons.has && window.GbIcons.has(name)) {
+      return window.GbIcons.html(name, size);
+    }
+    var d = name === 'chevron-left' ? 'M8.5 3 4.5 7l4 4' : 'M5.5 3 9.5 7l-4 4';
+    return '<span class="gb-icon gb-icon--' + (size || 16) + '" aria-hidden="true">' +
+           '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" ' +
+           'stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"/></svg></span>';
+  }
 
   /* Подсвечивается не страница, а РАЗДЕЛ, в котором стоишь
      (gbppl-panel-8). Плоский список дверей синел только на самой себе,
@@ -467,49 +548,184 @@
     );
   }
 
-  /* ВЕРСИЯ ЭТОЙ СТРАНИЦЫ (gbppl-panel-8). Те же данные реестра, что
-     носила прежняя секция Sandbox, но не списком, а сегментами: у
-     страницы РОВНО ОДНА версия в силе, варианты взаимоисключающие, и
-     это тумблер, а не навигация — тот же довод, по которому Mode стал
-     сегментами (gbppl-panel-6). Реестр не тронут ни строкой: срез
-     тот же, меняется одежда. Недоступный вариант остаётся не ссылкой:
-     курсор ничего не обещает. */
-  function versionSection(pageId, root) {
-    if (!pageId) return '';
-    var reg = window.GB_SANDBOXES;
-    if (!reg || typeof reg.forPage !== 'function') return '';
-    var slice = reg.forPage(pageId, root);
-    if (!slice) return '';
-
-    var segs = [seg(slice.live.label, slice.live.href, slice.live.current, true, '')];
-    slice.variants.forEach(function (v) {
-      segs.push(seg(v.label, v.href, v.current, v.ready, v.ready ? '' : statusWord(v.status)));
-    });
-
+  /* ============================================================
+     СТРОКА ВЫБОРА (gbppl-panel-layers-1)
+     ------------------------------------------------------------
+     Один облик на все переключатели, у которых больше двух значений
+     или у значений есть что рассказать о себе: имя слева, выбранное
+     справа, шеврон. Тон 01.09: «лучше делать просто select». Значение
+     синее, потому что это СОСТОЯНИЕ (Тон-5) — тот же довод, по
+     которому синеет активная строка навигации; имя тихое, 14 Zinc 400,
+     тот же голос, что был у .gbsp-group__title.
+     ============================================================ */
+  function pickRow(name, value) {
     return (
-      '<div class="gbsp-sec gbsp-sec--ver">' +
-        '<span class="gbsp-eyebrow">Version of this page</span>' +
-        '<div class="gbsp-segs gbsp-segs--wrap" role="group" aria-label="Version of this page">' +
-          segs.join('') +
-        '</div>' +
+      /* aria-haspopup, но НЕ aria-expanded: строка не раскрывается на
+         месте, она уводит на слой, и «expanded» было бы неправдой. */
+      '<button class="gbsp-pick" type="button" aria-haspopup="true">' +
+        '<span class="gbsp-pick__name">' + esc(name) + '</span>' +
+        '<span class="gbsp-pick__val">' + esc(value) + '</span>' +
+        '<span class="gbsp-pick__chev">' + glyph('chevron-right', 16) + '</span>' +
+      '</button>'
+    );
+  }
+
+  /* ОДНО ЗНАЧЕНИЕ — НЕ ВЫБОР. Страница без песочниц имеет ровно одну
+     версию, и шеврон обещал бы за ней список из одной строки. Строка
+     остаётся (пустота тоже ответ, Тон 25.08), но перестаёт быть
+     кнопкой: курсор ничего не обещает — то же правило, по которому
+     неготовый вариант не ссылка. */
+  function loneRow(name, value) {
+    return (
+      '<div class="gbsp-pick is-lone">' +
+        '<span class="gbsp-pick__name">' + esc(name) + '</span>' +
+        '<span class="gbsp-pick__val">' + esc(value) + '</span>' +
       '</div>'
     );
+  }
 
-    /* МЕТКА ТЕКУЩЕЙ ВЕРСИИ (gbppl-panel-9). Тон: «блок хороший, но
-       для Live нужно явно показывать, что это текущая версия».
-       Подчёркивание Blue 400 говорило «выбрано» тем, кто уже знает
-       язык сегментов; суффикс говорит это словом. Метка идёт за
-       АКТИВНЫМ, а не за Live: текущей бывает и песочница, и тогда
-       слово стоит у неё. Суффикс внутри ссылки, потому что он часть
-       её имени, а не сосед по ряду. */
-    function seg(label, href, current, ready, note) {
-      if (!ready) {
-        return '<span class="gbsp-seg is-off" title="' + esc(note) + '">' + esc(label) + '</span>';
+  /* ВЕРСИЯ ЭТОЙ СТРАНИЦЫ. Те же данные реестра, что носила секция
+     Sandbox (gbppl-panel-4) и ряд сегментов (gbppl-panel-8), но в
+     третьей одежде: строка выбора в корне, список с описаниями на
+     слое. Реестр не тронут ни строкой — срез тот же. Недоступный
+     вариант остаётся не ссылкой: курсор ничего не обещает. */
+  function versionOptions(pageId, root) {
+    if (!pageId) return null;
+    var reg = window.GB_SANDBOXES;
+    if (!reg || typeof reg.forPage !== 'function') return null;
+    var slice = reg.forPage(pageId, root);
+    if (!slice) return null;
+
+    var out = [{
+      label: slice.live.label,
+      href: slice.live.href,
+      current: slice.live.current,
+      /* У Live в реестре описания нет: он не вариант, он точка
+         отсчёта. Строка сказана здесь один раз и одинаково на всех
+         страницах. */
+      desc: 'The page as the Live Prototype carries it today.'
+    }];
+    slice.variants.forEach(function (v) {
+      out.push({
+        label: v.label,
+        href: v.ready ? v.href : '',
+        current: v.current,
+        desc: v.desc || '',
+        off: !v.ready,
+        status: statusWord(v.status)
+      });
+    });
+    return out;
+  }
+
+  function versionSection(pageId, root) {
+    var opts = versionOptions(pageId, root);
+    if (!opts) return '';
+    var on = opts.filter(function (o) { return o.current; })[0] || opts[0];
+    return (
+      '<div class="gbsp-sec gbsp-sec--ver">' +
+        (opts.length > 1 ? pickRow('Version', on.label) : loneRow('Version', on.label)) +
+      '</div>'
+    );
+  }
+
+  /* ============================================================
+     ВТОРОЙ СЛОЙ (gbppl-panel-layers-1)
+     ------------------------------------------------------------
+     Тон 01.09: «панель можно сделать многослойной: навигация как в
+     дровере, переход на второй слой с возможностью вернуться назад».
+
+     Слой ЗАМЕЩАЕТ корень в потоке ящика, а не ложится поверх него:
+     ящик прокручивается сам (max-height + overflow), и абсолютный
+     лист внутри прокрутки встал бы не туда, куда смотрит человек.
+     Замещение честнее и по высоте: слой ростом со свой список, а не
+     со скрытый под ним корень.
+
+     Шапка — язык gb-drawer (Тон-18): стрелка назад слева, заголовок
+     сразу за ней по левому краю. Заголовок носит .gbsp-title, то есть
+     занимает МЕСТО титула «Design Studio»: в дровере шапка одна, и
+     двух заголовков подряд у одной поверхности не бывает.
+
+     Слой один: открытый вытесняет прежний. Возврат — стрелка, Esc и
+     сам выбор.
+     ============================================================ */
+  function panelBox(host) { return host.querySelector('.gbsp-panel'); }
+
+  function closeLayer(host, giveFocus) {
+    var box = panelBox(host);
+    var lay = box && box.querySelector('.gbsp-layer');
+    if (!lay) return false;
+    var opener = lay.__opener;
+    lay.remove();
+    var shell = host.querySelector('.gbsp');
+    if (shell) shell.classList.remove('is-layered');
+    box.scrollTop = 0;
+    /* Возвращение корня — та же короткая ступень, что у полок
+       гардероба: переключение слоя это шаг, а не дверь. */
+    box.classList.remove('is-back');
+    void box.offsetWidth;
+    box.classList.add('is-back');
+    if (giveFocus && opener && document.contains(opener)) opener.focus();
+    return true;
+  }
+
+  /* spec: { title, build() -> [{label, desc, current, href, off, status}],
+             onPick(option) } */
+  function openLayer(host, spec, opener) {
+    var box = panelBox(host);
+    if (!box) return;
+    closeLayer(host, false);
+
+    var options = spec.build() || [];
+    var items = options.map(function (o, i) {
+      var body = '<span class="gbsp-opt__name">' + esc(o.label) + '</span>' +
+                 (o.desc ? '<span class="gbsp-opt__desc">' + esc(o.desc) + '</span>' : '');
+      if (o.off) {
+        return '<li><span class="gbsp-opt is-off">' + body +
+               '<span class="gbsp-opt__flag">' + esc(o.status || 'in progress') + '</span>' +
+               '</span></li>';
       }
-      return '<a class="gbsp-seg' + (current ? ' is-on' : '') + '" href="' + esc(href) + '"' +
-             (current ? ' aria-current="page"' : '') + '>' + esc(label) +
-             (current ? '<span class="gbsp-cur">· current</span>' : '') + '</a>';
-    }
+      if (o.href) {
+        return '<li><a class="gbsp-opt' + (o.current ? ' is-on' : '') + '" href="' + esc(o.href) + '"' +
+               (o.current ? ' aria-current="page"' : '') + '>' + body + '</a></li>';
+      }
+      return '<li><button class="gbsp-opt' + (o.current ? ' is-on' : '') + '" type="button"' +
+             ' data-pick="' + i + '" aria-pressed="' + (o.current ? 'true' : 'false') + '">' +
+             body + '</button></li>';
+    }).join('');
+
+    var lay = document.createElement('div');
+    lay.className = 'gbsp-layer';
+    lay.__opener = opener || null;
+    lay.innerHTML =
+      '<div class="gbsp-layerhead">' +
+        '<button class="gbsp-back" type="button" aria-label="Back">' +
+          glyph('chevron-left', 20) +
+        '</button>' +
+        '<span class="gbsp-title">' + esc(spec.title || '') + '</span>' +
+      '</div>' +
+      '<ul class="gbsp-list gbsp-layerlist">' + items + '</ul>';
+
+    box.appendChild(lay);
+    var shell = host.querySelector('.gbsp');
+    if (shell) shell.classList.add('is-layered');
+    box.classList.remove('is-back');
+    box.scrollTop = 0;
+
+    lay.querySelector('.gbsp-back').addEventListener('click', function () {
+      closeLayer(host, true);
+    });
+    lay.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-pick]') : null;
+      if (!b) return;
+      var o = options[+b.getAttribute('data-pick')];
+      if (o && typeof spec.onPick === 'function') spec.onPick(o);
+      closeLayer(host, true);
+    });
+    /* Фокус уходит на стрелку — первый управляющий элемент слоя, ровно
+       как в дровере. Клавиатура попадает туда, откуда есть дорога
+       назад. */
+    lay.querySelector('.gbsp-back').focus();
   }
 
   /* ПОДВАЛ (gbppl-panel-8): строка состояния и копия ссылки. Держится
@@ -601,57 +817,78 @@
     var actions = spec.actions || [];
 
     var group = document.createElement('div');
-    group.className = 'gbsp-group';
+    var current = spec.value;
+    var forced = null;   /* setNote перебивает подсказку группы */
 
+    function labelFor(v) {
+      for (var i = 0; i < options.length; i++) if (options[i].value === v) return options[i].label;
+      return options.length ? options[0].label : '';
+    }
+
+    /* ДВА ОБЛИКА ГРУППЫ (gbppl-panel-layers-1). Группа с выбором —
+       ОДНА строка выбора: имя слева, выбранное справа, описания
+       вариантов на втором слое (Тон 01.09: «описания нужно показывать,
+       но на отдельном уровне»). Группа без выбора — команды, а команде
+       нечего рассказывать о себе, поэтому она остаётся строкой ящика
+       рядом со своим именем.
+
+       Замер до правки: три сценария чекаута с абзацами занимали в
+       корне 357.6px, четыре группы портала — 837.9px. */
     var html = '';
-    if (spec.title) {
-      html += '<span class="gbsp-group__title">' + esc(spec.title) + '</span>';
+    if (options.length) {
+      group.className = 'gbsp-group gbsp-group--pick';
+      html += (options.length > 1 ? pickRow : loneRow)(spec.title || '', labelFor(current));
+    } else {
+      group.className = 'gbsp-group gbsp-group--acts';
+      if (spec.title) {
+        html += '<span class="gbsp-group__title">' + esc(spec.title) + '</span>';
+      }
+      if (actions.length) {
+        html += '<ul class="gbsp-list gbsp-acts">';
+        actions.forEach(function (a, i) {
+          html += '<li><button class="gbsp-link" type="button" data-act="' + i + '">' +
+                  esc(a.label) + '</button></li>';
+        });
+        html += '</ul>';
+      }
+      html += '<p class="gbsp-note"></p>';
     }
-    if (options.length || actions.length) {
-      html += '<ul class="gbsp-list">';
-      options.forEach(function (o, i) {
-        html += '<li><button class="gbsp-link" type="button" data-opt="' + i + '"' +
-                ' aria-pressed="false">' + esc(o.label) + '</button></li>';
-      });
-      actions.forEach(function (a, i) {
-        html += '<li><button class="gbsp-link" type="button" data-act="' + i + '">' +
-                esc(a.label) + '</button></li>';
-      });
-      html += '</ul>';
-    }
-    html += '<p class="gbsp-note"></p>';
     group.innerHTML = html;
 
-    var optEls = group.querySelectorAll('[data-opt]');
+    var valEl  = group.querySelector('.gbsp-pick__val');
     var noteEl = group.querySelector('.gbsp-note');
-    var forced = null;   /* setNote перебивает подсказки опций */
-    var current = spec.value;
 
     function paint() {
+      if (valEl) valEl.textContent = labelFor(current);
+      if (!noteEl) return;
       var line = forced;
-      for (var i = 0; i < optEls.length; i++) {
-        var on = options[i].value === current;
-        optEls[i].classList.toggle('is-active', on);
-        optEls[i].setAttribute('aria-pressed', String(on));
-        if (on && forced === null && options[i].note) line = options[i].note;
-      }
       if (line === null || line === undefined) line = spec.note || '';
       noteEl.textContent = line;
       noteEl.hidden = !line;
     }
 
+    var pick = group.querySelector('button.gbsp-pick');
+    if (pick) {
+      pick.addEventListener('click', function () {
+        openLayer(host, {
+          title: spec.title || '',
+          build: function () {
+            return options.map(function (o) {
+              return { label: o.label, desc: o.note || '', current: o.value === current, value: o.value };
+            });
+          },
+          onPick: function (o) {
+            current = o.value;
+            paint();
+            if (typeof spec.onChange === 'function') spec.onChange(o.value, o);
+          }
+        }, pick);
+      });
+    }
+
     group.addEventListener('click', function (e) {
-      var btn = e.target.closest ? e.target.closest('[data-opt],[data-act]') : null;
+      var btn = e.target.closest ? e.target.closest('[data-act]') : null;
       if (!btn || !group.contains(btn)) return;
-      var oi = btn.getAttribute('data-opt');
-      if (oi !== null) {
-        var opt = options[+oi];
-        current = opt.value;
-        forced = null;
-        paint();
-        if (typeof spec.onChange === 'function') spec.onChange(opt.value, opt);
-        return;
-      }
       var ai = btn.getAttribute('data-act');
       if (ai !== null && typeof actions[+ai].onClick === 'function') actions[+ai].onClick();
     });
@@ -662,6 +899,11 @@
     return {
       element: group,
       setActive: function (value) { current = value; forced = null; paint(); },
+      /* Подсказка принадлежит группе КОМАНД: у группы с выбором
+         описания переехали на слой, и подпись под строкой была бы тем
+         самым абзацем, который Тон просил убрать из корня. Значение
+         всё равно запоминается: страница вправе позвать setNote до
+         того, как узнает, какой у группы облик. */
       setNote: function (text) { forced = (text === null || text === undefined) ? null : String(text); paint(); }
     };
   }
@@ -694,7 +936,15 @@
     var sec = modeSection(host);
 
     var wrap = document.createElement('div');
-    wrap.className = 'gbsp-seggroup';
+    /* ИМЯ ГРУППЫ СТОИТ В ОДНОЙ СТРОКЕ С ТУМБЛЕРОМ
+       (gbppl-panel-layers-1). Прежде eyebrow занимал свою строку над
+       рядом, и секция инструментов набирала 160.9px на двух группах.
+       Слева имя, справа сам переключатель — тот же порядок «имя слева,
+       значение справа», что у строк выбора этажом выше, и ящик
+       читается одним столбцом подписей. Заодно Mode перестаёт быть
+       похож на ряд табов страницы: у него есть подпись, и она говорит,
+       что это переключатель. */
+    wrap.className = 'gbsp-seggroup gbsp-seggroup--inline';
     /* gbppl-panel-7: место группы в секции задаётся РАНГОМ, а не
        порядком вызова. Mode объявляет inspect.js асинхронно (через
        whenDefined), Device — сама панель в connectedCallback, то есть
@@ -719,7 +969,7 @@
              ' aria-pressed="false">' + (o.icon || esc(o.label)) +
              '</button>';
     }
-    var html = '<span class="gbsp-eyebrow">' + esc(title) + '</span>' +
+    var html = '<span class="gbsp-eyebrow gbsp-seglabel">' + esc(title) + '</span>' +
                '<div class="gbsp-segs' + shape + '"' +
                ' role="group" aria-label="' + esc(title) + '">';
     options.forEach(function (o, i) { html += segHtml(o, i); });
@@ -736,29 +986,30 @@
        Страница без comments.js получает тумблер из двух положений и
        не врёт про третье. */
     html += '</div>';
-    /* ВСПЛЫВАЮЩАЯ ПОДПИСЬ ПОД СТРОКОЙ (gbppl-panel-9). Строка иконок
-       молчалива, и молчание лечится не только тултипом системы:
-       подпись под рядом называет то, на что смотрит курсор, а в
-       покое — то, что включено. Появляется только у групп, которые
-       её попросили; у Mode её нет и не должно быть. */
-    if (spec.caption) html += '<p class="gbsp-cap"></p>';
     html += '<p class="gbsp-note"></p>';
     wrap.innerHTML = html;
 
     var row    = wrap.querySelector('.gbsp-segs');
     var segEls = wrap.querySelectorAll('[data-seg]');
     var noteEl = wrap.querySelector('.gbsp-note');
-    var capEl  = wrap.querySelector('.gbsp-cap');
     var current = spec.value;
 
-    /* В покое подпись ПУСТА, и это нарочно: что включено, уже сказано
-       подчёркиванием сегмента и строкой состояния внизу ящика, а
-       третий раз то же самое — шум. Тон просил имя и размер «на
-       наведении», подпись отвечает ровно на наведение. Место под
-       строку держится всегда (min-height в css), поэтому ряд под ней
-       не прыгает. */
+    /* ИМЯ ТОГО, НА ЧТО СМОТРИТ КУРСОР, ГОВОРИТ СТРОКА СОСТОЯНИЯ
+       (gbppl-panel-layers-1). Прежде под рядом иконок стоял свой
+       абзац .gbsp-cap с придержанной высотой 17px, а строка 12/1.45
+       занимает 17.4 — наведение растило ящик на 0.4px, и на экране с
+       масштабом всё, что ниже, дёргалось на пиксель. Тон 01.09: «при
+       наведении на девайсы контент ниже начинает танцевать».
+
+       Слот снят целиком, а не подпёрт точным числом: у ящика уже есть
+       место, которое отвечает «что у меня сейчас», и оно ростом ровно
+       в одну строку при любом ответе. Наведение подменяет её на время
+       наведения, уход возвращает. Ни одного нового пикселя высоты, и
+       танцевать больше нечему. */
     function paintCap(o) {
-      if (capEl) capEl.textContent = o ? (o.title || o.label) : '';
+      if (!spec.caption) return;
+      STATE.hover = o ? (o.title || o.label) : '';
+      paintStatus();
     }
 
     function paint() {
@@ -774,7 +1025,7 @@
       paintCap(null);
     }
 
-    if (capEl) {
+    if (spec.caption) {
       /* Мышь и клавиатура спрашивают одно и то же, поэтому отвечает
          одна функция: наведение и фокус называют цель, уход и потеря
          фокуса возвращают подпись к включённому. */
@@ -1059,9 +1310,14 @@
      Абзацы секции This page остаются: они говорят про сценарий
      страницы, чего строка состояния сказать не может.
      ============================================================ */
-  var STATE = { mode: 'view', device: 'full', comment: false, commentsDown: '', commentsOpen: 0 };
+  var STATE = { mode: 'view', device: 'full', comment: false, commentsDown: '',
+                commentsOpen: 0, hover: '' };
 
   function statusLine() {
+    /* gbppl-panel-layers-1. Наведение на экран перебивает всё
+       остальное ровно на время наведения: вопрос «что это за иконка»
+       задан только что и вслух, а «что включено» никуда не денется. */
+    if (STATE.hover) return STATE.hover;
     /* gbppl-comments-b. Comment перебивает пару View / Inspect,
        потому что это тот же тумблер: одно положение зараз. А отказ
        сервиса перебивает всё — режим, в котором нечего сохранить, —
@@ -1075,7 +1331,12 @@
     var mode = STATE.mode === 'inspect' ? 'Inspect' : 'View';
     var d = STATE.device;
     if (d === 'full') return mode + ' · Full window';
-    return mode + ' · ' + deviceLabel(d) + ' ' + d + ', page runs inside the frame';
+    /* КОРОТКО НАРОЧНО (gbppl-panel-layers-1). Хвост «page runs inside
+       the frame» уводил строку на второй ряд на узком ящике, а строка
+       теперь ещё и отвечает на наведение: две длины в одном месте
+       двигали бы подвал. Что страница работает внутри кадра, видно по
+       самому кадру и сказано в подсказке группы. */
+    return mode + ' · ' + deviceLabel(d) + ' ' + d + ' in a frame';
   }
 
   function paintStatus() {
@@ -1621,7 +1882,27 @@
       wireKeys(this.__device);
       wireEmbedded();
 
+      /* ВЕРСИЯ УХОДИТ НА СЛОЙ (gbppl-panel-layers-1). Строка стоит в
+         шаблоне, потому что её содержимое известно из реестра ещё до
+         первого addGroup; список строится заново на каждом открытии —
+         текущей версией бывает и песочница, а адрес страницы может
+         смениться, пока ящик открыт. */
+      var verPick = this.querySelector('.gbsp-sec--ver button.gbsp-pick');
+      if (verPick) {
+        verPick.addEventListener('click', function () {
+          openLayer(host, {
+            title: 'Version of this page',
+            build: function () {
+              return versionOptions(host.getAttribute('page'), root) || [];
+            }
+          }, verPick);
+        });
+      }
+
       function setOpen(open) {
+        /* Закрытый ящик всегда открывается корнем: слой это шаг
+           внутри одного разговора, а не место, куда возвращаются. */
+        if (!open) closeLayer(host, false);
         shell.classList.toggle('is-collapsed', !open);
         tab.setAttribute('aria-expanded', String(open));
         tab.setAttribute('aria-label',
@@ -1656,8 +1937,13 @@
         /* Один Esc — одно закрытие. Слушателей на этой клавише трое
            (дровер, консоль, прибор), все на document, и наш висит
            первым: без остановки цепочки один нажим и закрывал ящик, и
-           выводил из Inspect (замер 27.08). */
+           выводил из Inspect (замер 27.08).
+           gbppl-panel-layers-1: с многослойным ящиком закрытий стало
+           два, и очередь у них та же — сначала ближайшее. Открытый
+           слой Esc возвращает на корень, и только следующий Esc
+           закрывает ящик. */
         if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if (closeLayer(host, true)) return;
         setOpen(false);
         tab.focus();
       });
