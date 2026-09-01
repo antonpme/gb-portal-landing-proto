@@ -1,6 +1,33 @@
 /* ============================================================
-   gbppl-lab-f-2 / gbppl-toggle-hover-1 / gbppl-toggle-family-1
+   gbppl-lab-f-2 / gbppl-toggle-hover-1 / gbppl-toggle-family-1 /
+   gbppl-panel-mode-toggle-1
    THE TOGGLE BUTTON
+   ------------------------------------------------------------
+   THE INVERSE FAMILY (gbppl-panel-mode-toggle-1, 01.09). Ton, on
+   the console: «Мне вообще не нравятся эти табы для переключения —
+   я бы, честно говоря, заменил их на наш Toggle Button. Было бы
+   отлично вообще убрать эти табы отовсюду из панели управления.»
+
+   The console is Zinc 950 and this control was a white sheet, so
+   the switch he asked for could not be carried without a second
+   colour family — and a colour family is a cell of the component,
+   not a patch in the consumer (Ton-8). It is answered THE WAY THE
+   BUTTON ANSWERS IT: every colour of the control moved onto a slot
+   on the element, and --inverse repoints the slots. Nothing else
+   changed; the checkout's paint is the same eight values it has
+   always rendered, now spelled through slots.
+
+   The inverse cell is the ORGANISM'S OWN INVERSE, spent rather
+   than reinvented: --gb-btn-fill-inverse (white), --gb-btn-ink-on-
+   inverse (Zinc 900), --gb-btn-ink-inverse (white),
+   --gb-btn-wash-inverse-hover (white at 20%, LIVE 24-25.08 — the
+   inverse twin of the ink wash this file already spends) and
+   --gb-btn-focus-ring-inverse (white). Two values had no cell to
+   borrow and are DECLARED here with the argument at the rule: the
+   track ground and the track line.
+
+   FIRST CARRIER: the Mode switch of <gb-studio-panel>, which is
+   also where the second layout modifier below comes from.
    ------------------------------------------------------------
    THE FAMILY (gbppl-toggle-family-1, 01.09). Ton: «Toggle, как и
    обычная кнопка, должен быть в разных вариантах. То есть
@@ -240,11 +267,30 @@
      source is repaired at the owner rather than carried forward. */
   --gbtg-cap-lift: 1px;
 
+  /* ---- THE COLOUR CELL (gbppl-panel-mode-toggle-1) ----
+     Eight slots, the whole paint of the control, declared here at
+     the light values MEASURED on the checkout and repointed as a
+     set by --inverse. The architecture is the button organism's:
+     the family modifier moves the slots, no rule below names a
+     colour of its own, and a family can never lose a specificity
+     race to the default because the default is on the element.
+
+     Nothing outside this file may set a --gbtg- slot. A consumer
+     that needs a third family asks for one here. */
+  --gbtg-track:      var(--white);                    /* LIVE checkout 29.08 */
+  --gbtg-line:       var(--zinc-300);                 /* LIVE checkout 29.08 */
+  --gbtg-ink:        var(--zinc-700);                 /* LIVE checkout 29.08 */
+  --gbtg-ink-hover:  var(--zinc-900);                 /* DECLARED, gbppl-toggle-hover-1 */
+  --gbtg-wash-hover: var(--gb-btn-wash-ink-hover);    /* LIVE 24-25.08, Zinc 300 at 20% */
+  --gbtg-on-fill:    var(--zinc-900);                 /* LIVE checkout 29.08 */
+  --gbtg-on-ink:     var(--white);                    /* LIVE checkout 29.08 */
+  --gbtg-ring:       var(--gb-btn-focus-ring);        /* DECLARED, the organism's ring */
+
   display: inline-flex;
   gap: var(--gbtg-inset);
   padding: var(--gbtg-inset);
-  background: var(--white);
-  border: 1px solid var(--zinc-300);
+  background: var(--gbtg-track);
+  border: 1px solid var(--gbtg-line);
   border-radius: var(--radius);
   /* NEITHER nowrap NOR a fixed track: the items themselves narrow
      and let their labels wrap, which is measured behaviour and not
@@ -281,7 +327,7 @@
   line-height: 1.5;
   text-align: center;
   text-transform: uppercase;
-  color: var(--zinc-700);
+  color: var(--gbtg-ink);
   cursor: pointer;
   transition: color var(--mo-micro) var(--mo-move),
               background-color var(--mo-micro) var(--mo-move),
@@ -362,6 +408,63 @@
   --gbtg-pad-y: var(--gbtg-l-pad-y);
   --gbtg-pad-x: var(--gbtg-l-pad-x);
   --gbtg-label: var(--gbtg-l-label);
+}
+
+/* ============================================================
+   FAMILY: which colours the eight slots point at
+   (gbppl-panel-mode-toggle-1, 01.09)
+   ------------------------------------------------------------
+   ONE FAMILY BESIDE THE DEFAULT, AND IT IS A GROUND, NOT A HUE.
+   The button has three colour families because a button can be
+   primary, secondary or standing on a dark ground. A toggle holds
+   a value and never shouts, so it has no primary and no secondary;
+   what it does have is the same two grounds the house has, and
+   --inverse is the second one.
+
+   THE MIRROR IS TAKEN ROLE BY ROLE, not by swapping numbers:
+
+     track     the SHEET the control stands on, so that a track is
+               a card of its own wherever it is put down. Light is
+               the white page; dark is --zinc-950. DECLARED: the
+               house has no measured dark toggle, and 950 is the
+               ground the first carrier stands on (the console) and
+               the darkest rung we own, which is what a sheet under
+               a white card should be.
+     line      light is Zinc 300 against white, two rungs of
+               separation. DECLARED Zinc 700 against Zinc 950, the
+               same two rungs read the other way. It is one step
+               louder than the console's own hairlines (Zinc 800)
+               on purpose: those divide, this one contains.
+     ink       the quiet half. Light Zinc 700 on white, DECLARED
+               Zinc 300 on 950 — the mirrored rung, and the same
+               ink the console already reads its own rows in.
+     pressed   the CARD. Light is the black card on the white
+               sheet; inverse is the white card on the dark one,
+               and both are the button organism's own inverse
+               cell: --gb-btn-fill-inverse over
+               --gb-btn-ink-on-inverse. Nothing new is named.
+     hover     --gb-btn-wash-inverse-hover, white at 20%, LIVE
+               24-25.08. It is the exact twin of the ink wash the
+               light family spends, measured on the same day off
+               the header's glyphs over the hero video, and being
+               translucent it composites onto whatever dark ground
+               the item stands on. The ink steps to
+               --gb-btn-ink-inverse (white) — the same movement as
+               Zinc 700 -> Zinc 900 on light: the quiet half
+               stepping toward the card it is about to become.
+     ring      --gb-btn-focus-ring-inverse, white. Blue 600 at two
+               pixels is unreadable on Zinc 950, which is the
+               reason that token exists.
+   ============================================================ */
+.gb-toggle--inverse {
+  --gbtg-track:      var(--zinc-950);                    /* DECLARED */
+  --gbtg-line:       var(--zinc-700);                    /* DECLARED */
+  --gbtg-ink:        var(--zinc-300);                    /* DECLARED */
+  --gbtg-ink-hover:  var(--gb-btn-ink-inverse);          /* LIVE 24-25.08 */
+  --gbtg-wash-hover: var(--gb-btn-wash-inverse-hover);   /* LIVE 24-25.08 */
+  --gbtg-on-fill:    var(--gb-btn-fill-inverse);         /* DECLARED in tokens.css */
+  --gbtg-on-ink:     var(--gb-btn-ink-on-inverse);       /* DECLARED in tokens.css */
+  --gbtg-ring:       var(--gb-btn-focus-ring-inverse);   /* DECLARED in tokens.css */
 }
 
 /* ============================================================
@@ -465,21 +568,21 @@
    ============================================================ */
 .gb-toggle__item:hover:not(.is-on, [aria-checked="true"], [aria-pressed="true"]),
 .gb-toggle__item.is-hover:not(.is-on, [aria-checked="true"], [aria-pressed="true"]) {
-  background: var(--gb-btn-wash-ink-hover);
-  color: var(--zinc-900);
+  background: var(--gbtg-wash-hover);
+  color: var(--gbtg-ink-hover);
 }
 
 .gb-toggle__item.is-on,
 .gb-toggle__item[aria-checked="true"],
 .gb-toggle__item[aria-pressed="true"] {
-  background: var(--zinc-900);
-  color: var(--white);
+  background: var(--gbtg-on-fill);
+  color: var(--gbtg-on-ink);
 }
 
 /* DECLARED. Keyboard only, the button organism's ring. */
 .gb-toggle__item:focus-visible,
 .gb-toggle__item.is-focus {
-  outline: var(--gb-btn-focus-ring-width) solid var(--gb-btn-focus-ring);
+  outline: var(--gb-btn-focus-ring-width) solid var(--gbtg-ring);
   outline-offset: var(--gb-btn-focus-ring-offset);
 }
 
@@ -593,6 +696,45 @@
 .gb-toggle--fill { display: flex; width: 100%; }
 .gb-toggle--fill .gb-toggle__item {
   flex: 1 1 0;
+  min-width: 0;
+  justify-content: center;
+  padding-inline: var(--space-8);
+}
+
+/* ============================================================
+   SPREAD (gbppl-panel-mode-toggle-1, 01.09)
+   ------------------------------------------------------------
+   THE SECOND WAY TO FILL A TRACK, and the argument for it is
+   already written in --fill above: «Basis 0 rather than auto: on
+   auto the share is the label plus the growth, and three different
+   labels give three different widths, which is a filled track but
+   not an equal one.» That paragraph names both behaviours and
+   picks the equal one for the rail, where the halves are values of
+   one axis and equality is the point.
+
+   THE CONSOLE IS THE OTHER CASE. Its Mode switch is VIEW /
+   INSPECT / COMMENT in a rail 287.11 wide, and the third half also
+   carries the unread count. Measured at 1280: equal shares give
+   95.7 each and COMMENT with its count needs 106.1, so the badge
+   climbs over the label — the track is full and the control is
+   broken. On basis auto the same three halves come out 60.4 / 82.1
+   / 126.8, the track is full to the pixel, and nothing overlaps.
+
+   So: shares that FOLLOW THE LABELS. Use it when the halves are
+   not comparable in length or when one of them carries something
+   besides its word; use --fill when they are three readings of one
+   axis. The two are alternatives, and both are alternatives to the
+   hug, which is the default and the checkout.
+
+   Everything else is --fill's, to the line: the same floor of
+   --space-8 (in a share the padding is a floor, not the air), the
+   same min-width: 0, the same centring stated rather than
+   inherited, no wrap. Vertical padding, height, ink, ground,
+   radius, motion and the label ladder are untouched.
+   ============================================================ */
+.gb-toggle--spread { display: flex; width: 100%; }
+.gb-toggle--spread .gb-toggle__item {
+  flex: 1 1 auto;
   min-width: 0;
   justify-content: center;
   padding-inline: var(--space-8);
