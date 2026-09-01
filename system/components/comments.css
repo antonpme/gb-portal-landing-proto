@@ -21,6 +21,18 @@
    is brought onto ONE COLUMN and ONE RHYTHM. The two sections that
    carry it are THE ONE COLUMN and THE RHYTHM, below.
 
+   gbppl-comments-hitbox-1, 01.09: the same drawer, three hours later
+   and in front of the client. Ton: «Тыкал по полям, но туда ничего
+   не нажимается» and «Не могу нормально навести курсор на кнопку
+   Resolve». A dressed drawer you cannot hit is worse than an
+   undressed one you can, and both faults were here, in this file:
+   an eight pixel dead band the label's margin left under every caps
+   line (THE WHOLE ROW IS THE FIELD), and a blanket `default` cursor
+   that reached every child of every control in the drawer, taking
+   the caret off the fields and the pointer off the button labels
+   (AND A CONTROL ANSWERS FOR ITS OWN INSIDES). Neither organism was
+   at fault and neither was touched.
+
    WHAT THIS FILE DRAWS, AND WHAT IT DELIBERATELY DOES NOT.
    Three things are new here and nothing else: the pin on the page,
    the shelf of threads in the console, and the thread inside the
@@ -128,8 +140,62 @@ html.gbc-on,
 html.gbc-on * { cursor: crosshair !important; }
 html.gbc-on :is(.gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim, .gbc-layer),
 html.gbc-on :is(.gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim, .gbc-layer) * { cursor: default !important; }
+
+/* ============================================================
+   AND A CONTROL ANSWERS FOR ITS OWN INSIDES
+                              (gbppl-comments-hitbox-1, 01.09)
+   ------------------------------------------------------------
+   Ton, live in front of the client: «Не могу нормально навести
+   курсор на кнопку Resolve. Навожу, а стрелочка часто остаётся
+   обычной, не меняется на pointer. Это или ошибка нашего компонента
+   Outline Button, или конкретно этой кнопки.» Neither. It is this
+   block, and the arithmetic says so.
+
+   The line above hands `default` to EVERY DESCENDANT of the console
+   and the drawer, weight (0,2,1). The line that gave the buttons
+   their pointer reached the BUTTON only, weight (0,2,2) — and a
+   button in this house is never one node: `.gb-btn` carries a
+   `.gb-btn__label` span, `.gb-btn--icon` carries an `<svg>` with its
+   `<path>`. Those children matched the first rule and nothing else,
+   so the pointer lived in the padding and died on the word. Measured
+   before the fix, thread drawer at 1280: Resolve 28 of 35 sample
+   points pointer, the three over the letters `default`; the close
+   cross 15 of 35, the whole glyph `default`. Outside Comment mode
+   the same label reads `pointer` on every page of the studio (the
+   organism declares `cursor: pointer` on `.gb-btn` and cursor
+   inherits), so nothing is wrong with button.css and nothing was
+   touched there.
+
+   AND A FIELD AIMS LIKE A FIELD. Same rule, other half of the same
+   complaint: «вообще не понимаю, куда там целиться». The blanket
+   `default` also took the I-beam off the inputs — a text field in
+   Comment mode was pointing at itself with an arrow, on all 81
+   sample points of both fields. `.gba-input` is the field class of
+   the house, so the rule is written on it and not on the tag: a
+   checkbox that arrives in the console later must not inherit a
+   caret. The label of a field is part of the same target (see THE
+   WHOLE ROW IS THE FIELD, below) and aims with it.
+
+   OPEN TO TON: the same caret on `.gba-label` at the OWNER, so a
+   label reads the same on the login, the gate and the checkout.
+   Browsers point an arrow at a `<label>` by default, so this is a
+   departure and not a bug fix; here it is scoped to the drawer,
+   where the label and its air are one row with the control.
+   ============================================================ */
 html.gbc-on :is(.gbsp, .gbd-panel) :is(a, button),
+html.gbc-on :is(.gbsp, .gbd-panel) :is(a, button) *,
 html.gbc-on .gbc-pin { cursor: pointer !important; }
+
+html.gbc-on :is(.gbsp, .gbd-panel) .gba-input,
+html.gbc-on .gbd-panel .gbc-field > .gba-label { cursor: text !important; }
+
+/* A locked form says so with the pointer too. `.gb-btn:disabled`
+   needs no line of its own: the organism takes it out of
+   `pointer-events`, so the pointer reads the row underneath, which
+   is already `default`. */
+html.gbc-on .gbd-panel .gba-input:disabled,
+html.gbc-on .gbd-panel .gbc-form.is-down .gbc-field > .gba-label { cursor: not-allowed !important; }
+
 html.gbc-on ::selection { background: transparent; }
 
 /* ============================================================
@@ -370,7 +436,39 @@ html.gbc-on ::selection { background: transparent; }
    лид-страницы это часть колонки, в дровере — лишний сдвиг от края
    тела. Обнуляется здесь, у потребителя, а не у владельца. */
 .gbc-field { padding: 0; margin-bottom: var(--space-24); }
-.gbc-field > .gba-label { margin-bottom: var(--space-8); }
+
+/* ============================================================
+   THE WHOLE ROW IS THE FIELD
+                              (gbppl-comments-hitbox-1, 01.09)
+   ------------------------------------------------------------
+   Ton, live in front of the client: «Тыкал по полям, но туда
+   ничего не нажимается — практически невозможно попасть курсором в
+   input.» The instrument found the hole and it is exactly eight
+   pixels tall. A 4px grid over the whole block of both fields,
+   thread drawer at 1280, 1056 sample points: every row hit its
+   control except two — y 304..311 under the name label and y
+   410..417 under the comment label, 0 of 22 each. `elementFromPoint`
+   named the thief: `DIV.gba-field.gbc-field`, the wrapper itself,
+   showing through the gap. Worse than dead: the drawer panel takes
+   focus for a stray click inside it, so a jab at that band did not
+   miss quietly, it BLURRED the field the previous jab had focused.
+
+   The gap was this file's own — `margin-bottom` on the label. The
+   other carriers of the owner measure 0 there (auth drawer, guest
+   login, the gate, all four fields of the booking lead form: label
+   bottom == control top), so nothing at the owner is at fault and
+   nothing at the owner moves.
+
+   The fix is the gap changing hands, not size: 8 as PADDING inside
+   the `<label for>` instead of MARGIN outside it. Geometry is
+   identical to the pixel (label box 18 → 26, control top where it
+   always was), and the browser's own rule does the rest — a click
+   anywhere in a label puts the caret in the control it names. The
+   row now reads and behaves as one object from the top of its caps
+   line to the underline, edge to edge of the body column, which is
+   what a field with a frame does and what ours only looked like.
+   ============================================================ */
+.gbc-field > .gba-label { padding-bottom: var(--space-8); }
 
 /* ============================================================
    THE FREE TEXT FIELD (gbppl-comments-c, 28.08)
@@ -398,6 +496,18 @@ html.gbc-on ::selection { background: transparent; }
    genuinely its own: the column below. The live lead form of the
    booking is the one field that stays on its own live mechanics, and
    auth.css says why on the spot.
+
+   AND THE FLOOR CAME DOWN TO ONE LINE (gbppl-comments-hitbox-1,
+   01.09). Ton: «чтобы она была растягиваемой, а не большой по
+   дефолту. Это сразу сбивает, непонятно, куда ставить курсор». The
+   live 80 is still the FIELD's floor; what the thread asks for is a
+   different STARTING height, which is an axis and not a rewrite.
+   .gba-textarea--line at the owner puts the floor on the same rung of
+   the control ladder the name field stands on (48 / 56 / 64), and the
+   empty drawer becomes rows of one height. Growth, the ceiling of 192
+   and the quiet ground at the ceiling are untouched, and the class is
+   worn by this drawer alone: the checkout keeps the live 80 until Ton
+   says otherwise.
    ============================================================ */
 
 /* A locked field says so with ink, not with a browser default grey:

@@ -98,6 +98,40 @@
       which is Ton's call and not this wave's.
 
    ------------------------------------------------------------
+   AND THEN IT HAD TO BE HITTABLE (gbppl-comments-hitbox-1, 01.09)
+   ------------------------------------------------------------
+   Ton, live in front of the client, on the drawer he had just had
+   dressed: «Тыкал по полям, но туда ничего не нажимается —
+   практически невозможно попасть курсором в input. Что-то с инпутами
+   явно не то. Особенно в этот text field: вообще не понимаю, куда
+   там целиться.» And, in the same breath: «Не могу нормально навести
+   курсор на кнопку Resolve. Навожу, а стрелочка часто остаётся
+   обычной, не меняется на pointer.»
+
+   Three faults, none of them in the organisms it borrows, all three
+   measured with a grid of dispatched mouse events before a line was
+   written (map before and after in the wave report):
+
+   1. AN EIGHT PIXEL DEAD BAND under every label, this file's own
+      margin showing through as the wrapper. It swallowed the click
+      AND blurred the field, so aiming at the row cost you the field
+      you already had. Fixed in comments.css, THE WHOLE ROW IS THE
+      FIELD: the gap changes hands from margin to the label's padding
+      and the browser's own «a label focuses its control» does the
+      rest. 100% of the row hits now, at 390, 1280 and 1920.
+   2. NO CARET AND NO POINTER. The Comment cursor rules handed
+      `default` to every descendant of the drawer, so a text field
+      pointed at itself with an arrow and a button's own label span
+      did too. Fixed in comments.css, AND A CONTROL ANSWERS FOR ITS
+      OWN INSIDES. button.css was measured and left alone: outside
+      this mode the same label reads `pointer` on every page.
+   3. THE FREE TEXT FIELD OPENED BIG. Ton: «чтобы она была
+      растягиваемой, а не большой по дефолту. Это сразу сбивает,
+      непонятно, куда ставить курсор». The empty drawer now stands on
+      rows of ONE height — see areaBlock and the .gba-textarea--line
+      axis at the owner.
+
+   ------------------------------------------------------------
    ПОЛКА ТОЛЬКО В СВОЁМ РЕЖИМЕ, СЧЁТ ВСЕГДА (gbppl-panel-11, 28.08)
    ------------------------------------------------------------
    Тон, 28.08, дословно: «Не логично показывать секцию Comments on
@@ -807,10 +841,24 @@
      каждой странице, которую мы мерили, — и боксировать многострочник
      значит либо завести пятый облик поля, либо переодеть шаг 1
      букинга, который Тон сам запер на живую форму «один в один».
-     Вопрос на столе, замер в отчёте волны. */
+     Вопрос на столе, замер в отчёте волны.
+
+     И НАЧИНАЕТ ОН СО СТРОКИ (gbppl-comments-hitbox-1, 01.09). Тон, в
+     тот же час, что и жалоба на попадание курсором: «чтобы она была
+     растягиваемой, а не большой по дефолту. Это сразу сбивает,
+     непонятно, куда ставить курсор». Пол 80 был живым числом лид-формы
+     и остался полом ПОЛЯ; форме треда, где многострочник стоит в
+     колонку с однострочником, владелец даёт ось .gba-textarea--line:
+     пол опускается на ту же ступень лестницы контрола, на которой
+     стоит поле имени (48 / 56 с 1280 / 64 с 2000). Пустой дровер
+     становится тремя рядами одного роста, и целиться больше некуда
+     мимо. Рост, потолок 192 и земля на потолке остаются у поля:
+     набранная строка тут же поднимает высоту, стёртая опускает
+     обратно. rows="1" тем же решением — браузеру без field-sizing
+     атрибутом говорится то же, что остальным говорит CSS. */
   function areaBlock(id, label, placeholder, value, dis) {
     return fieldBlock(id, label,
-      '<textarea class="gba-input gba-textarea" id="' + id + '" rows="3"' +
+      '<textarea class="gba-input gba-textarea gba-textarea--line" id="' + id + '" rows="1"' +
         (placeholder ? ' placeholder="' + placeholder + '"' : '') + dis + '>' +
         (value || '') + '</textarea>');
   }
