@@ -25,7 +25,11 @@
                         27.08) — лейбл внутри поля, уезжает вверх и
                         сжимается; лестница живой contact-us
                         13/14/16 при 48/48/56. Без атрибута поле
-                        байт-в-байт прежнее.
+                        байт-в-байт прежнее. МНОГОСТРОЧНИК РАСТЁТ
+                        (gbppl-field-autogrow-1, 01.09): пол 2-3
+                        строки, потолок три ступени 64, за потолком
+                        прокрутка внутри и тихая земля Zinc 50;
+                        механика в конце файла, облик в auth.css.
      <gb-auth-flow>     колонка формы max-w 600 и ФЛОУ живого
                         гостя: signin (e-mail + Google) → сабмит
                         пустого/невалидного = ошибка «Please enter
@@ -319,6 +323,106 @@
   if (!customElements.get('gb-field')) {
     customElements.define('gb-field', GbField);
   }
+
+  /* ============================================================
+     АВТОРОСТ МНОГОСТРОЧНИКА          gbppl-field-autogrow-1, 01.09
+     ------------------------------------------------------------
+     Тон: «я тоже склоняюсь к Auto-Grow, поле должно расти». Рост
+     объявлен в auth.css одной строкой (field-sizing: content), и
+     там, где браузер её понимает, ЭТОТ КОД ВЫСОТЫ НЕ КАСАЕТСЯ: он
+     нужен ради двух вещей, которых у CSS нет.
+
+       ФОЛБЕК     браузеру без field-sizing высота считается тем же
+                  способом, каким её считали порознь booking.js и
+                  comments.js: обнулить, снять scrollHeight, вернуть
+                  вместе с рамкой. Потолок и пол при этом остаются
+                  на CSS (min-height / max-height сильнее height), и
+                  ветка получается одна, а не вторая механика.
+       ЗЕМЛЯ     .is-capped — тихое тело на потолке (auth.css). Оно
+                  ставится по ФАКТУ ПРОКРУТКИ, а не по числу строк:
+                  спросить у браузера scrollHeight > clientHeight
+                  дешевле и честнее, чем считать строки самому, и
+                  ответ не врёт ни на одной ширине и ни при одном
+                  кегле лестницы.
+
+     ПОЧЕМУ НАБЛЮДАТЕЛЬ, А НЕ ПРОВОДКА У ПОТРЕБИТЕЛЯ. Многострочник
+     приезжает на страницу не только с клавиатуры: тело дровера
+     переписывается на каждом open, чекаут держит свои в <template>
+     и раздаёт клонами, Alpine и восстановленный черновик кладут
+     текст в поле без единого события input. Поэтому здесь та же
+     пара, что у icon.js: один делегированный input на документе и
+     один MutationObserver на прибывающих узлах. Потребитель не
+     обязан звать ничего — но может: window.GbFields.grow(el).
+
+     ЖИВОЙ ЛИД-ФОРМЫ НЕ КАСАЕМСЯ. Поле внутри .gba-field--floating
+     принадлежит шагу 1 букинга, который Тон запер на живую форму
+     «один в один» (27.08); его высоту ставит booking.js своими
+     живыми числами, и ours() отсеивает его в одном месте.
+     ============================================================ */
+  var FIT = !!(window.CSS && CSS.supports && CSS.supports('field-sizing', 'content'));
+
+  function ours(t) {
+    return !!t && t.tagName === 'TEXTAREA' &&
+           t.classList && t.classList.contains('gba-textarea') &&
+           !(t.closest && t.closest('.gba-field--floating'));
+  }
+
+  function grow(t) {
+    if (!ours(t)) return;
+    if (!FIT) {
+      /* Рамка входит в высоту только при border-box: дровер треда
+         объявляет его сам, страница с preflight — за всех. */
+      var cs = getComputedStyle(t);
+      var edge = cs.boxSizing === 'border-box'
+        ? (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0)
+        : 0;
+      t.style.height = '0px';
+      t.style.height = (t.scrollHeight + edge) + 'px';
+    }
+    t.classList.toggle('is-capped', t.scrollHeight > t.clientHeight + 1);
+  }
+
+  function sweep(root) {
+    var scope = (root && root.querySelectorAll) ? root : document;
+    var list = scope.querySelectorAll('.gba-textarea');
+    for (var i = 0; i < list.length; i++) grow(list[i]);
+  }
+
+  document.addEventListener('input', function (e) { grow(e.target); }, true);
+
+  /* Ширина меняет число строк, а значит и факт прокрутки: кадр
+     устройства, поворот, перетянутое окно. Один кадр анимации на
+     всю серию событий. */
+  var waiting = 0;
+  window.addEventListener('resize', function () {
+    if (waiting) return;
+    waiting = requestAnimationFrame(function () { waiting = 0; sweep(); });
+  });
+
+  function watch() {
+    if (!window.MutationObserver) return;
+    new MutationObserver(function (records) {
+      records.forEach(function (rec) {
+        Array.prototype.forEach.call(rec.addedNodes, function (node) {
+          if (node.nodeType !== 1) return;
+          if (node.matches && node.matches('.gba-textarea')) grow(node);
+          else if (node.querySelector && node.querySelector('.gba-textarea')) sweep(node);
+        });
+      });
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { sweep(); watch(); });
+  } else {
+    sweep();
+    watch();
+  }
+
+  /* Имя во множественном числе нарочно: класс GbField в этом файле
+     занят элементом <gb-field>, а наружу выходит поведение СЕМЬИ
+     полей, не одного элемента. */
+  window.GbFields = { grow: grow, sweep: sweep, native: FIT };
 
   /* ---------------- САБМИТ ФОРМЫ ----------------
      gbppl-button-2, 26.08: кнопка = организм .gb-btn, лестница L,
