@@ -43,6 +43,61 @@
    ниже), строка сироты сведена к двум фразам.
 
    ------------------------------------------------------------
+   THE DRAWER GETS DRESSED (gbppl-comments-dress-1, 01.09)
+   ------------------------------------------------------------
+   Ton, on a screenshot of this very drawer: «Drawer с комментами
+   выглядит каким-то немножечко кривым. Переключение модов, вот этот
+   note | suggest text, выглядит тоже странным. Окно input-текста
+   (free text), по-моему, тоже какое-то кривоватое вообще глобально в
+   системе.»
+
+   THREE THINGS MOVED, AND NOT ONE OF THEM IS A NEW DRAWING.
+
+   1. ONE FIELD VOICE INSTEAD OF TWO. The form wore
+      .gba-field--floating, the variant of the LIVE LEAD FORM, and
+      that variant has two labels by construction: the single line
+      one floats inside the box (11.2 / 300, no caps) and the
+      multiline one stands above it (12 / 600, ls 1.44). Two voices
+      in a form of two fields is the crookedness itself, and it
+      cannot be fixed inside that variant without inventing a fifth
+      face of the field. So the drawer wears THE DEFAULT FIELD, the
+      one the login drawer and the checkout drawers already wear:
+      Eyebrow label above, underline below, 14 / 16 / 18 in 48 / 56 /
+      64. The argument the earlier wave used for the floating one —
+      «it stands beside the live lead form» — was never true here: a
+      thread drawer is studio furniture and never opens beside a
+      booking form. Тон-14: студия живёт на системе строже
+      прототипов.
+
+      The floating variant also has nowhere to rise in this column.
+      Its raised label sits at top -4, and in a lead form each field
+      has 24 to 40 of margin above it; here the rhythm is 24 and the
+      raised label came out 3.6px under the line of running text
+      above it. Measured, not guessed (before / after in the report).
+
+   2. NOTE | SUGGEST TEXT IS A TOGGLE NOW. It was .gbdoc-seg, the
+      underlined segment of the documentation, and between two
+      underlined fields it read as a link rather than a choice. Two
+      short values is the toggle by the canon of axes (window.ORO_AXES
+      in system/oro/oro.js: 2..4 short values -> .gb-toggle), and the
+      house has had the component since 29.08. The size is S and the
+      track HUGS its two words: --fill across 472 makes the black
+      half the loudest thing in the drawer, and this control is not
+      the business of the form, the Post button is.
+
+      NO SECOND TAB STOP IS DEMANDED OF THE PAGE. The markup keeps
+      aria-pressed, which toggle.js reads as a legal spelling of the
+      same control, so the switch works on a page that carries only
+      toggle.css and gains the arrow keys and the roving tab stop
+      wherever toggle.js is loaded too.
+
+   3. THE COLUMN. Everything in the drawer starts on one edge now:
+      the sub, the lede, the labels, the text inside the fields, the
+      button and the hint. See comments.css, THE ONE COLUMN — and the
+      measurement of the system-wide version of the same defect,
+      which is Ton's call and not this wave's.
+
+   ------------------------------------------------------------
    ПОЛКА ТОЛЬКО В СВОЁМ РЕЖИМЕ, СЧЁТ ВСЕГДА (gbppl-panel-11, 28.08)
    ------------------------------------------------------------
    Тон, 28.08, дословно: «Не логично показывать секцию Comments on
@@ -150,6 +205,7 @@
   var down = '';           /* пусто или строка состояния об отказе */
   var openId = null;       /* тред, открытый в дровере */
   var pending = null;      /* новая булавка: { el, fx, fy } */
+  var keepFocus = '';      /* половина тогла, которой вернуть фокус после пересборки */
   var hovered = null;
   var deepLink = null;     /* ?comment=ID, снятый при загрузке */
   var moving = false;      /* мы сами двигаем режим прибора */
@@ -712,49 +768,49 @@
 
   /* Подпись автора: имя спрашивается ОДИН раз в браузере, дальше
      сворачивается в строку «as <имя> · change» (спека §4.2). */
-  /* ПОЛЯ ДРОВЕРА = ШАГ 1 БУКИНГА, ТОТ ЖЕ ВАРИАНТ (gbppl-comments-c).
-     Замер live/book-a-meeting.html на 1280: обёртка носит
-     .gba-field--floating, однострочник 48 высотой, Inter 300 14/14,
-     лейбл ВНУТРИ .gba-inputwrap и ПОСЛЕ контрола (порядок в DOM
-     несущий: подъём это :focus ~ и :not(:placeholder-shown) ~), а
-     плейсхолдер один пробел, иначе псевдокласс не срабатывает и
-     подсказка лежит под лейблом. До этой волны дровер носил ДЕФОЛТ
-     поля, гостевую лестницу 16/56 с капс-подписью сверху, то есть не
-     тот облик, что на живой форме рядом. */
+  /* ПОЛЯ ДРОВЕРА = ДЕФОЛТНОЕ ПОЛЕ СИСТЕМЫ (gbppl-comments-dress-1,
+     01.09; полный разбор в шапке файла). Лейбл СТОИТ НАД контролом и
+     говорит единственным капс-голосом системы (.gba-label на токенах
+     Eyebrow, раздел 3 скилла), контрол подчёркнут, лестница 14/16/18
+     при 48/56/64 — ровно то, что носят дровер входа и дроверы
+     чекаута. Однострочник и многострочник получают ОДИН облик; до
+     этой волны они носили .gba-field--floating и говорили двумя
+     разными голосами в форме из двух полей.
+     Плейсхолдера у имени нет: лейбл над полем уже сказал слово, и
+     повторять его внутри строки значит написать его дважды. */
+  function fieldBlock(id, label, control) {
+    return '<div class="gba-field gbc-field">' +
+      '<label class="gba-label" for="' + id + '">' + label + '</label>' +
+      '<div class="gba-inputwrap">' + control + '</div>' +
+    '</div>';
+  }
+
   function authorBlock(dis) {
     var me = author();
     if (!me) {
-      return '<div class="gba-field gba-field--floating gbc-field">' +
-        '<div class="gba-inputwrap">' +
-          '<input class="gba-input" id="gbc-name" type="text" autocomplete="name"' +
-            ' placeholder=" "' + dis + '>' +
-          '<label class="gba-label" for="gbc-name">Your name</label>' +
-        '</div>' +
-      '</div>';
+      return fieldBlock('gbc-name', 'Your name',
+        '<input class="gba-input" id="gbc-name" type="text" autocomplete="name"' + dis + '>');
     }
     return '<p class="gbc-as">as ' + esc(me) +
            ' <button class="gbc-link" type="button" data-act="rename"' + dis + '>change</button></p>';
   }
 
-  /* МНОГОСТРОЧНИК ТОГО ЖЕ ВАРИАНТА. У него лейбл НЕ плавает, и это не
-     наш выбор, а живая форма: на contact-us-219 единственное поле с
-     лейблом над строкой это как раз комментарий (auth.css, «статичный
-     лейбл над полем»), и computed говорит 12 / 600 / ls 1.44 Zinc 500
-     без капса. Плавать ему негде: покой лейбла у варианта top 50%, то
-     есть середина восьмидесяти пикселей.
-     ОТКРЫТО ТОНУ: он просил «поле с рамкой». Рамки у поля нет ни у
-     нас, ни на лайве, .gba-input подчёркнут на всех страницах,
-     которые мы мерили; выдумывать её здесь значит завести пятую
-     версию поля мимо владельца. Носим замеренное, вопрос на столе. */
+  /* МНОГОСТРОЧНИК ТОГО ЖЕ ОБЛИКА: .gba-textarea это версия того же
+     .gba-input (auth.css), поэтому лейбл, подчёркивание, лестница и
+     фокус приходят оттуда же, а разница ровно в трёх вещах, которые
+     объявил владелец: пол 80, междустрочие 1.6 и вертикальные поля.
+     Потолок и снятая ручка живут в comments.css.
+     ОТКРЫТО ТОНУ (не решено этой волной): он просил «поле с рамкой».
+     Рамки у поля нет ни у нас, ни на лайве — .gba-input подчёркнут на
+     каждой странице, которую мы мерили, — и боксировать многострочник
+     значит либо завести пятый облик поля, либо переодеть шаг 1
+     букинга, который Тон сам запер на живую форму «один в один».
+     Вопрос на столе, замер в отчёте волны. */
   function areaBlock(id, label, placeholder, value, dis) {
-    return '<div class="gba-field gba-field--floating gbc-field">' +
-      '<label class="gba-label" for="' + id + '">' + label + '</label>' +
-      '<div class="gba-inputwrap">' +
-        '<textarea class="gba-input gba-textarea" id="' + id + '" rows="3"' +
-          (placeholder ? ' placeholder="' + placeholder + '"' : '') + dis + '>' +
-          (value || '') + '</textarea>' +
-      '</div>' +
-    '</div>';
+    return fieldBlock(id, label,
+      '<textarea class="gba-input gba-textarea" id="' + id + '" rows="3"' +
+        (placeholder ? ' placeholder="' + placeholder + '"' : '') + dis + '>' +
+        (value || '') + '</textarea>');
   }
 
   function msgBlock(c, i) {
@@ -787,9 +843,28 @@
 
   /* Форма нового комментария. Два вида, один переключатель: note —
      замечание словами, suggest text — предложенная копия, и тогда
-     рядом стоит то, что написано сейчас (спека §4.2). Сегмент взят у
-     документации (.gbdoc-seg, «контролы не кнопки»), поле и кнопка —
-     у системы (.gba-input, .gb-btn). */
+     рядом стоит то, что написано сейчас (спека §4.2). Переключатель —
+     системный Toggle button (toggle.css), поле и кнопка — .gba-input и
+     .gb-btn; ни одной своей формы. */
+  /* ВЫБОР ВИДА = ТОГЛ (gbppl-comments-dress-1). Два коротких значения,
+     и канон осей (window.ORO_AXES) на такой длине называет .gb-toggle.
+     Регистр разметки невидим (капс рисует компонент), поэтому слова
+     пишутся по правилам копии, sentence case.
+     aria-pressed, не aria-checked: toggle.js читает обе записи, но
+     первая работает и там, где подключён только toggle.css. */
+  function kindsBlock(suggest, d) {
+    function half(value, label, on) {
+      return '<button class="gb-toggle__item' + (on ? ' is-on' : '') + '" type="button"' +
+        ' data-kind="' + value + '" aria-pressed="' + on + '"' + d + '>' + label + '</button>';
+    }
+    return '<div class="gbc-kinds">' +
+      '<div class="gb-toggle' + (down ? ' is-disabled' : '') + '" role="radiogroup"' +
+        ' aria-label="Kind of comment">' +
+        half('note', 'Note', !suggest) +
+        half('suggest', 'Suggest text', suggest) +
+      '</div>' +
+    '</div>';
+  }
   /* ЗАПЕРТО ЦЕЛИКОМ ИЛИ НЕ ЗАПЕРТО ВОВСЕ (gbppl-comments-c). Пока
      писать некуда, форма не принимает ни буквы: disabled стоит на
      полях, на сегментах note | suggest и на кнопке. Наполовину живая
@@ -803,12 +878,7 @@
     var d = dis();
     return '<form class="gbc-form' + (down ? ' is-down' : '') + '" data-form="new">' +
       authorBlock(d) +
-      '<div class="gbdoc-axis gbc-kinds">' +
-        '<button class="gbdoc-seg' + (suggest ? '' : ' is-on') + '" type="button" data-kind="note"' +
-          ' aria-pressed="' + (!suggest) + '"' + d + '>note</button>' +
-        '<button class="gbdoc-seg' + (suggest ? ' is-on' : '') + '" type="button" data-kind="suggest"' +
-          ' aria-pressed="' + suggest + '"' + d + '>suggest text</button>' +
-      '</div>' +
+      kindsBlock(suggest, d) +
       (suggest ?
         '<div class="gbc-diff gbc-diff--live">' +
           '<p class="gbc-diff__row"><span class="gbc-diff__k">was</span>' +
@@ -822,8 +892,13 @@
       '<div class="gbc-actions">' +
         '<button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="submit"' +
           d + '><span class="gb-btn__label">Post</span></button>' +
-        '<span class="gbc-hint">' + (down ? SAY[down] : 'Ctrl and Enter posts') + '</span>' +
       '</div>' +
+      /* Подсказка СТРОКОЙ ПОД РЯДОМ, а не рядом с кнопкой
+         (gbppl-comments-dress-1): «Ctrl and Enter posts» умещалось
+         сбоку, а строка отказа сервиса переносилась под кнопку сама,
+         и одно и то же место говорило то справа, то снизу. Одно
+         место для одной роли. */
+      '<p class="gbc-hint">' + (down ? SAY[down] : 'Ctrl and Enter posts') + '</p>' +
     '</form>';
   }
 
@@ -840,8 +915,8 @@
           '<button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-act="status"' +
             d + '><span class="gb-btn__label">' +
             (c.status === 'open' ? 'Resolve' : 'Reopen') + '</span></button>' +
-          (down ? '<span class="gbc-hint">' + SAY[down] + '</span>' : '') +
         '</div>' +
+        (down ? '<p class="gbc-hint">' + SAY[down] + '</p>' : '') +
       '</form>';
   }
 
@@ -980,7 +1055,12 @@
     form.addEventListener('click', function (e) {
       var k = e.target.closest ? e.target.closest('[data-kind]') : null;
       if (k && pending) {
-        openNew(pending.el, pending.fx, pending.fy, k.getAttribute('data-kind'));
+        /* Форма пересобирается целиком, значит нажатая половина тогла
+           это уже другой узел. Возвращаем на неё фокус: со стрелок
+           клавиатуры (toggle.js жмёт по мере движения) иначе фокус
+           уезжал бы в поле имени на каждом переключении. */
+        keepFocus = k.getAttribute('data-kind');
+        openNew(pending.el, pending.fx, pending.fy, keepFocus);
         return;
       }
       var rn = e.target.closest ? e.target.closest('[data-act="rename"]') : null;
@@ -1004,7 +1084,10 @@
       }
     });
 
-    var focusOn = nameEl || newEl || bodyEl;
+    var focusOn = keepFocus
+      ? body.querySelector('.gb-toggle__item[data-kind="' + keepFocus + '"]')
+      : (nameEl || newEl || bodyEl);
+    keepFocus = '';
     if (focusOn) focusOn.focus({ preventScroll: true });
   }
 
