@@ -70,6 +70,12 @@
                     rgba(0,0,0,0) on rgb(63,63,70).
      hover          ground --zinc-50 on the unpressed half only,
                     ink unchanged. Measured rgb(250,250,250).
+                    SUPERSEDED 01.09 (gbppl-toggle-hover-1). The
+                    measurement stands; the value does not. Two per
+                    cent against a white track is a hover nobody
+                    sees, and Ton said so out loud. The wash and the
+                    ink it moved to, and why, are in the hover block
+                    further down this file.
      motion         --mo-micro (160ms) with --mo-move, measured
                     0.16s cubic-bezier(0.4, 0, 0.2, 1) — the same
                     pair the page was already rendering.
@@ -149,9 +155,79 @@
               border-color var(--mo-micro) var(--mo-move);
 }
 
-/* Hover belongs to the half that is NOT pressed: washing the black
-   card would say it can be pressed again, and it cannot. */
-.gb-toggle__item:hover:not(.is-on) { background: var(--zinc-50); }
+/* ============================================================
+   THE HOVER HAS TO BE SEEN (gbppl-toggle-hover-1, 01.09)
+   ------------------------------------------------------------
+   Ton, 01.09: «нет ховер стейта в прототипе чекаута».
+
+   THE RULE WAS NEVER BROKEN, AND NOTHING WAS OVERRIDING IT.
+   Measured live on 01.09 through the harvest Chrome at 1280, with
+   a real CDP Input.dispatchMouseEvent onto the centre of the
+   unpressed half: the item computed rgb(250, 250, 250) under the
+   pointer, the pressed half held rgb(24, 24, 27), and the console
+   was clean. Same result on all three consumers — live/checkout.html,
+   system/oro/button.html (5 tracks) and system/oro/lab/playground.html
+   (8 tracks). CSS.getMatchedStylesForNode on the hovered node lists
+   exactly four rules that touch background: the UA sheet, Tailwind
+   preflight's `background-color: transparent` at 0-0-1, this file's
+   base at 0-1-0 and this hover at 0-3-0. The bundle never had a say.
+
+   WHAT IS BROKEN IS THE VALUE. Zinc 50 is #fafafa and the track it
+   lies on is #ffffff: five units out of 255, two per cent, on a
+   32px pill — a step nobody sees. And on the bench bar it is worse
+   than invisible: .gbdoc-pg__bar IS Zinc 50, so a hovered half
+   there turns exactly the colour of the furniture around the
+   control. Zinc 50 is a GROUND in this house (docs.css: «Zinc 50
+   только полоса внутри объекта»), and a ground cannot also be the
+   wash of a control standing on white.
+
+   The 29.08 measurement was honest — the checkout really did spend
+   hover:bg-zinc-50 by hand — and this is exactly what Ton-17 is
+   for: an obvious shortfall of the source is repaired at our owner
+   instead of being carried forward because it was measured.
+
+   SO THE HOVER TAKES THE ANSWER THE HOUSE ALREADY HAS. Nothing is
+   invented and no new grey is named:
+
+     wash   --gb-btn-wash-ink-hover, Zinc 300 at 20%, LIVE 24-25.08.
+            It is the one wash an ink-coloured transparent control
+            lays down in this system; it is what the ghost Remove
+            button standing twelve pixels away in the same checkout
+            band already spends; and being translucent it composites
+            onto whatever ground the item stands on — rgb(246, 246, 247)
+            over the white track — rather than naming a ground of its
+            own. Two controls in one band with two different hover
+            washes would be two houses.
+     ink    --zinc-700 -> --zinc-900. DECLARED, and at 1:1 it is the
+            half a person actually reads: screenshots of the real
+            checkout at 1280 put the wash alone still quiet and the
+            label coming forward unmistakable. It is also what the
+            state MEANS — the unpressed half stepping up toward the
+            black card it is about to become — and Zinc 900 is the
+            ink the pressed half and the secondary ghost button
+            already carry, so it is a rung of the same voice.
+
+   THE PRESSED HALF IS STILL NEVER WASHED, and the guard now names
+   all three markers the pressed rule below accepts, not just the
+   class: a consumer that presses with aria alone would otherwise
+   have its black card go grey under the pointer, and with a wash
+   this visible that would be a bug you could see across the room.
+   Specificity is unchanged at 0-3-0 — :not() takes the weight of
+   its heaviest argument, so the list costs nothing.
+
+   GEOMETRY UNTOUCHED. Checkout at 1280, before and after: track
+   314.70 x 42.26, items 121.28 x 32.49 and 179.66 x 32.49, pressed
+   ground rgb(24, 24, 27), motion --mo-micro. Identical to the pixel.
+
+   .is-hover joins .is-focus as a demo-only class, so a showcase can
+   hold the state still. A state only a pointer can prove is a state
+   nobody checks, which is how this one got two per cent deep.
+   ============================================================ */
+.gb-toggle__item:hover:not(.is-on, [aria-checked="true"], [aria-pressed="true"]),
+.gb-toggle__item.is-hover:not(.is-on, [aria-checked="true"], [aria-pressed="true"]) {
+  background: var(--gb-btn-wash-ink-hover);
+  color: var(--zinc-900);
+}
 
 .gb-toggle__item.is-on,
 .gb-toggle__item[aria-checked="true"],
