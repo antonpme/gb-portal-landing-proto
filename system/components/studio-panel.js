@@ -4,7 +4,10 @@
    2026-08-26, Mode 2026-08-26, Device gbppl-panel-7 2026-08-27,
    вторая компоновка gbppl-panel-8 2026-08-27, Classic снят
    gbppl-panel-10 2026-08-27, гардероб и счёт gbppl-panel-11
-   2026-08-28, счёт на ярлыке gbppl-panel-12 2026-08-28)
+   2026-08-28, счёт на ярлыке gbppl-panel-12 2026-08-28, слои
+   gbppl-panel-layers-1 2026-09-01, модель прототипа
+   gbppl-proto-model-1 2026-09-01, тумблер вместо табов
+   gbppl-panel-mode-toggle-1 2026-09-01)
    ------------------------------------------------------------
    ОДИН ПУЛЬТ. Тон 26.08, дословно: «обязательно свести язык к
    Studio, одной волной», и следом «нужно просто унифицировать всё
@@ -396,6 +399,56 @@
    Строка снята совсем, имя и размер называет СТРОКА СОСТОЯНИЯ внизу
    ящика — то самое место, которое и так отвечает «что у меня
    включено», и высоты у него ровно одна строка при любом ответе.
+
+   ------------------------------------------------------------
+   ТАБЫ УШЛИ, ТУМБЛЕР ПРИШЁЛ (gbppl-panel-mode-toggle-1, 2026-09-01)
+   ------------------------------------------------------------
+   Тон в тот же день, посмотрев на многослойный ящик. Три пункта,
+   дословно:
+
+   1. «У нас Version Live идёт вроде как активный, но без шеврона. Я
+      бы сделал так, чтобы даже если версия всего одна, мы всё равно
+      могли перейти и посмотреть её описание и всё прочее. Во-первых,
+      это будет консистентно, во-вторых — информативно».
+   2. «Когда заходишь внутрь, я бы делал эти описания в виде короткого
+      summary на одну-две строки, а дальше — expandable block. Весь
+      этот текст не должен висеть под ними, потому что версий может
+      быть много, и они просто не поместятся на экране».
+   3. «Переключение режимов (View, Inspect, Comment): сейчас они
+      сливаются в одно целое. Мне вообще не нравятся эти табы для
+      переключения — я бы, честно говоря, заменил их на наш Toggle
+      Button. Было бы отлично вообще убрать эти табы отовсюду из
+      панели управления, они меня просто ужасно бесят».
+
+   ОДИНОЧКА ПЕРЕСТАЛА БЫТЬ НЕМОЙ (пункт 1). loneRow снят: строка
+   выбора с одним значением — та же кнопка с шевроном, и слой за ней
+   показывает то, чего в корне не видно, — записку, статус и
+   провенанс. Довод panel-layers-1 («шеврон обещал бы список из одной
+   строки») говорил про список; за шевроном лежит не список, а
+   карточка версии, и она есть у одиночки ровно так же.
+
+   ЗАПИСКА ОТКРЫВАЕТСЯ ДВУМЯ СТРОКАМИ (пункт 2). line-clamp на
+   .gbsp-opt__desc плюс тихая строка «More», которую прибор ставит
+   только там, где текст действительно не поместился. Провенанс не
+   прячется: он короткий и он датирует ответ. Подробности у growMore
+   ниже.
+
+   MODE СТАЛ КОНТРОЛОМ, А НЕ РЯДОМ СЛОВ (пункт 3). Тумблер режима —
+   системный <gb-toggle> --inverse --s --spread; семья --inverse
+   родилась в toggle.css этой волной, и консоль её первый носитель
+   (Тон-8: цветовая семья это клетка компонента, а не заплатка
+   потребителя). Панель по-прежнему владеет ВИДОМ и МЕСТОМ, а
+   inspect.js и comments.js — поведением: addSegments, setActive,
+   setBadge и addOption не изменились ни одной подписью, и ни один
+   владелец режима не узнал, что переключатель сменил облик.
+
+   ПОДЧЁРКИВАНИЕ УБРАНО ОТОВСЮДУ, а не только у Mode: ряд девайсов и
+   фильтр комментов (его рисует comments.js, но одевает эта панель)
+   говорят «выбрано» цветом Blue 400, как строки навигации; полоса над
+   кадром — тем же. Тумблером они не стали по замеру, а не по вкусу:
+   второй трек в секции инструментов стоит +16px там, где Тон тем же
+   утром просил ящик СЖАТЬ, а полоса над кадром ростом 36 не вмещает
+   трек S (42.26). Вопрос вынесен Тону в отчёте.
    ============================================================ */
 (function () {
   'use strict';
@@ -671,19 +724,22 @@
     );
   }
 
-  /* ОДНО ЗНАЧЕНИЕ — НЕ ВЫБОР. Страница без песочниц имеет ровно одну
-     версию, и шеврон обещал бы за ней список из одной строки. Строка
-     остаётся (пустота тоже ответ, Тон 25.08), но перестаёт быть
-     кнопкой: курсор ничего не обещает — то же правило, по которому
-     неготовый вариант не ссылка. */
-  function loneRow(name, value, slot) {
-    return (
-      '<div class="gbsp-pick is-lone"' + (slot ? ' data-slot="' + esc(slot) + '"' : '') + '>' +
-        '<span class="gbsp-pick__name">' + esc(name) + '</span>' +
-        '<span class="gbsp-pick__val">' + esc(value) + '</span>' +
-      '</div>'
-    );
-  }
+  /* ОДНО ЗНАЧЕНИЕ — ТОЖЕ СТРОКА ВЫБОРА (gbppl-panel-mode-toggle-1,
+     Тон 01.09, дословно: «У нас Version Live идёт вроде как активный,
+     но без шеврона. Я бы сделал так, чтобы даже если версия всего
+     одна, мы всё равно могли перейти и посмотреть её описание и всё
+     прочее. Во-первых, это будет консистентно, во-вторых —
+     информативно»).
+
+     Строка с одним значением была немой: .gbsp-pick.is-lone, без
+     шеврона, без клика (panel-layers-1: «шеврон обещал бы список из
+     одной строки»). Довод был про СПИСОК, а на слое лежит не список, а
+     описание версии, её статус и провенанс — и они есть у одиночки
+     ровно так же, как у любой другой. Немая строка прятала их и делала
+     две одинаковые с виду строки разными на ощупь.
+
+     Функция снята целиком; loneRow больше нет, потому что второго
+     облика у строки выбора больше не бывает. */
 
   /* ВЕРСИЯ ЭТОЙ СТРАНИЦЫ. Те же данные реестра, что носила секция
      Sandbox (gbppl-panel-4) и ряд сегментов (gbppl-panel-8), но в
@@ -775,11 +831,11 @@
     var opts = versionOptions(pageId, root);
     if (opts) {
       var on = chosen(opts);
-      html += (opts.length > 1 ? pickRow : loneRow)('Version', on.label, 'version');
+      html += pickRow('Version', on.label, 'version');
     }
     elementSlices(pageId, root).forEach(function (el) {
       var eo = chosen(elementOptions(el));
-      html += (el.variants.length ? pickRow : loneRow)(el.label, eo.label, 'el:' + el.id);
+      html += pickRow(el.label, eo.label, 'el:' + el.id);
     });
     if (!html) return '';
     return (
@@ -893,6 +949,67 @@
     return true;
   }
 
+  /* ============================================================
+     ЗАПИСКА НАЧИНАЕТСЯ С ДВУХ СТРОК (gbppl-panel-mode-toggle-1)
+     ------------------------------------------------------------
+     Тон 01.09, дословно: «Когда заходишь внутрь, я бы делал эти
+     описания в виде короткого summary на одну-две строки, а дальше —
+     expandable block. Весь этот текст не должен висеть под ними,
+     потому что версий может быть много, и они просто не поместятся
+     на экране».
+
+     ДВЕ СТРОКИ РЕЖЕТ CSS, А НЕ JS. line-clamp обрывает по строке и
+     ставит многоточие, значит слово не рвётся и первая фраза не
+     обрезается на середине; деление записки по первой точке дало бы
+     summary в одно слово там, где записка начинается коротко («Live.
+     Дальше...»), и в четыре строки там, где первое предложение
+     длинное. Замер решает по МЕСТУ на экране, а не по пунктуации.
+
+     СТРОКА «MORE» ПОЯВЛЯЕТСЯ ТОЛЬКО ТАМ, ГДЕ ЕСТЬ ЧТО РАЗВЕРНУТЬ:
+     прибор спрашивает сам браузер (scrollHeight против clientHeight
+     уже обрезанного абзаца), а не считает символы. Записка в две
+     строки остаётся просто запиской, без обещания продолжения.
+
+     ПРОВЕНАНС ВСЕГДА ВИДЕН: он в одну строку, он и есть ответ на
+     «когда и чем это стало», и прятать его за разворот значило бы
+     прятать самое короткое.
+
+     СОСТОЯНИЕ НЕ ЛИПНЕТ. Слой собирается заново на каждое открытие
+     (openLayer чистит прежний и строит список с нуля), поэтому
+     развёрнутая записка схлопывается сама, когда слой закрыли:
+     помнить это некому и незачем — второй заход к тому же варианту
+     это новый вопрос, а не продолжение старого.
+
+     КНОПКА СТОИТ РЯДОМ С ВАРИАНТОМ, А НЕ ВНУТРИ НЕГО: сам вариант —
+     кнопка (или ссылка), а кнопку в кнопку положить нельзя. Поэтому
+     «More» это следующий узел того же <li>, тихий 12-й кегль в
+     колонке текста; клик по нему до выбора варианта не доходит.
+     ============================================================ */
+  function growMore(lay) {
+    var descs = lay.querySelectorAll('.gbsp-opt__desc');
+    Array.prototype.forEach.call(descs, function (d) {
+      if (d.scrollHeight <= d.clientHeight + 1) return;
+      var opt = d.closest('.gbsp-opt');
+      if (!opt || !opt.parentNode) return;
+      var b = document.createElement('button');
+      b.className = 'gbsp-more';
+      b.type = 'button';
+      b.textContent = 'More';
+      b.setAttribute('aria-expanded', 'false');
+      if (d.id) b.setAttribute('aria-controls', d.id);
+      opt.parentNode.insertBefore(b, opt.nextSibling);
+    });
+  }
+
+  function sayMore(btn) {
+    var li = btn.parentNode;
+    var d = li && li.querySelector('.gbsp-opt__desc');
+    if (!d) return;
+    var open = d.classList.toggle('is-open');
+    btn.textContent = open ? 'Less' : 'More';
+    btn.setAttribute('aria-expanded', String(open));
+  }
+
   /* spec: { title, build() -> [{label, desc, current, href, off, status}],
              onPick(option) } */
   function openLayer(host, spec, opener) {
@@ -915,7 +1032,8 @@
           '</span>'
         : '';
       var body = '<span class="gbsp-opt__name">' + esc(o.label) + '</span>' +
-                 (o.desc ? '<span class="gbsp-opt__desc">' + esc(o.desc) + '</span>' : '') +
+                 (o.desc ? '<span class="gbsp-opt__desc" id="gbsp-note-' + i + '">' +
+                           esc(o.desc) + '</span>' : '') +
                  foot;
       if (o.off) {
         return '<li><span class="gbsp-opt is-off">' + body + '</span></li>';
@@ -946,11 +1064,14 @@
     if (shell) shell.classList.add('is-layered');
     box.classList.remove('is-back');
     box.scrollTop = 0;
+    growMore(lay);
 
     lay.querySelector('.gbsp-back').addEventListener('click', function () {
       closeLayer(host, true);
     });
     lay.addEventListener('click', function (e) {
+      var m = e.target.closest ? e.target.closest('.gbsp-more') : null;
+      if (m) { sayMore(m); return; }
       var b = e.target.closest ? e.target.closest('[data-pick]') : null;
       if (!b) return;
       var o = options[+b.getAttribute('data-pick')];
@@ -1118,7 +1239,7 @@
     var html = '';
     if (type === 'choice') {
       group.className = 'gbsp-group gbsp-group--pick';
-      html += (options.length > 1 ? pickRow : loneRow)(spec.title || '', labelFor(current));
+      html += pickRow(spec.title || '', labelFor(current));
     } else if (type === 'actions') {
       group.className = 'gbsp-group gbsp-group--acts';
       if (spec.title) {
@@ -1222,21 +1343,46 @@
     return placeSection(host, sec, 10);
   }
 
+  /* Компонент, а не копия его поведения (gbppl-panel-mode-toggle-1).
+     Ряд глифов не тумблер и через эту дверь не проходит. */
+  function tune(el) {
+    if (!el || !window.GbToggle || !el.classList.contains('gb-toggle')) return;
+    try {
+      if (typeof window.GbToggle.enhance === 'function') window.GbToggle.enhance(el);
+      if (typeof window.GbToggle.sync === 'function') window.GbToggle.sync(el);
+    } catch (e) {}
+  }
+
   function makeSegments(host, spec) {
     spec = spec || {};
     var options = spec.options || [];
     var sec = modeSection(host);
 
+    /* ДВА ОБЛИКА ГРУППЫ (gbppl-panel-mode-toggle-1). Ряд глифов
+       (Device, spec.row) остаётся рядом глифов с именем слева; выбор
+       СЛОВАМИ переезжает на системный <gb-toggle>. Признак — тот же
+       spec.row, которым Device и так отличался: у кого глифы, у того
+       ряд; у кого слова, у того тумблер. Ни inspect.js, ни comments.js
+       про это не знают и не должны: панель владеет ВИДОМ и МЕСТОМ
+       (gbppl-panel-6), они владеют поведением. */
+    var asSwitch = !spec.row;
+
     var wrap = document.createElement('div');
-    /* ИМЯ ГРУППЫ СТОИТ В ОДНОЙ СТРОКЕ С ТУМБЛЕРОМ
-       (gbppl-panel-layers-1). Прежде eyebrow занимал свою строку над
-       рядом, и секция инструментов набирала 160.9px на двух группах.
-       Слева имя, справа сам переключатель — тот же порядок «имя слева,
-       значение справа», что у строк выбора этажом выше, и ящик
-       читается одним столбцом подписей. Заодно Mode перестаёт быть
-       похож на ряд табов страницы: у него есть подпись, и она говорит,
-       что это переключатель. */
-    wrap.className = 'gbsp-seggroup gbsp-seggroup--inline';
+    /* ИМЯ ГРУППЫ СТОИТ В ОДНОЙ СТРОКЕ С РЯДОМ (gbppl-panel-layers-1).
+       Прежде eyebrow занимал свою строку над рядом, и секция
+       инструментов набирала 160.9px на двух группах. Слева имя, справа
+       сам переключатель — тот же порядок «имя слева, значение справа»,
+       что у строк выбора этажом выше.
+
+       У ТУМБЛЕРА ИМЕНИ СЛЕВА НЕТ (gbppl-panel-mode-toggle-1), и это
+       замер, а не вкус: трек с тремя словами и счётом просит 287.11 —
+       ровно всю полосу ящика, — а eyebrow «Mode» с зазором отняли бы
+       58 и оставили 229 на минимум в 253.77. Подпись, ради которой
+       ломался бы контрол, здесь и не нужна: коробка тумблера сама
+       говорит, что это переключатель (за этим Тон его и позвал), три
+       слова называют себя, а строка состояния внизу ящика печатает
+       выбранный режим словом. */
+    wrap.className = 'gbsp-seggroup ' + (asSwitch ? 'gbsp-seggroup--switch' : 'gbsp-seggroup--inline');
     /* gbppl-panel-7: место группы в секции задаётся РАНГОМ, а не
        порядком вызова. Mode объявляет inspect.js асинхронно (через
        whenDefined), Device — сама панель в connectedCallback, то есть
@@ -1252,18 +1398,38 @@
     /* Девайсы стоят одной строкой ИКОНОК (gbppl-panel-9), и тогда
        имя с числом живут в title и во всплывающей подписи под
        строкой: у кнопки без слова обязано быть слово где-то ещё.
-       У режима слово своё, и глифа ему не нужно. */
+       У режима слово своё, и глифа ему не нужно.
+
+       ПОЛОВИНА ТУМБЛЕРА — ТОТ ЖЕ УЗЕЛ, ТОЛЬКО В ОДЕЖДЕ КОМПОНЕНТА
+       (gbppl-panel-mode-toggle-1): data-seg, aria-pressed и порядок
+       остаются на месте, поэтому paint, setBadge и addOption ниже
+       работают в обоих обликах одним кодом. Слово половины лежит в
+       .gb-toggle__label — слоте, который toggle.css завёл ровно для
+       случая «в половине не только слово»: счёт непрочитанного встаёт
+       ему соседом по флексу и берёт зазор компонента, а не свой. */
     function segHtml(o, i) {
-      return '<button class="gbsp-seg' + (o.icon ? ' gbsp-seg--icon' : '') +
-             '" type="button" data-seg="' + i + '"' +
-             (o.title ? ' title="' + esc(o.title) + '"' : '') +
-             (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
-             ' aria-pressed="false">' + (o.icon || esc(o.label)) +
-             '</button>';
+      var head = ' type="button" data-seg="' + i + '"' +
+                 (o.title ? ' title="' + esc(o.title) + '"' : '') +
+                 (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
+                 ' aria-pressed="false">';
+      if (asSwitch) {
+        return '<button class="gb-toggle__item"' + head +
+               '<span class="gb-toggle__label">' + esc(o.label) + '</span></button>';
+      }
+      return '<button class="gbsp-seg' + (o.icon ? ' gbsp-seg--icon' : '') + '"' + head +
+             (o.icon || esc(o.label)) + '</button>';
     }
-    var html = '<span class="gbsp-eyebrow gbsp-seglabel">' + esc(title) + '</span>' +
-               '<div class="gbsp-segs' + shape + '"' +
-               ' role="group" aria-label="' + esc(title) + '">';
+    /* ТУМБЛЕР ЗДЕСЬ ХОЗЯИН ЗНАЧЕНИЯ, а компонент — форма и клавиши:
+       data-gb-toggle="host" (toggle.js) оставляет ему роль группы,
+       один таб-стоп и стрелки, а класс нажатой половины по-прежнему
+       двигает paint() ниже. Двух источников правды о том, какой режим
+       включён, у консоли не появляется. */
+    var html = asSwitch
+      ? '<div class="gb-toggle gb-toggle--inverse gb-toggle--s gb-toggle--spread"' +
+        ' data-gb-toggle="host" role="group" aria-label="' + esc(title) + '">'
+      : '<span class="gbsp-eyebrow gbsp-seglabel">' + esc(title) + '</span>' +
+        '<div class="gbsp-segs' + shape + '"' +
+        ' role="group" aria-label="' + esc(title) + '">';
     options.forEach(function (o, i) { html += segHtml(o, i); });
     /* ТРЕТЬЯ ПОЗИЦИЯ MODE ОЖИЛА (gbppl-comments-b, 28.08). С panel-8
        здесь стоял выключенный сегмент «Comment» с подписью coming
@@ -1281,7 +1447,7 @@
     html += '<p class="gbsp-note"></p>';
     wrap.innerHTML = html;
 
-    var row    = wrap.querySelector('.gbsp-segs');
+    var row    = wrap.querySelector(asSwitch ? '.gb-toggle' : '.gbsp-segs');
     var segEls = wrap.querySelectorAll('[data-seg]');
     var noteEl = wrap.querySelector('.gbsp-note');
     var current = spec.value;
@@ -1353,6 +1519,14 @@
     sec.insertBefore(wrap, before);
     paint();
     dress();
+    /* Клавиши тумблера приходят от компонента (toggle.js: один
+       таб-стоп на группу, стрелки, Home/End, и стрелка ещё и
+       нажимает, поэтому наш обработчик клика получает клавиатуру
+       даром). Вызов идемпотентный, и наблюдатель toggle.js сделал бы
+       то же самое кадром позже — зовём сами, чтобы группа была цела
+       уже в ту же миллисекунду. Страница без toggle.js (такой сейчас
+       нет) остаётся с рабочим кликом и без стрелок. */
+    tune(row);
 
     /* Номер позиции по значению: сегменты дописываются позже
        (addOption), и владелец режима знает своё value, а не индекс. */
@@ -1382,12 +1556,16 @@
         if (!btn) return this;
         var b = btn.querySelector('.gbsp-badge');
         n = Math.max(0, parseInt(n, 10) || 0);
-        /* Счёт добавляет ряду 24px (16 бейджа и 8 отступа), а ящик их
-           не отдаёт: замер 28.08 на 1280 — ряду Mode нужно 204.5 при
-           199 доступных, и слово Comment ломалось на две строки.
-           Ряд СО СЧЁТОМ встаёт на ступень 8 вместо 16 (188.5, с
-           запасом); без счёта всё остаётся как было. */
-        if (row) row.classList.toggle('has-badge', !!n);
+        /* ПОЛОСУ ПОД СЧЁТ ДАЁТ ТЕПЕРЬ САМ ТУМБЛЕР
+           (gbppl-panel-mode-toggle-1). До этой волны ряд Mode был
+           рядом слов с зазором 16, счёт добавлял ему 24px, ящик их не
+           отдавал, и «Comment» ломался на две строки — отсюда две
+           ступени тесноты (has-badge 8, badge-wide 4). Половина
+           тумблера растёт вместе со своим содержимым и делит трек с
+           соседями по их длине (--spread), поэтому теснить нечего:
+           замер 1280 после правки — 60.4 / 82.1 / 126.8 при полосе
+           287.11. Классы остаются только у ряда глифов. */
+        if (row && !asSwitch) row.classList.toggle('has-badge', !!n);
         if (!n) {
           if (b) b.remove();
           /* Метка уходит вместе с числом; у сегмента-глифа своя
@@ -1405,12 +1583,11 @@
           btn.appendChild(b);
         }
         b.textContent = n > 99 ? '99+' : String(n);
-        /* Третий глиф просит ещё 6px, а их уже нет: «99+» упирается в
-           край ряда РОВНО (замер 28.08: 199.13 при 199.11), и слово
-           снова ломается. Тогда зазор ряда идёт на половину ступени —
-           та же половина, что у ряда девайсов ниже, и по той же
-           причине. Случай редкий, правило одно. */
-        row.classList.toggle('badge-wide', b.textContent.length > 2);
+        /* «99+» — третий знак и ещё 6px. В ряду глифов их не было, и
+           зазор уходил на половину ступени; в тумблере они приходят из
+           доли соседей (замер 1280 с «99+»: 52.2 / 73.9 / 133.6 при
+           той же полосе 287.11), и теснить снова нечего. */
+        if (!asSwitch) row.classList.toggle('badge-wide', b.textContent.length > 2);
         btn.setAttribute('aria-label', (options[i].label || value) + ', ' + n + ' unread');
         return this;
       },
@@ -1427,6 +1604,11 @@
         row.insertAdjacentHTML('beforeend', segHtml(o, options.length - 1));
         segEls = wrap.querySelectorAll('[data-seg]');
         paint();
+        /* Половина, дописанная в живой трек, тоже принадлежит группе:
+           таб-стоп и стрелки перевешиваются на новый состав. Сам
+           наблюдатель toggle.js её не увидит — он ловит появление
+           ГРУППЫ, а не её детей. */
+        tune(row);
         return this;
       }
     };
