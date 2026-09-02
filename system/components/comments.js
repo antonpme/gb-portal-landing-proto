@@ -132,6 +132,36 @@
       axis at the owner.
 
    ------------------------------------------------------------
+   ONE POST CLOSES, ONE HOVER READS (gbppl-comments-hover-1, 02.09)
+   ------------------------------------------------------------
+   Ton, 02.09: «1. Когда сабмитишь коммент, этот drawer с комментом
+   должен закрываться, а он почему-то не закрывается. И я бы хотел,
+   чтобы комменты было видно по hover: припинили коммент на canvas —
+   навести курсор и увидеть, кто что писал, без клика. Как в Figma:
+   появляется bubble с текстом коммента, и с большого расстояния, не
+   нажимая на каждый, сразу видишь суть.»
+
+   1. THE DRAWER CLOSES ON A NEW THREAD, AND ONLY ON A NEW THREAD.
+      Why it did not: the first wave (2216fff) ended the POST with
+      `load().then(... openThread(id))`, reusing the open path as a
+      way to «show what you just made». It was never a decision —
+      spec §4.2 says what Post does and nothing about what happens
+      after it — and it read as a failure: the same panel, the same
+      title, only the composer had turned into a reply box. Now the
+      pin with its number is the receipt, and the page is back.
+      A REPLY still leaves the thread open, the way Figma does: the
+      composer empties, the conversation stays under the eye, and it
+      has to, because the next reply is written while reading it.
+      See submit().
+
+   2. THE PIN ANSWERS BEFORE IT IS PRESSED. Hover shows a bubble with
+      the head of the first message and its text, clamped to three
+      lines; the click still opens the whole thread in the drawer.
+      Nothing is asked of touch (0a.4). The whole of it — what it
+      says, what it wears, where it flips — is in ПУЗЫРЬ НА ХОВЕРЕ
+      below and in comments.css, THE BUBBLE ON HOVER.
+
+   ------------------------------------------------------------
    ПОЛКА ТОЛЬКО В СВОЁМ РЕЖИМЕ, СЧЁТ ВСЕГДА (gbppl-panel-11, 28.08)
    ------------------------------------------------------------
    Тон, 28.08, дословно: «Не логично показывать секцию Comments on
@@ -561,7 +591,29 @@
       if (!pin) return;
       e.preventDefault();
       e.stopPropagation();
+      hideBubble();
       openThread(pin.getAttribute('data-pin'), false);
+    });
+
+    /* ХОВЕР ЧИТАЕТ, КЛИК ОТКРЫВАЕТ (gbppl-comments-hover-1, 02.09).
+       Слушатели стоят на СЛОЕ, а не на булавке: булавки рождаются
+       заново на каждой перерисовке (paintPins), и подписка на каждую
+       из них была бы подпиской на объект со сроком жизни в один
+       кадр. Тач сюда не заходит ни разу: pointerType и запрос
+       (hover: hover) отсекают палец, для которого «навести» не
+       существует, и поведение на тач-устройстве остаётся прежним
+       (закон 0a.4 — нового жеста не заводим). */
+    layer.addEventListener('pointerover', function (e) {
+      if (e.pointerType === 'touch' || !canHover()) return;
+      var pin = e.target.closest ? e.target.closest('[data-pin]') : null;
+      if (!pin) return;
+      wantBubble(pin.getAttribute('data-pin'));
+    });
+    layer.addEventListener('pointerout', function (e) {
+      var pin = e.target.closest ? e.target.closest('[data-pin]') : null;
+      if (!pin) return;
+      if (e.relatedTarget && pin.contains(e.relatedTarget)) return;
+      hideBubble();
     });
     return layer;
   }
@@ -574,9 +626,13 @@
   function paintPins() {
     if (!pinsVisible() && !layer) return;
     makeLayer();
+    /* Пузырь переживает перерисовку: layer.innerHTML его открепляет,
+       и в конце функции он возвращается на место у своей булавки,
+       уже с новыми координатами. Иначе прокрутка под неподвижным
+       курсором гасила бы то, что человек в этот момент читает. */
     layer.innerHTML = '';
     layer.hidden = !pinsVisible();
-    if (!pinsVisible()) return;
+    if (!pinsVisible()) { hideBubble(); return; }
 
     items.forEach(function (c, i) {
       var el = resolve(c.anchor);
@@ -607,6 +663,153 @@
       np.style.top  = (pr.top + pending.fy * pr.height) + 'px';
       layer.appendChild(np);
     }
+
+    if (bubbleId) placeBubble(bubbleId);
+  }
+
+  /* ============================================================
+     ПУЗЫРЬ НА ХОВЕРЕ (gbppl-comments-hover-1, 02.09)
+     ------------------------------------------------------------
+     Тон, 02.09, дословно: «я бы хотел, чтобы комменты было видно по
+     hover: припинили коммент на canvas — навести курсор и увидеть,
+     кто что писал, без клика. Как в Figma: появляется bubble с
+     текстом коммента, и с большого расстояния, не нажимая на каждый,
+     сразу видишь суть».
+
+     ЧТО ОН ГОВОРИТ. Ровно шапку первого сообщения треда: кто, когда,
+     сколько ответов, и текст, обрезанный тремя строками. Это те же
+     четыре вещи, что печатает строка полки в консоли (paintShelf), и
+     они собраны теми же функциями (author, ago, firstLine рядом) —
+     второго правила «что показать в превью» в файле нет.
+
+     ЧЕМ ОН ОДЕТ, И ПОЧЕМУ НЕ СВЕТЛОЙ КАРТОЧКОЙ. Тёмной плашкой, как
+     .gbi-badge прибора: у ховер-читалки над чужой страницей уже есть
+     облик в системе, и это он. Довод не «панель тёмная», а место в
+     стопке: плашка висит НАД произвольным содержимым (белый каталог,
+     чёрный герой главной, фотография в карточке), и Zinc 950 с
+     --shadow-panel читается на всех трёх, а светлая карточка на
+     светлой странице теряет край — ровно то, из-за чего консоль
+     стала тёмной (gbppl-panel-3, Тон 26.08: «белый на белом не
+     видно»). Светлая поверхность в этом режиме занята: она у дровера,
+     который открывается по КЛИКУ. Разная громкость у чтения и у
+     работы — это и есть разница между наведением и нажатием.
+
+     ЧЕГО У НЕГО НЕТ. Ни хвостика, ни своей рамки, ни кнопок внутри:
+     pointer-events нет вовсе, попасть в него нельзя и не нужно.
+     Ответить, резолвить и читать ленту по-прежнему можно только в
+     дровере.
+     ============================================================ */
+  var HOVER_MS  = 180;     /* NO TOKEN: длительностей ожидания в системе нет
+                              (--mo-* это длительности ДВИЖЕНИЯ). 180 —
+                              меньше, чем задержка узнавания у Figma-подобных
+                              подсказок, и достаточно, чтобы проезд мыши по
+                              трём булавкам не зажёг ни одной. Вопрос Тону,
+                              если нужна ступень ожидания в шкале. */
+  var bubbleId    = '';    /* тред, чей пузырь сейчас на экране */
+  var bubbleEl    = null;
+  var bubbleTimer = 0;
+
+  function canHover() {
+    try { return window.matchMedia('(hover: hover)').matches; } catch (e) { return true; }
+  }
+
+  function replyLine(c) {
+    var n = (c.replies || []).length;
+    return n ? (n === 1 ? '1 reply' : n + ' replies') : '';
+  }
+
+  /* Тот же выбор текста, что у строки полки (firstLine): у
+     предложения копии суть в предложенной строке, а не в объяснении.
+     Обрезает здесь не JS, а CSS: три строки клампом видят край слова,
+     а не шестидесятый символ. */
+  function previewText(c) {
+    var t = c.kind === 'suggest' && c.suggestion ? c.suggestion.after : c.body;
+    return String(t || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function bubbleHTML(c) {
+    var more = replyLine(c);
+    var txt = previewText(c);
+    return '<p class="gbc-bubble__by">' + esc(c.author || 'someone') +
+        '<time title="' + esc(c.created) + '">' + esc(ago(c.created)) + '</time>' +
+        (more ? '<span class="gbc-bubble__n">' + esc(more) + '</span>' : '') +
+        (c.status === 'open' ? '' : '<span class="gbc-chip">' + esc(c.status) + '</span>') +
+      '</p>' +
+      (txt ? '<p class="gbc-bubble__body">' + esc(txt) + '</p>' : '');
+  }
+
+  function hideBubble() {
+    if (bubbleTimer) { clearTimeout(bubbleTimer); bubbleTimer = 0; }
+    bubbleId = '';
+    if (bubbleEl && bubbleEl.parentNode) bubbleEl.parentNode.removeChild(bubbleEl);
+    bubbleEl = null;
+  }
+
+  function wantBubble(id) {
+    if (!id || id === bubbleId) return;
+    hideBubble();
+    bubbleTimer = setTimeout(function () {
+      bubbleTimer = 0;
+      placeBubble(id);
+    }, HOVER_MS);
+  }
+
+  /* СТУПЕНИ ЧИТАЮТСЯ НА ОСТРОВЕ, А НЕ ПИШУТСЯ ЧИСЛАМИ (ловушка 21).
+     Флип — это арифметика, значит зазор и поле нужны числом; но взять
+     их надо там, где стоит слой, потому что на вендорном каталоге
+     --space-* на :root принадлежат бандлу, а .gbc-layer в списке
+     островов oro-ui-override.css и держит нашу шкалу. */
+  function rung(cs, name, fallback) {
+    var v = parseFloat(cs.getPropertyValue(name));
+    return isFinite(v) && v > 0 ? v : fallback;
+  }
+
+  function placeBubble(id) {
+    if (!layer || !/^[A-Za-z0-9_-]+$/.test(String(id))) { hideBubble(); return; }
+    var c = byId(id);
+    var pin = c ? layer.querySelector('.gbc-pin[data-pin="' + id + '"]') : null;
+    if (!pin) { hideBubble(); return; }
+
+    if (!bubbleEl || bubbleEl.getAttribute('data-for') !== id) {
+      if (bubbleEl && bubbleEl.parentNode) bubbleEl.parentNode.removeChild(bubbleEl);
+      bubbleEl = document.createElement('div');
+      bubbleEl.className = 'gbc-bubble';
+      bubbleEl.setAttribute('data-for', id);
+      /* Читалка для указателя, не вторая копия треда для читалки
+         экрана: тред целиком доступен по клику, и объявлять его
+         дважды значило бы объявить его невпопад. */
+      bubbleEl.setAttribute('aria-hidden', 'true');
+    }
+    bubbleEl.innerHTML = bubbleHTML(c);
+    if (bubbleEl.parentNode !== layer) layer.appendChild(bubbleEl);
+    bubbleId = id;
+
+    var cs = getComputedStyle(layer);
+    var gap  = rung(cs, '--space-8', 8);    /* булавка → пузырь */
+    var edge = rung(cs, '--space-16', 16);  /* пузырь → кромка окна */
+    var pr = pin.getBoundingClientRect();
+    var br = bubbleEl.getBoundingClientRect();
+
+    var left = pr.left + pr.width / 2 - br.width / 2;
+    var maxLeft = Math.max(edge, window.innerWidth - br.width - edge);
+    left = Math.min(Math.max(left, edge), maxLeft);
+
+    /* НАД БУЛАВКОЙ, ПОКА ЕСТЬ КУДА. Сверху пузырь не закрывает то, на
+       что человек смотрит: булавка стоит на элементе, а рука идёт к
+       ней снизу. Не помещается над — переворачиваем под неё, не
+       помещается и там — вжимаем в окно: у окна ниже пузыря выбора
+       уже нет. */
+    var top = pr.top - gap - br.height;
+    if (top < edge) {
+      var below = pr.bottom + gap;
+      top = (below + br.height <= window.innerHeight - edge)
+        ? below
+        : Math.max(edge, window.innerHeight - edge - br.height);
+    }
+
+    bubbleEl.style.left = Math.round(left) + 'px';
+    bubbleEl.style.top  = Math.round(top) + 'px';
+    bubbleEl.classList.add('is-in');
   }
 
   /* ============================================================
@@ -1202,10 +1405,28 @@
     };
     hold(true);
     call('POST', '/api/comments', payload)
-      .then(function (res) {
-        var id = res && res.comment && res.comment.id;
+      .then(function () {
+        /* ЗАКРЫВАЕТСЯ СОЗДАНИЕ, ОТВЕТ ОСТАЁТСЯ ОТКРЫТЫМ
+           (gbppl-comments-hover-1, 02.09; Тон: «Когда сабмитишь
+           коммент, этот drawer с комментом должен закрываться, а он
+           почему-то не закрывается»). Тред открывался тут потому, что
+           первая волна (2216fff) переиспользовала openThread как
+           «показать сделанное»: решения Тона за этим не стояло, в
+           спеке §4.2 после Post не сказано ничего, и результат читался
+           как «ничего не произошло» — тот же дровер, только теперь с
+           композером ответа. Замечание оставлено, и человек снова
+           смотрит на страницу: булавка с номером и есть ответ.
+           Отправка ОТВЕТА закрытием не кончается (выше, ветка reply):
+           у Figma композер треда очищается, а сам тред стоит, потому
+           что разговор продолжается — и потому, что ответ пишут, уже
+           читая ленту, которую закрытие унесло бы из-под руки. */
         pending = null;
-        return load().then(function () { busy = false; if (id) openThread(id, false); });
+        openId = null;
+        return load().then(function () {
+          busy = false;
+          var d = document.querySelector('gb-drawer');
+          if (d && typeof d.close === 'function') d.close();
+        });
       })
       .catch(function (err) { hold(false); fell(err); });
   }

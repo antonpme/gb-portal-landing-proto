@@ -33,10 +33,15 @@
    (AND A CONTROL ANSWERS FOR ITS OWN INSIDES). Neither organism was
    at fault and neither was touched.
 
+   gbppl-comments-hover-1, 02.09: Ton, «я бы хотел, чтобы комменты
+   было видно по hover... как в Figma: появляется bubble с текстом
+   коммента». One new drawing, THE BUBBLE ON HOVER, and it is the
+   instrument's own plate grown a paragraph, not a fourth surface.
+
    WHAT THIS FILE DRAWS, AND WHAT IT DELIBERATELY DOES NOT.
-   Three things are new here and nothing else: the pin on the page,
-   the shelf of threads in the console, and the thread inside the
-   drawer. The hairline round the hovered element and the plate that
+   Four things are new here and nothing else: the pin on the page,
+   the bubble it shows under the pointer, the shelf of threads in the
+   console, and the thread inside the drawer. The hairline round the hovered element and the plate that
    names it are Inspect's and are drawn by Inspect (inspect.css); the
    segment of the Mode toggle is the console's (studio-panel.css); the
    fields are auth.css, the buttons are button.css, the Note | Suggest
@@ -131,6 +136,94 @@
   box-shadow: none;
   pointer-events: none;
 }
+
+/* ============================================================
+   THE BUBBLE ON HOVER (gbppl-comments-hover-1, 02.09)
+   ------------------------------------------------------------
+   Ton, 02.09: «я бы хотел, чтобы комменты было видно по hover:
+   припинили коммент на canvas — навести курсор и увидеть, кто что
+   писал, без клика. Как в Figma: появляется bubble с текстом
+   коммента, и с большого расстояния, не нажимая на каждый, сразу
+   видишь суть.»
+
+   IT IS THE INSTRUMENT'S PLATE, GROWN A PARAGRAPH. .gbi-badge is
+   already the studio's answer to «name the thing under the pointer»:
+   Zinc 950, --radius, --shadow-panel, ink 12 for the meta. This
+   bubble answers the same kind of question about the same kind of
+   object, so it speaks in that voice and adds exactly two things the
+   badge never needed — a line of running text at the documentation
+   size, and a wrap.
+
+   AND THE DARK GROUND IS A MEASUREMENT, NOT A MOOD. The bubble hangs
+   over WHATEVER is under the pin: the white catalog, the near black
+   home hero, a photograph inside a listing card. Zinc 950 with
+   --shadow-panel keeps an edge on all three; a light card keeps none
+   on the first — which is the reason the console itself is dark
+   (gbppl-panel-3, Ton 26.08: «белый на белом не видно»). The light
+   surface of this mode is spoken for: it belongs to the drawer, and
+   the drawer opens on a CLICK. Reading and working are not the same
+   loudness.
+
+   NO TAIL, NO BORDER, NO POINTER. `pointer-events: none` — you
+   cannot land in it and never need to; every action of a thread
+   lives one click away. The clamp is three lines: the shelf in the
+   console already cuts a preview at 60 characters and Ton reads
+   these from across the room, so the bubble cuts at a line end
+   instead, and the rest waits in the drawer.
+
+   THE LENGTHS. --space-8 / --space-16 / --space-64 and the type
+   floor 12; the max width is five rungs of 64 (320) — wide enough
+   for about a dozen words a line at 14, narrow enough that two
+   bubbles could never stand side by side and be confused for one
+   surface. Read on the island, never off :root (ловушка 21в): the
+   flip in comments.js takes the same two rungs with
+   getComputedStyle on .gbc-layer.
+   ============================================================ */
+.gbc-bubble {
+  position: absolute;
+  box-sizing: border-box;
+  max-width: calc(var(--space-64) * 5);
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius);
+  background: var(--zinc-950);
+  box-shadow: var(--shadow-panel);
+  color: var(--white);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--mo-micro) var(--mo-move);
+}
+.gbc-bubble.is-in { opacity: 1; }
+
+/* The head of a message, compressed: the same order, the same ink
+   and the same 8 under it as .gbc-msg__by wears in the drawer. */
+.gbc-bubble__by {
+  margin: 0 0 var(--space-8);
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--white);
+}
+.gbc-bubble__by time,
+.gbc-bubble__n {
+  margin-left: var(--space-8);
+  font-weight: 400;
+  color: var(--zinc-400);
+}
+.gbc-bubble__body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-200);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  overflow-wrap: anywhere;   /* одно длинное слово не растягивает плашку */
+}
+/* A bubble with no text under the head (a suggestion whose «why» is
+   empty draws nothing) must not keep the gap the head reserves. */
+.gbc-bubble__by:last-child { margin-bottom: 0; }
 
 /* The page while a comment is being placed. Same crosshair Inspect
    uses and for the same reason: the pointer is choosing an object,
@@ -274,7 +367,11 @@ html.gbc-on ::selection { background: transparent; }
    Zinc 900 — quieter and unreadable is not quieter. The light ground is
    untouched: Eyebrow on a Zinc 100 plate is the shape Ton described, and
    in the white drawer it never shouted. */
-.gbsp .gbc-chip { background: var(--zinc-900); color: var(--zinc-400); }
+/* The hover bubble is the third ground, and it is the console's: one
+   selector gains one name rather than a fourth chip being drawn
+   (gbppl-comments-hover-1). */
+.gbsp .gbc-chip,
+.gbc-bubble .gbc-chip { background: var(--zinc-900); color: var(--zinc-400); }
 .gbc-chip--lost { background: var(--zinc-200); color: var(--zinc-700); }
 /* One rung louder than a plain status on both grounds: "element moved" is
    a warning about the anchor, not a state of the thread. */
