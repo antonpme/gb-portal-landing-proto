@@ -734,8 +734,8 @@ window.ORO_AXES = {
 
     BUDGET: {
       /* .gb-toggle__item type — the button label ladder */
-      LABEL_SIZE: 11,          /* --gb-btn-s-label */
-      LABEL_SIZE_2XL: 12,      /* --gb-btn-s-label-2xl, from 2000 */
+      LABEL_SIZE: 11,          /* --gb-btn-medium-label */
+      LABEL_SIZE_2XL: 12,      /* --gb-btn-medium-label-2xl, from 2000 */
       LABEL_2XL_FROM: 2000,    /* the toggle.css media query */
       LABEL_WEIGHT: 600,       /* --gb-btn-label-weight */
       LABEL_TRACKING: 1,       /* --gb-btn-label-tracking, per character */
@@ -1208,6 +1208,27 @@ window.ORO_AXES = {
 
     paint();
     PANELS.push(paint);
+
+    /* THE FACE ARRIVES LATE, AND SO DO PANELS (gbppl-oro-engine-2 found
+       it, gbppl-btn-ladder-1 applied it here at the owner). The hook at
+       the foot of this file asks document.fonts.ready ONCE, when the
+       script is parsed, and empties the cost cache for whatever panels
+       exist at that moment. A page that builds its panel afterwards is
+       never asked again, and by then the cache can already hold widths
+       costed in the fallback face: the toggle showcase read its track at
+       279.6 instead of 292.5 at 1280, thirteen pixels of somebody else's
+       letters, and it stayed wrong until the reader resized the window.
+       Worse, the promise can settle before the stylesheet has asked for
+       a font at all, in which case the one reset lands on an empty cache
+       and nothing is ever recosted.
+
+       So every panel asks for itself, at the moment it is registered.
+       The cost of asking twice is nothing: replan only rebuilds when an
+       answer moves, and almost always it does not. */
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { COST_SEEN = {}; paint(true); });
+    }
+
     return paint;
   }
 
