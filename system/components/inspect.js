@@ -1073,7 +1073,14 @@
      ============================================================ */
 
   /* ---------- what each kind of specimen reports ---------- */
-  var SIZE_NAME = { s: 'S', m: 'M', l: 'L', xl: 'XL' };
+  /* gbppl-btn-ladder-1, 02.09: the rungs are words now, and the
+     drawer prints the word rather than a letter. The circle ladder of
+     --icon reads the same three words for its own three flat rungs
+     (40 / 48 / 56), which is why one table serves both. */
+  var SIZE_NAME = {
+    xsmall: 'xsmall', small: 'small', medium: 'medium',
+    large: 'large', xlarge: 'xlarge'
+  };
 
   var KINDS = {
     button: {
@@ -1082,8 +1089,8 @@
       find: function (slot) { return slot.querySelector('.gb-btn'); },
 
       describe: function (el) {
-        var m = /gb-btn--(s|m|l|xl)\b/.exec(el.className);
-        var size = m ? m[1] : 'l';
+        var m = /gb-btn--(xsmall|small|medium|large|xlarge)\b/.exec(el.className);
+        var size = m ? m[1] : 'large';
         var type = /gb-btn--outline\b/.test(el.className) ? 'outline'
                  : /gb-btn--ghost\b/.test(el.className) ? 'ghost' : 'filled';
         var colour = /gb-btn--secondary\b/.test(el.className) ? 'secondary'
@@ -1175,7 +1182,7 @@
 
       describe: function (el) {
         var c = String(el.className);
-        var m = /gb-btn--(s|m|l)\b/.exec(c);
+        var m = /gb-btn--(small|medium|large)\b/.exec(c);
         return {
           size: m ? m[1] : 'live',
           type: /gb-btn--outline\b/.test(c) ? 'outline' : /gb-btn--ghost\b/.test(c) ? 'ghost' : 'filled',
@@ -1201,11 +1208,11 @@
         var box = parseFloat(cs.width) || 0;
         var glyph = icon ? (parseFloat(getComputedStyle(icon).width) || 0) : 0;
         var circleTok = d.size === 'live' ? ['--gb-btn-icon-size', '--icon-button-size']
-                      : d.size === 's' ? ['--gb-btn-m-h']
-                      : d.size === 'm' ? ['--gb-btn-l-h'] : ['--gb-btn-xl-h'];
+                      : d.size === 'small' ? ['--gb-btn-small-h-2xl']
+                      : d.size === 'medium' ? ['--gb-btn-medium-h-2xl'] : ['--gb-btn-xlarge-h'];
         var glyphTok = d.size === 'live' ? ['--gb-btn-icon-glyph']
-                     : d.size === 's' ? ['--gb-btn-l-icon-xl']
-                     : d.size === 'm' ? ['--gb-btn-l-icon-2xl'] : ['--gb-btn-xl-icon-2xl'];
+                     : d.size === 'small' ? ['--gb-btn-large-icon-xl']
+                     : d.size === 'medium' ? ['--gb-btn-large-icon-2xl'] : ['--gb-btn-xlarge-icon-2xl'];
         var fam = d.colour === 'primary' ? 'accent' : d.colour === 'secondary' ? 'ink' : 'inverse';
         var fillStates = [
           '--gb-btn-fill-' + d.colour,
@@ -1286,10 +1293,10 @@
       body: function (el, d) {
         var cs = getComputedStyle(el);
         var svgEl = el.querySelector('svg');
-        var tok = d.size === '16' ? ['--gb-btn-l-icon']
+        var tok = d.size === '16' ? ['--gb-btn-large-icon']
                 : d.size === '22' ? ['--gb-btn-icon-glyph']
-                : d.size === '24' ? ['--gb-btn-l-icon-2xl']
-                : ['--gb-btn-l-icon-xl'];
+                : d.size === '24' ? ['--gb-btn-large-icon-2xl']
+                : ['--gb-btn-large-icon-xl'];
         var grid = svgEl ? (svgEl.getAttribute('viewBox') || 'no viewBox') : 'no drawing';
         var drawn = svgEl ? parseFloat(getComputedStyle(svgEl).strokeWidth) : 0;
         var boxw = parseFloat(cs.width) || 0;
@@ -1475,7 +1482,7 @@
         var famToken = /noto serif/i.test(first) ? '--font-serif'
                      : /inter/i.test(first) ? '--font-sans' : null;
         var cls = role && role.cls ? role.cls : '';
-        var btn = /gb-btn--(s|m|l|xl)/.exec(cls);
+        var btn = /gb-btn--(xsmall|small|medium|large|xlarge)/.exec(cls);
         var sizeTokens = null, weightTokens = null, trackKnown = null;
 
         if (cls === '.gb-eyebrow') {
@@ -1637,7 +1644,7 @@
               ['--zinc-400', '--blue-600', '--red-500']),
           row('Ink', cs.color, ['--zinc-800']),
           row('Chevron box', ch ? px(ch.width) : 'no glyph',
-              ch ? ['--gb-btn-l-icon-xl'] : null),
+              ch ? ['--gb-btn-large-icon-xl'] : null),
           row('Chevron ink', ch ? ch.color : 'no glyph',
               ch ? ['--zinc-500', '--blue-600', '--zinc-300'] : null),
           row('Native arrow', cs.appearance, null, 'appearance none: the browser draws nothing here'),
@@ -1709,7 +1716,9 @@
           row('Item', box ? Math.round(box.width) + ' by ' + Math.round(box.height) : 'none',
               null, 'padding ' + (os ? px(os.paddingTop) + ' / ' + px(os.paddingLeft) : '')),
           row('Label', os ? px(os.fontSize) + ' / ' + os.fontWeight + ' / ' + os.letterSpacing : 'none',
-              ['--gb-btn-s-label', '--gb-btn-label-weight', '--gb-btn-label-tracking'],
+              ['--gb-btn-xsmall-label', '--gb-btn-small-label',
+               '--gb-btn-medium-label', '--gb-btn-large-label',
+               '--gb-btn-label-weight', '--gb-btn-label-tracking'],
               'the button label ladder, uppercase'),
           row('Pressed', os ? os.backgroundColor + ' on ' + os.color : 'none',
               ['--zinc-900', '--white']),
@@ -1762,7 +1771,7 @@
         var up = el.querySelector('[data-step="1"]');
         var off = /is-disabled/.test(c) || el.getAttribute('aria-disabled') === 'true';
         return {
-          size: /gb-inputnumber--m\b/.test(c) ? 'M' : 'S',
+          size: /gb-inputnumber--medium\b/.test(c) ? 'medium' : 'small',
           well: /gb-inputnumber--dense\b/.test(c) ? 'dense' : 'standard',
           host: el.getAttribute('data-gb-inputnumber') === 'host',
           value: v ? (v.tagName === 'INPUT' ? v.value : v.textContent.trim()) : null,
@@ -1790,9 +1799,9 @@
         var rowsList = [
           row('Frame height', px(cs.height), null, 'the button rung plus two hairlines'),
           row('Button', btn ? Math.round(btn.width) + ' by ' + Math.round(btn.height) : 'none',
-              ['--gb-btn-m-h', '--gb-btn-l-h']),
+              ['--gb-btn-small-h-2xl', '--gb-btn-medium-h-2xl']),
           row('Glyph box', glyph ? px(getComputedStyle(glyph).width) : 'none',
-              glyph ? ['--gb-btn-l-icon-xl'] : null),
+              glyph ? ['--gb-btn-large-icon-xl'] : null),
           row('Well width', vs ? px(vs.width) : 'none', null,
               d.well === 'dense' ? 'the button rung' : 'the button rung plus one space step'),
           row('Number', vs ? px(vs.fontSize) + ' / ' + vs.fontWeight : 'none', null,
@@ -1872,7 +1881,7 @@
      roles in one block — every part gets its own door and there is
      nothing left to guess.
 
-     WHAT IT IS MADE OF. `.gb-btn--icon --s --ghost --secondary
+     WHAT IT IS MADE OF. `.gb-btn--icon --small --ghost --secondary
      --plain` from button.css with a glyph from the icon record: no
      new component and no local paint (Тон-6). The glyph is `info`,
      which the record did not hold, because nothing in the house had
@@ -2000,7 +2009,7 @@
      Idempotent, and run again whenever a region redraws itself: a
      playground rewrites its hold on every change of an axis, and a
      door that is not put back is a door that worked once. */
-  var DOOR_CLS = 'gb-btn gb-btn--icon gb-btn--s gb-btn--ghost gb-btn--secondary gb-btn--plain gbdoc-props';
+  var DOOR_CLS = 'gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain gbdoc-props';
 
   function addDoor(box, slot, part) {
     if (!box || box.querySelector(':scope > .gbdoc-props')) return;

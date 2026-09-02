@@ -127,8 +127,8 @@
               '</nav>' +
             '</div>' +
             '<div class="gbg-actions">' +
-              '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="#"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
-              '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label" data-pc-section="label">Start Gifting</span></a>' +
+              '<a class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" href="#"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
+              '<a class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label" data-pc-section="label">Start Gifting</span></a>' +
               '<button class="gbh-icon-button" type="button" aria-label="Search gifts">' + ICON_SEARCH + '</button>' +
             '</div>' +
           '</div>' +
@@ -439,7 +439,7 @@
     return (
       '<button data-p="large" type="' + (opts.type || 'submit') + '" aria-label="' + esc(label) + '"' +
         (opts.disabled ? ' disabled' : '') +
-        ' data-pc-name="button" class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary gb-btn--block gba-submit' +
+        ' data-pc-name="button" class="gb-btn gb-btn--large gb-btn--filled gb-btn--primary gb-btn--block gba-submit' +
         ' bg-primary-600 rounded uppercase' + (opts.cls ? ' ' + opts.cls : '') + '">' +
         '<span class="gb-btn__icon icon icon-arrow-right" data-p="right large" data-pc-section="icon">' + ICON_ARROW + '</span>' +
         '<span class="gb-btn__label uppercase tracking-[1px] font-semibold" data-pc-section="label" data-p="large">' + esc(label) + '</span>' +

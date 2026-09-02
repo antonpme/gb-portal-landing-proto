@@ -56,7 +56,7 @@
    (label-style="floating", auth.js), лестница поля 13/14/16 при
    48/48/56, одна колонка с отступами 24/32/40, живые имена полей
    («Your Name», «Company Name», вопрос комментария целиком),
-   кнопка --s --block в своём ряду и живые тексты ошибок ДОСЛОВНО,
+   кнопка --medium --block в своём ряду и живые тексты ошибок ДОСЛОВНО,
    включая строчную букву. Замер: harvest public-book-a-meeting
    (25.08) плюс прибор по состояниям rest/focus/filled/error на
    1280/1440/1920/390 (27.08).
@@ -377,7 +377,7 @@
       '<button type="' + (opts.type || 'button') + '" aria-label="' + esc(label) + '"' +
         (opts.disabled ? ' disabled' : '') +
         (opts.id ? ' data-role="' + opts.id + '"' : '') +
-        ' class="gb-btn gb-btn--' + (opts.size || 'l') +
+        ' class="gb-btn gb-btn--' + (opts.size || 'large') +
           ' gb-btn--filled gb-btn--primary gb-btn--block' +
           (opts.bare ? '' : ' gba-submit') + '">' +
         icon +
@@ -491,7 +491,7 @@
            Стрелки у живой кнопки нет, поэтому и у нашей её нет:
            этой оси фидбек не касался. */
         '<div class="gbb-leadcta">' +
-          btnHTML('Continue', { id: 'continue', size: 'l', bare: true, icon: false }) +
+          btnHTML('Continue', { id: 'continue', size: 'large', bare: true, icon: false }) +
         '</div>' +
       '</div>'
     );

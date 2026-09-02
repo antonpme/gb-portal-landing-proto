@@ -613,7 +613,9 @@
    ------------------------------------------------------------
    Ton's button spec of 25.08: three types (filled, outline,
    ghost), two colours (primary blue, secondary black) plus the
-   white inversion for dark grounds, three size ladders, five
+   white inversion for dark grounds, a ladder of sizes (three then,
+   five since gbppl-btn-ladder-1 of 02.09: xsmall, small, medium,
+   large, xlarge), five
    states, an optional icon on either side, and type and padding
    that scale with BOTH the size of the button and the width of
    the screen.
@@ -651,7 +653,7 @@
    NOT CHANGED ON PURPOSE: --btn-l-pad-x-xl (28px, FORMULA). The
    portal hero CTAs were wearing it when this block was written.
    PHASE 2 CLOSED THAT (gbppl-button-2, 26.08): those CTAs now
-   wear the organism and read --gb-btn-l-pad-x-xl (32px, LIVE), so
+   wear the organism and read --gb-btn-large-pad-x-xl (32px, LIVE), so
    the 28 is no longer on any screen. The token stays declared,
    because the interpolated ladder it belongs to is still the
    fallback for sizes live has never shown.
@@ -663,28 +665,62 @@
    одного размера. Сетка: самый большой (2K и больше) 72px,
    следующий 64, далее 56, 48 и так далее по стандарту.»
 
-   So the button heights of the system are ONE grid of six steps,
-   eight apart, and every ladder walks it:
+   So the button heights of the system are ONE grid, eight apart,
+   and every ladder walks it. As it stands after 02.09, with the
+   names the ladders wear today:
 
-     72   XL from 2000                      LIVE  ("2K and above")
-     64   XL from 1280, L from 2000         LIVE
-     56   XL base, L from 1280, M from 2000 LIVE
-     48   L base, M from 1280, S from 2000  LIVE
-     42   S from 1280        LIVE, OFF THE GRID (see below)
-     40   M base             DECLARED, NEW  (the missing one)
-     36   S base                            LIVE public header
+     72   xlarge from 2000                     LIVE ("2K and above")
+     64   xlarge from 1280, large from 2000    LIVE
+     56   xlarge base, large from 1280         LIVE
+     48   large base, medium from 2000         LIVE
+     42   medium from 1280   LIVE, OFF THE GRID (see below)
+     40   small from 2000                      DS-2
+     36   medium base, small from 1280         LIVE public header
+     32   small base, xsmall from 2000         DS-2
+     28   xsmall base and 1280  DECLARED, OFF THE GRID (Ton's floor)
 
-   THE MISSING SIZE IS 40, AND IT IS NOW M. Before this pass the
-   ladders were S 36/42/48, L 48/56/64 and XL 56/64/72: the grid
-   step of 40 had no ladder standing on it, and nothing started
-   between the header's 36 and the form's 48. M 40/48/56 fills the
-   hole, and with it every step of Ton's grid is reachable.
+   THE 40 WAS THE MISSING STEP, and on 26.08 the ladder cut to fill
+   it was M (40/48/56): before that pass the ladders were S 36/42/48,
+   L 48/56/64 and XL 56/64/72, and nothing started between the
+   header's 36 and the form's 48. On 02.09 `small` (32/36/40) took
+   over that rung with a node of the mock behind it and M was
+   dissolved; the story is at THE RUNG THAT WAS DISSOLVED below.
 
    AND SINCE 02.09 THE GRID HAS ONE RUNG MORE, BELOW ALL OF THEM
    (gbppl-toggle-small-1): 32, the base of the new `small` ladder
    32 / 36 / 40. It is still eight apart from 40 and it is still
    Ton's grid; what is new is that a ladder now stands under S.
    The arithmetic and the provenance are at the SIZE SMALL block.
+
+   ------------------------------------------------------------
+   AND THE SAME DAY THE LADDERS TOOK THEIR FINAL NAMES
+   (gbppl-btn-ladder-1, 02.09)
+   ------------------------------------------------------------
+   The reconciliation with DS-2 (docs\BUTTON-FIGMA-RECONCILIATION.md,
+   01.09) found that our letters and the file the team looks at name
+   different things: the mock's `medium` is 48, which is our S at 2K.
+   Ton settled it by principle: the system speaks the language of the
+   file, the curve down to small screens stays ours because the mock
+   has none, and the ladder is FIVE RUNGS at 2K.
+
+     xsmall   32     new, built by this wave
+     small    40     built 02.09 (gbppl-toggle-small-1)
+     medium   48     WAS S      36 / 42 / 48, not one number moved
+     large    64     WAS L      48 / 56 / 64, not one number moved
+     xlarge   72     WAS XL     56 / 64 / 72, not one number moved
+
+   AND ONE RUNG WENT AWAY: 56 at 2K, the old M (40 / 48 / 56). It
+   was the single ladder of this house that neither the live product
+   nor the mock had ever shown, declared on 26.08 to fill a hole in
+   the grid, and with a rung standing at 40 and another at 48 the
+   hole is filled twice over. Its carriers are listed in the wave
+   report and every one of them moved to `medium`. No alias was left
+   behind, here or in the stylesheets: an alias is a second name for
+   the same thing, and a second name is the drift this organism
+   exists to end (precedent: button phase 2, 26.08).
+
+   The heights the grid can reach are therefore 72 / 64 / 56 / 48 /
+   42 / 40 / 36 / 32 / 28, and the last one is new with xsmall.
 
    42 IS A LIVE DEVIATION AND IT STAYS. The public header measures
    42 at 1280 (harvest public-home-sweep 17.08; re-read by
@@ -703,33 +739,124 @@
      ever been caught mid-press. */
   --blue-800: #1e40af;
 
-  /* ============ SIZE SMALL, the rung below everything ============
+  /* ============ SIZE XSMALL, the floor of the house ============
+     (gbppl-btn-ladder-1, 02.09)
+
+     WHY IT EXISTS. It is the bottom rung of the five-rung ladder Ton
+     settled on 01.09, and the mock has it: DS-2 draws xsmall in both
+     filled families (`2027:342` and `2019:545`, 09.06.2026) at 32
+     tall. Nothing in the product wears it today, and that is said
+     out loud rather than hidden: this block, the `--xsmall`
+     modifier in button.css and the showcase are the whole of it.
+     The first carrier arrives with its own measurement.
+
+     THE ARITHMETIC, THE SAME CURVE ONE STEP FURTHER DOWN. The
+     living curve of the ladders above (mean .874 at 1280, mean .856
+     at base; the table is at the SIZE SMALL block) applied to the
+     32 the mock fixes at 2K:
+
+       1280 = 32 x .874 = 27.97  ->  28
+       base = 28 x .856 = 23.97  ->  24
+
+     AND THE BASE IS NOT 24. Ton, 02.09: the floor of xsmall is 28
+     on narrow screens, because a finger matters more than a curve.
+     24 is under every touch target anyone publishes, and a rung
+     that small is not a smaller button, it is a different object.
+     So the ladder is 28 / 28 / 32: it steps ONCE, at 2000, and the
+     absence of a 1280 step is the ladder rather than an omission,
+     the same way `small` has no pad-x step. 28 is off the grid of
+     eight, exactly as the live header's 42 is, and for the same
+     kind of reason: a measured floor beats a formula.
+
+     EVERY NUMBER BELOW IS DECLARED unless it says ALIAS or names
+     DS-2. The 2K column is the mock read node by node; everything
+     under it is the curve, and the base height is Ton's floor. */
+  --gb-btn-xsmall-h:            28px;  /* Ton 02.09: the floor. The
+                                curve asks 24 and 24 is under any touch
+                                target; a finger matters more than a
+                                curve. Off the eight-grid, like the
+                                live 42 */
+                             /* no --h-xl: the curve gives 32 x .874 =
+                                27.97 -> 28 at 1280, which is the floor
+                                again, so the ladder has no 1280 step */
+  --gb-btn-xsmall-h-2xl:        32px;  /* DS-2 2K, and a rung of Ton's
+                                height grid */
+  --gb-btn-xsmall-pad-y:        4px;   /* DS-2 2K, and the ONE place the
+                                flat 8 of every other ladder cannot be
+                                spent: 8 over 8 around a 10px caps line
+                                (12.1 rendered) is 28.1, and the rung
+                                would be a tenth of a pixel taller than
+                                itself. pad-y is not load bearing here,
+                                min-height is. NO TOKEN: half the
+                                smallest step of the space scale, the
+                                same half-step the toggle's inset is */
+  --gb-btn-xsmall-pad-x:        var(--btn-pad-x);   /* ALIAS 16: the mock
+                                gives 16 at 2K and the pad stays FLAT
+                                below it, exactly as on `small`. The
+                                curve asks 12.5, and 12 is not a rung of
+                                the space scale while 8 would turn the
+                                button into a chip */
+  --gb-btn-xsmall-gap:          8px;   /* DECLARED: one step under
+                                small's 12 -> 16 on the +4 rhythm both
+                                live ladders keep, and a rung of the
+                                space scale. The mock's own 14 lies on
+                                no scale at all and is read as 12 there,
+                                so it is the 2K value that is brought to
+                                a step, not this one */
+  --gb-btn-xsmall-gap-xl:       12px;  /* DECLARED, >=1280: small's base
+                                gap, and the mock's 14 brought to the
+                                nearest step of the +4 rhythm. No 2000
+                                step, because no ladder here steps its
+                                gap at 2000 */
+  --gb-btn-xsmall-font-size:    var(--btn-font-size);    /* ALIAS 14 */
+  --gb-btn-xsmall-font-size-xl: var(--btn-font-size-xl); /* ALIAS 16, >=1280 */
+  --gb-btn-xsmall-font-weight:  600;   /* DECLARED: follows every rung
+                                but medium, and the mock */
+  --gb-btn-xsmall-line-height:  normal;/* DECLARED, follows the rest */
+  --gb-btn-xsmall-tracking:     var(--btn-letter-spacing);    /* ALIAS -0.35 */
+  --gb-btn-xsmall-tracking-xl:  var(--btn-letter-spacing-xl); /* ALIAS -0.4, >=1280 */
+  --gb-btn-xsmall-label:        10px;  /* DS-2 2K, and FLAT: the curve
+                                would ask 8.75 under it and 10 is the
+                                floor of this house, the same floor
+                                `small` reaches at base. The label
+                                stops descending one rung before the
+                                box does, which is why xsmall and
+                                small share it at base. The 10 deepens
+                                the open question of the 11px caps of
+                                medium against a documentation floor of
+                                12; it does not answer it */
+  --gb-btn-xsmall-icon:         12px;  /* DS-2 2K, and FLAT down the
+                                ladder: small already carries 12 at
+                                base, and a glyph under 12 stops being
+                                a drawing */
+
+  /* ============ SIZE SMALL, the rung below everything but xsmall ============
      (gbppl-toggle-small-1, 02.09)
 
      WHY IT EXISTS, AND WHY TODAY. Ton, on a screenshot of the
      console's Mode switch: «уменьшить размер вот этих тогглов в
      панели управления прототипом. Там должен быть самый маленький
      тоггл, который у нас есть. Это просто гигантское.» There was
-     no smallest: S (36/42/48) was the bottom of the house, and
+     no smallest: medium (36/42/48, then still called S) was the
+     bottom of the house, and
      gbppl-toggle-type-1 had just put half a toggle on it literally,
      which is how the console's Mode row got to 51.76 at 1280 and
      57.76 on his own screen.
 
-     THE NAME IS THE FINAL ONE, ON PURPOSE. The five-rung ladder is
-     already decided (docs\BUTTON-FIGMA-RECONCILIATION.md §6, DS-2
-     of 01.09): xsmall 32 / small 40 / medium 48 / large 64 /
-     xlarge 72 at 2K, where OUR S IS THE FUTURE medium. This rung
-     is born under `small` rather than under a letter, so the
-     renaming wave has one fewer name to move and no alias is ever
-     created (precedent: button phase 2 deleted the old classes
-     without aliases). Until that wave runs, the file speaks two
-     dialects: four letters and one word. That is a KNOWN,
-     TEMPORARY inconsistency and it is written here rather than
-     discovered later.
+     THE NAME WAS THE FINAL ONE FROM THE FIRST HOUR, ON PURPOSE.
+     The five-rung ladder was decided before this rung was cut
+     (docs\BUTTON-FIGMA-RECONCILIATION.md §6, DS-2 of 01.09), so it
+     was born under `small` rather than under a letter and the
+     renaming wave later that day had one fewer name to move. For a
+     few hours the file spoke two dialects, four letters and one
+     word; gbppl-btn-ladder-1 closed that the same day and no alias
+     was created either way.
 
      THE ARITHMETIC, TAKEN OFF THE NEIGHBOURS AND CONTINUED DOWN.
-     The living curve of the four ladders in this block, read at
-     the two thresholds:
+     The living curve of the four ladders that stood in this block
+     at the time, read at the two thresholds (their letters are the
+     ones they wore that morning; S is today's medium, L is large,
+     XL is xlarge, and M was dissolved by the naming wave):
 
        ladder   2K   1280   base    1280/2K   base/1280
        S        48    42     36      .875       .857
@@ -745,7 +872,9 @@
        base = 36 x .856 = 30.82  ->  32   (the next step down)
 
      small = 32 / 36 / 40, a -4/-4 step: exactly the continuation
-     S's -6/-6 promises. Both new points land on the eight-grid.
+     medium's -6/-6 promises. Both new points land on the
+     eight-grid. THIS TABLE IS THE CURVE THE WHOLE HOUSE IS BUILT
+     ON, and xsmall above is read off it too.
 
      EVERY NUMBER BELOW IS DECLARED unless it says ALIAS. The 2K
      column is the mock read node by node (DS-2 `2019:498` /
@@ -757,7 +886,7 @@
   --gb-btn-small-h-xl:         36px;  /* DECLARED, >=1280: 40 x .874,
                                 and a rung of Ton's height grid */
   --gb-btn-small-h-2xl:        40px;  /* DS-2 2K, and the grid rung that
-                                until now was only M's base */
+                                until now was only the base of the old M */
   --gb-btn-small-pad-y:        var(--btn-pad-y);   /* ALIAS 8: flat 8 is what
                                 all four ladders measure at every size and
                                 every width, and the mock gives small 8 too */
@@ -772,183 +901,170 @@
                                 proportion */
                              /* no --pad-x-xl: the ladder is flat, so there
                                 is no 1280 step to point at */
-  --gb-btn-small-gap:          12px;  /* DECLARED: one step under S's 12->20
-                                on the +4 rhythm both live ladders keep, and
-                                the base of S itself */
+  --gb-btn-small-gap:          12px;  /* DECLARED: one step under medium's
+                                12->20 on the +4 rhythm both live ladders
+                                keep, and the base of medium itself */
   --gb-btn-small-gap-xl:       16px;  /* DS-2 2K gives 16; no ladder in this
                                 block steps its gap at 2000, so the 1280 step
                                 carries 2K as well */
   --gb-btn-small-font-size:    var(--btn-font-size);    /* ALIAS 14 */
   --gb-btn-small-font-size-xl: var(--btn-font-size-xl); /* ALIAS 16, >=1280.
                                 The outer element's type is one value for
-                                every rung but XL */
-  --gb-btn-small-font-weight:  600;   /* DECLARED: follows M, L and XL, and
-                                the mock. The 400 is the header's alone */
-  --gb-btn-small-line-height:  normal;/* DECLARED, follows M, L and XL */
+                                every rung but xlarge */
+  --gb-btn-small-font-weight:  600;   /* DECLARED: follows large and
+                                xlarge, and the mock. The 400 is the
+                                header's alone */
+  --gb-btn-small-line-height:  normal;/* DECLARED, follows large and xlarge */
   --gb-btn-small-tracking:     var(--btn-letter-spacing);    /* ALIAS -0.35 */
   --gb-btn-small-tracking-xl:  var(--btn-letter-spacing-xl); /* ALIAS -0.4, >=1280 */
   --gb-btn-small-label:        10px;  /* DECLARED, curve of the label
-                                (~.875 a step) taken down one rung from S's
-                                11. IT IS THE FLOOR: 10 is where the mock
+                                (~.875 a step) taken down one rung from
+                                medium's 11. IT IS THE FLOOR: 10 is where the mock
                                 floors its own smallest label too, and
                                 nothing in this house is set smaller. The
-                                11px caps of S are already an open question
+                                11px caps of medium are already an open question
                                 to Ton (skill section 8); a 10 under them
                                 deepens that question and does not answer
                                 it, and it is named here so the answer moves
                                 both rungs at once */
-  --gb-btn-small-label-xl:     11px;  /* DECLARED, >=1280: S's base label */
-  --gb-btn-small-label-2xl:    12px;  /* DS-2 2K, and live as the S label
+  --gb-btn-small-label-xl:     11px;  /* DECLARED, >=1280: medium's base label */
+  --gb-btn-small-label-2xl:    12px;  /* DS-2 2K, and live as the medium label
                                 at 2000 — the two sources agree here */
   --gb-btn-small-icon:         12px;  /* DECLARED, the glyph curve one rung
-                                under the flat 16 of S */
+                                under the flat 16 of medium */
   --gb-btn-small-icon-xl:      16px;  /* DS-2 2K gives 16; no 2000 step,
                                 because the 1280 step already carries it */
 
-  /* ============ SIZE S, the header ladder ============
+  /* ============ SIZE MEDIUM, the header ladder ============
      Live off the public header (harvest public-home 2026-08-17,
-     re-read 24.08). The smallest of the three: chrome buttons,
-     bars, anything standing inside an 80px header. */
-  --gb-btn-s-h:            var(--btn-min-h);            /* ALIAS 36 */
-  --gb-btn-s-h-xl:         var(--btn-min-h-xl);         /* ALIAS 42, >=1280 */
-  --gb-btn-s-h-2xl:        var(--btn-min-h-2xl);        /* ALIAS 48, >=2000 */
-  --gb-btn-s-pad-y:        var(--btn-pad-y);            /* ALIAS 8 */
-  --gb-btn-s-pad-x:        var(--btn-pad-x);            /* ALIAS 16 */
-  --gb-btn-s-pad-x-xl:     var(--btn-pad-x-xl);         /* ALIAS 20, >=1280 */
-  --gb-btn-s-gap:          12px;                        /* LIVE header 24.08 */
-  --gb-btn-s-gap-xl:       20px;                        /* LIVE header 24.08, >=1280 */
-  --gb-btn-s-font-size:    var(--btn-font-size);        /* ALIAS 14 */
-  --gb-btn-s-font-size-xl: var(--btn-font-size-xl);     /* ALIAS 16, >=1280 */
-  --gb-btn-s-font-weight:  var(--btn-font-weight);      /* ALIAS 400 */
-  --gb-btn-s-line-height:  var(--btn-line-height);      /* ALIAS 1.1 */
-  --gb-btn-s-tracking:     var(--btn-letter-spacing);   /* ALIAS -0.35 */
-  --gb-btn-s-tracking-xl:  var(--btn-letter-spacing-xl);/* ALIAS -0.4, >=1280 */
-  --gb-btn-s-label:        var(--btn-label-font-size);      /* ALIAS 11 */
-  --gb-btn-s-label-2xl:    var(--btn-label-font-size-2xl);  /* ALIAS 12, >=2000 */
-  --gb-btn-s-icon:         16px;                        /* DECLARED: the live
+     re-read 24.08). Chrome buttons, bars, anything standing inside
+     an 80px header.
+
+     IT WAS CALLED S UNTIL 02.09 and not one of its numbers moved
+     when it was renamed (gbppl-btn-ladder-1): 36 / 42 / 48 is what
+     the header measured then and what it measures now. The name is
+     the mock's, because DS-2 calls 48 at 2K `medium` and the team
+     reads the mock; the word changed, the ladder did not. Every
+     carrier moved in the same commit and no alias was left. */
+  --gb-btn-medium-h:            var(--btn-min-h);            /* ALIAS 36 */
+  --gb-btn-medium-h-xl:         var(--btn-min-h-xl);         /* ALIAS 42, >=1280 */
+  --gb-btn-medium-h-2xl:        var(--btn-min-h-2xl);        /* ALIAS 48, >=2000 */
+  --gb-btn-medium-pad-y:        var(--btn-pad-y);            /* ALIAS 8 */
+  --gb-btn-medium-pad-x:        var(--btn-pad-x);            /* ALIAS 16 */
+  --gb-btn-medium-pad-x-xl:     var(--btn-pad-x-xl);         /* ALIAS 20, >=1280 */
+  --gb-btn-medium-gap:          12px;                        /* LIVE header 24.08 */
+  --gb-btn-medium-gap-xl:       20px;                        /* LIVE header 24.08, >=1280 */
+  --gb-btn-medium-font-size:    var(--btn-font-size);        /* ALIAS 14 */
+  --gb-btn-medium-font-size-xl: var(--btn-font-size-xl);     /* ALIAS 16, >=1280 */
+  --gb-btn-medium-font-weight:  var(--btn-font-weight);      /* ALIAS 400 */
+  --gb-btn-medium-line-height:  var(--btn-line-height);      /* ALIAS 1.1 */
+  --gb-btn-medium-tracking:     var(--btn-letter-spacing);   /* ALIAS -0.35 */
+  --gb-btn-medium-tracking-xl:  var(--btn-letter-spacing-xl);/* ALIAS -0.4, >=1280 */
+  --gb-btn-medium-label:        var(--btn-label-font-size);      /* ALIAS 11 */
+  --gb-btn-medium-label-2xl:    var(--btn-label-font-size-2xl);  /* ALIAS 12, >=2000 */
+  --gb-btn-medium-icon:         16px;                        /* DECLARED: the live
                                 header carries no icon inside a button. 16 is
-                                the first step of the L icon ladder and the
+                                the first step of the large icon ladder and the
                                 largest glyph a 36px box holds without
                                 crowding its 8px padding. Flat down the
                                 ladder: a glyph that grew to 20 would
                                 out-shout an 11px label. */
 
-  /* ============ SIZE M, the missing step ============
-     40/48/56 (gbppl-button-2, 26.08). THE SIZE THE SYSTEM DID NOT
-     HAVE: Ton's grid has a rung at 40 and no ladder was standing
-     on it, so nothing sat between the header's S and the form's L.
-     M is the button for a panel, a bar or a popup: heavier than
-     chrome, lighter than a form submit.
+  /* ============ THE RUNG THAT WAS DISSOLVED: the old M ============
+     40 / 48 / 56, declared 26.08 as «the missing size» and taken
+     out again on 02.09 (gbppl-btn-ladder-1, Ton by principle).
 
-     EVERY NUMBER HERE IS DECLARED OR AN ALIAS, because live has
-     never shown a 40px button. Each one is interpolated between
-     the two live ladders that surround it at the same width, and
-     where the 17.08 proportion formula (pad-x = 0.5H) agrees, it
-     is said so. Nothing is invented twice: a later measurement
-     replaces these lines and nothing else. */
-  --gb-btn-m-h:            40px;   /* DECLARED, grid step (Ton 26.08) */
-  --gb-btn-m-h-xl:         48px;   /* DECLARED, >=1280 */
-  --gb-btn-m-h-2xl:        56px;   /* DECLARED, >=2000 */
-  --gb-btn-m-pad-y:        var(--btn-pad-y);   /* ALIAS 8: flat 8 is what
-                                all three live ladders measure at every
-                                size and every width */
-  --gb-btn-m-pad-x:        20px;   /* DECLARED: between S 16 and L 24, and
-                                exactly 0.5H of 40 */
-  --gb-btn-m-pad-x-xl:     24px;   /* DECLARED, >=1280: between S 20 and
-                                L 32, and exactly 0.5H of 48. No 2000 step,
-                                because no live ladder steps pad-x at 2000 */
-  --gb-btn-m-gap:          16px;   /* DECLARED: between S 12 and L 20, on
-                                the +4 rhythm both live ladders keep */
-  --gb-btn-m-gap-xl:       20px;   /* DECLARED, >=1280: between S 20 and L 24 */
-  --gb-btn-m-font-size:    var(--btn-font-size);    /* ALIAS 14 */
-  --gb-btn-m-font-size-xl: var(--btn-font-size-xl); /* ALIAS 16, >=1280.
-                                Only XL leaves 14/16 on the outer element */
-  --gb-btn-m-font-weight:  600;    /* DECLARED: follows L and XL. The 400 of
-                                the outer element is the header's alone */
-  --gb-btn-m-line-height:  normal; /* DECLARED, follows L and XL */
-  --gb-btn-m-tracking:     var(--btn-letter-spacing);    /* ALIAS -0.35 */
-  --gb-btn-m-tracking-xl:  var(--btn-letter-spacing-xl); /* ALIAS -0.4, >=1280 */
-  --gb-btn-m-label:        12px;   /* DECLARED as a rung, but the number is
-                                live: 12 is the S label at 2000 */
-  --gb-btn-m-label-xl:     14px;   /* DECLARED, >=1280; live as the L base label */
-  --gb-btn-m-label-2xl:    15px;   /* DECLARED, >=2000; live as the L 640 label */
-  --gb-btn-m-icon:         var(--gb-btn-l-icon);      /* ALIAS 16 */
-  --gb-btn-m-icon-xl:      var(--gb-btn-l-icon-xl);   /* ALIAS 20, >=1280 */
-  --gb-btn-m-icon-2xl:     var(--gb-btn-l-icon-2xl);  /* ALIAS 24, >=2000.
-                                M borrows L's glyph ladder whole: both are
-                                content buttons. S is flat at 16 only
-                                because the live header has no icon at all */
+     IT IS RECORDED HERE RATHER THAN DELETED SILENTLY, because a
+     measurement is never deleted quietly and neither is a decision.
+     M was the ONE ladder of this house that neither the live
+     product nor DS-2 had ever shown: every number in it was
+     interpolated between the two live ladders around it. Its
+     purpose was to fill the 40 rung of Ton's grid, and `small`
+     (32 / 36 / 40) now stands on that rung with a mock behind it,
+     so the hole M was cut to fill is filled twice over. Its
+     carriers all read `medium` from 02.09 and are listed one by
+     one in the wave report; nothing wears 56 at 2K any more.
 
-  /* ============ SIZE L, the form ladder ============
-     48/56/64. Interpolated on 17.08 and made LIVE by the guest
+     If a 56 rung is ever wanted back, it comes back with a
+     measurement or with a node in the mock, not with this
+     paragraph. */
+
+  /* ============ SIZE LARGE, the form ladder ============
+     48/56/64. Called L until 02.09; the rename moved the word and
+     nothing else, and `large` is the mock's own name for 64 at 2K. Interpolated on 17.08 and made LIVE by the guest
      sign-in submit (harvest public-login 17.08 plus the live
      states of 18.08), which measures the whole family: height,
      padding, gap, label ladder and icon ladder. The workhorse
      size, and the organism's DEFAULT. */
-  --gb-btn-l-h:            var(--btn-l-min-h);          /* ALIAS 48 */
-  --gb-btn-l-h-xl:         var(--btn-l-min-h-xl);       /* ALIAS 56, >=1280 */
-  --gb-btn-l-h-2xl:        var(--btn-l-min-h-2xl);      /* ALIAS 64, >=2000 */
-  --gb-btn-l-pad-y:        var(--btn-l-pad-y);          /* ALIAS 8 */
-  --gb-btn-l-pad-x:        var(--btn-l-pad-x);          /* ALIAS 24 */
-  --gb-btn-l-pad-x-xl:     32px;                        /* LIVE auth 18.08,
+  --gb-btn-large-h:            var(--btn-l-min-h);          /* ALIAS 48 */
+  --gb-btn-large-h-xl:         var(--btn-l-min-h-xl);       /* ALIAS 56, >=1280 */
+  --gb-btn-large-h-2xl:        var(--btn-l-min-h-2xl);      /* ALIAS 64, >=2000 */
+  --gb-btn-large-pad-y:        var(--btn-l-pad-y);          /* ALIAS 8 */
+  --gb-btn-large-pad-x:        var(--btn-l-pad-x);          /* ALIAS 24 */
+  --gb-btn-large-pad-x-xl:     32px;                        /* LIVE auth 18.08,
                                 >=1280. The interpolated --btn-l-pad-x-xl
                                 says 28 and stays untouched (see the block
                                 head): live measured 32 and live wins. */
-  --gb-btn-l-gap:          20px;                        /* LIVE auth 18.08 */
-  --gb-btn-l-gap-xl:       24px;                        /* LIVE auth 18.08, >=1280 */
-  --gb-btn-l-font-size:    var(--btn-font-size);        /* ALIAS 14 */
-  --gb-btn-l-font-size-xl: var(--btn-font-size-xl);     /* ALIAS 16, >=1280 */
-  --gb-btn-l-font-weight:  600;                         /* LIVE auth 18.08: the
+  --gb-btn-large-gap:          20px;                        /* LIVE auth 18.08 */
+  --gb-btn-large-gap-xl:       24px;                        /* LIVE auth 18.08, >=1280 */
+  --gb-btn-large-font-size:    var(--btn-font-size);        /* ALIAS 14 */
+  --gb-btn-large-font-size-xl: var(--btn-font-size-xl);     /* ALIAS 16, >=1280 */
+  --gb-btn-large-font-weight:  600;                         /* LIVE auth 18.08: the
                                 form submit is heavier than the header's 400 */
-  --gb-btn-l-line-height:  normal;                      /* LIVE auth 18.08 */
-  --gb-btn-l-tracking:     var(--btn-letter-spacing);   /* ALIAS -0.35 */
-  --gb-btn-l-tracking-xl:  var(--btn-letter-spacing-xl);/* ALIAS -0.4, >=1280 */
-  --gb-btn-l-label:        14px;                        /* LIVE auth 18.08 */
-  --gb-btn-l-label-sm:     15px;                        /* LIVE auth 18.08, >=640 */
-  --gb-btn-l-label-2xl:    16px;                        /* LIVE auth 18.08, >=2000 */
-  --gb-btn-l-icon:         16px;                        /* LIVE auth 18.08 */
-  --gb-btn-l-icon-xl:      20px;                        /* LIVE auth 18.08, >=1280 */
-  --gb-btn-l-icon-2xl:     24px;                        /* LIVE auth 18.08, >=2000 */
+  --gb-btn-large-line-height:  normal;                      /* LIVE auth 18.08 */
+  --gb-btn-large-tracking:     var(--btn-letter-spacing);   /* ALIAS -0.35 */
+  --gb-btn-large-tracking-xl:  var(--btn-letter-spacing-xl);/* ALIAS -0.4, >=1280 */
+  --gb-btn-large-label:        14px;                        /* LIVE auth 18.08 */
+  --gb-btn-large-label-sm:     15px;                        /* LIVE auth 18.08, >=640 */
+  --gb-btn-large-label-2xl:    16px;                        /* LIVE auth 18.08, >=2000 */
+  --gb-btn-large-icon:         16px;                        /* LIVE auth 18.08 */
+  --gb-btn-large-icon-xl:      20px;                        /* LIVE auth 18.08, >=1280 */
+  --gb-btn-large-icon-2xl:     24px;                        /* LIVE auth 18.08, >=2000 */
 
-  /* ============ SIZE XL, the committing ladder ============
-     56/64/72, live off the product page Continue (harvest
+  /* ============ SIZE XLARGE, the committing ladder ============
+     56/64/72, called XL until 02.09. THE MOCK HAS NO RUNG AT 72 AND
+     THIS ONE STILL STANDS: 72 is LIVE, measured on the product page
+     Continue, and a live rung outlives a file that does not draw
+     it. It is the one rung of the five whose name is ours rather
+     than DS-2's, built out of the mock's own word for the rung
+     below it. Live off the product page Continue (harvest
      public-product 17.08), the single primary action of its
      template. Worn on the prototype by Place Order.
 
      THE LABEL IS THE LIVE ONE, 14/15/16, not the 11/12 of the
-     header ladder. live\checkout.html currently puts the small
+     medium ladder. live\checkout.html currently puts the small
      header label on this large button, which is the exact defect
      Ton named on the hub shelf 24.08 (a button with, in his
-     words, an unsystematic font): XL geometry wearing S
-     typography. The organism carries the live pair; fixing the
+     words, an unsystematic font): xlarge geometry wearing the
+     header's typography. The organism carries the live pair; fixing the
      consumer is phase 2. The live threshold for the 15px step is
      768 and for the 16px step 2258; the second is normalised to
      the system's own 2000, the off-Tailwind threshold every other
      ladder here flips at. */
-  --gb-btn-xl-h:            var(--btn-xl-min-h);        /* ALIAS 56 */
-  --gb-btn-xl-h-xl:         var(--btn-xl-min-h-xl);     /* ALIAS 64, >=1280 */
-  --gb-btn-xl-h-2xl:        var(--btn-xl-min-h-2xl);    /* ALIAS 72, >=2000 */
-  --gb-btn-xl-pad-y:        var(--btn-xl-pad-y);        /* ALIAS 8 */
-  --gb-btn-xl-pad-x:        var(--btn-xl-pad-x);        /* ALIAS 24 */
-  --gb-btn-xl-pad-x-xl:     var(--btn-xl-pad-x-xl);     /* ALIAS 32, >=1280 */
-  --gb-btn-xl-gap:          24px;                       /* DECLARED: one L step
-                                up, the same +4 rhythm the icon ladder keeps */
-  --gb-btn-xl-gap-xl:       28px;                       /* DECLARED, >=1280 */
-  --gb-btn-xl-font-size:    20px;                       /* LIVE product 17.08 */
-  --gb-btn-xl-font-size-xl: 24px;                       /* LIVE product 17.08, >=1280 */
-  --gb-btn-xl-font-weight:  600;                        /* LIVE product 17.08 */
-  --gb-btn-xl-line-height:  normal;                     /* LIVE product 17.08 */
-  --gb-btn-xl-tracking:     -0.5px;                     /* LIVE product 17.08 */
-  --gb-btn-xl-tracking-xl:  -0.6px;                     /* LIVE product 17.08, >=1280 */
-  --gb-btn-xl-label:        14px;                       /* LIVE product 17.08 */
-  --gb-btn-xl-label-md:     15px;                       /* LIVE product 17.08, >=768 */
-  --gb-btn-xl-label-2xl:    16px;                       /* LIVE product 17.08 at
+  --gb-btn-xlarge-h:            var(--btn-xl-min-h);        /* ALIAS 56 */
+  --gb-btn-xlarge-h-xl:         var(--btn-xl-min-h-xl);     /* ALIAS 64, >=1280 */
+  --gb-btn-xlarge-h-2xl:        var(--btn-xl-min-h-2xl);    /* ALIAS 72, >=2000 */
+  --gb-btn-xlarge-pad-y:        var(--btn-xl-pad-y);        /* ALIAS 8 */
+  --gb-btn-xlarge-pad-x:        var(--btn-xl-pad-x);        /* ALIAS 24 */
+  --gb-btn-xlarge-pad-x-xl:     var(--btn-xl-pad-x-xl);     /* ALIAS 32, >=1280 */
+  --gb-btn-xlarge-gap:          24px;                       /* DECLARED: one large
+                                step up, the same +4 rhythm the icon ladder keeps */
+  --gb-btn-xlarge-gap-xl:       28px;                       /* DECLARED, >=1280 */
+  --gb-btn-xlarge-font-size:    20px;                       /* LIVE product 17.08 */
+  --gb-btn-xlarge-font-size-xl: 24px;                       /* LIVE product 17.08, >=1280 */
+  --gb-btn-xlarge-font-weight:  600;                        /* LIVE product 17.08 */
+  --gb-btn-xlarge-line-height:  normal;                     /* LIVE product 17.08 */
+  --gb-btn-xlarge-tracking:     -0.5px;                     /* LIVE product 17.08 */
+  --gb-btn-xlarge-tracking-xl:  -0.6px;                     /* LIVE product 17.08, >=1280 */
+  --gb-btn-xlarge-label:        14px;                       /* LIVE product 17.08 */
+  --gb-btn-xlarge-label-md:     15px;                       /* LIVE product 17.08, >=768 */
+  --gb-btn-xlarge-label-2xl:    16px;                       /* LIVE product 17.08 at
                                 2258, threshold normalised to 2000 */
-  --gb-btn-xl-icon:         20px;                       /* DECLARED, one L step up */
-  --gb-btn-xl-icon-xl:      24px;                       /* DECLARED, >=1280 */
-  --gb-btn-xl-icon-2xl:     28px;                       /* DECLARED, >=2000 */
+  --gb-btn-xlarge-icon:         20px;                       /* DECLARED, one large step up */
+  --gb-btn-xlarge-icon-xl:      24px;                       /* DECLARED, >=1280 */
+  --gb-btn-xlarge-icon-2xl:     28px;                       /* DECLARED, >=2000 */
 
-  /* ============ THE LABEL, shared by all three ============
+  /* ============ THE LABEL, shared by every rung ============
      Only the SIZE changes down the ladders; weight, tracking,
      line-height and case are one value everywhere, and all three
      live sources agree on them (header label span, auth submit

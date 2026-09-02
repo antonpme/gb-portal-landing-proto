@@ -940,7 +940,7 @@
       areaBlock('gbc-body', suggest ? 'Why' : 'Comment',
                 suggest ? 'Optional' : 'What should change here', '', d) +
       '<div class="gbc-actions">' +
-        '<button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="submit"' +
+        '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="submit"' +
           d + '><span class="gb-btn__label">Post</span></button>' +
       '</div>' +
       /* Подсказка СТРОКОЙ ПОД РЯДОМ, а не рядом с кнопкой
@@ -960,9 +960,9 @@
         authorBlock(d) +
         areaBlock('gbc-body', 'Reply', 'Answer in the thread', '', d) +
         '<div class="gbc-actions">' +
-          '<button class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" type="submit"' +
+          '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="submit"' +
             d + '><span class="gb-btn__label">Post</span></button>' +
-          '<button class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" type="button" data-act="status"' +
+          '<button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" data-act="status"' +
             d + '><span class="gb-btn__label">' +
             (c.status === 'open' ? 'Resolve' : 'Reopen') + '</span></button>' +
         '</div>' +

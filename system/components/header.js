@@ -280,8 +280,8 @@
              classes. data-pc-section="label" остаётся живой
              анатомией и адресом харвест-конфигов. */
           '<div class="gbh-menu__actions">' +
-            '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--inverse" href="' + catalogHref + '" aria-label="All Gifts"><span class="gb-btn__label" data-pc-section="label">All Gifts</span></a>' +
-            '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--inverse" href="' + catalogHref + '" aria-label="Customize"><span class="gb-btn__label" data-pc-section="label">Customize</span></a>' +
+            '<a class="gb-btn gb-btn--medium gb-btn--outline gb-btn--inverse" href="' + catalogHref + '" aria-label="All Gifts"><span class="gb-btn__label" data-pc-section="label">All Gifts</span></a>' +
+            '<a class="gb-btn gb-btn--medium gb-btn--outline gb-btn--inverse" href="' + catalogHref + '" aria-label="Customize"><span class="gb-btn__label" data-pc-section="label">Customize</span></a>' +
           '</div>' +
         '</div>' +
       '</div>'
@@ -330,8 +330,8 @@
           '<div class="gbh-actions">' +
             /* Text-only per live: без глифа календаря (diff measure
                2026-08-12); лейбл в своём span per живой анатомии. */
-            '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="' + meetingHref + '"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
-            '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--secondary" href="' + portalHref + '" data-gbh-outline><span class="gb-btn__label" data-pc-section="label">My Portal</span></a>' +
+            '<a class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" href="' + meetingHref + '"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
+            '<a class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" href="' + portalHref + '" data-gbh-outline><span class="gb-btn__label" data-pc-section="label">My Portal</span></a>' +
             /* The cart is NOT in the template: it belongs to a signed
                in visitor and is put in (and taken out) by __applyCart
                below. Its markup lives in CART() so that the glyph and
@@ -510,10 +510,10 @@
     }).join('');
     /* First block, and only below 1024, where the bar has let it go. */
     var cta =
-      '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary gb-btn--block" href="' + meetingHref + '">' +
+      '<a class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary gb-btn--block" href="' + meetingHref + '">' +
         '<span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
       (portalHref
-        ? '<a class="gb-btn gb-btn--s gb-btn--outline gb-btn--inverse gb-btn--block" href="' + portalHref + '">' +
+        ? '<a class="gb-btn gb-btn--medium gb-btn--outline gb-btn--inverse gb-btn--block" href="' + portalHref + '">' +
             '<span class="gb-btn__label" data-pc-section="label">My Portal</span></a>'
         : '');
     return (
@@ -588,7 +588,7 @@
             '<button class="gbh-link" type="button">Explore</button>' +
           '</nav>' +
           '<div class="gbh-actions">' +
-            '<a class="gb-btn gb-btn--s gb-btn--filled gb-btn--primary" href="' + meetingHref + '"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
+            '<a class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" href="' + meetingHref + '"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>' +
             '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" aria-label="Search gifts">' +
               '<span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>' +
             '</button>' +

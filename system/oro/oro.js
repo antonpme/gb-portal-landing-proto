@@ -553,10 +553,24 @@ window.ORO_AXES = {
 
   AXES: {
     /* THE LADDER. Always a toggle: it is short, it is ordered, and
-       it is the one axis a person compares rather than picks. Four
-       rungs at most anywhere in the system (S / M / L / XL). */
+       it is the one axis a person compares rather than picks. FIVE
+       rungs since gbppl-btn-ladder-1 (02.09), and the rung names
+       became words with them: xsmall / small / medium / large /
+       xlarge.
+
+       AND THAT IS WHY THE RAIL LABELS THEM XS / S / M / L / XL. The
+       words do not fit and cannot be made to: the budget reads 66.9
+       against a share of 49 at 1280 for a single MEDIUM, so five
+       words turn the one axis a person compares into a dropdown, and
+       four of them would too. The short form is the SAME rung under
+       its initials, which is the rule Ton approved on 31.08 («a
+       label is a rung, never a measurement») spelled as briefly as
+       the rail can afford. The full word is printed everywhere it
+       has room: in the code fold under the card, in the Sizes shelf,
+       in Anatomy and in Properties. Open to Ton: short strip, or
+       full words in a Select. */
     size:    { label: 'Size', group: 'shape', control: 'toggle',
-               note: 'the height ladder, at most four rungs' },
+               note: 'the height ladder, five rungs, labelled by their initials' },
 
     /* THE SHAPE OF THE THING. Toggle up to four; a component that
        grows a fifth type is telling you the axis is really two,

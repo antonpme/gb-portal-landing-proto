@@ -1,15 +1,16 @@
 /* ============================================================
-   gbppl-button-1 / -2 / gbppl-oro-icons-1 / -icon-consumers-1
+   gbppl-button-1 / -2 / gbppl-oro-icons-1 / -icon-consumers-1 /
+   gbppl-toggle-small-1 / gbppl-btn-ladder-1
    THE BUTTON ORGANISM
    ------------------------------------------------------------
    Ton's spec, 25.08, in one class: three TYPES (filled, outline,
    ghost), two COLOURS (primary blue, secondary black) plus the
-   white INVERSE for dark grounds, four SIZE ladders (S, M, L, XL),
-   five STATES (rest, hover, focus, active, disabled) and an icon
-   that can stand on either side of the label, or on both, or on
-   neither.
+   white INVERSE for dark grounds, a LADDER OF FIVE SIZES (xsmall,
+   small, medium, large, xlarge), five STATES (rest, hover, focus,
+   active, disabled) and an icon that can stand on either side of
+   the label, or on both, or on neither.
 
-       <button class="gb-btn gb-btn--l gb-btn--filled gb-btn--primary">
+       <button class="gb-btn gb-btn--large gb-btn--filled gb-btn--primary">
          <span class="gb-btn__icon">...svg...</span>
          <span class="gb-btn__label">Book a meeting</span>
        </button>
@@ -17,13 +18,23 @@
    Everything is a default except the base class:
      type   filled     (--outline, --ghost)
      colour primary    (--secondary, --inverse)
-     size   L          (--s, --m, --xl)
-   so a bare <button class="gb-btn"> is a filled primary L, which
-   is the button the product asks for most often. --filled,
-   --primary and --l exist as explicit spellings for people who
+     size   large      (--xsmall, --small, --medium, --xlarge)
+   so a bare <button class="gb-btn"> is a filled primary large,
+   which is the button the product asks for most often. --filled,
+   --primary and --large exist as explicit spellings for people who
    would rather write the whole sentence.
 
-   One SHAPE stands beside the four sizes: --icon, the circle that
+   THE SIZES WERE LETTERS UNTIL 02.09 (gbppl-btn-ladder-1). S, M, L
+   and XL became medium, (dissolved), large and xlarge, and small
+   and xsmall were built under them, so that the system speaks the
+   language of the file the team reads (DS-2). Not one height moved
+   in the rename; the whole story, including the arithmetic of the
+   two new rungs and the dissolution of the old M, is in the BUTTON
+   ORGANISM block of tokens.css. NO ALIAS WAS LEFT BEHIND: every
+   carrier moved in the same commit, exactly as phase 2 did with the
+   four local ladders it replaced.
+
+   One SHAPE stands beside the five sizes: --icon, the circle that
    holds a glyph and no label (gbppl-drawer-unify-1, 28.08). It is
    a shape rather than a size because it answers a different
    question. Since gbppl-oro-icons-1 it reads the size modifiers
@@ -45,56 +56,59 @@
    a custom property inside a media query, a limitation tokens.css
    already documents at its breakpoint block.
 
-   HOW THE FOUR LADDERS FIT IN ONE CLASS. The base rule defines
-   ALL FOUR ladders as private variables on the element, and the
+   HOW THE FIVE LADDERS FIT IN ONE CLASS. The base rule defines
+   ALL FIVE ladders as private variables on the element, and the
    size modifier only chooses which ladder the geometry slots
    point at. So every media query in this file touches exactly one
-   selector (.gb-btn) and moves all four ladders one step at
+   selector (.gb-btn) and moves all five ladders one step at
    once, and no size modifier can ever lose a specificity race to
    the default. The private slots are prefixed --gbb-; nothing
    outside this file should set them.
 
    ------------------------------------------------------------
-   THE HEIGHT GRID (Ton 26.08): 72 / 64 / 56 / 48 / 40 / 36
+   THE HEIGHT GRID (Ton 26.08): 72 / 64 / 56 / 48 / 40 / 36 ...
    ------------------------------------------------------------
    «Самый большой (2K и больше) 72px, следующий 64, далее 56, 48 и
-   так далее по стандарту.» Six steps, eight apart, and the four
-   ladders between them:
+   так далее по стандарту.» Steps eight apart, and the five ladders
+   between them:
 
      ladder   base   >=1280   >=2000   what it is for
-     S         36      42*      48     chrome: bars, headers
-     M         40      48       56     panels, popups, toolbars
-     L         48      56       64     forms, hero actions
-     XL        56      64       72     the one committing action
+     xsmall    28*     28*      32     the densest chrome there is
+     small     32      36       40     dense furniture
+     medium    36      42*      48     chrome: bars, headers
+     large     48      56       64     forms, hero actions
+     xlarge    56      64       72     the one committing action
 
-   * 42 is the live public header at 1280 and the one step off the
-     eight-grid. Live wins over the formula; the deviation is
-     recorded in tokens.css and on the showcase and is not being
-     rounded away.
+   * 42 is the live public header at 1280 and 28 is Ton's touch
+     floor for xsmall; both are off the eight-grid and both stay.
+     Live and a finger win over the formula, and the deviations are
+     recorded in tokens.css and on the showcase rather than being
+     rounded away. xsmall does not step at 1280 because its curve
+     value there IS its floor.
 
-   M IS THE SIZE TON SAID WAS MISSING. Its numbers are DECLARED,
-   every one interpolated between the two live ladders that stand
-   either side of it at the same width. tokens.css carries the
-   arithmetic per line.
+   THE TWO SMALLEST RUNGS ARE THE MOCK'S AND THE CURVE'S. Their 2K
+   column is DS-2 read node by node; everything under it is the
+   living curve of the ladders above, and every line is DECLARED.
+   tokens.css carries the arithmetic per line.
 
    ------------------------------------------------------------
    PHASE 2 IS DONE (gbppl-button-2, 26.08): «даю добро на
    миграцию». Every consumer wears this class now and the four
    local button ladders are deleted, not aliased:
 
-     was                      is now
-     .gbh-cta                 --s --filled --primary
-     .gbh-cta--outline        --s --outline --secondary
-     .gbh-cta--inverted       --s --outline --inverse
-     .gba-btn                 --l --filled --primary --block
-     .gba-btn--inline         --l --filled --primary  (had no users)
-     .btn-xl      (checkout)  --xl --filled --primary --block
-     .btn-cta     (portal)    --l --filled --primary | --secondary, --block
-     .btn-start   (portal)    --l --filled --primary | --outline --secondary
-     .btn-bar     (portal)    --s --filled --primary | --outline --secondary
-     .gsp-btn     (portal)    --l --filled --primary --block
-     .gsp-btn--quiet          --l --outline --secondary --block
-     .btn-send    (portal)    --l --filled --secondary --block
+     was                      is now (spelled in the names of 02.09)
+     .gbh-cta                 --medium --filled --primary
+     .gbh-cta--outline        --medium --outline --secondary
+     .gbh-cta--inverted       --medium --outline --inverse
+     .gba-btn                 --large --filled --primary --block
+     .gba-btn--inline         --large --filled --primary  (had no users)
+     .btn-xl      (checkout)  --xlarge --filled --primary --block
+     .btn-cta     (portal)    --large --filled --primary | --secondary, --block
+     .btn-start   (portal)    --large --filled --primary | --outline --secondary
+     .btn-bar     (portal)    --medium --filled --primary | --outline --secondary
+     .gsp-btn     (portal)    --large --filled --primary --block
+     .gsp-btn--quiet          --large --outline --secondary --block
+     .btn-send    (portal)    --large --filled --secondary --block
 
    Nothing was left behind as an alias: an alias is a second name
    for the same thing, and a second name is the drift this organism
@@ -109,62 +123,78 @@
    ============================================================ */
 .gb-btn {
 
-  /* ---- the three ladders, all present, all at their base step ---- */
-  --gbb-s-h:            var(--gb-btn-s-h);
-  --gbb-s-pad-y:        var(--gb-btn-s-pad-y);
-  --gbb-s-pad-x:        var(--gb-btn-s-pad-x);
-  --gbb-s-gap:          var(--gb-btn-s-gap);
-  --gbb-s-font-size:    var(--gb-btn-s-font-size);
-  --gbb-s-font-weight:  var(--gb-btn-s-font-weight);
-  --gbb-s-line-height:  var(--gb-btn-s-line-height);
-  --gbb-s-tracking:     var(--gb-btn-s-tracking);
-  --gbb-s-label:        var(--gb-btn-s-label);
-  --gbb-s-icon:         var(--gb-btn-s-icon);
+  /* ---- THE FIVE LADDERS, all present, all at their base step ----
+     xsmall, small, medium, large, xlarge (gbppl-btn-ladder-1, 02.09).
+     Every rung is declared here on the element and a size modifier
+     only repoints the ten geometry slots, so a media query moves all
+     five at once and no modifier can lose a specificity race to the
+     default. */
+  --gbb-xsmall-h:            var(--gb-btn-xsmall-h);
+  --gbb-xsmall-pad-y:        var(--gb-btn-xsmall-pad-y);
+  --gbb-xsmall-pad-x:        var(--gb-btn-xsmall-pad-x);
+  --gbb-xsmall-gap:          var(--gb-btn-xsmall-gap);
+  --gbb-xsmall-font-size:    var(--gb-btn-xsmall-font-size);
+  --gbb-xsmall-font-weight:  var(--gb-btn-xsmall-font-weight);
+  --gbb-xsmall-line-height:  var(--gb-btn-xsmall-line-height);
+  --gbb-xsmall-tracking:     var(--gb-btn-xsmall-tracking);
+  --gbb-xsmall-label:        var(--gb-btn-xsmall-label);
+  --gbb-xsmall-icon:         var(--gb-btn-xsmall-icon);
 
-  --gbb-m-h:            var(--gb-btn-m-h);
-  --gbb-m-pad-y:        var(--gb-btn-m-pad-y);
-  --gbb-m-pad-x:        var(--gb-btn-m-pad-x);
-  --gbb-m-gap:          var(--gb-btn-m-gap);
-  --gbb-m-font-size:    var(--gb-btn-m-font-size);
-  --gbb-m-font-weight:  var(--gb-btn-m-font-weight);
-  --gbb-m-line-height:  var(--gb-btn-m-line-height);
-  --gbb-m-tracking:     var(--gb-btn-m-tracking);
-  --gbb-m-label:        var(--gb-btn-m-label);
-  --gbb-m-icon:         var(--gb-btn-m-icon);
+  --gbb-small-h:            var(--gb-btn-small-h);
+  --gbb-small-pad-y:        var(--gb-btn-small-pad-y);
+  --gbb-small-pad-x:        var(--gb-btn-small-pad-x);
+  --gbb-small-gap:          var(--gb-btn-small-gap);
+  --gbb-small-font-size:    var(--gb-btn-small-font-size);
+  --gbb-small-font-weight:  var(--gb-btn-small-font-weight);
+  --gbb-small-line-height:  var(--gb-btn-small-line-height);
+  --gbb-small-tracking:     var(--gb-btn-small-tracking);
+  --gbb-small-label:        var(--gb-btn-small-label);
+  --gbb-small-icon:         var(--gb-btn-small-icon);
 
-  --gbb-l-h:            var(--gb-btn-l-h);
-  --gbb-l-pad-y:        var(--gb-btn-l-pad-y);
-  --gbb-l-pad-x:        var(--gb-btn-l-pad-x);
-  --gbb-l-gap:          var(--gb-btn-l-gap);
-  --gbb-l-font-size:    var(--gb-btn-l-font-size);
-  --gbb-l-font-weight:  var(--gb-btn-l-font-weight);
-  --gbb-l-line-height:  var(--gb-btn-l-line-height);
-  --gbb-l-tracking:     var(--gb-btn-l-tracking);
-  --gbb-l-label:        var(--gb-btn-l-label);
-  --gbb-l-icon:         var(--gb-btn-l-icon);
+  --gbb-medium-h:            var(--gb-btn-medium-h);
+  --gbb-medium-pad-y:        var(--gb-btn-medium-pad-y);
+  --gbb-medium-pad-x:        var(--gb-btn-medium-pad-x);
+  --gbb-medium-gap:          var(--gb-btn-medium-gap);
+  --gbb-medium-font-size:    var(--gb-btn-medium-font-size);
+  --gbb-medium-font-weight:  var(--gb-btn-medium-font-weight);
+  --gbb-medium-line-height:  var(--gb-btn-medium-line-height);
+  --gbb-medium-tracking:     var(--gb-btn-medium-tracking);
+  --gbb-medium-label:        var(--gb-btn-medium-label);
+  --gbb-medium-icon:         var(--gb-btn-medium-icon);
 
-  --gbb-xl-h:           var(--gb-btn-xl-h);
-  --gbb-xl-pad-y:       var(--gb-btn-xl-pad-y);
-  --gbb-xl-pad-x:       var(--gb-btn-xl-pad-x);
-  --gbb-xl-gap:         var(--gb-btn-xl-gap);
-  --gbb-xl-font-size:   var(--gb-btn-xl-font-size);
-  --gbb-xl-font-weight: var(--gb-btn-xl-font-weight);
-  --gbb-xl-line-height: var(--gb-btn-xl-line-height);
-  --gbb-xl-tracking:    var(--gb-btn-xl-tracking);
-  --gbb-xl-label:       var(--gb-btn-xl-label);
-  --gbb-xl-icon:        var(--gb-btn-xl-icon);
+  --gbb-large-h:            var(--gb-btn-large-h);
+  --gbb-large-pad-y:        var(--gb-btn-large-pad-y);
+  --gbb-large-pad-x:        var(--gb-btn-large-pad-x);
+  --gbb-large-gap:          var(--gb-btn-large-gap);
+  --gbb-large-font-size:    var(--gb-btn-large-font-size);
+  --gbb-large-font-weight:  var(--gb-btn-large-font-weight);
+  --gbb-large-line-height:  var(--gb-btn-large-line-height);
+  --gbb-large-tracking:     var(--gb-btn-large-tracking);
+  --gbb-large-label:        var(--gb-btn-large-label);
+  --gbb-large-icon:         var(--gb-btn-large-icon);
 
-  /* ---- geometry slots, pointed at L: the default size ---- */
-  --gbb-h:           var(--gbb-l-h);
-  --gbb-pad-y:       var(--gbb-l-pad-y);
-  --gbb-pad-x:       var(--gbb-l-pad-x);
-  --gbb-gap:         var(--gbb-l-gap);
-  --gbb-font-size:   var(--gbb-l-font-size);
-  --gbb-font-weight: var(--gbb-l-font-weight);
-  --gbb-line-height: var(--gbb-l-line-height);
-  --gbb-tracking:    var(--gbb-l-tracking);
-  --gbb-label:       var(--gbb-l-label);
-  --gbb-icon:        var(--gbb-l-icon);
+  --gbb-xlarge-h:           var(--gb-btn-xlarge-h);
+  --gbb-xlarge-pad-y:       var(--gb-btn-xlarge-pad-y);
+  --gbb-xlarge-pad-x:       var(--gb-btn-xlarge-pad-x);
+  --gbb-xlarge-gap:         var(--gb-btn-xlarge-gap);
+  --gbb-xlarge-font-size:   var(--gb-btn-xlarge-font-size);
+  --gbb-xlarge-font-weight: var(--gb-btn-xlarge-font-weight);
+  --gbb-xlarge-line-height: var(--gb-btn-xlarge-line-height);
+  --gbb-xlarge-tracking:    var(--gb-btn-xlarge-tracking);
+  --gbb-xlarge-label:       var(--gb-btn-xlarge-label);
+  --gbb-xlarge-icon:        var(--gb-btn-xlarge-icon);
+
+  /* ---- geometry slots, pointed at large: the default size ---- */
+  --gbb-h:           var(--gbb-large-h);
+  --gbb-pad-y:       var(--gbb-large-pad-y);
+  --gbb-pad-x:       var(--gbb-large-pad-x);
+  --gbb-gap:         var(--gbb-large-gap);
+  --gbb-font-size:   var(--gbb-large-font-size);
+  --gbb-font-weight: var(--gbb-large-font-weight);
+  --gbb-line-height: var(--gbb-large-line-height);
+  --gbb-tracking:    var(--gbb-large-tracking);
+  --gbb-label:       var(--gbb-large-label);
+  --gbb-icon:        var(--gbb-large-icon);
 
   /* ---- palette slots, pointed at primary: the default colour ---- */
   --gbb-fill:          var(--gb-btn-fill-primary);
@@ -289,117 +319,140 @@ body.gb-demo a.gb-btn { color: var(--gbb-ink); }
 /* ============================================================
    SIZE: which ladder the geometry slots point at
    ============================================================ */
-.gb-btn--s {
-  --gbb-h:           var(--gbb-s-h);
-  --gbb-pad-y:       var(--gbb-s-pad-y);
-  --gbb-pad-x:       var(--gbb-s-pad-x);
-  --gbb-gap:         var(--gbb-s-gap);
-  --gbb-font-size:   var(--gbb-s-font-size);
-  --gbb-font-weight: var(--gbb-s-font-weight);
-  --gbb-line-height: var(--gbb-s-line-height);
-  --gbb-tracking:    var(--gbb-s-tracking);
-  --gbb-label:       var(--gbb-s-label);
-  --gbb-icon:        var(--gbb-s-icon);
+.gb-btn--xsmall {
+  --gbb-h:           var(--gbb-xsmall-h);
+  --gbb-pad-y:       var(--gbb-xsmall-pad-y);
+  --gbb-pad-x:       var(--gbb-xsmall-pad-x);
+  --gbb-gap:         var(--gbb-xsmall-gap);
+  --gbb-font-size:   var(--gbb-xsmall-font-size);
+  --gbb-font-weight: var(--gbb-xsmall-font-weight);
+  --gbb-line-height: var(--gbb-xsmall-line-height);
+  --gbb-tracking:    var(--gbb-xsmall-tracking);
+  --gbb-label:       var(--gbb-xsmall-label);
+  --gbb-icon:        var(--gbb-xsmall-icon);
 }
-.gb-btn--m {
-  --gbb-h:           var(--gbb-m-h);
-  --gbb-pad-y:       var(--gbb-m-pad-y);
-  --gbb-pad-x:       var(--gbb-m-pad-x);
-  --gbb-gap:         var(--gbb-m-gap);
-  --gbb-font-size:   var(--gbb-m-font-size);
-  --gbb-font-weight: var(--gbb-m-font-weight);
-  --gbb-line-height: var(--gbb-m-line-height);
-  --gbb-tracking:    var(--gbb-m-tracking);
-  --gbb-label:       var(--gbb-m-label);
-  --gbb-icon:        var(--gbb-m-icon);
+.gb-btn--small {
+  --gbb-h:           var(--gbb-small-h);
+  --gbb-pad-y:       var(--gbb-small-pad-y);
+  --gbb-pad-x:       var(--gbb-small-pad-x);
+  --gbb-gap:         var(--gbb-small-gap);
+  --gbb-font-size:   var(--gbb-small-font-size);
+  --gbb-font-weight: var(--gbb-small-font-weight);
+  --gbb-line-height: var(--gbb-small-line-height);
+  --gbb-tracking:    var(--gbb-small-tracking);
+  --gbb-label:       var(--gbb-small-label);
+  --gbb-icon:        var(--gbb-small-icon);
 }
-.gb-btn--l {
-  --gbb-h:           var(--gbb-l-h);
-  --gbb-pad-y:       var(--gbb-l-pad-y);
-  --gbb-pad-x:       var(--gbb-l-pad-x);
-  --gbb-gap:         var(--gbb-l-gap);
-  --gbb-font-size:   var(--gbb-l-font-size);
-  --gbb-font-weight: var(--gbb-l-font-weight);
-  --gbb-line-height: var(--gbb-l-line-height);
-  --gbb-tracking:    var(--gbb-l-tracking);
-  --gbb-label:       var(--gbb-l-label);
-  --gbb-icon:        var(--gbb-l-icon);
+.gb-btn--medium {
+  --gbb-h:           var(--gbb-medium-h);
+  --gbb-pad-y:       var(--gbb-medium-pad-y);
+  --gbb-pad-x:       var(--gbb-medium-pad-x);
+  --gbb-gap:         var(--gbb-medium-gap);
+  --gbb-font-size:   var(--gbb-medium-font-size);
+  --gbb-font-weight: var(--gbb-medium-font-weight);
+  --gbb-line-height: var(--gbb-medium-line-height);
+  --gbb-tracking:    var(--gbb-medium-tracking);
+  --gbb-label:       var(--gbb-medium-label);
+  --gbb-icon:        var(--gbb-medium-icon);
 }
-.gb-btn--xl {
-  --gbb-h:           var(--gbb-xl-h);
-  --gbb-pad-y:       var(--gbb-xl-pad-y);
-  --gbb-pad-x:       var(--gbb-xl-pad-x);
-  --gbb-gap:         var(--gbb-xl-gap);
-  --gbb-font-size:   var(--gbb-xl-font-size);
-  --gbb-font-weight: var(--gbb-xl-font-weight);
-  --gbb-line-height: var(--gbb-xl-line-height);
-  --gbb-tracking:    var(--gbb-xl-tracking);
-  --gbb-label:       var(--gbb-xl-label);
-  --gbb-icon:        var(--gbb-xl-icon);
+.gb-btn--large {
+  --gbb-h:           var(--gbb-large-h);
+  --gbb-pad-y:       var(--gbb-large-pad-y);
+  --gbb-pad-x:       var(--gbb-large-pad-x);
+  --gbb-gap:         var(--gbb-large-gap);
+  --gbb-font-size:   var(--gbb-large-font-size);
+  --gbb-font-weight: var(--gbb-large-font-weight);
+  --gbb-line-height: var(--gbb-large-line-height);
+  --gbb-tracking:    var(--gbb-large-tracking);
+  --gbb-label:       var(--gbb-large-label);
+  --gbb-icon:        var(--gbb-large-icon);
+}
+.gb-btn--xlarge {
+  --gbb-h:           var(--gbb-xlarge-h);
+  --gbb-pad-y:       var(--gbb-xlarge-pad-y);
+  --gbb-pad-x:       var(--gbb-xlarge-pad-x);
+  --gbb-gap:         var(--gbb-xlarge-gap);
+  --gbb-font-size:   var(--gbb-xlarge-font-size);
+  --gbb-font-weight: var(--gbb-xlarge-font-weight);
+  --gbb-line-height: var(--gbb-xlarge-line-height);
+  --gbb-tracking:    var(--gbb-xlarge-tracking);
+  --gbb-label:       var(--gbb-xlarge-label);
+  --gbb-icon:        var(--gbb-xlarge-icon);
 }
 
 /* ============================================================
    THE LADDERS CLIMB
    ------------------------------------------------------------
-   One rule per threshold, all three ladders moved together. 640
+   One rule per threshold, all five ladders moved together. 640
    and 768 are label-only steps that live measured on the form
    submit and the product CTA respectively; 1280 is the wide step
    of every ladder; 2000 is the system's off-Tailwind top step
    (live sweep 17.08: 1999 = 42, 2000 = 48).
    ============================================================ */
 @media (min-width: 640px) {
-  .gb-btn { --gbb-l-label: var(--gb-btn-l-label-sm); }
+  .gb-btn { --gbb-large-label: var(--gb-btn-large-label-sm); }
 }
 @media (min-width: 768px) {
-  .gb-btn { --gbb-xl-label: var(--gb-btn-xl-label-md); }
+  .gb-btn { --gbb-xlarge-label: var(--gb-btn-xlarge-label-md); }
 }
 @media (min-width: 1280px) {
   .gb-btn {
-    --gbb-s-h:          var(--gb-btn-s-h-xl);
-    --gbb-s-pad-x:      var(--gb-btn-s-pad-x-xl);
-    --gbb-s-gap:        var(--gb-btn-s-gap-xl);
-    --gbb-s-font-size:  var(--gb-btn-s-font-size-xl);
-    --gbb-s-tracking:   var(--gb-btn-s-tracking-xl);
+    /* xsmall has no height line, and the absence is the ladder: the
+       curve gives it 28 at 1280 and 28 is already its base floor
+       (tokens.css, --gb-btn-xsmall-h). Its pad is flat too, like
+       small's, so gap and label are all it steps here. */
+    --gbb-xsmall-gap:        var(--gb-btn-xsmall-gap-xl);
+    --gbb-xsmall-font-size:  var(--gb-btn-xsmall-font-size-xl);
+    --gbb-xsmall-tracking:   var(--gb-btn-xsmall-tracking-xl);
 
-    --gbb-m-h:          var(--gb-btn-m-h-xl);
-    --gbb-m-pad-x:      var(--gb-btn-m-pad-x-xl);
-    --gbb-m-gap:        var(--gb-btn-m-gap-xl);
-    --gbb-m-font-size:  var(--gb-btn-m-font-size-xl);
-    --gbb-m-tracking:   var(--gb-btn-m-tracking-xl);
-    --gbb-m-label:      var(--gb-btn-m-label-xl);
-    --gbb-m-icon:       var(--gb-btn-m-icon-xl);
+    /* small has no pad-x line either: flat 16 at every width. */
+    --gbb-small-h:           var(--gb-btn-small-h-xl);
+    --gbb-small-gap:         var(--gb-btn-small-gap-xl);
+    --gbb-small-font-size:   var(--gb-btn-small-font-size-xl);
+    --gbb-small-tracking:    var(--gb-btn-small-tracking-xl);
+    --gbb-small-label:       var(--gb-btn-small-label-xl);
+    --gbb-small-icon:        var(--gb-btn-small-icon-xl);
 
-    --gbb-l-h:          var(--gb-btn-l-h-xl);
-    --gbb-l-pad-x:      var(--gb-btn-l-pad-x-xl);
-    --gbb-l-gap:        var(--gb-btn-l-gap-xl);
-    --gbb-l-font-size:  var(--gb-btn-l-font-size-xl);
-    --gbb-l-tracking:   var(--gb-btn-l-tracking-xl);
-    --gbb-l-icon:       var(--gb-btn-l-icon-xl);
+    --gbb-medium-h:          var(--gb-btn-medium-h-xl);
+    --gbb-medium-pad-x:      var(--gb-btn-medium-pad-x-xl);
+    --gbb-medium-gap:        var(--gb-btn-medium-gap-xl);
+    --gbb-medium-font-size:  var(--gb-btn-medium-font-size-xl);
+    --gbb-medium-tracking:   var(--gb-btn-medium-tracking-xl);
 
-    --gbb-xl-h:         var(--gb-btn-xl-h-xl);
-    --gbb-xl-pad-x:     var(--gb-btn-xl-pad-x-xl);
-    --gbb-xl-gap:       var(--gb-btn-xl-gap-xl);
-    --gbb-xl-font-size: var(--gb-btn-xl-font-size-xl);
-    --gbb-xl-tracking:  var(--gb-btn-xl-tracking-xl);
-    --gbb-xl-icon:      var(--gb-btn-xl-icon-xl);
+    --gbb-large-h:          var(--gb-btn-large-h-xl);
+    --gbb-large-pad-x:      var(--gb-btn-large-pad-x-xl);
+    --gbb-large-gap:        var(--gb-btn-large-gap-xl);
+    --gbb-large-font-size:  var(--gb-btn-large-font-size-xl);
+    --gbb-large-tracking:   var(--gb-btn-large-tracking-xl);
+    --gbb-large-icon:       var(--gb-btn-large-icon-xl);
+
+    --gbb-xlarge-h:         var(--gb-btn-xlarge-h-xl);
+    --gbb-xlarge-pad-x:     var(--gb-btn-xlarge-pad-x-xl);
+    --gbb-xlarge-gap:       var(--gb-btn-xlarge-gap-xl);
+    --gbb-xlarge-font-size: var(--gb-btn-xlarge-font-size-xl);
+    --gbb-xlarge-tracking:  var(--gb-btn-xlarge-tracking-xl);
+    --gbb-xlarge-icon:      var(--gb-btn-xlarge-icon-xl);
   }
 }
 @media (min-width: 2000px) {
   .gb-btn {
-    --gbb-s-h:      var(--gb-btn-s-h-2xl);
-    --gbb-s-label:  var(--gb-btn-s-label-2xl);
+    /* xsmall steps ONCE, here: 28 -> 32. Its label and glyph are
+       flat, both already at the floor of the house. */
+    --gbb-xsmall-h:      var(--gb-btn-xsmall-h-2xl);
 
-    --gbb-m-h:      var(--gb-btn-m-h-2xl);
-    --gbb-m-label:  var(--gb-btn-m-label-2xl);
-    --gbb-m-icon:   var(--gb-btn-m-icon-2xl);
+    --gbb-small-h:       var(--gb-btn-small-h-2xl);
+    --gbb-small-label:   var(--gb-btn-small-label-2xl);
 
-    --gbb-l-h:      var(--gb-btn-l-h-2xl);
-    --gbb-l-label:  var(--gb-btn-l-label-2xl);
-    --gbb-l-icon:   var(--gb-btn-l-icon-2xl);
+    --gbb-medium-h:      var(--gb-btn-medium-h-2xl);
+    --gbb-medium-label:  var(--gb-btn-medium-label-2xl);
 
-    --gbb-xl-h:     var(--gb-btn-xl-h-2xl);
-    --gbb-xl-label: var(--gb-btn-xl-label-2xl);
-    --gbb-xl-icon:  var(--gb-btn-xl-icon-2xl);
+    --gbb-large-h:      var(--gb-btn-large-h-2xl);
+    --gbb-large-label:  var(--gb-btn-large-label-2xl);
+    --gbb-large-icon:   var(--gb-btn-large-icon-2xl);
+
+    --gbb-xlarge-h:     var(--gb-btn-xlarge-h-2xl);
+    --gbb-xlarge-label: var(--gb-btn-xlarge-label-2xl);
+    --gbb-xlarge-icon:  var(--gb-btn-xlarge-icon-2xl);
   }
 }
 
@@ -588,10 +641,10 @@ body.gb-demo a.gb-btn { color: var(--gbb-ink); }
    modifier on --icon reads the BASE rung of a ladder and no media
    query touches it.
 
-     --s   40 = the M base    glyph 20
+     --small   40   glyph 20
      none  44 = LIVE          glyph 22
-     --m   48 = the L base    glyph 24
-     --l   56 = the XL base   glyph 28
+     --medium  48   glyph 24
+     --large   56   glyph 28
 
    THE GLYPH IS HALF THE CIRCLE. 22 of 44 is the live ratio,
    measured, and holding it lands every other rung on a number the
@@ -637,18 +690,37 @@ body.gb-demo a.gb-btn { color: var(--gbb-ink); }
 /* The three rungs. Written as two classes so they outweigh both
    --icon and the size modifier they stand beside, and so a size
    modifier on a LABELLED button keeps meaning exactly what it
-   meant before this wave. */
-.gb-btn--icon.gb-btn--s {
-  --gbb-circle: var(--gb-btn-m-h);           /* 40, the M base of the grid */
-  --gbb-icon:   var(--gb-btn-l-icon-xl);     /* 20 */
+   meant before this wave.
+
+   THE CIRCLE IS NOT THE LABELLED LADDER, AND IT NEVER WAS. It is
+   FLAT — one number at every width — and it names a rung of Ton's
+   height grid rather than a step of a ladder that climbs. Before
+   02.09 the three were lettered one step under the labelled ladder
+   of the same letter (icon --s was 40 while a labelled --s was 36
+   at base), and the renaming wave kept the three circles to the
+   pixel and moved the WORDS down with them: 40 is now `small`, 48
+   is `medium`, 56 is `large`. Two of the three now agree with the
+   2K rung of the labelled ladder they share a name with (small 40,
+   medium 48); the third does not (large is 64 labelled, 56 round),
+   and that disagreement is the price of not moving a single
+   carrier by a single pixel. It is written down rather than
+   smoothed over, and it is a question for Ton in the wave report.
+
+   Every carrier of an icon button today wears the 40 circle, which
+   is why this mapping is the one that costs nothing: what read
+   `--icon --s` on 01.09 reads `--icon --small` on 02.09 and
+   measures 40 by 40 in both. */
+.gb-btn--icon.gb-btn--small {
+  --gbb-circle: var(--gb-btn-small-h-2xl);       /* 40, the small rung at 2K */
+  --gbb-icon:   var(--gb-btn-large-icon-xl);     /* 20 */
 }
-.gb-btn--icon.gb-btn--m {
-  --gbb-circle: var(--gb-btn-l-h);           /* 48, the L base of the grid */
-  --gbb-icon:   var(--gb-btn-l-icon-2xl);    /* 24 */
+.gb-btn--icon.gb-btn--medium {
+  --gbb-circle: var(--gb-btn-medium-h-2xl);      /* 48, the medium rung at 2K */
+  --gbb-icon:   var(--gb-btn-large-icon-2xl);    /* 24 */
 }
-.gb-btn--icon.gb-btn--l {
-  --gbb-circle: var(--gb-btn-xl-h);          /* 56, the XL base of the grid */
-  --gbb-icon:   var(--gb-btn-xl-icon-2xl);   /* 28 */
+.gb-btn--icon.gb-btn--large {
+  --gbb-circle: var(--gb-btn-xlarge-h);          /* 56, the xlarge base of the grid */
+  --gbb-icon:   var(--gb-btn-xlarge-icon-2xl);   /* 28 */
 }
 
 /* INVERSE KEEPS ITS OWN WASH (gbppl-icon-consumers-1, 28.08).

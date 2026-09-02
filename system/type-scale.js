@@ -1,14 +1,14 @@
 /* ============================================================
    gbppl-inspect-1 — THE TYPE RECORD, ONE COPY
    ------------------------------------------------------------
-   The 47 roles of the type scale, transcribed row for row out of
+   The 46 roles of the type scale, transcribed row for row out of
    studio\system\TYPE-SCALE.md, which was itself read off the
    running product with an instrument.
 
    WHY THE RECORD LEFT THE SHOWCASE. Until 26.08 this array lived
    inside system\oro\typography.html and only that page could read
    it. The Inspect mode names the type role under the pointer on
-   ANY page of the prototype, and a second copy of 47 rows would
+   ANY page of the prototype, and a second copy of those rows would
    have been two records the day one of them was corrected
    (Ton-8: one source). So the record moved out to a file both
    read, the way system\sandbox-registry.js is one record for the
@@ -193,7 +193,7 @@
 
     /* ---------- button ---------- */
     { g: 'button', id: 'btn-outer-xl', name: 'Button outer, semibold', fam: 'sans', prov: 'verified',
-      kind: 'btnouter', size: 'xl', cls: '.gb-btn--xl', sample: 'Continue',
+      kind: 'btnouter', size: 'xlarge', cls: '.gb-btn--xlarge', sample: 'Continue',
       note: 'The same slot on the committing ladder, and the reason the outer element cannot be called one role',
       rungs: [{ w: 0, s: 20, f: 600, lh: 'normal', ls: '-0.5px', tt: 'uppercase' },
               { w: 1280, s: 24, f: 600, lh: 'normal', ls: '-0.6px', tt: 'uppercase' }] },
@@ -201,35 +201,41 @@
       rungs: [{ w: 0, s: 18, f: 400, lh: '18px', ls: '1px', tt: 'uppercase' },
               { w: 1280, s: 20, f: 400, lh: '20px', ls: '1px', tt: 'uppercase' }] },
     { g: 'button', id: 'btn-outer-s', name: 'Button outer, regular', fam: 'sans', prov: 'verified',
-      kind: 'btnouter', size: 's', cls: '.gb-btn--s', sample: 'Continue',
+      kind: 'btnouter', size: 'medium', cls: '.gb-btn--medium', sample: 'Continue',
       note: 'The type of the button element itself, which the label span then overrides. Measured on the button, not the label',
       rungs: [{ w: 0, s: 14, f: 400, lh: 'normal', ls: '-0.35px', tt: 'uppercase' },
               { w: 1280, s: 16, f: 400, lh: 'normal', ls: '-0.4px', tt: 'uppercase' }] },
-    { g: 'button', id: 'btn-label-xl', name: 'Button label XL', fam: 'sans', prov: 'verified',
-      kind: 'btnlabel', size: 'xl', cls: '.gb-btn--xl .gb-btn__label', sample: 'Continue',
+    { g: 'button', id: 'btn-label-xl', name: 'Button label, xlarge', fam: 'sans', prov: 'verified',
+      kind: 'btnlabel', size: 'xlarge', cls: '.gb-btn--xlarge .gb-btn__label', sample: 'Continue',
       rungs: [{ w: 0, s: 14, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' },
               { w: 768, s: 15, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' },
               { w: 2000, s: 16, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' }] },
-    { g: 'button', id: 'btn-label-l', name: 'Button label L', fam: 'sans', prov: 'verified',
-      kind: 'btnlabel', size: 'l', cls: '.gb-btn--l .gb-btn__label', sample: 'Continue',
+    { g: 'button', id: 'btn-label-l', name: 'Button label, large', fam: 'sans', prov: 'verified',
+      kind: 'btnlabel', size: 'large', cls: '.gb-btn--large .gb-btn__label', sample: 'Continue',
       rungs: [{ w: 0, s: 14, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' },
               { w: 640, s: 15, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' },
               { w: 2000, s: 16, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' }] },
     { g: 'button', id: 'btn-figma-l', name: 'Button style, large', fam: 'sans', prov: 'figma', sample: 'Continue',
       rungs: [{ w: 0, s: 16, f: 600, lh: 'normal', ls: '1.5px', tt: 'uppercase' }] },
-    { g: 'button', id: 'btn-label-m', name: 'Button label M', fam: 'sans', prov: 'declared',
-      kind: 'btnlabel', size: 'm', cls: '.gb-btn--m .gb-btn__label', sample: 'Continue',
-      note: 'The interpolated rung. Every number is a live number borrowed from the ladder above or below it',
-      rungs: [{ w: 0, s: 12, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' },
-              { w: 1280, s: 14, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' },
-              { w: 2000, s: 15, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' }] },
+    /* THE ROLE THAT WENT WITH ITS RUNG (gbppl-btn-ladder-1, 02.09).
+       «Button label M», 12 / 14 / 15, described the label ladder of the
+       old M rung of the button (40 / 48 / 56). Ton dissolved that rung
+       by principle when the ladder took the mock's five names, and a
+       role that names nothing is worse than a role that is missing:
+       match() would answer with a class no stylesheet declares. So the
+       record went out with the rung and the count of this file went from
+       47 to 46. Nothing else moved; the surviving button roles are the
+       same numbers under the new words, and whether `small` (10/11/12)
+       and `xsmall` (10 flat) should be named as roles of their own is a
+       question for Ton, not a thing to add in passing.
+    */
     { g: 'button', id: 'btn-figma-m', name: 'Button style, medium', fam: 'sans', prov: 'figma', sample: 'Continue',
       rungs: [{ w: 0, s: 14, f: 600, lh: 'normal', ls: '1.3px', tt: 'uppercase' }] },
     { g: 'button', id: 'outlined-label', name: 'Outlined button label', fam: 'sans', prov: 'recorded', sample: 'Get help',
       rungs: [{ w: 0, s: 12, f: 400, lh: 'normal', ls: '-0.35px', tt: 'uppercase' },
               { w: 1280, s: 14, f: 400, lh: 'normal', ls: '-0.35px', tt: 'uppercase' }] },
-    { g: 'button', id: 'btn-label-s', name: 'Button label S', fam: 'sans', prov: 'verified',
-      kind: 'btnlabel', size: 's', cls: '.gb-btn--s .gb-btn__label', sample: 'Continue',
+    { g: 'button', id: 'btn-label-s', name: 'Button label, medium', fam: 'sans', prov: 'verified',
+      kind: 'btnlabel', size: 'medium', cls: '.gb-btn--medium .gb-btn__label', sample: 'Continue',
       rungs: [{ w: 0, s: 11, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' },
               { w: 2000, s: 12, f: 600, lh: 'normal', ls: '1px', tt: 'uppercase' }] },
     { g: 'button', id: 'btn-figma-s', name: 'Button style, small', fam: 'sans', prov: 'figma', sample: 'Continue',
