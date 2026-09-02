@@ -13,8 +13,9 @@
      4. GbOro.controls (gbppl-oro-canon-1), the playground panel
         renderer: a showcase hands over a schema and gets the
         panel, the rule, the conditional hiding, the More fold,
-        the Reset, the ground on the stage and the Preview | Code
-        band. Its markup and its grounds are .gbdoc-pg-* in
+        the Reset, and — since gbppl-showcase-tools-1 — the ground
+        and the Preview | Code switch as rows of that same panel.
+        Its markup and its grounds are .gbdoc-pg-* in
         system/components/docs.css.
    The argument for each is written out under it.
    ------------------------------------------------------------
@@ -514,14 +515,20 @@
 window.ORO_AXES = {
   /* The order of the groups, one for every panel in the house. A
      component with no axis in a group simply skips it; nobody
-     re-orders. Ground is last and stands on the scene, because it
-     dresses the stage rather than the specimen (spec §1). */
+     re-orders. Ground is last because it dresses the stage rather
+     than the specimen (spec §1), and since gbppl-showcase-tools-1
+     that is where it stands: the last group of the rail, under
+     everything the component itself is made of. */
   GROUP_ORDER: ['shape', 'state', 'content', 'ground'],
 
-  /* What each group is called over the rail. Ground is in the
-     order above and NOT here, because it is never a group of the
-     rail: it is one control in the corner of the scene. */
-  GROUP_LABELS: { shape: 'Shape', state: 'State', content: 'Content', ground: 'Ground' },
+  /* What each group is called over the rail. THE GROUND GROUP IS
+     CALLED STAGE, and the word is the point (gbppl-showcase-tools-1,
+     Ton 02.09). The row inside it is still Ground: the group says
+     what these controls dress and the row says which of its
+     properties, so a reader can never read Light | Dark as a
+     property of the specimen. It is also where the view of the
+     showcase itself lives, Preview or Code, for the same reason. */
+  GROUP_LABELS: { shape: 'Shape', state: 'State', content: 'Content', ground: 'Stage' },
 
   /* Names that mean the same axis and must print the same word.
      A schema may also name its axis outright with canon: 'type'. */
@@ -607,11 +614,14 @@ window.ORO_AXES = {
     colour:  { label: 'Colour', group: 'shape', control: 'select',
                note: 'always a Select: the longest words in the house, and the set grows' },
 
-    /* THE STAGE, NOT THE SPECIMEN. Two short values, a toggle, and
-       it stands in the corner of the scene it changes rather than
-       in the rail (spec §1). A hug, not a fill: it floats. */
-    ground:  { label: 'Ground', group: 'ground', control: 'toggle', where: 'scene',
-               note: 'Light | Dark, on the stage, hugging its two words' },
+    /* THE STAGE, NOT THE SPECIMEN, and it says so with a word
+       rather than with a place. It stood in the corner of the scene
+       until gbppl-showcase-tools-1 (spec §1); Ton read a control
+       loose on the canvas next to the exhibit and asked why it was
+       not in the panel with the rest. It is a row of the rail now,
+       last group, and the group is called Stage. */
+    ground:  { label: 'Ground', group: 'ground', control: 'toggle',
+               note: 'Light | Dark, the last row of the rail, in the group called Stage' },
 
     /* THE COMPONENT'S OWN BACKING, which the icon button calls
        Ground today and which is not the stage at all: two short
@@ -686,7 +696,8 @@ window.ORO_AXES = {
        read,        fn(hold) -> html       optional, the one measured line
        block,       fn(state) -> boolean   optional, with blockClass
        blockClass,  the class the hold wears when block() is true
-       ground       an axis object, or false for no ground switch
+       ground,      an axis object, or false for no ground switch
+       action       optional html, one button in the foot of the rail
      })  ->  paint(recost)
 
    AN AXIS: { id, label, group: 'shape'|'state'|'content',
@@ -718,15 +729,20 @@ window.ORO_AXES = {
                prevent and a canon that overrode physics would
                just draw it again.
 
-   THE BUDGET IS A SHARE, NOT A SUM (Ton 31.08 12:23: «трек toggle
-   в рельсе тянется на всю ширину, а дети не заполняют его»). The
-   rail's tracks wear .gb-toggle--fill and the items split the
-   track in equal shares, so the track is paid for by its LONGEST
-   label taken n times:
+   THE BUDGET IS A SUM AGAIN (gbppl-showcase-tools-1). It was a
+   SHARE while the rail's control was .gb-toggle--fill, whose track
+   spans the column and whose items split it in equal parts, so
+   the track was paid for by its longest label taken n times. The
+   rail's control is .gbdoc-seg now — quiet text of its natural
+   width in a row that is allowed to wrap — and a row of natural
+   widths is paid for by the sum of them:
 
-     share = (room - 2*BORDER - 2*INSET - (n-1)*GAP) / n
-     item  = widest label + 2 * ITEM_PAD_FILL
-     toggle if item <= share, else Select
+     row = Σ(label + 2*SEG_PAD_X) + (n-1)*SEG_GAP
+     segments if row <= room, else the picker
+
+   The question the rule asks is unchanged and so is the reason
+   for asking it: a control that wraps onto a second line is the
+   defect the whole rule exists to prevent.
 
    Every number in BUDGET is the value the CSS spends and the
    comment names which declaration it is copied from, so a drift
@@ -742,28 +758,22 @@ window.ORO_AXES = {
   /* ---- the rule as a table, so no branch of it is retyped ---- */
   var RULE = {
     BOOL: 'checkbox',   /* 1. true or false -> Switch. PLACEHOLDER: native checkbox. */
-    TOGGLE_TO: 4,       /* 2. one of 2..4 short values -> .gb-toggle */
-    SELECT_FROM: 5,     /* 3. five or more, or long:true -> .gba-select */
-    TEXT: 'field',      /* 4. free text or number -> .gba-input */
+    TOGGLE_TO: 4,       /* 2. one of 2..4 short values -> .gbdoc-seg row */
+    SELECT_FROM: 5,     /* 3. five or more, or long:true -> the picker */
+    TEXT: 'field',      /* 4. free text or number -> the text box */
 
     BUDGET: {
-      /* .gb-toggle__item type — the button label ladder */
-      LABEL_SIZE: 11,          /* --gb-btn-medium-label */
-      LABEL_SIZE_2XL: 12,      /* --gb-btn-medium-label-2xl, from 2000 */
-      LABEL_2XL_FROM: 2000,    /* the toggle.css media query */
-      LABEL_WEIGHT: 600,       /* --gb-btn-label-weight */
-      LABEL_TRACKING: 1,       /* --gb-btn-label-tracking, per character */
-      LABEL_CAPS: true,        /* text-transform: uppercase */
+      /* .gbdoc-seg type, docs.css SEGMENT CONTROL. One size at every
+         width: the instrument of the documentation does not step with
+         the 2xl breakpoint the way a button label does. */
+      LABEL_SIZE: 14,          /* .gbdoc-seg font-size */
+      LABEL_WEIGHT: 500,       /* .gbdoc-seg font-weight */
+      LABEL_TRACKING: 0.2,     /* .gbdoc-seg letter-spacing, per character */
+      LABEL_CAPS: false,       /* sentence case: the segment does not shout */
       LABEL_FACE: '--font-sans',   /* read from the token, not retyped */
-      /* .gb-toggle__item box. In a share the padding is the WRAP
-         THRESHOLD and not the air, so it is --space-8, one rung
-         under the hug's --space-16; the argument is written in
-         toggle.css under the modifier that spends it. */
-      ITEM_PAD_FILL: 8,        /* --space-8, each side, on a FILL track */
-      /* .gb-toggle box */
-      GAP: 4,                  /* --gbtg-inset, between two items */
-      INSET: 4,                /* --gbtg-inset, each side of the row */
-      BORDER: 1,               /* the 1px --zinc-300 hairline, each side */
+      /* .gbdoc-seg box and the row it stands in */
+      SEG_PAD_X: 2,            /* .gbdoc-seg padding, each side */
+      SEG_GAP: 16,             /* --space-16, .gbdoc-pg__segs column gap */
       /* the room, at the width where the rail is a fixed rail */
       RAIL: 320,               /* --gbdoc-pg-rail = --space-64 * 5, docs.css */
       RAIL_PAD: 24,            /* --gbdoc-pg-pad, each side */
@@ -791,25 +801,29 @@ window.ORO_AXES = {
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* ---------- the four controls of the rule ---------- */
-  /* THE TOGGLE IS THE HOUSE'S OWN, .gb-toggle out of
-     system/components/toggle.css, measured off the checkout. In the
-     rail it wears --fill: the track spans the column AND the items
-     split it in equal shares, so a row of controls has one left
-     edge and one right edge like every other row. The one caller
-     that passes a modifier is the scene's ground, which passes the
-     empty string: a control floating over a stage hugs its two
-     words. data-gb-toggle="host" because the state is the panel's;
-     the component keeps the group contract, the single tab stop
-     and the arrow keys, and paints nothing. */
-  function toggleHTML(ax, named, mod) {
+  /* ---------- the four controls of the rule ----------
+     gbppl-showcase-tools-1. ALL THREE OF THEM ARE FURNITURE OF THE
+     DOCUMENTATION AND NONE OF THEM IS A COMPONENT OF THE SYSTEM.
+     Until this wave the short axis wore .gb-toggle, the checkout's
+     black card, and the long one wore <gb-field type="select">, the
+     system's own underlined Select. Ton, twice: «какой-то заповедник
+     тогглов, хз что демо, а что управление»; «зоопарк»; and on
+     02.09, «почему тогглы вообще такие огромные?». A control may not
+     wear the species of the thing it drives, which is the rule
+     docs.css has held for the segment since 26.08 and which now
+     holds for the whole rail. */
+
+  /* THE SHORT AXIS: a row of .gbdoc-seg, the instrument of the
+     documentation. Every segment is its own tab stop, exactly as on
+     the workbench and on the type pages — the atom's contract in
+     this house, and no new interaction is invented here. */
+  function segsHTML(ax, named, extra) {
     return (named === false ? '' : '<span class="gbdoc-pg__name">' + esc(ax.label) + '</span>') +
-      '<div class="' + ('gb-toggle ' + (mod == null ? 'gb-toggle--fill' : mod)).replace(/\s+$/, '') +
-      '" role="radiogroup" data-gb-toggle="host"' +
-      ' aria-label="' + esc(ax.label) + '">' +
+      '<div class="gbdoc-pg__segs" role="radiogroup" aria-label="' + esc(ax.label) + '">' +
       ax.values.map(function (v) {
-        return '<button class="gb-toggle__item" type="button" role="radio" aria-checked="false"' +
-               ' data-pgaxis="' + esc(ax.id) + '" data-val="' + esc(v[0]) + '">' + esc(v[1]) + '</button>';
+        return '<button class="gbdoc-seg" type="button" role="radio" aria-checked="false"' +
+               ' ' + (extra || ('data-pgaxis="' + esc(ax.id) + '"')) +
+               ' data-val="' + esc(v[0]) + '">' + esc(v[1]) + '</button>';
       }).join('') + '</div>';
   }
   /* PLACEHOLDER UNTIL THE SWITCH IS MEASURED. The label carries the
@@ -820,22 +834,30 @@ window.ORO_AXES = {
       '<input type="checkbox" id="pgc-' + rowId + '" data-pgbool="' + esc(ax.id) + '">' +
       '<span>' + esc(ax.label) + '</span></label>';
   }
+  /* THE LONG AXIS: the rail's own picker. A native select in a
+     hairline box, addressed by the painter through the same
+     [data-pgfield] hook the gb-field carried, so nothing downstream
+     of here had to learn a second shape. */
   function selectHTML(ax, rowId) {
-    return '<gb-field input-id="pgc-' + rowId + '" name="pgc-' + rowId + '" type="select" optional' +
-      ' label="' + esc(ax.label) + '" options="' +
-      esc(ax.values.map(function (v) { return v[1]; }).join('|')) +
-      '" data-pgfield="' + esc(ax.id) + '"></gb-field>';
+    return '<span class="gbdoc-pg__name">' + esc(ax.label) + '</span>' +
+      '<span class="gbdoc-pg__pick" data-pgfield="' + esc(ax.id) + '">' +
+      '<select id="pgc-' + rowId + '" aria-label="' + esc(ax.label) + '">' +
+      ax.values.map(function (v) {
+        return '<option>' + esc(v[1]) + '</option>';
+      }).join('') + '</select></span>';
   }
   function textHTML(ax, rowId) {
-    return '<gb-field input-id="pgc-' + rowId + '" name="pgc-' + rowId + '" type="text" optional' +
-      ' label="' + esc(ax.label) + '" data-pgfield="' + esc(ax.id) + '"></gb-field>';
+    return '<span class="gbdoc-pg__name">' + esc(ax.label) + '</span>' +
+      '<span data-pgfield="' + esc(ax.id) + '">' +
+      '<input class="gbdoc-pg__text" type="text" id="pgc-' + rowId + '"' +
+      ' aria-label="' + esc(ax.label) + '"></span>';
   }
   var BUILD = {
     checkbox: boolHTML,   /* the placeholder the Switch replaces */
     switch: boolHTML,
     field: textHTML,
     select: selectHTML,
-    toggle: function (ax) { return toggleHTML(ax); }
+    toggle: function (ax) { return segsHTML(ax); }
   };
 
   /* ---------- the budget, costed from strings ----------
@@ -847,10 +869,9 @@ window.ORO_AXES = {
 
   function budgetFont() {
     var B = RULE.BUDGET;
-    var size = window.innerWidth >= B.LABEL_2XL_FROM ? B.LABEL_SIZE_2XL : B.LABEL_SIZE;
     var face = getComputedStyle(document.documentElement)
                  .getPropertyValue(B.LABEL_FACE).trim() || 'sans-serif';
-    return B.LABEL_WEIGHT + ' ' + size + 'px ' + face;
+    return B.LABEL_WEIGHT + ' ' + B.LABEL_SIZE + 'px ' + face;
   }
 
   /* CSS letter-spacing puts the tracking after EVERY character, the
@@ -871,22 +892,17 @@ window.ORO_AXES = {
     return w;
   }
 
-  function shareOf(ax, room) {
-    var B = RULE.BUDGET;
-    var n = ax.values.length;
-    return (room - 2 * B.BORDER - 2 * B.INSET - (n - 1) * B.GAP) / n;
-  }
-
-  function costItem(ax) {
+  /* The whole row, at its natural widths: the segments are not a
+     track split into shares, they are words with air between them. */
+  function costRow(ax) {
     var B = RULE.BUDGET;
     var font = budgetFont();
-    var widest = 0;
+    var sum = 0;
     ax.values.forEach(function (v) {
       var label = B.LABEL_CAPS ? String(v[1]).toUpperCase() : String(v[1]);
-      var w = costText(label, font);
-      if (w > widest) widest = w;
+      sum += costText(label, font) + 2 * B.SEG_PAD_X;
     });
-    return widest + 2 * B.ITEM_PAD_FILL;
+    return sum + (ax.values.length - 1) * B.SEG_GAP;
   }
 
   /* The room to spend it in. Constants where the rail is the fixed
@@ -934,11 +950,10 @@ window.ORO_AXES = {
     if (canon) {                                                         /* 2 canon */
       if (canon.control !== 'toggle') return canon.control;
       if (canon.upTo && ax.values.length > canon.upTo) return 'select';
-      if (room != null && costItem(ax) > shareOf(ax, room)) {
-        console.warn('GbOro.controls: canonical toggle ' + ax.id + ' does not fit its share at this width (' +
-                     Math.round(costItem(ax) * 10) / 10 + ' against ' +
-                     Math.round(shareOf(ax, room) * 10) / 10 +
-                     'px); drawn as a select. The rail or the labels have to change.');
+      if (room != null && costRow(ax) > room) {
+        console.warn('GbOro.controls: canonical segment row ' + ax.id + ' does not fit the rail at this width (' +
+                     Math.round(costRow(ax) * 10) / 10 + ' against ' + Math.round(room * 10) / 10 +
+                     'px); drawn as a picker. The rail or the labels have to change.');
         return 'select';
       }
       return 'toggle';
@@ -946,7 +961,7 @@ window.ORO_AXES = {
     noteOffCanon(ax);
     if (ax.long || ax.values.length >= RULE.SELECT_FROM) return 'select';   /* 3 count */
     if (ax.values.length > RULE.TOGGLE_TO) return 'select';                 /* 3 count */
-    if (room != null && costItem(ax) > shareOf(ax, room)) return 'select';  /* 4 budget */
+    if (room != null && costRow(ax) > room) return 'select';                /* 4 budget */
     return 'toggle';
   }
 
@@ -972,23 +987,17 @@ window.ORO_AXES = {
     rows.forEach(function (r) {
       if (plan[r.ax.id] !== 'toggle') return;
       if (!p) p = probeOf(rail);
-      /* The item, not the track: in the rail the track is always
-         exactly as wide as the room, so its width says nothing;
-         what can still go wrong is one label too wide for one
-         share. */
-      p.innerHTML = '<div class="gb-toggle">' + r.ax.values.map(function (v) {
-        return '<span class="gb-toggle__item">' + esc(v[1]) + '</span>';
+      /* The whole row at its natural width, forbidden to wrap: what
+         can go wrong now is a row of words wider than the rail, and
+         the row is the thing the budget costed. */
+      p.innerHTML = '<div class="gbdoc-pg__segs">' + r.ax.values.map(function (v) {
+        return '<span class="gbdoc-seg">' + esc(v[1]) + '</span>';
       }).join('') + '</div>';
-      var widest = 0;
-      Array.prototype.forEach.call(p.firstChild.children, function (it) {
-        var w = it.getBoundingClientRect().width;
-        if (w > widest) widest = w;
-      });
-      var share = shareOf(r.ax, room);
-      if (widest > share) {
-        console.warn('GbOro.controls: axis ' + r.ax.id + ' exceeded its share at ' +
-                     Math.round(widest * 10) / 10 + 'px against ' + Math.round(share * 10) / 10 +
-                     'px; the schema should have sent it to a select.');
+      var wide = p.firstChild.getBoundingClientRect().width;
+      if (wide > room) {
+        console.warn('GbOro.controls: axis ' + r.ax.id + ' exceeded the rail at ' +
+                     Math.round(wide * 10) / 10 + 'px against ' + Math.round(room * 10) / 10 +
+                     'px; the schema should have sent it to a picker.');
       }
     });
     if (p) p.innerHTML = '';
@@ -996,9 +1005,16 @@ window.ORO_AXES = {
 
   /* ---------- the rail ----------
      One pass builds the markup AND the list of rows the painter
-     walks, so a row is never looked up by guessing. The ground is
-     not here: it is drawn on the scene, and it keeps its default
-     and its place in reset() all the same. */
+     walks, so a row is never looked up by guessing.
+
+     gbppl-showcase-tools-1: EVERY CONTROL OF THE CARD IS IN HERE.
+     The component's own axes first, in the canon's order; then the
+     rare ones behind one More; then the group the canon calls Stage,
+     which holds what dresses the showcase rather than the specimen —
+     the ground under the exhibit and the view of the card itself.
+     The ground used to float on the scene and the view used to live
+     in a footer band of its own; Ton read the first as a control
+     loose on the canvas and asked what the second was for. */
   function groupsOf(spec) {
     if (spec.groups) return spec.groups;
     var L = (CANON && CANON.GROUP_LABELS) || {};
@@ -1007,7 +1023,7 @@ window.ORO_AXES = {
       .map(function (g) { return [g, L[g] || g]; });
   }
 
-  function railHTML(spec, rows, plan) {
+  function railHTML(spec, rows, plan, ground) {
     var all = spec.axes;
     var html = '';
     function rowFor(a) {
@@ -1032,7 +1048,19 @@ window.ORO_AXES = {
       html += '<details class="gbdoc-pg__more"><summary>More</summary>' +
               more.map(rowFor).join('') + '</details>';
     }
+    /* THE STAGE GROUP. The view row is not an axis and never enters
+       the state object: it is which of the two faces of the card is
+       showing, so it carries data-pgview and the painter lights it
+       from its own variable. */
+    var stageLabel = ((CANON && CANON.GROUP_LABELS) || {}).ground || 'Stage';
+    html += '<div class="gbdoc-pg__group">' +
+            '<span class="gbdoc-pg__gname">' + esc(stageLabel) + '</span>' +
+            (ground ? rowFor(ground) : '') +
+            '<div class="gbdoc-pg__row">' +
+            segsHTML({ id: 'view', label: 'View', values: VIEWS }, true, 'data-pgview') +
+            '</div></div>';
     html += '<div class="gbdoc-pg__foot">' +
+            (spec.action || '') +
             '<button class="gbdoc-pg__reset" type="button" data-pgreset>Reset</button></div>';
     return html;
   }
@@ -1048,14 +1076,22 @@ window.ORO_AXES = {
     var available = spec.available || function () { return true; };
 
     var rail = root.querySelector('[data-pg-rail]');
-    var viewHost = root.querySelector('[data-pg-view]');
     var scene = root.querySelector('[data-pg-scene]');
     var view_ = root.querySelector('.gbdoc-pg__view');
     var codewrap = root.querySelector('[data-pg-codewrap]');
     var hold = root.querySelector('[data-pg-hold]');
-    var read = root.querySelector('[data-pg-read]');
+    /* gbppl-showcase-tools-1: the measured line left the card when the
+       footer band did, so it is looked for inside the card first — the
+       bench still keeps its own there — and then among the card's
+       following siblings, which is where the engine now writes it. */
+    var read = root.querySelector('[data-pg-read]') || (function () {
+      for (var n = root.nextElementSibling; n; n = n.nextElementSibling) {
+        if (n.matches('[data-pg-read]')) return n;
+        if (n.matches('.gbdoc-pg')) return null;
+      }
+      return null;
+    })();
     var code = root.querySelector('[data-pg-code]');
-    var groundHost = root.querySelector('[data-pg-ground]');
     var rows = [];
     var S = {};
     var view = 'preview';
@@ -1079,7 +1115,9 @@ window.ORO_AXES = {
       if (!force && Math.abs(room - planRoom) < 0.5) return false;
       var next = {};
       var moved = !plan;
-      axes.forEach(function (a) {
+      /* The ground is costed with the rest: it is a row of the rail
+         now, and a row of the rail obeys the same four factors. */
+      axes.concat(ground ? [ground] : []).forEach(function (a) {
         next[a.id] = ruleFor(a, room);
         if (plan && plan[a.id] !== next[a.id]) moved = true;
       });
@@ -1087,18 +1125,11 @@ window.ORO_AXES = {
       if (!moved) return false;
       plan = next;
       rows.length = 0;
-      rail.innerHTML = railHTML(spec, rows, plan);
+      rail.innerHTML = railHTML(spec, rows, plan, ground);
       auditRail(rail, rows, plan, room);
       return true;
     }
     replan(true);
-    if (groundHost && ground) groundHost.innerHTML = toggleHTML(ground, false, '');
-    if (viewHost) {
-      viewHost.innerHTML = VIEWS.map(function (v) {
-        return '<button class="gb-toggle__item" type="button" role="radio" aria-checked="false"' +
-               ' data-pgview="' + v[0] + '">' + v[1] + '</button>';
-      }).join('');
-    }
 
     function labelOf(ax, val) {
       var hit = (ax.values || []).filter(function (v) { return v[0] === val; })[0];
@@ -1138,7 +1169,13 @@ window.ORO_AXES = {
       if (window.GbIcons) window.GbIcons.mount(hold);
       if (spec.after) spec.after(S, hold);
       if (spec.blockClass) hold.classList.toggle(spec.blockClass, !!(spec.block && spec.block(S)));
-      if (view_) view_.classList.toggle('is-dark', S.ground === 'dark');
+      /* THE GROUND DRESSES THE STAGE, AND IN THE CODE VIEW THERE IS
+         NO STAGE (gbppl-showcase-tools-1). A dark column under the
+         code block put a dark code block on a dark field and the
+         markup vanished into it. The choice is remembered — go back
+         to Preview and the stage is dark again — it is simply not
+         spent on a view that has no specimen standing on it. */
+      if (view_) view_.classList.toggle('is-dark', S.ground === 'dark' && view !== 'code');
       if (code) code.textContent = spec.sample(S, true);
 
       if (scene) scene.hidden = view === 'code';
@@ -1162,10 +1199,10 @@ window.ORO_AXES = {
         }
       });
 
-      /* root, not rail: one of these toggles stands on the scene,
-         and the painter walks every axis toggle of the card
-         wherever it is drawn. */
-      Array.prototype.forEach.call(root.querySelectorAll('.gb-toggle__item[data-pgaxis]'), function (c) {
+      /* root, not rail: the card is walked whole, so a page that
+         hangs a control of its own outside the rail is painted with
+         the rest of them. */
+      Array.prototype.forEach.call(root.querySelectorAll('.gbdoc-seg[data-pgaxis]'), function (c) {
         var id = c.getAttribute('data-pgaxis');
         var val = c.getAttribute('data-val');
         var on = S[id] === val;
@@ -1174,27 +1211,25 @@ window.ORO_AXES = {
         c.setAttribute('aria-checked', on ? 'true' : 'false');
         if (ok) c.removeAttribute('disabled'); else c.setAttribute('disabled', '');
       });
-      if (viewHost) {
-        Array.prototype.forEach.call(viewHost.querySelectorAll('[data-pgview]'), function (c) {
-          var on = view === c.getAttribute('data-pgview');
-          c.classList.toggle('is-on', on);
-          c.setAttribute('aria-checked', on ? 'true' : 'false');
-        });
-      }
+      Array.prototype.forEach.call(root.querySelectorAll('.gbdoc-seg[data-pgview]'), function (c) {
+        var on = view === c.getAttribute('data-val');
+        c.classList.toggle('is-on', on);
+        c.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
 
       if (read) read.innerHTML = measured();
     }
 
     root.addEventListener('click', function (e) {
       if (!e.target.closest) return;
-      var chip = e.target.closest('.gb-toggle__item[data-pgaxis]');
+      var chip = e.target.closest('.gbdoc-seg[data-pgaxis]');
       if (chip && !chip.hasAttribute('disabled')) {
         S[chip.getAttribute('data-pgaxis')] = chip.getAttribute('data-val');
         paint();
         return;
       }
-      var v = e.target.closest('[data-pgview]');
-      if (v) { view = v.getAttribute('data-pgview'); paint(); return; }
+      var v = e.target.closest('.gbdoc-seg[data-pgview]');
+      if (v) { view = v.getAttribute('data-val'); paint(); return; }
       if (e.target.closest('[data-pgreset]')) { reset(); paint(); }
     });
     root.addEventListener('change', function (e) {

@@ -332,12 +332,18 @@
      own script and the reader's URL bar can both reach. */
   function pgHTML(pg) {
     var hold = 'gbdoc-hold' + (pg.hold ? ' ' + pg.hold : '');
+    /* gbppl-showcase-tools-1. THE CARD HAS TWO ZONES AND NO THIRD:
+       the canvas and the rail. What used to stand between them is
+       gone — the ground host in the corner of the scene, and the
+       footer band with the Preview | Code switch in it — because
+       every control of the card is a row of the rail now. The two
+       quiet lines the card used to carry inside itself, the page's
+       own foot and the one measured line, stand under it. */
     return '<div class="gbdoc-pg" data-pg="' + esc(pg.name) + '">\n' +
       '<div class="gbdoc-pg__body">\n' +
       '<div class="gbdoc-pg__view">\n' +
       '<div class="gbdoc-pg__scene" data-pg-scene id="pgStage"' +
       (pg.inspect ? ' data-inspect="' + esc(pg.inspect) + '"' : '') + '>\n' +
-      (pg.ground === false ? '' : '<div class="gbdoc-pg__ground" data-pg-ground></div>\n') +
       '<div class="' + hold + '" id="pgHold" data-pg-hold></div>\n' +
       '</div>\n' +
       '<div class="gbdoc-pg__code" data-pg-codewrap hidden>\n' +
@@ -346,16 +352,13 @@
       '<pre><code id="pgCode" data-pg-code></code></pre>\n' +
       '</div>\n</div>\n</div>\n' +
       '<div class="gbdoc-pg__rail" data-pg-rail></div>\n' +
-      '</div>\n' +
+      '</div>\n</div>\n' +
       /* The one line under the card that the page's own script
          writes: which specimen is standing, and why a value is out.
          Icons has one; the pages whose readout is a table beside the
          card do not, and say so in their own words. */
       (pg.foot ? '<p class="gbdoc-foot" id="' + esc(pg.foot) + '"></p>\n' : '') +
-      '<div class="gbdoc-pg__bar">\n' +
-      (pg.action || '') +
-      '<div class="gb-toggle" role="radiogroup" data-gb-toggle="host" aria-label="View" data-pg-view></div>\n' +
-      '</div>\n</div>';
+      '<p class="gbdoc-pg__read" data-pg-read></p>';
   }
 
   function blockHTML(b) {
