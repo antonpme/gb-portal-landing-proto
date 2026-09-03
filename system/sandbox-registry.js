@@ -338,6 +338,44 @@
           tags: ['flow', 'shipping', 'personalization'],
           created: '2026-09-03',
           updated: '2026-09-03'
+        },
+        {
+          id: 'v4',
+          /* Имя по канону 31.08: код версии не имя. Отличие этой
+             комнаты от Live и от трёх соседних — заказ собирается
+             из ПАРТИЙ: сколько коробок, куда и что на них напечатано.
+             Отсюда «Delivery groups». Ключ v4 живёт только в id и в
+             href. */
+          label: 'Delivery groups',
+          /* Тон 03.09, отвергнув режимную логику V3: «ты только
+             добавил аккордеон к тому, что было; нужна универсальная
+             логика, перекрывающая всё». Утверждён план: три
+             прототипа трёх логик команде, эта первая.
+
+             Форма «всего» его же словами: «адресов может быть 5, а
+             подарков 50, распределяются как угодно: по 10 на адрес
+             или 20 на один и 5 на другой»; «получатель может быть
+             тем, под кого персонализация, а может совершенно
+             другим»; «персонализация может быть привязана к
+             адресам, а может не привязана; её может не быть; может
+             быть только гифт-карта; может быть по каждому гифту».
+
+             Новое правило той же волны, шире одной версии: «пока
+             адреса не выбраны, мы не знаем доступные методы» —
+             метод доставки выбирается ПОСЛЕ адреса, у каждой партии
+             своей. Вопрос, действительно ли методы зависят от
+             адреса, уходит Расселу.
+
+             Сценарий Loaded cart — предложение Тона дословно: «50
+             подарков: 20 в офис А с общей открыткой, 5 Марии
+             именных, 25 в офис Б чистых». */
+          desc: 'An order is a list of groups. A group is how many boxes, where they go and who signs for them, how they travel, and one answer about personalization: none, one card and inscription for the whole group, or a line for every box. Two groups may go to the same address, so ten named and ten plain boxes to one office is two groups and not a special case. A group picks its shipping method only after it has an address, and an imported file folds into groups by address and personalization.',
+          status: 'in-progress',
+          href: 'live/checkout.html?v=4',
+          ready: true,
+          tags: ['flow', 'shipping', 'personalization'],
+          created: '2026-09-03',
+          updated: '2026-09-03'
         }
       ]
     },

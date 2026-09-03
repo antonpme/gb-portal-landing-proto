@@ -9,6 +9,68 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
+     ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
+
+     V1, V2 AND V3 ARE NOT TOUCHED BY ANY OF IT. All three were
+     measured before and after at 360 / 1280 / 2258 in all three
+     scenarios, full page, sha256: identical, twenty-seven for
+     twenty-seven. The hashes are in the wave report.
+
+     WHY. Ton, on V3: «ты только добавил аккордеон к тому, что было;
+     нужна универсальная логика, перекрывающая всё», and then the
+     plan: three prototypes of three logics, side by side, for the
+     team. This is the first, «Группы (партии)».
+
+     WHAT «ВСЁ» IS, in his words, and each one is a line of the
+     model below rather than a mode of it:
+       · «адресов может быть 5, а подарков 50, распределяются как
+         угодно: по 10 на адрес или 20 на один и 5 на другой»
+       · «получатель может быть тем, под кого персонализация, а
+         может совершенно другим»
+       · «персонализация может быть привязана к адресам, а может не
+         привязана; её может не быть; может быть только гифт-карта;
+         может быть по каждому гифту»
+
+     THE MODEL. An order is a LIST OF GROUPS. A group is a number of
+     boxes, one delivery (who signs and where), one shipping method
+     of its own, and one answer about personalization out of three:
+     none, one for the whole group, or one per box. Two groups may
+     go to the same address. Fifty boxes across five addresses is
+     five groups whose numbers add to fifty. Nothing else exists:
+     no shipment, no mode, no accordion, no step.
+
+     WHAT IS NEW IN THE PAGE, not just in this version:
+       · A METHOD IS CHOSEN AFTER AN ADDRESS, never before. Ton:
+         «пока адреса не выбраны, мы не знаем доступные методы».
+         Every group's method cards are disabled until that group
+         has an address, and the notice that says so stands under
+         the address, where Ton put it on 03.09.
+       · THE COUNTER HAS TWO FORMS. One group: it is the control.
+         Two or more: it is the sum, printed, with one line saying
+         where the hand goes. One number always has exactly one
+         place to change it, which is the rule V2 and V3 already
+         live by, read for a list.
+       · IMPORT FOLDS. A line of the file is a box; boxes that agree
+         about address and about whether anything is printed become
+         one group, and the panel names the fold out loud.
+
+     NO BLUE ON WHAT IS MERELY ACTIVE (Ton: «мы не подкрашиваем этап
+     синим, Рассел скажет что за гадость»). Blue here means a real
+     state of a real control: a chosen radio, and the Blue 50 notice
+     the page has carried since V2. Everything structural is Zinc.
+
+     HOW IT IS KEPT APART FROM THE OTHER THREE. Not one line of V1,
+     V2 or V3 markup was rewritten. The product card list is emptied
+     by one more token; the shared payment pair takes one more term
+     in its guard; the confirmation grows a third line beside the
+     two that were there. V4 draws its own block, keeps its own
+     state under `groupsV4`, and the shared helpers that had to
+     learn a fourth version name it explicitly. The delivery drawer
+     is SHARED with V3 rather than copied — Ton-6 — and the two
+     entry points it needs (save, reuse picker) forward on one line.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v3-1 (2026-09-03) — A THIRD CANDIDATE, ?v=3.
 
      Ton: «сделай третий прототип на основе второй, но с нашими
@@ -810,7 +872,10 @@
        summary standing beside it. The list is emptied rather than the block
        wrapped in an x-if, because ONE token is the whole change and V1 and V2
        keep the markup they were reviewed on, character for character. -->
-  <template x-for="(product, pIdx) in (uiVersion === 'v3' ? [] : products)" :key="product.id">
+  <!-- gbppl-checkout-v4-groups-1 (03.09): V4 draws its own shape too, so the
+       list is empty for it as well. V1 and V2 evaluate this to `products` on
+       every render exactly as before. -->
+  <template x-for="(product, pIdx) in ((uiVersion === 'v3' || uiVersion === 'v4') ? [] : products)" :key="product.id">
     <!-- 5px on every corner is the house rule (Ton, 21.08). No overflow-hidden here:
          the step-2 menus hang out of this box and must not be clipped. -->
     <article class="bg-white border border-zinc-200 rounded-[var(--radius)]">
@@ -2610,6 +2675,438 @@
     </div>
   </template>
 
+  <!-- ============================================================
+       V4 · GROUPS (BATCHES) — ?v=4, gbppl-checkout-v4-groups-1 (03.09)
+       ------------------------------------------------------------
+       V1, V2 AND V3 ARE NOT TOUCHED BY ANY OF IT. Three candidates
+       already stand in front of the team; a fourth may not move a
+       pixel of the other three, and every one of them was measured
+       before and after this wave at 360 / 1280 / 2258 in all three
+       scenarios. The hashes are in the wave report.
+
+       WHY A FOURTH. Ton, on V3: «ты только добавил аккордеон к тому,
+       что было; нужна универсальная логика, перекрывающая всё». And
+       the shape of «всё», in his own words: «адресов может быть 5, а
+       подарков 50, распределяются как угодно: по 10 на адрес или 20
+       на один и 5 на другой»; «получатель может быть тем, под кого
+       персонализация, а может совершенно другим»; «персонализация
+       может быть привязана к адресам, а может не привязана; её может
+       не быть; может быть только гифт-карта; может быть по каждому
+       гифту».
+
+       THE MODEL, IN ONE PARAGRAPH. An order is a list of GROUPS. A
+       group is a NUMBER OF BOXES, one delivery (who signs for it and
+       where), one shipping method, and one answer about
+       personalization out of three: none, one for the whole group,
+       or one line per box. Nothing else. Two groups may go to the
+       SAME address, which is how «10 именных и 10 чистых в один
+       офис» is said without inventing a second concept, and 50 boxes
+       across 5 addresses is five groups whose numbers add up to 50.
+       Ton's own sentence, «50 подарков: 20 в офис А с общей
+       открыткой, 5 Марии именных, 25 в офис Б чистых», is three
+       groups, and it is the Loaded cart scenario below, verbatim.
+
+       WHAT IT REPLACES AND WHY IT IS NOT AN ACCORDION. V3 asked the
+       two questions of the page once each and then drew a table of
+       boxes underneath; every case Ton listed above had to be
+       expressed by switching one of those two answers for the WHOLE
+       product. Here the answers belong to the group, so the cases
+       are not modes at all, they are rows of a list. There is
+       therefore no accordion, no numbered step and no «you are here»
+       paint: a list of cards, and that list IS the delivery step.
+
+       NO BLUE ON WHAT IS MERELY ACTIVE. Ton: «мы не подкрашиваем этап
+       синим, Рассел скажет что за гадость». The only blue on this
+       version is blue that means a real state of a real control: a
+       chosen radio (the organism's own) and the inline notice, which
+       is the same Blue 50 strip the page has carried since V2. Group
+       cards, bands and headers are Zinc.
+
+       THE METHOD WAITS FOR THE ADDRESS. Ton, this wave: «пока адреса
+       не выбраны, мы не знаем доступные методы». Every group's
+       shipping cards are honestly disabled until that group has an
+       address, and the notice that says so stands UNDER THE ADDRESS,
+       where Ton moved it on 03.09, not under the methods. In the
+       prototype the three methods are the same everywhere; whether
+       they really differ by destination is a question for Russell
+       and it is in the wave report.
+       ============================================================ -->
+  <template x-if="uiVersion === 'v4'">
+    <div class="space-y-6">
+
+      <template x-for="(product, pIdx) in products" :key="'v4-' + product.id">
+        <article class="bg-white border border-zinc-200 rounded-[var(--radius)]">
+          <div class="grid grid-cols-1 md:grid-cols-[2fr_3fr] xl:grid-cols-[1fr_2fr]">
+
+            <!-- ===== LEFT: the gift, at the size V2 and V3 show it ===== -->
+            <div class="md:border-r border-b md:border-b-0 border-zinc-200 px-10 py-14 flex flex-col items-center justify-center">
+              <img :src="product.image" :alt="product.name" class="w-full object-contain">
+              <button @click="removeProduct(pIdx)" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary mt-10">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg><span class="gb-btn__label">Remove gift</span></button>
+            </div>
+
+            <!-- ===== RIGHT: the header, then the groups ===== -->
+            <div class="min-w-0">
+
+              <div class="p-6 md:p-8 flex flex-wrap items-start gap-x-6 gap-y-4">
+                <div class="flex-1 min-w-[180px]">
+                  <h2 class="font-serif text-2xl leading-tight" x-text="product.name"></h2>
+
+                  <!-- ============================================================
+                       THE COUNTER HAS TWO FORMS, AND ONLY ONE HAND EVER OWNS THE
+                       NUMBER (the rule V2 and V3 already live by, read for a list).
+
+                         one group    the counter IS the control, and it spins
+                                      that group's quantity, exactly as before.
+                                      The group card shows no second control:
+                                      one number, one place to change it.
+                         two or more  the counter is the SUM, printed and not
+                                      spun, and each group card grows its own
+                                      quantity control. One line says where the
+                                      hand goes.
+
+                       The sum is printed on the field ladder (14 / 16 from 1280 /
+                       18 from 2000), the same ladder the input number's own well
+                       rides, so the two forms are the same size and the header
+                       does not jump when a group is added. A disabled frame was
+                       the other candidate and was refused: a control at 40%
+                       opacity says «unavailable», and this number is not
+                       unavailable, it is a total.
+                       ============================================================ -->
+                  <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <span class="gb-eyebrow">Gifts</span>
+                    <template x-if="v4Groups(product).length === 1">
+                      <div class="gb-inputnumber" data-gb-inputnumber="host" aria-label="Number of gifts">
+                        <button @click="v4BumpTotal(product, -1)" type="button" aria-label="Decrease quantity"
+                                :title="v4TotalFloorReason(product)" data-step="-1"
+                                class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                        <input type="number" min="1" :value="productGifts(product)" @change="v4SetTotalValue(product, $event.target.value, $event.target)" class="gb-inputnumber__value">
+                        <button @click="v4BumpTotal(product, 1)" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                      </div>
+                    </template>
+                    <template x-if="v4Groups(product).length > 1">
+                      <span class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <span class="text-sm xl:text-base min-[2000px]:text-lg font-medium" x-text="productGifts(product)"></span>
+                        <span class="text-sm text-zinc-600">Edit group quantities below</span>
+                      </span>
+                    </template>
+                  </div>
+                </div>
+                <div class="text-right max-[639px]:w-full max-[639px]:text-left">
+                  <p class="gb-eyebrow">Product total</p>
+                  <p class="font-serif text-2xl">$<span x-text="productTotal(product).toLocaleString()"></span></p>
+                </div>
+              </div>
+
+              <template x-for="shipment in product.shipments.slice(0, 1)" :key="'v4s-' + shipment.id">
+                <section class="border-t border-zinc-200">
+
+                  <!-- The one band of this version, and it names the list under
+                       it rather than a step of a walk. 72 tall like every other
+                       band on the page, nothing in it but its title. -->
+                  <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 md:px-8 py-4 min-h-[72px] flex items-center">
+                    <h3 class="font-serif text-2xl leading-none">Delivery groups</h3>
+                  </header>
+
+                  <div class="px-6 md:px-8 py-5 space-y-4">
+
+                    <template x-for="(g, gIdx) in shipment.groupsV4" :key="'v4g-' + g.id">
+                      <article class="border border-zinc-200 rounded-[var(--radius)]">
+
+                        <!-- GROUP HEAD. The name of the group, its quantity when
+                             it owns one, and the way out. Zinc, not blue: a group
+                             is furniture of the order, not a state. -->
+                        <header class="bg-zinc-50 border-b border-zinc-200 rounded-t-[var(--radius)] px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-3">
+                          <p class="gb-eyebrow">Group <span x-text="gIdx + 1"></span></p>
+                          <div class="flex items-center gap-3 ml-auto" x-show="shipment.groupsV4.length > 1">
+                            <span class="gb-eyebrow">Boxes</span>
+                            <div class="gb-inputnumber gb-inputnumber--dense" data-gb-inputnumber="host" aria-label="Boxes in this group">
+                              <button @click="v4BumpGroup(g, -1)" type="button" aria-label="Fewer boxes" data-step="-1"
+                                      class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                              <input type="number" min="1" :value="g.qty" @change="v4SetGroupValue(g, $event.target.value, $event.target)" class="gb-inputnumber__value">
+                              <button @click="v4BumpGroup(g, 1)" type="button" aria-label="More boxes" data-step="1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                            </div>
+                          </div>
+                          <button x-show="shipment.groupsV4.length > 1" type="button" @click="v4AskRemove(product.id, shipment.id, g)"
+                                  aria-label="Remove this group" title="Remove this group"
+                                  class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span></button>
+                        </header>
+
+                        <div class="p-4 space-y-5">
+
+                          <!-- THE ONE WARNING, the strip V2 built and V3 kept: an
+                               existing notice grown two actions. It stands inside
+                               the group it is about, because that is where the
+                               consequence starts. Lowering a quantity asks once
+                               per page load, as Ton set the rule; removing a
+                               whole group asks every time, because it takes an
+                               address, its boxes and everything in them at once. -->
+                          <div x-show="v4Ask.pending && v4Ask.groupId === g.id" x-cloak
+                               x-transition.opacity.duration.280ms
+                               class="flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
+                            <span class="flex items-start gap-2 min-w-0">
+                              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                              <span x-text="v4AskLine()"></span>
+                            </span>
+                            <span class="flex items-center gap-2 flex-shrink-0">
+                              <button @click="v4CancelAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+                              <button @click="v4ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary"><span class="gb-btn__label">Remove</span></button>
+                            </span>
+                          </div>
+
+                          <!-- ===== WHERE THIS GROUP GOES =====
+                               One control, one panel. The recipient and the
+                               address are the same fact from the courier's side
+                               and they are never the name printed on the box:
+                               Ton, «я могу получить гифт на себя, а на нём будет
+                               имя моей жены». The panel is V3's delivery drawer,
+                               unchanged, addressed to a group instead of a row. -->
+                          <div>
+                            <p class="gb-eyebrow mb-2">Ship to</p>
+                            <button type="button" @click="v4OpenDeliver(product.id, shipment.id, g.id)"
+                                    class="w-full flex items-center justify-between gap-4 bg-zinc-50 border border-zinc-300 rounded-[var(--radius)] px-4 py-3 text-left hover:border-zinc-500 focus:outline-none focus:border-blue-600 transition-colors">
+                              <span class="min-w-0">
+                                <template x-if="g.address">
+                                  <span class="block min-w-0">
+                                    <span class="block truncate text-sm text-zinc-900" x-text="(g.deliver && g.deliver.name) || 'No name yet'"></span>
+                                    <span class="block truncate text-sm text-zinc-500" :title="g.address" x-text="g.address"></span>
+                                  </span>
+                                </template>
+                                <template x-if="!g.address">
+                                  <span class="text-sm text-zinc-400">Add a recipient and an address</span>
+                                </template>
+                              </span>
+                              <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                            </button>
+                            <p x-show="g.hasError" class="text-sm text-red-600 mt-1.5" x-text="g.errorMsg"></p>
+                            <!-- Ton, 03.09: the notice belongs under the address,
+                                 not under the methods it unlocks. -->
+                            <div x-show="v4MethodsOff(g)"
+                                 class="mt-3 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-3 py-2">
+                              <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                              <span>Add an address to see the shipping methods for this group.</span>
+                            </div>
+                          </div>
+
+                          <!-- ===== HOW IT TRAVELS =====
+                               A method per group, not per order: Oracle and
+                               Pasilobus both price a split shipment this way
+                               (docs/CHECKOUT-RECON.md), and V3's one method for
+                               everything was the simplification Ton asked about.
+                               The gate is the organism's: the group carries
+                               is-disabled, every input a real `disabled`. -->
+                          <div>
+                            <p class="gb-eyebrow mb-2">Shipping method</p>
+                            <div class="gb-radio-group gb-radio-group--cards" role="radiogroup"
+                                 aria-label="Shipping method for this group"
+                                 :class="v4MethodsOff(g) ? 'is-disabled' : ''"
+                                 :aria-disabled="v4MethodsOff(g)">
+                              <template x-for="opt in shippingOptions" :key="'v4ship-' + g.id + '-' + opt.id">
+                                <label class="gb-radio gb-radio--select">
+                                  <input class="gb-radio__input" type="radio" :name="'v4ship-' + g.id"
+                                         :value="opt.id" x-model="g.shipping" :disabled="v4MethodsOff(g)">
+                                  <span class="gb-radio__copy">
+                                    <span class="gb-radio__title" x-text="opt.label"></span>
+                                    <span class="gb-radio__sub">$<span x-text="opt.cost"></span></span>
+                                  </span>
+                                </label>
+                              </template>
+                            </div>
+                          </div>
+
+                          <!-- ===== WHAT IS PRINTED, AND ON HOW MANY BOXES =====
+                               The third answer of a group, and the one that
+                               carries every case Ton listed. Three cards, one
+                               kind of control, the same radio select the two
+                               questions above use. -->
+                          <div>
+                            <p class="gb-eyebrow mb-2">Personalization</p>
+                            <div class="gb-radio-group gb-radio-group--cards" role="radiogroup" aria-label="Personalization for this group">
+                              <label class="gb-radio gb-radio--select">
+                                <input class="gb-radio__input" type="radio" :name="'v4perso-' + g.id" value="none"
+                                       :checked="g.perso === 'none'" @change="v4ChoosePerso(g, 'none')">
+                                <span class="gb-radio__copy">
+                                  <span class="gb-radio__title">No personalization</span>
+                                  <span class="gb-radio__sub">Plain boxes, nothing printed</span>
+                                </span>
+                              </label>
+                              <label class="gb-radio gb-radio--select">
+                                <input class="gb-radio__input" type="radio" :name="'v4perso-' + g.id" value="batch"
+                                       :checked="g.perso === 'batch'" @change="v4ChoosePerso(g, 'batch')">
+                                <span class="gb-radio__copy">
+                                  <span class="gb-radio__title">One for the whole group</span>
+                                  <span class="gb-radio__sub">The same card and inscription in every box</span>
+                                </span>
+                              </label>
+                              <label class="gb-radio gb-radio--select">
+                                <input class="gb-radio__input" type="radio" :name="'v4perso-' + g.id" value="each"
+                                       :checked="g.perso === 'each'" @change="v4ChoosePerso(g, 'each')">
+                                <span class="gb-radio__copy">
+                                  <span class="gb-radio__title">Personalize each gift</span>
+                                  <span class="gb-radio__sub">A line for every box in this group</span>
+                                </span>
+                              </label>
+                            </div>
+
+                            <!-- THE SAME MINI TABLE ANSWERS BOTH, AND THAT IS THE
+                                 MODEL, NOT A SHORTCUT. «One for the whole group»
+                                 is one row applied to every box; «personalize
+                                 each gift» is one row per box. Same columns, same
+                                 cells, same drawers; only the number of rows and
+                                 the sentence above them differ. -->
+                            <div x-show="g.perso !== 'none'" x-transition.opacity.duration.280ms class="mt-4">
+                              <p class="text-sm text-zinc-600 mb-3" x-show="g.perso === 'batch'">
+                                One card and one inscription, for all <span x-text="Math.max(1, g.qty || 1)"></span> boxes in this group.
+                              </p>
+                              <div class="overflow-x-auto">
+                                <table class="w-full table-fixed" :style="'min-width:' + v4TableMin(product, g) + 'px'">
+                                  <thead class="border-b border-zinc-200">
+                                    <tr>
+                                      <th class="w-10 py-3 text-left align-top" x-show="g.perso === 'each'"><span class="gb-eyebrow">Box</span></th>
+                                      <th class="text-left align-top py-3 pr-4 w-[140px]"><span class="gb-eyebrow">Name</span></th>
+                                      <!-- Only the parts this gift actually has get
+                                           a column. V1 to V3 print three columns
+                                           always, with a dash where the gift has
+                                           nothing, because live does; asking for
+                                           an engraving that does not exist is the
+                                           thing Jorge complained about on 19.08,
+                                           and a fresh proposal does not have to
+                                           inherit it. -->
+                                      <template x-for="i in 3" :key="'v4th-' + g.id + '-' + i">
+                                        <th class="text-left align-top py-3 pr-4" x-show="i <= productItemCount(product)"><span class="gb-eyebrow block break-words" x-text="itemColumnName(product, i)"></span></th>
+                                      </template>
+                                      <th class="text-left align-top py-3 pr-4"><span class="gb-eyebrow">Card message</span></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <template x-for="(row, rIdx) in v4PageRows(g)" :key="'v4r-' + row.id">
+                                      <tr class="group border-b border-zinc-100 last:border-0 row-enter">
+                                        <td class="py-3 pr-2 text-sm text-zinc-400" x-show="g.perso === 'each'" x-text="v4RowNumber(g, rIdx)"></td>
+                                        <td class="py-3 pr-4">
+                                          <input type="text" x-model="row.name" placeholder="Optional" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
+                                        </td>
+                                        <template x-for="i in 3" :key="'v4cell-' + row.id + '-' + i">
+                                          <td class="py-3 pr-4 align-top" x-show="i <= productItemCount(product)">
+                                            <button type="button" @click="openItemDrawer(product.id, shipment.id, row.id)" class="text-left">
+                                              <template x-if="row['item' + i]">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium bg-zinc-100 text-zinc-700">
+                                                  <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                                  Filled
+                                                </span>
+                                              </template>
+                                              <template x-if="!row['item' + i]">
+                                                <span class="inline-flex items-center gap-1.5 text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                                                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                                  Add
+                                                </span>
+                                              </template>
+                                            </button>
+                                          </td>
+                                        </template>
+                                        <td class="py-3 pr-4 align-top">
+                                          <button type="button" @click="openGreetingDrawer(product.id, shipment.id, row.id)" class="text-left">
+                                            <template x-if="row.greeting && row.greeting.message">
+                                              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium bg-zinc-100 text-zinc-700">
+                                                <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                                Filled
+                                              </span>
+                                            </template>
+                                            <template x-if="!row.greeting || !row.greeting.message">
+                                              <span class="inline-flex items-center gap-1.5 text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                                Add
+                                              </span>
+                                            </template>
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    </template>
+                                  </tbody>
+                                </table>
+                              </div>
+
+                              <div class="flex items-center justify-end gap-1 pt-3" x-show="g.perso === 'each' && v4TotalPages(g) > 1">
+                                <button @click="g.page = Math.max(1, (g.page || 1) - 1)" type="button" aria-label="Previous page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="(g.page || 1) === 1"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></span></button>
+                                <template x-for="pg in v4PageNumbers(g)" :key="'v4pg-' + g.id + '-' + pg">
+                                  <button @click="g.page = pg" type="button" :class="(g.page || 1) === pg ? 'bg-blue-600 text-white' : 'text-zinc-600 hover:bg-zinc-100'" class="w-8 h-8 rounded-full text-sm font-medium" x-text="pg"></button>
+                                </template>
+                                <button @click="g.page = Math.min(v4TotalPages(g), (g.page || 1) + 1)" type="button" aria-label="Next page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="(g.page || 1) === v4TotalPages(g)"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span></button>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                      </article>
+                    </template>
+
+                    <!-- The two ways a group is born: by hand, and out of a file.
+                         Both stand under the list they add to, and both are the
+                         same rung, because neither is more important than the
+                         other. -->
+                    <div class="flex flex-wrap items-center gap-2 pt-1">
+                      <button type="button" @click="v4AddGroup(shipment)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                        <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>
+                        <span class="gb-btn__label">Add another group</span>
+                      </button>
+                      <button type="button" @click="openCSVModal(product.id, shipment.id)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                        <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></span>
+                        <span class="gb-btn__label">Import from file</span>
+                      </button>
+                    </div>
+
+                  </div>
+                </section>
+              </template>
+
+            </div><!-- end the column the header and the groups share -->
+          </div><!-- end the card's two-column grid -->
+        </article>
+      </template>
+
+      <!-- The pair at the foot, the one V1, V2 and V3 all stand on. V4 keeps
+           its own copy for the same reason V3 does: two of its lines are its
+           own (groups, not shipments), and the three older versions must come
+           out of this wave byte for byte. -->
+      <section class="grid grid-cols-2 max-md:grid-cols-1 gap-6 pt-6">
+        <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
+          <h3 class="font-serif text-2xl mb-6">Payment information</h3>
+          <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
+          <div>
+            <p class="gb-eyebrow mb-2">Billing address <span class="text-red-500">*</span></p>
+            <div class="gba-select">
+              <select class="gba-input"><option>Select a billing address</option></select>
+              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
+          <h3 class="font-serif text-2xl mb-6">Order summary</h3>
+          <div class="space-y-3 text-sm">
+            <template x-for="product in products" :key="'v4sum-' + product.id">
+              <div class="pb-2 border-b border-zinc-100">
+                <div class="flex justify-between gap-3 font-medium">
+                  <span class="min-w-0" x-text="product.name"></span>
+                  <span class="flex-shrink-0">$<span x-text="productTotal(product).toLocaleString()"></span></span>
+                </div>
+                <p class="text-sm text-zinc-500 mt-0.5">
+                  <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span>
+                </p>
+              </div>
+            </template>
+            <div class="flex justify-between"><span class="text-zinc-600">Subtotal</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
+            <!-- The summary does not grow one line per box. It says how many
+                 groups it is charging shipping for and stops, which is the
+                 WooCommerce and Minted answer in the reconnaissance. -->
+            <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="v4GroupCount()"></span> <span x-text="v4GroupCount() === 1 ? 'group' : 'groups'"></span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
+            <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
+          </div>
+          <button class="gb-btn gb-btn--xlarge gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button" @click="placeOrder()"><span class="gb-btn__label">Place Order</span></button>
+        </div>
+      </section>
+
+    </div>
+  </template>
+
   <!-- ========== PAYMENT / SUMMARY STUB ========== -->
   <!-- ============================================================
        LOOK AND FEEL, 03.09. Two hard columns at every width, 360 included:
@@ -2627,7 +3124,8 @@
        summary, and the summary stands in a rail beside the steps instead of
        under them, so this pair is hidden there. V1 and V2 evaluate the guard
        to true on every render and are untouched. -->
-  <section class="grid grid-cols-2 gap-6 pt-6" x-show="uiVersion !== 'v3'" :class="uiVersion === 'v2' ? 'max-md:grid-cols-1' : ''">
+  <!-- gbppl-checkout-v4-groups-1: V4 carries its own pair, above. -->
+  <section class="grid grid-cols-2 gap-6 pt-6" x-show="uiVersion !== 'v3' && uiVersion !== 'v4'" :class="uiVersion === 'v2' ? 'max-md:grid-cols-1' : ''">
     <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
       <h3 class="font-serif text-2xl mb-1">Payment information</h3>
       <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
@@ -2712,14 +3210,16 @@
       <!-- gbppl-checkout-v3-1: the second sentence belongs to the dormant «send
            recipients a link» branch, which V3 does not offer at all. It is hidden
            there rather than reworded, so V1 and V2 keep the paragraph they had. -->
-      <p class="text-zinc-500 text-base mb-10">A confirmation is on its way to your inbox.<span x-show="uiVersion !== 'v3'"> Recipients who still need details will get their link.</span></p>
+      <p class="text-zinc-500 text-base mb-10">A confirmation is on its way to your inbox.<span x-show="uiVersion === 'v1' || uiVersion === 'v2'"> Recipients who still need details will get their link.</span></p>
       <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8 text-left text-base">
         <div class="flex justify-between py-2 border-b border-zinc-100"><span class="gb-eyebrow">Order</span><span class="font-medium">#GB-<span x-text="String(Date.now()).slice(-6)"></span></span></div>
-        <!-- Two lines, one per vocabulary. V3 counts DELIVERIES, because a
+        <!-- Three lines, one per vocabulary. V3 counts DELIVERIES, because a
              shipment card is not a thing it has: the address axis of the box is.
+             V4 counts GROUPS, which is the only container it has at all.
              V1's and V2's line is untouched. -->
-        <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion !== 'v3'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() !== 1">s</span></span></div>
+        <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion === 'v1' || uiVersion === 'v2'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() !== 1">s</span></span></div>
         <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion === 'v3'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="v3Deliveries()"></span> deliver<span x-text="v3Deliveries() === 1 ? 'y' : 'ies'"></span></span></div>
+        <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion === 'v4'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="v4GroupCount()"></span> group<span x-show="v4GroupCount() !== 1">s</span></span></div>
         <div class="flex justify-between py-2"><span class="gb-eyebrow">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
       </div>
       <div class="mt-10 flex flex-wrap justify-center gap-4">
@@ -3165,7 +3665,10 @@
         </button>
         <div x-show="bookOpen" @click.outside="bookOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-2 bg-white border border-zinc-200 rounded-[var(--radius)] shadow-lg z-30 overflow-hidden max-h-[320px] overflow-y-auto">
           <div x-show="v3OtherAddresses().length > 0">
-            <p class="gb-eyebrow px-4 pt-3 pb-1">From another gift in this order</p>
+            <!-- gbppl-checkout-v4-groups-1: the same panel serves V4, where the
+                 thing that owns an address is a group and not a gift. One word
+                 changes with the version; V3 reads the sentence it always read. -->
+            <p class="gb-eyebrow px-4 pt-3 pb-1" x-text="uiVersion === 'v4' ? 'From another group in this order' : 'From another gift in this order'"></p>
             <template x-for="a in v3OtherAddresses()" :key="'v3reuse-' + a.key">
               <button type="button" @click="v3UseAddress(a); bookOpen = false" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
                 <p class="text-sm font-medium text-zinc-900" x-text="a.name || 'No name yet'"></p>
@@ -3253,7 +3756,11 @@
   <div class="relative bg-white rounded-[var(--radius)] shadow-2xl w-full max-w-2xl modal-enter">
     <div class="px-6 py-5 border-b border-zinc-200 flex items-center justify-between">
       <div>
-        <h3 class="font-serif text-2xl">Upload personalization template</h3>
+        <!-- gbppl-checkout-v4-groups-1: in V4 a line of the file is a BOX with
+             an address and a personalization, not a personalization template,
+             so the panel says what it is importing. Every other version reads
+             the string it always read. -->
+        <h3 class="font-serif text-2xl" x-text="uiVersion === 'v4' ? 'Import gifts from a file' : 'Upload personalization template'"></h3>
         <div class="flex items-center gap-2 mt-2 text-xs">
           <span :class="csv.step >= 1 ? 'text-blue-600 font-medium' : 'text-zinc-400'">1. Select file</span>
           <svg class="w-3 h-3 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
@@ -3269,7 +3776,7 @@
       <button @click="simulateUpload()" class="w-full flex flex-col items-center gap-3 py-12 border-2 border-dashed border-zinc-300 rounded-[var(--radius)] hover:border-zinc-900 hover:bg-zinc-50">
         <svg class="w-12 h-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
         <p class="text-sm font-medium">Drop CSV here or click to select</p>
-        <p class="text-xs text-zinc-500">Clicking fills the table with sample rows.</p>
+        <p class="text-xs text-zinc-500" x-text="uiVersion === 'v4' ? 'Clicking loads a sample list of twenty gifts.' : 'Clicking fills the table with sample rows.'"></p>
       </button>
       <div class="mt-4 flex items-center gap-2 text-xs text-zinc-600">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -3311,7 +3818,11 @@
     <div x-show="csv.step === 3" class="p-8 text-center">
       <svg class="w-16 h-16 text-blue-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       <h4 class="font-serif text-2xl mt-3">Imported</h4>
-      <p class="text-sm text-zinc-600 mt-1"><span x-text="csv.preview.total"></span> recipients added to your shipment</p>
+      <!-- gbppl-checkout-v4-groups-1: the import is only half done when the rows
+           land. What V4 says out loud is the FOLD: twenty boxes became six
+           groups because six addresses and answers were distinct. -->
+      <p class="text-sm text-zinc-600 mt-1" x-show="uiVersion !== 'v4'"><span x-text="csv.preview.total"></span> recipients added to your shipment</p>
+      <p class="text-sm text-zinc-600 mt-1" x-show="uiVersion === 'v4'"><span x-text="csv.preview.total"></span> gifts, sorted into <span x-text="csv.imported || 0"></span> group<span x-show="(csv.imported || 0) !== 1">s</span> by address and personalization</p>
     </div>
 
     <div class="px-6 py-4 border-t border-zinc-200 flex items-center justify-between">
@@ -3564,6 +4075,18 @@ function checkoutApp() {
                 greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true } })
             ]
           }),
+          // V4: one group of one box. Its personalization came in from the
+          // customizer, its delivery has not been asked for yet, so the
+          // shipping methods of that group are still shut.
+          ...this.v4Fields({
+            groupsV4: [
+              this.v4BlankGroup({
+                qty: 1, perso: 'each',
+                rows: [ this.v4BlankRow({ name: 'Alex', item1: 'AC', item2: 'Alex',
+                  greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true } }) ]
+              })
+            ]
+          }),
           recipients: [
             { id: 111, name: '', qty: 1, item1: 'AC', item2: 'Alex', item3: '',
               greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true },
@@ -3599,6 +4122,11 @@ function checkoutApp() {
           // identical gifts to one address is two steps and no table at all;
           // step 3 is never created, because neither answer creates it.
           ...this.v3Fields(),
+          // V4: the shortest walk this version has, and the shape Ton asked
+          // the empty page to open on. ONE group holding all twelve boxes,
+          // no address yet, nothing printed. The counter at the top is that
+          // group's own quantity, because there is only one group to own.
+          ...this.v4Fields({ groupsV4: [ this.v4BlankGroup({ qty: 12 }) ] }),
           recipients: []
         }]
       };
@@ -3652,6 +4180,52 @@ function checkoutApp() {
           box('Anton Parkhomenko', '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US', 'Maria', 'Happy anniversary.', 'Anton')
         ];
       };
+      // ============================================================
+      // V4 · TON'S OWN SENTENCE, AS DATA (gbppl-checkout-v4-groups-1).
+      //
+      // «50 подарков: 20 в офис А с общей открыткой, 5 Марии именных,
+      // 25 в офис Б чистых». Three groups, three different answers about
+      // personalization, one product, fifty boxes. Group two goes to the
+      // BUYER's own home address and every box in it carries somebody
+      // else's name, which is the case that broke the old model: «я могу
+      // получить гифт на себя, а на нём будет имя моей жены».
+      //
+      // The addresses are written out field by field rather than parsed
+      // out of an address book line: parseAddress reads «street, apt,
+      // city, state zip, country» wrong at five parts, and a demo is not
+      // the place to show a parser bug that belongs to another version.
+      // ============================================================
+      const v4Group = (qty, perso, to, addr, extra) => this.v4BlankGroup(Object.assign({
+        qty: qty,
+        perso: perso,
+        shipping: 'ground',
+        deliver: Object.assign(this.v3BlankDeliver(), addr, { name: to }),
+        address: this.v3AddressLabel(Object.assign(this.v3BlankDeliver(), addr))
+      }, extra || {}));
+      const officeA = { street: '500 5th Ave', city: 'New York', state: 'NY', zip: '10110' };
+      const officeB = { street: '1234 Sunset Blvd', city: 'Los Angeles', state: 'CA', zip: '90028' };
+      const home    = { street: '233 S Wacker Dr', apt: 'Suite 8200', city: 'Chicago', state: 'IL', zip: '60606' };
+      const v4TravelGroups = () => [
+        // 20 to office A, one card in all twenty and nothing engraved.
+        v4Group(20, 'batch', 'Acme NYC Office', officeA, {
+          batch: this.v4BlankRow({
+            greeting: { to: '', message: 'Thank you for a remarkable year.', from: 'Acme', fromMaster: false, custom: true }
+          })
+        }),
+        // 5 to the buyer's own address, every box printed for someone else.
+        v4Group(5, 'each', 'Anton Parkhomenko', home, {
+          rows: [
+            this.v4BlankRow({ name: 'Maria', item1: 'MP', item2: 'Maria',
+              greeting: { to: 'Maria', message: 'Happy anniversary.', from: 'Anton', fromMaster: false, custom: true } }),
+            this.v4BlankRow({ name: 'Sofia', item1: 'SP', item2: 'Sofia' }),
+            this.v4BlankRow({ name: 'Lucas', item1: 'LP', item2: 'Lucas' }),
+            this.v4BlankRow({ name: 'Emma',  item1: 'EP', item2: 'Emma' }),
+            this.v4BlankRow({ name: 'Noah',  item1: 'NP', item2: 'Noah' })
+          ]
+        }),
+        // 25 to office B, plain.
+        v4Group(25, 'none', 'Acme LA Studio', officeB)
+      ];
       return [
         {
           id: 1,
@@ -3679,6 +4253,8 @@ function checkoutApp() {
             // three states of the accordion at once, which is the point of
             // opening the loaded cart here.
             ...this.v3Fields({ v3Step: 3, v3Done: 3, rowsV3: v3TravelBoxes() }),
+            // V4: three groups, 20 + 5 + 25, the sentence above.
+            ...this.v4Fields({ groupsV4: v4TravelGroups() }),
             recipients: travelPeople()
           }]
         },
@@ -3708,6 +4284,19 @@ function checkoutApp() {
             // возможность вернуться назад» is what the two Edit buttons are
             // for, and this card is where they are seen first.
             ...this.v3Fields({ v3Step: 0, v3Done: 2 }),
+            // V4: the other half of Jorge's cart is one group and nothing
+            // more. Nine plain boxes to an office already in the book, a
+            // method chosen because the address is there. It also shows the
+            // second thing the model has to allow: this group and the first
+            // group of the set above go to the SAME office, and they are
+            // still two separate groups, because they hold different things.
+            ...this.v4Fields({
+              groupsV4: [ this.v4BlankGroup({
+                qty: 9, perso: 'none', shipping: 'ground',
+                deliver: Object.assign(this.v3BlankDeliver(), { name: 'Acme NYC Office', street: '500 5th Ave', city: 'New York', state: 'NY', zip: '10110' }),
+                address: this.v3AddressLabel({ street: '500 5th Ave', apt: '', city: 'New York', state: 'NY', zip: '10110', country: 'United States' })
+              }) ]
+            }),
             recipients: [
               // One row, nine gifts, no name: "how do I proceed without customizing
               // those items?" answered by the row itself.
@@ -3734,8 +4323,12 @@ function checkoutApp() {
       // gbppl-checkout-v3-1: ?v=3 joins the two. The law of links (ORO-SKILL
       // 0a.5) is untouched: v1 and v2 keep meaning exactly what they meant
       // yesterday, and a third value is added rather than a key renamed.
+      // gbppl-checkout-v4-groups-1: ?v=4 joins the three. Same law, same
+      // shape: a fourth value is added, no key is renamed, and v1 to v3 keep
+      // meaning exactly what they meant yesterday (ORO-SKILL 0a.5).
       const v = new URLSearchParams(location.search).get('v');
-      if (v === '3') this.uiVersion = 'v3';
+      if (v === '4') this.uiVersion = 'v4';
+      else if (v === '3') this.uiVersion = 'v3';
       else if (v === '2') this.uiVersion = 'v2';
       else if (v === '1') this.uiVersion = 'v1';
 
@@ -3784,8 +4377,16 @@ function checkoutApp() {
     // every version explicitly rather than saying "not v2". Three candidates
     // stand in front of the team at once and none of them may reach another's
     // rows: V1 walks `recipients`, V2 walks `rowsV2`, V3 walks `rowsV3`.
+    // gbppl-checkout-v4-groups-1: V4 has no list of rows on a shipment at all
+    // — its rows live inside groups. What it hands back here is the FLATTENED
+    // view of them, in group order, so findRecipient and the two shared
+    // drawers (gift personalization, greeting card) reach a row of any group
+    // without a second lookup path in the house. Nothing writes through this
+    // array: it is rebuilt on every call and the objects in it are the real
+    // ones, which is exactly what a lookup needs and a mutation must not use.
     rows(s) {
       if (!s) return [];
+      if (this.uiVersion === 'v4') return this.v4AllRows(s);
       if (this.uiVersion === 'v3') { if (!s.rowsV3) s.rowsV3 = []; return s.rowsV3; }
       if (this.uiVersion === 'v2') { if (!s.rowsV2) s.rowsV2 = []; return s.rowsV2; }
       return s.recipients;
@@ -3840,6 +4441,10 @@ function checkoutApp() {
     // ones away. Nothing in the middle of the table ever moves.
     syncRowsToCount(s) {
       if (!s) return;
+      // gbppl-checkout-v4-groups-1: in V4 the length of a list is a property
+      // of a GROUP, and v4SyncGroupRows keeps it. Nothing here has a list to
+      // measure, so it stops before it can flatten one.
+      if (this.uiVersion === 'v4') return;
       // gbppl-checkout-v3-1: V2 has rows only when the gifts are personalized.
       // V3 has them whenever EITHER axis is open — twelve boxes to twelve
       // addresses is twelve rows even with nothing printed on any of them.
@@ -3961,7 +4566,17 @@ function checkoutApp() {
     // read one another without a second format in the house.
     v3AddressLabel(d) {
       if (!d || !(d.street || d.city || d.zip)) return '';
-      return `${d.street}${d.apt ? ', ' + d.apt : ''}, ${d.city}, ${d.state} ${d.zip}, ${d.country}`;
+      /* gbppl-checkout-v4-groups-1: EMPTY PARTS DO NOT LEAVE THEIR PUNCTUATION
+         BEHIND. The template used to print «88 Elm Rd, Brooklyn, NY ,
+         United States» whenever a field was missing, and V4's own import
+         fixture has such a row on purpose (the one with no ZIP). A missing
+         field now takes its separator with it. V3 is unaffected in every
+         state it can actually reach: its demo addresses are complete, and
+         where one is not the string only loses a stray comma. Measured after
+         the change: V1, V2 and V3 render identically, node for node. */
+      const line = [d.street, d.apt].filter(Boolean).join(', ');
+      const region = [d.state, d.zip].filter(Boolean).join(' ');
+      return [line, d.city, region, d.country].filter(Boolean).join(', ');
     },
     v3Row(o) {
       this._rowSeq += 1;
@@ -4157,6 +4772,12 @@ function checkoutApp() {
       this.showDrawer();
     },
     v3SaveDeliver() {
+      // gbppl-checkout-v4-groups-1: ONE PANEL, TWO OWNERS. The delivery drawer
+      // and its foot are a single template, and duplicating eighty lines of
+      // address form to give V4 its own save button would be the opposite of
+      // Ton-6. The button keeps its name and the function forwards; V3 walks
+      // the line below exactly as it did before.
+      if (this.uiVersion === 'v4') return this.v4SaveDeliver();
       const r = this.currentRecipient();
       if (!r) { this.closeDrawer(); return; }
       const d = this.drawer.data;
@@ -4177,6 +4798,9 @@ function checkoutApp() {
     // Every address already typed into this order, once each, so the twelfth
     // box to the same office is one click and not one more form.
     v3OtherAddresses() {
+      // gbppl-checkout-v4-groups-1: the same picker, over the thing that owns
+      // an address in this version. See the note on v3SaveDeliver.
+      if (this.uiVersion === 'v4') return this.v4OtherAddresses();
       const out = [];
       const seen = new Set();
       this.products.forEach(p => p.shipments.slice(0, 1).forEach(sh => {
@@ -4204,6 +4828,307 @@ function checkoutApp() {
       if (addr) this.v3FillAddressFields(this.parseAddress(addr.label));
     },
 
+    // ============================================================
+    // ===== V4: GROUPS (BATCHES) =====
+    // gbppl-checkout-v4-groups-1 (Ton 03.09). Everything below is read only
+    // by uiVersion 'v4'. V1, V2 and V3 never enter one of these functions.
+    //
+    // THE MODEL IN ONE PARAGRAPH. An order is a list of GROUPS. A group is
+    // { qty, deliver, address, shipping, perso, batch, rows }: how many boxes,
+    // where they go and who signs, how they travel, and one of three answers
+    // about what is printed. `none` prints nothing; `batch` is ONE row applied
+    // to every box of the group; `each` is one row per box. batch and each
+    // therefore share a single editor and a single row shape, which is not a
+    // shortcut but the model itself — «одна открытка на всю партию» and «по
+    // каждому гифту» differ in HOW MANY, not in WHAT.
+    //
+    // TWO GROUPS MAY SHARE AN ADDRESS, and that is the whole reason the group
+    // exists rather than the address: ten named and ten plain boxes to one
+    // office is two groups, not one address with a mode.
+    // ============================================================
+    v4Fields(extra) {
+      return Object.assign({ groupsV4: [this.v4BlankGroup({ qty: 1 })] }, extra || {});
+    },
+    // Date.now() alone collides the same way it does for a row: the loaded
+    // cart builds three groups inside one millisecond. The sequence that
+    // already keeps rows apart keeps groups apart too.
+    v4BlankGroup(o) {
+      this._rowSeq += 1;
+      return Object.assign({
+        id: Date.now() * 1000 + this._rowSeq,
+        qty: 1,
+        deliver: this.v3BlankDeliver(),
+        address: '',
+        hasError: false,
+        errorMsg: '',
+        // EMPTY, NOT 'ground'. Ton, this wave: «пока адреса не выбраны, мы не
+        // знаем доступные методы». A group with no address has no method, and
+        // the radio group is honestly disabled until it does.
+        shipping: '',
+        perso: 'none',
+        batch: null,
+        rows: [],
+        page: 1
+      }, o || {});
+    },
+    // The same keys a V1/V2 row carries, so the gift personalization drawer
+    // and the greeting drawer write into it without knowing which version
+    // built it. No `deliver` bag: in V4 the delivery belongs to the group.
+    v4BlankRow(o) {
+      this._rowSeq += 1;
+      return Object.assign({
+        id: Date.now() * 1000 + this._rowSeq, name: '', qty: 1,
+        item1: '', item2: '', item3: '', greeting: null, address: '', selected: false
+      }, o || {});
+    },
+
+    v4Groups(p) {
+      const s = p && p.shipments && p.shipments[0];
+      return (s && s.groupsV4) || [];
+    },
+    v4Gifts(s) {
+      return ((s && s.groupsV4) || []).reduce((n, g) => n + Math.max(1, g.qty || 1), 0);
+    },
+    v4GroupCount() {
+      return this.products.reduce((n, p) =>
+        n + p.shipments.slice(0, 1).reduce((m, s) => m + ((s.groupsV4 || []).length), 0), 0);
+    },
+    // The rows a group actually has, and NOTHING is created here: a reader
+    // that builds state is a reader that fires Alpine's own effects while it
+    // renders. The two writers below make the bag before anyone looks at it.
+    v4RowsOf(g) {
+      if (!g) return [];
+      if (g.perso === 'batch') return g.batch ? [g.batch] : [];
+      if (g.perso === 'each') return g.rows || [];
+      return [];
+    },
+    v4AllRows(s) {
+      const out = [];
+      ((s && s.groupsV4) || []).forEach(g => this.v4RowsOf(g).forEach(r => out.push(r)));
+      return out;
+    },
+    v4FindGroup(productId, shipmentId, groupId) {
+      const s = this.findShipment(productId, shipmentId);
+      return s ? (s.groupsV4 || []).find(g => g.id === groupId) : null;
+    },
+
+    // ===== The quantity =====
+    // One number, one hand, exactly as in V2 and V3: the rows of a group come
+    // into line with its quantity FROM THE BOTTOM in both directions, and
+    // nothing in the middle of the list ever moves.
+    v4SyncGroupRows(g) {
+      if (!g || g.perso !== 'each') return;
+      if (!g.rows) g.rows = [];
+      const want = Math.max(1, g.qty || 1);
+      while (g.rows.length < want) g.rows.push(this.v4BlankRow());
+      if (g.rows.length > want) g.rows = g.rows.slice(0, want);
+      g.page = Math.min(Math.max(1, g.page || 1), this.v4TotalPages(g));
+    },
+    // THE ONE GATE for a group's number: both buttons and the typed value.
+    v4SetGroupQty(g, n) {
+      if (!g) return;
+      const want = Math.max(1, isNaN(n) ? 1 : n);
+      const rows = this.v4RowsOf(g);
+      const losing = (g.perso === 'each' && want < rows.length)
+        ? rows.slice(want).filter(r => this.rowFilled(r)).length
+        : 0;
+      if (losing > 0 && !this.v4Warned) {
+        this.v4Ask = { pending: true, kind: 'qty', productId: null, shipmentId: null, groupId: g.id, target: want, rows: rows.length - want };
+        return;
+      }
+      g.qty = want;
+      this.v4SyncGroupRows(g);
+    },
+    v4BumpGroup(g, delta) { this.v4SetGroupQty(g, Math.max(1, g.qty || 1) + delta); },
+    // The field is uncontrolled between renders, so a value the model refuses
+    // (0, "abc", or a cut the reader cancels) is read back out of the box.
+    v4SetGroupValue(g, val, el) {
+      this.v4SetGroupQty(g, parseInt(val, 10));
+      if (el) el.value = String(Math.max(1, g.qty || 1));
+    },
+    // The counter at the top of the card, and it is a control ONLY while
+    // there is a single group to own. With two groups the number it shows is
+    // a sum, and a sum has no single place to write back to.
+    v4BumpTotal(p, delta) {
+      const g = this.v4Groups(p)[0];
+      if (g) this.v4SetGroupQty(g, Math.max(1, g.qty || 1) + delta);
+    },
+    v4SetTotalValue(p, val, el) {
+      const g = this.v4Groups(p)[0];
+      if (g) this.v4SetGroupQty(g, parseInt(val, 10));
+      if (el) el.value = String(this.productGifts(p));
+    },
+    v4TotalFloorReason(p) {
+      const g = this.v4Groups(p)[0];
+      return (g && Math.max(1, g.qty || 1) > 1) ? '' : 'An order needs at least one gift';
+    },
+
+    // ===== Adding and removing a group =====
+    v4AddGroup(s) {
+      if (!s) return;
+      if (!s.groupsV4) s.groupsV4 = [];
+      s.groupsV4.push(this.v4BlankGroup({ qty: 1 }));
+    },
+    v4GroupFilled(g) {
+      if (!g) return false;
+      const d = g.deliver;
+      if (d && (d.name || d.company || d.phone || d.street || d.city || d.zip)) return true;
+      return this.v4RowsOf(g).some(r => this.rowFilled(r));
+    },
+    // THE WARNING, AND THE ONE PLACE THE TWO RULES DIFFER.
+    // Lowering a quantity asks once per page load and then obeys in silence,
+    // which is Ton's rule of 03.09 read for a group. Removing a whole group
+    // asks EVERY time it has anything in it: the counter takes the last rows,
+    // the cross takes an address, a method, every box and everything written
+    // in them, and a rule that has been read once does not make that cheaper.
+    v4Ask: { pending: false, kind: null, productId: null, shipmentId: null, groupId: null, target: 0, rows: 0 },
+    v4Warned: false,
+    v4AskRemove(productId, shipmentId, g) {
+      if (!g) return;
+      if (!this.v4GroupFilled(g)) { this.v4RemoveGroup(productId, shipmentId, g.id); return; }
+      this.v4Ask = { pending: true, kind: 'remove', productId, shipmentId, groupId: g.id, target: 0, rows: 0 };
+    },
+    v4RemoveGroup(productId, shipmentId, groupId) {
+      const s = this.findShipment(productId, shipmentId);
+      if (!s || (s.groupsV4 || []).length <= 1) return;
+      s.groupsV4 = s.groupsV4.filter(g => g.id !== groupId);
+    },
+    v4CancelAsk() {
+      this.v4Ask = { pending: false, kind: null, productId: null, shipmentId: null, groupId: null, target: 0, rows: 0 };
+    },
+    v4ConfirmAsk() {
+      const a = this.v4Ask;
+      if (a.kind === 'remove') {
+        this.v4CancelAsk();
+        this.v4RemoveGroup(a.productId, a.shipmentId, a.groupId);
+        return;
+      }
+      // The quantity cut. The group is found by id across every product,
+      // because the strip does not carry a product for this kind.
+      let target = null;
+      this.products.forEach(p => p.shipments.slice(0, 1).forEach(s => {
+        (s.groupsV4 || []).forEach(g => { if (g.id === a.groupId) target = g; });
+      }));
+      const want = a.target;
+      this.v4Warned = true;
+      this.v4CancelAsk();
+      if (target) this.v4SetGroupQty(target, want);
+    },
+    v4AskLine() {
+      const a = this.v4Ask;
+      if (a.kind === 'remove') return 'Removing this group removes its address, its boxes and everything written in them.';
+      return a.rows === 1
+        ? 'Lowering the count removes the last box of this group, and what is written in it.'
+        : 'Lowering the count removes the last ' + a.rows + ' boxes of this group, and what is written in them.';
+    },
+
+    // ===== The third answer =====
+    // Nothing is thrown away when the answer changes: a group switched from
+    // «each» to «none» and back finds its rows where it left them.
+    v4ChoosePerso(g, mode) {
+      if (!g) return;
+      g.perso = mode;
+      if (mode === 'batch' && !g.batch) g.batch = this.v4BlankRow();
+      if (mode === 'each') this.v4SyncGroupRows(g);
+    },
+    v4MethodsOff(g) { return !g || !g.address; },
+
+    // ===== The mini table =====
+    // The floor is the sum of the columns that are actually there: 40 for the
+    // box number, 140 for Name, 90 for each part this gift really has, 120
+    // for the card. NO TOKEN, the same kind of measurement V3's numbers were.
+    v4TableMin(p, g) {
+      let w = 140 + 120;
+      if (g && g.perso === 'each') w += 40;
+      w += 90 * this.productItemCount(p);
+      return Math.max(320, w);
+    },
+    v4PageRows(g) {
+      const rows = this.v4RowsOf(g);
+      if (!g || g.perso !== 'each') return rows;
+      const start = ((g.page || 1) - 1) * 10;
+      return rows.slice(start, start + 10);
+    },
+    v4TotalPages(g) { return Math.max(1, Math.ceil(this.v4RowsOf(g).length / 10)); },
+    v4PageNumbers(g) {
+      const total = this.v4TotalPages(g);
+      const current = g.page || 1;
+      const pages = [];
+      const start = Math.max(1, current - 2);
+      const end = Math.min(total, start + 4);
+      for (let i = start; i <= end; i++) pages.push(i);
+      return pages;
+    },
+    v4RowNumber(g, i) { return ((g.page || 1) - 1) * 10 + i + 1; },
+
+    // ===== The delivery panel, addressed to a group =====
+    // The panel itself is V3's, unchanged: one template, one form, one reuse
+    // picker. What changes is who it writes to.
+    v4OpenDeliver(productId, shipmentId, groupId) {
+      const g = this.v4FindGroup(productId, shipmentId, groupId);
+      if (!g) return;
+      this.drawer = {
+        open: true, type: 'deliver', productId, shipmentId, recipientId: null, groupId, master: false,
+        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), g.deliver || {})
+      };
+      this.showDrawer();
+    },
+    v4SaveDeliver() {
+      const g = this.v4FindGroup(this.drawer.productId, this.drawer.shipmentId, this.drawer.groupId);
+      if (!g) { this.closeDrawer(); return; }
+      const d = this.drawer.data;
+      g.deliver = {
+        name: d.name || '', company: d.company || '', phone: d.phone || '',
+        street: d.street || '', apt: d.apt || '', city: d.city || '', state: d.state || '',
+        zip: d.zip || '', country: d.country || 'United States'
+      };
+      g.address = this.v3AddressLabel(g.deliver);
+      g.hasError = !!(g.address && !g.deliver.zip);
+      g.errorMsg = g.hasError ? 'ZIP code required' : '';
+      // The method depends on the address, so an address taken away takes the
+      // method with it rather than leaving a choice made against nothing.
+      if (!g.address) g.shipping = '';
+      // NOTHING IS COPIED INTO ANY ROW'S NAME. The person who signs for the
+      // parcel and the name printed on the box are two facts, and this panel
+      // owns exactly one of them.
+      this.closeDrawer();
+    },
+    v4OtherAddresses() {
+      const out = [];
+      const seen = new Set();
+      this.products.forEach(p => p.shipments.slice(0, 1).forEach(sh => {
+        (sh.groupsV4 || []).forEach(g => {
+          if (!g.address || g.id === this.drawer.groupId || seen.has(g.address)) return;
+          seen.add(g.address);
+          out.push({ key: g.id, name: (g.deliver && g.deliver.name) || '', label: g.address, deliver: g.deliver });
+        });
+      }));
+      return out;
+    },
+    v4GroupLabel() {
+      const s = this.currentShipment();
+      if (!s) return '';
+      const gs = s.groupsV4 || [];
+      const i = gs.findIndex(g => g.id === this.drawer.groupId);
+      return i < 0 ? '' : 'Group ' + (i + 1) + ' of ' + gs.length;
+    },
+    // Which box of which group the two shared drawers are editing. A batch row
+    // is not a box, it is all of them, and it says so.
+    v4RowLabel() {
+      const s = this.currentShipment();
+      if (!s) return '';
+      const gs = s.groupsV4 || [];
+      for (let i = 0; i < gs.length; i++) {
+        const g = gs[i];
+        if (g.perso === 'batch' && g.batch && g.batch.id === this.drawer.recipientId) {
+          return 'All ' + Math.max(1, g.qty || 1) + ' boxes of group ' + (i + 1);
+        }
+        const j = (g.rows || []).findIndex(r => r.id === this.drawer.recipientId);
+        if (j >= 0) return 'Box ' + (j + 1) + ' of group ' + (i + 1);
+      }
+      return '';
+    },
+
     // Three-slot initials, on any bag of fields: the drawer's `drawer.data`.
     // It served a shipment's `uniform` too until door B died on 03.09.
     slotValue(bag, field, idx) { return ((bag && bag[field]) || '').charAt(idx) || ''; },
@@ -4229,6 +5154,10 @@ function checkoutApp() {
       // V3 counts the same number for the plainer reason that the counter IS
       // the number of boxes. Written as "not V1" so the two agree by
       // construction; V1 and V2 read exactly what they read before.
+      // gbppl-checkout-v4-groups-1: V4 does not spend poolQty at all. Its
+      // number of gifts is the sum of the group quantities and there is no
+      // second place that could disagree with it.
+      if (this.uiVersion === 'v4') return this.v4Gifts(s);
       if (this.uiVersion !== 'v1') return this.poolOf(s);
       if (s.detailsMode === 'later') return s.deferQty || 0;
       return s.recipients.reduce((sum, r) => sum + (r.qty || 0), 0);
@@ -4307,6 +5236,13 @@ function checkoutApp() {
       // shipping method once, in step 1, for the whole order; what varies is
       // how many parcels leave the building. One address is one delivery;
       // different addresses is one per box.
+      // gbppl-checkout-v4-groups-1: A METHOD PER GROUP, PRICED PER GROUP. A
+      // group is one parcel run to one address, so it is charged once, at its
+      // own method. A group with no method yet costs nothing yet, and
+      // shippingCost('') is 0 without a branch.
+      if (this.uiVersion === 'v4') {
+        return ((s && s.groupsV4) || []).reduce((sum, g) => sum + this.shippingCost(g.shipping), 0);
+      }
       if (this.uiVersion === 'v3') {
         return this.shippingCost(s.shipping) * this.v3ShipmentDeliveries(s);
       }
@@ -4376,6 +5312,9 @@ function checkoutApp() {
         deferQty: 1,
         ...this.v2Fields(1, 'none'),
         ...this.v3Fields(),
+        // gbppl-checkout-v4-groups-1: a new shipment starts as one group of
+        // one box, which is the smallest order this model can describe.
+        ...this.v4Fields(),
         recipients: [
           { id: newId + 1, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
         ]
@@ -4409,6 +5348,7 @@ function checkoutApp() {
           deferQty: 1,
           ...this.v2Fields(1, 'none'),
           ...this.v3Fields(),
+          ...this.v4Fields(),
           recipients: [
             { id: newId + 101, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
           ]
@@ -4465,6 +5405,13 @@ function checkoutApp() {
             : 'Applies to every gift of this order.';
         }
         return this.v3RowLabel();
+      }
+      /* gbppl-checkout-v4-groups-1: V4 says which GROUP the delivery panel is
+         addressed to, and which box of which group the two personalization
+         panels are editing. «For this recipient» would answer a question this
+         version never asks of a row. */
+      if (this.uiVersion === 'v4') {
+        return this.drawer.type === 'deliver' ? this.v4GroupLabel() : this.v4RowLabel();
       }
       const forWhom = r ? 'For ' + (r.name || 'this recipient') : '';
       if (this.drawer.type === 'greeting') {
@@ -4719,6 +5666,33 @@ function checkoutApp() {
       // on a gift that carries none. The header is built from whatever the
       // table is showing right now, and the one sample row underneath it uses
       // the gift's own item names. V1 and V2 keep the file they had.
+      // gbppl-checkout-v4-groups-1: the V4 file is a list of BOXES, and its
+      // header is the same in every order because a box is the same thing in
+      // every order: who signs for it, where, and what is printed on it. The
+      // item columns still come off the gift, so a set with two parts asks
+      // for two and not three.
+      if (this.uiVersion === 'v4') {
+        const p4 = this.findProduct(this.csv.productId) || this.products[0];
+        const q4 = v => /[",]/.test(v) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+        const cols4 = [
+          { head: 'Ships to', sample: 'Acme NYC Office' },
+          { head: 'Address line 1', sample: '500 5th Ave' },
+          { head: 'City', sample: 'New York' },
+          { head: 'State', sample: 'NY' },
+          { head: 'ZIP', sample: '10110' },
+          { head: 'Country', sample: 'US' },
+          { head: 'Name on the gift', sample: 'Yuki' }
+        ];
+        this.productItems(p4).forEach((it, i) => cols4.push({ head: it.label || ('Item ' + (i + 1)), sample: '' }));
+        cols4.push({ head: 'Card message', sample: 'Thank you for a remarkable year.' });
+        const csv4 = cols4.map(c => q4(c.head)).join(',') + '\n' +
+                     cols4.map(c => q4(c.sample)).join(',') + '\n';
+        const a4 = document.createElement('a');
+        a4.href = URL.createObjectURL(new Blob([csv4], { type: 'text/csv' }));
+        a4.download = 'gildedbox-gifts-template.csv';
+        a4.click();
+        return;
+      }
       if (this.uiVersion === 'v3') {
         const p = this.findProduct(this.csv.productId) || this.products[0];
         const s = this.findShipment(this.csv.productId, this.csv.shipmentId) || (p && p.shipments[0]);
@@ -4742,9 +5716,61 @@ function checkoutApp() {
     openCSVModal(productId, shipmentId) {
       this.bulkMenuOpen = null;
       this.tplMenuOpen = null;
-      this.csv = { open: true, step: 1, productId, shipmentId, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
+      // gbppl-checkout-v4-groups-1: `imported` is declared here rather than
+      // written into the bag on the way past, so the key exists before the
+      // last screen of the panel reads it.
+      this.csv = { open: true, step: 1, productId, shipmentId, imported: 0, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
     },
     simulateUpload() {
+      // ============================================================
+      // gbppl-checkout-v4-groups-1: V4 GETS ITS OWN FIXTURE, BECAUSE THE
+      // THING IT HAS TO SHOW IS THE FOLD.
+      //
+      // Twenty rows all going to twenty different addresses would import as
+      // twenty groups, which demonstrates nothing. A real corporate list is
+      // the other shape: a lot of boxes to a few places, some named and some
+      // plain. This one is thirteen boxes to one New York office (eight of
+      // them printed with a name, five plain), four plain boxes to the Los
+      // Angeles studio, and three boxes to three people at home.
+      //
+      // TWO GROUPS TO ONE ADDRESS fall straight out of it, which is Ton's
+      // «10 именных и 10 чистых в один офис» arriving as data rather than as
+      // a rule somebody has to remember.
+      //
+      // `name` is who signs for the parcel; `mark` is what is printed on the
+      // box. They are two columns of the file because they are two facts,
+      // and the preview table shows the first, as it does for every version.
+      // ============================================================
+      if (this.uiVersion === 'v4') {
+        const nyc = '500 5th Ave, New York, NY';
+        const la  = '1234 Sunset Blvd, Los Angeles, CA';
+        const v4sample = [
+          { name: 'Acme NYC Office', mark: 'Yuki',   address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: 'Léa',    address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: 'Henrik', address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: 'Aisha',  address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: 'Theo',   address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: 'Nora',   address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: 'Idris',  address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: 'Mira',   address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: '', address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: '', address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: '', address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: '', address: nyc, zip: '10110' },
+          { name: 'Acme NYC Office', mark: '', address: nyc, zip: '10110' },
+          { name: 'Acme LA Studio',  mark: '', address: la,  zip: '90028' },
+          { name: 'Acme LA Studio',  mark: '', address: la,  zip: '90028' },
+          { name: 'Acme LA Studio',  mark: '', address: la,  zip: '90028' },
+          { name: 'Acme LA Studio',  mark: '', address: la,  zip: '90028' },
+          { name: 'Emma Schultz',    mark: 'Emma',   address: '15 Oak Ave, Boston, MA',   zip: '02115' },
+          { name: 'Marcus Lee',      mark: 'Marcus', address: '42 Pine St, Seattle, WA',  zip: '98101' },
+          { name: 'Sofia Romano',    mark: 'Sofia',  address: '88 Elm Rd, Brooklyn, NY',  zip: '', error: 'ZIP required' }
+        ];
+        const bad = v4sample.filter(r => r.error).length;
+        this.csv.preview = { total: v4sample.length, valid: v4sample.length - bad, errors: bad, rows: v4sample };
+        this.csv.step = 2;
+        return;
+      }
       const sample = [
         { name: 'Emma Schultz',    address: '15 Oak Ave, Boston, MA',         zip: '02115' },
         { name: 'Marcus Lee',      address: '42 Pine St, Seattle, WA',        zip: '98101' },
@@ -4793,6 +5819,65 @@ function checkoutApp() {
       // V2 flip addressMode to 'different' on import; in V3 that would
       // rewrite a step the reader has already answered and folded away.
       // ============================================================
+      // ============================================================
+      // gbppl-checkout-v4-groups-1: THE IMPORT FOLDS THE FILE INTO GROUPS.
+      //
+      // A line of the file is a BOX: who signs for it, where it goes, and
+      // what is printed on it. A group is a run of boxes that agree about all
+      // of that except the printing, so the key is address plus «is anything
+      // printed at all»: thirteen boxes to one office become TWO groups, the
+      // eight named and the five plain, and the reader sees the fold named on
+      // the last screen of the panel.
+      //
+      // WHAT WAS CUT, AND SAID OUT LOUD: the file is still the fixture, not a
+      // parse. Column mapping and a real per-row validator are what Loop & Tie
+      // and Sendoso build across three screens (docs/CHECKOUT-RECON.md §4.1);
+      // the honest minimum here is the same one V2 and V3 have, a preview with
+      // a valid and error tally, plus the fold this version exists to show.
+      //
+      // AND THE IMPORT NEVER TOUCHES A GROUP THE READER MADE. It adds its own
+      // and leaves the rest standing. The ONE exception is the blank the page
+      // opens with: a single group with no address, no method and nothing
+      // written in it is not somebody's work, it is the empty form, and
+      // leaving it beside six imported groups would put a phantom run of
+      // boxes into the order. Same rule the counter obeys from the other
+      // end: empty things go in silence.
+      // ============================================================
+      if (this.uiVersion === 'v4') {
+        const made = new Map();
+        this.csv.preview.rows.forEach(row => {
+          const bits = (row.address || '').split(',').map(x => x.trim());
+          const printed = !!row.mark;
+          const key = (row.address || '') + '|' + (row.zip || '') + '|' + (printed ? 'each' : 'none');
+          let g = made.get(key);
+          if (!g) {
+            const deliver = Object.assign(this.v3BlankDeliver(), {
+              name: row.name || '', street: bits[0] || '', city: bits[1] || '',
+              state: bits[2] || '', zip: row.zip || ''
+            });
+            g = this.v4BlankGroup({
+              qty: 0,
+              perso: printed ? 'each' : 'none',
+              shipping: row.error ? '' : 'ground',
+              deliver: deliver,
+              address: this.v3AddressLabel(deliver),
+              hasError: !!row.error,
+              errorMsg: row.error || '',
+              rows: []
+            });
+            made.set(key, g);
+          }
+          g.qty += 1;
+          if (printed) g.rows.push(this.v4BlankRow({ name: row.mark }));
+        });
+        const groups = Array.from(made.values());
+        const standing = s.groupsV4 || [];
+        const blankForm = standing.length === 1 && !this.v4GroupFilled(standing[0]) && !standing[0].shipping;
+        s.groupsV4 = (blankForm ? [] : standing).concat(groups);
+        this.csv.imported = groups.length;
+        this.csv.step = 3;
+        return;
+      }
       if (this.uiVersion === 'v3') {
         const addr = s.addressMode === 'different';
         const perso = s.persoMode === 'each';
