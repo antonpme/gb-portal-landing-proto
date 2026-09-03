@@ -77,6 +77,18 @@
    were redrawn from their grid of twenty. The rule the file lives
    by is unchanged — provenance is said out loud — and the folder
    of exports is still a wave of its own.
+
+   ------------------------------------------------------------
+   AND A TWENTY THIRD, TAKEN BACK FROM THE SHOWCASE
+   (gbppl-inspect-select-1, 03.09)
+   ------------------------------------------------------------
+   `copy` is the mark on every value line of the Inspect drawer. Ton
+   asked for «существующий глиф copy из системы (icon.js)» and it was
+   not here: two showcase pages were each drawing their own by hand,
+   at two different weights, which is the drift this record exists to
+   end. Copied out of system/oro/icons.html, the one already at the
+   house 1.5. inspect.js is its first consumer and the third thing in
+   the house to ask the record instead of carrying its own.
    ============================================================ */
 (function () {
   'use strict';
@@ -164,6 +176,23 @@
     'close': {
       body: '<path d="M6 6l12 12M18 6L6 18"/>',
       from: 'drawer.js: the cross every drawer in the house wears',
+      stroke: 1.5
+    },
+    /* gbppl-inspect-select-1, 03.09. Ton, on the Inspect drawer:
+       «На каждом значении должен быть copy on hover... Иконка =
+       существующий глиф copy из системы (icon.js)». It was not in the
+       record — it was drawn BY HAND TWICE, in system/oro/icons.html
+       and again, a little differently, in system/oro/typography.html,
+       which is the exact drift this file exists to end. Copied
+       character for character from the icons showcase, the one of the
+       two already at the house weight of 1.5. The other two copies are
+       left standing: changing what typography.html draws is a look, not
+       a behaviour, and it belongs to a cleanup wave with its own eyes
+       on it. Said here so the next reader does not draw a fourth. */
+    'copy': {
+      body: '<rect x="9" y="9" width="12" height="12" rx="2"/>' +
+            '<path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+      from: 'system/oro/icons.html: the copy button of a glyph row',
       stroke: 1.5
     },
     'eye': {

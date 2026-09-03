@@ -1100,6 +1100,80 @@ html.gbc-on .gbdoc-regcard__go[href]::after { pointer-events: none; }
 .gbdoc-copybtn.is-done { color: var(--blue-600); }
 .gbdoc-copybtn:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }
 
+/* ---- ONE LINE, ONE VALUE, ONE MARK TO TAKE IT ----
+   gbppl-inspect-select-1, 03.09. Ton, after Valerie asked to be able
+   to highlight a colour in the Inspect drawer: «На каждом значении
+   должен быть copy on hover: ховеришь на значение, справа появляется
+   иконка Копировать. При этом должна оставаться возможность просто
+   выделить текст и скопировать вручную. Это было бы самым правильным
+   решением.» Two paths to the same string, and the mark is the
+   shortcut, never the only way in.
+
+   A row of the properties table says a value and, under it, the token
+   behind that value. They are two different strings and a developer
+   wants one or the other, never the pair, so each LINE is the unit
+   here and each line carries its own mark. A line with nothing to
+   paste — «No token», «In the organism» — carries none, and the
+   absence is the answer.
+
+   THE MARK DOES NOT MOVE THE LINE AND DOES NOT TAKE THE DRAG. It
+   stands in the flow from the first frame, so nothing reflows when it
+   appears; it is only faded in, and while it is faded out it is out
+   of `pointer-events` entirely, so a selection dragged across the
+   value cannot end on an invisible button. Revealed by hover on ITS
+   OWN line, not on the row: hovering the value must not light up the
+   token's mark as well, or the reader has to work out which of two
+   marks belongs to what is under the pointer.
+
+   NO HOVER, NO MARK, and that is the whole of the touch story
+   (закон 0a.4: a new gesture is Ton's to declare, not a wave's). On a
+   touch pointer the drawer behaves exactly as it did before this
+   wave, and the value is still selectable by hand.
+
+   OUT OF THE TAB RING on purpose (`tabindex="-1"` at the caller). A
+   drawer of thirty measured rows would otherwise put sixty invisible
+   stops between the close cross and the link at the foot. The
+   keyboard path to the same string is the one this wave just gave
+   back: select the line and press Ctrl+C. */
+.gbdoc-vrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+/* The 3 that used to sit on the token line itself moves to the gap
+   between the two lines: inside a flex row a margin on the item
+   pushes the item away from the mark beside it. Same number, same
+   picture, and it is still the NO TOKEN literal declared on
+   .gbdoc-tokenline above. */
+.gbdoc-vrow > .gbdoc-tokenline { margin-top: 0; }
+.gbdoc-vrow + .gbdoc-vrow { margin-top: 3px; }
+.gbdoc-vrow > :first-child { min-width: 0; }
+
+.gbdoc-copybtn--row {
+  flex: 0 0 auto;
+  /* 20 for the pointer, 16 of glyph inside it, and the four pixels of
+     difference are given back as negative block margin so the target
+     OVERHANGS its line instead of stretching it. Measured before this
+     line went in: the token line is 19.58 tall and a 20px item made
+     every row that has a token 0.42px taller than it was at HEAD. A
+     hit area is allowed to be bigger than the text; a row is not
+     allowed to move because of it. NO TOKEN on either number: they
+     are the size of a target and the size of a glyph, not lengths in
+     the layout, and both are already named on .gb-icon. */
+  width: 20px;
+  height: 20px;
+  margin-block: calc((16px - 20px) / 2);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--mo-micro) var(--mo-move),
+    color var(--mo-micro) var(--mo-move);
+}
+.gbdoc-vrow:hover > .gbdoc-copybtn--row {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* ---- DO AND AVOID, AS LAYOUT ----
    Carbon and Polaris both show the rule twice: once as a sentence
    and once as two compositions standing next to each other. The

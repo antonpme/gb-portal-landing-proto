@@ -34,6 +34,14 @@
    other value here IS a token: the hairline and the live state
    are Blue 600, the plate is Zinc 950, the type is Inter at 12.
 
+   gbppl-inspect-select-1 (03.09), at the foot of this file: the
+   selection is muted on the PAGE and painted on the instrument, and
+   the drawer points an I-beam at its own numbers. Valerie, the
+   client's front end: «I'd like to be able to highlight the text so
+   when I need to copy a color I can get it... I can't copy an
+   individual line in here or anywhere in the drawer.» She could, all
+   along, and could not see it.
+
    THE LENGTHS, AFTER gbppl-studio-tokens-1. Every length that is a
    rung is now written as one (--space-*, --radius). What stayed a
    number is the geometry of the DRAWING itself: the field inside a
@@ -251,5 +259,48 @@ html.gbi-on,
 html.gbi-on * { cursor: crosshair !important; }
 html.gbi-on :is(.gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim),
 html.gbi-on :is(.gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim) * { cursor: default !important; }
-html.gbi-on :is(.gbsp, .gbd-panel) :is(a, button) { cursor: pointer !important; }
+/* The `*` is not decoration (the same arithmetic comments.css spells
+   out for Comment mode): a button in this house is never one node,
+   `.gb-btn` carries a label span and an icon button carries an svg
+   with its path, and without this the hand died on the word. */
+html.gbi-on :is(.gbsp, .gbd-panel) :is(a, button),
+html.gbi-on :is(.gbsp, .gbd-panel) :is(a, button) * { cursor: pointer !important; }
+
+/* ---- Selection: muted on the page, alive on the instrument ----
+   gbppl-inspect-select-1. Valerie, the client's front end, 02.09:
+   «I'd like to be able to highlight the text so when I need to copy
+   a color I can get it. the css lets me copy the block but I can't
+   copy an individual line in here or anywhere in the drawer.»
+
+   Nothing ever forbade the selection. The line below used to have no
+   scope at all, and it paints the highlight TRANSPARENT: a drag
+   inside the drawer did select, `getSelection()` did return the row,
+   Ctrl+C did copy it, and the screen showed absolutely nothing. An
+   invisible selection is not a selection to the person making it.
+
+   The mute earns its place on the PAGE and only there. A drag over
+   the page while inspecting is a measurement gesture — mousedown is
+   cancelled in inspect.js for that very reason — and a blue band left
+   over from before the mode was entered would sit on top of the
+   overlay pretending to be part of the drawing.
+
+   The studio's own two surfaces are the opposite case. The drawer and
+   the console exist to hand numbers to a developer, so there the
+   highlight is painted back, in Blue 200: a selection is a state, and
+   state is blue (Ton-5). The rule below wins on specificity, one class
+   deeper than the mute above it. */
 html.gbi-on ::selection { background: transparent; }
+html.gbi-on :is(.gbsp, .gbd-panel)::selection,
+html.gbi-on :is(.gbsp, .gbd-panel) ::selection {
+  background: var(--blue-200);
+  color: var(--zinc-900);
+}
+
+/* And the pointer says so before the drag begins. The block above
+   gives every descendant of the drawer `default`, which over a table
+   of measured values reads «there is nothing here to take». The body
+   of the drawer is prose and numbers, so it gets the I-beam; the
+   controls in it keep the hand they already had, because the
+   a/button rule above is one element more specific than this one. */
+html.gbi-on :is(.gbd-body, .gbd-foot),
+html.gbi-on :is(.gbd-body, .gbd-foot) * { cursor: text !important; }

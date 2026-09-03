@@ -289,7 +289,32 @@ html.gbc-on .gbd-panel .gbc-field > .gba-label { cursor: text !important; }
 html.gbc-on .gbd-panel .gba-input:disabled,
 html.gbc-on .gbd-panel .gbc-form.is-down .gbc-field > .gba-label { cursor: not-allowed !important; }
 
+/* SELECTION: MUTED ON THE PAGE, ALIVE ON THE INSTRUMENT.
+   gbppl-inspect-select-1, the twin of the block in inspect.css and
+   the same finding. The first line paints the highlight transparent
+   and used to have no scope at all, so the text of a thread could be
+   dragged over and copied and the screen showed nothing back. The
+   mute belongs to the PAGE, where a drag is the aiming gesture of
+   Comment mode and mousedown is cancelled for it. In the console and
+   in the thread drawer the highlight is painted back in Blue 200:
+   a selection is a state, and state is blue (Ton-5). */
 html.gbc-on ::selection { background: transparent; }
+html.gbc-on :is(.gbsp, .gbd-panel)::selection,
+html.gbc-on :is(.gbsp, .gbd-panel) ::selection {
+  background: var(--blue-200);
+  color: var(--zinc-900);
+}
+
+/* The pointer says so before the drag begins. Everything in the body
+   and the foot of the drawer is prose, a name or a number — the line
+   that says which element the thread is about, the author, the time,
+   the message — and it reads as text. The fields, the buttons and the
+   locked form keep the pointers the three blocks above give them:
+   each of those is one element or one class more specific than this
+   line, which is written at (0,2,1) on purpose so it can only ever
+   beat the blanket `default` it is answering. */
+html.gbc-on :is(.gbd-body, .gbd-foot),
+html.gbc-on :is(.gbd-body, .gbd-foot) * { cursor: text !important; }
 
 /* ============================================================
    THE SHELF IN THE CONSOLE

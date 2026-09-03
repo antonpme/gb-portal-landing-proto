@@ -125,6 +125,27 @@
    in KINDS. The core below knows about neither.
 
    ------------------------------------------------------------
+   gbppl-inspect-select-1 (03.09). TWO WAYS TO TAKE ONE VALUE
+   ------------------------------------------------------------
+   Valerie, the client's front end, 02.09: «I'd like to be able to
+   highlight the text so when I need to copy a color I can get it. the
+   css lets me copy the block but I can't copy an individual line in
+   here or anywhere in the drawer.» The finding was that nothing had
+   ever forbidden it: inspect.css painted the highlight transparent
+   with no scope, so the drag selected, the clipboard took it, and the
+   screen said nothing. That half is fixed in the stylesheet.
+
+   Ton, on top of it: «На каждом значении должен быть copy on hover:
+   ховеришь на значение, справа появляется иконка Копировать. При этом
+   должна оставаться возможность просто выделить текст и скопировать
+   вручную. Это было бы самым правильным решением.» So every LINE that
+   holds a string worth pasting grew a quiet mark of its own — the
+   value its value, the token its token — and the mark is a shortcut
+   beside the selection, never instead of it. See `copymark` and
+   `table` below, and .gbdoc-vrow in docs.css for why it costs the
+   table not one pixel.
+
+   ------------------------------------------------------------
    gbppl-inspect-2 (27.08). The order, from the team through Ton
    after the second showing: «Всем очень понравился Inspect, просят
    показывать больше данных и чётче». Six things came of it, and
@@ -294,25 +315,63 @@
     return r;
   }
 
+  /* ---------- the copy mark of one line ----------
+     gbppl-inspect-select-1, 03.09. The whole of the affordance in one
+     helper: a line that holds a string worth pasting gets a quiet
+     glyph beside it, a line that holds a caption gets nothing.
+
+     THE GLYPH COMES OUT OF THE RECORD, not out of this file. Ton
+     asked for «существующий глиф copy из системы (icon.js)»; it was
+     not in the record when he said it, so this wave put it there and
+     this is its first consumer. If icon.js is missing from a page the
+     mark simply does not appear and the line is still selectable,
+     because selection is the path and this is the shortcut.
+
+     tabindex="-1": see the .gbdoc-copybtn--row block in docs.css. */
+  function copymark(text, what) {
+    var icons = window.GbIcons;
+    if (!icons || !text) return '';
+    var glyph = icons.svg('copy');
+    if (!glyph) return '';
+    var say = 'Copy ' + what;
+    return '<button class="gbdoc-copybtn gbdoc-copybtn--inline gbdoc-copybtn--row" ' +
+      'type="button" tabindex="-1" data-gbi-copy="' + esc(text) + '" ' +
+      'title="' + esc(say) + '" aria-label="' + esc(say) + '">' +
+      '<span class="gb-icon gb-icon--16" aria-hidden="true">' + glyph + '</span></button>';
+  }
+  function vrow(inner, copyText, what) {
+    return '<span class="gbdoc-vrow">' + inner + copymark(copyText, what) + '</span>';
+  }
+
   /* Two columns, not three: the drawer is 520 wide and a third
      column of token names would put it on a horizontal scrollbar.
      The token goes under the value it produced, which is also
-     where Figma's inspect panel puts it. */
+     where Figma's inspect panel puts it.
+
+     Each of those two lines is now its own row with its own mark
+     (gbppl-inspect-select-1). Asked which of the two a copy should
+     put on the clipboard, the answer is BOTH, each beside the thing
+     it is: Valerie asked for the colour, which is the rendered value,
+     but the law of this house is that a value comes from a token and
+     what a developer wires a component with is the token. Two strings,
+     two marks, nothing to guess. */
   function table(rowsList) {
     var html = '<table class="gbdoc-table"><thead><tr><th>Property</th><th>Rendered, and the token behind it</th></tr></thead><tbody>';
     rowsList.forEach(function (r) {
       var under = r.token
-        ? '<code class="gbdoc-tokenline">' + esc(r.token) + '</code>'
+        ? vrow('<code class="gbdoc-tokenline">' + esc(r.token) + '</code>', r.token, 'this token')
         : (r.note === 'no token'
-            ? '<span class="gbdoc-tokenline gbdoc-tokenline--none">No token</span>'
+            ? '<span class="gbdoc-vrow"><span class="gbdoc-tokenline gbdoc-tokenline--none">No token</span></span>'
             /* 'quiet' = there is nothing to say under this value, and
                saying «In the organism» about the display mode of a
                plain div would be a claim, not a caption. Used by the
                generic reading, never by a specimen kind. */
             : (r.note === 'quiet' ? ''
-              : (r.note ? '<span class="gbdoc-tokenline gbdoc-tokenline--none">' + esc(r.note) + '</span>'
-                        : '<span class="gbdoc-tokenline gbdoc-tokenline--none">In the organism</span>')));
-      html += '<tr><td>' + esc(r.label) + '</td><td><span class="gbdoc-num">' + esc(r.value) + '</span>' + under + '</td></tr>';
+              : '<span class="gbdoc-vrow"><span class="gbdoc-tokenline gbdoc-tokenline--none">' +
+                esc(r.note || 'In the organism') + '</span></span>'));
+      html += '<tr><td>' + esc(r.label) + '</td><td>' +
+        vrow('<span class="gbdoc-num">' + esc(r.value) + '</span>', r.value, 'this value') +
+        under + '</td></tr>';
     });
     return html + '</tbody></table>';
   }
@@ -2126,28 +2185,53 @@
     }).observe(document.body, { childList: true, subtree: true });
   }
 
+  /* ---------- the clipboard, said once ----------
+     The block button and the line mark are two affordances with one
+     job, so the writing is one function and only the answer differs:
+     the block button is a WORD and changes its word, the line mark is
+     a GLYPH and goes blue for the same 1400ms, which is the answer the
+     quiet copy buttons of the showcase have always given
+     (gbppl-inspect-select-1). */
+  function copyText(text, done) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, done);
+      return;
+    }
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
+    document.body.removeChild(ta);
+  }
+
   /* Copy, inside the drawer and anywhere else a snippet is drawn. */
   document.addEventListener('click', function (e) {
     var btn = e.target.closest ? e.target.closest('.gbdoc-copy') : null;
     if (!btn) return;
     var pre = btn.parentNode.querySelector('code');
     if (!pre) return;
-    var done = function () {
+    copyText(pre.textContent, function () {
       btn.textContent = 'Copied';
       setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(pre.textContent).then(done, done);
-    } else {
-      var ta = document.createElement('textarea');
-      ta.value = pre.textContent;
-      ta.style.position = 'fixed';
-      ta.style.left = '-9999px';
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy'); done(); } catch (err) { /* nothing else to try */ }
-      document.body.removeChild(ta);
-    }
+    });
+  });
+
+  /* One line of one row, on hover. `preventDefault` and `stopPropagation`
+     because this click is not a question about the page: the drawer is
+     chrome, so the capture handler above has already let it through,
+     and nothing behind the mark should hear it either. */
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('[data-gbi-copy]') : null;
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    copyText(btn.getAttribute('data-gbi-copy'), function () {
+      btn.classList.add('is-done');
+      setTimeout(function () { btn.classList.remove('is-done'); }, 1400);
+    });
   });
 
   /* ============================================================
