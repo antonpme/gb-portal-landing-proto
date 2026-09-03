@@ -240,6 +240,11 @@
      double click inside it is a drag that did not choose anything. */
   -webkit-user-select: none;
   user-select: none;
+  /* The fade is on the row (see OFF below) and a set can be switched
+     on while somebody is looking at it: the checkout's shipping
+     methods come back the moment an address is chosen. Same duration
+     and same curve as every other colour change on this control. */
+  transition: opacity var(--mo-micro) var(--mo-move);
 }
 
 /* ============================================================
@@ -362,6 +367,61 @@
 }
 
 /* ============================================================
+   OFF NEVER RECOLOURS. THE LAW, WRITTEN OUT BECAUSE THE BROWSER
+   BREAKS IT (gbppl-radio-1, Ton 03.09)
+   ------------------------------------------------------------
+   Ton, on the live ?v=2: «Disabled радиоселекты для UPS Ground и
+   для No Personalization выглядят по-разному. UPS Ground выбран,
+   но почему-то чёрным цветом, а No Personalization — синим, как
+   положено. Может это баг?»
+
+   IT IS A BUG, AND IT IS CHROME'S. The old cards were a native
+   radio painted by `accent-color: #2563eb`, and **accent-color has
+   no effect on a control the browser considers disabled**: Chrome
+   drops it and paints its own greyed radio instead. The two cards
+   Ton put side by side differed in exactly one thing, and it was
+   the `disabled` the gate of 03.09 had just put on the shipping
+   ones («типы доставки должны быть disabled, пока не выберешь
+   адрес»). The blue did not fade. It was never asked for.
+
+   MEASURED, not argued (scratchpad ton-probe.mjs, the centre pixel
+   of each mark read out of the rendered bitmap at 2x):
+
+     old markup, chosen                  rgb(37, 99, 235)   Blue 600
+     old markup, chosen and disabled     rgb(235, 236, 237) NEUTRAL,
+                                         no blue in it at all
+     organism,   chosen                  rgb(37, 99, 235)   Blue 600
+     organism,   chosen and disabled     rgb(168, 193, 247) Blue 600
+                                         at 0.4 over Blue 50
+
+   THE LAW: **off is an opacity and nothing else.** A radio that is
+   switched off keeps every colour its STATUS gives it — a chosen
+   circle stays Blue 600 ring and Blue 600 dot, an unchosen one
+   stays a Zinc 900 ring — and the whole row is quieted by the one
+   fade above. So a chosen option inside a switched off set reads as
+   a quiet blue, identical in kind to the loud blue beside it, which
+   is what Ton asked for: «единый вид с No Personalization с
+   поправкой на дим».
+
+   The two rules below are already what the rules further up
+   compute; they are written again HERE, at higher specificity and
+   after everything, so that the law cannot be lost to a UA sheet
+   that targets :disabled, to a consumer's own reset, or to the next
+   person editing this file. A rule that only says what is already
+   true is documentation the browser cannot ignore.
+   ============================================================ */
+.gb-radio__input:checked:disabled {
+  border-color: var(--gbr-on);
+}
+.gb-radio__input:checked:disabled::before {
+  background: var(--gbr-on);
+  transform: scale(1);
+}
+.gb-radio__input:not(:checked):disabled {
+  border-color: var(--gbr-line);
+}
+
+/* ============================================================
    THE GROUP
    ------------------------------------------------------------
    Two shapes. The plain one is a column of circles, 16 apart, which
@@ -440,7 +500,8 @@
   border: 1px solid var(--gbr-card-line);
   border-radius: var(--radius);
   transition: border-color var(--mo-micro) var(--mo-move),
-              background-color var(--mo-micro) var(--mo-move);
+              background-color var(--mo-micro) var(--mo-move),
+              opacity var(--mo-micro) var(--mo-move);
 }
 
 /* The arithmetic above, written once. */
