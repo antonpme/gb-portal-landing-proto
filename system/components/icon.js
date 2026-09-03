@@ -89,6 +89,26 @@
    end. Copied out of system/oro/icons.html, the one already at the
    house 1.5. inspect.js is its first consumer and the third thing in
    the house to ask the record instead of carrying its own.
+
+   ------------------------------------------------------------
+   AND SEVEN MORE, FOR THE CONSOLE'S NAVIGATION
+   (gbppl-panel2-build-1, 03.09)
+   ------------------------------------------------------------
+   Console 2.0 навигируется по разделам студии РЯДОМ ИКОНОК, и
+   рисунков для них в записи не было. Пять пришли из утверждённого
+   мокапа посимвольно (`home`, `globe`, `flask`, `grid`, `link`), и
+   провенанс у них честный: DECLARED, мокап консоли, утверждённый
+   заказчиком 03.09 после трёх раундов правок. Ни лайв, ни Figma их
+   не показывали, и выдумывать им адрес было бы враньём.
+
+   Ещё две — `panel-left` и `panel-right` — не новые вовсе: это тот
+   самый глиф кнопки дока, который studio-panel.js рисовал у себя
+   инлайном и сам же назвал долгом («ГЛИФ РИСУЕТСЯ ЗДЕСЬ, А НЕ В
+   ЗАПИСИ НАБОРА, и это долг, названный вслух», gbppl-panel-dock-1).
+   Долг закрыт: пара переехала сюда, вертикаль подрезана по
+   прямоугольнику окна (было M9 4v16 при рамке 4.5..19.5), и консоль
+   спрашивает их по имени, как спрашивает шесть экранов.
+   Двадцать три записи стали тридцатью.
    ============================================================ */
 (function () {
   'use strict';
@@ -206,6 +226,39 @@
       from: 'catalog.js: the filters toggle',
       stroke: 1.5
     },
+    /* ---- СЕМЬ ГЛИФОВ КОНСОЛИ 2.0 (gbppl-panel2-build-1, 03.09) ----
+       Первые четыре — разделы студии: дом = Hub, глобус = Live
+       Prototype (то, что опубликовано миру), колба = Sandbox (то, что
+       ещё в опыте), сетка 2x2 = Design System (набор из частей).
+       Пятый — цепочка Copy link. Все пять сняты с мокапа посимвольно и
+       уже нарисованы на сетке 24 без своего веса и своих концов, как
+       требует запись. Пара panel-* — переезд рисунка кнопки дока из
+       studio-panel.js, долг которой там и назван. */
+    'flask': {
+      body: '<path d="M9.6 3.2v6.4L4.4 18a2 2 0 0 0 1.7 3h11.8a2 2 0 0 0 1.7-3l-5.2-8.4V3.2"/>' +
+            '<path d="M8.2 3.2h7.6"/><path d="M7.3 14.6h9.4"/>',
+      from: 'DECLARED: the Sandbox section of the console navigation (panel 2.0 mockup, Ton 03.09)',
+      stroke: 1.5
+    },
+    'globe': {
+      body: '<circle cx="12" cy="12" r="8.8"/><path d="M3.2 12h17.6"/>' +
+            '<ellipse cx="12" cy="12" rx="4.2" ry="8.8"/>',
+      from: 'DECLARED: the Live Prototype section of the console navigation (panel 2.0 mockup, Ton 03.09)',
+      stroke: 1.5
+    },
+    'grid': {
+      body: '<rect x="3.4" y="3.4" width="7.2" height="7.2" rx="1.6"/>' +
+            '<rect x="13.4" y="3.4" width="7.2" height="7.2" rx="1.6"/>' +
+            '<rect x="3.4" y="13.4" width="7.2" height="7.2" rx="1.6"/>' +
+            '<rect x="13.4" y="13.4" width="7.2" height="7.2" rx="1.6"/>',
+      from: 'DECLARED: the Design System section of the console navigation (panel 2.0 mockup, Ton 03.09)',
+      stroke: 1.5
+    },
+    'home': {
+      body: '<path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.8 9.4V20h12.4V9.4"/>',
+      from: 'DECLARED: the Hub section of the console navigation (panel 2.0 mockup, Ton 03.09)',
+      stroke: 1.5
+    },
     /* THE ONE GLYPH THIS SET DREW FOR ITSELF (gbppl-oro-props-1,
        29.08). Every other body here was copied out of the file that
        draws it; this one had no such file, because the door to the
@@ -222,6 +275,12 @@
     'info': {
       body: '<circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/>',
       from: 'system/icons/circle-info.svg, redrawn on the grid for the properties door of the showcase',
+      stroke: 1.5
+    },
+    'link': {
+      body: '<path d="M10.4 13.6a4.6 4.6 0 0 0 6.5 0l2.7-2.7a4.6 4.6 0 0 0-6.5-6.5l-1.5 1.6"/>' +
+            '<path d="M13.6 10.4a4.6 4.6 0 0 0-6.5 0l-2.7 2.7a4.6 4.6 0 0 0 6.5 6.5l1.5-1.6"/>',
+      from: 'DECLARED: Copy link in the console foot (panel 2.0 mockup, Ton 03.09)',
       stroke: 1.5
     },
     'mail': {
@@ -243,6 +302,21 @@
       body: '<path d="M19.5 12h-15"/>',
       from: 'checkout.html: the four quantity input numbers',
       stroke: 2.5
+    },
+    /* Кнопка дока консоли, обе стороны. Рисунок тот же, что жил
+       инлайном в studio-panel.js: прямоугольник окна (тот же, что у
+       пресета Full) и одна вертикаль, отрезающая полосу пульта. Имя
+       говорит, С КАКОЙ стороны стоит полоса, а не куда поедет ящик:
+       запись называет рисунок, решение о смысле принимает потребитель. */
+    'panel-left': {
+      body: '<rect x="3" y="4.5" width="18" height="15" rx="1.5"/><path d="M9 4.5v15"/>',
+      from: 'studio-panel.js: the dock button, drawn inline until 03.09',
+      stroke: 1.5
+    },
+    'panel-right': {
+      body: '<rect x="3" y="4.5" width="18" height="15" rx="1.5"/><path d="M15 4.5v15"/>',
+      from: 'studio-panel.js: the dock button, drawn inline until 03.09',
+      stroke: 1.5
     },
     'plus': {
       body: '<path d="M12 4.5v15m7.5-7.5h-15"/>',
