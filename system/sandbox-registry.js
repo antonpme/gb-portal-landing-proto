@@ -289,7 +289,16 @@
              один подарок. Имя варианта Тон утвердил 31.08 и оно
              осталось: количество по-прежнему одно на все подарки
              набора. Вопрос Тону в отчёте волны. */
-          desc: 'Gifts are not personalized by default. One counter sets how many gifts there are, and personalization is a choice of two: none, or a row per gift.',
+          /* gbppl-radio-1, 03.09, second touch of the same day: the
+             address mode stopped being a toggle in the head of step
+             one and became a radio select under the question, by
+             Ton's word («или справа как было, или если ниже, то тем
+             же радио селектом для консистентности»). Three groups of
+             this version now wear system/components/radio.css. The
+             desc grows one sentence, because the way a person answers
+             the first question of the page is exactly the kind of
+             difference from Live this line is for. */
+          desc: 'Gifts are not personalized by default. One counter sets how many gifts there are, and personalization is a choice of two: none, or a row per gift. Both questions, and the choice between one address and many, are answered by the same control: a radio select.',
           status: 'in-progress',
           href: 'live/checkout.html?v=2',
           ready: true,

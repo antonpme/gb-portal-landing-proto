@@ -532,6 +532,12 @@
 <link rel="stylesheet" href="../system/components/inputnumber.css">
 <!-- gbppl-lab-f-2: the toggle button, lifted out of this very page into the system. -->
 <link rel="stylesheet" href="../system/components/toggle.css">
+<!-- gbppl-radio-1: the radio card, lifted out of this very page the same way.
+     No script comes with it: a native radio already owns the keyboard. It
+     stands with the other organisms of the form, and order costs nothing
+     here: every selector in the file begins with .gb-radio and collides with
+     nothing on this page. -->
+<link rel="stylesheet" href="../system/components/radio.css">
 <link rel="stylesheet" href="../system/components/footer.css">
 <link rel="stylesheet" href="../system/components/studio-panel.css">
 <!-- Inspect mode (gbppl-inspect-1, gbppl-panel-6). Three stylesheets and
@@ -913,17 +919,41 @@
 
                      Nothing else on the card moves: the segment is the first row of the head and
                      the rows under it are laid out from the top. -->
-                <div class="gb-toggle gb-toggle--small" role="radiogroup" data-gb-toggle="host"
-                     aria-label="How these gifts are addressed">
-                  <button class="gb-toggle__item" type="button" role="radio" data-value="same"
-                          @click="shipment.addressMode='same'"
-                          :class="shipment.addressMode==='same' ? 'is-on' : ''"
-                          :aria-checked="shipment.addressMode==='same'">One address</button>
-                  <button class="gb-toggle__item" type="button" role="radio" data-value="different"
-                          @click="shipment.addressMode='different'"
-                          :class="shipment.addressMode==='different' ? 'is-on' : ''"
-                          :aria-checked="shipment.addressMode==='different'">Different addresses</button>
-                </div>
+                <!-- ============================================================
+                     gbppl-radio-1 (03.09): IN V2 THE TOGGLE HAS LEFT THIS BAND.
+
+                     Ton, choosing between the two places the control could
+                     stand: «или справа как было, или если ниже, то тем же
+                     радио селектом для консистентности». Below, and as a radio
+                     select, so the two questions of this page are answered by
+                     ONE KIND OF CONTROL — which is the same instruction that
+                     rebuilt section 2 the day before.
+
+                     The reasoning behind «below» is section 2's own: the choice
+                     decides what the rest of the step even is, so it stands
+                     first in the BODY, under the question, not in the head
+                     beside the title. A control in the head reads as furniture
+                     of the band; this one is an answer.
+
+                     V1 KEEPS THE TOGGLE, in this band, unchanged: it is the
+                     control the toggle organism was measured off on 29.08 and
+                     both versions are still in front of the team. `x-if` and
+                     not `x-show`, so V2 has no hidden second control holding a
+                     value nobody can see.
+                     ============================================================ -->
+                <template x-if="uiVersion !== 'v2'">
+                  <div class="gb-toggle gb-toggle--small" role="radiogroup" data-gb-toggle="host"
+                       aria-label="How these gifts are addressed">
+                    <button class="gb-toggle__item" type="button" role="radio" data-value="same"
+                            @click="shipment.addressMode='same'"
+                            :class="shipment.addressMode==='same' ? 'is-on' : ''"
+                            :aria-checked="shipment.addressMode==='same'">One address</button>
+                    <button class="gb-toggle__item" type="button" role="radio" data-value="different"
+                            @click="shipment.addressMode='different'"
+                            :class="shipment.addressMode==='different' ? 'is-on' : ''"
+                            :aria-checked="shipment.addressMode==='different'">Different addresses</button>
+                  </div>
+                </template>
                 <!-- gbppl-checkout-14: was a hand-typed 12px ghost with a red hover. The organism
                      has no danger colour (ORO-SKILL 8, waiting on Ton), so the button takes the
                      quiet cell it belongs in and the red hover goes with the hand-drawing. -->
@@ -958,6 +988,60 @@
                  x-text="shipment.addressMode === 'same'
                    ? 'All gifts in this order will be delivered to one address.'
                    : 'Each gift in this order will be delivered to a different address.'"></p>
+
+              <!-- ============================================================
+                   gbppl-radio-1 (03.09): AND HERE IS WHERE IT WENT. Two radio
+                   select cards, first thing in the body, exactly the shape
+                   section 2 opens with.
+
+                   THE EYEBROW IS PLURAL ON PURPOSE. «Addresses» asks how many;
+                   «Address», the eyebrow one block down, asks which one. Two
+                   words apart by one letter, and the letter is the question.
+
+                   THE SUBS ARE THE OPTIONS' OWN DESCRIPTIONS, NOT THE CAPTION
+                   THAT WAS DELETED. Ton, yesterday, on «All gifts go to one
+                   address.»: «Зачем повторять это текстом над лейблом поля?
+                   Всю эту чушь нужно убрать повсюду.» That line was a 12px
+                   grey echo of the control's state, standing OUTSIDE the
+                   control and saying what the lit half already said. These two
+                   lines are inside the cards, one per option, and each says
+                   what its own option MEANS — the same thing «Every gift in
+                   this order is the same» does under No personalization, which
+                   is the line that stayed when the other four went. They are
+                   14 rather than 12, they are part of the control, and only
+                   one of them is ever true at a time.
+
+                   The rhythm is the step's own: 20 above the group (pt-5) and
+                   20 below it, which is the `py-5` the body under it already
+                   carries and the same 20 `space-y-5` puts between every other
+                   block of this step.
+                   ============================================================ -->
+              <template x-if="uiVersion === 'v2'">
+                <div class="px-6 pt-5">
+                  <p class="gb-eyebrow mb-2">Addresses</p>
+                  <div class="gb-radio-group gb-radio-group--cards" role="radiogroup"
+                       aria-label="How these gifts are addressed">
+                    <label class="gb-radio gb-radio--select">
+                      <input class="gb-radio__input" type="radio" :name="'addr-' + shipment.id" value="same"
+                             :checked="shipment.addressMode === 'same'"
+                             @change="shipment.addressMode = 'same'">
+                      <span class="gb-radio__copy">
+                        <span class="gb-radio__title">One address</span>
+                        <span class="gb-radio__sub">Every gift ships to the same place</span>
+                      </span>
+                    </label>
+                    <label class="gb-radio gb-radio--select">
+                      <input class="gb-radio__input" type="radio" :name="'addr-' + shipment.id" value="different"
+                             :checked="shipment.addressMode === 'different'"
+                             @change="shipment.addressMode = 'different'">
+                      <span class="gb-radio__copy">
+                        <span class="gb-radio__title">Different addresses</span>
+                        <span class="gb-radio__sub">Each gift ships to its own recipient</span>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </template>
 
               <!-- ===== STEP 1 BODY · ONE ADDRESS: address + shipping method ===== -->
               <div x-show="shipment.addressMode === 'same'" class="px-6 py-5 space-y-5" x-data="{ shipToOpen: false }">
@@ -1031,31 +1115,78 @@
                      one row above already names the one thing to do, and a
                      caption repeating it is what this wave is here to remove.
                      ============================================================ -->
-                <div :class="uiVersion !== 'v2' ? ''
-                       : (shipment.shipToId ? 'transition-opacity' : 'transition-opacity opacity-40 pointer-events-none')"
-                     :aria-disabled="uiVersion === 'v2' && !shipment.shipToId">
+                <!-- ============================================================
+                     gbppl-radio-1 (03.09): THE THREE SHIPPING CARDS ARE THE
+                     ORGANISM NOW, AND THE GATE IS THE ORGANISM'S TOO.
+
+                     This grid is where the radio card was BORN: it has been
+                     eleven Tailwind utilities around a native radio on
+                     `accent-color` since 21.08, and yesterday its title took
+                     `.gba-method-title` out of auth.css because the role
+                     existed. Today the whole control does. Ton, 03.09: «сначала
+                     перенести Radio Button Component в систему, потом сделать
+                     вторую версию — Radio Select.» Measured before and after at
+                     360 / 1280 / 2258; every number the page rendered is in the
+                     wave report.
+
+                     TWO COPIES RATHER THAN ONE CONDITIONAL, which is the
+                     precedent this file already set for a V2-only change (the
+                     gate notice and the two tallies). V1 keeps the markup it
+                     had, byte for byte, and it is a `x-if` rather than an
+                     `x-show` so only one of the two ever exists: two radios
+                     with one name would fight over the checked state.
+
+                     AND THE FADE MOVED FROM THE PAGE ONTO THE CONTROL. The gate
+                     Ton asked for on 03.09 — «типы доставки должны быть
+                     disabled, пока не выберешь адрес» — was `opacity-40
+                     pointer-events-none` typed on the wrapper, which is a
+                     hardcoded double of something the system now owns (Ton-8).
+                     The group carries `is-disabled` and every input a real
+                     `disabled`; the organism fades the CARDS at the same 0.4
+                     and leaves the eyebrow alone. That is the one visible
+                     difference of this migration and it is deliberate: the name
+                     of the section is not unavailable, the options are.
+                     ============================================================ -->
+                <div>
                   <p class="gb-eyebrow mb-2">Shipping method</p>
-                  <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
-                    <template x-for="opt in shippingOptions" :key="'ship-'+opt.id">
-                      <label
-                        :class="shipment.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-white hover:border-zinc-400'"
-                        class="cursor-pointer border rounded-[var(--radius)] p-4 flex items-center transition-colors">
-                        <span class="flex items-center gap-3 min-w-0">
-                          <input type="radio" :name="'ship-' + shipment.id" :value="opt.id" x-model="shipment.shipping"
-                                 :disabled="uiVersion === 'v2' && !shipment.shipToId"
-                                 class="accent-blue-600 w-4 h-4 flex-shrink-0">
-                          <span class="min-w-0">
-                            <!-- gbppl-checkout-noise-1: the card title takes the system's radio-card
-                                 role (.gba-method-title, auth.css: 16/600 Zinc 900) instead of the
-                                 14/500 Tailwind pair it was typed in. V1 keeps its own weight, so
-                                 the class is bound, not written into the list. -->
-                            <span class="block truncate" :class="uiVersion === 'v2' ? 'gba-method-title' : 'text-sm font-medium leading-tight'" x-text="opt.label"></span>
-                            <span class="text-sm text-zinc-500 block">$<span x-text="opt.cost"></span></span>
+
+                  <template x-if="uiVersion !== 'v2'">
+                    <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+                      <template x-for="opt in shippingOptions" :key="'ship-'+opt.id">
+                        <label
+                          :class="shipment.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-white hover:border-zinc-400'"
+                          class="cursor-pointer border rounded-[var(--radius)] p-4 flex items-center transition-colors">
+                          <span class="flex items-center gap-3 min-w-0">
+                            <input type="radio" :name="'ship-' + shipment.id" :value="opt.id" x-model="shipment.shipping"
+                                   class="accent-blue-600 w-4 h-4 flex-shrink-0">
+                            <span class="min-w-0">
+                              <span class="block truncate text-sm font-medium leading-tight" x-text="opt.label"></span>
+                              <span class="text-sm text-zinc-500 block">$<span x-text="opt.cost"></span></span>
+                            </span>
                           </span>
-                        </span>
-                      </label>
-                    </template>
-                  </div>
+                        </label>
+                      </template>
+                    </div>
+                  </template>
+
+                  <template x-if="uiVersion === 'v2'">
+                    <div class="gb-radio-group gb-radio-group--cards" role="radiogroup"
+                         aria-label="Shipping method"
+                         :class="shipment.shipToId ? '' : 'is-disabled'"
+                         :aria-disabled="!shipment.shipToId">
+                      <template x-for="opt in shippingOptions" :key="'ship-'+opt.id">
+                        <label class="gb-radio gb-radio--select">
+                          <input class="gb-radio__input" type="radio" :name="'ship-' + shipment.id"
+                                 :value="opt.id" x-model="shipment.shipping"
+                                 :disabled="!shipment.shipToId">
+                          <span class="gb-radio__copy">
+                            <span class="gb-radio__title" x-text="opt.label"></span>
+                            <span class="gb-radio__sub">$<span x-text="opt.cost"></span></span>
+                          </span>
+                        </label>
+                      </template>
+                    </div>
+                  </template>
                 </div>
               </div>
 
@@ -1280,39 +1411,35 @@
 
                 <div>
                   <p class="gb-eyebrow mb-2">Personalization</p>
-                  <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+                  <!-- gbppl-radio-1 (03.09): the two cards are the organism.
+                       This whole block is V2 only, so there is no second copy
+                       and nothing to bind: the markup below is what a consumer
+                       of system/components/radio.css writes. What it replaced
+                       was the same eleven Tailwind utilities the shipping grid
+                       above carried, down to the `mt-0.5` that put the circle
+                       level with the title — and that 2 is arithmetic in the
+                       component now, half the difference between the title's
+                       line box and the circle, so it stays right at the 2K
+                       rung where the circle is 18. -->
+                  <div class="gb-radio-group gb-radio-group--cards" role="radiogroup"
+                       aria-label="Personalization">
                     <!-- @change + :checked rather than x-model: choosing does more than
                          store a word (chooseMode brings the rows in line with the
                          counter), and the model has to stay the single writer. -->
-                    <label
-                      :class="shipment.persoMode === 'none' ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-white hover:border-zinc-400'"
-                      class="cursor-pointer border rounded-[var(--radius)] p-4 flex items-start transition-colors">
-                      <span class="flex items-start gap-3 min-w-0">
-                        <input type="radio" :name="'perso-' + shipment.id" value="none"
-                               :checked="shipment.persoMode === 'none'" @change="chooseMode(shipment, 'none')"
-                               class="accent-blue-600 w-4 h-4 flex-shrink-0 mt-0.5">
-                        <span class="min-w-0">
-                          <!-- gbppl-checkout-noise-1: the title of a radio card is a system role,
-                               not a Tailwind pair. .gba-method-title (auth.css) is the one the
-                               system already owns for exactly this control: 16/600 Zinc 900 over
-                               a 14px Zinc 500 line. Russell's rule for the whole page — big and
-                               readable — starts with the thing you are choosing. -->
-                          <span class="gba-method-title block">No personalization</span>
-                          <span class="text-sm text-zinc-500 block">Every gift in this order is the same</span>
-                        </span>
+                    <label class="gb-radio gb-radio--select">
+                      <input class="gb-radio__input" type="radio" :name="'perso-' + shipment.id" value="none"
+                             :checked="shipment.persoMode === 'none'" @change="chooseMode(shipment, 'none')">
+                      <span class="gb-radio__copy">
+                        <span class="gb-radio__title">No personalization</span>
+                        <span class="gb-radio__sub">Every gift in this order is the same</span>
                       </span>
                     </label>
-                    <label
-                      :class="shipment.persoMode === 'each' ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-white hover:border-zinc-400'"
-                      class="cursor-pointer border rounded-[var(--radius)] p-4 flex items-start transition-colors">
-                      <span class="flex items-start gap-3 min-w-0">
-                        <input type="radio" :name="'perso-' + shipment.id" value="each"
-                               :checked="shipment.persoMode === 'each'" @change="chooseMode(shipment, 'each')"
-                               class="accent-blue-600 w-4 h-4 flex-shrink-0 mt-0.5">
-                        <span class="min-w-0">
-                          <span class="gba-method-title block">Personalize each gift</span>
-                          <span class="text-sm text-zinc-500 block">Add names and details per gift</span>
-                        </span>
+                    <label class="gb-radio gb-radio--select">
+                      <input class="gb-radio__input" type="radio" :name="'perso-' + shipment.id" value="each"
+                             :checked="shipment.persoMode === 'each'" @change="chooseMode(shipment, 'each')">
+                      <span class="gb-radio__copy">
+                        <span class="gb-radio__title">Personalize each gift</span>
+                        <span class="gb-radio__sub">Add names and details per gift</span>
                       </span>
                     </label>
                   </div>
