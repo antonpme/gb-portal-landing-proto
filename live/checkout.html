@@ -9,6 +9,68 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-noise-1 (2026-09-03) — ?v=2 STOPS WHISPERING
+     WHAT ITS CONTROLS ALREADY SAY.
+
+     ?v=1 IS NOT TOUCHED BY ANY OF IT: every change below is either
+     inside V2-only markup or bound through uiVersion, and V1 was
+     measured before and after at 360 / 1280 / 2258, both scenarios
+     of step 1, geometry and text: zero difference.
+
+     Ton, on the screenshot of ?v=2, verbatim: «"All gifts go to one
+     address." Этот мелкий текст добавляет визуальный шум. Золотое
+     правило: если ты делаешь текст маленьким и плохо читаемым,
+     значит ты не хочешь его показывать. Зачем мы его добавляем? У
+     нас сверху тоггл, который и так говорит, на один адрес отправка
+     или на разные. Зачем повторять это текстом над лейблом поля?
+     Всю эту чушь нужно убрать повсюду. Это создаёт ужасный шум.
+     Первым же докопается Рассел.»
+
+     THE RULE, as this wave read it. A small grey line goes if it
+     restates the state of a control standing next to it. It stays
+     if it says something no control on screen says. Four lines went
+     and each is marked at its site:
+
+       · the caption under the address toggle — the toggle is the
+         sentence;
+       · «All 12 gifts are identical. Nothing more is needed.» —
+         the count is the counter's, «identical» is the chosen
+         card's own subtitle;
+       · «Applied to all 12 gifts.» — the third saying of what the
+         checkbox above it already says;
+       · «Recalculates live as you edit» — the other half of the
+         rule: 12px grey, and a promise every total keeps anyway.
+
+     THREE STAYED, and why: «One card, the same message in every
+     box» adds the fact that it is ONE shared card, which the
+     checkbox does not say; «Every gift in this order is the same»
+     is the radio option's own description, part of the control, not
+     a caption about it; «Payment is not part of this walkthrough»
+     is the prototype telling the truth about itself, which nothing
+     else on the page does.
+
+     TWO MORE THINGS TON SAID ON THE SAME PAGE, same day:
+
+     THE GATE NOTICE MOVES UNDER THE ADDRESS. «Alert "Choose an
+     address in step 1 to continue" должен быть сразу под селектом
+     адреса, а не под селектом типа доставки.»
+
+     AND THE METHODS WAIT FOR IT. «И типы доставки должны быть
+     disabled, пока не выберешь адрес: от адреса зависит, какие
+     методы доступны.» Honest disabled, in the page's own gate
+     language: opacity-40 + pointer-events-none, a real `disabled`
+     on every radio, aria-disabled on the group.
+
+     RADIO CARD TITLES TAKE A SYSTEM ROLE. They were a 14/500
+     Tailwind pair; the system owns this exact control's title in
+     auth.css (.gba-method-title, 16/600 Zinc 900 over a 14px Zinc
+     500 line), and all five cards of V2 — two shipping, two
+     personalization, and the drawer's — now wear it. The thing you
+     are choosing reads bigger than the price under it, which is
+     Russell's rule for the page, and Ton-6 for the way we got
+     there: the role existed, so nothing was drawn.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-panel-sandbox-1 (2026-09-03) — THE PAGE OPENS ON THE
      COMMON ORDER, NOT THE NARROW ONE.
 
@@ -872,18 +934,30 @@
 
               <!-- One line under the toggle, changing with it: the consequence of the choice
                    said out loud before any field is asked for (approved copy set, 21.08). -->
-              <!-- gbppl-checkout-v2-rework-1 (03.09), wording pass: fourteen words became
-                   seven and say the same thing. V1 keeps the sentence the team already
-                   reviewed, word for word — both versions stand in front of them and only
-                   one of them is being reworked. -->
-              <p class="px-6 pt-4 -mb-1 text-xs text-zinc-500"
-                 x-text="uiVersion === 'v2'
-                   ? (shipment.addressMode === 'same'
-                       ? 'All gifts go to one address.'
-                       : 'Each gift goes to its own address.')
-                   : (shipment.addressMode === 'same'
-                       ? 'All gifts in this order will be delivered to one address.'
-                       : 'Each gift in this order will be delivered to a different address.')"></p>
+              <!-- ============================================================
+                   gbppl-checkout-noise-1 (03.09): IN V2 THIS LINE IS GONE.
+
+                   Ton, verbatim: «"All gifts go to one address." Этот мелкий
+                   текст добавляет визуальный шум. Золотое правило: если ты
+                   делаешь текст маленьким и плохо читаемым, значит ты не хочешь
+                   его показывать. Зачем мы его добавляем? У нас сверху тоггл,
+                   который и так говорит, на один адрес отправка или на разные.
+                   Зачем повторять это текстом над лейблом поля? Всю эту чушь
+                   нужно убрать повсюду. Это создаёт ужасный шум. Первым же
+                   докопается Рассел.»
+
+                   The toggle one row above IS the sentence: One address /
+                   Different addresses, in the reader's hand, lit. A 12px grey
+                   echo of the control's own state is not information, it is
+                   the whisper Russell reads as "I am not important".
+
+                   V1 keeps the line word for word — both versions stand in
+                   front of the team and only one of them is being reworked.
+                   ============================================================ -->
+              <p class="px-6 pt-4 -mb-1 text-xs text-zinc-500" x-show="uiVersion === 'v1'"
+                 x-text="shipment.addressMode === 'same'
+                   ? 'All gifts in this order will be delivered to one address.'
+                   : 'Each gift in this order will be delivered to a different address.'"></p>
 
               <!-- ===== STEP 1 BODY · ONE ADDRESS: address + shipping method ===== -->
               <div x-show="shipment.addressMode === 'same'" class="px-6 py-5 space-y-5" x-data="{ shipToOpen: false }">
@@ -908,10 +982,58 @@
                       </button>
                     </div>
                   </div>
+                  <!-- ============================================================
+                       gbppl-checkout-noise-1 (03.09): THE GATE NOTICE STANDS
+                       UNDER THE CONTROL IT IS ABOUT.
+
+                       Ton, verbatim: «Alert "Choose an address in step 1 to
+                       continue" должен быть сразу под селектом адреса, а не под
+                       селектом типа доставки.» It used to sit at the bottom of
+                       the whole step, under the shipping cards, so it read as a
+                       verdict on shipping. It is a verdict on the address, and
+                       it now stands directly under the address.
+
+                       «in step 1» went with the move: the sentence is inside
+                       step 1, one row under the field it names, and a pointer
+                       that points at itself is the same noise as the line this
+                       wave deleted above.
+
+                       V2 only, and by a second copy rather than a conditional
+                       inside one, so V1's notice stays exactly where and what it
+                       was (the two tallies further down set the precedent).
+                       ============================================================ -->
+                  <div x-show="uiVersion === 'v2' && !shipment.shipToId"
+                       class="mt-3 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-3 py-2">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                    <span>Choose an address to continue.</span>
+                  </div>
                 </div>
 
                 <!-- Shipping method — price only, the way live shows it. Selection stays blue (Ton-5). -->
-                <div>
+                <!-- ============================================================
+                     gbppl-checkout-noise-1 (03.09): IN V2 THE METHODS WAIT FOR
+                     THE ADDRESS.
+
+                     Ton, verbatim: «И типы доставки должны быть disabled, пока
+                     не выберешь адрес: от адреса зависит, какие методы
+                     доступны.» Offering UPS Overnight before the page knows
+                     where the box is going is offering something the back end
+                     may not sell to that ZIP.
+
+                     The dimming is the page's OWN gate language, the one the
+                     personalization body has worn since 21.08: opacity-40 +
+                     pointer-events-none, nothing invented. Honest, not painted:
+                     the radios carry a real `disabled`, so the keyboard skips
+                     them and the screen reader says so; the group carries
+                     aria-disabled. Choosing an address brings all of it back.
+
+                     No second sentence explains the dimming: the blue notice
+                     one row above already names the one thing to do, and a
+                     caption repeating it is what this wave is here to remove.
+                     ============================================================ -->
+                <div :class="uiVersion !== 'v2' ? ''
+                       : (shipment.shipToId ? 'transition-opacity' : 'transition-opacity opacity-40 pointer-events-none')"
+                     :aria-disabled="uiVersion === 'v2' && !shipment.shipToId">
                   <p class="gb-eyebrow mb-2">Shipping method</p>
                   <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
                     <template x-for="opt in shippingOptions" :key="'ship-'+opt.id">
@@ -919,9 +1041,15 @@
                         :class="shipment.shipping === opt.id ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-white hover:border-zinc-400'"
                         class="cursor-pointer border rounded-[var(--radius)] p-4 flex items-center transition-colors">
                         <span class="flex items-center gap-3 min-w-0">
-                          <input type="radio" :name="'ship-' + shipment.id" :value="opt.id" x-model="shipment.shipping" class="accent-blue-600 w-4 h-4 flex-shrink-0">
+                          <input type="radio" :name="'ship-' + shipment.id" :value="opt.id" x-model="shipment.shipping"
+                                 :disabled="uiVersion === 'v2' && !shipment.shipToId"
+                                 class="accent-blue-600 w-4 h-4 flex-shrink-0">
                           <span class="min-w-0">
-                            <span class="text-sm font-medium block leading-tight truncate" x-text="opt.label"></span>
+                            <!-- gbppl-checkout-noise-1: the card title takes the system's radio-card
+                                 role (.gba-method-title, auth.css: 16/600 Zinc 900) instead of the
+                                 14/500 Tailwind pair it was typed in. V1 keeps its own weight, so
+                                 the class is bound, not written into the list. -->
+                            <span class="block truncate" :class="uiVersion === 'v2' ? 'gba-method-title' : 'text-sm font-medium leading-tight'" x-text="opt.label"></span>
                             <span class="text-sm text-zinc-500 block">$<span x-text="opt.cost"></span></span>
                           </span>
                         </span>
@@ -937,11 +1065,11 @@
               </div>
 
               <!-- Hint: pick address first (One address without an address chosen) — Russell rule #1 -->
-              <div x-show="shipment.addressMode === 'same' && !shipment.shipToId" class="mx-6 mb-5 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-3 py-2">
+              <!-- gbppl-checkout-noise-1 (03.09): V2's copy of this notice moved up under the
+                   address select, where Ton put it. What is left here is V1's, unchanged. -->
+              <div x-show="uiVersion !== 'v2' && shipment.addressMode === 'same' && !shipment.shipToId" class="mx-6 mb-5 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-3 py-2">
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-                <!-- Wording pass 03.09: «Pick where this ships» named the outcome, not the
-                     control. The line now names the control the reader has to touch. -->
-                <span x-text="uiVersion === 'v2' ? 'Choose an address in step 1 to continue.' : 'Pick where this ships in step 1 to continue.'"></span>
+                <span>Pick where this ships in step 1 to continue.</span>
               </div>
 
               <!-- Disabled-until-address wrapper (One address + nothing chosen) — Russell rule #1 -->
@@ -1164,7 +1292,12 @@
                                :checked="shipment.persoMode === 'none'" @change="chooseMode(shipment, 'none')"
                                class="accent-blue-600 w-4 h-4 flex-shrink-0 mt-0.5">
                         <span class="min-w-0">
-                          <span class="text-sm font-medium block leading-tight">No personalization</span>
+                          <!-- gbppl-checkout-noise-1: the title of a radio card is a system role,
+                               not a Tailwind pair. .gba-method-title (auth.css) is the one the
+                               system already owns for exactly this control: 16/600 Zinc 900 over
+                               a 14px Zinc 500 line. Russell's rule for the whole page — big and
+                               readable — starts with the thing you are choosing. -->
+                          <span class="gba-method-title block">No personalization</span>
                           <span class="text-sm text-zinc-500 block">Every gift in this order is the same</span>
                         </span>
                       </span>
@@ -1177,7 +1310,7 @@
                                :checked="shipment.persoMode === 'each'" @change="chooseMode(shipment, 'each')"
                                class="accent-blue-600 w-4 h-4 flex-shrink-0 mt-0.5">
                         <span class="min-w-0">
-                          <span class="text-sm font-medium block leading-tight">Personalize each gift</span>
+                          <span class="gba-method-title block">Personalize each gift</span>
                           <span class="text-sm text-zinc-500 block">Add names and details per gift</span>
                         </span>
                       </span>
@@ -1188,7 +1321,25 @@
                 <!-- ===== "No personalization": the order is already complete ===== -->
                 <div x-show="shipment.persoMode === 'none'" x-transition.opacity.duration.280ms class="space-y-5">
 
-                  <p class="text-sm text-zinc-700" x-text="identicalLine(shipment)"></p>
+                  <!-- ============================================================
+                       gbppl-checkout-noise-1 (03.09): «All 12 gifts are identical.
+                       Nothing more is needed.» is gone from here, and identicalLine()
+                       with it.
+
+                       Ton's rule, applied honestly: «Зачем повторять это текстом...
+                       Всю эту чушь нужно убрать повсюду.» The line said three things
+                       and owned none of them. "All 12" is the counter's number, in a
+                       box at the top of the card. "identical" is the chosen card's own
+                       subtitle, one row above, in those very words. "Nothing more is
+                       needed" is what an empty section says by being empty — the page
+                       asks for nothing else, and saying so out loud is the prototype
+                       reassuring itself.
+
+                       Jorge's question of 19.08 («how do I proceed without customizing
+                       those items?») is still answered, and answered better: by a
+                       chosen card that reads No personalization and a step that then
+                       asks for nothing.
+                       ============================================================ -->
 
                   <!-- Julia, meeting 20.08: a large share of un-personalized orders still
                        want ONE card in every box. That is not "personalization" to the
@@ -1215,7 +1366,12 @@
                         <label class="gb-eyebrow block mb-1">From</label>
                         <input type="text" x-model="shipment.genericCard.from" placeholder="Your name or company" class="gba-input">
                       </div>
-                      <p class="text-xs text-zinc-500" x-text="appliedToAll(shipment)"></p>
+                      <!-- gbppl-checkout-noise-1 (03.09): «Applied to all 12 gifts.» is gone,
+                           and appliedToAll() with it. It was the THIRD time this panel said
+                           the same fact: the checkbox that opens it reads "Add a greeting card
+                           to all gifts", its own line reads "One card, the same message in
+                           every box", and the count is the counter's. A 12px grey echo under
+                           a control that already says it is the noise Ton named. -->
                     </div>
                   </div>
                 </div>
@@ -1562,8 +1718,25 @@
       </div>
     </div>
     <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
-      <h3 class="font-serif text-2xl mb-1">Order summary</h3>
-      <p class="text-zinc-500 text-xs mb-6">Recalculates live as you edit</p>
+      <!-- ============================================================
+           gbppl-checkout-noise-1 (03.09): «Recalculates live as you edit»
+           leaves V2.
+
+           It is not a duplicate of a control, so it was weighed on the other
+           half of Ton's rule: «если ты делаешь текст маленьким и плохо
+           читаемым, значит ты не хочешь его показывать. Зачем мы его
+           добавляем?» A 12px grey line promising that a total adds up — the
+           only text-xs subtitle on the page, next to a text-sm one on the
+           card beside it — is a promise nobody asked for about behaviour
+           every total has.
+
+           With the line gone the heading takes the gap the line was holding
+           (mb-1 + line + mb-6 -> mb-6), so Order summary and Payment
+           information start their content on the same line. V1 keeps both
+           the sentence and the mb-1, hence the bound class.
+           ============================================================ -->
+      <h3 class="font-serif text-2xl" :class="uiVersion === 'v2' ? 'mb-6' : 'mb-1'">Order summary</h3>
+      <p class="text-zinc-500 text-xs mb-6" x-show="uiVersion !== 'v2'">Recalculates live as you edit</p>
       <div class="space-y-3 text-sm">
         <template x-for="product in products" :key="'sum-' + product.id">
           <div class="pb-2 border-b border-zinc-100">
@@ -1996,7 +2169,9 @@
             <span class="flex items-center gap-3">
               <input type="radio" name="drawer-shipping" :value="opt.id" x-model="drawer.data.shipping" class="accent-blue-600 w-4 h-4">
               <span>
-                <span class="text-sm font-medium block leading-tight" x-text="opt.label"></span>
+                <!-- gbppl-checkout-noise-1: same radio card, same system role as the two in
+                     step 1, so V2 speaks with one voice inside the drawer too. -->
+                <span class="block" :class="uiVersion === 'v2' ? 'gba-method-title' : 'text-sm font-medium leading-tight'" x-text="opt.label"></span>
                 <span class="block text-sm text-zinc-500">$<span x-text="opt.cost"></span></span>
               </span>
             </span>
@@ -2608,15 +2783,12 @@ function checkoutApp() {
     },
 
     // ===== V2: THE TWO ANSWERS =====
-    identicalLine(s) {
-      const n = this.poolOf(s);
-      if (n === 1) return 'This gift is not personalized. Nothing more is needed.';
-      return 'All ' + n + ' gifts are identical. Nothing more is needed.';
-    },
-    appliedToAll(s) {
-      const n = this.poolOf(s);
-      return n === 1 ? 'Applied to this gift.' : 'Applied to all ' + n + ' gifts.';
-    },
+    // identicalLine() and appliedToAll() were deleted here on 03.09
+    // (gbppl-checkout-noise-1). Both built a small grey sentence out of
+    // facts the controls beside them were already stating, and both
+    // sentences left the page with Ton's sweep. Nothing calls them; a
+    // helper kept alive for a line nobody prints is the next line
+    // somebody prints.
     // Choosing "Personalize each gift" brings the table up already the right
     // length. Choosing "No personalization" keeps the rows exactly where they
     // are: the answer can be changed back, and nothing typed is thrown away
