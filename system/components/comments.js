@@ -885,9 +885,10 @@
      ПОЛКА КОНСОЛИ: «Comments on this page»
      ------------------------------------------------------------
      Своя секция, а не группа в «This page»: список тредов — не
-     переключатель страницы. Мебель вся своя, консольная: eyebrow у
-     заголовка, сегменты фильтра, строки списка того же .gbsp-link,
-     что двери и песочницы (Тон-14, пункт 2).
+     переключатель страницы. Мебель вся своя, консольная: жёлоб
+     фильтра, строки списка того же .gbsp-link, что и команды Demo
+     (Тон-14, пункт 2). Заголовка у полки с 03.09 нет ни у одной, и
+     слово владельца живёт в aria-label самой полки.
      ============================================================ */
   function mountShelf() {
     var p = panelEl();
@@ -904,12 +905,19 @@
       when: 'comment'
     });
     shelf = sec.body;
+    /* ФИЛЬТР — ЖЁЛОБ КОНСОЛИ (gbppl-panel2-build-1, мокап 03.09). Был
+       рядом сегментов .gbsp-seg, где выбранный говорил синим; стал той
+       же коробкой с равными долями, что Mode и Device этажом выше. Ни
+       одного своего правила: панель владеет ВИДОМ, полка — списком.
+       Счёт стоит НАД жёлобом и только когда ему есть что сказать:
+       «0 open · 0 resolved» над строкой «No comments on this page yet»
+       — это один ответ, произнесённый дважды. */
     shelf.innerHTML =
-      '<p class="gbsp-note gbc-count"></p>' +
-      '<div class="gbsp-segs gbsp-segs--row gbc-filter" role="group" aria-label="Filter">' +
-        '<button class="gbsp-seg" type="button" data-f="open" aria-pressed="false">Open</button>' +
-        '<button class="gbsp-seg" type="button" data-f="resolved" aria-pressed="false">Resolved</button>' +
-        '<button class="gbsp-seg" type="button" data-f="mine" aria-pressed="false">Mine</button>' +
+      '<p class="gbsp-note gbc-count" hidden></p>' +
+      '<div class="gbsp-trough gbsp-trough--fenced gbc-filter" role="group" aria-label="Filter">' +
+        '<button class="gbsp-cell" type="button" data-f="open" aria-pressed="false">Open</button>' +
+        '<button class="gbsp-cell" type="button" data-f="resolved" aria-pressed="false">Resolved</button>' +
+        '<button class="gbsp-cell" type="button" data-f="mine" aria-pressed="false">Mine</button>' +
       '</div>' +
       '<ul class="gbsp-list gbc-list"></ul>';
 
@@ -947,6 +955,11 @@
     var count = shelf.querySelector('.gbc-count');
     count.textContent = down ? 'Comments unavailable'
       : (open + ' open · ' + done + ' resolved' + (applied ? ' · ' + applied + ' applied' : ''));
+    /* Пустая страница молчит: строка списка ниже уже сказала «No
+       comments on this page yet», и счёт нулей над ней был бы тем же
+       ответом вторым голосом (gbppl-panel2-build-1). Отказ сервиса —
+       не пустота, он говорит всегда. */
+    count.hidden = !down && !items.length;
 
     var segs = shelf.querySelectorAll('[data-f]');
     for (var i = 0; i < segs.length; i++) {
