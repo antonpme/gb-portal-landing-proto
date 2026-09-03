@@ -295,6 +295,7 @@
    family takes its underline to Blue 600 under the pointer. The
    chosen circle does not move: it is already there. */
 .gb-radio:hover .gb-radio__input:not(:checked):not(:disabled),
+.gb-radio.is-hover .gb-radio__input:not(:checked):not(:disabled),
 .gb-radio__input.is-hover:not(:checked):not(:disabled) {
   border-color: var(--gbr-line-hover);
 }
@@ -326,16 +327,30 @@
 /* ============================================================
    OFF
    ------------------------------------------------------------
-   One fade for the row, one for the group, and they never
-   multiply. The second rule is the trap toggle.css found on its own
-   showcase: the correct markup for a switched-off group wears BOTH
-   markers at once — the group so the pointer stops, a real
-   `disabled` on every input so the tab order does too — and 0.4
-   inside 0.4 is 0.16, which is a control twice as gone as anything
-   else the house switches off.
+   THE FADE ALWAYS LIVES ON THE ROW, NEVER ON THE GROUP, and that
+   is the whole design of this block rather than a detail of it.
+
+   The toggle learned on its own showcase that the correct markup
+   for a switched-off set wears BOTH markers at once — the group so
+   the pointer stops, a real `disabled` on every input so the tab
+   order does too — and that two opacities multiply: 0.4 inside 0.4
+   is 0.16, a control twice as gone as anything else the house
+   switches off. The toggle answers that with a guard rule that
+   un-fades a member inside a faded group. This file answers it by
+   never putting the two in the same place: the group turns the
+   pointer off and the ROWS fade, once, whichever of the two
+   markers put them there.
+
+   It also means --gbr-off is read where it is declared, on the row.
+   A slot declared on .gb-radio is not available to .gb-radio-group,
+   and a group rule spending it would silently render nothing —
+   which is exactly what the first draft of this file did, caught by
+   the showcase's own «the whole set off» specimen reading 1.
    ============================================================ */
 .gb-radio:has(.gb-radio__input:disabled),
-.gb-radio.is-disabled {
+.gb-radio.is-disabled,
+.gb-radio-group.is-disabled .gb-radio,
+.gb-radio-group[aria-disabled='true'] .gb-radio {
   opacity: var(--gbr-off);
   pointer-events: none;
   cursor: default;
@@ -343,14 +358,7 @@
 
 .gb-radio-group.is-disabled,
 .gb-radio-group[aria-disabled='true'] {
-  opacity: var(--gbr-off);
   pointer-events: none;
-}
-.gb-radio-group.is-disabled .gb-radio:has(.gb-radio__input:disabled),
-.gb-radio-group.is-disabled .gb-radio.is-disabled,
-.gb-radio-group[aria-disabled='true'] .gb-radio:has(.gb-radio__input:disabled),
-.gb-radio-group[aria-disabled='true'] .gb-radio.is-disabled {
-  opacity: 1;
 }
 
 /* ============================================================
@@ -471,10 +479,12 @@
    edge says that better than a ring two lines up. The plain radio's
    own hover is switched off here for the same reason — one hover
    per control. */
-.gb-radio--select:hover:not(:has(.gb-radio__input:checked)) {
+.gb-radio--select:hover:not(:has(.gb-radio__input:checked)),
+.gb-radio--select.is-hover:not(:has(.gb-radio__input:checked)) {
   border-color: var(--gbr-card-line-hover);
 }
-.gb-radio--select:hover .gb-radio__input:not(:checked):not(:disabled) {
+.gb-radio--select:hover .gb-radio__input:not(:checked):not(:disabled),
+.gb-radio--select.is-hover .gb-radio__input:not(:checked):not(:disabled) {
   border-color: var(--gbr-line);
 }
 

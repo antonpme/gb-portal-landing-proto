@@ -98,6 +98,11 @@
     /* gbppl-inputnumber-1. It stood last as Stepper; the rail is
        alphabetical, so under its own name it stands here. */
     { href: 'inputnumber.html', label: 'Input number' },
+    /* gbppl-radio-1. The rail is alphabetical and the house name is
+       the client's: PrimeVue calls this control a RadioButton, so it
+       stands here as Radio button and not under Ton's own «Radio
+       select», which is a look of it and a section of the page. */
+    { href: 'radio.html', label: 'Radio button' },
     { href: 'select.html', label: 'Select' },
     /* gbppl-toggle-family-1. Last of the Base list under its own
        name, and the name is the house's: PrimeVue would call this

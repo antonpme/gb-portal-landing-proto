@@ -432,6 +432,9 @@
   var OWNERS = [
     [/^gb-btn/, 'system/components/button.css'],
     [/^gb-toggle/, 'system/components/toggle.css'],
+    /* gbppl-radio-1. One prefix, the whole family: the row, the
+       circle, the label, both lines of the card and the group. */
+    [/^gb-radio/, 'system/components/radio.css'],
     /* gbppl-inputnumber-1. The frame had no deed of its own and read
        its owner off an ancestor; the rename is the moment to write
        the купчая down, one prefix like every other row. */
@@ -588,6 +591,38 @@
         var d = KINDS.inputnumber.describe(el);
         return d.size + ' · ' + d.well + (d.host ? ' · host driven' : '') +
                (d.state === 'rest' ? '' : ' · ' + d.state);
+      } },
+
+    /* gbppl-radio-1. The parts first, the row second, the group last:
+       the rule of this table is that the smaller, more specific thing
+       comes first, and a person pointing at the quiet line of a card
+       is pointing at that line. The row is SOLID, so a plain hover
+       anywhere inside it answers «Radio button» and Alt drills to the
+       part. */
+    { sel: '.gb-radio__title', name: 'Radio title', oro: 'radio.html#variants' },
+    { sel: '.gb-radio__sub', name: 'Radio description', oro: 'radio.html#variants' },
+    { sel: '.gb-radio__label', name: 'Radio label', oro: 'radio.html#anatomy' },
+    { sel: '.gb-radio__input', name: 'Radio circle', oro: 'radio.html#anatomy' },
+    { sel: '.gb-radio--select', name: 'Radio select', oro: 'radio.html#variants',
+      detail: function (el) {
+        var i = el.querySelector('.gb-radio__input');
+        return (i && i.checked ? 'chosen' : 'not chosen') +
+               (i && i.disabled ? ' · disabled' : '');
+      } },
+    { sel: '.gb-radio', name: 'Radio button', oro: 'radio.html#radio',
+      detail: function (el) {
+        var i = el.querySelector('.gb-radio__input');
+        return (i && i.checked ? 'chosen' : 'not chosen') +
+               (i && i.disabled ? ' · disabled' : '');
+      } },
+    { sel: '.gb-radio-group', name: 'Radio group', oro: 'radio.html#groups',
+      detail: function (el) {
+        var list = el.querySelectorAll('.gb-radio__input');
+        var on = el.querySelector('.gb-radio__input:checked');
+        var lbl = on ? on.closest('.gb-radio') : null;
+        var word = lbl ? (lbl.querySelector('.gb-radio__title') || lbl.querySelector('.gb-radio__label')) : null;
+        return list.length + ' values · ' + (word ? word.textContent.trim() : 'nothing chosen') +
+               (/--cards/.test(String(el.className)) ? ' · cards' : '');
       } },
 
     /* gbppl-oro-field-2. The four other looks of the field, above the
@@ -2555,7 +2590,11 @@
      one and you get the whole. Hold Alt to switch that off and
      take the exact element under the pointer, which is how a
      developer gets to the label, the glyph or the wrapper. */
-  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
+  /* gbppl-radio-1. The ROW and not the group: a person pointing at a
+     radio card is pointing at one answer, the way they point at one
+     half of a toggle. Alt still drills to the circle or to either
+     line, and the group is reached by pointing between the cards. */
+  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
               '.gbb-slot, .gbs-chip, .gb-eyebrow, .gbh-navitem, .gbh-link';
   function resolveTarget(el, drill) {
     if (drill || !el || !el.closest) return el;
