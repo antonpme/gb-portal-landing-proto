@@ -282,13 +282,20 @@
           /* Было «V2 · Shared pool». Тон 31.08: «Что такое V2 Shared
              Pool?» — теперь имя говорит, ЧТО общее: количество. */
           label: 'Shared quantity pool',
-          desc: 'Gifts are not personalized by default. Quantity is a pool on the gift, and personalization is an add-on behind a choice of two doors.',
+          /* Переписано 03.09 (gbppl-checkout-v2-rework-1) по фидбеку
+             команды со встречи 02.09: «одна персонализация на всех»
+             умерла (Юля: «такого не бывает»), пул с вычитанием тоже —
+             количеством владеет только счётчик Gifts, одна строка =
+             один подарок. Имя варианта Тон утвердил 31.08 и оно
+             осталось: количество по-прежнему одно на все подарки
+             набора. Вопрос Тону в отчёте волны. */
+          desc: 'Gifts are not personalized by default. One counter sets how many gifts there are, and personalization is a choice of two: none, or a row per gift.',
           status: 'in-progress',
           href: 'live/checkout.html?v=2',
           ready: true,
           tags: ['flow', 'personalization'],
           created: '2026-08-25',
-          updated: '2026-08-31'
+          updated: '2026-09-03'
         }
       ]
     },

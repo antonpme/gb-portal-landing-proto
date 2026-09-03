@@ -9,6 +9,53 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-v2-rework-1 (2026-09-03) — SECTION 2 OF ?v=2 IS
+     REBUILT ON WHAT THE TEAM SAID OUT LOUD ON 02.09.
+
+     ?v=1 IS NOT TOUCHED BY ANY OF IT. Both versions are still
+     candidates in front of the team, so every change below is
+     behind `uiVersion === 'v2'` and V1 was measured before and
+     after, three widths, three scenarios, geometry and text: zero
+     difference.
+
+     1. «ONE PERSONALIZATION FOR ALL» IS DEAD, WHOLE. Julia, at the
+        meeting: «такого не бывает, так делать нельзя». Out go the
+        door, the inline form behind it, the summary line that
+        offered to switch to it, the `uniform` state, and every
+        branch that read it. It is not hidden behind a flag; a
+        shape the business does not sell should not be one keystroke
+        from coming back.
+
+     2. THE SECTION BEGINS WITH THE QUESTION. Two radio cards, «No
+        personalization» (the default) and «Personalize each gift»,
+        and they are the SHIPPING METHOD cards of step 1 to the
+        class. Ton: the two questions of this page should be
+        answered by one kind of control. The choice stands first,
+        above what it governs.
+
+     3. THE COUNTER OWNS THE QUANTITY, ALONE. Ton: «количеством
+        владеет только счётчик Gifts сверху страницы... связь
+        1 гифт = 1 строка». The pool with its subtraction and its
+        self-growth is gone, and with it the Gifts column, the row
+        bin, «Add a gift for someone else», Delete selected and the
+        drawer's quantity. Raising the counter adds rows at the
+        bottom; lowering it takes the LAST ones away, after ONE
+        warning if any of them has something written in it, and in
+        silence ever after.
+
+     4. THE COLUMNS SAY WHAT THEY HOLD. «Name for personalization»
+        is «Name» (Ton refused the narrower «Name on gift»: the
+        name goes on the box, the card and some of the items). The
+        three «Personalize Item N» headings are the items' own
+        names, ellipsed with the full name on hover, falling back
+        to «Item N» when the back end sends a nameless part.
+        «Greeting Card» is «Card message». All of them join the
+        Eyebrow role, the one caps voice the system has.
+
+     Wording, geometry and the rest of the audit are marked at
+     their sites below.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-inputnumber-1 (2026-08-31) — THE QUANTITY CONTROL IS
      CALLED WHAT THE CLIENT'S STACK CALLS IT.
 
@@ -262,9 +309,12 @@
 
      WHAT THIS PAGE KEEPS. Every value stays Alpine's: all four
      frames carry data-gb-inputnumber="host", so the component never
-     writes a number here. bumpPool, syncPool, the deferred quantity
-     and the drawer quantity behave exactly as they did, and the
-     totals are recomputed by the same handlers.
+     writes a number here. (The handlers named in that sentence were
+     bumpPool and syncPool; gbppl-checkout-v2-rework-1 replaced them
+     with setGiftCount on 03.09, and the contract with the component
+     is unchanged: host mode, Alpine owns the value.) The deferred
+     quantity and the drawer quantity behave exactly as they did, and
+     the totals are recomputed by the same handlers.
 
      WHAT MOVED, measured before and after at 390 / 1024 / 1280:
        · the well of the deferred input number 64 -> 56 wide, one step of
@@ -633,8 +683,16 @@
             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg><span class="gb-btn__label">Remove gift</span></button>
         </div>
 
-        <!-- ===== RIGHT: product header + shipments ===== -->
-        <div class="p-8 space-y-5">
+        <!-- ===== RIGHT: product header + shipments =====
+             min-w-0 in V2. A grid item's min-width is `auto`, so the 880px table
+             inside this column pushed the track wider than its 2fr share and
+             squeezed the picture column: on the loaded cart the two cards on one
+             page had picture columns of 156 and 259, and the images inside them
+             were different sizes. Measured, not guessed. The table already scrolls
+             inside its own box (gbppl-checkout-12), so nothing is lost by holding
+             the track to its share. V1 carries the same defect and is left alone
+             until the team picks a version. -->
+        <div class="p-8 space-y-5" :class="uiVersion === 'v2' ? 'min-w-0' : ''">
 
           <!-- ===== Product header ===== -->
           <div class="flex flex-wrap items-start justify-between pb-1">
@@ -646,43 +704,97 @@
                 · <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span> total
               </p>
               <!-- ============================================================
-                   V2: QUANTITY LIVES ON THE GIFT (Ton, meeting 20.08). The number
-                   of gifts is the first thing the card states and the only place
-                   it is set — one pool per shipment, personalized or not. NOT
-                   under the Russell gate (Ton, 21.08): the gate protects the
-                   personalization body, but how many gifts you are buying is a
-                   property of the gift itself and owes nothing to the address.
+                   V2: THE COUNTER OWNS THE QUANTITY, AND NOTHING ELSE DOES.
+                   (Ton, meeting 20.08, for the counter standing here at all;
+                   Ton 02-03.09, for it being the ONLY hand on the number.)
+
+                   Until 03.09 this was a POOL: the personalization rows below
+                   carved gifts out of it, the pool grew by itself when a row
+                   asked for more than it held, and the ring around the frame
+                   said so. That whole machine is gone with the fork it served.
+                   Ton, after the team meeting 02.09: «количеством владеет
+                   только счётчик Gifts сверху страницы... связь 1 гифт = 1
+                   строка». So: one gift is one row, the counter adds rows at
+                   the bottom and takes the LAST ones away, and no other
+                   control on the page moves this number.
+
+                   NOT under the Russell gate (Ton, 21.08): the gate protects
+                   the personalization body, but how many gifts you are buying
+                   is a property of the gift itself and owes nothing to the
+                   address.
                    ============================================================ -->
-              <div x-show="uiVersion === 'v2'" class="mt-2.5 flex items-center gap-4"
-                   x-effect="if (uiVersion === 'v2') syncPool(product)">
+              <div x-show="uiVersion === 'v2'" class="mt-2.5 flex items-center gap-4">
                 <span class="gb-eyebrow">Gifts</span>
-                <!-- The ring is the pool saying it grew on its own: a personalization row
-                     asked for more gifts than the pool held, so the pool came up to meet it. -->
-                <!-- gbppl-oro-select-stepper-1: the temporary look is over. The frame is the
-                     component now (.gb-inputnumber), the well is .gb-inputnumber__value, and the two
-                     buttons keep the .gb-btn--icon --small --plain they took on 28.08. The value
-                     stays Alpine's: data-gb-inputnumber="host" tells the component to leave it
-                     alone and do the half the page never had, bounds and aria. The grown-pool
-                     ring is page state and stays a page class. -->
-                <div class="gb-inputnumber" data-gb-inputnumber="host" aria-label="Number of gifts"
-                     :class="product.shipments[0] && product.shipments[0].poolGrown ? 'border-blue-600 ring-2 ring-blue-200' : ''">
-                  <button @click="bumpPool(product, -1)" type="button" aria-label="Decrease quantity"
-                          :title="poolFloorReason(product)" data-step="-1"
+                <!-- gbppl-oro-select-stepper-1: the frame is the component (.gb-inputnumber),
+                     the well is .gb-inputnumber__value, and the two buttons keep the
+                     .gb-btn--icon --small --plain they took on 28.08. The value stays
+                     Alpine's: data-gb-inputnumber="host" tells the component to leave it
+                     alone and do the half the page never had, bounds and aria. -->
+                <div class="gb-inputnumber" data-gb-inputnumber="host" aria-label="Number of gifts">
+                  <button @click="bumpGifts(product, -1)" type="button" aria-label="Decrease quantity"
+                          :title="giftFloorReason(product)" data-step="-1"
                           class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
-                  <input type="number" min="1" :value="productPool(product)" @input="setPoolValue(product, $event.target.value)" class="gb-inputnumber__value">
-                  <button @click="bumpPool(product, 1)" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                  <!-- @change, not @input: a typed "12" passes through "1" on its way, and
+                       with rows following the number that keystroke would take eleven rows
+                       away before the second digit landed. The buttons are instant; the
+                       keyboard commits on blur or Enter, the way a number field does. -->
+                  <input type="number" min="1" :value="productPool(product)" @change="setGiftValue(product, $event.target.value, $event.target)" class="gb-inputnumber__value">
+                  <button @click="bumpGifts(product, 1)" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
                 </div>
-                <p class="text-zinc-500 text-sm">
+                <!-- The gift count used to be printed here a second time, one word after
+                     the control that sets it («1 shipment · 12 gifts total»). The number
+                     is already on screen, in a box, in the reader's hand. -->
+                <p class="text-zinc-500 text-sm whitespace-nowrap">
                   <span x-text="product.shipments.length"></span> shipment<span x-show="product.shipments.length > 1">s</span>
-                  · <span x-text="productPool(product)"></span> gift<span x-show="productPool(product) !== 1">s</span> total
                 </p>
-                <p class="text-xs text-blue-700" x-show="product.shipments[0] && product.shipments[0].poolGrown" x-cloak>Raised to fit your personalizations.</p>
               </div>
             </div>
             <div class="text-right">
               <p class="gb-eyebrow">Product total</p>
               <p class="font-serif text-3xl">$<span x-text="productTotal(product).toLocaleString()"></span></p>
             </div>
+          </div>
+
+          <!-- ============================================================
+               V2 · THE ONE WARNING (Ton 03.09: «предупредить ОДИН раз...
+               после первого предупреждения молча»).
+
+               Lowering the counter over rows that have something written in
+               them destroys work, so the first time it is about to happen the
+               page stops and says so. After that it does not ask again: the
+               rule has been read, and a prototype that repeats itself is a
+               prototype nobody finishes walking. Empty rows are always taken
+               away in silence — there is nothing to lose.
+
+               WHY THIS SHAPE AND NOT ANOTHER. A browser confirm() is out
+               (Ton 03.09, and it is not the system's voice anyway). A
+               <gb-drawer> is the surface for a document, not for a yes/no
+               about the control the hand is still on. The system's own
+               inline notice — Blue 50 ground, Blue 200 hairline, --radius,
+               the alert glyph — is already on this page one section above
+               («Choose an address in step 1 to continue»), and the pair of
+               quiet buttons is the pair the fork summary wore. So nothing is
+               invented: an existing notice grows the two actions it needs.
+               Blue, not Red: Ton-5 says blue is state and red is an error,
+               and being asked a question is not an error.
+
+               It stands under the COUNTER, because that is the control the
+               hand is on and the place the consequence starts.
+               ============================================================ -->
+          <div x-show="uiVersion === 'v2' && giftCut.pending && giftCut.productId === product.id" x-cloak
+               x-transition.opacity.duration.280ms
+               class="flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
+            <span class="flex items-start gap-2 min-w-0">
+              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+              <span x-text="giftCutLine()"></span>
+            </span>
+            <!-- No ml-auto: when the sentence takes the whole line the two buttons follow it
+                 on the next one, left aligned, reading as its continuation. Pushed to the far
+                 right they would sit alone across an empty strip. -->
+            <span class="flex items-center gap-2 flex-shrink-0">
+              <button @click="cancelGiftCut()" type="button" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+              <button @click="confirmGiftCut()" type="button" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--primary"><span class="gb-btn__label">Remove</span></button>
+            </span>
           </div>
 
           <!-- ===== SHIPMENTS within this product ===== -->
@@ -746,10 +858,18 @@
 
               <!-- One line under the toggle, changing with it: the consequence of the choice
                    said out loud before any field is asked for (approved copy set, 21.08). -->
+              <!-- gbppl-checkout-v2-rework-1 (03.09), wording pass: fourteen words became
+                   seven and say the same thing. V1 keeps the sentence the team already
+                   reviewed, word for word — both versions stand in front of them and only
+                   one of them is being reworked. -->
               <p class="px-6 pt-4 -mb-1 text-xs text-zinc-500"
-                 x-text="shipment.addressMode === 'same'
-                   ? 'All gifts in this order will be delivered to one address.'
-                   : 'Each gift in this order will be delivered to a different address.'"></p>
+                 x-text="uiVersion === 'v2'
+                   ? (shipment.addressMode === 'same'
+                       ? 'All gifts go to one address.'
+                       : 'Each gift goes to its own address.')
+                   : (shipment.addressMode === 'same'
+                       ? 'All gifts in this order will be delivered to one address.'
+                       : 'Each gift in this order will be delivered to a different address.')"></p>
 
               <!-- ===== STEP 1 BODY · ONE ADDRESS: address + shipping method ===== -->
               <div x-show="shipment.addressMode === 'same'" class="px-6 py-5 space-y-5" x-data="{ shipToOpen: false }">
@@ -805,7 +925,9 @@
               <!-- Hint: pick address first (One address without an address chosen) — Russell rule #1 -->
               <div x-show="shipment.addressMode === 'same' && !shipment.shipToId" class="mx-6 mb-5 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-3 py-2">
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-                <span>Pick where this ships in step 1 to continue.</span>
+                <!-- Wording pass 03.09: «Pick where this ships» named the outcome, not the
+                     control. The line now names the control the reader has to touch. -->
+                <span x-text="uiVersion === 'v2' ? 'Choose an address in step 1 to continue.' : 'Pick where this ships in step 1 to continue.'"></span>
               </div>
 
               <!-- Disabled-until-address wrapper (One address + nothing chosen) — Russell rule #1 -->
@@ -887,10 +1009,11 @@
                      ============================================================ -->
                 <div class="min-w-0" x-show="uiVersion === 'v2'">
                   <h3 class="font-serif text-2xl leading-tight">2. Personalization</h3>
-                  <!-- Only while the fork is untouched: once a door is open the blue bar
-                       below states where things stand, and two answers in a row is one
-                       too many (Art: the interface is already wordy). -->
-                  <p class="text-zinc-500 text-xs mt-1" x-show="selectedCount(shipment) === 0 && !shipment.persoMode">Every gift in this order is the same unless you say otherwise.</p>
+                  <!-- The grey line that stood here («Every gift in this order is the same
+                       unless you say otherwise») is gone: the two radio cards immediately
+                       below now say exactly that, one of them in those very words, and a
+                       heading that answers its own question before the question is asked
+                       is the wordiness Art complained of. -->
                   <p class="text-blue-600 text-xs mt-1 font-medium" x-show="selectedCount(shipment) > 0"><span x-text="selectedCount(shipment)"></span> selected</p>
                 </div>
                 <!-- ============================================================
@@ -910,7 +1033,7 @@
                     <button @click="tplMenuOpen = tplMenuOpen === shipment.id ? null : shipment.id; bulkMenuOpen = null"
                             class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary">
                       <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg></span>
-                      <span class="gb-btn__label">Bulk Personalize</span>
+                      <span class="gb-btn__label">Bulk personalize</span>
                       <svg class="w-3 h-3 ml-1 transition-transform" :class="tplMenuOpen === shipment.id ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                     </button>
                     <div x-show="tplMenuOpen === shipment.id" x-cloak @click.outside="tplMenuOpen = null" x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute right-0 top-full mt-2 w-[300px] bg-white border border-zinc-200 rounded-[var(--radius)] shadow-xl z-50 overflow-hidden">
@@ -941,7 +1064,7 @@
                            16px glyph (58px wide) and "Edit Selected" printed straight out of
                            its right edge, on both shipments, at every width. One </span>. -->
                       <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg></span>
-                      <span class="gb-btn__label">Edit Selected<span x-show="selectedCount(shipment) > 0"> · <span x-text="selectedCount(shipment)"></span></span></span>
+                      <span class="gb-btn__label">Edit selected<span x-show="selectedCount(shipment) > 0"> · <span x-text="selectedCount(shipment)"></span></span></span>
                       <svg class="w-3 h-3 ml-1 transition-transform" :class="bulkMenuOpen === shipment.id ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                     </button>
                     <!-- The menu no longer explains itself: the button already says Edit Selected and
@@ -968,7 +1091,11 @@
                           <span>Attach video message</span>
                         </button>
                       </div>
-                      <div class="border-t border-zinc-100 p-2">
+                      <!-- V2 has no Delete selected, and that is the counter rule reaching
+                           into the menu: rows are born and taken by the Gifts counter alone
+                           (Ton 03.09). An item that removes three rows would be moving the
+                           gift count from a second place. V1 keeps it, untouched. -->
+                      <div class="border-t border-zinc-100 p-2" x-show="uiVersion !== 'v2'">
                         <button @click="bulkDelete(product.id, shipment.id)" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-red-50 text-red-600 rounded-[var(--radius)] text-sm text-left">
                           <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397"/></svg>
                           <span>Delete selected</span>
@@ -980,31 +1107,87 @@
               </div>
 
               <!-- ============================================================
-                   V2 · THE PERSONALIZATION FORK.
-                   The organism is the details chooser Variant 3 that sleeps under
-                   two `false &&` guards above: two tiles with an icon, a title and
-                   a line of description, collapsing after the click into a compact
-                   blue summary bar with "Change choice". Same shape, new question —
-                   there it asked WHEN details arrive, here it asks WHETHER, and in
-                   what shape. The unchosen state is a real answer, not an empty
-                   one: the gifts are identical and the order is already complete.
-                   ============================================================ -->
-              <div x-show="uiVersion === 'v2' && shipment.detailsMode === 'now'" class="px-6">
+                   V2 · SECTION 2 BEGINS WITH THE CHOICE, AND THE CHOICE HAS
+                   TWO ANSWERS (Ton 02-03.09, after the team meeting).
 
-                <!-- ===== Default: nothing personalized ===== -->
-                <div x-show="!shipment.persoMode" x-transition.opacity.duration.280ms class="py-5 space-y-5">
+                   WHAT DIED HERE. «One personalization for all» is gone
+                   whole: the door, the inline form behind it, the summary
+                   line offering to switch to it, and the state it kept.
+                   Julia, at the meeting: «такого не бывает, так делать
+                   нельзя». One message on a hundred boxes is not a thing
+                   this business sells, and a prototype that offers it
+                   teaches the team a shape that does not exist.
+
+                   WHAT STANDS IN ITS PLACE. Two radio cards, and they are
+                   the SHIPPING METHOD cards of step 1, to the class — same
+                   grid, same hairline, same Blue 50 ground when chosen,
+                   same 14px title over a 14px grey line. Ton 03.09 asked
+                   for exactly that: the two questions of this page are
+                   answered by one kind of control. And the choice stands
+                   FIRST, above everything it governs, because it decides
+                   what the rest of the section even is.
+
+                   The default is «No personalization», and it is a finished
+                   answer, not an empty one: most orders are a dozen
+                   identical gifts to one address (Brian the coordinator,
+                   DD-141 #6), and Jorge's question of 19.08 — «how do I
+                   proceed without customizing those items?» — is answered
+                   before he asks it.
+                   ============================================================ -->
+              <div x-show="uiVersion === 'v2' && shipment.detailsMode === 'now'" class="px-6 py-5 space-y-5">
+
+                <div>
+                  <p class="gb-eyebrow mb-2">Personalization</p>
+                  <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+                    <!-- @change + :checked rather than x-model: choosing does more than
+                         store a word (chooseMode brings the rows in line with the
+                         counter), and the model has to stay the single writer. -->
+                    <label
+                      :class="shipment.persoMode === 'none' ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-white hover:border-zinc-400'"
+                      class="cursor-pointer border rounded-[var(--radius)] p-4 flex items-start transition-colors">
+                      <span class="flex items-start gap-3 min-w-0">
+                        <input type="radio" :name="'perso-' + shipment.id" value="none"
+                               :checked="shipment.persoMode === 'none'" @change="chooseMode(shipment, 'none')"
+                               class="accent-blue-600 w-4 h-4 flex-shrink-0 mt-0.5">
+                        <span class="min-w-0">
+                          <span class="text-sm font-medium block leading-tight">No personalization</span>
+                          <span class="text-sm text-zinc-500 block">Every gift in this order is the same</span>
+                        </span>
+                      </span>
+                    </label>
+                    <label
+                      :class="shipment.persoMode === 'each' ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-white hover:border-zinc-400'"
+                      class="cursor-pointer border rounded-[var(--radius)] p-4 flex items-start transition-colors">
+                      <span class="flex items-start gap-3 min-w-0">
+                        <input type="radio" :name="'perso-' + shipment.id" value="each"
+                               :checked="shipment.persoMode === 'each'" @change="chooseMode(shipment, 'each')"
+                               class="accent-blue-600 w-4 h-4 flex-shrink-0 mt-0.5">
+                        <span class="min-w-0">
+                          <span class="text-sm font-medium block leading-tight">Personalize each gift</span>
+                          <span class="text-sm text-zinc-500 block">Add names and details per gift</span>
+                        </span>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- ===== "No personalization": the order is already complete ===== -->
+                <div x-show="shipment.persoMode === 'none'" x-transition.opacity.duration.280ms class="space-y-5">
 
                   <p class="text-sm text-zinc-700" x-text="identicalLine(shipment)"></p>
 
                   <!-- Julia, meeting 20.08: a large share of un-personalized orders still
                        want ONE card in every box. That is not "personalization" to the
-                       person ordering, so it stands here, outside the fork, as a plain
-                       yes/no with the field folded away until it is a yes. -->
+                       person ordering, so it lives HERE, as a sub-option of this answer
+                       and of no other: the per-gift table gives every row a card of its
+                       own and has nothing to ask for in common (Ton 03.09).
+                       A checkbox, not a switch — Ton 03.09, settling it: this is one
+                       thing you either add to the order or do not. -->
                   <div class="border border-zinc-200 rounded-[var(--radius)]">
-                    <label class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
+                    <label class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
                       <input type="checkbox" x-model="shipment.genericCard.on" class="accent-blue-600 w-4 h-4 flex-shrink-0">
                       <span class="text-sm text-zinc-900">Add a greeting card to all gifts</span>
-                      <span class="text-xs text-zinc-500">One card, the same message in every box</span>
+                      <span class="text-sm text-zinc-500">One card, the same message in every box</span>
                     </label>
                     <div x-show="shipment.genericCard.on" x-cloak x-transition.opacity.duration.280ms class="border-t border-zinc-200 px-4 py-5 space-y-6">
                       <div>
@@ -1021,122 +1204,6 @@
                       <p class="text-xs text-zinc-500" x-text="appliedToAll(shipment)"></p>
                     </div>
                   </div>
-
-                  <!-- ===== The two doors ===== -->
-                  <div class="border-t border-zinc-200 pt-5 space-y-3">
-                    <p class="gb-eyebrow">Or add personalization</p>
-                    <div class="grid grid-cols-2 gap-3">
-                      <button @click="chooseMode(shipment, 'each')" class="text-left p-5 border border-zinc-200 rounded-[var(--radius)] hover:border-blue-600 hover:shadow-sm transition-colors">
-                        <div class="flex items-center gap-2.5 mb-2">
-                          <svg class="w-5 h-5 text-zinc-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
-                          <h4 class="font-medium text-zinc-900">Personalize each gift</h4>
-                        </div>
-                        <p class="text-xs text-zinc-500 pl-[30px]">Add names and details per gift.</p>
-                      </button>
-                      <button @click="chooseMode(shipment, 'all')" class="text-left p-5 border border-zinc-200 rounded-[var(--radius)] hover:border-blue-600 hover:shadow-sm transition-colors">
-                        <div class="flex items-center gap-2.5 mb-2">
-                          <svg class="w-5 h-5 text-zinc-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-6a2.25 2.25 0 00-2.25 2.25v6"/></svg>
-                          <h4 class="font-medium text-zinc-900">One personalization for all</h4>
-                        </div>
-                        <p class="text-xs text-zinc-500 pl-[30px]">Same message and details on every gift.</p>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- ===== After the choice: the compact summary bar ===== -->
-                <!-- Status bar after a door is chosen. Reworked (Ton, 21.08): the logic was
-                     inverted — the STATUS wore the blue while the ACTION hid as gray
-                     underlined text at the far edge. Now the status is quiet ink on a quiet
-                     ground, and the actions sit right next to it, blue and named concretely
-                     ("Switch to…" says where the door leads, "Change choice" said nothing).
-                     Switching keeps the work; removing only clears the mode. -->
-                <div x-show="shipment.persoMode" x-cloak x-transition.opacity.duration.280ms class="flex flex-wrap items-center gap-x-4 gap-y-1.5 bg-zinc-50 border border-zinc-200 rounded-[var(--radius)] px-4 py-3 my-5">
-                  <span class="flex items-center gap-2.5 min-w-0">
-                    <span class="gb-eyebrow">Personalization</span>
-                    <span class="text-sm font-medium text-zinc-900 truncate" x-text="shipment.persoMode === 'each' ? 'Each gift on its own' : 'One personalization for all'"></span>
-                    <!-- The pool split, next to the fork that caused it: every row of door A
-                         takes gifts out of the plain pile and nothing is ever double-counted. -->
-                    <span class="text-sm text-zinc-500" x-text="shipment.persoMode === 'each' ? poolSummary(shipment) : appliedToAll(shipment)"></span>
-                  </span>
-                  <span class="h-4 w-px bg-zinc-300"></span>
-                  <button @click="chooseMode(shipment, shipment.persoMode === 'each' ? 'all' : 'each')" type="button" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--primary">
-                    <span class="gb-btn__label" x-text="shipment.persoMode === 'each' ? 'Switch to one personalization for all' : 'Switch to per-gift personalization'"></span>
-                  </button>
-                  <button @click="shipment.persoMode = null" type="button" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Remove personalization</span></button>
-                </div>
-
-                <!-- ===== Door B: one form, filled once ===== -->
-                <div x-show="shipment.persoMode === 'all'" x-cloak class="pb-8 space-y-8">
-                  <div class="space-y-8">
-                    <p class="gb-eyebrow">Gift personalization</p>
-                    <!-- Same fields as the drawer, same rows the gift actually has — only
-                         inline, and written to the shipment once instead of to every row. -->
-                    <template x-for="(it, idx) in productItems(product)" :key="'uni-item-'+shipment.id+'-'+idx">
-                      <div class="grid grid-cols-1 md:grid-cols-[72px_1fr_212px] gap-6 items-center">
-                        <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
-                        <div>
-                          <p class="gb-eyebrow">Item <span x-text="idx + 1"></span></p>
-                          <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
-                          <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
-                        </div>
-                        <div>
-                          <template x-if="it.kind === 'initials'">
-                            <div>
-                              <!-- gbppl-checkout-14: a character box, not a field. One glyph, centred, 30px Noto
-                                   Serif — .gba-input would put Inter 300 in it and pull the caret left. -->
-                              <div class="flex flex-wrap gap-2.5">
-                                <template x-for="i in 3" :key="'uslot-'+shipment.id+'-'+idx+'-'+i">
-                                  <input
-                                    type="text"
-                                    maxlength="1"
-                                    :value="slotValue(shipment.uniform, 'item' + (idx+1), i-1)"
-                                    @input="updateSlot(shipment.uniform, 'item' + (idx+1), i-1, $event.target.value, $event)"
-                                    @keydown="slotKeydown($event)"
-                                    class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
-                                </template>
-                              </div>
-                              <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
-                            </div>
-                          </template>
-                          <template x-if="it.kind !== 'initials'">
-                            <div>
-                              <input type="text" :value="shipment.uniform['item' + (idx+1)] || ''" @input="shipment.uniform['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="gba-input">
-                              <p class="gb-eyebrow mt-1.5">Name (<span x-text="(shipment.uniform['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
-                            </div>
-                          </template>
-                        </div>
-                      </div>
-                    </template>
-                  </div>
-
-                  <div class="border-t border-zinc-200 pt-8 space-y-8">
-                    <p class="gb-eyebrow">Greeting card</p>
-                    <div class="grid grid-cols-2 gap-8">
-                      <div class="gba-inputwrap">
-                        <label class="gb-eyebrow block mb-1">To</label>
-                        <input type="text" x-model="shipment.uniform.greeting.to" placeholder="Name on the card (optional)" class="gba-input">
-                      </div>
-                      <div class="gba-inputwrap">
-                        <label class="gb-eyebrow block mb-1">From</label>
-                        <input type="text" x-model="shipment.uniform.greeting.from" placeholder="Your name or company" class="gba-input">
-                      </div>
-                    </div>
-                    <div>
-                      <div class="flex justify-between items-baseline mb-1">
-                        <label class="gb-eyebrow">Message</label>
-                        <span class="text-xs text-zinc-500"><span x-text="(shipment.uniform.greeting.message || '').length"></span> / 280</span>
-                      </div>
-                      <textarea x-model="shipment.uniform.greeting.message" rows="3" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
-                    </div>
-                  </div>
-
-                  <!-- No Save button: there is one copy of this form and it IS the state.
-                       The line says where what you typed ends up. -->
-                  <p class="flex items-center gap-2 text-xs text-zinc-500">
-                    <svg class="w-4 h-4 text-zinc-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span x-text="appliedToAll(shipment)"></span>
-                  </p>
                 </div>
               </div>
 
@@ -1150,8 +1217,63 @@
                      in the different-addresses scenario at every width. The box around this
                      table already scrolls sideways on its own (gbppl-checkout-12), so the table
                      is allowed to ask for the width its own words need. -->
-                <table class="w-full table-fixed min-w-[880px]">
+                <!-- 880 was measured for EIGHT columns (gbppl-checkout-15). V2 has six:
+                     Gifts and the bin left the table, and 132 + 40 of fixed width went
+                     with them. Holding 880 in a column that now honours its 1fr:2fr share
+                     would have pushed Card message off the right edge at 1280, behind a
+                     sideways scroll, where nobody would know it existed. 680 is that
+                     measurement minus what left, rounded down to the nearest step of the
+                     8-grid; NO TOKEN, like the 880 it replaces. -->
+                <table class="w-full table-fixed" :class="uiVersion === 'v2' ? 'min-w-[680px]' : 'min-w-[880px]'">
                   <thead class="border-b border-zinc-200">
+                    <!-- ============================================================
+                         TWO HEADER ROWS, ONE PER VERSION (gbppl-checkout-v2-rework-1).
+                         The V1 row below is the row this file has carried since
+                         gbppl-checkout-15, character for character, because V1 is a
+                         candidate in front of the team and must not move. The V2 row
+                         is a rework, not a patch, and a patched row would have meant
+                         a conditional inside every cell — which is how V1 loses a
+                         pixel by accident. Only ONE of the two is ever in the DOM.
+
+                         WHAT CHANGED IN THE V2 ROW (Ton 02-03.09):
+
+                         CASE AND VOICE. Every other label on this page that names a
+                         field or a section is the Eyebrow role, the system's one caps
+                         voice (ORO-SKILL 3): ADDRESS, SHIPPING METHOD, PRODUCT TOTAL,
+                         GIFTS. The column headings were the last labels speaking in
+                         their own 14px sentence case, and gbppl-checkout-10 said out
+                         loud that changing them was «a separate decision, not a
+                         cleanup». Ton took the decision («регистр заголовков колонок
+                         привести к канону системы»), so they join the role.
+
+                         NAME, not «Name for personalization». Ton refused the
+                         narrower «Name on gift» too: the name goes on the box, on the
+                         card and on some of the items, so no preposition is true for
+                         all three. One word is. The placeholder under it still carries
+                         the permission to leave it empty. The fake sort control goes
+                         with the long label: it was a button with an arrow glyph that
+                         sorted nothing.
+
+                         THE THREE ITEM COLUMNS SAY WHAT THE ITEMS ARE. «Personalize
+                         Item 1 / 2 / 3» named a slot, not a thing; nobody reading a
+                         row could tell which box was the candle and which the mug.
+                         Each heading is now the item's own name, off the gift
+                         (product.items, the list the drawer already prints), ellipsed
+                         with the full name on hover. FALLBACK, RECORDED AS A RULE: an
+                         item that arrives without a name falls back to «Item N». Why a
+                         set would ship a nameless part is a question for the back end
+                         and goes to Russell separately.
+
+                         «Greeting Card» becomes «Card message»: the column holds the
+                         message, and that is the only thing it ever shows.
+
+                         GIFTS AND THE BIN ARE GONE. One gift is one row, so a per-row
+                         quantity was a second hand on the number the counter owns, and
+                         a per-row bin was a second way to lower it. Rows are added and
+                         taken away by the Gifts counter, from the bottom, and by
+                         nothing else.
+                         ============================================================ -->
+                    <template x-if="uiVersion !== 'v2'">
                     <tr class="text-sm text-zinc-800">
                       <!-- text-left, or the browser's own `th { text-align: center }` parks the
                            select-all box 12px right of every checkbox below it in the 40px column. -->
@@ -1180,6 +1302,18 @@
                       <th class="text-left py-3.5 font-medium w-[132px]" title="How many gifts with this personalization">Gifts</th>
                       <th class="py-3.5 w-10"></th>
                     </tr>
+                    </template>
+                    <template x-if="uiVersion === 'v2'">
+                    <tr class="text-sm text-zinc-800">
+                      <th class="w-10 py-3.5 align-top text-left"><input type="checkbox" @change="toggleAllSelected(shipment, $event.target.checked)" :checked="allSelected(shipment)" class="accent-blue-600 w-4 h-4"></th>
+                      <th class="text-left align-top py-3.5 pr-4 w-[180px]"><span class="gb-eyebrow">Name</span></th>
+                      <th class="text-left align-top py-3.5 pr-4 w-[170px] min-[2000px]:w-[280px]" x-show="shipment.addressMode === 'different'"><span class="gb-eyebrow">Address</span></th>
+                      <template x-for="i in 3" :key="'th2-item-'+i">
+                        <th class="text-left align-top py-3.5 pr-4"><span class="gb-eyebrow block truncate" :title="itemColumnName(product, i)" x-text="itemColumnName(product, i)"></span></th>
+                      </template>
+                      <th class="text-left align-top py-3.5 pr-4"><span class="gb-eyebrow">Card message</span></th>
+                    </tr>
+                    </template>
                   </thead>
                   <tbody>
                     <template x-for="recipient in paginatedRecipients(shipment)" :key="recipient.id">
@@ -1256,15 +1390,16 @@
                             </span>
                           </template>
                         </td>
-                        <!-- Gifts (was Qty, was third from the left) -->
-                        <td class="py-3" @click.stop title="How many gifts with this personalization">
+                        <!-- Gifts (was Qty, was third from the left). V2 hides the cell with
+                             its heading: the counter above is the only quantity on the page. -->
+                        <td class="py-3" @click.stop title="How many gifts with this personalization" x-show="uiVersion !== 'v2'">
                           <div class="gb-inputnumber gb-inputnumber--dense" data-gb-inputnumber="host" aria-label="Gifts with this personalization">
                             <button @click="recipient.qty > 1 && recipient.qty--" type="button" aria-label="Decrease quantity" data-step="-1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
                             <input type="number" x-model.number="recipient.qty" min="1" class="gb-inputnumber__value">
                             <button @click="recipient.qty++" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
                           </div>
                         </td>
-                        <td class="py-3" @click.stop>
+                        <td class="py-3" @click.stop x-show="uiVersion !== 'v2'">
                           <button @click.stop="removeRecipient(product.id, shipment.id, recipient.id)" type="button" aria-label="Remove recipient" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg></span></button>
                         </td>
                       </tr>
@@ -1278,7 +1413,9 @@
                      and an empty table's one action belongs in its middle. Once rows exist
                      the same action moves under the last row, compact. The label is
                      contextual too: "someone else" only makes sense after the first row. -->
-                <div x-show="rows(shipment).length === 0" class="py-12 text-center border-b border-zinc-100">
+                <!-- V2 never reaches it: choosing "Personalize each gift" brings the table
+                     up with exactly as many rows as the counter says, and the floor is one. -->
+                <div x-show="rows(shipment).length === 0 && uiVersion !== 'v2'" class="py-12 text-center border-b border-zinc-100">
                   <p class="text-sm text-zinc-500">No recipients yet.</p>
                   <!-- Outlined = the system's tertiary. Its hover is the Zinc 100 wash both
                        outlined buttons of portal.html wear (.gb-btn --outline --secondary),
@@ -1296,7 +1433,11 @@
                      set, 21.08). The leading "+" of the approved string is the icon, not a
                      character — drawing both would give the button two plus signs. -->
                 <div class="flex items-center justify-between gap-6 py-4" x-show="rows(shipment).length > 0">
-                  <div class="min-w-0">
+                  <!-- «Add a gift for someone else» is gone from V2 (Ton 03.09). It added a
+                       row, a row is a gift, and adding a gift is what the counter at the top
+                       of the card does: two controls for one number is the very thing this
+                       rework removes. V1 keeps the button and its line. -->
+                  <div class="min-w-0" x-show="uiVersion !== 'v2'">
                     <!-- Base blue-600, hover blue-700 — the system pair (tokens.css: "Blue 700
                          is the live CTA hover"), not an invented 700→800 step. -->
                     <button @click="addRecipient(product.id, shipment.id)" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--primary">
@@ -1304,7 +1445,10 @@
                     </button>
                     <p class="text-xs text-zinc-500 mt-1 pl-2">Add the same gift for another person and personalize it separately.</p>
                   </div>
-                  <div class="flex items-center gap-4 flex-shrink-0">
+                  <!-- ml-auto only in V2, where the action to the left of this group is gone
+                       and justify-between has nothing left to push against. V1's class list
+                       comes out of :class unchanged, so its markup does not move at all. -->
+                  <div class="flex items-center gap-4 flex-shrink-0" :class="uiVersion === 'v2' ? 'ml-auto' : ''">
                     <!-- gbppl-checkout-14 / gbppl-icon-consumers-1: PAGINATION still has no component,
                          but its two arrows are no longer hand-drawn: .gb-btn--icon --small --plain.
                          The numbered pills stay page markup until a Pagination cell exists. -->
@@ -1315,7 +1459,15 @@
                       </template>
                       <button @click="shipment.page = Math.min(totalPages(shipment), shipment.page + 1)" type="button" aria-label="Next page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="shipment.page === totalPages(shipment)"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span></button>
                     </div>
-                    <span class="text-xs text-zinc-500">
+                    <!-- Two tallies, one per version, rather than a conditional inside one:
+                         V1's line is left exactly as it stood. V2 drops the recipient count,
+                         because one row is one gift and «5 recipients · 5 gifts» prints the
+                         same number twice. -->
+                    <span class="text-xs text-zinc-500" x-show="uiVersion === 'v2'">
+                      <span class="font-medium text-zinc-900" x-text="shipmentGifts(shipment)"></span> gift<span x-show="shipmentGifts(shipment) !== 1">s</span>
+                      · $<span class="font-medium text-zinc-900" x-text="shipmentTotal(product, shipment).toLocaleString()"></span>
+                    </span>
+                    <span class="text-xs text-zinc-500" x-show="uiVersion !== 'v2'">
                       <span class="font-medium text-zinc-900" x-text="rows(shipment).length"></span> recipient<span x-show="rows(shipment).length !== 1">s</span>
                       · <span class="font-medium text-zinc-900" x-text="shipmentGifts(shipment)"></span> gift<span x-show="shipmentGifts(shipment) !== 1">s</span>
                       · $<span class="font-medium text-zinc-900" x-text="shipmentTotal(product, shipment).toLocaleString()"></span>
@@ -1365,7 +1517,19 @@
   </template>
 
   <!-- ========== PAYMENT / SUMMARY STUB ========== -->
-  <section class="grid grid-cols-2 gap-6 pt-6">
+  <!-- ============================================================
+       LOOK AND FEEL, 03.09. Two hard columns at every width, 360 included:
+       at 360 «Payment information» and «Order summary» stood in 152px each,
+       the product name ran into its own price, and PLACE ORDER printed
+       through the right edge of its card. Ton, on this page: «страница
+       выглядит какой-то поломанной, вся кривая».
+
+       The fix is one stacked column below 768. It is added to V2 ONLY, and
+       through :class rather than by editing the class list, so V1's markup
+       and V1's rendering are untouched to the pixel — the same defect is on
+       V1's list for the day the team picks a version.
+       ============================================================ -->
+  <section class="grid grid-cols-2 gap-6 pt-6" :class="uiVersion === 'v2' ? 'max-md:grid-cols-1' : ''">
     <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
       <h3 class="font-serif text-2xl mb-1">Payment information</h3>
       <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
@@ -1626,8 +1790,10 @@
       <div class="ck-drawer-stack">
 
         <!-- Qty gets its full name here, next to the fields it actually counts: the number of gifts
-             carrying THIS personalization (Julia's semantics, meeting 20.08) — not "gifts for this person". -->
-        <div class="flex items-center justify-between border-b border-zinc-200 pb-6">
+             carrying THIS personalization (Julia's semantics, meeting 20.08) — not "gifts for this person".
+             HIDDEN IN V2 (Ton 03.09): one row is one gift there, so the drawer has no quantity
+             to offer; the Gifts counter on the card is the only one. -->
+        <div class="flex items-center justify-between border-b border-zinc-200 pb-6" x-show="uiVersion !== 'v2'">
           <div>
             <p class="gb-eyebrow">Quantity of gifts</p>
             <p class="text-xs text-zinc-500 mt-1">How many gifts with this personalization</p>
@@ -1751,7 +1917,9 @@
     <!-- Details -->
     <div class="space-y-6">
       <p class="gb-eyebrow">Details</p>
-      <div class="grid grid-cols-2 gap-6">
+      <!-- Below 520 the drawer IS the screen width, so two and three columns of
+           fields become 90px slots. V2 stacks them there; V1 untouched (03.09). -->
+      <div class="grid grid-cols-2 gap-6" :class="uiVersion === 'v2' ? 'max-[520px]:grid-cols-1' : ''">
         <div>
           <!-- Per-recipient mode: this IS the field the table calls "Name for personalization",
                and saving prefills the row that has none yet (Valerie, 20.08) — so it wears the
@@ -1782,7 +1950,7 @@
         <label class="gb-eyebrow block mb-1">Apt / Suite <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
         <input type="text" x-model="drawer.data.apt" class="gba-input">
       </div>
-      <div class="grid grid-cols-3 gap-6">
+      <div class="grid grid-cols-3 gap-6" :class="uiVersion === 'v2' ? 'max-[520px]:grid-cols-1' : ''">
         <div class="gba-inputwrap">
           <label class="gb-eyebrow block mb-1">City <span class="text-red-500">*</span></label>
           <input type="text" x-model="drawer.data.city" class="gba-input">
@@ -2041,18 +2209,20 @@ function checkoutApp() {
 
     // Everything V2 keeps on a shipment, in one place. V1 reads none of it, which
     // is why adding these fields to the scenarios below changes nothing for V1.
-    //   poolQty     the gifts ordered — the pool, set in the product header
-    //   persoMode   null (identical gifts) | 'each' (door A) | 'all' (door B)
-    //   rowsV2      door A's rows; V1's own list stays untouched in `recipients`
-    //   uniform     door B's single personalization
+    //   poolQty     the gifts ordered, set in the product header and nowhere else
+    //   persoMode   'none' (identical gifts) | 'each' (a row per gift)
+    //   rowsV2      the per-gift rows; V1's own list stays untouched in `recipients`
     //   genericCard the one card an un-personalized order still wants (Julia)
+    //
+    // `uniform` left with door B on 03.09, and so did `poolGrown`: nothing grows
+    // by itself any more. The name poolQty is kept on purpose — it is the same
+    // number it always was, and renaming state mid-review renames it in every
+    // comment that explains the decision.
     v2Fields(pool, mode, extra) {
       return Object.assign({
         poolQty: pool,
-        persoMode: mode || null,
-        poolGrown: false,
+        persoMode: mode || 'none',
         rowsV2: [],
-        uniform: { item1: '', item2: '', item3: '', greeting: { to: '', message: '', from: '' } },
         genericCard: { on: false, message: '', from: '' }
       }, extra || {});
     },
@@ -2114,10 +2284,15 @@ function checkoutApp() {
           shipToLabel: '',
           deferQty: 1,
           // V2: one gift, and the customizer already carried its personalization in.
-          // One gift with one personalization IS door B, so the fork opens collapsed
-          // on "One personalization for all" with the customizer's own values in it.
-          ...this.v2Fields(1, 'all', {
-            uniform: { item1: 'AC', item2: 'Alex', item3: '', greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton' } }
+          // One gift, one row, already filled — which is exactly what "Personalize
+          // each gift" means now that the second door is gone (03.09). The values
+          // are the customizer's own, the same three the V1 row below carries.
+          ...this.v2Fields(1, 'each', {
+            rowsV2: [
+              { id: 1111, name: '', qty: 1, item1: 'AC', item2: 'Alex', item3: '',
+                greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true },
+                address: '', selected: false }
+            ]
           }),
           recipients: [
             { id: 111, name: '', qty: 1, item1: 'AC', item2: 'Alex', item3: '',
@@ -2147,9 +2322,9 @@ function checkoutApp() {
           shipToLabel: '',
           deferQty: 1,
           // V2: the Brian Coordinator order (DD-141 #6) — a dozen identical gifts to
-          // one place, nothing to personalize and no Full Name to invent. The fork
-          // starts unchosen, which in V2 is a finished order, not an empty one.
-          ...this.v2Fields(12, null),
+          // one place, nothing to personalize and no Full Name to invent. "No
+          // personalization" is the default answer, and it is a finished order.
+          ...this.v2Fields(12, 'none'),
           recipients: []
         }]
       };
@@ -2188,9 +2363,11 @@ function checkoutApp() {
             shipToId: null,
             shipToLabel: '',
             deferQty: 1,
-            // V2: this half of Jorge's cart IS personalized, one entry per person —
-            // door A, already open, six gifts in the pool because Aisha takes two.
-            ...this.v2Fields(6, 'each', { rowsV2: travelPeople() }),
+            // V2: this half of Jorge's cart IS personalized, one entry per person.
+            // FIVE gifts, not six: the per-row quantity left the table on 03.09, so
+            // Aisha's two became one row like everyone else's. Five rows, five gifts,
+            // and the counter above the card says 5.
+            ...this.v2Fields(5, 'each', { rowsV2: travelPeople() }),
             recipients: travelPeople()
           }]
         },
@@ -2210,10 +2387,10 @@ function checkoutApp() {
             shipToId: office ? office.id : null,
             shipToLabel: office ? office.name + ', ' + office.label : '',
             deferQty: 1,
-            // V2: the other half, and the whole argument. Nine gifts in the pool, the
-            // fork untouched, no rows at all — the question Jorge asked ("how do I
-            // proceed without customizing those items?") never gets asked of him.
-            ...this.v2Fields(9, null),
+            // V2: the other half, and the whole argument. Nine gifts on the counter,
+            // "No personalization", no rows at all — the question Jorge asked ("how do
+            // I proceed without customizing those items?") never gets asked of him.
+            ...this.v2Fields(9, 'none'),
             recipients: [
               // One row, nine gifts, no name: "how do I proceed without customizing
               // those items?" answered by the row itself.
@@ -2288,87 +2465,141 @@ function checkoutApp() {
     setRows(s, arr) {
       if (this.uiVersion === 'v2') s.rowsV2 = arr; else s.recipients = arr;
     },
+    // Date.now() alone collides: raising the counter from 3 to 12 makes nine rows
+    // inside one millisecond, and nine rows carrying one id are one row to Alpine's
+    // :key. A sequence rides along so every row is its own.
+    _rowSeq: 0,
     blankRow() {
-      return { id: Date.now(), name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false };
+      this._rowSeq += 1;
+      return { id: Date.now() * 1000 + this._rowSeq, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false };
     },
 
-    // ===== V2: THE POOL =====
-    // The pool is the order: how many of this gift are being bought. Door A's rows
-    // are carved OUT of it, they never add to it — that is the whole difference from
-    // V1, where the order size was whatever the rows happened to sum to.
-    personalizedGifts(s) {
-      if (!s || s.persoMode !== 'each') return 0;
-      return (s.rowsV2 || []).reduce((sum, r) => sum + (r.qty || 0), 0);
-    },
-    poolOf(s) { return Math.max(1, s.poolQty || 0, this.personalizedGifts(s)); },
-    plainGifts(s) { return Math.max(0, this.poolOf(s) - this.personalizedGifts(s)); },
+    // ============================================================
+    // ===== V2: THE GIFT COUNT, AND THE ROWS THAT FOLLOW IT =====
+    // Ton 02-03.09, after the team meeting: «количеством владеет только
+    // счётчик Gifts сверху страницы... связь 1 гифт = 1 строка».
+    //
+    // WHAT THIS REPLACED: a POOL. Rows carried a quantity of their own and
+    // subtracted from a shared pile, the pile grew by itself when the rows
+    // outgrew it, and the summary line did arithmetic out loud («12 gifts:
+    // 11 plain + 1 personalized»). Nobody has to hold that model in their
+    // head to buy gifts, and now nobody does: the counter IS the number of
+    // gifts, and when the gifts are personalized the table has exactly that
+    // many rows, no more and no fewer.
+    // ============================================================
+    poolOf(s) { return Math.max(1, s.poolQty || 1); },
     productPool(p) { return p.shipments.reduce((n, s) => n + this.poolOf(s), 0); },
 
-    // Overflow: the pool GROWS to fit rather than refusing the row. Refusing would
-    // dead-end the user mid-table and send them back up to the header to unlock the
-    // thing they were already doing; and an order can never hold fewer gifts than it
-    // holds personalizations, so the number they typed is simply out of date. The
-    // pool comes up to meet the rows, the input number rings blue and says why, and the
-    // total moves in the same breath — nothing happens silently.
-    syncPool(p) {
-      p.shipments.forEach(s => {
-        const need = this.personalizedGifts(s);
-        if (need > (s.poolQty || 0)) {
-          s.poolQty = need;
-          s.poolGrown = true;
-          setTimeout(() => { s.poolGrown = false; }, 2400);
-        }
-      });
-    },
-    // ...and it never shrinks below them: the minus button stops at the floor and
-    // its tooltip says which gifts are holding it there.
-    poolFloor(p) {
-      const s = p.shipments[0];
-      return s ? Math.max(1, this.personalizedGifts(s)) : 1;
-    },
-    bumpPool(p, delta) {
-      const s = p.shipments[0];
-      if (!s) return;
-      s.poolQty = Math.max(this.poolFloor(p), this.poolOf(s) + delta);
-    },
-    setPoolValue(p, val) {
-      const s = p.shipments[0];
-      if (!s) return;
-      const n = parseInt(val, 10);
-      const floor = this.poolFloor(p);
-      s.poolQty = (isNaN(n) || n < floor) ? floor : n;
-    },
-    poolFloorReason(p) {
-      const s = p.shipments[0];
-      if (!s || this.poolOf(s) > this.poolFloor(p)) return '';
-      const n = this.personalizedGifts(s);
-      if (n === 0) return 'An order needs at least one gift';
-      return n + ' gift' + (n === 1 ? '' : 's') + ' already carry their own personalization';
+    // A row is worth warning about only if something is written in it.
+    rowFilled(r) {
+      if (!r) return false;
+      const g = r.greeting;
+      return !!(r.name || r.item1 || r.item2 || r.item3 || r.address ||
+                (g && (g.message || g.to || g.from)));
     },
 
-    // ===== V2: THE FORK =====
-    poolSummary(s) {
-      const n = this.poolOf(s);
-      return n + ' gift' + (n === 1 ? '' : 's') + ': ' + this.plainGifts(s) + ' plain + ' + this.personalizedGifts(s) + ' personalized';
+    // The rows come into line with the number FROM THE BOTTOM in both
+    // directions: new rows land under the last one, lowering takes the last
+    // ones away. Nothing in the middle of the table ever moves.
+    syncRowsToCount(s) {
+      if (!s || s.persoMode !== 'each') return;
+      const want = this.poolOf(s);
+      const rows = this.rows(s);
+      while (rows.length < want) rows.push(this.blankRow());
+      if (rows.length > want) this.setRows(s, rows.slice(0, want));
+      s.page = Math.min(Math.max(1, s.page || 1), this.totalPages(s));
     },
+
+    // THE ONE GATE. Everything that moves the number goes through here: both
+    // buttons, the typed value, and choosing "Personalize each gift".
+    setGiftCount(p, n) {
+      const s = p.shipments[0];
+      if (!s) return;
+      const want = Math.max(1, isNaN(n) ? 1 : n);
+      const rows = this.rows(s);
+      const losing = (s.persoMode === 'each' && want < rows.length)
+        ? rows.slice(want).filter(r => this.rowFilled(r)).length
+        : 0;
+      // Empty rows always go quietly; filled ones cost one warning, once
+      // (Ton 03.09: «предупредить ОДИН раз... после первого предупреждения молча»).
+      if (losing > 0 && !this.giftCutWarned) {
+        this.giftCut = { pending: true, productId: p.id, target: want, rows: rows.length - want };
+        return;
+      }
+      s.poolQty = want;
+      this.syncRowsToCount(s);
+    },
+    // The warning strip's state. `warned` is per page load, not per card: the
+    // rule is about the page, and reading it a second time teaches nothing.
+    giftCut: { pending: false, productId: null, target: 0, rows: 0 },
+    giftCutWarned: false,
+    confirmGiftCut() {
+      const p = this.findProduct(this.giftCut.productId);
+      const target = this.giftCut.target;
+      this.giftCutWarned = true;
+      this.cancelGiftCut();
+      if (p) this.setGiftCount(p, target);
+    },
+    cancelGiftCut() {
+      this.giftCut = { pending: false, productId: null, target: 0, rows: 0 };
+    },
+    // «The last 1 will be removed» is not a sentence anyone writes. One row is
+    // «the last row»; more than one counts.
+    giftCutLine() {
+      const n = this.giftCut.rows;
+      return n === 1
+        ? 'Lowering the count removes the last row, and what is written in it.'
+        : 'Lowering the count removes the last ' + n + ' rows, and what is written in them.';
+    },
+
+    bumpGifts(p, delta) {
+      const s = p.shipments[0];
+      if (!s) return;
+      this.setGiftCount(p, this.poolOf(s) + delta);
+    },
+    // The field is uncontrolled between renders, so a value the model refuses
+    // (0, "abc", or a cut the reader cancels) has to be read back out of it,
+    // or the box would keep showing a number the order does not have.
+    setGiftValue(p, val, el) {
+      this.setGiftCount(p, parseInt(val, 10));
+      if (el) el.value = String(this.productPool(p));
+    },
+    giftFloorReason(p) {
+      const s = p.shipments[0];
+      if (!s || this.poolOf(s) > 1) return '';
+      return 'An order needs at least one gift';
+    },
+
+    // ===== V2: THE TWO ANSWERS =====
     identicalLine(s) {
       const n = this.poolOf(s);
       if (n === 1) return 'This gift is not personalized. Nothing more is needed.';
-      return 'All ' + n + ' gifts are identical. No personalization needed.';
+      return 'All ' + n + ' gifts are identical. Nothing more is needed.';
     },
     appliedToAll(s) {
       const n = this.poolOf(s);
       return n === 1 ? 'Applied to this gift.' : 'Applied to all ' + n + ' gifts.';
     },
-    // Door A on an empty list opens with one row waiting, so the door leads
-    // somewhere. Change choice only clears the mode — never the work behind it.
+    // Choosing "Personalize each gift" brings the table up already the right
+    // length. Choosing "No personalization" keeps the rows exactly where they
+    // are: the answer can be changed back, and nothing typed is thrown away
+    // because somebody looked at the other option.
     chooseMode(s, mode) {
       s.persoMode = mode;
-      if (mode === 'each' && this.rows(s).length === 0) this.rows(s).push(this.blankRow());
+      if (mode === 'each') this.syncRowsToCount(s);
     },
 
-    // Three-slot initials, on any bag of fields: the drawer's `drawer.data` in V1,
-    // a shipment's `uniform` in door B of V2.
+    // The heading of an item column: the item's own name, and «Item N» when the
+    // gift arrives without one. The fallback is recorded as a rule, not left to
+    // chance; why a set would ship a nameless part is a question for the back
+    // end, and it goes to Russell separately (Ton 03.09).
+    itemColumnName(p, i) {
+      const it = this.productItems(p)[i - 1];
+      return (it && it.label) ? it.label : 'Item ' + i;
+    },
+
+    // Three-slot initials, on any bag of fields: the drawer's `drawer.data`.
+    // It served a shipment's `uniform` too until door B died on 03.09.
     slotValue(bag, field, idx) { return ((bag && bag[field]) || '').charAt(idx) || ''; },
     updateSlot(bag, field, idx, val, evt) {
       const arr = ((bag[field] || '') + '   ').split('').slice(0, 3);
@@ -2527,7 +2758,7 @@ function checkoutApp() {
         shipToId: firstAddr ? firstAddr.id : null,
         shipToLabel: firstAddr ? firstAddr.label : '',
         deferQty: 1,
-        ...this.v2Fields(1, null),
+        ...this.v2Fields(1, 'none'),
         recipients: [
           { id: newId + 1, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
         ]
@@ -2559,7 +2790,7 @@ function checkoutApp() {
           deadline: '2025-08-15',
           page: 1,
           deferQty: 1,
-          ...this.v2Fields(1, null),
+          ...this.v2Fields(1, 'none'),
           recipients: [
             { id: newId + 101, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
           ]
@@ -2892,6 +3123,12 @@ function checkoutApp() {
         });
       });
       if (s.addressMode === 'same') s.addressMode = 'different';
+      // V2: an import is the one place rows arrive from outside the counter, and
+      // the counter is not allowed to be wrong about the order. Twenty rows means
+      // twenty gifts, so the number comes up to the list it was just handed and
+      // the reader sees it move in the header (Ton 03.09, the 1 gift = 1 row rule
+      // read from the other end).
+      if (this.uiVersion === 'v2') s.poolQty = this.rows(s).length;
       this.csv.step = 3;
     },
 
