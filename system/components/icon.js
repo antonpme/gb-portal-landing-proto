@@ -193,6 +193,20 @@
       from: 'derived: the drawer back arrow turned a quarter',
       stroke: 1.5
     },
+    /* gbppl-checkout-recon-1, 03.09. Ton, on ?v=3: «Аккордеон в
+       принципе нормально, но непонятно: он уже заполнен или ещё
+       пустой.» A step that has been answered now wears a tick, and a
+       tick is a glyph, so the record gets one instead of the checkout
+       drawing an eleventh copy of it by hand. The path is the one
+       already on that page — the «Filled» pills of the personalization
+       table and the drawn check of the order confirmation. It is
+       written there at 2.5, which is what `stroke` records; .gb-icon
+       draws it at the house 1.5 like every other entry. */
+    'check': {
+      body: '<path d="M4.5 12.75l6 6 9-13.5"/>',
+      from: 'checkout.html: the Filled pills of the personalization table',
+      stroke: 2.5
+    },
     'close': {
       body: '<path d="M6 6l12 12M18 6L6 18"/>',
       from: 'drawer.js: the cross every drawer in the house wears',

@@ -53,6 +53,13 @@
      word (law 0a.2), and it has neither yet; PrimeVue's name for
      this control is Stepper, and a Stepper organism is a wave of its
      own. It is the first question at the foot of the report.
+
+     Two marks were added on 03.09 by gbppl-checkout-recon-1, and
+     both are borrowed rather than drawn: the Blue 600 tick of a done
+     step is icon.js `check`, and the Blue 600 2px underline of the
+     open band is the value `.gbdoc-seg.is-on` already carries. The
+     case for both, and the twelve public checkouts behind it, is in
+     studio/docs/CHECKOUT-RECON.md.
      ============================================================ -->
 <!-- ============================================================
      gbppl-checkout-noise-1 (2026-09-03) — ?v=2 STOPS WHISPERING
@@ -1878,11 +1885,15 @@
        возможность вернуться назад». So the page stops asking every
        question at once. Only the step being answered is open; a step
        already answered folds into one line that says its answer, with
-       an Edit that opens it again with everything still in it; a step
-       not yet reached is a quiet heading. The order summary never
-       folds — it stands in a rail beside the steps, so the number the
-       reader is spending is on screen while every question is
-       answered.
+       a tick beside it and an Edit that opens it again with everything
+       still in it; a step not yet reached is a quiet heading.
+
+       gbppl-checkout-recon-1 (03.09) changed where the money stands.
+       It stood in a 340px rail beside the steps for one day. Ton: «Не
+       нравится Order Summary сбоку и маленькая картинка гифта. Я не
+       просил это делать.» It is back at the foot of the page, beside
+       the payment card, the way V1 and V2 have always had it, and the
+       gift is back to the size V2 draws it at.
 
        TWO. THE ROW IS THE BOX, NOT THE PERSON. Ton, verbatim: «адрес
        доставки и фактический получатель могут абсолютно не совпадать
@@ -1924,22 +1935,49 @@
        on the list for him, at the foot of the wave report.
        ============================================================ -->
   <template x-if="uiVersion === 'v3'">
-    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
-
-      <!-- ===== LEFT: the order, one step at a time ===== -->
-      <div class="min-w-0 space-y-6">
+    <div class="space-y-6">
 
         <template x-for="(product, pIdx) in products" :key="'v3-' + product.id">
           <article class="bg-white border border-zinc-200 rounded-[var(--radius)]">
+            <!-- ============================================================
+                 gbppl-checkout-recon-1 (03.09) — THE GIFT COMES BACK TO THE
+                 SIZE V2 SHOWS IT AT, AND THE MONEY GOES BACK UNDER THE ORDER.
 
-            <!-- ===== Product header: the gift, the counter, the money =====
-                 A 64px thumbnail rather than V1's picture column: the rail on
-                 the right takes 340 of the page, and a photograph the size of
-                 the one on V1's card would leave the steps in a gutter. 64 is
-                 a step of the space scale, and the photo is context here, not
-                 the subject. -->
-            <div class="p-6 flex flex-wrap items-start gap-x-6 gap-y-4">
-              <img :src="product.image" :alt="product.name" class="w-16 h-16 md:w-24 md:h-24 object-contain flex-shrink-0">
+                 Ton, on ?v=3, verbatim: «Не нравится Order Summary сбоку и
+                 маленькая картинка гифта. Я не просил это делать.» So the
+                 340px rail is gone, the card is V2's two-column grid again
+                 (picture as a SHARE of the card, not 64 pixels of context),
+                 and the summary stands at the foot of the page beside the
+                 payment card, exactly where V1 and V2 put it.
+
+                 The reconnaissance agrees with him for this page and not for
+                 a plain one. Twelve public checkouts were walked with the
+                 probe (docs/CHECKOUT-RECON.md): a single-address checkout
+                 does keep a sticky summary rail on the right (Shopify,
+                 Stripe), but NOT ONE multi-recipient screen in the sample
+                 does — Multiship's live demo, Oracle's split-shipping spec,
+                 WooCommerce and Domaine's build all give the recipient list
+                 the whole width and put the money at the foot. The recipient
+                 table is the subject of this page, and a rail beside it was
+                 squeezing «Onyx candle» into two lines at 1280.
+                 ============================================================ -->
+            <div class="grid grid-cols-1 md:grid-cols-[2fr_3fr] xl:grid-cols-[1fr_2fr]">
+
+            <!-- ===== LEFT: the gift, at V2's size ===== -->
+            <div class="md:border-r border-b md:border-b-0 border-zinc-200 px-10 py-14 flex flex-col items-center justify-center">
+              <img :src="product.image" :alt="product.name" class="w-full object-contain">
+              <button @click="removeProduct(pIdx)" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary mt-10">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg><span class="gb-btn__label">Remove gift</span></button>
+            </div>
+
+            <!-- ===== RIGHT: the header, then the accordion =====
+                 min-w-0 for the same measured reason V2 carries it: a grid
+                 item's min-width is `auto`, and the table inside would push
+                 this track past its share and steal the picture column. -->
+            <div class="min-w-0">
+
+            <!-- ===== Product header: the name, the counter, the money ===== -->
+            <div class="p-6 md:p-8 flex flex-wrap items-start gap-x-6 gap-y-4">
               <!-- The title column refuses to go under 180: without a floor it
                    shrank to 90px at 360 and set the gift's name in four lines
                    next to its price. With one, the price wraps to its own line
@@ -1971,7 +2009,7 @@
                  page load, and empty rows are always taken away in silence. -->
             <div x-show="giftCut.pending && giftCut.productId === product.id" x-cloak
                  x-transition.opacity.duration.280ms
-                 class="mx-6 mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
+                 class="mx-6 md:mx-8 mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
               <span class="flex items-start gap-2 min-w-0">
                 <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
                 <span x-text="giftCutLine()"></span>
@@ -1994,12 +2032,54 @@
                      ============================================================ -->
                 <section class="border-t border-zinc-200">
 
+                  <!-- ============================================================
+                       THE THREE STATES SAY WHICH ONE THEY ARE, OUT LOUD.
+                       gbppl-checkout-recon-1 (03.09). Ton: «Аккордеон в
+                       принципе нормально, но непонятно: он уже заполнен или
+                       ещё пустой.»
+
+                       The reconnaissance says the same thing in the same
+                       words. Baymard, verbatim: «It's key that accordion
+                       checkouts collapse the past checkout steps into
+                       summaries, allowing users to review the previously
+                       entered information without the need to click.» NN/g,
+                       on Sephora: «Each subsequent accordion expands only
+                       when all the required information from the previous
+                       step has been provided.» Both were already true here.
+                       What was missing was the MARK: three bands of the same
+                       grey, and only the ink and the presence of a sentence
+                       told them apart.
+
+                       So each state now carries one, and every one of them
+                       is a thing the house already owns:
+
+                         done    a Blue 600 tick (icon.js `check`, the path
+                                 this page already draws in its Filled pills)
+                                 in a 24 slot, then the title, then the
+                                 sentence that says the answer, then Edit.
+                         open    the same 24 slot, empty, so the three titles
+                                 stand on one left edge — and the band's
+                                 bottom hairline turns Blue 600 at 2px, which
+                                 is `.gbdoc-seg.is-on` to the value: the
+                                 house already says «this is the current one»
+                                 with a 2px blue underline.
+                         future  the same slot, empty, title at Zinc 400, no
+                                 sentence, no hover. Nothing to review yet.
+
+                       Ton-5 holds: blue is state, and «answered» and «being
+                       answered» are states, not furniture.
+                       ============================================================ -->
+
                   <!-- SUMMARY ROW. The whole band is the target and the Edit
                        button is the visible one; a real <button> inside a
                        <button> would be invalid, so the row is a div that
                        carries the click and the organism carries the label. -->
                   <div x-show="v3State(shipment, 1) === 'done'" @click="v3Edit(shipment, 1)"
-                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                       class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                    <!-- The colour lives on the wrapper: icon.js rewrites the
+                         className of the node it fills, so a paint class put
+                         on the glyph itself would be swept away on mount. -->
+                    <span class="w-6 flex-shrink-0 text-blue-600" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
                     <h3 class="font-serif text-2xl leading-none">1. Delivery</h3>
                     <p class="text-sm text-zinc-600 min-w-0" x-text="v3Sum1(shipment)"></p>
                     <button type="button" @click.stop="v3Edit(shipment, 1)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary ml-auto"><span class="gb-btn__label">Edit</span></button>
@@ -2010,7 +2090,8 @@
                        it stands here because all three steps are written the
                        same way and a reader should not have to wonder. -->
                   <div x-show="v3State(shipment, 1) === 'future'"
-                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex items-center">
+                       class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex items-center gap-x-4">
+                    <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
                     <h3 class="font-serif text-2xl leading-none text-zinc-400">1. Delivery</h3>
                   </div>
 
@@ -2025,11 +2106,12 @@
                            band cannot be pushed past it at any width. Below
                            the wrap point the row wraps and grows, which is a
                            phone doing what a phone does. -->
-                      <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-3">
+                      <header class="bg-zinc-100/70 border-b-2 border-blue-600 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-3">
+                        <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
                         <h3 class="font-serif text-2xl leading-none">1. Delivery</h3>
                       </header>
 
-                      <div class="px-6 py-5 space-y-5" x-data="{ shipToOpen: false }">
+                      <div class="px-6 md:px-8 py-5 space-y-5" x-data="{ shipToOpen: false }">
 
                         <!-- The plural asks HOW MANY; the eyebrow one block
                              down asks WHICH ONE. Two words apart by a letter,
@@ -2137,24 +2219,27 @@
                 <section class="border-t border-zinc-200">
 
                   <div x-show="v3State(shipment, 2) === 'done'" @click="v3Edit(shipment, 2)"
-                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                       class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                    <span class="w-6 flex-shrink-0 text-blue-600" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
                     <h3 class="font-serif text-2xl leading-none">2. Personalization</h3>
                     <p class="text-sm text-zinc-600 min-w-0" x-text="v3Sum2(shipment)"></p>
                     <button type="button" @click.stop="v3Edit(shipment, 2)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary ml-auto"><span class="gb-btn__label">Edit</span></button>
                   </div>
 
                   <div x-show="v3State(shipment, 2) === 'future'"
-                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex items-center">
+                       class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex items-center gap-x-4">
+                    <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
                     <h3 class="font-serif text-2xl leading-none text-zinc-400">2. Personalization</h3>
                   </div>
 
                   <template x-if="v3State(shipment, 2) === 'open'">
                     <div>
-                      <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-3">
+                      <header class="bg-zinc-100/70 border-b-2 border-blue-600 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-3">
+                        <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
                         <h3 class="font-serif text-2xl leading-none">2. Personalization</h3>
                       </header>
 
-                      <div class="px-6 py-5 space-y-5">
+                      <div class="px-6 md:px-8 py-5 space-y-5">
                         <div class="gb-radio-group gb-radio-group--cards" role="radiogroup" aria-label="Personalization">
                           <label class="gb-radio gb-radio--select">
                             <input class="gb-radio__input" type="radio" :name="'v3perso-' + shipment.id" value="none"
@@ -2217,24 +2302,27 @@
                 <section class="border-t border-zinc-200" x-show="v3HasStep3(shipment)">
 
                   <div x-show="v3HasStep3(shipment) && v3State(shipment, 3) === 'done'" @click="v3Edit(shipment, 3)"
-                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                       class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                    <span class="w-6 flex-shrink-0 text-blue-600" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
                     <h3 class="font-serif text-2xl leading-none">3. <span x-text="v3Step3Title(shipment)"></span></h3>
                     <p class="text-sm text-zinc-600 min-w-0" x-text="v3Sum3(shipment)"></p>
                     <button type="button" @click.stop="v3Edit(shipment, 3)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary ml-auto"><span class="gb-btn__label">Edit</span></button>
                   </div>
 
                   <div x-show="v3HasStep3(shipment) && v3State(shipment, 3) === 'future'"
-                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex items-center">
+                       class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex items-center gap-x-4">
+                    <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
                     <h3 class="font-serif text-2xl leading-none text-zinc-400">3. <span x-text="v3Step3Title(shipment)"></span></h3>
                   </div>
 
                   <template x-if="v3HasStep3(shipment) && v3State(shipment, 3) === 'open'">
                     <div>
-                      <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <header class="bg-zinc-100/70 border-b-2 border-blue-600 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
                         <h3 class="font-serif text-2xl leading-none">3. <span x-text="v3Step3Title(shipment)"></span></h3>
                       </header>
 
-                      <div class="px-6 py-5">
+                      <div class="px-6 md:px-8 py-5">
                         <!-- ============================================================
                              THE TOOLBAR STANDS WITH THE TABLE, NOT IN THE BAND.
                              Ton, on V2: the step band grew taller the moment its
@@ -2461,51 +2549,62 @@
 
               </div>
             </template>
+
+            </div><!-- end the column the header and the steps share -->
+            </div><!-- end the card's two-column grid -->
           </article>
         </template>
 
-        <!-- ===== Payment, at the foot of the column the questions live in ===== -->
-        <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-6">
-          <h3 class="font-serif text-2xl mb-1">Payment information</h3>
-          <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
-          <div>
-            <p class="gb-eyebrow mb-2">Billing address <span class="text-red-500">*</span></p>
-            <div class="gba-select">
-              <select class="gba-input"><option>Select a billing address</option></select>
-              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+        <!-- ============================================================
+             THE PAIR AT THE FOOT, THE ONE V1 AND V2 STAND ON.
+             gbppl-checkout-recon-1 (03.09).
+
+             Payment on the left, the money on the right, one stacked
+             column below 768 — the same shape and the same stacking rule
+             the shared block downstairs took on 03.09 after Ton called the
+             two hard columns «поломанной». V3 keeps its OWN copy of the
+             pair rather than joining that block, because two lines of it
+             are V3's alone (deliveries, not shipments) and V1 and V2 must
+             come out of this wave byte for byte.
+             ============================================================ -->
+        <section class="grid grid-cols-2 max-md:grid-cols-1 gap-6 pt-6">
+          <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
+            <h3 class="font-serif text-2xl mb-6">Payment information</h3>
+            <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
+            <div>
+              <p class="gb-eyebrow mb-2">Billing address <span class="text-red-500">*</span></p>
+              <div class="gba-select">
+                <select class="gba-input"><option>Select a billing address</option></select>
+                <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- ===== RIGHT: the money, always on screen =====
-           The summary is the one thing on this page that never folds. Every
-           step above it changes a number in it, and a person answering a
-           question about shipping should not have to scroll to find out what
-           it costs. Sticky from 1024 up; below that it is simply the last
-           block of the column, where a phone puts it anyway. -->
-      <aside class="min-w-0 lg:sticky lg:top-6">
-        <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-6">
-          <h3 class="font-serif text-2xl mb-6">Order summary</h3>
-          <div class="space-y-3 text-sm">
-            <template x-for="product in products" :key="'v3sum-' + product.id">
-              <div class="pb-2 border-b border-zinc-100">
-                <div class="flex justify-between gap-3 font-medium">
-                  <span class="min-w-0" x-text="product.name"></span>
-                  <span class="flex-shrink-0">$<span x-text="productTotal(product).toLocaleString()"></span></span>
+          <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
+            <h3 class="font-serif text-2xl mb-6">Order summary</h3>
+            <div class="space-y-3 text-sm">
+              <template x-for="product in products" :key="'v3sum-' + product.id">
+                <div class="pb-2 border-b border-zinc-100">
+                  <div class="flex justify-between gap-3 font-medium">
+                    <span class="min-w-0" x-text="product.name"></span>
+                    <span class="flex-shrink-0">$<span x-text="productTotal(product).toLocaleString()"></span></span>
+                  </div>
+                  <p class="text-sm text-zinc-500 mt-0.5">
+                    <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span>
+                  </p>
                 </div>
-                <p class="text-sm text-zinc-500 mt-0.5">
-                  <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span>
-                </p>
-              </div>
-            </template>
-            <div class="flex justify-between"><span class="text-zinc-600">Subtotal</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
-            <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="v3Deliveries()"></span> <span x-text="v3Deliveries() === 1 ? 'delivery' : 'deliveries'"></span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
-            <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
+              </template>
+              <div class="flex justify-between"><span class="text-zinc-600">Subtotal</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
+              <!-- N recipients never become N lines here. Every multi-address
+                   checkout in the reconnaissance keeps the summary short and
+                   says the count instead: WooCommerce prints one line, «Ships
+                   to multiple addresses». This one names the deliveries it is
+                   charging for and stops. -->
+              <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="v3Deliveries()"></span> <span x-text="v3Deliveries() === 1 ? 'delivery' : 'deliveries'"></span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
+              <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
+            </div>
+            <button class="gb-btn gb-btn--xlarge gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button" @click="placeOrder()"><span class="gb-btn__label">Place Order</span></button>
           </div>
-          <button class="gb-btn gb-btn--xlarge gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button" @click="placeOrder()"><span class="gb-btn__label">Place Order</span></button>
-        </div>
-      </aside>
+        </section>
 
     </div>
   </template>

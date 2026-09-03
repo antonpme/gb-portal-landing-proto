@@ -321,8 +321,17 @@
              шагов), и «адрес доставки и фактический получатель могут
              абсолютно не совпадать с именем для персонализации на
              коробке: я могу получить гифт на себя, а на нём будет имя
-             моей жены» (строка = коробка, две независимые стороны). */
-          desc: 'The page asks one question at a time: the step you are answering is open, an answered step folds into one line with an Edit beside it, and the order summary stands in a rail that never folds. A row of the table is a gift box, not a person, so where a box goes and what is printed on it are two separate answers.',
+             моей жены» (строка = коробка, две независимые стороны).
+
+             Правка 03.09 (gbppl-checkout-recon-1) по фидбеку Тона на
+             первый показ: «Не нравится Order Summary сбоку и маленькая
+             картинка гифта. Я не просил это делать. Аккордеон в
+             принципе нормально, но непонятно: он уже заполнен или ещё
+             пустой.» Сводка вернулась вниз, картинка к размеру V2,
+             состояния шага названы галочкой и синей кромкой. Разведка
+             двенадцати публичных чекаутов, на которой это стоит:
+             studio/docs/CHECKOUT-RECON.md. */
+          desc: 'The page asks one question at a time: the step you are answering is open and underlined in blue, an answered step folds into one line with a tick, its answer and an Edit, and a step not yet reached stays quiet. The gift is shown at full size and the order summary sits at the foot beside payment. A row of the table is a gift box, not a person, so where a box goes and what is printed on it are two separate answers.',
           status: 'in-progress',
           href: 'live/checkout.html?v=3',
           ready: true,
