@@ -9,6 +9,20 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-panel-sandbox-1 (2026-09-03) — THE PAGE OPENS ON THE
+     COMMON ORDER, NOT THE NARROW ONE.
+
+     Ton, on the console screenshot of ?v=2, verbatim: «Дефолтный
+     сценарий должен быть самый распространённый, а все узкие
+     сценарии нужно делать дополнительными.» The default scenario
+     moved from 'customizer' to 'portalEmpty' — a fresh order with
+     nothing filled in — in the two places that name it (the
+     `scenario` field and init()), and nowhere else. The Scenario
+     row of the console keeps all three, in the same order, with
+     the same notes; only which one is lit on arrival changed.
+     The V1/V2 checkout logic itself is untouched by this wave.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v2-rework-1 (2026-09-03) — SECTION 2 OF ?v=2 IS
      REBUILT ON WHAT THE TEAM SAID OUT LOUD ON 02.09.
 
@@ -2189,7 +2203,27 @@ function checkoutApp() {
     ],
 
     // ===== SCENARIO STATE =====
-    scenario: 'customizer',
+    // gbppl-panel-sandbox-1 (Ton, 03.09, verbatim): «А про сценарии: мы
+    // должны просто сделать их в настройках прототипа, и всё. Дефолтный
+    // сценарий должен быть самый распространённый, а все узкие сценарии
+    // нужно делать дополнительными.»
+    //
+    // The page opened on 'customizer' from the day it was born, because
+    // that was the screen being designed at the time. It is the narrow
+    // case: someone who came in from the 3D Customizer with one recipient
+    // already personalized. The common case is the one that arrives with
+    // nothing filled in — a fresh order from the portal — and opening on
+    // it is what shows V2's own default answer, "No personalization",
+    // without touching a single control first.
+    //
+    // The other two lose nothing: they were already extra choices in the
+    // Scenario row of the console, and they stay exactly where they were,
+    // in the same order, with the same notes. Only which one is lit on
+    // arrival has changed. No URL key reads or writes this (?scenario=
+    // has never existed anywhere in the studio, checked by grep across
+    // html and js), so law 0a.5 has nothing to keep reading: the address
+    // that opened this page yesterday opens it the same way today.
+    scenario: 'portalEmpty',
 
     // ===== VERSION STATE (gbppl-checkout-5) =====
     // 'v1' is the page as checkout-4 left it — the agreed quick fixes on today's
@@ -2403,7 +2437,10 @@ function checkoutApp() {
 
     // ===== INIT =====
     init() {
-      this.setScenario('customizer');
+      // gbppl-panel-sandbox-1: the most common order, not the narrow one.
+      // Kept literal and next to the field above on purpose — the two must
+      // agree, and a reader who changes one must see the other.
+      this.setScenario('portalEmpty');
 
       // gbppl-checkout-8: the version is reachable from the URL, so the hub
       // can hand the V2 sandbox straight to whoever opens that card instead of
