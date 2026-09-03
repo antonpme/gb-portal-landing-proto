@@ -885,13 +885,12 @@
 
   /* Полоса пульта у левой (9) или правой (15) трети окна. Числа —
      координаты рисунка на сетке 24, не размеры интерфейса. */
+  /* ДОЛГ ЗАКРЫТ (gbppl-panel2-build-1): рисунок уехал в запись набора,
+     и консоль спрашивает его по имени, как спрашивает шесть экранов.
+     Имя называет РИСУНОК (с какой стороны стоит полоса), а смысл
+     («туда уедет ящик») остаётся решением потребителя — здесь. */
   function dockIcon(side) {
-    var line = side === 'left' ? 'M9 4v16' : 'M15 4v16';
-    return '<span class="gb-icon gb-icon--16" aria-hidden="true">' +
-           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-           'stroke-linecap="round" stroke-linejoin="round">' +
-           '<rect x="2.5" y="4" width="19" height="16" rx="1.5"/>' +
-           '<path d="' + line + '"/></svg></span>';
+    return glyph(side === 'left' ? 'panel-left' : 'panel-right', 16);
   }
 
   /* Ставит МЕСТО на хозяина и переписывает кнопку. Кнопка называет
@@ -981,7 +980,13 @@
       if (!e.target || !e.target.closest) return;
       var head = e.target.closest('.gbsp-head, .gbsp-layerhead');
       if (!head || !box.contains(head)) return;
-      if (e.target.closest('button')) return;
+      /* Ссылки исключены вместе с кнопками (gbppl-panel2-build-1): в
+         шапке теперь стоят четыре <a> навигации, а захват указателя
+         (setPointerCapture) уводит последующий click на элемент
+         захвата, то есть на саму шапку, и переход по разделу просто не
+         случился бы. Ручка — это ПУСТОЕ место строки; всё, что
+         отвечает на нажатие, ручкой не бывает. */
+      if (e.target.closest('button, a')) return;
       var r = box.getBoundingClientRect();
       drag = {
         id: e.pointerId, head: head, live: false, snap: '',
@@ -1123,145 +1128,42 @@
   }
 
   /* ============================================================
-     СКЛАДНЫЕ ПОЛКИ (gbppl-panel-sections-1, Тон 01.09: «самое главное,
-     нужно сделать секции сворачиваемыми»)
+     ПОЛКА ЯЩИКА, ПРОСТАЯ (gbppl-panel2-build-1)
      ------------------------------------------------------------
-     Одно значение на полку, память на origin, как у стороны дока: что
-     держать закрытым — настройка рабочего места, и решается она один
-     раз. Ключ читается при отрисовке (полка приезжает сразу свёрнутой,
-     без мигания) и переписывается на клик.
+     Здесь жили СКЛАДНЫЕ ПОЛКИ (gbppl-panel-sections-1, Тон 01.09:
+     «самое главное, нужно сделать секции сворачиваемыми»): айбрау
+     полки был кнопкой, свёрнутая печатала след, память лежала в
+     localStorage `gbppl-folds`.
 
-     Ключ НЕ ходит в KEEP и в Copy link: ссылка описывает вид
-     прототипа, а не устройство пульта у того, кто её прислал.
+     Компоновка 2.0 сняла айбрау у всех полок до одной (мокап,
+     утверждённый 03.09), а складывание без заголовка не за что
+     держать. Просили его ради вертикали — «мы экономим вертикальное
+     пространство», — и вертикаль отдала сама компоновка: список
+     навигации в 190px стал рядом иконок в 34, ящик на чекауте
+     595 → 430 (замер 1280). Вопрос Тону стоит в отчёте волны.
+
+     КЛЮЧ `gbppl-folds` НЕ ТРОГАЕТСЯ И НЕ ЧИСТИТСЯ (закон 0a.5): он
+     просто перестал читаться. Браузер, у которого он лежит, ничего не
+     теряет, а вернуть складывание — значит вернуть чтение того же
+     ключа, а не завести новый.
+
+     Полка теперь ровно две вещи: коробка с полем и линией (CSS) и
+     тело под содержимое. Тело оставлено ОТДЕЛЬНЫМ узлом, хотя могло
+     бы быть самой полкой: addSection отдаёт его владельцу, и
+     владелец, переписав innerHTML, не должен уметь стереть саму
+     полку вместе с её местом в порядке рангов.
      ============================================================ */
-  var FOLD_KEY = 'gbppl-folds';
-
-  function readFolds() {
-    try {
-      var o = JSON.parse(localStorage.getItem(FOLD_KEY) || '{}');
-      return (o && typeof o === 'object') ? o : {};
-    } catch (e) { return {}; }
-  }
-
-  function isFolded(id) { return !!readFolds()[id]; }
-
-  function writeFold(id, folded) {
-    try {
-      var f = readFolds();
-      if (folded) f[id] = 1; else delete f[id];
-      localStorage.setItem(FOLD_KEY, JSON.stringify(f));
-    } catch (e) {}
-  }
-
-  /* ШАПКА ПОЛКИ. Айбрау остаётся айбрау — тот же класс, тот же голос,
-     — но живёт внутри кнопки: слово слева, след справа (виден только у
-     свёрнутой), шеврон в хвосте. Второго капса и второго кегля здесь
-     не заводится (Тон-6). */
-  function foldHead(id, title) {
-    var off = isFolded(id);
+  function plainSec(id, title, body, cls, rank) {
     return (
-      '<button class="gbsp-fold" type="button" data-fold="' + esc(id) + '"' +
-        ' aria-expanded="' + (off ? 'false' : 'true') + '"' +
-        ' aria-controls="gbsp-body-' + esc(id) + '">' +
-        '<span class="gbsp-eyebrow">' + esc(title) + '</span>' +
-        '<span class="gbsp-fold__trace"' + (off ? '' : ' hidden') + '></span>' +
-        '<span class="gbsp-fold__chev">' + glyph('chevron-down', 16) + '</span>' +
-      '</button>'
-    );
-  }
-
-  /* Полка целиком: шапка плюс тело под своим id. Тело — тот же
-     .gbsp-secbody, что addSection завёл для чужих полок
-     (gbppl-comments-b): у ящика одна анатомия секции, а не две. */
-  function foldSec(id, title, body, cls, rank) {
-    return (
-      '<div class="gbsp-sec ' + cls + (isFolded(id) ? ' is-folded' : '') + '"' +
-        ' data-fold-id="' + esc(id) + '"' +
+      '<div class="gbsp-sec ' + cls + '"' +
+        ' data-sec-id="' + esc(id) + '"' +
+        (title ? ' aria-label="' + esc(title) + '"' : '') +
         (rank ? ' data-rank="' + rank + '"' : '') + '>' +
-        foldHead(id, title) +
         '<div class="gbsp-secbody" id="gbsp-body-' + esc(id) + '">' + body + '</div>' +
       '</div>'
     );
   }
 
-  /* СЛЕД СВЁРНУТОЙ ПОЛКИ. Считается на месте и только когда полка
-     закрыта: у открытой он был бы вторым голосом того же ответа.
-     Функцию следа полка носит на себе (__trace), потому что ответ у
-     каждой свой: у навигации — где ты, у прототипа — что собрано, у
-     чужой полки — то, что её владелец сказал сам. */
-  function traceNav(sec) {
-    var here = sec.querySelector('.gbsp-here');
-    if (here && here.textContent.trim()) return here.textContent.trim();
-    var on = sec.querySelector('.gbsp-link.is-active');
-    return on ? on.textContent.trim() : '';
-  }
-
-  /* СЛЕД НАЗЫВАЕТ ВЕРСИЮ И ТО, ЧТО ОТ LIVE ОТЛИЧАЕТСЯ. Версия стоит
-     всегда: она про всю страницу, и «на какой версии я стою» — первый
-     вопрос к прототипу (Тон 01.09). Элементы попадают в след, только
-     когда они НЕ на Live: страница с четырьмя живыми элементами
-     сказала бы «Live · Live · Live · Live» и не сообщила бы ничего, а
-     страница с выбранным Suggested-хедером обязана сказать это и
-     свёрнутой. Строка Demo не в счёт: полка отвечает за то, что
-     СОБРАНО, а подставные данные — не сборка. */
-  function traceProto(sec) {
-    var out = [];
-    var ver = sec.querySelector('.gbsp-pick[data-slot="version"] .gbsp-pick__val');
-    if (ver && ver.textContent.trim()) out.push(ver.textContent.trim());
-    var rows = sec.querySelectorAll('.gbsp-pick[data-slot^="el:"]');
-    for (var i = 0; i < rows.length; i++) {
-      if (rows[i].getAttribute('data-live') === '1') continue;
-      var t = rows[i].querySelector('.gbsp-pick__val');
-      if (t && t.textContent.trim()) out.push(t.textContent.trim());
-    }
-    return out.join(' · ');
-  }
-
-  function paintTraces(host) {
-    var secs = host.querySelectorAll('.gbsp-sec[data-fold-id]');
-    for (var i = 0; i < secs.length; i++) {
-      var sec = secs[i];
-      var slot = sec.querySelector('.gbsp-fold__trace');
-      if (!slot) continue;
-      var folded = sec.classList.contains('is-folded');
-      var text = '';
-      if (folded && typeof sec.__trace === 'function') {
-        try { text = sec.__trace(sec) || ''; } catch (e) { text = ''; }
-      }
-      slot.textContent = text;
-      slot.hidden = !folded || !text;
-    }
-  }
-
-  function setFold(host, sec, folded) {
-    sec.classList.toggle('is-folded', folded);
-    var btn = sec.querySelector('.gbsp-fold');
-    if (btn) btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
-    var body = sec.querySelector('.gbsp-secbody');
-    /* Возвращается полка тем же коротким проявлением, что полки
-       гардероба (gbppl-panel-11): открытие — шаг, а не дверь. Ухода
-       нет: то, что убрали, исчезает сразу. */
-    if (body && !folded) {
-      body.classList.remove('is-arriving');
-      void body.offsetWidth;
-      body.classList.add('is-arriving');
-    }
-    var id = sec.getAttribute('data-fold-id');
-    if (id) writeFold(id, folded);
-    paintTraces(host);
-  }
-
-  function wireFolds(host) {
-    var panel = host.querySelector('.gbsp-panel');
-    if (!panel) return;
-    panel.addEventListener('click', function (e) {
-      var b = e.target.closest ? e.target.closest('.gbsp-fold') : null;
-      if (!b || !panel.contains(b)) return;
-      var sec = b.closest('.gbsp-sec');
-      if (!sec) return;
-      setFold(host, sec, !sec.classList.contains('is-folded'));
-    });
-  }
 
   /* Подсвечивается не страница, а РАЗДЕЛ, в котором стоишь
      (gbppl-panel-8). Плоский список дверей синел только на самой себе,
@@ -1389,73 +1291,124 @@
   }
 
   /* ============================================================
-     СЕКЦИЯ НАВИГАЦИИ (gbppl-panel-9)
+     НАВИГАЦИЯ РЯДОМ ИКОНОК (gbppl-panel2-build-1, Тон 03.09)
      ------------------------------------------------------------
-     Тон: «Первому блоку не хватает понятной подписи: не сразу ясно,
-     где ты сейчас находишься... Назвать блок не Hub, а Hub Homepage.
-     Показать вложенность: дать группе название, а Live Prototype и
-     остальные элементы оформить как дочерние страницы».
+     Тон 27.08 просил показать, «где ты сейчас находишься», и ответом
+     был СПИСОК: корень Hub Homepage, три ребёнка со ступенькой и
+     волоском, имя страницы подписью под активной строкой. Список
+     занимал 190px верхней трети ящика и каждый раз читался целиком
+     ради одного слова.
 
-     Подпись группы — та же роль Eyebrow, что у всех остальных
-     подписей ящика; слова «you are in» выбраны потому, что группа
-     отвечает на вопрос о МЕСТЕ, а не о переходе, и это единственное
-     место панели, которое говорит про здесь и сейчас.
+     Тон 03.09 на мокапе: навигация по разделам = четыре сегмента
+     жёлоба с иконками, клик = переход на главную раздела, активный =
+     карточка с синим глифом. Hub обособлен СВОИМ жёлобом (зазором, а
+     не волоском): «остальные три к нему принадлежат».
 
-     Вложенность рисуется отступом и линией, а не вторым кеглем:
-     дети — те же .gbsp-link, что и корень, потому что это та же
-     навигация (Тон-6, второго языка списку не заводим).
+     ЧТО ДЕРЖИТ ИМЯ РАЗДЕЛА, КОГДА СЛОВА НЕТ. Три вещи разом, и ни
+     одна не рисуется: `title` (подсказка браузера под курсором),
+     `aria-label` (читалка) и СТРОКА ИМЕНИ ЭТАЖОМ НИЖЕ, которая
+     называет и страницу, и контейнер словами. Кнопка без слова
+     обязана иметь слово где-то ещё — то же правило, по которому уже
+     живёт ряд экранов (gbppl-panel-9).
 
-     Имя текущей страницы печатается ТОЛЬКО тогда, когда активная
-     строка — не сама эта страница: на хабе, на карте, на полке
-     песочниц и на About Oro строка и есть страница, и повторять её
-     под собой значит сказать одно дважды.
-
-     gbppl-panel-sandbox-1: подпись отвечает уже на ДВА вопроса, и
-     оба нужны разом — где я стою и что при этом открыто. На Live
-     она прежняя, одно имя страницы («Checkout page»). В песочнице
-     подсвечена другая строка, и одного имени страницы стало мало:
-     «Sandboxes» + «Checkout page» не сказали бы, КОТОРАЯ из двух
-     песочниц чекаута на экране. Имя варианта приходит из реестра
-     тем же словом, каким его печатает полка Sandboxes и строка
-     Version соседней полки (Тон 31.08: «Прототипы должны называться
-     по странице»), и встаёт за разделителем «·» — тем самым, что
-     держит пары в тайтлах вкладок (правила копии, раздел 3).
+     ГЛИФЫ ПРИХОДЯТ ИЗ ЗАПИСИ НАБОРА по именам (icon.js: home, globe,
+     flask, grid). Своих рисунков консоль больше не носит.
      ============================================================ */
-  function navSection(root, pageId) {
+  var NAV_ICONS = {
+    'index.html':             'home',
+    'live/index.html':        'globe',
+    'sandboxes.html':         'flask',
+    'system/oro/index.html':  'grid'
+  };
+
+  /* Раздел, в котором стоишь: из реестра, если выбран вариант, иначе
+     из адреса (variantHere / sectionHere выше, gbppl-panel-sandbox-1). */
+  function sectionNow(root, pageId) {
+    return variantHere(pageId, root) ? 'sandboxes.html' : sectionHere(root);
+  }
+
+  function navCell(root, path, label, section, here) {
+    var on = here === section;
+    return '<a class="gbsp-cell' + (on ? ' is-on' : '') + '"' +
+      ' href="' + root + path + '"' +
+      ' title="' + esc(label) + '" aria-label="' + esc(label) + '"' +
+      (on ? ' aria-current="page"' : '') + '>' +
+      glyph(NAV_ICONS[section] || 'grid', 20) +
+    '</a>';
+  }
+
+  /* ШАПКА ЯЩИКА: четыре раздела и две тихие кнопки пульта.
+     Класс .gbsp-head не переименован намеренно — за него ящик таскают,
+     на него садится счёт у оторванной фигуры, и он остаётся один,
+     когда ящик сложен в полосу (комментарий в studio-panel.css). */
+  function headHtml(root, pageId) {
+    var here = sectionNow(root, pageId);
+    var three = NAV_KIDS.map(function (k) {
+      return navCell(root, k[0], k[1], k[2], here);
+    }).join('');
+    return (
+      '<div class="gbsp-head">' +
+        '<div class="gbsp-trough gbsp-trough--nav gbsp-nav__hub">' +
+          navCell(root, NAV_ROOT[0], NAV_ROOT[1], 'index.html', here) +
+        '</div>' +
+        '<div class="gbsp-trough gbsp-trough--nav gbsp-nav__three"' +
+             ' role="group" aria-label="Studio sections">' + three + '</div>' +
+        '<div class="gbsp-tools">' +
+          '<button class="gbsp-dock" type="button"></button>' +
+          '<button class="gbsp-min" type="button" aria-controls="gbsp-panel">' +
+            glyph('chevron-down', 16) +
+          '</button>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  /* ============================================================
+     ИМЯ СТРАНИЦЫ И ЕЁ КОНТЕЙНЕР (gbppl-panel2-build-1)
+     ------------------------------------------------------------
+     Тон 03.09: «ниже имя страницы + статус (Sandbox · not on Live yet
+     / Live)». Строка, которую раньше печатала подпись под активным
+     пунктом списка (.gbsp-here), разложена надвое: ИМЯ отвечает «что
+     открыто», ПОДПИСЬ — «в каком контейнере это лежит».
+
+     Имя варианта отсюда УШЛО в строку Version соседней полки (мокап):
+     раньше подпись говорила «Checkout page · Shared quantity pool» и
+     повторяла то, что строкой ниже и так стоит своим словом.
+     Остаётся ответ, которого в строке Version нет: страница в
+     песочнице ещё НЕ на Live, и это первое, что надо знать, глядя на
+     прототип (gbppl-panel-sandbox-1, Тон 03.09: «Этот чекаут не
+     является частью лайва»).
+
+     Источник имени — та же таблица PLACES, что подсвечивает раздел, и
+     то же слово, каким страницу зовёт полка Sandboxes (Тон 31.08:
+     «Прототипы должны называться по странице»).
+     ============================================================ */
+  var SECTION_WORD = {
+    'index.html':            'Studio',
+    'live/index.html':       'Live',
+    'sandboxes.html':        'Sandboxes',
+    'system/oro/index.html': 'Design System'
+  };
+
+  function whoSection(root, pageId) {
     var rel     = relHere(root);
     var variant = variantHere(pageId, root);
-    /* Вариант выбран — место читается из реестра, а не из папки. */
-    var here = variant ? 'sandboxes.html' : sectionHere(root);
-    var name = PLACES[rel] || '';
-    if (variant) {
-      name = name ? name + ' · ' + variant.label : variant.label;
-    }
-
-    function row(path, label, section, kid) {
-      var on = here === section;
-      /* Строка активна и ведёт не на саму страницу — значит имя
-         страницы ещё не произнесено, и его говорит подпись. */
-      var say = on && name && path !== rel ? name : '';
-      return '<li>' +
-        '<a class="gbsp-link' + (on ? ' is-active' : '') + '" href="' + root + path + '"' +
-        (on ? ' aria-current="page"' : '') + '>' + label + '</a>' +
-        (say ? '<span class="gbsp-here">' + esc(say) + '</span>' : '') +
-      '</li>';
-    }
-
-    var kids = NAV_KIDS.map(function (k) {
-      return row(k[0], k[1], k[2], true);
-    }).join('');
-
-    /* gbppl-panel-sections-1: полка складывается за свой айбрау, и
-       свёрнутая называет место, в котором стоишь, — единственный
-       ответ, ради которого её и читают. */
-    return foldSec('nav', 'you are in',
-      '<ul class="gbsp-list">' +
-        row(NAV_ROOT[0], NAV_ROOT[1], 'index.html', false) +
-        '<li><ul class="gbsp-list gbsp-sub">' + kids + '</ul></li>' +
-      '</ul>',
-      'gbsp-sec--nav');
+    var here    = sectionNow(root, pageId);
+    var name    = PLACES[rel] || '';
+    var sub     = variant ? 'Sandbox · not on Live yet' : (SECTION_WORD[here] || '');
+    /* Страницы, которой нет в таблице, имя даёт её раздел: пустая
+       строка 16/600 читалась бы дырой, а «неизвестно где» — неправдой,
+       раздел-то известен. */
+    if (!name) { name = sub; sub = ''; }
+    /* И ОДНО ИМЯ НЕ ГОВОРИТСЯ ДВАЖДЫ: полка Sandboxes сама и есть
+       раздел Sandboxes, и «Sandboxes · Sandboxes» было бы не ответом,
+       а эхом (поймано прогоном 27 страниц). */
+    if (sub === name) sub = '';
+    if (!name) return '';
+    return plainSec('who', '',
+      '<span class="gbsp-name">' + esc(name) + '</span>' +
+      (sub ? '<span class="gbsp-name__sub">' + esc(sub) + '</span>' : ''),
+      'gbsp-sec--who');
   }
 
   /* ============================================================
@@ -1469,19 +1422,32 @@
      тот же голос, что был у .gbsp-group__title.
      ============================================================ */
   function pickRow(name, value, slot, live) {
+    var id = 'gbsp-lbl-' + String(slot || name).replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     return (
-      /* aria-haspopup, но НЕ aria-expanded: строка не раскрывается на
-         месте, она уводит на слой, и «expanded» было бы неправдой. */
-      '<button class="gbsp-pick" type="button" aria-haspopup="true"' +
-        (slot ? ' data-slot="' + esc(slot) + '"' : '') +
-        /* gbppl-panel-sections-1: стоит ли строка на Live. Читает это
-           только след свёрнутой полки: ему важно назвать то, что от
-           Live ОТЛИЧАЕТСЯ, а не пересказать четыре одинаковых слова. */
-        (live ? ' data-live="1"' : '') + '>' +
-        '<span class="gbsp-pick__name">' + esc(name) + '</span>' +
-        '<span class="gbsp-pick__val">' + esc(value) + '</span>' +
-        '<span class="gbsp-pick__chev">' + glyph('chevron-right', 16) + '</span>' +
-      '</button>'
+      '<div class="gbsp-row">' +
+        /* Подпись стоит СНАРУЖИ контрола, своей колонкой (мокап 03.09:
+           «подпись слева, контрол справа»). Кнопке она достаётся через
+           aria-labelledby: имя настройки читается вслух вместе со
+           значением, хотя внутри кнопки его больше нет. */
+        '<span class="gbsp-row__label" id="' + id + '">' + esc(name) + '</span>' +
+        '<span class="gbsp-row__ctl">' +
+          /* aria-haspopup, но НЕ aria-expanded: строка не раскрывается
+             на месте, она уводит на слой, и «expanded» было бы
+             неправдой. */
+          '<button class="gbsp-pick" type="button" aria-haspopup="true"' +
+            ' aria-labelledby="' + id + '"' +
+            (slot ? ' data-slot="' + esc(slot) + '"' : '') +
+            /* gbppl-panel-sections-1: стоит ли строка на Live. Флаг
+               пережил след свёрнутой полки — его читает setElement и
+               он остаётся честным ответом «это Live или нет». */
+            (live ? ' data-live="1"' : '') + '>' +
+            '<span class="gbsp-pick__val">' + esc(value) + '</span>' +
+            /* Шеврон ВНИЗ, как у всякого селекта (мокап 03.09): строка
+               открывает список, а не уводит вбок. */
+            '<span class="gbsp-pick__chev">' + glyph('chevron-down', 16) + '</span>' +
+          '</button>' +
+        '</span>' +
+      '</div>'
     );
   }
 
@@ -1621,7 +1587,7 @@
        инструментов (страница без реестра, но с демо-данными). Пять,
        потому что инструменты 10: «что собрано» стоит выше «чем
        смотрю» (gbppl-panel-8). */
-    return foldSec('proto', NAME_PROTOTYPE, html, 'gbsp-sec--proto', 5);
+    return plainSec('proto', NAME_PROTOTYPE, html, 'gbsp-sec--proto', 5);
   }
 
   /* Полка Prototype, живая. В шаблоне её может не быть вовсе (нечего
@@ -1631,9 +1597,8 @@
     var sec = host.querySelector('.gbsp-sec--proto');
     if (sec) return sec;
     var box = document.createElement('div');
-    box.innerHTML = foldSec('proto', NAME_PROTOTYPE, '', 'gbsp-sec--proto');
+    box.innerHTML = plainSec('proto', NAME_PROTOTYPE, '', 'gbsp-sec--proto');
     sec = box.firstChild;
-    sec.__trace = traceProto;
     placeSection(host, sec, 5);
     return sec;
   }
@@ -1647,8 +1612,9 @@
     return row ? row.querySelector('.gbsp-pick__val') : null;
   }
 
-  /* Значение строки и её отношение к Live переписываются вместе: след
-     свёрнутой полки читает второе, и разъехаться им нельзя. */
+  /* Значение строки и её отношение к Live переписываются вместе: флаг
+     data-live — честный ответ «это Live или нет», и разъехаться со
+     значением ему нельзя. */
   function sayRow(host, slot, label, live) {
     var row = protoRow(host, slot);
     if (!row) return;
@@ -1656,7 +1622,6 @@
     if (val) val.textContent = label;
     if (live) row.setAttribute('data-live', '1');
     else row.removeAttribute('data-live');
-    paintTraces(host);
   }
 
   /* ВЫБОР ВАРИАНТА = ПЕРЕКЛЮЧЕНИЕ КЛЮЧА. Что ставится в адрес, знает
@@ -1688,7 +1653,6 @@
   function wireProto(host, root) {
     var sec = host.querySelector('.gbsp-sec--proto');
     if (!sec) return;
-    sec.__trace = traceProto;
     var pageId = host.getAttribute('page');
 
     var ver = sec.querySelector('button.gbsp-pick[data-slot="version"]');
@@ -1926,13 +1890,21 @@
     return (
       '<div class="gbsp-foot">' +
         '<p class="gbsp-status"></p>' +
-        '<button class="gbsp-link gbsp-copy" type="button">Copy link to this view</button>' +
+        /* Copy link стал тихой командой с глифом-цепочкой (мокап
+           03.09) и потерял хвост «to this view»: строка состояния
+           слева от неё и есть тот самый вид, и называть его дважды в
+           одной строке незачем. Слово лежит в своём слоте — иначе
+           «Copied» затирало бы глиф вместе с текстом. */
+        '<button class="gbsp-copy" type="button">' +
+          glyph('link', 16) +
+          '<span class="gbsp-copy__word">Copy link</span>' +
+        '</button>' +
       '</div>'
     );
   }
 
   var TEMPLATE = function (root, pageId) {
-    var body = navSection(root, pageId) +
+    var body = whoSection(root, pageId) +
                protoSection(pageId, root) +
                footHtml();
     return (
@@ -1943,21 +1915,16 @@
           '<span class="gbsp-tab__word">Studio</span>' +
         '</button>' +
         '<nav class="gbsp-panel" id="gbsp-panel" aria-label="Design Studio">' +
-          /* ШАПКА ЯЩИКА (gbppl-panel-dock-1): титул и одна тихая
-             кнопка справа. Глиф и метку кнопке ставит paintDock, потому
-             что они зависят от стороны, а сторона читается из памяти
-             уже на живом элементе.
-             gbppl-panel-float-2: и вторая тихая кнопка перед ней —
-             сворачивание, которое видно только у оторванного ящика (у
-             пристыкованного эту работу делает язычок). Сама шапка с
-             этой волны ещё и ручка: за неё ящик таскают. */
-          '<div class="gbsp-head">' +
-            '<span class="gbsp-title">Design Studio</span>' +
-            '<button class="gbsp-min" type="button" aria-controls="gbsp-panel">' +
-              glyph('chevron-down', 16) +
-            '</button>' +
-            '<button class="gbsp-dock" type="button"></button>' +
-          '</div>' +
+          /* ШАПКА ЯЩИКА — ряд навигации и две тихие кнопки пульта
+             (gbppl-panel2-build-1). До этой волны здесь стояла строка
+             титула «DESIGN STUDIO» с кнопкой дока в хвосте; титул снят
+             (развилка волны, разбор в шапке studio-panel.css), а его
+             место занял ряд разделов. Глиф и метку кнопке дока ставит
+             paintDock: они зависят от стороны, а сторона читается из
+             памяти уже на живом элементе.
+             Шапка с gbppl-panel-float-2 ещё и ручка: за неё ящик
+             таскают. */
+          headHtml(root, pageId) +
           body +
         '</nav>' +
       '</div>'
@@ -2226,14 +2193,25 @@
     return placeSection(host, sec, 10);
   }
 
-  /* Компонент, а не копия его поведения (gbppl-panel-mode-toggle-1).
-     Ряд глифов не тумблер и через эту дверь не проходит. */
-  function tune(el) {
-    if (!el || !window.GbToggle || !el.classList.contains('gb-toggle')) return;
-    try {
-      if (typeof window.GbToggle.enhance === 'function') window.GbToggle.enhance(el);
-      if (typeof window.GbToggle.sync === 'function') window.GbToggle.sync(el);
-    } catch (e) {}
+  /* ТУМБЛЕРА ЗДЕСЬ БОЛЬШЕ НЕТ (gbppl-panel2-build-1), и вместе с ним
+     ушла функция tune(): она звала GbToggle.enhance/sync на живом
+     треке, чтобы клавиши группы приходили от компонента. У жёлоба
+     клавиш компонента нет и не должно быть: это ряд обычных кнопок,
+     каждая со своим таб-стопом, ровно как ряд экранов и фильтр
+     комментов, которые так жили всегда. Почему тумблер отпущен —
+     в шапке studio-panel.css. */
+
+  /* Один слот записки на полку инструментов, рождается по первому
+     спросу и всегда стоит последним ребёнком полки. */
+  function sectionNote(sec) {
+    if (!sec.__note) {
+      var p = document.createElement('p');
+      p.className = 'gbsp-note';
+      p.hidden = true;
+      sec.__note = p;
+    }
+    sec.appendChild(sec.__note);
+    return sec.__note;
   }
 
   function makeSegments(host, spec) {
@@ -2241,14 +2219,14 @@
     var options = spec.options || [];
     var sec = modeSection(host);
 
-    /* ДВА ОБЛИКА ГРУППЫ (gbppl-panel-mode-toggle-1). Ряд глифов
-       (Device, spec.row) остаётся рядом глифов с именем слева; выбор
-       СЛОВАМИ переезжает на системный <gb-toggle>. Признак — тот же
-       spec.row, которым Device и так отличался: у кого глифы, у того
-       ряд; у кого слова, у того тумблер. Ни inspect.js, ни comments.js
-       про это не знают и не должны: панель владеет ВИДОМ и МЕСТОМ
-       (gbppl-panel-6), они владеют поведением. */
-    var asSwitch = !spec.row;
+    /* ОБЛИК ОДИН НА ВСЕХ (gbppl-panel2-build-1). Здесь было два: ряд
+       глифов с именем слева у Device и системный <gb-toggle> у Mode.
+       Теперь и у слов, и у глифов ЖЁЛОБ с равными долями, а spec.row
+       различает только НАЧИНКУ ячейки (глиф или слово) да ещё то,
+       нужно ли группе примечание под жёлобом. Ни inspect.js, ни
+       comments.js про это не знают и не должны: панель владеет ВИДОМ и
+       МЕСТОМ (gbppl-panel-6), они владеют поведением. */
+    var asIcons = !!spec.row;
 
     var wrap = document.createElement('div');
     /* ИМЯ ГРУППЫ СТОИТ В ОДНОЙ СТРОКЕ С РЯДОМ (gbppl-panel-layers-1).
@@ -2265,7 +2243,7 @@
        говорит, что это переключатель (за этим Тон его и позвал), три
        слова называют себя, а строка состояния внизу ящика печатает
        выбранный режим словом. */
-    wrap.className = 'gbsp-seggroup ' + (asSwitch ? 'gbsp-seggroup--switch' : 'gbsp-seggroup--inline');
+    wrap.className = 'gbsp-seggroup';
     /* gbppl-panel-7: место группы в секции задаётся РАНГОМ, а не
        порядком вызова. Mode объявляет inspect.js асинхронно (через
        whenDefined), Device — сама панель в connectedCallback, то есть
@@ -2277,56 +2255,36 @@
        видно всегда, как было у всех групп до этой волны. */
     if (spec.when) wrap.setAttribute('data-when', spec.when);
     var title = spec.title || 'Mode';
-    var shape = spec.row ? ' gbsp-segs--row' : '';
     /* Девайсы стоят одной строкой ИКОНОК (gbppl-panel-9), и тогда
-       имя с числом живут в title и во всплывающей подписи под
-       строкой: у кнопки без слова обязано быть слово где-то ещё.
-       У режима слово своё, и глифа ему не нужно.
+       имя с числом живут в title и в строке состояния под курсором:
+       у кнопки без слова обязано быть слово где-то ещё. У режима
+       слово своё, и глифа ему не нужно.
 
-       ПОЛОВИНА ТУМБЛЕРА — ТОТ ЖЕ УЗЕЛ, ТОЛЬКО В ОДЕЖДЕ КОМПОНЕНТА
-       (gbppl-panel-mode-toggle-1): data-seg, aria-pressed и порядок
+       ЯЧЕЙКА ОДНА НА ОБА СЛУЧАЯ: data-seg, aria-pressed и порядок
        остаются на месте, поэтому paint, setBadge и addOption ниже
-       работают в обоих обликах одним кодом. Слово половины лежит в
-       .gb-toggle__label — слоте, который toggle.css завёл ровно для
-       случая «в половине не только слово»: счёт непрочитанного встаёт
-       ему соседом по флексу и берёт зазор компонента, а не свой. */
+       работают одним кодом. Счёт непрочитанного встаёт слову соседом
+       по флексу и берёт зазор самой ячейки, а не свой. */
     function segHtml(o, i) {
-      var head = ' type="button" data-seg="' + i + '"' +
-                 (o.title ? ' title="' + esc(o.title) + '"' : '') +
-                 (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
-                 ' aria-pressed="false">';
-      if (asSwitch) {
-        return '<button class="gb-toggle__item"' + head +
-               '<span class="gb-toggle__label">' + esc(o.label) + '</span></button>';
-      }
-      return '<button class="gbsp-seg' + (o.icon ? ' gbsp-seg--icon' : '') + '"' + head +
+      return '<button class="gbsp-cell" type="button" data-seg="' + i + '"' +
+             (o.title ? ' title="' + esc(o.title) + '"' : '') +
+             (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
+             ' aria-pressed="false">' +
              (o.icon || esc(o.label)) + '</button>';
     }
-    /* ТУМБЛЕР ЗДЕСЬ ХОЗЯИН ЗНАЧЕНИЯ, а компонент — форма и клавиши:
-       data-gb-toggle="host" (toggle.js) оставляет ему роль группы,
-       один таб-стоп и стрелки, а класс нажатой половины по-прежнему
-       двигает paint() ниже. Двух источников правды о том, какой режим
-       включён, у консоли не появляется.
+    /* ЖЁЛОБ, И БОЛЬШЕ НИЧЕГО (gbppl-panel2-build-1). Здесь стояла
+       развилка на два вида разметки: <gb-toggle --inverse --small
+       --spread> у Mode и айбрау-подпись плюс .gbsp-segs у Device.
+       Осталась одна коробка на обе группы.
 
-       И СТУПЕНЬ ТЕПЕРЬ САМАЯ МАЛЕНЬКАЯ, КАКАЯ У НАС ЕСТЬ
-       (gbppl-toggle-small-1, 02.09). Тон, глядя на этот самый ряд:
-       «уменьшить размер вот этих тогглов в панели управления
-       прототипом. Там должен быть самый маленький тоггл, который у нас
-       есть. Это просто гигантское.» Самой маленькой не было: тогдашняя --s была
-       полом дома, и накануне (gbppl-toggle-type-1) половина тогла
-       встала на кнопочную S буквально, отчего ряд вырос с 42.26 до
-       51.76 на 1280 и до 57.76 на экране Тона. Ответ не подпилка
-       консоли: у КНОПКИ появилась ступень ниже всех, --small
-       32 / 36 / 40 (tokens.css, SIZE SMALL — там арифметика живой
-       кривой и провенанс каждого числа), тогл получил на неё
-       модификатор, а консоль просто носит его. Краска (--inverse) и
-       раскладка (--spread) не изменились ни на строку. */
-    var html = asSwitch
-      ? '<div class="gb-toggle gb-toggle--inverse gb-toggle--small gb-toggle--spread"' +
-        ' data-gb-toggle="host" role="group" aria-label="' + esc(title) + '">'
-      : '<span class="gbsp-eyebrow gbsp-seglabel">' + esc(title) + '</span>' +
-        '<div class="gbsp-segs' + shape + '"' +
-        ' role="group" aria-label="' + esc(title) + '">';
+       ПОДПИСИ СЛЕВА НЕТ НИ У КОГО, и это арифметика, а не вкус
+       (мокап 03.09): с колонкой подписи 72 ячейка выходит 65, а
+       «Comment» со счётом просит 82, и равные доли, ради которых шла
+       правка, ломаются на первой же группе. Имя группы уходит в
+       aria-label жёлоба, вслух его говорит строка состояния внизу
+       ящика, а коробка сама говорит, что она переключатель. */
+    var html = '<div class="gbsp-trough gbsp-trough--fenced' +
+               (asIcons ? ' gbsp-trough--icons' : '') + '"' +
+               ' role="group" aria-label="' + esc(title) + '">';
     options.forEach(function (o, i) { html += segHtml(o, i); });
     /* ТРЕТЬЯ ПОЗИЦИЯ MODE ОЖИЛА (gbppl-comments-b, 28.08). С panel-8
        здесь стоял выключенный сегмент «Comment» с подписью coming
@@ -2341,12 +2299,22 @@
        Страница без comments.js получает тумблер из двух положений и
        не врёт про третье. */
     html += '</div>';
-    html += '<p class="gbsp-note"></p>';
     wrap.innerHTML = html;
 
-    var row    = wrap.querySelector(asSwitch ? '.gb-toggle' : '.gbsp-segs');
+    var row    = wrap.querySelector('.gbsp-trough');
     var segEls = wrap.querySelectorAll('[data-seg]');
-    var noteEl = wrap.querySelector('.gbsp-note');
+    /* ПРИМЕЧАНИЕ ПРИНАДЛЕЖИТ ПОЛКЕ, А НЕ ГРУППЕ (gbppl-panel2-build-1,
+       мокап 03.09: один абзац под обоими жёлобами, не между ними).
+       Прежде свой <p> был у каждой группы, и на странице с инспектором
+       записка Mode вставала МЕЖДУ Mode и Device, разрывая пару
+       переключателей текстом.
+
+       Пишет в него только группа СЛОВ (Mode): она говорит про
+       поведение страницы. Ряд экранов молчит нарочно — его подсказку
+       берёт на себя строка состояния внизу ящика, и берёт на
+       НАВЕДЕНИЕ, где абзацу пришлось бы расти и двигать всё под собой
+       (пункт 4 Тона 01.09, «контент ниже танцует»). */
+    var noteEl = asIcons ? null : sectionNote(sec);
     var current = spec.value;
 
     /* ИМЯ ТОГО, НА ЧТО СМОТРИТ КУРСОР, ГОВОРИТ СТРОКА СОСТОЯНИЯ
@@ -2375,8 +2343,10 @@
         segEls[i].setAttribute('aria-pressed', String(on));
         if (on && options[i].note) line = options[i].note;
       }
-      noteEl.textContent = line;
-      noteEl.hidden = !line;
+      if (noteEl) {
+        noteEl.textContent = line;
+        noteEl.hidden = !line;
+      }
       paintCap(null);
     }
 
@@ -2414,16 +2384,12 @@
       if ((+kin[q].getAttribute('data-rank') || 50) > rank) { before = kin[q]; break; }
     }
     sec.insertBefore(wrap, before);
+    /* Записка полки остаётся ПОСЛЕДНЕЙ, кто бы ни объявился позже:
+       группы приходят из двух файлов и в непредсказуемом порядке
+       (Device из connectedCallback, Mode через whenDefined). */
+    if (sec.__note) sec.appendChild(sec.__note);
     paint();
     dress();
-    /* Клавиши тумблера приходят от компонента (toggle.js: один
-       таб-стоп на группу, стрелки, Home/End, и стрелка ещё и
-       нажимает, поэтому наш обработчик клика получает клавиатуру
-       даром). Вызов идемпотентный, и наблюдатель toggle.js сделал бы
-       то же самое кадром позже — зовём сами, чтобы группа была цела
-       уже в ту же миллисекунду. Страница без toggle.js (такой сейчас
-       нет) остаётся с рабочим кликом и без стрелок. */
-    tune(row);
 
     /* Номер позиции по значению: сегменты дописываются позже
        (addOption), и владелец режима знает своё value, а не индекс. */
@@ -2453,16 +2419,10 @@
         if (!btn) return this;
         var b = btn.querySelector('.gbsp-badge');
         n = Math.max(0, parseInt(n, 10) || 0);
-        /* ПОЛОСУ ПОД СЧЁТ ДАЁТ ТЕПЕРЬ САМ ТУМБЛЕР
-           (gbppl-panel-mode-toggle-1). До этой волны ряд Mode был
-           рядом слов с зазором 16, счёт добавлял ему 24px, ящик их не
-           отдавал, и «Comment» ломался на две строки — отсюда две
-           ступени тесноты (has-badge 8, badge-wide 4). Половина
-           тумблера растёт вместе со своим содержимым и делит трек с
-           соседями по их длине (--spread), поэтому теснить нечего:
-           замер 1280 после правки — 60.4 / 82.1 / 126.8 при полосе
-           287.11. Классы остаются только у ряда глифов. */
-        if (row && !asSwitch) row.classList.toggle('has-badge', !!n);
+        /* ПОЛОСУ ПОД СЧЁТ ДАЁТ САМА ЯЧЕЙКА (gbppl-panel2-build-1).
+           Классы тесноты (has-badge 8, badge-wide 4) сняты: ячейки
+           жёлоба делят полосу поровну независимо от содержимого, а
+           зазор слова и счёта живёт внутри ячейки. */
         if (!n) {
           if (b) b.remove();
           /* Метка уходит вместе с числом; у сегмента-глифа своя
@@ -2480,11 +2440,10 @@
           btn.appendChild(b);
         }
         b.textContent = n > 99 ? '99+' : String(n);
-        /* «99+» — третий знак и ещё 6px. В ряду глифов их не было, и
-           зазор уходил на половину ступени; в тумблере они приходят из
-           доли соседей (замер 1280 с «99+»: 52.2 / 73.9 / 133.6 при
-           той же полосе 287.11), и теснить снова нечего. */
-        if (!asSwitch) row.classList.toggle('badge-wide', b.textContent.length > 2);
+        /* Три знака теснят ячейку на полступени (studio-panel.css,
+           .gbsp-cell.badge-wide): замер 1280 — «Comment» с «99+»
+           просит 95 при доле 92.46, зазор 6 → 4 возвращает 93. */
+        btn.classList.toggle('badge-wide', b.textContent.length > 2);
         btn.setAttribute('aria-label', (options[i].label || value) + ', ' + n + ' unread');
         return this;
       },
@@ -2501,11 +2460,6 @@
         row.insertAdjacentHTML('beforeend', segHtml(o, options.length - 1));
         segEls = wrap.querySelectorAll('[data-seg]');
         paint();
-        /* Половина, дописанная в живой трек, тоже принадлежит группе:
-           таб-стоп и стрелки перевешиваются на новый состав. Сам
-           наблюдатель toggle.js её не увидит — он ловит появление
-           ГРУППЫ, а не её детей. */
-        tune(row);
         return this;
       }
     };
@@ -3253,35 +3207,30 @@
     addSection(spec) {
       if (!this.__rendered) this.connectedCallback();
       spec = spec || {};
-      /* ЧУЖАЯ ПОЛКА СКЛАДЫВАЕТСЯ ТАК ЖЕ (gbppl-panel-sections-1): ни
-         одной строки у владельца, потому что шапку полки и раньше
-         рисовала панель. Id для памяти берётся из класса полки, а не
-         из заголовка: заголовок это копия, её переписывают, а
-         .gbsp-sec--comments — имя вещи. */
+      /* Id берётся из класса полки, а не из заголовка: заголовок это
+         копия, её переписывают, а .gbsp-sec--comments — имя вещи. */
       var id = (spec.className || '').replace(/^.*gbsp-sec--/, '') ||
                String(spec.title || 'section').toLowerCase().replace(/[^a-z0-9]+/g, '-');
       var box = document.createElement('div');
-      box.innerHTML = foldSec(id, spec.title || '', '', spec.className || '');
+      /* Заголовок полки БОЛЬШЕ НЕ РИСУЕТСЯ (gbppl-panel2-build-1): в
+         компоновке 2.0 айбрау нет ни у одной полки. Слово владельца не
+         пропадает — оно уходит в aria-label самой полки, и читалка
+         по-прежнему объявляет «Comments on this page». */
+      box.innerHTML = plainSec(id, spec.title || '', '', spec.className || '');
       var sec = box.firstChild;
-      /* След свёрнутой полки владелец даёт сам: панель не знает, что у
-         неё внутри, и выдумывать за неё счётчик не станет. */
-      if (typeof spec.trace === 'function') sec.__trace = spec.trace;
-      else if (spec.trace) sec.__trace = function () { return String(spec.trace); };
       /* gbppl-panel-11: полка может жить не во всех режимах. Спросили
          — панель гасит её сама, по событиям режима; не спросили —
          стоит всегда, как стояла. */
       if (spec.when) sec.setAttribute('data-when', spec.when);
       placeSection(this, sec, typeof spec.rank === 'number' ? spec.rank : 50);
       dress();
-      var host = this;
       return {
         element: sec,
         body: sec.querySelector('.gbsp-secbody'),
-        setTrace: function (text) {
-          sec.__trace = function () { return text ? String(text) : ''; };
-          paintTraces(host);
-          return this;
-        }
+        /* След свёрнутой полки исчез вместе со складыванием; ручка
+           оставлена немой, чтобы владелец, зовущий её, не падал
+           (закон о том, что чужой код не ломается молча). */
+        setTrace: function () { return this; }
       };
     }
 
@@ -3340,14 +3289,6 @@
          бывает и песочница, и вариант элемента, а адрес может
          смениться, пока ящик открыт. */
       wireProto(this, root);
-
-      /* СКЛАДНЫЕ ПОЛКИ (gbppl-panel-sections-1). Свёрнутость приезжает
-         вместе с разметкой (foldSec читает память), здесь остаётся
-         повесить один делегат на клик и напечатать следы. */
-      var navSec = this.querySelector('.gbsp-sec--nav');
-      if (navSec) navSec.__trace = traceNav;
-      wireFolds(this);
-      paintTraces(this);
 
       function setOpen(open) {
         /* Закрытый ящик всегда открывается корнем: слой это шаг
@@ -3623,15 +3564,19 @@
      ============================================================ */
   function wireFoot(host) {
     var copy = host.querySelector('.gbsp-copy');
-    if (copy) {
-      var word = copy.textContent, timer = null;
+    /* Слово переписывается в своём слоте, а не в самой кнопке
+       (gbppl-panel2-build-1): рядом со словом теперь стоит глиф
+       цепочки, и textContent на кнопке стёр бы его вместе с текстом. */
+    var say = copy && copy.querySelector('.gbsp-copy__word');
+    if (copy && say) {
+      var word = say.textContent, timer = null;
       copy.addEventListener('click', function () {
         copyText(viewUrl(), function (ok) {
-          copy.textContent = ok ? 'Copied' : 'Could not copy';
+          say.textContent = ok ? 'Copied' : 'Could not copy';
           copy.classList.add('is-said');
           clearTimeout(timer);
           timer = setTimeout(function () {
-            copy.textContent = word;
+            say.textContent = word;
             copy.classList.remove('is-said');
           }, 1500);
         });
