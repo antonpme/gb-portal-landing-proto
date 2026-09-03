@@ -305,6 +305,30 @@
           tags: ['flow', 'personalization'],
           created: '2026-08-25',
           updated: '2026-09-03'
+        },
+        {
+          id: 'v3',
+          /* Имя по канону 31.08: код версии не имя. Что отличает эту
+             комнату от Live и от двух соседних — страница задаёт по
+             одному вопросу за раз, вместо того чтобы показать все
+             сразу. Отсюда «One step at a time». Ключ v3 живёт только
+             в id и в href. */
+          label: 'One step at a time',
+          /* Тон 03.09: «сделай третий прототип на основе второй, но с
+             нашими доработками, я тебе доверяю». Две доработки, обе
+             его словами: «выбор, выбор, выбор — перегружено» плюс
+             «должна быть возможность вернуться назад» (аккордеон
+             шагов), и «адрес доставки и фактический получатель могут
+             абсолютно не совпадать с именем для персонализации на
+             коробке: я могу получить гифт на себя, а на нём будет имя
+             моей жены» (строка = коробка, две независимые стороны). */
+          desc: 'The page asks one question at a time: the step you are answering is open, an answered step folds into one line with an Edit beside it, and the order summary stands in a rail that never folds. A row of the table is a gift box, not a person, so where a box goes and what is printed on it are two separate answers.',
+          status: 'in-progress',
+          href: 'live/checkout.html?v=3',
+          ready: true,
+          tags: ['flow', 'shipping', 'personalization'],
+          created: '2026-09-03',
+          updated: '2026-09-03'
         }
       ]
     },

@@ -9,6 +9,52 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-v3-1 (2026-09-03) — A THIRD CANDIDATE, ?v=3.
+
+     Ton: «сделай третий прототип на основе второй, но с нашими
+     доработками, я тебе доверяю». V1 AND V2 ARE NOT TOUCHED BY ANY
+     OF IT — both are still in front of the team and both had to come
+     out of this wave byte for byte on the screen. The hashes of
+     full-page screenshots at 360 / 1280 / 2258, before and after, are
+     in the wave report.
+
+     WHAT V3 IS, in two sentences. The page asks one question at a
+     time: the step being answered is open, an answered step folds
+     into one line that says its answer with an Edit beside it, and a
+     step not yet reached is a quiet heading. A row of the table is a
+     BOX, not a person, and a box has two sides that know nothing
+     about each other — where it goes and who signs for it, and what
+     is printed on it.
+
+     WHY. «Выбор, выбор, выбор — перегружено» and «должна быть
+     возможность вернуться назад» are the first; «адрес доставки и
+     фактический получатель могут абсолютно не совпадать с именем для
+     персонализации на коробке: я могу получить гифт на себя, а на нём
+     будет имя моей жены» is the second, and it is in the demo data as
+     well as in the model.
+
+     HOW IT IS KEPT APART FROM THE OTHER TWO. Nothing in the V1/V2
+     markup was rewritten. The product card list is emptied by one
+     token when uiVersion is 'v3'; the payment and summary pair is
+     hidden by one x-show; V3 draws its own block, its own delivery
+     drawer and its own row list (`rowsV3`), and the shared helpers
+     that had to learn a third version say «v3» explicitly rather
+     than «not v2», so V1 and V2 keep the branch they always took.
+
+     THE ACCORDION IS NOT A NEW ORGANISM, and that is a decision.
+     Ton-6 asks for the existing thing first, and the thing already
+     exists on this page: the numbered grey band of step 1 has been
+     the header of a step since the file was born. V3 gives it two
+     more states — a summary line and a quiet future line — and both
+     are made of what the house already owns (the band, the serif
+     step title, `.gb-btn --small --ghost --secondary` for Edit, Zinc
+     400 ink for «not yet»). Promoting a steps accordion into
+     system/components would need either a live measurement or Ton's
+     word (law 0a.2), and it has neither yet; PrimeVue's name for
+     this control is Stepper, and a Stepper organism is a wave of its
+     own. It is the first question at the foot of the report.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-noise-1 (2026-09-03) — ?v=2 STOPS WHISPERING
      WHAT ITS CONTROLS ALREADY SAY.
 
@@ -752,7 +798,12 @@
 <main x-show="!placed" class="gb-container pb-24 space-y-6">
 
   <!-- ========== PRODUCT CARDS — one card per gift in the cart, stacked (live does the same) ========== -->
-  <template x-for="(product, pIdx) in products" :key="product.id">
+  <!-- gbppl-checkout-v3-1 (03.09): V3 does not render these cards at all — it
+       draws its own shape further down, an accordion of steps with the order
+       summary standing beside it. The list is emptied rather than the block
+       wrapped in an x-if, because ONE token is the whole change and V1 and V2
+       keep the markup they were reviewed on, character for character. -->
+  <template x-for="(product, pIdx) in (uiVersion === 'v3' ? [] : products)" :key="product.id">
     <!-- 5px on every corner is the house rule (Ton, 21.08). No overflow-hidden here:
          the step-2 menus hang out of this box and must not be clipped. -->
     <article class="bg-white border border-zinc-200 rounded-[var(--radius)]">
@@ -1815,6 +1866,650 @@
     </article>
   </template>
 
+  <!-- ============================================================
+       V3 — ONE STEP AT A TIME, AND A ROW IS A BOX
+       gbppl-checkout-v3-1 (2026-09-03)
+       ------------------------------------------------------------
+       Ton, 03.09: «сделай третий прототип на основе второй, но с
+       нашими доработками, я тебе доверяю». Two things he said before
+       that are the whole of this version.
+
+       ONE. «Выбор, выбор, выбор — перегружено», and «должна быть
+       возможность вернуться назад». So the page stops asking every
+       question at once. Only the step being answered is open; a step
+       already answered folds into one line that says its answer, with
+       an Edit that opens it again with everything still in it; a step
+       not yet reached is a quiet heading. The order summary never
+       folds — it stands in a rail beside the steps, so the number the
+       reader is spending is on screen while every question is
+       answered.
+
+       TWO. THE ROW IS THE BOX, NOT THE PERSON. Ton, verbatim: «адрес
+       доставки и фактический получатель могут абсолютно не совпадать
+       с именем для персонализации на коробке: я могу получить гифт на
+       себя, а на нём будет имя моей жены». So a gift has TWO
+       independent sides and neither owns the other:
+
+         DELIVERY         where the box goes, and who signs for it.
+                          The recipient's name lives WITH the address,
+                          inside the row's delivery drawer.
+         PERSONALIZATION  what is printed ON the box: a name, the
+                          engraved items, a card.
+
+       Everything the model has to cover falls out of that with no
+       special case: three boxes to one person at one address, one of
+       them carrying his wife's name and two carrying nothing; one
+       person at two addresses, home and office; both axes at once, or
+       neither. The Name column of the table is the name ON THE BOX
+       and never the recipient — the two are never mixed, in the
+       markup or in the copy.
+
+       THE COUNTER IS STILL THE ONLY HAND ON THE NUMBER (Ton 02.09,
+       carried over from V2): N gifts is N rows. Raising it adds rows
+       at the bottom, lowering it takes the last ones away after ONE
+       warning. Duplicating a row and importing a file both raise the
+       counter in front of the reader rather than behind it.
+
+       STEP 3 ONLY EXISTS IF THE FIRST TWO ANSWERS CREATED IT, and it
+       is named after what it actually holds: Recipients when only the
+       addresses differ, Personalization when only the gifts do,
+       Recipients & personalization when both.
+
+       ONE SHIPPING METHOD PER ORDER, AND IT IS A DELIBERATE
+       SIMPLIFICATION. V1 and V2 let every row carry its own; V3 asks
+       once, in step 1, beside the addresses question. The reason is
+       the same one that folded the steps: the method is the same for
+       every box in nearly every order, and asking twenty times to
+       cover the case where it is not is the overload Ton named. It is
+       on the list for him, at the foot of the wave report.
+       ============================================================ -->
+  <template x-if="uiVersion === 'v3'">
+    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
+
+      <!-- ===== LEFT: the order, one step at a time ===== -->
+      <div class="min-w-0 space-y-6">
+
+        <template x-for="(product, pIdx) in products" :key="'v3-' + product.id">
+          <article class="bg-white border border-zinc-200 rounded-[var(--radius)]">
+
+            <!-- ===== Product header: the gift, the counter, the money =====
+                 A 64px thumbnail rather than V1's picture column: the rail on
+                 the right takes 340 of the page, and a photograph the size of
+                 the one on V1's card would leave the steps in a gutter. 64 is
+                 a step of the space scale, and the photo is context here, not
+                 the subject. -->
+            <div class="p-6 flex flex-wrap items-start gap-x-6 gap-y-4">
+              <img :src="product.image" :alt="product.name" class="w-16 h-16 md:w-24 md:h-24 object-contain flex-shrink-0">
+              <!-- The title column refuses to go under 180: without a floor it
+                   shrank to 90px at 360 and set the gift's name in four lines
+                   next to its price. With one, the price wraps to its own line
+                   instead, which is what a phone should do with it. -->
+              <div class="flex-1 min-w-[180px]">
+                <h2 class="font-serif text-2xl leading-tight" x-text="product.name"></h2>
+                <div class="mt-3 flex items-center gap-4">
+                  <span class="gb-eyebrow">Gifts</span>
+                  <!-- The same component, the same host contract and the same
+                       three handlers as V2: the value is Alpine's, the bounds
+                       and the aria are the component's. -->
+                  <div class="gb-inputnumber" data-gb-inputnumber="host" aria-label="Number of gifts">
+                    <button @click="bumpGifts(product, -1)" type="button" aria-label="Decrease quantity"
+                            :title="giftFloorReason(product)" data-step="-1"
+                            class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                    <input type="number" min="1" :value="productPool(product)" @change="setGiftValue(product, $event.target.value, $event.target)" class="gb-inputnumber__value">
+                    <button @click="bumpGifts(product, 1)" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right max-[639px]:w-full max-[639px]:text-left">
+                <p class="gb-eyebrow">Product total</p>
+                <p class="font-serif text-2xl">$<span x-text="productTotal(product).toLocaleString()"></span></p>
+              </div>
+            </div>
+
+            <!-- The one warning, unchanged from V2 in shape and in text: it
+                 stands under the control the hand is on, it is asked once per
+                 page load, and empty rows are always taken away in silence. -->
+            <div x-show="giftCut.pending && giftCut.productId === product.id" x-cloak
+                 x-transition.opacity.duration.280ms
+                 class="mx-6 mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
+              <span class="flex items-start gap-2 min-w-0">
+                <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                <span x-text="giftCutLine()"></span>
+              </span>
+              <span class="flex items-center gap-2 flex-shrink-0">
+                <button @click="cancelGiftCut()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+                <button @click="confirmGiftCut()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary"><span class="gb-btn__label">Remove</span></button>
+              </span>
+            </div>
+
+            <!-- V3 draws the FIRST shipment of a product and no other. Splitting
+                 a product into several shipments was V1's answer to "these go
+                 somewhere else"; the address axis of the box is V3's, and it is
+                 the same answer without a second container to keep in mind. -->
+            <template x-for="shipment in product.shipments.slice(0, 1)" :key="'v3s-' + shipment.id">
+              <div>
+
+                <!-- ============================================================
+                     STEP 1 · DELIVERY
+                     ============================================================ -->
+                <section class="border-t border-zinc-200">
+
+                  <!-- SUMMARY ROW. The whole band is the target and the Edit
+                       button is the visible one; a real <button> inside a
+                       <button> would be invalid, so the row is a div that
+                       carries the click and the organism carries the label. -->
+                  <div x-show="v3State(shipment, 1) === 'done'" @click="v3Edit(shipment, 1)"
+                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                    <h3 class="font-serif text-2xl leading-none">1. Delivery</h3>
+                    <p class="text-sm text-zinc-600 min-w-0" x-text="v3Sum1(shipment)"></p>
+                    <button type="button" @click.stop="v3Edit(shipment, 1)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary ml-auto"><span class="gb-btn__label">Edit</span></button>
+                  </div>
+
+                  <!-- FUTURE ROW. Step 1 can only be in front of you before
+                       anything is answered, so this never renders in practice;
+                       it stands here because all three steps are written the
+                       same way and a reader should not have to wonder. -->
+                  <div x-show="v3State(shipment, 1) === 'future'"
+                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex items-center">
+                    <h3 class="font-serif text-2xl leading-none text-zinc-400">1. Delivery</h3>
+                  </div>
+
+                  <template x-if="v3State(shipment, 1) === 'open'">
+                    <div>
+                      <!-- THE BAND IS 72 TALL AND STAYS 72. Ton, on V2: the
+                           step band grew taller the moment its buttons
+                           appeared. Every band of this accordion carries the
+                           same min-height, which is the top rung of the house
+                           button grid (72/64/56/48/40/36/32), and every
+                           control inside it is `small` — 32/36/40 — so the
+                           band cannot be pushed past it at any width. Below
+                           the wrap point the row wraps and grows, which is a
+                           phone doing what a phone does. -->
+                      <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-3">
+                        <h3 class="font-serif text-2xl leading-none">1. Delivery</h3>
+                      </header>
+
+                      <div class="px-6 py-5 space-y-5" x-data="{ shipToOpen: false }">
+
+                        <!-- The plural asks HOW MANY; the eyebrow one block
+                             down asks WHICH ONE. Two words apart by a letter,
+                             and the letter is the question (V2 set this). -->
+                        <div>
+                          <p class="gb-eyebrow mb-2">Addresses</p>
+                          <div class="gb-radio-group gb-radio-group--cards" role="radiogroup"
+                               aria-label="How these gifts are addressed">
+                            <label class="gb-radio gb-radio--select">
+                              <input class="gb-radio__input" type="radio" :name="'v3addr-' + shipment.id" value="same"
+                                     :checked="shipment.addressMode === 'same'"
+                                     @change="v3ChooseAddress(shipment, 'same')">
+                              <span class="gb-radio__copy">
+                                <span class="gb-radio__title">One address</span>
+                                <span class="gb-radio__sub">Every gift ships to the same place</span>
+                              </span>
+                            </label>
+                            <label class="gb-radio gb-radio--select">
+                              <input class="gb-radio__input" type="radio" :name="'v3addr-' + shipment.id" value="different"
+                                     :checked="shipment.addressMode === 'different'"
+                                     @change="v3ChooseAddress(shipment, 'different')">
+                              <span class="gb-radio__copy">
+                                <span class="gb-radio__title">Different addresses</span>
+                                <span class="gb-radio__sub">Each gift ships to its own recipient</span>
+                              </span>
+                            </label>
+                          </div>
+                        </div>
+
+                        <!-- ONE ADDRESS: the address itself, right here. -->
+                        <div x-show="shipment.addressMode === 'same'">
+                          <p class="gb-eyebrow mb-2">Address</p>
+                          <div class="relative">
+                            <button @click="shipToOpen = !shipToOpen"
+                                    class="w-full flex items-center justify-between gap-4 bg-zinc-50 border border-zinc-300 rounded-[var(--radius)] px-4 py-3 text-left hover:border-zinc-500 focus:outline-none focus:border-blue-600 transition-colors">
+                              <span class="text-sm truncate" :class="shipment.shipToLabel ? 'text-zinc-900' : 'text-zinc-400'" x-text="shipment.shipToLabel || 'Select an address'"></span>
+                              <svg class="w-4 h-4 text-zinc-500 flex-shrink-0 transition-transform" :class="shipToOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                            </button>
+                            <div x-show="shipToOpen" @click.outside="shipToOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-1 bg-white border border-zinc-200 rounded-[var(--radius)] shadow-lg z-30 overflow-hidden">
+                              <template x-for="addr in addressBook" :key="'v3book-' + addr.id">
+                                <button @click="shipment.shipToLabel = addr.name + ', ' + addr.label; shipment.shipToId = addr.id; shipToOpen = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+                                  <p class="font-medium" x-text="addr.name"></p>
+                                  <p class="text-sm text-zinc-500 truncate" x-text="addr.label"></p>
+                                </button>
+                              </template>
+                              <button @click="shipToOpen = false; openAddressBookDrawer(product.id, shipment.id)" class="w-full text-left px-4 py-2.5 text-sm bg-zinc-50 hover:bg-zinc-100 flex items-center gap-2 font-medium border-t border-zinc-200">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                Add new address
+                              </button>
+                            </div>
+                          </div>
+                          <div x-show="!shipment.shipToId"
+                               class="mt-3 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-3 py-2">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                            <span>Choose an address to continue.</span>
+                          </div>
+                        </div>
+
+                        <!-- DIFFERENT ADDRESSES: nothing to fill in here, and
+                             the line says where it IS filled in. This is not
+                             an echo of the control above it — no control on
+                             screen says what happens next — so it stays, and
+                             it stays at 14 rather than whispering at 12. -->
+                        <p x-show="shipment.addressMode === 'different'" class="text-sm text-zinc-600">You will add each recipient in step 3.</p>
+
+                        <!-- ONE METHOD FOR THE WHOLE ORDER. The gate is the
+                             organism's: the group carries is-disabled, every
+                             input a real `disabled`, and the cards fade at 0.4
+                             while the eyebrow above them does not (the name of
+                             the section is not unavailable, the options are). -->
+                        <div>
+                          <p class="gb-eyebrow mb-2">Shipping method</p>
+                          <div class="gb-radio-group gb-radio-group--cards" role="radiogroup"
+                               aria-label="Shipping method"
+                               :class="v3MethodsOff(shipment) ? 'is-disabled' : ''"
+                               :aria-disabled="v3MethodsOff(shipment)">
+                            <template x-for="opt in shippingOptions" :key="'v3ship-' + opt.id">
+                              <label class="gb-radio gb-radio--select">
+                                <input class="gb-radio__input" type="radio" :name="'v3ship-' + shipment.id"
+                                       :value="opt.id" x-model="shipment.shipping"
+                                       :disabled="v3MethodsOff(shipment)">
+                                <span class="gb-radio__copy">
+                                  <span class="gb-radio__title" x-text="opt.label"></span>
+                                  <span class="gb-radio__sub">$<span x-text="opt.cost"></span></span>
+                                </span>
+                              </label>
+                            </template>
+                          </div>
+                        </div>
+
+                        <div>
+                          <button type="button" @click="v3Continue(shipment, 1)" :disabled="!v3CanLeave(shipment, 1)"
+                                  class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary"><span class="gb-btn__label" x-text="v3NextLabel(shipment, 1)"></span></button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </section>
+
+                <!-- ============================================================
+                     STEP 2 · PERSONALIZATION
+                     Two answers and nothing else. The data, if there is any,
+                     belongs to step 3.
+                     ============================================================ -->
+                <section class="border-t border-zinc-200">
+
+                  <div x-show="v3State(shipment, 2) === 'done'" @click="v3Edit(shipment, 2)"
+                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                    <h3 class="font-serif text-2xl leading-none">2. Personalization</h3>
+                    <p class="text-sm text-zinc-600 min-w-0" x-text="v3Sum2(shipment)"></p>
+                    <button type="button" @click.stop="v3Edit(shipment, 2)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary ml-auto"><span class="gb-btn__label">Edit</span></button>
+                  </div>
+
+                  <div x-show="v3State(shipment, 2) === 'future'"
+                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex items-center">
+                    <h3 class="font-serif text-2xl leading-none text-zinc-400">2. Personalization</h3>
+                  </div>
+
+                  <template x-if="v3State(shipment, 2) === 'open'">
+                    <div>
+                      <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-3">
+                        <h3 class="font-serif text-2xl leading-none">2. Personalization</h3>
+                      </header>
+
+                      <div class="px-6 py-5 space-y-5">
+                        <div class="gb-radio-group gb-radio-group--cards" role="radiogroup" aria-label="Personalization">
+                          <label class="gb-radio gb-radio--select">
+                            <input class="gb-radio__input" type="radio" :name="'v3perso-' + shipment.id" value="none"
+                                   :checked="shipment.persoMode === 'none'" @change="v3ChoosePerso(shipment, 'none')">
+                            <span class="gb-radio__copy">
+                              <span class="gb-radio__title">No personalization</span>
+                              <span class="gb-radio__sub">Every gift in this order is the same</span>
+                            </span>
+                          </label>
+                          <label class="gb-radio gb-radio--select">
+                            <input class="gb-radio__input" type="radio" :name="'v3perso-' + shipment.id" value="each"
+                                   :checked="shipment.persoMode === 'each'" @change="v3ChoosePerso(shipment, 'each')">
+                            <span class="gb-radio__copy">
+                              <span class="gb-radio__title">Personalize each gift</span>
+                              <span class="gb-radio__sub">Add names and details per gift</span>
+                            </span>
+                          </label>
+                        </div>
+
+                        <!-- Julia, meeting 20.08: a large share of orders with no
+                             personalization still want ONE card in every box. It
+                             is a sub-option of this answer and of no other: the
+                             per-gift table gives every row a card of its own. -->
+                        <div x-show="shipment.persoMode === 'none'" x-transition.opacity.duration.280ms
+                             class="border border-zinc-200 rounded-[var(--radius)]">
+                          <label class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
+                            <input type="checkbox" x-model="shipment.genericCard.on" class="accent-blue-600 w-4 h-4 flex-shrink-0">
+                            <span class="text-sm text-zinc-900">Add a greeting card to all gifts</span>
+                            <span class="text-sm text-zinc-500">One card, the same message in every box</span>
+                          </label>
+                          <div x-show="shipment.genericCard.on" x-cloak x-transition.opacity.duration.280ms class="border-t border-zinc-200 px-4 py-5 space-y-6">
+                            <div>
+                              <div class="flex justify-between items-baseline mb-1">
+                                <label class="gb-eyebrow">Message</label>
+                                <span class="text-sm text-zinc-500"><span x-text="(shipment.genericCard.message || '').length"></span> / 280</span>
+                              </div>
+                              <textarea x-model="shipment.genericCard.message" rows="3" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
+                            </div>
+                            <div class="gba-inputwrap">
+                              <label class="gb-eyebrow block mb-1">From</label>
+                              <input type="text" x-model="shipment.genericCard.from" placeholder="Your name or company" class="gba-input">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <button type="button" @click="v3Continue(shipment, 2)"
+                                  class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary"><span class="gb-btn__label" x-text="v3NextLabel(shipment, 2)"></span></button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </section>
+
+                <!-- ============================================================
+                     STEP 3 · THE BOXES
+                     It exists only because the two answers above created it,
+                     and it is named after what it holds.
+                     ============================================================ -->
+                <section class="border-t border-zinc-200" x-show="v3HasStep3(shipment)">
+
+                  <div x-show="v3HasStep3(shipment) && v3State(shipment, 3) === 'done'" @click="v3Edit(shipment, 3)"
+                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                    <h3 class="font-serif text-2xl leading-none">3. <span x-text="v3Step3Title(shipment)"></span></h3>
+                    <p class="text-sm text-zinc-600 min-w-0" x-text="v3Sum3(shipment)"></p>
+                    <button type="button" @click.stop="v3Edit(shipment, 3)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary ml-auto"><span class="gb-btn__label">Edit</span></button>
+                  </div>
+
+                  <div x-show="v3HasStep3(shipment) && v3State(shipment, 3) === 'future'"
+                       class="bg-zinc-100/70 px-6 py-4 min-h-[72px] flex items-center">
+                    <h3 class="font-serif text-2xl leading-none text-zinc-400">3. <span x-text="v3Step3Title(shipment)"></span></h3>
+                  </div>
+
+                  <template x-if="v3HasStep3(shipment) && v3State(shipment, 3) === 'open'">
+                    <div>
+                      <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 py-4 min-h-[72px] flex flex-wrap items-center gap-x-3 gap-y-2">
+                        <h3 class="font-serif text-2xl leading-none">3. <span x-text="v3Step3Title(shipment)"></span></h3>
+                      </header>
+
+                      <div class="px-6 py-5">
+                        <!-- ============================================================
+                             THE TOOLBAR STANDS WITH THE TABLE, NOT IN THE BAND.
+                             Ton, on V2: the step band grew taller the moment its
+                             buttons appeared. Small buttons alone were not enough —
+                             «3. Recipients & personalization» plus three of them
+                             measured 860 in a column of 868 and wrapped, which is the
+                             same complaint with a smaller cursor. So the band keeps
+                             nothing but its number and its name, at a flat 72 at every
+                             width and in every combination of the two axes, and the
+                             actions move one row down, directly over the rows they act
+                             on. Nothing is lost: they were never about the step, they
+                             were always about the table.
+                             ============================================================ -->
+                        <div class="flex flex-wrap items-center justify-end gap-2 pb-4">
+                          <!-- IMPORT IS ITS OWN BUTTON NOW. In V2 it hid inside a
+                               menu called Bulk personalize, next to a template
+                               download; the modal it opens already offers the
+                               blank template on its first screen, so the menu
+                               was a door in front of a door. -->
+                          <button type="button" @click="openCSVModal(product.id, shipment.id)"
+                                  class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                            <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></span>
+                            <span class="gb-btn__label">Import from file</span>
+                          </button>
+
+                          <!-- ===== Bulk personalize: every row ===== -->
+                          <div class="relative" x-show="shipment.persoMode === 'each'">
+                            <button @click="tplMenuOpen = tplMenuOpen === shipment.id ? null : shipment.id; bulkMenuOpen = null"
+                                    type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                              <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg></span>
+                              <span class="gb-btn__label">Bulk personalize</span>
+                            </button>
+                            <div x-show="tplMenuOpen === shipment.id" x-cloak @click.outside="tplMenuOpen = null" x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute right-0 top-full mt-2 w-[300px] bg-white border border-zinc-200 rounded-[var(--radius)] shadow-xl z-50 overflow-hidden">
+                              <div class="p-2">
+                                <div class="px-3 pt-2 pb-1.5 gb-eyebrow">Apply to every gift</div>
+                                <button @click="tplMenuOpen = null; openMasterDrawer(product.id, shipment.id, 'greeting', 'all')" class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left hover:bg-zinc-50">
+                                  <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25"/></svg>
+                                  <span>Apply greeting card</span>
+                                </button>
+                                <button @click="tplMenuOpen = null; openMasterDrawer(product.id, shipment.id, 'item', 'all')" class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left hover:bg-zinc-50">
+                                  <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                                  <span>Apply gift personalization</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- ===== Edit selected: only the ticked rows, and in
+                                   V3 that is the truth. V2's copy of this menu
+                                   said «selected» and wrote every row of the
+                                   shipment (a gap this file has carried since
+                                   the menu was built). The drawer now takes a
+                                   scope, so the two menus differ in reach the
+                                   way their labels say they do. ===== -->
+                          <div class="relative" x-show="shipment.persoMode === 'each'">
+                            <button :disabled="selectedCount(shipment) === 0"
+                                    :title="selectedCount(shipment) === 0 ? 'Select rows first' : ''"
+                                    @click="bulkMenuOpen = bulkMenuOpen === shipment.id ? null : shipment.id; tplMenuOpen = null"
+                                    type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                              <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg></span>
+                              <span class="gb-btn__label">Edit selected<span x-show="selectedCount(shipment) > 0"> · <span x-text="selectedCount(shipment)"></span></span></span>
+                            </button>
+                            <div x-show="bulkMenuOpen === shipment.id" x-cloak @click.outside="bulkMenuOpen = null" x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute right-0 top-full mt-2 w-[300px] bg-white border border-zinc-200 rounded-[var(--radius)] shadow-xl z-50 overflow-hidden">
+                              <div class="p-2">
+                                <div class="px-3 pt-2 pb-1.5 gb-eyebrow">Apply to selected (<span x-text="selectedCount(shipment)"></span>)</div>
+                                <button @click="bulkMenuOpen = null; openMasterDrawer(product.id, shipment.id, 'greeting', 'selected')" class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left hover:bg-zinc-50">
+                                  <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25"/></svg>
+                                  <span>Apply greeting card</span>
+                                </button>
+                                <button @click="bulkMenuOpen = null; openMasterDrawer(product.id, shipment.id, 'item', 'selected')" class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left hover:bg-zinc-50">
+                                  <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                                  <span>Apply gift personalization</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- ONE TABLE OF BOXES. The columns are assembled by the
+                             two axes: the address axis brings Deliver to, the
+                             personalization axis brings Name, the items and the
+                             card. A row is a box, always, in every combination.
+                             The minimum width is the sum of what is actually
+                             there, so the one-axis table does not scroll
+                             sideways for columns it does not have. -->
+                        <div class="overflow-x-auto">
+                          <table class="w-full table-fixed" :style="'min-width:' + v3TableMin(shipment) + 'px'">
+                            <thead class="border-b border-zinc-200">
+                              <tr>
+                                <th class="w-10 py-3.5 align-top text-left" x-show="shipment.persoMode === 'each'"><input type="checkbox" @change="toggleAllSelected(shipment, $event.target.checked)" :checked="allSelected(shipment)" class="accent-blue-600 w-4 h-4"></th>
+                                <!-- 300 from the client's own 2xl: at 2258 the table
+                                     has room to spare and a pinned 200 kept ellipsing
+                                     a street that fitted. The same step V2's Address
+                                     column takes, for the same measured reason. -->
+                                <th class="text-left align-top py-3.5 pr-4 w-[200px] min-[2000px]:w-[300px]" x-show="shipment.addressMode === 'different'"><span class="gb-eyebrow">Deliver to</span></th>
+                                <th class="text-left align-top py-3.5 pr-4 w-[140px]" x-show="shipment.persoMode === 'each'"><span class="gb-eyebrow">Name</span></th>
+                                <template x-for="i in 3" :key="'v3th-item-' + i">
+                                  <!-- The item heading WRAPS rather than ellipses. V2
+                                       truncated it with the full name on hover, which
+                                       in a 90px column printed «PASSPOR…» three times
+                                       across a row; two short lines say the name. -->
+                                  <th class="text-left align-top py-3.5 pr-4" x-show="shipment.persoMode === 'each'"><span class="gb-eyebrow block break-words" :title="itemColumnName(product, i)" x-text="itemColumnName(product, i)"></span></th>
+                                </template>
+                                <th class="text-left align-top py-3.5 pr-4" x-show="shipment.persoMode === 'each'"><span class="gb-eyebrow">Card message</span></th>
+                                <th class="py-3.5 w-12"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <template x-for="row in paginatedRecipients(shipment)" :key="'v3row-' + row.id">
+                                <tr class="group border-b border-zinc-100 row-enter"
+                                    :class="row.hasError ? 'bg-red-50/40' : ''">
+
+                                  <td class="py-3" x-show="shipment.persoMode === 'each'"><input type="checkbox" x-model="row.selected" class="accent-blue-600 w-4 h-4"></td>
+
+                                  <!-- DELIVER TO — the address AND the person who
+                                       signs for it, which is a different person
+                                       from the Name column whenever the buyer
+                                       says so. Ton: «я могу получить гифт на
+                                       себя, а на нём будет имя моей жены». -->
+                                  <td class="py-3 pr-4 align-top" x-show="shipment.addressMode === 'different'">
+                                    <button type="button" @click="openDeliverDrawer(product.id, shipment.id, row.id)" class="block w-full text-left cursor-pointer">
+                                      <template x-if="row.address">
+                                        <span class="block max-w-full">
+                                          <span class="block truncate text-sm text-zinc-900" x-show="row.deliver && row.deliver.name" x-text="row.deliver && row.deliver.name"></span>
+                                          <span class="block truncate text-sm text-zinc-500" :title="row.address" x-text="row.address"></span>
+                                        </span>
+                                      </template>
+                                      <template x-if="!row.address">
+                                        <span class="gb-eyebrow inline-flex items-center gap-1.5 group-hover:text-zinc-900 transition-colors">
+                                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                          Add
+                                        </span>
+                                      </template>
+                                    </button>
+                                    <p x-show="row.hasError" class="text-sm text-red-600 mt-1" x-text="row.errorMsg"></p>
+                                  </td>
+
+                                  <!-- NAME — the name printed ON the box, and
+                                       nothing else. It is never the recipient:
+                                       the recipient lives in the cell to the
+                                       left, with the address. -->
+                                  <td class="py-3 pr-4" x-show="shipment.persoMode === 'each'">
+                                    <input type="text" x-model="row.name" placeholder="Optional" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
+                                  </td>
+
+                                  <template x-for="i in 3" :key="'v3cell-item-' + i">
+                                    <td class="py-3 pr-4 align-top" x-show="shipment.persoMode === 'each'">
+                                      <button type="button" @click="openItemDrawer(product.id, shipment.id, row.id)" class="text-left" :class="i > productItemCount(product) ? 'pointer-events-none' : ''">
+                                        <template x-if="i > productItemCount(product)">
+                                          <span class="text-zinc-300 text-sm" title="Nothing to personalize on this gift">·</span>
+                                        </template>
+                                        <template x-if="i <= productItemCount(product) && row['item' + i]">
+                                          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium bg-zinc-100 text-zinc-700">
+                                            <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                            Filled
+                                          </span>
+                                        </template>
+                                        <template x-if="i <= productItemCount(product) && !row['item' + i]">
+                                          <span class="inline-flex items-center gap-1.5 text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                            Add
+                                          </span>
+                                        </template>
+                                      </button>
+                                    </td>
+                                  </template>
+
+                                  <td class="py-3 pr-4 align-top" x-show="shipment.persoMode === 'each'">
+                                    <button type="button" @click="openGreetingDrawer(product.id, shipment.id, row.id)" class="text-left">
+                                      <template x-if="row.greeting && row.greeting.message">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium bg-zinc-100 text-zinc-700">
+                                          <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                          Filled
+                                        </span>
+                                      </template>
+                                      <template x-if="!row.greeting || !row.greeting.message">
+                                        <span class="inline-flex items-center gap-1.5 text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                          Add
+                                        </span>
+                                      </template>
+                                    </button>
+                                  </td>
+
+                                  <!-- DUPLICATE — one action, and it copies the
+                                       WHOLE box: the address, the recipient, the
+                                       name on the gift, the items and the card.
+                                       A box is one thing and "another one like
+                                       this" is one wish; a menu asking which
+                                       half to copy would be a third question on
+                                       a page this version exists to quieten.
+                                       The counter follows the new row and the
+                                       reader sees it move, exactly as it does
+                                       after an import. -->
+                                  <td class="py-3 text-right">
+                                    <button type="button" @click="v3Duplicate(product, shipment, row.id)" aria-label="Duplicate this gift" title="Duplicate this gift"
+                                            class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></span></button>
+                                  </td>
+                                </tr>
+                              </template>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-4 py-4">
+                          <div class="flex items-center gap-1" x-show="totalPages(shipment) > 1">
+                            <button @click="shipment.page = Math.max(1, shipment.page - 1)" type="button" aria-label="Previous page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="shipment.page === 1"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></span></button>
+                            <template x-for="pg in pageNumbers(shipment)" :key="'v3pg-' + pg">
+                              <button @click="shipment.page = pg" type="button" :class="shipment.page === pg ? 'bg-blue-600 text-white' : 'text-zinc-600 hover:bg-zinc-100'" class="w-8 h-8 rounded-full text-sm font-medium" x-text="pg"></button>
+                            </template>
+                            <button @click="shipment.page = Math.min(totalPages(shipment), shipment.page + 1)" type="button" aria-label="Next page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="shipment.page === totalPages(shipment)"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span></button>
+                          </div>
+                          <span class="text-sm text-zinc-500" x-text="v3Sum3(shipment)"></span>
+                        </div>
+
+                        <div>
+                          <button type="button" @click="v3Continue(shipment, 3)"
+                                  class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary"><span class="gb-btn__label">Done</span></button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </section>
+
+              </div>
+            </template>
+          </article>
+        </template>
+
+        <!-- ===== Payment, at the foot of the column the questions live in ===== -->
+        <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-6">
+          <h3 class="font-serif text-2xl mb-1">Payment information</h3>
+          <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
+          <div>
+            <p class="gb-eyebrow mb-2">Billing address <span class="text-red-500">*</span></p>
+            <div class="gba-select">
+              <select class="gba-input"><option>Select a billing address</option></select>
+              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RIGHT: the money, always on screen =====
+           The summary is the one thing on this page that never folds. Every
+           step above it changes a number in it, and a person answering a
+           question about shipping should not have to scroll to find out what
+           it costs. Sticky from 1024 up; below that it is simply the last
+           block of the column, where a phone puts it anyway. -->
+      <aside class="min-w-0 lg:sticky lg:top-6">
+        <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-6">
+          <h3 class="font-serif text-2xl mb-6">Order summary</h3>
+          <div class="space-y-3 text-sm">
+            <template x-for="product in products" :key="'v3sum-' + product.id">
+              <div class="pb-2 border-b border-zinc-100">
+                <div class="flex justify-between gap-3 font-medium">
+                  <span class="min-w-0" x-text="product.name"></span>
+                  <span class="flex-shrink-0">$<span x-text="productTotal(product).toLocaleString()"></span></span>
+                </div>
+                <p class="text-sm text-zinc-500 mt-0.5">
+                  <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span>
+                </p>
+              </div>
+            </template>
+            <div class="flex justify-between"><span class="text-zinc-600">Subtotal</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
+            <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="v3Deliveries()"></span> <span x-text="v3Deliveries() === 1 ? 'delivery' : 'deliveries'"></span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
+            <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
+          </div>
+          <button class="gb-btn gb-btn--xlarge gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button" @click="placeOrder()"><span class="gb-btn__label">Place Order</span></button>
+        </div>
+      </aside>
+
+    </div>
+  </template>
+
   <!-- ========== PAYMENT / SUMMARY STUB ========== -->
   <!-- ============================================================
        LOOK AND FEEL, 03.09. Two hard columns at every width, 360 included:
@@ -1828,7 +2523,11 @@
        and V1's rendering are untouched to the pixel — the same defect is on
        V1's list for the day the team picks a version.
        ============================================================ -->
-  <section class="grid grid-cols-2 gap-6 pt-6" :class="uiVersion === 'v2' ? 'max-md:grid-cols-1' : ''">
+  <!-- gbppl-checkout-v3-1: V3 carries its own payment card and its own order
+       summary, and the summary stands in a rail beside the steps instead of
+       under them, so this pair is hidden there. V1 and V2 evaluate the guard
+       to true on every render and are untouched. -->
+  <section class="grid grid-cols-2 gap-6 pt-6" x-show="uiVersion !== 'v3'" :class="uiVersion === 'v2' ? 'max-md:grid-cols-1' : ''">
     <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
       <h3 class="font-serif text-2xl mb-1">Payment information</h3>
       <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
@@ -1910,10 +2609,17 @@
            page whose other H1 already stands on the portal ladder (28/36/40,
            serif 300). Two H1 sizes on one route; this one joins the other. -->
       <h1 class="font-serif font-light text-[28px] xl:text-[36px] min-[2000px]:text-[40px] leading-tight mb-3">Your order is placed</h1>
-      <p class="text-zinc-500 text-base mb-10">A confirmation is on its way to your inbox. Recipients who still need details will get their link.</p>
+      <!-- gbppl-checkout-v3-1: the second sentence belongs to the dormant «send
+           recipients a link» branch, which V3 does not offer at all. It is hidden
+           there rather than reworded, so V1 and V2 keep the paragraph they had. -->
+      <p class="text-zinc-500 text-base mb-10">A confirmation is on its way to your inbox.<span x-show="uiVersion !== 'v3'"> Recipients who still need details will get their link.</span></p>
       <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8 text-left text-base">
         <div class="flex justify-between py-2 border-b border-zinc-100"><span class="gb-eyebrow">Order</span><span class="font-medium">#GB-<span x-text="String(Date.now()).slice(-6)"></span></span></div>
-        <div class="flex justify-between py-2 border-b border-zinc-100"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() !== 1">s</span></span></div>
+        <!-- Two lines, one per vocabulary. V3 counts DELIVERIES, because a
+             shipment card is not a thing it has: the address axis of the box is.
+             V1's and V2's line is untouched. -->
+        <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion !== 'v3'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() !== 1">s</span></span></div>
+        <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion === 'v3'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="v3Deliveries()"></span> deliver<span x-text="v3Deliveries() === 1 ? 'y' : 'ies'"></span></span></div>
         <div class="flex justify-between py-2"><span class="gb-eyebrow">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
       </div>
       <div class="mt-10 flex flex-wrap justify-center gap-4">
@@ -2108,8 +2814,9 @@
         <!-- Qty gets its full name here, next to the fields it actually counts: the number of gifts
              carrying THIS personalization (Julia's semantics, meeting 20.08) — not "gifts for this person".
              HIDDEN IN V2 (Ton 03.09): one row is one gift there, so the drawer has no quantity
-             to offer; the Gifts counter on the card is the only one. -->
-        <div class="flex items-center justify-between border-b border-zinc-200 pb-6" x-show="uiVersion !== 'v2'">
+             to offer; the Gifts counter on the card is the only one. V3 inherits that rule, so
+             the guard names V1 rather than excluding V2 — same render for V1 and V2. -->
+        <div class="flex items-center justify-between border-b border-zinc-200 pb-6" x-show="uiVersion === 'v1'">
           <div>
             <p class="gb-eyebrow">Quantity of gifts</p>
             <p class="text-xs text-zinc-500 mt-1">How many gifts with this personalization</p>
@@ -2320,6 +3027,121 @@
   <div class="ck-drawer-actions">
     <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
     <button @click="saveAddress()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.addressBookMode ? 'Save & use for this shipment' : 'Save address & shipping'"></span></button>
+  </div>
+</template>
+
+<!-- ============================================================
+     V3 · THE DELIVERY DRAWER (gbppl-checkout-v3-1)
+     ------------------------------------------------------------
+     One side of a box: where it goes and who signs for it. The
+     personalization side is a different drawer and a different
+     question, and the two never share a field — which is the whole
+     of Ton's example: «я могу получить гифт на себя, а на нём будет
+     имя моей жены». The name typed here is the RECIPIENT. It never
+     prefills the Name column of the table, and the Name column
+     never writes back into it. (V1 and V2 do prefill one from the
+     other, on purpose, from Valerie's note of 20.08; V3 cannot,
+     because in V3 they are not the same fact.)
+
+     THE REUSE PICKER IS THE POINT OF THE PANEL. Twelve boxes to one
+     office is twelve identical addresses, and typing an address
+     twelve times is the part of this job people actually hate.
+     Every address already entered in this order stands at the top
+     of the panel, once each, next to the address book, and one
+     click fills the form.
+
+     NO SHIPPING METHOD HERE. V3 asks for the method once, in step 1,
+     for the whole order (see the note at the head of the V3 block).
+     ============================================================ -->
+<template id="ck-drawer-deliver">
+  <div class="ck-drawer-stack" x-data="{ bookOpen: false }">
+
+    <div>
+      <p class="gb-eyebrow mb-2">Use an address you already entered</p>
+      <div class="relative">
+        <button @click="bookOpen = !bookOpen" type="button" class="gba-input flex items-center justify-between text-left cursor-pointer">
+          <span class="text-zinc-500">Pick an address</span>
+          <svg class="w-4 h-4 text-zinc-500 transition-transform" :class="bookOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+        </button>
+        <div x-show="bookOpen" @click.outside="bookOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-2 bg-white border border-zinc-200 rounded-[var(--radius)] shadow-lg z-30 overflow-hidden max-h-[320px] overflow-y-auto">
+          <div x-show="v3OtherAddresses().length > 0">
+            <p class="gb-eyebrow px-4 pt-3 pb-1">From another gift in this order</p>
+            <template x-for="a in v3OtherAddresses()" :key="'v3reuse-' + a.key">
+              <button type="button" @click="v3UseAddress(a); bookOpen = false" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+                <p class="text-sm font-medium text-zinc-900" x-text="a.name || 'No name yet'"></p>
+                <p class="text-sm text-zinc-500 truncate mt-0.5" x-text="a.label"></p>
+              </button>
+            </template>
+          </div>
+          <div>
+            <p class="gb-eyebrow px-4 pt-3 pb-1">From your address book</p>
+            <template x-for="addr in addressBook" :key="'v3deliverbook-' + addr.id">
+              <button type="button" @click="v3UseBookAddress(addr.id); bookOpen = false" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+                <p class="text-sm font-medium text-zinc-900" x-text="addr.name"></p>
+                <p class="text-sm text-zinc-500 truncate mt-0.5" x-text="addr.label"></p>
+              </button>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <p class="gb-eyebrow">Recipient</p>
+      <div class="grid grid-cols-2 max-[520px]:grid-cols-1 gap-6">
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">Full name <span class="text-red-500">*</span></label>
+          <input type="text" x-model="drawer.data.name" placeholder="Anton Parkhomenko" class="gba-input">
+        </div>
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">Company <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
+          <input type="text" x-model="drawer.data.company" placeholder="GildedBox" class="gba-input">
+        </div>
+      </div>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1">Phone <span class="text-zinc-400 font-normal normal-case tracking-normal">(for delivery)</span></label>
+        <input type="tel" x-model="drawer.data.phone" placeholder="+1 555 123 4567" class="gba-input">
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <p class="gb-eyebrow">Address</p>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1">Street <span class="text-red-500">*</span></label>
+        <input type="text" x-model="drawer.data.street" placeholder="123 Main St" class="gba-input">
+      </div>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1">Apt / Suite <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
+        <input type="text" x-model="drawer.data.apt" class="gba-input">
+      </div>
+      <div class="grid grid-cols-3 max-[520px]:grid-cols-1 gap-6">
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">City <span class="text-red-500">*</span></label>
+          <input type="text" x-model="drawer.data.city" class="gba-input">
+        </div>
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">State <span class="text-red-500">*</span></label>
+          <input type="text" x-model="drawer.data.state" class="gba-input">
+        </div>
+        <div class="gba-inputwrap">
+          <label class="gb-eyebrow block mb-1">ZIP <span class="text-red-500">*</span></label>
+          <input type="text" x-model="drawer.data.zip" class="gba-input">
+        </div>
+      </div>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1">Country <span class="text-red-500">*</span></label>
+        <div class="gba-select">
+          <select x-model="drawer.data.country" class="gba-input"><option>United States</option><option>Canada</option><option>Italy</option><option>United Kingdom</option><option>Germany</option><option>France</option></select>
+          <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<template id="ck-drawer-foot-deliver">
+  <div class="ck-drawer-actions">
+    <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+    <button @click="v3SaveDeliver()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Save delivery</span></button>
   </div>
 </template>
 
@@ -2632,6 +3454,16 @@ function checkoutApp() {
                 address: '', selected: false }
             ]
           }),
+          // V3: one box, its personalization already carried in from the
+          // customizer, and neither its address nor its recipient chosen yet.
+          // The accordion therefore opens where the work is, on step 1, and
+          // step 3 is already named «Personalization» behind it.
+          ...this.v3Fields({
+            rowsV3: [
+              this.v3Row({ name: 'Alex', item1: 'AC', item2: 'Alex',
+                greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true } })
+            ]
+          }),
           recipients: [
             { id: 111, name: '', qty: 1, item1: 'AC', item2: 'Alex', item3: '',
               greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true },
@@ -2663,6 +3495,10 @@ function checkoutApp() {
           // one place, nothing to personalize and no Full Name to invent. "No
           // personalization" is the default answer, and it is a finished order.
           ...this.v2Fields(12, 'none'),
+          // V3: the same order, and the shortest walk the page has. Twelve
+          // identical gifts to one address is two steps and no table at all;
+          // step 3 is never created, because neither answer creates it.
+          ...this.v3Fields(),
           recipients: []
         }]
       };
@@ -2684,6 +3520,38 @@ function checkoutApp() {
         { id: 214, name: 'Aisha Patel',    qty: 2, item1: 'AP', item2: 'Aisha',  item3: '', greeting: { to: 'Aisha',  message: 'Welcome aboard. Glad you joined us.',                from: 'People Ops',  fromMaster: false, custom: true }, address: '12 Park Ave, NY, NY, 10016, US',         shipping: 'ground', selected: false },
         { id: 215, name: 'Theo Mendez',    qty: 1, item1: 'TM', item2: 'Theo',   item3: '', greeting: { to: 'Theo',   message: 'Year one in the books. Onward!',                    from: 'The team',    fromMaster: false, custom: true }, address: '301 Mission St, SF, CA, 94105, US',      shipping: 'ground', selected: false }
       ]));
+      // ============================================================
+      // V3 · THE SAME CART AS FIVE BOXES, AND ONE OF THEM IS TON'S OWN
+      // EXAMPLE (gbppl-checkout-v3-1).
+      //
+      // Four boxes go to the four people whose names are printed on them,
+      // which is the ordinary case. The fifth goes to the BUYER, at the
+      // address already in his book, and carries somebody else's name.
+      // Ton, verbatim: «я могу получить гифт на себя, а на нём будет имя
+      // моей жены». It is in the demo data on purpose: the model is only
+      // worth anything if the scenario the team walks contains the case
+      // that broke the old one.
+      // ============================================================
+      const v3TravelBoxes = () => {
+        const box = (to, addr, printed, message, from) => {
+          const parsed = this.parseAddress(addr);
+          return this.v3Row({
+            name: printed,
+            item1: (printed || '').slice(0, 2).toUpperCase(),
+            item2: printed,
+            greeting: { to: printed, message: message, from: from, fromMaster: false, custom: true },
+            address: addr,
+            deliver: Object.assign(this.v3BlankDeliver(), parsed, { name: to })
+          });
+        };
+        return [
+          box('Yuki Tanaka',    '5 Bay St, San Francisco, CA, 94103, US', 'Yuki',   'Thanks for the hustle this quarter. You moved mountains.', 'Engineering'),
+          box('Léa Bernard',    '9 River Ct, Denver, CO, 80202, US',      'Léa',    'Three years and counting. Thank you.',                     'CEO'),
+          box('Henrik Larsson', '64 Hill Rd, Boulder, CO, 80301, US',     'Henrik', 'For everything you do behind the scenes.',                 'Ops'),
+          box('Aisha Patel',    '12 Park Ave, NY, NY, 10016, US',         'Aisha',  'Welcome aboard. Glad you joined us.',                      'People Ops'),
+          box('Anton Parkhomenko', '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US', 'Maria', 'Happy anniversary.', 'Anton')
+        ];
+      };
       return [
         {
           id: 1,
@@ -2706,6 +3574,11 @@ function checkoutApp() {
             // Aisha's two became one row like everyone else's. Five rows, five gifts,
             // and the counter above the card says 5.
             ...this.v2Fields(5, 'each', { rowsV2: travelPeople() }),
+            // V3: both axes are open, so this card opens ON step 3 with the
+            // first two folded into their summaries. One screen shows all
+            // three states of the accordion at once, which is the point of
+            // opening the loaded cart here.
+            ...this.v3Fields({ v3Step: 3, v3Done: 3, rowsV3: v3TravelBoxes() }),
             recipients: travelPeople()
           }]
         },
@@ -2729,6 +3602,12 @@ function checkoutApp() {
             // "No personalization", no rows at all — the question Jorge asked ("how do
             // I proceed without customizing those items?") never gets asked of him.
             ...this.v2Fields(9, 'none'),
+            // V3: the other half of Jorge's cart, and the whole argument.
+            // Nine identical gifts to one office: both questions answered,
+            // no third step, every band folded. Ton's «должна быть
+            // возможность вернуться назад» is what the two Edit buttons are
+            // for, and this card is where they are seen first.
+            ...this.v3Fields({ v3Step: 0, v3Done: 2 }),
             recipients: [
               // One row, nine gifts, no name: "how do I proceed without customizing
               // those items?" answered by the row itself.
@@ -2752,8 +3631,12 @@ function checkoutApp() {
       // ?v=1 says V1 out loud; anything else leaves the default alone. The
       // Sandbox section still switches freely afterwards — the query is a starting
       // position, not a lock.
+      // gbppl-checkout-v3-1: ?v=3 joins the two. The law of links (ORO-SKILL
+      // 0a.5) is untouched: v1 and v2 keep meaning exactly what they meant
+      // yesterday, and a third value is added rather than a key renamed.
       const v = new URLSearchParams(location.search).get('v');
-      if (v === '2') this.uiVersion = 'v2';
+      if (v === '3') this.uiVersion = 'v3';
+      else if (v === '2') this.uiVersion = 'v2';
       else if (v === '1') this.uiVersion = 'v1';
 
       // gbppl-drawer-unify-1: the surface can leave without the page asking
@@ -2797,14 +3680,20 @@ function checkoutApp() {
     // is `rowsV2`. Both versions therefore run the same table, the same drawers, the
     // same bulk menu and the same CSV import, and neither can reach the other's data
     // — which is what lets V1 stay bit-for-bit the flow the team already reviewed.
+    // gbppl-checkout-v3-1: a THIRD list joins the two, and the accessor names
+    // every version explicitly rather than saying "not v2". Three candidates
+    // stand in front of the team at once and none of them may reach another's
+    // rows: V1 walks `recipients`, V2 walks `rowsV2`, V3 walks `rowsV3`.
     rows(s) {
       if (!s) return [];
-      if (this.uiVersion !== 'v2') return s.recipients;
-      if (!s.rowsV2) s.rowsV2 = [];
-      return s.rowsV2;
+      if (this.uiVersion === 'v3') { if (!s.rowsV3) s.rowsV3 = []; return s.rowsV3; }
+      if (this.uiVersion === 'v2') { if (!s.rowsV2) s.rowsV2 = []; return s.rowsV2; }
+      return s.recipients;
     },
     setRows(s, arr) {
-      if (this.uiVersion === 'v2') s.rowsV2 = arr; else s.recipients = arr;
+      if (this.uiVersion === 'v3') s.rowsV3 = arr;
+      else if (this.uiVersion === 'v2') s.rowsV2 = arr;
+      else s.recipients = arr;
     },
     // Date.now() alone collides: raising the counter from 3 to 12 makes nine rows
     // inside one millisecond, and nine rows carrying one id are one row to Alpine's
@@ -2812,7 +3701,12 @@ function checkoutApp() {
     _rowSeq: 0,
     blankRow() {
       this._rowSeq += 1;
-      return { id: Date.now() * 1000 + this._rowSeq, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false };
+      const r = { id: Date.now() * 1000 + this._rowSeq, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false };
+      // gbppl-checkout-v3-1: in V3 a row is a BOX, and a box has a delivery
+      // side of its own. The bag is added only there, so V1's and V2's rows
+      // are the same objects, key for key, that they have always been.
+      if (this.uiVersion === 'v3') r.deliver = this.v3BlankDeliver();
+      return r;
     },
 
     // ============================================================
@@ -2835,15 +3729,22 @@ function checkoutApp() {
     rowFilled(r) {
       if (!r) return false;
       const g = r.greeting;
+      const d = r.deliver;   // V3 only; V1 and V2 rows have no such key
       return !!(r.name || r.item1 || r.item2 || r.item3 || r.address ||
-                (g && (g.message || g.to || g.from)));
+                (g && (g.message || g.to || g.from)) ||
+                (d && (d.name || d.company || d.phone || d.street || d.city || d.zip)));
     },
 
     // The rows come into line with the number FROM THE BOTTOM in both
     // directions: new rows land under the last one, lowering takes the last
     // ones away. Nothing in the middle of the table ever moves.
     syncRowsToCount(s) {
-      if (!s || s.persoMode !== 'each') return;
+      if (!s) return;
+      // gbppl-checkout-v3-1: V2 has rows only when the gifts are personalized.
+      // V3 has them whenever EITHER axis is open — twelve boxes to twelve
+      // addresses is twelve rows even with nothing printed on any of them.
+      if (this.uiVersion === 'v3') { if (!this.v3HasStep3(s)) return; }
+      else if (s.persoMode !== 'each') return;
       const want = this.poolOf(s);
       const rows = this.rows(s);
       while (rows.length < want) rows.push(this.blankRow());
@@ -2858,7 +3759,9 @@ function checkoutApp() {
       if (!s) return;
       const want = Math.max(1, isNaN(n) ? 1 : n);
       const rows = this.rows(s);
-      const losing = (s.persoMode === 'each' && want < rows.length)
+      // gbppl-checkout-v3-1: same question, one more way to answer yes.
+      const listed = this.uiVersion === 'v3' ? this.v3HasStep3(s) : (s.persoMode === 'each');
+      const losing = (listed && want < rows.length)
         ? rows.slice(want).filter(r => this.rowFilled(r)).length
         : 0;
       // Empty rows always go quietly; filled ones cost one warning, once
@@ -2936,6 +3839,270 @@ function checkoutApp() {
       return (it && it.label) ? it.label : 'Item ' + i;
     },
 
+    // ============================================================
+    // ===== V3: THE BOX, AND THE THREE STEPS AROUND IT =====
+    // gbppl-checkout-v3-1 (Ton 03.09). Everything below is read only by
+    // uiVersion 'v3'; V1 and V2 never enter a single one of these functions.
+    //
+    // THE MODEL IN ONE PARAGRAPH. A row is a BOX. A box has two sides that
+    // know nothing about each other: DELIVERY (r.deliver — the person who
+    // signs for it and where) and PERSONALIZATION (r.name, the name printed
+    // on the box, plus r.item1..3 and r.greeting). Ton: «адрес доставки и
+    // фактический получатель могут абсолютно не совпадать с именем для
+    // персонализации на коробке: я могу получить гифт на себя, а на нём
+    // будет имя моей жены». Nothing in this block ever copies one side into
+    // the other, and that restraint is the model.
+    // ============================================================
+    v3BlankDeliver() {
+      return { name: '', company: '', phone: '', street: '', apt: '', city: '', state: '', zip: '', country: 'United States' };
+    },
+    // The one place a delivery becomes a line of text. The same shape
+    // saveAddress writes in V1 and V2, so the address book and the table
+    // read one another without a second format in the house.
+    v3AddressLabel(d) {
+      if (!d || !(d.street || d.city || d.zip)) return '';
+      return `${d.street}${d.apt ? ', ' + d.apt : ''}, ${d.city}, ${d.state} ${d.zip}, ${d.country}`;
+    },
+    v3Row(o) {
+      this._rowSeq += 1;
+      return Object.assign({
+        id: Date.now() * 1000 + this._rowSeq, name: '', qty: 1,
+        item1: '', item2: '', item3: '', greeting: null,
+        address: '', selected: false, deliver: this.v3BlankDeliver()
+      }, o || {});
+    },
+    // A shipment's V3 state: which step is open, how far the reader has got,
+    // and the rows. Everything else on a shipment is shared with V2 on
+    // purpose — addressMode and persoMode are the SAME two questions, and a
+    // second copy of an answer is a second thing to keep in step.
+    v3Fields(extra) {
+      return Object.assign({ v3Step: 1, v3Done: 0, rowsV3: [] }, extra || {});
+    },
+
+    // ===== The accordion =====
+    // Step 3 is not a step that is sometimes empty: it does not exist until
+    // one of the first two answers creates it.
+    v3HasStep3(s) { return !!s && (s.addressMode === 'different' || s.persoMode === 'each'); },
+    v3LastStep(s) { return this.v3HasStep3(s) ? 3 : 2; },
+    // Three states and no fourth. 'open' is the one step on screen, 'done'
+    // is a summary line with an Edit, 'future' is a quiet heading.
+    v3State(s, n) {
+      if (!s) return 'future';
+      if ((s.v3Step || 0) === n) return 'open';
+      if (n <= (s.v3Done || 0)) return 'done';
+      return 'future';
+    },
+    v3NextLabel(s, n) { return n === this.v3LastStep(s) ? 'Done' : 'Continue'; },
+    // Step 1 needs an address before it can be left, and only in the shape
+    // where the address is asked for here. Different addresses answers the
+    // question in step 3, so there is nothing to wait for.
+    v3CanLeave(s, n) {
+      if (n !== 1) return true;
+      return s.addressMode === 'different' || !!s.shipToId;
+    },
+    v3Continue(s, n) {
+      if (!this.v3CanLeave(s, n)) return;
+      const last = this.v3LastStep(s);
+      s.v3Done = Math.min(Math.max(s.v3Done || 0, n), last);
+      s.v3Step = n < last ? n + 1 : 0;
+      // Opening step 3 is the moment the table has to exist and be exactly
+      // as long as the counter says.
+      if (s.v3Step === 3) this.syncRowsToCount(s);
+    },
+    // Ton: «должна быть возможность вернуться назад». Nothing is cleared and
+    // nothing behind is un-answered: the step opens with everything in it and
+    // the later summaries stay where they are.
+    v3Edit(s, n) { s.v3Step = n; },
+    v3MethodsOff(s) { return s.addressMode === 'same' && !s.shipToId; },
+
+    // An axis changed, so the step it creates may have just appeared or just
+    // gone. Rows are never thrown away here: switching back must find the
+    // work intact.
+    v3AfterAxis(s) {
+      if (this.v3HasStep3(s)) this.syncRowsToCount(s);
+      const last = this.v3LastStep(s);
+      if ((s.v3Done || 0) > last) s.v3Done = last;
+      if ((s.v3Step || 0) > last) s.v3Step = 0;
+    },
+    v3ChooseAddress(s, mode) { s.addressMode = mode; this.v3AfterAxis(s); },
+    v3ChoosePerso(s, mode) { s.persoMode = mode; this.v3AfterAxis(s); },
+
+    // ===== What the folded steps say =====
+    v3Step3Title(s) {
+      const a = s.addressMode === 'different';
+      const p = s.persoMode === 'each';
+      if (a && p) return 'Recipients & personalization';
+      if (a) return 'Recipients';
+      return 'Personalization';
+    },
+    v3Sum1(s) {
+      const method = this.shippingLabel(s.shipping) || 'No shipping method';
+      if (s.addressMode === 'different') return 'Different addresses · ' + method;
+      // shipToLabel is «name, street…»; the summary names the address the way
+      // the reader picked it, by its name, and leaves the street to the step.
+      const who = s.shipToLabel ? s.shipToLabel.split(',')[0] : 'No address yet';
+      return 'One address · ' + who + ' · ' + method;
+    },
+    v3Sum2(s) {
+      if (s.persoMode === 'each') return 'Personalize each gift';
+      return s.genericCard && s.genericCard.on
+        ? 'No personalization · one greeting card in every box'
+        : 'No personalization';
+    },
+    v3PersoFilled(r) {
+      return !!(r && (r.name || r.item1 || r.item2 || r.item3 || (r.greeting && r.greeting.message)));
+    },
+    v3Sum3(s) {
+      const rows = this.rows(s);
+      const n = rows.length;
+      const bits = [n + ' gift' + (n === 1 ? '' : 's')];
+      if (s.addressMode === 'different') {
+        const seen = new Set();
+        rows.forEach(r => { if (r.address) seen.add(r.address); });
+        bits.push(seen.size + ' address' + (seen.size === 1 ? '' : 'es'));
+      }
+      if (s.persoMode === 'each') {
+        bits.push(rows.filter(r => this.v3PersoFilled(r)).length + ' personalized');
+      }
+      return bits.join(' · ');
+    },
+
+    // ===== The table =====
+    // The minimum width is the sum of the columns that are actually there, so
+    // a one-axis table does not scroll sideways for columns it does not have.
+    // The parts: 48 for the duplicate cell, 200 for Deliver to, and for the
+    // personalization axis 40 (tick) + 140 (Name) + 3 x 90 (items) + 120
+    // (card). NO TOKEN, the same kind of measurement V2's 680 was.
+    v3TableMin(s) {
+      let w = 48;
+      if (s.addressMode === 'different') w += 200;
+      if (s.persoMode === 'each') w += 40 + 140 + 3 * 90 + 120;
+      return Math.max(320, w);
+    },
+    // ONE ACTION, THE WHOLE BOX. Copying half a box would need a menu, and a
+    // menu here is the third question this version exists to remove. The copy
+    // lands directly under its original, and the counter follows it — the
+    // same rule the import obeys: rows may arrive from elsewhere, but the
+    // number on the counter is never allowed to be wrong about the order.
+    v3Duplicate(p, s, rowId) {
+      const rows = this.rows(s);
+      const i = rows.findIndex(r => r.id === rowId);
+      if (i < 0) return;
+      const copy = JSON.parse(JSON.stringify(rows[i]));
+      this._rowSeq += 1;
+      copy.id = Date.now() * 1000 + this._rowSeq;
+      copy.selected = false;
+      rows.splice(i + 1, 0, copy);
+      s.poolQty = rows.length;
+      s.page = Math.min(Math.max(1, s.page || 1), this.totalPages(s));
+    },
+
+    // ===== The money =====
+    // A delivery is a parcel leaving the building. One address is one; with
+    // different addresses it is one per distinct address, and a box whose
+    // address is not filled in yet counts as its own until it is.
+    v3ShipmentDeliveries(s) {
+      if (!s || s.addressMode !== 'different') return 1;
+      const rows = this.rows(s);
+      if (!rows.length) return 1;
+      const seen = new Set();
+      let blank = 0;
+      rows.forEach(r => { if (r.address) seen.add(r.address); else blank += 1; });
+      return Math.max(1, seen.size + blank);
+    },
+    v3Deliveries() {
+      return this.products.reduce((n, p) =>
+        n + p.shipments.slice(0, 1).reduce((m, s) => m + this.v3ShipmentDeliveries(s), 0), 0);
+    },
+
+    // ===== Import =====
+    // The template is whatever the table is showing. A header with a comma in
+    // it is quoted; the item names come off the gift, so a set with two parts
+    // gets two columns and not three.
+    v3TemplateColumns(p, s) {
+      const q = v => /[",]/.test(v) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+      const cols = [];
+      if (s && s.addressMode === 'different') {
+        cols.push({ head: 'Recipient', sample: 'Jane Doe' });
+        cols.push({ head: 'Address line 1', sample: '123 Main St' });
+        cols.push({ head: 'City', sample: 'New York' });
+        cols.push({ head: 'State', sample: 'NY' });
+        cols.push({ head: 'ZIP', sample: '10001' });
+        cols.push({ head: 'Country', sample: 'US' });
+      }
+      if (!s || s.persoMode === 'each') {
+        cols.push({ head: 'Name on the gift', sample: 'Jane' });
+        this.productItems(p).forEach((it, i) => cols.push({ head: it.label || ('Item ' + (i + 1)), sample: '' }));
+        cols.push({ head: 'Card message', sample: 'Happy birthday!' });
+      }
+      return cols.map(c => ({ head: q(c.head), sample: q(c.sample) }));
+    },
+
+    // ===== The delivery drawer =====
+    v3RowLabel() {
+      const s = this.currentShipment();
+      if (!s) return '';
+      const rows = this.rows(s);
+      const i = rows.findIndex(r => r.id === this.drawer.recipientId);
+      return i < 0 ? '' : 'Gift ' + (i + 1) + ' of ' + rows.length;
+    },
+    openDeliverDrawer(productId, shipmentId, rowId) {
+      const r = this.findRecipient(productId, shipmentId, rowId);
+      if (!r) return;
+      this.drawer = {
+        open: true, type: 'deliver', productId, shipmentId, recipientId: rowId, master: false,
+        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), r.deliver || {})
+      };
+      this.showDrawer();
+    },
+    v3SaveDeliver() {
+      const r = this.currentRecipient();
+      if (!r) { this.closeDrawer(); return; }
+      const d = this.drawer.data;
+      r.deliver = {
+        name: d.name || '', company: d.company || '', phone: d.phone || '',
+        street: d.street || '', apt: d.apt || '', city: d.city || '', state: d.state || '',
+        zip: d.zip || '', country: d.country || 'United States'
+      };
+      r.address = this.v3AddressLabel(r.deliver);
+      // The one validation the prototype has ever done, kept: an address
+      // without a ZIP is an address that will not be delivered.
+      r.hasError = !!(r.address && !r.deliver.zip);
+      r.errorMsg = r.hasError ? 'ZIP code required' : '';
+      // NOTHING IS COPIED INTO r.name. That field is the name printed on the
+      // box; this panel never touches it (see the block head).
+      this.closeDrawer();
+    },
+    // Every address already typed into this order, once each, so the twelfth
+    // box to the same office is one click and not one more form.
+    v3OtherAddresses() {
+      const out = [];
+      const seen = new Set();
+      this.products.forEach(p => p.shipments.slice(0, 1).forEach(sh => {
+        (sh.rowsV3 || []).forEach(r => {
+          if (!r.address || r.id === this.drawer.recipientId || seen.has(r.address)) return;
+          seen.add(r.address);
+          out.push({ key: r.id, name: (r.deliver && r.deliver.name) || '', label: r.address, deliver: r.deliver });
+        });
+      }));
+      return out;
+    },
+    // THE PICKER FILLS THE ADDRESS AND NOT THE PERSON. Two boxes to one
+    // office are usually for two different people, and a picker that also
+    // typed a name would be answering the question the reader opened this
+    // panel to answer.
+    v3FillAddressFields(src) {
+      Object.assign(this.drawer.data, {
+        street: src.street || '', apt: src.apt || '', city: src.city || '',
+        state: src.state || '', zip: src.zip || '', country: src.country || 'United States'
+      });
+    },
+    v3UseAddress(a) { this.v3FillAddressFields(a.deliver || {}); },
+    v3UseBookAddress(id) {
+      const addr = this.addressBook.find(a => a.id === id);
+      if (addr) this.v3FillAddressFields(this.parseAddress(addr.label));
+    },
+
     // Three-slot initials, on any bag of fields: the drawer's `drawer.data`.
     // It served a shipment's `uniform` too until door B died on 03.09.
     slotValue(bag, field, idx) { return ((bag && bag[field]) || '').charAt(idx) || ''; },
@@ -2958,7 +4125,10 @@ function checkoutApp() {
     // the prominent qty selector). In "now" mode, sum recipients[].qty as before.
     shipmentGifts(s) {
       // V2 counts the pool, not the rows: the rows are a subset of it.
-      if (this.uiVersion === 'v2') return this.poolOf(s);
+      // V3 counts the same number for the plainer reason that the counter IS
+      // the number of boxes. Written as "not V1" so the two agree by
+      // construction; V1 and V2 read exactly what they read before.
+      if (this.uiVersion !== 'v1') return this.poolOf(s);
       if (s.detailsMode === 'later') return s.deferQty || 0;
       return s.recipients.reduce((sum, r) => sum + (r.qty || 0), 0);
     },
@@ -3032,6 +4202,13 @@ function checkoutApp() {
       return opt ? opt.label : '';
     },
     estimatedShipping(s) {
+      // gbppl-checkout-v3-1: ONE METHOD, PRICED PER DELIVERY. V3 asks for the
+      // shipping method once, in step 1, for the whole order; what varies is
+      // how many parcels leave the building. One address is one delivery;
+      // different addresses is one per box.
+      if (this.uiVersion === 'v3') {
+        return this.shippingCost(s.shipping) * this.v3ShipmentDeliveries(s);
+      }
       if (s.addressMode === 'same') {
         return this.shippingCost(s.shipping);
       }
@@ -3097,6 +4274,7 @@ function checkoutApp() {
         shipToLabel: firstAddr ? firstAddr.label : '',
         deferQty: 1,
         ...this.v2Fields(1, 'none'),
+        ...this.v3Fields(),
         recipients: [
           { id: newId + 1, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
         ]
@@ -3129,6 +4307,7 @@ function checkoutApp() {
           page: 1,
           deferQty: 1,
           ...this.v2Fields(1, 'none'),
+          ...this.v3Fields(),
           recipients: [
             { id: newId + 101, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
           ]
@@ -3166,10 +4345,26 @@ function checkoutApp() {
       if (this.drawer.type === 'item')      return 'Gift personalization' + who;
       if (this.drawer.type === 'recipient') return 'Personalization';
       if (this.drawer.type === 'address')   return this.drawer.addressBookMode ? 'Add new address' : 'Shipping address';
+      /* gbppl-checkout-v3-1: V3's own panel, and its own word. «Delivery» is
+         one of the two sides of a box; «Shipping address» would name only
+         half of what is inside it, and the person who signs for the parcel
+         is the other half. */
+      if (this.drawer.type === 'deliver')   return 'Delivery';
       return '';
     },
     drawerSub() {
       const r = this.currentRecipient();
+      /* gbppl-checkout-v3-1: in V3 `name` is the name printed ON the box, not
+         the person, so «For Alex» would answer a question nobody asked. The
+         panel says which BOX of the order it is editing instead. */
+      if (this.uiVersion === 'v3') {
+        if (this.drawer.master) {
+          return this.drawer.scope === 'selected'
+            ? 'Applies to the gifts you ticked.'
+            : 'Applies to every gift of this order.';
+        }
+        return this.v3RowLabel();
+      }
       const forWhom = r ? 'For ' + (r.name || 'this recipient') : '';
       if (this.drawer.type === 'greeting') {
         return this.drawer.master
@@ -3260,10 +4455,17 @@ function checkoutApp() {
       };
       this.showDrawer();
     },
-    openMasterDrawer(productId, shipmentId, type) {
+    // gbppl-checkout-v3-1: THE MENU'S REACH IS NOW A PARAMETER, AND V3 TELLS
+    // THE TRUTH WITH IT. V1 and V2 have two menus, «Bulk personalize» and
+    // «Edit selected», and BOTH of them write every row of the shipment: the
+    // second one's label has been a lie since it was built (said out loud in
+    // saveItem below, ANATOMY §5). V3 passes 'all' from one menu and
+    // 'selected' from the other, and the writers respect it. Calls that pass
+    // no scope — every call V1 and V2 make — behave exactly as before.
+    openMasterDrawer(productId, shipmentId, type, scope) {
       this.bulkMenuOpen = null;
       this.drawer = {
-        open: true, type, productId, shipmentId, recipientId: null, master: true,
+        open: true, type, productId, shipmentId, recipientId: null, master: true, scope: scope || 'all',
         data: type === 'greeting'
           ? { ...this.blankDrawerData(), to: '', message: '', from: '' }
           : { ...this.blankDrawerData(), item1: '', item2: '', item3: '' }
@@ -3316,10 +4518,16 @@ function checkoutApp() {
       const d = this.drawer.data;
       return Object.assign({ to: d.to || '', message: d.message || '', from: d.from || '' }, flags);
     },
+    // The rows a master save is allowed to touch. 'selected' is V3's only;
+    // everything else, including every V1 and V2 call, gets the whole list.
+    masterTargets(s) {
+      const all = this.rows(s);
+      return this.drawer.scope === 'selected' ? all.filter(r => r.selected) : all;
+    },
     saveGreeting() {
       const s = this.currentShipment();
       if (this.drawer.master) {
-        this.rows(s).forEach(r => {
+        this.masterTargets(s).forEach(r => {
           if (!r.greeting || !r.greeting.custom) {
             r.greeting = this.greetingFromDrawer({ fromMaster: true, custom: false });
           }
@@ -3332,7 +4540,7 @@ function checkoutApp() {
     },
     saveMasterGreeting(overwrite) {
       const s = this.currentShipment();
-      this.rows(s).forEach(r => {
+      this.masterTargets(s).forEach(r => {
         if (overwrite || !r.greeting || !r.greeting.custom) {
           r.greeting = this.greetingFromDrawer({ fromMaster: true, custom: false });
         }
@@ -3348,7 +4556,7 @@ function checkoutApp() {
         r.item2 = this.drawer.data.item2;
         r.item3 = this.drawer.data.item3;
       };
-      if (this.drawer.master) this.rows(s).forEach(write);
+      if (this.drawer.master) this.masterTargets(s).forEach(write);
       else { const r = this.currentRecipient(); if (r) write(r); }
       this.closeDrawer();
     },
@@ -3404,6 +4612,25 @@ function checkoutApp() {
     downloadTemplate() {
       this.bulkMenuOpen = null;
       this.tplMenuOpen = null;
+      // gbppl-checkout-v3-1: THE TEMPLATE IS THE TABLE. In V3 the columns of
+      // step 3 are assembled by the two axes, so a fixed thirteen-column file
+      // would ask for addresses in an order that has one and for engravings
+      // on a gift that carries none. The header is built from whatever the
+      // table is showing right now, and the one sample row underneath it uses
+      // the gift's own item names. V1 and V2 keep the file they had.
+      if (this.uiVersion === 'v3') {
+        const p = this.findProduct(this.csv.productId) || this.products[0];
+        const s = this.findShipment(this.csv.productId, this.csv.shipmentId) || (p && p.shipments[0]);
+        const cols = this.v3TemplateColumns(p, s);
+        const csv3 = cols.map(c => c.head).join(',') + '\n' +
+                     cols.map(c => c.sample).join(',') + '\n';
+        const blob3 = new Blob([csv3], { type: 'text/csv' });
+        const a3 = document.createElement('a');
+        a3.href = URL.createObjectURL(blob3);
+        a3.download = 'gildedbox-gifts-template.csv';
+        a3.click();
+        return;
+      }
       const csv = 'Recipient Name,Gifts,Address Line 1,City,State,ZIP,Country,Personalize Item 1,Personalize Item 2,Personalize Item 3,Greeting To,Greeting Message,Greeting From\nJane Doe,1,123 Main St,New York,NY,10001,US,JD,Jane,,Jane,"Happy birthday!","From Acme"\n';
       const blob = new Blob([csv], { type: 'text/csv' });
       const a = document.createElement('a');
@@ -3445,6 +4672,52 @@ function checkoutApp() {
     },
     confirmCSVImport() {
       const s = this.findShipment(this.csv.productId, this.csv.shipmentId);
+      // ============================================================
+      // gbppl-checkout-v3-1: THE IMPORT LANDS ON THE AXES THAT ARE OPEN.
+      // The sample file is a list of people with addresses, which is the
+      // DELIVERY side of a box; when the address axis is open, that is where
+      // it goes, recipient name and all. When the personalization axis is
+      // open as well, the person's first name is also written into the Name
+      // column — a plausible thing to print on a box addressed to them, and
+      // the only place a name in this file could mean anything else.
+      //
+      // WHAT WAS CUT, AND SAID OUT LOUD: the file the reader can actually
+      // upload is still the fixture V2 ships, twenty rows with three bad
+      // ZIPs. Column-by-column validation of a real file (a header that does
+      // not match the template, an item name the gift does not carry) is a
+      // parser, not a prototype, and the row-by-row preview with its valid /
+      // error tally is the honest minimum V2 already had.
+      //
+      // AND V3 NEVER CHANGES THE ANSWER TO STEP 1 BEHIND THE READER. V1 and
+      // V2 flip addressMode to 'different' on import; in V3 that would
+      // rewrite a step the reader has already answered and folded away.
+      // ============================================================
+      if (this.uiVersion === 'v3') {
+        const addr = s.addressMode === 'different';
+        const perso = s.persoMode === 'each';
+        this.csv.preview.rows.forEach((row, i) => {
+          // The fixture writes "street, city, state" and keeps the ZIP in its
+          // own field, which is the shape of the template's address columns.
+          const bits = (row.address || '').split(',').map(x => x.trim());
+          const r = this.blankRow();
+          r.id = Date.now() * 1000 + 900 + i;
+          if (addr) {
+            r.deliver = Object.assign(this.v3BlankDeliver(), {
+              name: row.name, street: bits[0] || '', city: bits[1] || '',
+              state: bits[2] || '', zip: row.zip || ''
+            });
+            r.address = this.v3AddressLabel(r.deliver);
+            r.hasError = !!row.error;
+            r.errorMsg = row.error || '';
+          }
+          if (perso) r.name = (row.name || '').split(' ')[0] || '';
+          this.rows(s).push(r);
+        });
+        s.poolQty = this.rows(s).length;
+        s.page = 1;
+        this.csv.step = 3;
+        return;
+      }
       this.csv.preview.rows.forEach((row, i) => {
         this.rows(s).push({
           id: Date.now() + i,
