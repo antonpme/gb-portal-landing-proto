@@ -1,0 +1,503 @@
+/* ============================================================
+   gbppl-radio-1 — THE RADIO BUTTON, AND ITS SECOND LOOK
+   ------------------------------------------------------------
+   Ton, 03.09: «В Фигме есть просто радио. Сначала перенести Radio
+   Button Component в систему, потом сделать вторую версию — Radio
+   Select.» And, describing the second one: «радио, но с селектом»
+   — the same circle, a top line exactly as heavy as an ordinary
+   radio's label, a smaller and quieter line under it, all of it in
+   a box that stretches, and the circle sitting level with the top
+   line.
+
+   SO THIS FILE IS TWO THINGS AND SAYS SO. `.gb-radio` is the
+   control the mock draws: a circle and a word. `.gb-radio--select`
+   is the CARD the checkout has been rendering by hand since 21.08:
+   the same circle, a 16/600 title, a 14 grey line under it, a
+   hairline box that stretches to its share of the row. Neither is
+   invented; the first is measured out of the design file and the
+   second off the live prototype, and where the two disagree the
+   disagreement is written down at the value rather than resolved
+   in silence.
+
+   THE NAME. The client's stack is PrimeVue and PrimeVue calls this
+   control a RadioButton (checked on primevue.org on 03.09, the
+   same check the toggle and the input number were put through
+   after we got Stepper wrong once). The showcase is therefore
+   `system/oro/radio.html` and is titled Radio button; Radio select
+   is a SECTION of it, because it is a look of this control and not
+   a second component. Ton's own word for the pair, «Radio select»,
+   is printed on the page so the person who asked for it finds it.
+
+   NO JAVASCRIPT, AND THAT IS A DECISION. The control is a native
+   `<input type="radio">` with its paint taken off it. Everything a
+   radio group owes the keyboard — one tab stop, arrows that move
+   the choice, Home and End, the name attribute that makes a group
+   a group, a real `disabled` the tab order respects, the label that
+   answers a click — is the browser's, written by nobody and
+   breakable by nobody. The toggle needed a script because it is a
+   row of buttons pretending to be a radio group; this one IS the
+   radio group. A `radio.js` would have exactly one job, which is to
+   re-implement what is already there.
+
+   ------------------------------------------------------------
+   WHERE EVERY NUMBER COMES FROM
+   ------------------------------------------------------------
+   THE MOCK. Figma «Gifting Portal», fileKey jb9S38HV3lWnfqERtrV3Y0,
+   frame `radio` 10056:14561, read 03.09 through the MCP connector
+   (get_design_context, get_variable_defs, and the two exported
+   glyphs measured off their own path data). FOUR variants and no
+   more: status selected / unselected crossed with state enabled /
+   disabled. There is no hover in the file, no focus and no error;
+   what this file draws for those three is DECLARED and marked as
+   such at the rule.
+
+     box            18 by 18. Variables `radio/icon/size/width` and
+                    `/height`, both 18.
+     ring           1.8. Not typed in the file: the unselected glyph
+                    is a ring path whose outer circle has r 9 and
+                    whose inner circle spans 1.8 to 16.2, so r 7.2.
+                    9 minus 7.2.
+     dot            9, exactly half the box. The selected glyph's
+                    inner circle spans 4.5 to 13.5.
+     ring ink       #18181B, `tailwind/zinc/900`. The RESTING ring is
+                    Zinc 900 in this mock, not a grey hairline.
+     selected       #2563EB, `tailwind/blue/600`, and it takes BOTH
+                    the ring and the dot.
+     radius         `radio/border-radius` 1000, which is our
+                    --radius-pill.
+     gap            12 between the circle and the label.
+     label          `Body/BP: XL/Small - 400`: Inter 400, 14, line
+                    1.5, tracking 0.5, Zinc 900. That style is
+                    already a role in our register — `small-400` in
+                    system/type-scale.js — so nothing is named here.
+     disabled       opacity 0.4 on the whole control, circle and
+                    label together.
+
+   THE LIVE PROTOTYPE, live/checkout.html ?v=2, measured 03.09 with
+   the harvest Chrome at 360 / 1280 / 2258 before this wave touched
+   it. Five radio cards: three shipping methods, two personalization
+   answers, and one more inside the address drawer.
+
+     box            16 by 16, `accent-color` Blue 600, drawn by the
+                    browser.
+     card           1px Zinc 200, --radius, white; 16 of padding.
+     chosen card    ground Blue 50 (rgb 239,246,255), line Blue 600
+                    (rgb 37,99,235).
+     hover card     line Zinc 400.
+     grid           repeat(auto-fit, minmax(220px, 1fr)), gap 12.
+     title          16 / 600 / line 20px / Zinc 900. This is
+                    `.gba-method-title` out of auth.css, which the
+                    cards were put on yesterday (gbppl-checkout-
+                    noise-1).
+     sub            14 / 400 / line 20px / Zinc 500.
+     circle offset  2 from the top of the title's line box, which is
+                    (20 - 16) / 2 exactly.
+
+   THE THIRD SOURCE, AND THE ONE THAT SETTLES THE RING. auth.css has
+   carried a hand-built radio card since 18.08 — `.gba-method`,
+   the «how should we send your code» chooser of the sign in flow,
+   measured off the live site. Its circle is 16 with a 1.5 ring and
+   an 8 dot.
+
+   PUT THE THREE SIDE BY SIDE AND THE LADDER FALLS OUT:
+
+     source            box   ring   dot
+     live auth 18.08   16    1.5    8      ring = .094 box, dot = .5 box
+     Figma DS 2K       18    1.8    9      ring = .100 box, dot = .5 box
+
+   Two readings of one curve, three days and one design file apart,
+   agreeing on the proportion to within six thousandths. So the
+   radio has TWO RUNGS and neither of them is invented: 16 / 1.5 / 8
+   at the bottom, which is what every carrier renders today, and
+   18 / 1.8 / 9 from 2000, which is the mock. That is the house
+   model spelled out — «то, что есть в Фигме, самый большой вариант,
+   под разрешение 2К; нам нужно уменьшать интерфейс под малые
+   экраны» (Ton, 01.09) — and the small end was measured rather than
+   divided.
+
+   NO RUNG AT 1280, and the absence is the honest answer. Live has
+   never rendered a designed radio at that width, the mock has one
+   breakpoint, and 17 with a 1.65 ring is a number nobody has seen.
+   A control the size of a glyph steps once, where the client's own
+   2xl is.
+
+   ------------------------------------------------------------
+   THE FOUR DISAGREEMENTS, AND WHICH SIDE WON
+   ------------------------------------------------------------
+   1. RESTING RING. Mock Zinc 900; live auth Zinc 300; live checkout
+      whatever the browser draws. THE MOCK WINS. It is the appointed
+      source of this control's look, and a Zinc 900 ring is a
+      decision rather than an oversight: the thing being chosen
+      should be as readable as the words beside it, which is
+      Russell's rule for the whole page. The auth card's Zinc 300
+      circle is now the odd one out in the house and is named as
+      such in the report, with the migration left to Ton.
+
+   2. SELECTED MARK. Mock Blue 600 for ring and dot; live checkout
+      Blue 600; live auth Zinc 900 with a shadow. TWO AGAINST ONE,
+      and Ton-5 breaks the tie anyway: blue is state, black is
+      furniture, and a chosen option is a state.
+
+   3. LABEL LINE. Mock 1.5, so 21px on 14. Live checkout 20px, which
+      is Tailwind's `text-sm`. THE LIVE READING WINS on the CARD's
+      sub-line, because that is the line the carrier renders and has
+      rendered since 21.08; the mock's 1.5 stands on the PLAIN
+      radio's label, where live has nothing to say. One pixel, both
+      sides recorded, nothing averaged.
+
+   4. DISABLED. Mock 0.4; the house's one value for off is
+      --gb-btn-disabled-opacity, 0.6, measured on the live sign in
+      button. The MOCK wins here, and it wins with a second witness:
+      the checkout's own gate — the one Ton approved on 03.09, «типы
+      доставки должны быть disabled, пока не выберешь адрес» — is
+      `opacity-40`. Two carriers render 0.4 today and the mock draws
+      0.4, so the radio spends 0.4 and does not quietly change what
+      is on the screen. That the house now has two values for «off»
+      is a real finding and it goes to Ton as a question rather than
+      being smoothed over here.
+
+   ------------------------------------------------------------
+   WHAT IS DECLARED, because the mock draws four states and a
+   control a person can point at and tab into has six.
+   ------------------------------------------------------------
+     hover, plain     the ring steps to Blue 600. This is the FORM
+                      FAMILY'S OWN hover, live-measured: the field
+                      and the select both take their underline to
+                      Blue 600 under the pointer (field.html,
+                      select.html, «Blue 600, measured on the one
+                      live control that opens a list»). The ring is
+                      this control's underline. The difference
+                      between hover and chosen stays the DOT, which
+                      is the thing that actually holds the value.
+     hover, card      the box line steps to Zinc 400. LIVE checkout,
+                      not declared: the cards already do this.
+     focus            --gb-btn-focus-ring, 2px at 2px of offset, the
+                      one answer the house has for «you are here».
+                      Keyboard only, :focus-visible.
+     motion           --mo-micro with --mo-move, the same pair the
+                      toggle spends on its own colour changes. The
+                      dot arrives by scale rather than by appearing,
+                      which is service micro-motion and not a
+                      choreography (Ton-7 applies to the doors, the
+                      glass and the tick).
+
+   NO TOKEN, three of them, each argued:
+     gap 12          half a step of the space scale, which starts at
+                     8 and jumps to 16. It is not a preference: the
+                     mock says 12 and the live grid says 12, and two
+                     independent sources on a number the scale
+                     cannot express is exactly the case the toggle's
+                     --gbtg-inset already set a precedent for. One
+                     slot, one place to change it.
+     ring 1.5 / 1.8  a hairline is not a length off the space scale.
+     card floor 220  the minimum column of the live card grid.
+   ============================================================ */
+
+.gb-radio {
+  /* ---- THE TWO RUNGS, both declared here, the modifier chooses ----
+     The architecture is the button organism's: every rung stands on
+     the element and the media queries below move the rung, so no
+     consumer can lose a specificity race to a default. Nothing
+     outside this file should set a --gbr- slot. */
+  --gbr-size:  16px;    /* LIVE checkout + LIVE auth 18.08 */
+  --gbr-ring:  1.5px;   /* LIVE auth 18.08, .gba-method-radio */
+  --gbr-dot:   calc(var(--gbr-size) / 2);  /* both sources: the dot is half the box */
+
+  /* ---- the gap, and it is the one number the scale cannot say ---- */
+  --gbr-gap: 12px;      /* FIGMA 10056:14561 and LIVE checkout gap-3 */
+
+  /* ---- the colour cell: the whole paint of the control ----
+     Eight slots and not one colour named below this block. A family
+     that needs different ink repoints the slots the way
+     .gb-toggle--inverse does; there is no second family yet and one
+     is not invented before a carrier asks. */
+  --gbr-line:        var(--zinc-900);            /* FIGMA tailwind/zinc/900 */
+  --gbr-line-hover:  var(--blue-600);            /* DECLARED, the form family's live hover */
+  --gbr-on:          var(--blue-600);            /* FIGMA tailwind/blue/600 + LIVE accent-color */
+  --gbr-ink:         var(--zinc-900);            /* FIGMA, the label */
+  --gbr-ring-focus:  var(--gb-btn-focus-ring);   /* DECLARED, the organism's ring */
+  --gbr-focus-width: var(--gb-btn-focus-ring-width);
+  --gbr-focus-offset: var(--gb-btn-focus-ring-offset);
+  /* FIGMA 0.4 with the checkout's own gate as a second witness. It
+     is NOT --gb-btn-disabled-opacity (0.6): see disagreement 4. */
+  --gbr-off: 0.4;
+
+  /* ---- the label: a role we already own ----
+     `small-400` in system/type-scale.js, which is the mock's
+     `Body/BP: XL/Small - 400` under our name. One rung, flat at
+     every width, because that is what the role says and because
+     live reads 14 for small body everywhere. */
+  --gbr-label:          14px;
+  --gbr-label-weight:   400;
+  --gbr-label-tracking: 0.5px;
+  --gbr-label-line:     1.5;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gbr-gap);
+  cursor: pointer;
+  /* A label is the control's hit area, and text selected by a
+     double click inside it is a drag that did not choose anything. */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ============================================================
+   THE CIRCLE
+   ------------------------------------------------------------
+   The native input with its paint taken off and ours put back on.
+   `appearance: none` is what makes the ring ours; everything else
+   about the element — the group, the keyboard, the disabled, the
+   announced role — is untouched.
+
+   border-box, so --gbr-size IS the outer diameter the mock names
+   and the ring eats into it. At the bottom rung that leaves 13 of
+   content for an 8 dot, at the top 14.4 for a 9.
+   ============================================================ */
+.gb-radio__input {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: var(--gbr-size);
+  height: var(--gbr-size);
+  margin: 0;
+  display: grid;
+  place-content: center;
+  border: var(--gbr-ring) solid var(--gbr-line);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  cursor: inherit;
+  transition: border-color var(--mo-micro) var(--mo-move);
+}
+
+/* The dot. It is always in the box and it is always the right size;
+   what changes is whether it is drawn. Scaling from nothing rather
+   than fading keeps the mark reading as a mark at every frame. */
+.gb-radio__input::before {
+  content: '';
+  width: var(--gbr-dot);
+  height: var(--gbr-dot);
+  border-radius: var(--radius-pill);
+  background: var(--gbr-on);
+  transform: scale(0);
+  transition: transform var(--mo-micro) var(--mo-move);
+}
+
+.gb-radio__input:checked {
+  border-color: var(--gbr-on);
+}
+.gb-radio__input:checked::before {
+  transform: scale(1);
+}
+
+/* DECLARED. The ring is this control's underline, and the form
+   family takes its underline to Blue 600 under the pointer. The
+   chosen circle does not move: it is already there. */
+.gb-radio:hover .gb-radio__input:not(:checked):not(:disabled),
+.gb-radio__input.is-hover:not(:checked):not(:disabled) {
+  border-color: var(--gbr-line-hover);
+}
+
+/* DECLARED. Keyboard only, the button organism's ring. */
+.gb-radio__input:focus-visible,
+.gb-radio__input.is-focus {
+  outline: var(--gbr-focus-width) solid var(--gbr-ring-focus);
+  outline-offset: var(--gbr-focus-offset);
+}
+
+/* ============================================================
+   THE LABEL
+   ------------------------------------------------------------
+   The word beside the circle, on the role the register already
+   holds. No margin of its own: the gap belongs to the row, so a
+   consumer that puts a glyph in there gets the same air.
+   ============================================================ */
+.gb-radio__label {
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--gbr-label);
+  font-weight: var(--gbr-label-weight);
+  line-height: var(--gbr-label-line);
+  letter-spacing: var(--gbr-label-tracking);
+  color: var(--gbr-ink);
+}
+
+/* ============================================================
+   OFF
+   ------------------------------------------------------------
+   One fade for the row, one for the group, and they never
+   multiply. The second rule is the trap toggle.css found on its own
+   showcase: the correct markup for a switched-off group wears BOTH
+   markers at once — the group so the pointer stops, a real
+   `disabled` on every input so the tab order does too — and 0.4
+   inside 0.4 is 0.16, which is a control twice as gone as anything
+   else the house switches off.
+   ============================================================ */
+.gb-radio:has(.gb-radio__input:disabled),
+.gb-radio.is-disabled {
+  opacity: var(--gbr-off);
+  pointer-events: none;
+  cursor: default;
+}
+
+.gb-radio-group.is-disabled,
+.gb-radio-group[aria-disabled='true'] {
+  opacity: var(--gbr-off);
+  pointer-events: none;
+}
+.gb-radio-group.is-disabled .gb-radio:has(.gb-radio__input:disabled),
+.gb-radio-group.is-disabled .gb-radio.is-disabled,
+.gb-radio-group[aria-disabled='true'] .gb-radio:has(.gb-radio__input:disabled),
+.gb-radio-group[aria-disabled='true'] .gb-radio.is-disabled {
+  opacity: 1;
+}
+
+/* ============================================================
+   THE GROUP
+   ------------------------------------------------------------
+   Two shapes. The plain one is a column of circles, 16 apart, which
+   is the step the mock's own four variants stand at (y 16, 53, 90,
+   127: a 21 tall row every 37). The card one is the LIVE grid of
+   the checkout, to the number: auto-fit at a 220 floor with 12
+   between, so two cards stand side by side wherever the column can
+   hold them and stack when it cannot.
+
+   `--cards` rather than a second element name: a group of cards is
+   the same group holding the same value, and only the way it is
+   laid out differs.
+   ============================================================ */
+.gb-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);         /* FIGMA, the step of the mock's own stack */
+}
+
+.gb-radio-group--cards {
+  --gbr-card-min: 220px;        /* NO TOKEN, LIVE checkout minmax(220px, 1fr) */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--gbr-card-min), 1fr));
+  gap: 12px;                    /* LIVE checkout gap-3, the same 12 as --gbr-gap */
+}
+
+/* ============================================================
+   RADIO SELECT — the second look
+   ------------------------------------------------------------
+   Ton, 03.09: «радио, но с селектом». A radio whose label is two
+   lines: the option's name in the weight of a title, and one quiet
+   line saying what choosing it means. The whole of it inside a box
+   that takes its share of the row, so a set of them reads as a set
+   of answers rather than as a list.
+
+   THE TITLE IS THE SAME ROLE THE CARDS ALREADY WEAR. 16 / 600 /
+   line 20 / Zinc 900 is `.gba-method-title` out of auth.css,
+   measured off the live sign in on 18.08 and put on the checkout's
+   five cards on 03.09 (gbppl-checkout-noise-1). This file writes
+   the same four values under its own name because the role belongs
+   to THIS control and not to the sign in flow; the numbers are not
+   re-decided and not rounded. What that leaves is one role with two
+   class names in the house, which is a real duplicate and goes to
+   Ton with the auth card's own circle: both are the same migration.
+
+   THE CIRCLE SITS ON THE TOP LINE, and the offset is arithmetic
+   rather than a nudge. A 16 circle inside a 20 line box is 2 from
+   the top; an 18 circle inside the same box is 1. The rule below
+   says exactly that, so the top rung needs no second value and a
+   change to the title's line moves the circle with it. The live
+   card renders `mt-0.5`, which is that same 2.
+
+   THE BOX STRETCHES. `display: flex` and not inline-flex, so a card
+   fills its grid track; `align-items: flex-start`, so a two line
+   card and a one line card standing beside each other both begin at
+   the top.
+   ============================================================ */
+.gb-radio--select {
+  --gbr-card:            var(--white);       /* LIVE checkout */
+  --gbr-card-line:       var(--zinc-200);    /* LIVE checkout, border-zinc-200 */
+  --gbr-card-line-hover: var(--zinc-400);    /* LIVE checkout, hover:border-zinc-400 */
+  --gbr-card-on:         var(--blue-50);     /* LIVE checkout, bg-blue-50 */
+  --gbr-card-line-on:    var(--blue-600);    /* LIVE checkout, border-blue-600 */
+
+  --gbr-title:        16px;                  /* LIVE .gba-method-title */
+  --gbr-title-weight: 600;
+  --gbr-title-line:   20px;                  /* LIVE, 1.25 spelled as the px it renders */
+  --gbr-sub:          14px;                  /* LIVE checkout, text-sm */
+  --gbr-sub-line:     20px;                  /* LIVE checkout; the mock's 1.5 would be 21 */
+  --gbr-sub-ink:      var(--zinc-500);       /* LIVE checkout, text-zinc-500 */
+
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-16);                  /* LIVE checkout, p-4 */
+  background: var(--gbr-card);
+  border: 1px solid var(--gbr-card-line);
+  border-radius: var(--radius);
+  transition: border-color var(--mo-micro) var(--mo-move),
+              background-color var(--mo-micro) var(--mo-move);
+}
+
+/* The arithmetic above, written once. */
+.gb-radio--select .gb-radio__input {
+  margin-block-start: calc((var(--gbr-title-line) - var(--gbr-size)) / 2);
+}
+
+/* The two lines share one column so a long title wraps inside the
+   card instead of pushing the card wider than its track. */
+.gb-radio--select .gb-radio__copy {
+  min-width: 0;
+}
+
+.gb-radio__title {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--gbr-title);
+  font-weight: var(--gbr-title-weight);
+  line-height: var(--gbr-title-line);
+  color: var(--gbr-ink);
+}
+
+/* No margin between the two lines: the live card renders none, and
+   the title's own line box is the air. */
+.gb-radio__sub {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--gbr-sub);
+  font-weight: 400;
+  line-height: var(--gbr-sub-line);
+  color: var(--gbr-sub-ink);
+}
+
+/* LIVE checkout. The hover is the BOX's, not the circle's: inside a
+   card the whole card is the target, and a card that lights its own
+   edge says that better than a ring two lines up. The plain radio's
+   own hover is switched off here for the same reason — one hover
+   per control. */
+.gb-radio--select:hover:not(:has(.gb-radio__input:checked)) {
+  border-color: var(--gbr-card-line-hover);
+}
+.gb-radio--select:hover .gb-radio__input:not(:checked):not(:disabled) {
+  border-color: var(--gbr-line);
+}
+
+/* LIVE checkout. The chosen card takes the ground and the line; the
+   circle inside it is already blue by the rule above. */
+.gb-radio--select:has(.gb-radio__input:checked),
+.gb-radio--select.is-on {
+  background: var(--gbr-card-on);
+  border-color: var(--gbr-card-line-on);
+}
+
+/* ============================================================
+   THE LADDER CLIMBS, ONCE
+   ------------------------------------------------------------
+   One threshold, the client's own 2xl, and it moves the three
+   numbers of the circle. The dot follows by arithmetic. Nothing
+   else on the control steps: the label is a flat role, the card's
+   padding is a step of the space scale and the title is the same
+   16 the live card renders at every width.
+   ============================================================ */
+@media (min-width: 2000px) {
+  .gb-radio {
+    --gbr-size: 18px;    /* FIGMA radio/icon/size 18 */
+    --gbr-ring: 1.8px;   /* FIGMA, r 9 minus r 7.2 */
+  }
+}
