@@ -393,6 +393,13 @@
           /* gbppl-v5-image-1 (04.09): the two steps fold now, the way V3's
              three do. Same variant, same day, so `updated` already says
              04.09 and only the sentence moves. */
+          /* gbppl-v5-fix-1 (04.09, same day again): picking an address
+             applies the whole of it, including the recipient's name, and
+             the information strips of step 1 wear the house alert measured
+             off Figma Alertbox 9293-2260 (info is cyan, not blue, so an
+             information strip can no longer be mistaken for the chosen
+             radio card beside it). Behaviour and copy of the variant are
+             otherwise the sentence above; `updated` stays 04.09. */
           desc: 'The order is a number of gifts and a list of addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer with a Ships to column already filled in from the layout. There is no third step, and a long list is offered a file instead of a keyboard.',
           status: 'in-progress',
           href: 'live/checkout.html?v=5',

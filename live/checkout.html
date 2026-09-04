@@ -89,6 +89,37 @@
         2000, out of the slack in the item chip columns.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-v5-fix-1 (2026-09-04) — THREE THINGS AN HOUR BEFORE THE
+     DEMO, ALL OF THEM INSIDE ?v=5. V1 to V4 are byte-for-byte the
+     page they were: twelve renders (four versions x three
+     scenarios) compared node for node against HEAD, including
+     colour, size, margin and padding on every visible node —
+     identical, 0 differences, 0 console errors.
+
+     1. THE PICKER APPLIES THE ADDRESS. «Когда мы выбираем адрес из
+        списка адресов, там уже Recipient Name есть, и он должен
+        заполняться, но не заполняется. Вообще выбираю адрес — он
+        ни хрена не применяется.» Two faults, both his, both real:
+        the reuse picker was built for V3, where it deliberately
+        never fills the name, and parseAddress read a five-part
+        book line one field out of step, so City got «Suite 8200».
+        Fixed at v5UseBookAddress / v5UseAddress / v5ParseAddress,
+        with the whole argument written at the code.
+     2. THE INFORMATION STRIPS ARE NOT BLUE. «Полоса на Blue 50
+        выглядит как активный таб рядом с синей выбранной радио-
+        картой: непонятно, активный элемент или информация.» Ton's
+        correction the same hour: «информационные полосы НЕ
+        изобретать — у алертов есть свой канон в Figma». So the
+        house has an alert now, measured off ALERT COLORS, node
+        9293-2260 of the Gifting Portal file, and its information
+        tone is CYAN. Owner: system/components/alert.css. Blue
+        stays what Ton-5 says it is, state.
+     3. THE LADDER OF THE STEP. 20 everywhere (not a rung of any
+        scale) became three rungs: 16 attached, 24 rhythm, 48
+        before the button that closes the step. See the comment at
+        the step body.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -744,6 +775,11 @@
      here: every selector in the file begins with .gb-radio and collides with
      nothing on this page. -->
 <link rel="stylesheet" href="../system/components/radio.css">
+<!-- gbppl-v5-fix-1: the alert box, measured off Figma «Gifting Portal»
+     node 9293-2260 (ALERT COLORS). Only ?v=5 wears it today; V1-V4 keep
+     the strips they were signed off with, and every selector in the file
+     begins with .gb-alert, so linking it costs the other four nothing. -->
+<link rel="stylesheet" href="../system/components/alert.css">
 <link rel="stylesheet" href="../system/components/footer.css">
 <link rel="stylesheet" href="../system/components/studio-panel.css">
 <!-- Inspect mode (gbppl-inspect-1, gbppl-panel-6). Three stylesheets and
@@ -3366,17 +3402,20 @@
 
               <!-- The one warning, the strip V2 built: it stands under the
                    control the hand is on, it is asked once per page load, and
-                   empty rows are always taken away in silence. -->
+                   empty rows are always taken away in silence.
+                   gbppl-v5-fix-1: and it is now an ALERT of the house, in the
+                   WARNING tone — it asks before something is thrown away, and
+                   that is the one thing on this page orange is for. -->
               <div x-show="v5Ask.pending && v5Ask.kind === 'qty' && v5Ask.productId === product.id" x-cloak
                    x-transition.opacity.duration.280ms
-                   class="mx-6 md:mx-8 mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
-                <span class="flex items-start gap-2 min-w-0">
-                  <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-                  <span x-text="v5AskLine()"></span>
+                   class="gb-alert gb-alert--warning mx-6 md:mx-8 mb-6">
+                <span class="gb-alert__body">
+                  <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
+                  <span class="gb-alert__text" x-text="v5AskLine()"></span>
                 </span>
-                <span class="flex items-center gap-2 flex-shrink-0">
+                <span class="gb-alert__actions">
                   <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
-                  <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary"><span class="gb-btn__label">Remove</span></button>
+                  <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
                 </span>
               </div>
 
@@ -3427,7 +3466,27 @@
                       <h3 class="font-serif text-2xl leading-none">1. Delivery</h3>
                     </header>
 
-                    <div class="px-6 md:px-8 py-5 space-y-5" x-data="{ pick: false }">
+                    <!-- THE LADDER OF STEP 1 (gbppl-v5-fix-1, 04.09). Ton:
+                         «ритм ступенями системы... расстояние до Continue
+                         БОЛЬШЕ, чем между Add address и полосой». The step
+                         used to run on 20 everywhere, which is not a rung of
+                         --space-* at all, and Continue sat at the same 20 as
+                         every other pair, so the button that CLOSES the step
+                         looked like one more control inside it.
+                         Three rungs now, and nothing between them:
+                           16  what is attached to the control above it
+                               (the info alert under the address select);
+                           24  --space-24, the step's own rhythm: question to
+                               question, alert to list, list to Add address,
+                               and the pad of the whole panel;
+                           48  --space-48 before Continue, written as the
+                               ladder's own 24 plus 24 of padding on the
+                               button's row, because Tailwind's space-y owns
+                               the margin and two utilities fighting over one
+                               property is not a rhythm, it is a coin toss.
+                         Which makes the alert symmetrical as he asked: 24
+                         above it and 24 below it, both sides the same rung. -->
+                    <div class="px-6 md:px-8 py-6 space-y-6" x-data="{ pick: false }">
 
                       <div>
                         <p class="gb-eyebrow mb-2">Where these gifts go</p>
@@ -3452,7 +3511,7 @@
                       </div>
 
                       <!-- ===== ONE ADDRESS: two touches and the step is done. ===== -->
-                      <div x-show="shipment.v5Mode === 'one'" class="space-y-5">
+                      <div x-show="shipment.v5Mode === 'one'" class="space-y-6">
                         <div>
                           <p class="gb-eyebrow mb-2">Address</p>
                           <div class="relative">
@@ -3475,11 +3534,17 @@
                             </div>
                           </div>
                           <!-- Ton, 03.09: the notice belongs under the address,
-                               not under the methods it unlocks. -->
-                          <div x-show="!shipment.v5AddrId"
-                               class="mt-3 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-3 py-2">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-                            <span>Choose an address to see the shipping methods.</span>
+                               not under the methods it unlocks.
+                               gbppl-v5-fix-1: INFO tone, and info is cyan in
+                               the mock, not blue. It is attached to the select
+                               above it, so it takes 16 and not the 24 of the
+                               step's own ladder: an attached hint that stood a
+                               full rung away would read as a block of its own. -->
+                          <div x-show="!shipment.v5AddrId" class="gb-alert gb-alert--info mt-4">
+                            <span class="gb-alert__body">
+                              <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/></svg></span>
+                              <span class="gb-alert__text">Choose an address to see the shipping methods.</span>
+                            </span>
                           </div>
                         </div>
 
@@ -3503,22 +3568,37 @@
 
                       <!-- ===== MULTIPLE ADDRESSES: the list, and the arithmetic
                                over it that is never out of sight. ===== -->
-                      <div x-show="shipment.v5Mode === 'many'" class="space-y-4">
+                      <div x-show="shipment.v5Mode === 'many'" class="space-y-6">
 
-                        <div class="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[var(--radius)] border px-4 py-3 text-sm"
-                             :class="v5Left(shipment) > 0 ? 'text-blue-800 bg-blue-50 border-blue-200' : 'text-zinc-600 bg-zinc-50 border-zinc-200'">
-                          <span class="flex items-start gap-2 min-w-0">
+                        <!-- THE ARITHMETIC STRIP, AND WHY IT IS NOT BLUE ANY
+                             MORE (gbppl-v5-fix-1, 04.09). Ton: «непонятно:
+                             активный элемент или информация» — Blue 50 with a
+                             Blue 200 hairline is exactly what the CHOSEN radio
+                             card two rows above is wearing, and the eye read
+                             the strip as a third, selected option. The house
+                             now has an alert of its own, measured off his
+                             Figma (system/components/alert.css, node
+                             9293-2260), and its information tone is CYAN, not
+                             blue. Blue stays what Ton-5 says it is: state.
+                             The strip also stops being one tone with a
+                             swapped glyph. Something still unassigned is
+                             INFO; everything placed is SUCCESS, which is the
+                             tone the mock draws for a finished thing, and it
+                             is the only green on this page. -->
+                        <div class="gb-alert" :class="v5Left(shipment) > 0 ? 'gb-alert--info' : 'gb-alert--success'">
+                          <span class="gb-alert__body">
                             <template x-if="v5Left(shipment) > 0">
-                              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                              <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/></svg></span>
                             </template>
                             <template x-if="v5Left(shipment) === 0">
-                              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                              <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M8.4 12.2l2.5 2.5 4.7-5.4"/></svg></span>
                             </template>
-                            <span x-text="v5LeftLine(shipment)"></span>
+                            <span class="gb-alert__text" x-text="v5LeftLine(shipment)"></span>
                           </span>
                           <!-- Ton: the layout is offered, never done silently. -->
-                          <button type="button" x-show="(shipment.v5Addrs || []).length > 0 && v5Left(shipment) > 0"
-                                  @click="v5Split(shipment)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary ml-auto"><span class="gb-btn__label" x-text="v5SplitLabel(shipment)"></span></button>
+                          <span class="gb-alert__actions" x-show="(shipment.v5Addrs || []).length > 0 && v5Left(shipment) > 0">
+                            <button type="button" @click="v5Split(shipment)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label" x-text="v5SplitLabel(shipment)"></span></button>
+                          </span>
                         </div>
 
                         <!-- ONE ADDRESS IS ONE ROW OF THE LIST, and the row
@@ -3597,16 +3677,19 @@
                               </div>
                             </div>
 
+                            <!-- gbppl-v5-fix-1: the same alert, the same
+                                 warning tone as the quantity prompt above.
+                                 One question, one look, wherever it is asked. -->
                             <div x-show="v5Ask.pending && v5Ask.kind === 'addr' && v5Ask.addrId === a.id" x-cloak
                                  x-transition.opacity.duration.280ms
-                                 class="mx-4 mb-3 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
-                              <span class="flex items-start gap-2 min-w-0">
-                                <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-                                <span x-text="v5AskLine()"></span>
+                                 class="gb-alert gb-alert--warning mx-4 mb-4">
+                              <span class="gb-alert__body">
+                                <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
+                                <span class="gb-alert__text" x-text="v5AskLine()"></span>
                               </span>
-                              <span class="flex items-center gap-2 flex-shrink-0">
+                              <span class="gb-alert__actions">
                                 <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
-                                <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary"><span class="gb-btn__label">Remove</span></button>
+                                <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
                               </span>
                             </div>
 
@@ -3647,7 +3730,10 @@
                         <p x-show="v5SoftAddr(shipment)" x-cloak class="text-sm text-zinc-600">A long list is faster in a file. <button type="button" @click="downloadTemplate()" class="underline underline-offset-2 hover:text-zinc-900">Download the template</button>, or <button type="button" @click="openCSVModal(product.id, shipment.id)" class="underline underline-offset-2 hover:text-zinc-900">upload one you already have</button>.</p>
                       </div>
 
-                      <div>
+                      <!-- 24 of the ladder + 24 of its own = --space-48, and
+                           the button that closes the step gets twice the air
+                           of anything inside it (Ton 04.09). -->
+                      <div class="pt-6">
                         <button type="button" @click="v5Continue(shipment, 1)" :disabled="!v5CanLeave(shipment, 1)"
                                 class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary"><span class="gb-btn__label" x-text="v5NextLabel(shipment, 1)"></span></button>
                       </div>
@@ -3685,7 +3771,9 @@
                       <h3 class="font-serif text-2xl leading-none">2. Personalization</h3>
                     </header>
 
-                    <div class="px-6 md:px-8 py-5 space-y-5">
+                    <!-- The ladder of step 1, unchanged: 24 is the step's
+                         rhythm, 48 stands before Continue. -->
+                    <div class="px-6 md:px-8 py-6 space-y-6">
                       <!-- Julia, meeting 20.08: personalization is either absent
                            or per gift. «One for everyone» exists only as a
                            greeting card, and it is the checkbox below. -->
@@ -3915,7 +4003,9 @@
                         <p x-show="v5SoftPerso(shipment)" x-cloak class="text-sm text-zinc-600">A long list is faster in a file. <button type="button" @click="downloadTemplate()" class="underline underline-offset-2 hover:text-zinc-900">Download the template</button>, or <button type="button" @click="openCSVModal(product.id, shipment.id)" class="underline underline-offset-2 hover:text-zinc-900">upload one you already have</button>.</p>
                       </div>
 
-                      <div>
+                      <!-- The same 48 as step 1: the two steps of one card
+                           are one rhythm or they are none. -->
+                      <div class="pt-6">
                         <button type="button" @click="v5Continue(shipment, 2)"
                                 class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary"><span class="gb-btn__label" x-text="v5NextLabel(shipment, 2)"></span></button>
                       </div>
@@ -5922,8 +6012,15 @@ function checkoutApp() {
         state: src.state || '', zip: src.zip || '', country: src.country || 'United States'
       });
     },
-    v3UseAddress(a) { this.v3FillAddressFields(a.deliver || {}); },
+    v3UseAddress(a) {
+      // gbppl-v5-fix-1: a fourth owner of the same panel, and the FIRST one
+      // for which «the picker fills the address and not the person» is the
+      // wrong rule. See v5UseAddress. V1-V4 walk the line below untouched.
+      if (this.uiVersion === 'v5') return this.v5UseAddress(a);
+      this.v3FillAddressFields(a.deliver || {});
+    },
     v3UseBookAddress(id) {
+      if (this.uiVersion === 'v5') return this.v5UseBookAddress(id);
       const addr = this.addressBook.find(a => a.id === id);
       if (addr) this.v3FillAddressFields(this.parseAddress(addr.label));
     },
@@ -6376,7 +6473,10 @@ function checkoutApp() {
       if (mode === 'many' && !(s.v5Addrs || []).length && s.v5AddrId) {
         const b = this.addressBook.find(x => x.id === s.v5AddrId);
         if (b) {
-          const d = Object.assign(this.v3BlankDeliver(), this.parseAddress(b.label), { name: b.name });
+          // gbppl-v5-fix-1: the inverse of v3AddressLabel, not the old
+          // five-part guess — this is the same book entry the picker reads,
+          // and it used to walk into the list with Suite 8200 as its city.
+          const d = Object.assign(this.v3BlankDeliver(), this.v5ParseAddress(b.label), { name: b.name });
           s.v5Addrs = [this.v5BlankAddr({
             deliver: d, address: this.v3AddressLabel(d),
             qty: this.v5Total(s), shipping: s.v5Shipping || ''
@@ -6389,6 +6489,78 @@ function checkoutApp() {
       if (!s || !addr) return;
       s.v5AddrId = addr.id;
       s.v5AddrLabel = addr.name + ', ' + addr.label;
+    },
+
+    // ============================================================
+    // THE PICKER APPLIES THE WHOLE ADDRESS (gbppl-v5-fix-1, 04.09)
+    // ------------------------------------------------------------
+    // Ton, before the demo, verbatim: «Когда мы выбираем адрес из списка
+    // адресов, там уже Recipient Name есть, и он должен заполняться, но не
+    // заполняется. Вообще выбираю адрес — он ни хрена не применяется.»
+    //
+    // He was right twice over, and they are two separate faults.
+    //
+    // ONE. v3FillAddressFields copies six fields and DELIBERATELY skips the
+    // name — «two boxes to one office are usually for two different people».
+    // That reasoning is sound in V3, where the panel belongs to a GIFT and
+    // the name in it is the person who signs for that one parcel. In V5 the
+    // panel belongs to an ADDRESS: the thing being picked is a row of the
+    // address book, the address book row HAS a name («Acme NYC Office»), and
+    // the form's own heading over that field is Recipient. Skipping it there
+    // does not protect anything, it throws the answer away. So V5 gets its
+    // own filler and V3 keeps its rule, exactly the way v3SaveDeliver and
+    // v3OtherAddresses already fork.
+    //
+    // TWO. parseAddress reads a five-part label as «street, city, state,
+    // zip, country». Every label the house WRITES comes out of
+    // v3AddressLabel, which prints «street, apt, city, state zip, country»
+    // — also five parts, shifted by one. The first entry of the address book
+    // is exactly that shape, and picking it put «Suite 8200» in City,
+    // «Chicago» in State and «IL 60606» in ZIP (measured, before/after JSON
+    // in the wave folder). That is the «ни хрена не применяется» half: the
+    // form filled up with rubbish, so nothing usable arrived.
+    //
+    // v5ParseAddress is the exact inverse of v3AddressLabel and reads FROM
+    // THE END, where the shape is known: country last, then the region,
+    // which is «state zip» in one part when the writer joined them and two
+    // parts when it did not, then the city, then the street, and whatever is
+    // left in the middle is the apt line. parseAddress itself is not
+    // touched: V1 and V2 read the book through it and this wave changes
+    // nothing they render.
+    // ============================================================
+    v5ParseAddress(label) {
+      const rest = String(label || '').split(',').map(s => s.trim()).filter(Boolean);
+      if (rest.length < 4) return this.parseAddress(label);
+      const out = { street: '', apt: '', city: '', state: '', zip: '', country: 'United States' };
+      const country = rest.pop();
+      out.country = (country === 'US' || country === 'USA') ? 'United States' : country;
+      const region = rest.pop() || '';
+      const joined = region.match(/^(.+?)\s+([A-Za-z0-9][A-Za-z0-9\- ]{2,})$/);
+      if (joined) { out.state = joined[1]; out.zip = joined[2]; }
+      else { out.zip = region; out.state = rest.pop() || ''; }
+      out.city = rest.pop() || '';
+      out.street = rest.shift() || '';
+      out.apt = rest.join(', ');
+      return out;
+    },
+    // Everything the panel asks for, in one click. An address already in
+    // this order carries a company and a phone as well, and those are the
+    // same facts about the same place, so they come too.
+    v5UseAddress(a) {
+      const d = (a && a.deliver) || {};
+      Object.assign(this.drawer.data, {
+        name: d.name || '', company: d.company || '', phone: d.phone || '',
+        street: d.street || '', apt: d.apt || '', city: d.city || '',
+        state: d.state || '', zip: d.zip || '', country: d.country || 'United States'
+      });
+    },
+    // The address book stores a name and a line, and nothing else; company
+    // and phone are left exactly as the reader typed them rather than being
+    // wiped by a picker that has nothing to put there.
+    v5UseBookAddress(id) {
+      const addr = this.addressBook.find(a => a.id === id);
+      if (!addr) return;
+      Object.assign(this.drawer.data, this.v5ParseAddress(addr.label), { name: addr.name || '' });
     },
 
     // ===== The second question, and the hand that changes with it =====

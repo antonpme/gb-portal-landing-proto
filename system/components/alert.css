@@ -1,0 +1,160 @@
+/* ============================================================
+   gbppl-v5-fix-1 — THE ALERT BOX
+   ------------------------------------------------------------
+   Ton, 04.09, on step 1 of ?v=5: полоса остатка на Blue 50 стоит
+   рядом с синей выбранной радио-картой и «непонятно: активный
+   элемент или информация». Then, the same hour, the correction
+   that decided this file: «информационные полосы НЕ изобретать и
+   не уводить в Zinc по своему вкусу — у алертов есть свой канон в
+   его Figma».
+
+   SO NOTHING HERE IS INVENTED. Every value is read off ONE node:
+   Figma «Gifting Portal», file jb9S38HV3lWnfqERtrV3Y0, node
+   9293-2260, named ALERT COLORS, documented in the client's own
+   tracker as CD-5088 «[FE] Update error messaging styles». The
+   component draws FOUR tones and the mock names them in this
+   order: warning, error, info, success. Each one is the same box —
+   a 24px circle glyph, a 20px gap, one line of 14/500 — and the
+   only thing that changes between them is a triple of colours off
+   the Tailwind ramp at 50 / 200 / 900.
+
+   AND THE ANSWER TO TON'S QUESTION IS IN THE MOCK. His info tone
+   is NOT blue: it is CYAN 50/200/900. The selected radio card on
+   the same screen is Blue 600 on Blue 50 (Ton-5: синий =
+   состояние), so an information strip drawn to this canon can
+   never again be mistaken for a chosen option — the two are
+   different hues, not two weights of one. Nothing had to be
+   invented to separate them; the separation was already drawn.
+
+   WHAT THE HOUSE DOES NOT HAVE YET. tokens.css carries ONE grey
+   ramp, Blue 600/700/50/200 and Red 500/600. It has no cyan, no
+   orange, no green, and no 50/200/900 rungs of red. Twelve new
+   colours on :root is a change to the palette, and law 0a.4 says
+   the palette moves only by Ton's own word about the palette — he
+   gave his word about an ALERT. So the twelve live HERE, on the
+   component that measured them, named for the Tailwind rungs they
+   are, and the question «do they belong on :root» goes up with the
+   wave report rather than being answered by a file that had a
+   deadline. A later wave that promotes them changes twelve lines
+   in one place.
+
+   NO TOKEN, and why, at the value:
+     gap 20     — the mock's gap. The scale is 8/16/24/32/48/64 and
+                  20 is between two rungs. Kept, because Ton-3 says
+                  the source wins over the formula, and rounding it
+                  to 16 or 24 would move the glyph off the drawing.
+     padding-y 12 — half of --space-24, same reason.
+     letter-spacing .5px, font-size 14 — the mock's own type. 14 is
+                  the house's secondary size; the tracking is not a
+                  role we have and is carried as measured.
+   min-height 48 IS a rung (--space-48) and is written as one.
+
+   THE BOX WRAPS, THE MOCK DOES NOT. Every alert in the drawing is
+   one short line at a fixed 48. Ours carry a sentence and
+   sometimes a button (Split evenly, Cancel/Remove), so the height
+   is a MINIMUM and the row is allowed to wrap: at 360 an alert
+   that could not wrap would push the card sideways. Nothing else
+   about the box changes when it does.
+
+   Owner of the look: this file. Consumers write only class names.
+   ============================================================ */
+
+.gb-alert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;                    /* NO TOKEN 20: Figma 9293-2260 gap; 12 = the wrap gutter, half of --space-24 */
+  min-height: var(--space-48);
+  padding: 12px var(--space-24);     /* NO TOKEN 12: Figma 9293-2260 padding-y */
+  border: 1px solid var(--gb-alert-line);
+  border-radius: var(--radius);
+  background: var(--gb-alert-bg);
+  color: var(--gb-alert-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;                   /* Figma 9293-2260 */
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: .5px;              /* NO TOKEN: Figma 9293-2260 tracking */
+}
+
+/* The sentence and its glyph travel together, so a button parked at
+   the end of the row wraps as one piece and not between them. */
+.gb-alert__body {
+  display: flex;
+  align-items: center;
+  gap: 20px;                         /* NO TOKEN: Figma 9293-2260 */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gb-alert__icon {
+  flex: 0 0 24px;                    /* Figma 9293-2260: icon frame 24 */
+  width: 24px;
+  height: 24px;
+  display: block;
+  color: inherit;                    /* the glyph is currentColor, like every glyph in the house */
+}
+.gb-alert__icon svg { width: 100%; height: 100%; display: block; }
+
+.gb-alert__text { min-width: 0; }
+
+/* Anything the alert carries after its sentence sits at the end of
+   the row: one Split evenly, or a Cancel/Remove pair. */
+.gb-alert__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   THE FOUR TONES, in the order the mock draws them.
+   Each triple is Tailwind 50 / 200 / 900, read off node 9293-2260.
+   ------------------------------------------------------------ */
+.gb-alert--warning {
+  --gb-alert-bg:   #fff7ed;          /* tailwind/orange/50  · Figma Alertbox 9293-2260 */
+  --gb-alert-line: #fed7aa;          /* tailwind/orange/200 */
+  --gb-alert-ink:  #7c2d12;          /* tailwind/orange/900 */
+}
+.gb-alert--error {
+  --gb-alert-bg:   #fef2f2;          /* tailwind/red/50     · Figma Alertbox 9293-2260 */
+  --gb-alert-line: #fecaca;          /* tailwind/red/200 */
+  --gb-alert-ink:  #7f1d1d;          /* tailwind/red/900 */
+}
+.gb-alert--info {
+  --gb-alert-bg:   #ecfeff;          /* tailwind/cyan/50    · Figma Alertbox 9293-2260 */
+  --gb-alert-line: #a5f3fc;          /* tailwind/cyan/200 */
+  --gb-alert-ink:  #164e63;          /* tailwind/cyan/900 */
+}
+.gb-alert--success {
+  --gb-alert-bg:   #f0fdf4;          /* tailwind/green/50   · Figma Alertbox 9293-2260 */
+  --gb-alert-line: #bbf7d0;          /* tailwind/green/200 */
+  --gb-alert-ink:  #14532d;          /* tailwind/green/900 */
+}
+
+/* A tone is required; without one the box would inherit nothing and
+   read as a bare border. Info is the mock's neutral. */
+.gb-alert:not([class*="gb-alert--"]) {
+  --gb-alert-bg:   #ecfeff;
+  --gb-alert-line: #a5f3fc;
+  --gb-alert-ink:  #164e63;
+}
+
+/* A button inside an alert borrows the alert's ink, so the pair
+   reads as one object rather than a coloured strip with a blue link
+   stapled to it. Geometry, weight and the ladder rung are the
+   button's own; only the hue is lent. Two ranks survive the loan:
+   ghost is the quiet way out, outline is the answer. */
+.gb-alert .gb-btn--ghost.gb-btn--primary,
+.gb-alert .gb-btn--ghost.gb-btn--secondary { color: var(--gb-alert-ink); }
+.gb-alert .gb-btn--ghost.gb-btn--primary:hover,
+.gb-alert .gb-btn--ghost.gb-btn--secondary:hover { background: rgb(0 0 0 / .06); color: var(--gb-alert-ink); }
+.gb-alert .gb-btn--outline.gb-btn--primary,
+.gb-alert .gb-btn--outline.gb-btn--secondary {
+  color: var(--gb-alert-ink);
+  border-color: var(--gb-alert-ink);
+  background: transparent;
+}
+.gb-alert .gb-btn--outline.gb-btn--primary:hover,
+.gb-alert .gb-btn--outline.gb-btn--secondary:hover { background: rgb(0 0 0 / .06); color: var(--gb-alert-ink); }
