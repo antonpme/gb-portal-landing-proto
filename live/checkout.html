@@ -161,6 +161,34 @@
         2000, out of the slack in the item chip columns.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-v5-band-1 (2026-09-04) — THE FOLDED STEP BAND, FOUR
+     THINGS, ALL OF THEM INSIDE ?v=5. V1 to V4 keep their own copies
+     of every band and are untouched.
+
+     1. ONE OPTICAL AXIS. Ton: «галочка и сводка смещены вверх;
+        полоса собрана по базовой линии серифного заголовка».
+        Measured at 1280 against the cell centre: tick 3.00 above,
+        serif title 0.43 below, summary 0.09 above, Edit on it. Two
+        causes, both «a line box is not a cell», the console's own
+        sin of 03.09: the glyph rode the baseline of its wrapper's
+        line box, and Noto Serif's cap band is not centred in its
+        line. Cured in the <style> block, .ck-band-glyph and
+        .ck-band-cap, where the numbers and the reasons are.
+        After: 0.00 across the four, at 1280 and at 2258.
+     2. THE TICK IS ZINC 900. «Заполнен = спокойный факт.» Blue came
+        off the steps on 03.09 and this was the last of it here.
+     3. EDIT IS GHOST PRIMARY. «Синие чернила = действие.» The wash
+        on hover is the ghost's own and travels with the colour.
+     4. THE BANDS ARE A CLEAN 72. A border inside min-h-[72px] eats
+        the cell it is measured with, and the band's own border-b
+        doubled the section's border-t: two adjacent hairlines of
+        Zinc 200 read as one thick rule between two folded steps.
+        The bands hand the separator to the section and the open
+        band hands its 2px rung to the body under it, which draws
+        it in the same place. Nothing moved; the axis stopped
+        stepping 0.5px between the states of one accordion.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-v5-fix-1 (2026-09-04) — THREE THINGS AN HOUR BEFORE THE
      DEMO, ALL OF THEM INSIDE ?v=5. V1 to V4 are byte-for-byte the
      page they were: twelve renders (four versions x three
@@ -1021,6 +1049,45 @@
      2000 -- so the words on Place Order grow from 11 to 15 at 1280.
      That is the fix, not a regression.
      ============================================================ */
+
+  /* ============================================================
+     THE OPTICAL AXIS OF A FOLDED STEP BAND (gbppl-v5-band-1, 04.09)
+     ------------------------------------------------------------
+     Ton: «галочка и сводка в свёрнутой полосе смещены вверх; полоса
+     собрана по базовой линии серифного заголовка». Measured at 1280
+     against the band's own cell centre 410.5: tick 407.50 (3.00
+     above), serif title cap band 410.93 (0.43 below), summary
+     410.41, Edit button box 410.50, Edit label 410.50. Two
+     different sins, and both are the one the console gutters had
+     (613616e, 03.09): a LINE BOX IS NOT A CELL.
+
+     1. THE GLYPH SITS ON A BASELINE. `.gb-icon` is inline-flex, so
+        inside a plain span it is an inline box: the span's line box
+        puts it on the baseline and leaves the font's descent under
+        it (host 30.28 tall for a 24 glyph). Flex centres the span,
+        nothing centres the glyph. Making the span itself a flex box
+        takes the line box out of the question — the glyph is
+        centred in its own box and the box is centred by the row.
+        Same cure as the console: hand the cell to the thing in it.
+
+     2. THE SERIF'S CAP BAND IS NOT CENTRED IN ITS LINE. Noto Serif
+        runs 1.069 ascent / 0.293 descent against a cap of 0.714, so
+        the middle of the line sits 0.43px (at 24px) above the middle
+        of the capitals, and no line-height moves it: half-leading is
+        symmetrical by definition, so the offset is the font's and
+        constant. Inter is drawn cap-symmetric and measures 0.00.
+        `text-box` makes the box BE the cap band, so `items-center`
+        centres letters instead of leading. Only from 1280: below it
+        the band wraps into a stack (measured 131 / 151 / 103 at 360,
+        103 at 1024) where there is no single row to align, and
+        trimming the leading there would pull the stacked lines
+        together. Where the property is not supported the band is
+        exactly what it is today, 0.43 and all.
+     ============================================================ */
+  .ck-band-glyph { display: flex; align-items: center; justify-content: center; }
+  @media (min-width: 1280px) {
+    .ck-band-cap { text-box: trim-both cap alphabetic; }
+  }
 
   [x-cloak] { display: none !important; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -3512,22 +3579,29 @@
                          is a div that carries the click and the organism
                          carries the visible label. -->
                     <div x-show="v5State(shipment, 1) === 'done'" @click="v5Edit(shipment, 1)"
-                         class="bg-zinc-100/70 border-b border-zinc-200 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                         class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
                       <!-- The colour lives on the wrapper: icon.js rewrites the
-                           className of the node it fills. -->
-                      <span class="w-6 flex-shrink-0 text-blue-600" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
-                      <h3 class="font-serif text-2xl leading-none">1. Delivery</h3>
-                      <p class="text-sm text-zinc-600 min-w-0" x-text="v5Sum1(shipment)"></p>
-                      <button type="button" @click.stop="v5Edit(shipment, 1)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary ml-auto"><span class="gb-btn__label">Edit</span></button>
+                           className of the node it fills.
+                           gbppl-v5-band-1: and the colour is Zinc 900. Ton:
+                           «заполнен = спокойный факт». Blue came off the steps
+                           on 03.09 and the tick was the last of it in this
+                           accordion; furniture is black (Ton-5). -->
+                      <span class="w-6 flex-shrink-0 ck-band-glyph text-zinc-900" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap">1. Delivery</h3>
+                      <p class="text-sm text-zinc-600 min-w-0 ck-band-cap" x-text="v5Sum1(shipment)"></p>
+                      <!-- gbppl-v5-band-1: ghost PRIMARY. Ton: «синие чернила =
+                           действие». The wash on hover is the ghost's own and
+                           comes with the colour, so nothing else changes. -->
+                      <button type="button" @click.stop="v5Edit(shipment, 1)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary ml-auto"><span class="gb-btn__label">Edit</span></button>
                     </div>
 
                     <!-- FUTURE ROW. Step 1 is only ever in front of you after
                          Done folded both, and it stands here because both steps
                          are written the same way. -->
                     <div x-show="v5State(shipment, 1) === 'future'" @click="v5Edit(shipment, 1)"
-                         class="bg-zinc-100/70 border-b border-zinc-200 px-6 md:px-8 py-4 min-h-[72px] flex items-center gap-x-4 cursor-pointer hover:bg-zinc-100 transition-colors">
+                         class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex items-center gap-x-4 cursor-pointer hover:bg-zinc-100 transition-colors">
                       <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
-                      <h3 class="font-serif text-2xl leading-none text-zinc-400">1. Delivery</h3>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap text-zinc-400">1. Delivery</h3>
                     </div>
 
                     <template x-if="v5State(shipment, 1) === 'open'">
@@ -3535,9 +3609,19 @@
                     <!-- The open band does NOT repeat its own answer: the
                          controls under it ARE the answer, and this page has
                          been taking echoes out since 03.09. -->
-                    <header class="bg-zinc-100/70 border-b-2 border-zinc-900 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <!-- gbppl-v5-band-1: THE 2px RUNG MOVED TO THE BODY BELOW,
+                         and it draws in exactly the same place. A border inside
+                         a min-h-[72px] box eats the cell it is measured with:
+                         the folded band's row sat 0.5px above its own centre
+                         and the open band's 1.0px, so the axis stepped between
+                         the states of one accordion. The bands are a clean 72
+                         now and the hairline between them is the section's
+                         own border-t, which used to double the band's (2px of
+                         Zinc 200 read as one thick rule between two folded
+                         steps, measured 2027-2029 at 1280). -->
+                    <header class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
                       <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
-                      <h3 class="font-serif text-2xl leading-none">1. Delivery</h3>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap">1. Delivery</h3>
                     </header>
 
                     <!-- THE LADDER OF STEP 1 (gbppl-v5-fix-1, 04.09). Ton:
@@ -3560,7 +3644,7 @@
                                property is not a rhythm, it is a coin toss.
                          Which makes the alert symmetrical as he asked: 24
                          above it and 24 below it, both sides the same rung. -->
-                    <div class="px-6 md:px-8 py-6 space-y-6" x-data="{ pick: false }">
+                    <div class="border-t-2 border-zinc-900 px-6 md:px-8 py-6 space-y-6" x-data="{ pick: false }">
 
                       <div>
                         <p class="gb-eyebrow mb-2">Where these gifts go</p>
@@ -3842,30 +3926,35 @@
                        ============================================================ -->
                   <section class="border-t border-zinc-200">
 
+                    <!-- gbppl-v5-band-1: the tick is Zinc 900, Edit is ghost
+                         PRIMARY, the title carries its cap band and the
+                         separating hairline belongs to the section. Written
+                         exactly as step 1 above, where the reasons are. -->
                     <div x-show="v5State(shipment, 2) === 'done'" @click="v5Edit(shipment, 2)"
-                         class="bg-zinc-100/70 border-b border-zinc-200 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
-                      <span class="w-6 flex-shrink-0 text-blue-600" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
-                      <h3 class="font-serif text-2xl leading-none">2. Personalization</h3>
-                      <p class="text-sm text-zinc-600 min-w-0" x-text="v5Sum2(shipment)"></p>
-                      <button type="button" @click.stop="v5Edit(shipment, 2)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary ml-auto"><span class="gb-btn__label">Edit</span></button>
+                         class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                      <span class="w-6 flex-shrink-0 ck-band-glyph text-zinc-900" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap">2. Personalization</h3>
+                      <p class="text-sm text-zinc-600 min-w-0 ck-band-cap" x-text="v5Sum2(shipment)"></p>
+                      <button type="button" @click.stop="v5Edit(shipment, 2)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary ml-auto"><span class="gb-btn__label">Edit</span></button>
                     </div>
 
                     <div x-show="v5State(shipment, 2) === 'future'" @click="v5Edit(shipment, 2)"
-                         class="bg-zinc-100/70 border-b border-zinc-200 px-6 md:px-8 py-4 min-h-[72px] flex items-center gap-x-4 cursor-pointer hover:bg-zinc-100 transition-colors">
+                         class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex items-center gap-x-4 cursor-pointer hover:bg-zinc-100 transition-colors">
                       <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
-                      <h3 class="font-serif text-2xl leading-none text-zinc-400">2. Personalization</h3>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap text-zinc-400">2. Personalization</h3>
                     </div>
 
                     <template x-if="v5State(shipment, 2) === 'open'">
                     <div>
-                    <header class="bg-zinc-100/70 border-b-2 border-zinc-900 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <header class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
                       <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
-                      <h3 class="font-serif text-2xl leading-none">2. Personalization</h3>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap">2. Personalization</h3>
                     </header>
 
                     <!-- The ladder of step 1, unchanged: 24 is the step's
-                         rhythm, 48 stands before Continue. -->
-                    <div class="px-6 md:px-8 py-6 space-y-6">
+                         rhythm, 48 stands before Continue. The 2px rung is the
+                         body's border-top for the reason step 1 gives. -->
+                    <div class="border-t-2 border-zinc-900 px-6 md:px-8 py-6 space-y-6">
                       <!-- Julia, meeting 20.08: personalization is either absent
                            or per gift. «One for everyone» exists only as a
                            greeting card, and it is the checkbox below. -->
@@ -7100,8 +7189,13 @@ function checkoutApp() {
     // bottom hairline Blue 600. Ton, 03.09: «мы не подкрашиваем этап синим,
     // Рассел скажет что за гадость» — the sentence that kept V4 clean. So the
     // open band here says «this is the current one» with the same 2px rung in
-    // Zinc 900, the house colour for furniture (Ton-5), and the only blue left
-    // in the accordion is the done tick, which is a real answered state.
+    // Zinc 900, the house colour for furniture (Ton-5).
+    //
+    // AND SINCE gbppl-v5-band-1 (04.09) THERE IS NO BLUE IN THE ACCORDION AT
+    // ALL. The done tick was the last of it. Ton: «заполнен = спокойный
+    // факт» — an answered step is a fact, not a state being signalled, so
+    // the tick is Zinc 900. The one blue thing on a folded band is now Edit,
+    // which is the only thing on it you can do.
     v5LastStep() { return 2; },
     v5State(s, n) {
       if (!s) return 'future';
