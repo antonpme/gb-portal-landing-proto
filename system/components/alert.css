@@ -43,11 +43,13 @@
                   20 is between two rungs. Kept, because Ton-3 says
                   the source wins over the formula, and rounding it
                   to 16 or 24 would move the glyph off the drawing.
-     padding-y 12 — half of --space-24, same reason.
+     padding-y 12 — half of --space-24, same reason. Written as
+                  12 minus the border, see the height law below.
      letter-spacing .5px, font-size 14 — the mock's own type. 14 is
                   the house's secondary size; the tracking is not a
                   role we have and is carried as measured.
    min-height 48 IS a rung (--space-48) and is written as one.
+   row 24 is the mock's own glyph frame, not a new number.
 
    THE BOX WRAPS, THE MOCK DOES NOT. Every alert in the drawing is
    one short line at a fixed 48. Ours carry a sentence and
@@ -56,17 +58,67 @@
    that could not wrap would push the card sideways. Nothing else
    about the box changes when it does.
 
+   ------------------------------------------------------------
+   THE HEIGHT LAW, gbppl-alert-height-1, 04.09.
+
+   Ton, live on step 1 of ?v=5, dictated: «Когда распределяем все
+   гифты, алерт меняется с одного на другой, но из-за того что
+   пропадает кнопка, меняется высота алерта — контент внизу
+   дёргается и танцует, недопустимо. Кнопка должна быть в алерте
+   маленькая, либо у алерта фиксированная минимальная высота.»
+
+   Measured before the fix (prototype, Loaded cart, one line of
+   text in both states): the remainder strip stood at 61.74 with
+   its Split button and 49.74 without it at 1280, 65.74 / 49.74 at
+   2258 — and everything under it moved by exactly that difference
+   when the last gift was placed. The cause is plain: a `small`
+   button is 36 (40 from 2000) and the alert's own content row is
+   24, so the button, not the sentence, was setting the height.
+
+   BOTH HALVES OF TON'S SENTENCE, because they are one answer:
+
+   1. THE BUTTON IS XSMALL. The rung 28 / 28 / 32 was built on
+      02.09 and had waited for a carrier ever since; furniture
+      inside a 48 strip is the densest chrome the house has, which
+      is what the rung is FOR. Consumers write .gb-btn--xsmall.
+
+   2. THE ROW IS THE LAW, AND THE ROW IS 24. An alert's height is
+      set by its BODY — the 24 glyph frame of the mock and the
+      sentence beside it — and by nothing else. Whatever the alert
+      carries after the sentence is centred on that row and is not
+      allowed to grow it: --gb-alert-row is the constant, and the
+      actions give back the difference between the row and the
+      button as block margin. One-line alerts of every tone are
+      therefore the SAME height on one page, button or no button.
+
+   And the box now lands on the rung it always claimed. 12 is the
+   mock's padding measured to the INSIDE of its stroke; our border
+   is drawn outside the padding box, so the padding hands the
+   border its pixel back and the sum is the rung exactly:
+   1 + 11 + 24 + 11 + 1 = 48. Before this wave the same box
+   measured 49.74.
+
+   WHAT STILL GROWS, and honestly: a sentence that wraps to two
+   lines, and a narrow screen where the button cannot share the
+   line with the text. min-height, never height.
+
    Owner of the look: this file. Consumers write only class names.
    ============================================================ */
 
 .gb-alert {
+  /* The content row: the mock's glyph frame, and the tallest thing a
+     one-line alert is allowed to be. Everything else centres on it. */
+  --gb-alert-row: 24px;              /* Figma 9293-2260: icon frame 24 */
+  --gb-alert-pad-y: 12px;            /* NO TOKEN: Figma 9293-2260 padding-y, measured inside the stroke */
+  --gb-alert-line-w: 1px;
+
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px 20px;                    /* NO TOKEN 20: Figma 9293-2260 gap; 12 = the wrap gutter, half of --space-24 */
-  min-height: var(--space-48);
-  padding: 12px var(--space-24);     /* NO TOKEN 12: Figma 9293-2260 padding-y */
-  border: 1px solid var(--gb-alert-line);
+  min-height: var(--space-48);       /* the rung, and the sum below lands on it exactly */
+  padding: calc(var(--gb-alert-pad-y) - var(--gb-alert-line-w)) var(--space-24);
+  border: var(--gb-alert-line-w) solid var(--gb-alert-line);
   border-radius: var(--radius);
   background: var(--gb-alert-bg);
   color: var(--gb-alert-ink);
@@ -85,6 +137,7 @@
   gap: 20px;                         /* NO TOKEN: Figma 9293-2260 */
   flex: 1 1 auto;
   min-width: 0;
+  min-height: var(--gb-alert-row);   /* the body IS the row, and the row sets the height */
 }
 
 .gb-alert__icon {
@@ -99,13 +152,28 @@
 .gb-alert__text { min-width: 0; }
 
 /* Anything the alert carries after its sentence sits at the end of
-   the row: one Split evenly, or a Cancel/Remove pair. */
+   the row: one Split evenly, or a Cancel/Remove pair.
+
+   AND IT DOES NOT GROW THE STRIP (gbppl-alert-height-1). An xsmall
+   button is 28, the row is 24, so the actions hand back the two
+   pixels at each end as block margin and the strip stays 48 whether
+   the button is there or not. The button is not clipped: it simply
+   overhangs into the padding, which is what the padding is for. The
+   arithmetic is written out rather than rounded to a number, so that
+   the day the rung moves the strip does not. */
 .gb-alert__actions {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-left: auto;
   flex-shrink: 0;
+  margin-block: calc((var(--gb-alert-row) - var(--gb-btn-xsmall-h)) / 2);
+}
+/* xsmall steps once, at 2000: 28 -> 32. The give-back follows it. */
+@media (min-width: 2000px) {
+  .gb-alert__actions {
+    margin-block: calc((var(--gb-alert-row) - var(--gb-btn-xsmall-h-2xl)) / 2);
+  }
 }
 
 /* ------------------------------------------------------------

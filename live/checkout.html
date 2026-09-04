@@ -43,9 +43,9 @@
          counter in every mode, always: it is what the order buys.
          WHERE THEY GO is the layout, and the hand on it moves
          exactly once — numbers beside the addresses while the
-         gifts are alike, the table's Ships to column the moment
-         they are personalized, and the numbers become a read-only
-         mirror. The difference between the two is printed at all
+         gifts are alike, the table's address subheadings the
+         moment they are personalized, and the numbers become a
+         read-only mirror. The difference between the two is printed at all
          times over the list.
        · A METHOD PER ADDRESS, AFTER THE ADDRESS. Seven of eight
          systems in docs\CHECKOUT-RECON.md, and NetSuite's own API
@@ -59,6 +59,50 @@
          ten or from the third address typed by hand. What comes
          back is a SUMMARY first, then a table edited in place,
          then Confirm — Ton's own order, 04.09.
+     ============================================================ -->
+<!-- ============================================================
+     gbppl-alert-height-1 (2026-09-04) — THREE THINGS TON SAID
+     WHILE THE PAGE WAS OPEN IN FRONT OF HIM. All three land inside
+     ?v=5 and inside the two owners they belong to; V1 to V4 keep
+     their own markup untouched.
+
+     1. THE STRIP STOPS DANCING. «Когда распределяем все гифты,
+        алерт меняется с одного на другой, но из-за того что
+        пропадает кнопка, меняется высота алерта — контент внизу
+        дёргается и танцует, недопустимо. Кнопка должна быть в
+        алерте маленькая, либо у алерта фиксированная минимальная
+        высота.» Both halves, because they are one answer, and both
+        live in alert.css: the button drops to the XSMALL rung
+        (28 / 28 / 32, whose first carrier this is), and the
+        component now forbids anything after the sentence to set
+        the strip's height at all. Measured before: 61.74 with the
+        button against 49.74 without it at 1280. After: 48 in both
+        states, and nothing under the strip moves by a pixel.
+
+     2. THE FREE TEXT FIELD GROWS. «Мы всё ещё используем старый
+        free text field, где текст находится где-то вверху, а само
+        поле не тянется. Мы же хотели обновить компонент.» The
+        class was already the house field and the FLOOR was the old
+        thing: 80 is the live lead-form's floor, and in a column of
+        48-tall fields it reads as a dead box with the words
+        stranded at its top. Every card message V5 can reach — the
+        panel, the bulk drawer, the per-gift drawer — takes
+        .gba-textarea--line, the modifier the owner has carried
+        since 01.09: it starts at the control rung its neighbours
+        stand on and grows line by line from there.
+
+     3. THE TABLE STOPS SAYING IT TWICE. «Группы показываем не как
+        колонку, а заголовками таблицы, как сделано выше. Колонку
+        Ships To слева показывать не надо. И Name — это не просто
+        Name: чётко объяснить, что это имя для персонализации,
+        которое пойдёт на коробку, на карточку или как-то ещё.»
+        The column is gone; the address subheading is the only
+        thing that says where a run of gifts goes. Moving ONE gift
+        moves to the end of its row as a pin, quiet until the cursor
+        or the keyboard reaches it and lit while the gift has
+        nowhere to go; moving MANY is the selection bar's «Set
+        delivery address», unchanged. Name becomes PRINTED NAME and
+        takes 80 of the 180 the lost column gave back.
      ============================================================ -->
 <!-- ============================================================
      gbppl-v5-image-1 (2026-09-04) — FOUR THINGS TON ASKED FOR THE
@@ -3272,8 +3316,8 @@
        is the layout, and the hand on it moves exactly once: with no
        per-gift personalization the layout is the «Gifts» number
        beside each address; the moment «Personalize each gift» is
-       chosen the table takes over through its Ships to column and
-       the numbers beside the addresses become a read-only mirror
+       chosen the table takes over through its address subheadings
+       and the numbers beside the addresses become a read-only mirror
        («8 assigned»). Turn it off and they are the hand again. The
        arithmetic between the two numbers is never hidden: one line
        stands over the address list at all times and says «8 of 20
@@ -3413,9 +3457,11 @@
                   <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
                   <span class="gb-alert__text" x-text="v5AskLine()"></span>
                 </span>
+                <!-- gbppl-alert-height-1: XSMALL, the rung a strip 48 tall
+                     is furnished with. See alert.css, the height law. -->
                 <span class="gb-alert__actions">
-                  <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
-                  <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
+                  <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+                  <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
                 </span>
               </div>
 
@@ -3595,9 +3641,16 @@
                             </template>
                             <span class="gb-alert__text" x-text="v5LeftLine(shipment)"></span>
                           </span>
-                          <!-- Ton: the layout is offered, never done silently. -->
+                          <!-- Ton: the layout is offered, never done silently.
+                               gbppl-alert-height-1 (04.09), Ton on this very
+                               strip: «из-за того что пропадает кнопка,
+                               меняется высота алерта, контент внизу дёргается
+                               и танцует». XSMALL, and alert.css now forbids
+                               the button to set the strip's height at all, so
+                               this line and the green one it turns into stand
+                               at the same 48 and nothing below them moves. -->
                           <span class="gb-alert__actions" x-show="(shipment.v5Addrs || []).length > 0 && v5Left(shipment) > 0">
-                            <button type="button" @click="v5Split(shipment)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label" x-text="v5SplitLabel(shipment)"></span></button>
+                            <button type="button" @click="v5Split(shipment)" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label" x-text="v5SplitLabel(shipment)"></span></button>
                           </span>
                         </div>
 
@@ -3688,8 +3741,8 @@
                                 <span class="gb-alert__text" x-text="v5AskLine()"></span>
                               </span>
                               <span class="gb-alert__actions">
-                                <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
-                                <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
+                                <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+                                <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
                               </span>
                             </div>
 
@@ -3809,7 +3862,22 @@
                               <label class="gb-eyebrow">Message</label>
                               <span class="text-sm text-zinc-500"><span x-text="(shipment.v5Card.message || '').length"></span> / 280</span>
                             </div>
-                            <textarea x-model="shipment.v5Card.message" rows="3" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
+                            <!-- gbppl-alert-height-1 (04.09). Ton, live:
+                                 «Мы всё ещё используем старый free text
+                                 field, где текст находится где-то вверху, а
+                                 само поле не тянется. Мы же хотели обновить
+                                 компонент.» The class was already the house
+                                 field; what was old was its FLOOR. 80 is the
+                                 live lead-form's floor, and in a column of
+                                 48-tall single-line fields it reads as a dead
+                                 box with the words stranded at its top. The
+                                 owner has carried the answer since 01.09:
+                                 .gba-textarea--line starts the field at the
+                                 control rung its neighbours stand on (48 / 56
+                                 / 64) and lets it grow line by line from
+                                 there. rows is inert under field-sizing and
+                                 stays only as the pre-script fallback. -->
+                            <textarea x-model="shipment.v5Card.message" rows="1" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea gba-textarea--line"></textarea>
                           </div>
                           <div class="gba-inputwrap">
                             <label class="gb-eyebrow block mb-1">From</label>
@@ -3861,31 +3929,73 @@
                         </div>
 
                         <!-- ONE TABLE OF GIFTS, GROUPED BY WHERE THEY GO. The
-                             Ships to column arrives prefilled from the layout of
-                             step 1, and the subheadings are that layout read
-                             down the page instead of across it. -->
+                             subheadings are the layout of step 1 read down the
+                             page instead of across it.
+
+                             gbppl-alert-height-1 (04.09), and this is Ton's
+                             own answer to yesterday's question about the
+                             repetition: «Группы показываем не как колонку, а
+                             заголовками таблицы, как сделано выше. Колонку
+                             Ships To слева показывать не надо.» So the column
+                             is gone and the subheading is the SINGLE place
+                             that says where a run of gifts goes. Moving one
+                             gift used to live in that cell; it now lives where
+                             the row's other single-gift actions already live,
+                             at the end of the row, quiet until the cursor is
+                             on the row (a row with nowhere to go keeps its pin
+                             lit, because that one is not a refinement, it is
+                             the thing still missing). Moving MANY is unchanged:
+                             tick the rows, «Set delivery address». -->
                         <div class="overflow-x-auto">
                           <table class="w-full table-fixed" :style="'min-width:' + v5TableMin(product, shipment) + 'px'">
                             <thead class="border-b border-zinc-200">
                               <tr>
                                 <th class="w-10 py-3.5 align-top text-left"><input type="checkbox" @change="v5SelectAll(shipment, $event.target.checked)" :checked="v5AllSelected(shipment)" class="accent-blue-600 w-4 h-4" aria-label="Select every gift"></th>
-                                <th class="text-left align-top py-3.5 pr-4 w-[180px] min-[2000px]:w-[260px]" x-show="shipment.v5Mode === 'many'"><span class="gb-eyebrow">Ships to</span></th>
                                 <!-- gbppl-v5-image-1 (04.09). Ton: «В
                                      персонализации колонка Name должна явно
                                      быть шире. Явно.» 140 to 220, and to 280
-                                     from 2000 where the Ships to column also
-                                     widens. The room comes off the item
+                                     from 2000. The room comes off the item
                                      columns, which hold a chip that says
                                      «Filled» or «Add» and had the slack: the
                                      table is table-fixed, so the widths not
-                                     spelled out share whatever is left. The
-                                     floor in v5TableMin moves by the same 80. -->
-                                <th class="text-left align-top py-3.5 pr-4 w-[220px] min-[2000px]:w-[280px]"><span class="gb-eyebrow">Name</span></th>
+                                     spelled out share whatever is left.
+
+                                     gbppl-alert-height-1 (04.09). Ton: «И Name
+                                     — это не просто Name: чётко объяснить, что
+                                     это имя для персонализации, которое пойдёт
+                                     на коробку, на карточку или как-то ещё.
+                                     Найди короткое название.» PRINTED NAME:
+                                     two words, it says the one thing the
+                                     column does — this name gets PRINTED — and
+                                     it names no single surface, so the box,
+                                     the card and the item are all still
+                                     covered. The alternative, a grey
+                                     «on box or card» under a bare Name, was
+                                     dropped: the eyebrow row is one line tall
+                                     next to seven other headings, and a
+                                     second line under one of them tilts the
+                                     whole head of the table.
+
+                                     AND THE 180 THE SHIPS TO COLUMN GAVE BACK
+                                     BUYS THE TABLE ITS FIT, which is worth
+                                     more than another eighty on one column.
+                                     Measured: the scroller at 1280 is 751 and
+                                     the table was 826, so the last 75px — the
+                                     whole row-action cell — sat off the right
+                                     edge behind a sideways scroll, and that is
+                                     where the pin that replaces the lost
+                                     column now lives. The floor is 746 now and
+                                     nothing is hidden. Printed name keeps the
+                                     220 Ton already called wide enough, and
+                                     takes the room at 2000, where there is
+                                     room to take: 280 -> 380. The item and
+                                     card columns share the rest, as they do. -->
+                                <th class="text-left align-top py-3.5 pr-4 w-[220px] min-[2000px]:w-[380px]"><span class="gb-eyebrow">Printed name</span></th>
                                 <template x-for="i in 3" :key="'v5th-item-' + i">
                                   <th class="text-left align-top py-3.5 pr-4" x-show="i <= productItemCount(product)"><span class="gb-eyebrow block break-words" :title="itemColumnName(product, i)" x-text="itemColumnName(product, i)"></span></th>
                                 </template>
                                 <th class="text-left align-top py-3.5 pr-4"><span class="gb-eyebrow">Card message</span></th>
-                                <th class="py-3.5 w-12"></th>
+                                <th class="py-3.5 w-24"></th>
                               </tr>
                             </thead>
                             <template x-for="grp in v5PageGroups(product, shipment)" :key="'v5grp-' + grp.key">
@@ -3899,35 +4009,15 @@
                                   <tr class="group border-b border-zinc-100 row-enter">
                                     <td class="py-3"><input type="checkbox" x-model="row.selected" class="accent-blue-600 w-4 h-4" aria-label="Select this gift"></td>
 
-                                    <td class="py-3 pr-4 align-top" x-show="shipment.v5Mode === 'many'">
-                                      <button type="button" @click="v5OpenAssign(product.id, shipment.id, row.id)" class="block w-full text-left cursor-pointer">
-                                        <!-- QUIET ON PURPOSE. The subheading
-                                             above the run is what NAMES the
-                                             address; this cell is the same fact
-                                             again only because a row scrolled
-                                             away from its subheading still has
-                                             to say where it goes, and because
-                                             this is where one gift is moved. So
-                                             it stands at Zinc 500 and darkens
-                                             under the cursor, the way an action
-                                             does, not a heading. -->
-                                        <template x-if="row.addrId">
-                                          <span class="block truncate text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors" x-text="v5RowAddrName(shipment, row)"></span>
-                                        </template>
-                                        <template x-if="!row.addrId">
-                                          <span class="gb-eyebrow inline-flex items-center gap-1.5 group-hover:text-zinc-900 transition-colors">
-                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                                            Assign
-                                          </span>
-                                        </template>
-                                      </button>
-                                    </td>
-
-                                    <!-- NAME — the name printed ON the box. The
-                                         person who signs for the parcel lives in
-                                         the address, and the two never meet. -->
+                                    <!-- PRINTED NAME — the name that gets
+                                         printed on the gift. The person who
+                                         signs for the parcel lives in the
+                                         address, and the two never meet, which
+                                         is exactly why the heading now says so
+                                         out loud and the placeholder names both
+                                         shapes the printer accepts. -->
                                     <td class="py-3 pr-4">
-                                      <input type="text" x-model="row.name" placeholder="Optional" aria-label="Name on the gift" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
+                                      <input type="text" x-model="row.name" placeholder="Name or initials (optional)" aria-label="Name printed on the gift" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
                                     </td>
 
                                     <template x-for="i in 3" :key="'v5cell-item-' + i">
@@ -3966,7 +4056,24 @@
                                       </button>
                                     </td>
 
-                                    <td class="py-3 text-right">
+                                    <td class="py-3 text-right whitespace-nowrap">
+                                      <!-- WHERE THIS ONE GIFT GOES. The
+                                           subheading says it for the run; this
+                                           is how a single gift is moved out of
+                                           the run, and it stands with the row's
+                                           other single-gift action rather than
+                                           in a column of its own. Quiet until
+                                           the cursor is on the row, or the
+                                           keyboard is on the button — except on
+                                           a gift with no address yet, where it
+                                           stays lit, because that is not a
+                                           refinement, it is the thing missing. -->
+                                      <button type="button" x-show="shipment.v5Mode === 'many'"
+                                              @click="v5OpenAssign(product.id, shipment.id, row.id)"
+                                              :aria-label="row.addrId ? 'Change where this gift ships' : 'Set where this gift ships'"
+                                              :title="row.addrId ? ('Ships to ' + v5RowAddrName(shipment, row) + '. Click to change.') : 'Set where this gift ships'"
+                                              :class="row.addrId ? 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100' : 'text-zinc-900'"
+                                              class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary transition-opacity"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></span></button>
                                       <button type="button" @click="v5Duplicate(shipment, row.id)" aria-label="Duplicate this gift" title="Duplicate this gift"
                                               class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></span></button>
                                     </td>
@@ -4259,7 +4366,12 @@
         <label class="gb-eyebrow">Message</label>
         <span class="text-xs text-zinc-500"><span x-text="(drawer.data.message || '').length"></span> / 280</span>
       </div>
-      <textarea x-model="drawer.data.message" rows="4" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
+      <!-- gbppl-alert-height-1: the same field as the card panel of V5, and
+           the same floor. This template is the drawer V5's table opens for
+           «Set card message», so it could not stay a dead 80-tall box while
+           the panel beside it grew. It is shared with the bulk drawer of V2,
+           which inherits the fix rather than being given a twin. -->
+      <textarea x-model="drawer.data.message" rows="1" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea gba-textarea--line"></textarea>
     </div>
 
     <div class="gba-inputwrap">
@@ -4451,7 +4563,9 @@
             <label class="gb-eyebrow">Message</label>
             <span class="text-xs text-zinc-500"><span x-text="(drawer.data.greeting.message || '').length"></span> / 280</span>
           </div>
-          <textarea x-model="drawer.data.greeting.message" rows="4" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
+          <!-- gbppl-alert-height-1: the per-gift card, opened from the
+               «Card message» column of V5's table. Same field, same floor. -->
+          <textarea x-model="drawer.data.greeting.message" rows="1" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea gba-textarea--line"></textarea>
         </div>
 
         <div class="gba-inputwrap">
@@ -4724,7 +4838,7 @@
      V5 · SET DELIVERY ADDRESS (gbppl-checkout-v5-1)
      ------------------------------------------------------------
      The panel behind «Set delivery address» on the selection bar,
-     and behind a Ships to cell. It is a LIST AND NOT A FORM: the
+     and behind the pin at the end of a row. It is a LIST AND NOT A FORM: the
      addresses of step 1, once each, with what each one already
      holds, plus the two things a list cannot answer — «not
      assigned yet», and a new address, which hands over to the
@@ -6338,7 +6452,8 @@ function checkoutApp() {
     // a count of its own and a shipping method of its own, and the method
     // exists only once the address does. The table exists only when the gifts
     // are personalized one by one, and then it — not the counts — is what
-    // says where each gift goes, through its Ships to column. The difference
+    // says where each gift goes, through the address subheadings it is cut
+    // into and the pin at the end of each row. The difference
     // between the number and what the list holds is printed at all times:
     // «8 of 20 gifts not assigned», and while it is not zero Place Order is
     // shut.
@@ -6862,15 +6977,23 @@ function checkoutApp() {
       if (!a) return '';
       return (a.deliver && a.deliver.name) || a.address || '';
     },
-    v5Cols(p, s) { return 4 + (s.v5Mode === 'many' ? 1 : 0) + this.productItemCount(p); },
+    // The four columns that are always there — tick, printed name, card,
+    // row actions — plus one per part this gift has. gbppl-alert-height-1
+    // took Ships to out, so the «many» term went with it. s stays in the
+    // signature: the count is per-shipment by contract, and the caller
+    // passes it.
+    v5Cols(p, s) { return 4 + this.productItemCount(p); },
     // The floor is the sum of the columns that are actually there: 40 for the
-    // tick, 180 for Ships to, 140 for Name, 90 for each part this gift really
-    // has, 120 for the card, 48 for Duplicate. NO TOKEN, the same kind of
+    // tick, 220 for Printed name, 90 for each part this gift really has, 120
+    // for the card, 96 for the two row actions. NO TOKEN, the same kind of
     // measurement V3's and V4's numbers were.
     v5TableMin(p, s) {
       // gbppl-v5-image-1: the Name column went 140 -> 220, so its floor does.
-      let w = 40 + 220 + 120 + 48;
-      if (s.v5Mode === 'many') w += 180;
+      // gbppl-alert-height-1: Ships to (180) left and the row's action cell
+      // went 48 -> 96 to hold the pin beside Duplicate. Net -132: the floor
+      // is 746 at three parts, under the 751 the scroller measures at 1280,
+      // so the table stops running off its own right edge.
+      let w = 40 + 220 + 120 + 96;
       w += 90 * this.productItemCount(p);
       return Math.max(320, w);
     },
