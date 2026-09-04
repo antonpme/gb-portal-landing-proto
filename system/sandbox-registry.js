@@ -377,6 +377,26 @@
           tags: ['flow', 'shipping', 'personalization'],
           created: '2026-09-03',
           updated: '2026-09-03'
+        },
+        {
+          id: 'v5',
+          /* ПЯТАЯ КОМНАТА (gbppl-checkout-v5-1, 04.09). Концепт целиком:
+             studio/docs/CHECKOUT-CONCEPT.md — написан 04.09 по модели
+             Тона 03.09 «адреса первичны, группы = следствие адресов» и
+             утверждён ДО постройки. Слова «группа» на экране нет: V4
+             заказчик похоронил в тот же день, когда увидел.
+             ИМЯ БЕЗ НОМЕРА, номер приставляет verName по ключу (шапка
+             файла, блок ИМЕНА, gbppl-panel-version-1 04.09): полка и
+             консоль печатают «V5 · Addresses first», а второго места,
+             где номер мог бы разойтись с адресом ?v=5, не заводится. */
+          label: 'Addresses first',
+          desc: 'The order is a number of gifts and a list of addresses. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer with a Ships to column already filled in from the layout. There is no third step, and a long list is offered a file instead of a keyboard.',
+          status: 'in-progress',
+          href: 'live/checkout.html?v=5',
+          ready: true,
+          tags: ['flow', 'shipping', 'personalization'],
+          created: '2026-09-04',
+          updated: '2026-09-04'
         }
         /* ЧЕТВЁРТАЯ КОМНАТА СНЯТА С ПОЛКИ (gbppl-v4-retire-1, 03.09).
            Здесь стояла строка `v4` — «Delivery groups», заказ, собранный

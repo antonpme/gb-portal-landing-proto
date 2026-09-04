@@ -9,6 +9,56 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-v5-1 (2026-09-04) — ?v=5, ADDRESSES FIRST.
+
+     THE SPEC IS studio\docs\CHECKOUT-CONCEPT.md, written on 04.09
+     and agreed before a line was built, out of Ton's model of
+     03.09: «адреса первичны, группы = следствие адресов». V4's
+     word was buried on sight the day before («Нет такого понятия
+     Delivery Group, никто не поймёт»), so this version has no
+     container of its own invention at all: a number of gifts, a
+     list of ADDRESSES, and a table of gifts when the gifts are
+     personalized. Nothing on the screen says group, batch or
+     layer, and there is no third step.
+
+     V1, V2 AND V3 ARE NOT TOUCHED BY ANY OF IT, and ?v=4 still
+     falls through to the page default exactly as gbppl-v4-retire-1
+     left it. Every shared line this wave touched is bound through
+     uiVersion; all three older versions were shot before and after
+     at 360 / 1280 / 2258 in all three scenarios, full page, and
+     the sha256 of the twenty-seven pairs are in the wave report.
+
+     THE FOUR DECISIONS THIS VERSION MAKES, each argued at its site
+     below:
+       · TWO QUESTIONS, BOTH OPEN. No accordion: there are two
+         steps, and folding two questions buys a click and sells
+         nothing. Each band prints its own answer on the right, so
+         the reassurance a fold was giving is there without the
+         fold. No blue on a band — no tick, no underline (Ton:
+         «этапы синим не подкрашивать»).
+       · ONE HAND, AND IT IS NOT THE ONE THE BRIEF ASKED ABOUT.
+         There are two numbers here. HOW MANY GIFTS belongs to the
+         counter in every mode, always: it is what the order buys.
+         WHERE THEY GO is the layout, and the hand on it moves
+         exactly once — numbers beside the addresses while the
+         gifts are alike, the table's Ships to column the moment
+         they are personalized, and the numbers become a read-only
+         mirror. The difference between the two is printed at all
+         times over the list.
+       · A METHOD PER ADDRESS, AFTER THE ADDRESS. Seven of eight
+         systems in docs\CHECKOUT-RECON.md, and NetSuite's own API
+         cannot even ask for the list without a destination. One
+         address: three radio cards, honestly disabled until an
+         address is picked. Many: a select on every row, because
+         five addresses would otherwise be fifteen cards of the
+         same three options.
+       · THE FILE IS THE RECOMMENDED PATH ON VOLUME, never a
+         block. Loud plate over twenty, one quiet line from about
+         ten or from the third address typed by hand. What comes
+         back is a SUMMARY first, then a table edited in place,
+         then Confirm — Ton's own order, 04.09.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -886,7 +936,10 @@
   <!-- gbppl-checkout-v4-groups-1 (03.09): V4 draws its own shape too, so the
        list is empty for it as well. V1 and V2 evaluate this to `products` on
        every render exactly as before. -->
-  <template x-for="(product, pIdx) in ((uiVersion === 'v3' || uiVersion === 'v4') ? [] : products)" :key="product.id">
+  <!-- gbppl-checkout-v5-1 (04.09): V5 draws its own shape too, so the list is
+       empty for it as well. V1 and V2 evaluate this to `products` on every
+       render exactly as before. -->
+  <template x-for="(product, pIdx) in ((uiVersion === 'v3' || uiVersion === 'v4' || uiVersion === 'v5') ? [] : products)" :key="product.id">
     <!-- 5px on every corner is the house rule (Ton, 21.08). No overflow-hidden here:
          the step-2 menus hang out of this box and must not be clipped. -->
     <article class="bg-white border border-zinc-200 rounded-[var(--radius)]">
@@ -3118,6 +3171,650 @@
     </div>
   </template>
 
+  <!-- ============================================================
+       V5 · ADDRESSES FIRST — ?v=5, gbppl-checkout-v5-1 (04.09)
+       ------------------------------------------------------------
+       V1, V2 AND V3 ARE NOT TOUCHED BY ANY OF IT. All three were
+       measured before and after at 360 / 1280 / 2258 in all three
+       scenarios, full page, sha256. The hashes are in the wave
+       report. ?v=4 still falls through to the page default, exactly
+       as gbppl-v4-retire-1 left it.
+
+       THE SPEC IS studio/docs/CHECKOUT-CONCEPT.md, agreed by Ton on
+       04.09 after the model he set on 03.09: «адреса первичны,
+       группы = следствие адресов». The word «group» is not on this
+       screen, and neither is «batch», «layer» or «step 3».
+
+       TWO QUESTIONS, BOTH ON SCREEN AT ONCE, AND THAT IS THE
+       DECISION THIS VERSION MAKES ABOUT PRESENTATION. V3 folded its
+       steps because it had three of them; this one has two, and an
+       accordion over two questions buys a click and sells nothing.
+       So both sections stand open, each behind the numbered band
+       this page has carried since it was born, and each band prints
+       its own answer on the right — the reassurance a folded step
+       was giving («он уже заполнен или ещё пустой») without the
+       fold. NO BLUE ON A BAND: no tick, no underline, no lit
+       heading. Ton, 04.09: «этапы синим не подкрашивать». Blue on
+       this version means what it means everywhere else in the
+       house: a chosen radio, and the Blue 50 strip that says
+       something is still owed.
+
+       THE HAND, AND WHICH NUMBER IT HOLDS. There are two numbers on
+       this page and they are not the same number. HOW MANY GIFTS is
+       the counter at the top of the card, and it is the counter's in
+       every mode, always — it is what the order buys. WHERE THEY GO
+       is the layout, and the hand on it moves exactly once: with no
+       per-gift personalization the layout is the «Gifts» number
+       beside each address; the moment «Personalize each gift» is
+       chosen the table takes over through its Ships to column and
+       the numbers beside the addresses become a read-only mirror
+       («8 assigned»). Turn it off and they are the hand again. The
+       arithmetic between the two numbers is never hidden: one line
+       stands over the address list at all times and says «8 of 20
+       gifts not assigned», and it is the gate on Place Order.
+
+       THE METHOD WAITS FOR THE ADDRESS, per address, which is what
+       the reconnaissance found in seven of eight systems and what
+       NetSuite's own API signature makes law
+       (docs/CHECKOUT-RECON.md §5-7): the list of methods cannot be
+       fetched without a destination. One address: the three radio
+       cards, honestly disabled until an address is picked, with the
+       notice under the address where Ton moved it on 03.09.
+       Multiple addresses: a method on every row of the list, and
+       there it is a SELECT rather than three cards — five addresses
+       would otherwise be fifteen cards of the same three options in
+       one section, and the select says the same thing in one line.
+       In the summary shipping is one line and it is the SUM over
+       the addresses, which is the answer six of six sources give.
+
+       THE FILE IS THE RECOMMENDED PATH ON VOLUME, not the fallback.
+       Over twenty addresses or over twenty personalized gifts and a
+       full-width plate offers the template; from about ten, or from
+       the third address typed by hand, one quiet line does. Neither
+       ever blocks the keyboard. What comes back is shown as a
+       SUMMARY FIRST — errors or no errors, and how many recipients,
+       personalizations and gifts landed — with the detail as an
+       editable table underneath that is fixed in place, and only
+       then Confirm. One file fills step 1 and step 2 together.
+       ============================================================ -->
+  <template x-if="uiVersion === 'v5'">
+    <div class="space-y-6">
+
+      <template x-for="(product, pIdx) in products" :key="'v5-' + product.id">
+        <article class="bg-white border border-zinc-200 rounded-[var(--radius)]">
+          <div class="grid grid-cols-1 md:grid-cols-[2fr_3fr] xl:grid-cols-[1fr_2fr]">
+
+            <!-- ===== LEFT: the gift, at the size V2, V3 and V4 show it =====
+                 THE PICTURE FOLLOWS THE READER DOWN. Every version before this
+                 one leaves a column of empty white beside a tall card
+                 (CHECKOUT-RECON.md §4.5 named it and did not touch it, because
+                 the defect was inherited from V2). Here the card is taller than
+                 any of them — a list of addresses and a table of twenty gifts —
+                 so the same white would be half a screen of nothing. The
+                 picture is made sticky under the 80px site bar instead: no new
+                 value, one rung of the space scale above the bar, and the
+                 column stops being a hole. It is V5's alone; V1 to V4 are
+                 untouched and the defect is still on their list. -->
+            <div class="md:border-r border-b md:border-b-0 border-zinc-200 px-10 py-14 flex flex-col items-center justify-center">
+              <div class="w-full flex flex-col items-center md:sticky md:top-[96px]">
+                <img :src="product.image" :alt="product.name" class="w-full object-contain">
+                <button @click="removeProduct(pIdx)" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary mt-10">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg><span class="gb-btn__label">Remove gift</span></button>
+              </div>
+            </div>
+
+            <!-- ===== RIGHT: the header, then the two questions ===== -->
+            <div class="min-w-0">
+
+              <div class="p-6 md:p-8 flex flex-wrap items-start gap-x-6 gap-y-4">
+                <div class="flex-1 min-w-[180px]">
+                  <h2 class="font-serif text-2xl leading-tight" x-text="product.name"></h2>
+                  <!-- ONE HAND, AND IT NEVER MOVES OFF THIS CONTROL. The
+                       counter is how many gifts the order buys, in every mode
+                       of both questions below. What changes hands further down
+                       is the LAYOUT, which is a different number. -->
+                  <div class="mt-3 flex items-center gap-4">
+                    <span class="gb-eyebrow">Gifts</span>
+                    <div class="gb-inputnumber" data-gb-inputnumber="host" aria-label="Number of gifts">
+                      <button @click="v5BumpQty(product, -1)" type="button" aria-label="Decrease quantity"
+                              :title="v5QtyFloor(product)" data-step="-1"
+                              class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                      <input type="number" min="1" :value="v5Total(v5Sh(product))" @change="v5SetQtyValue(product, $event.target.value, $event.target)" class="gb-inputnumber__value">
+                      <button @click="v5BumpQty(product, 1)" type="button" aria-label="Increase quantity" data-step="1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-right max-[639px]:w-full max-[639px]:text-left">
+                  <p class="gb-eyebrow">Product total</p>
+                  <p class="font-serif text-2xl">$<span x-text="productTotal(product).toLocaleString()"></span></p>
+                </div>
+              </div>
+
+              <!-- The one warning, the strip V2 built: it stands under the
+                   control the hand is on, it is asked once per page load, and
+                   empty rows are always taken away in silence. -->
+              <div x-show="v5Ask.pending && v5Ask.kind === 'qty' && v5Ask.productId === product.id" x-cloak
+                   x-transition.opacity.duration.280ms
+                   class="mx-6 md:mx-8 mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
+                <span class="flex items-start gap-2 min-w-0">
+                  <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                  <span x-text="v5AskLine()"></span>
+                </span>
+                <span class="flex items-center gap-2 flex-shrink-0">
+                  <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+                  <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary"><span class="gb-btn__label">Remove</span></button>
+                </span>
+              </div>
+
+              <template x-for="shipment in product.shipments.slice(0, 1)" :key="'v5s-' + shipment.id">
+                <div>
+
+                  <!-- ============================================================
+                       STEP 1 · DELIVERY
+                       ============================================================ -->
+                  <section class="border-t border-zinc-200">
+                    <!-- The band is 72 and stays 72, the top rung of the house
+                         button grid, and it carries its own answer on the right
+                         so nothing has to be unfolded to be read. -->
+                    <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <h3 class="font-serif text-2xl leading-none">1. Delivery</h3>
+                      <p class="text-sm text-zinc-600 min-w-0" x-text="v5Sum1(shipment)"></p>
+                    </header>
+
+                    <div class="px-6 md:px-8 py-5 space-y-5" x-data="{ pick: false }">
+
+                      <div>
+                        <p class="gb-eyebrow mb-2">Where these gifts go</p>
+                        <div class="gb-radio-group gb-radio-group--cards" role="radiogroup" aria-label="Where these gifts go">
+                          <label class="gb-radio gb-radio--select">
+                            <input class="gb-radio__input" type="radio" :name="'v5addr-' + shipment.id" value="one"
+                                   :checked="shipment.v5Mode === 'one'" @change="v5ChooseMode(shipment, 'one')">
+                            <span class="gb-radio__copy">
+                              <span class="gb-radio__title">One address</span>
+                              <span class="gb-radio__sub">Every gift ships to the same place</span>
+                            </span>
+                          </label>
+                          <label class="gb-radio gb-radio--select">
+                            <input class="gb-radio__input" type="radio" :name="'v5addr-' + shipment.id" value="many"
+                                   :checked="shipment.v5Mode === 'many'" @change="v5ChooseMode(shipment, 'many')">
+                            <span class="gb-radio__copy">
+                              <span class="gb-radio__title">Multiple addresses</span>
+                              <span class="gb-radio__sub">Split the gifts across a list of addresses</span>
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <!-- ===== ONE ADDRESS: two touches and the step is done. ===== -->
+                      <div x-show="shipment.v5Mode === 'one'" class="space-y-5">
+                        <div>
+                          <p class="gb-eyebrow mb-2">Address</p>
+                          <div class="relative">
+                            <button @click="pick = !pick" type="button"
+                                    class="w-full flex items-center justify-between gap-4 bg-zinc-50 border border-zinc-300 rounded-[var(--radius)] px-4 py-3 text-left hover:border-zinc-500 focus:outline-none focus:border-blue-600 transition-colors">
+                              <span class="text-sm truncate" :class="shipment.v5AddrLabel ? 'text-zinc-900' : 'text-zinc-400'" x-text="shipment.v5AddrLabel || 'Select an address'"></span>
+                              <svg class="w-4 h-4 text-zinc-500 flex-shrink-0 transition-transform" :class="pick ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                            </button>
+                            <div x-show="pick" @click.outside="pick = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-1 bg-white border border-zinc-200 rounded-[var(--radius)] shadow-lg z-30 overflow-hidden">
+                              <template x-for="addr in addressBook" :key="'v5book-' + addr.id">
+                                <button type="button" @click="v5PickBook(shipment, addr); pick = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
+                                  <p class="font-medium" x-text="addr.name"></p>
+                                  <p class="text-sm text-zinc-500 truncate" x-text="addr.label"></p>
+                                </button>
+                              </template>
+                              <button type="button" @click="pick = false; v5OpenOne(product.id, shipment.id)" class="w-full text-left px-4 py-2.5 text-sm bg-zinc-50 hover:bg-zinc-100 flex items-center gap-2 font-medium border-t border-zinc-200">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                Add new address
+                              </button>
+                            </div>
+                          </div>
+                          <!-- Ton, 03.09: the notice belongs under the address,
+                               not under the methods it unlocks. -->
+                          <div x-show="!shipment.v5AddrId"
+                               class="mt-3 flex items-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-3 py-2">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                            <span>Choose an address to see the shipping methods.</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p class="gb-eyebrow mb-2">Shipping method</p>
+                          <div class="gb-radio-group gb-radio-group--cards" role="radiogroup" aria-label="Shipping method"
+                               :class="!shipment.v5AddrId ? 'is-disabled' : ''" :aria-disabled="!shipment.v5AddrId">
+                            <template x-for="opt in shippingOptions" :key="'v5ship-' + opt.id">
+                              <label class="gb-radio gb-radio--select">
+                                <input class="gb-radio__input" type="radio" :name="'v5ship-' + shipment.id"
+                                       :value="opt.id" x-model="shipment.v5Shipping" :disabled="!shipment.v5AddrId">
+                                <span class="gb-radio__copy">
+                                  <span class="gb-radio__title" x-text="opt.label"></span>
+                                  <span class="gb-radio__sub">$<span x-text="opt.cost"></span></span>
+                                </span>
+                              </label>
+                            </template>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ===== MULTIPLE ADDRESSES: the list, and the arithmetic
+                               over it that is never out of sight. ===== -->
+                      <div x-show="shipment.v5Mode === 'many'" class="space-y-4">
+
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[var(--radius)] border px-4 py-3 text-sm"
+                             :class="v5Left(shipment) > 0 ? 'text-blue-800 bg-blue-50 border-blue-200' : 'text-zinc-600 bg-zinc-50 border-zinc-200'">
+                          <span class="flex items-start gap-2 min-w-0">
+                            <template x-if="v5Left(shipment) > 0">
+                              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                            </template>
+                            <template x-if="v5Left(shipment) === 0">
+                              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </template>
+                            <span x-text="v5LeftLine(shipment)"></span>
+                          </span>
+                          <!-- Ton: the layout is offered, never done silently. -->
+                          <button type="button" x-show="(shipment.v5Addrs || []).length > 0 && v5Left(shipment) > 0"
+                                  @click="v5Split(shipment)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary ml-auto"><span class="gb-btn__label" x-text="v5SplitLabel(shipment)"></span></button>
+                        </div>
+
+                        <!-- ONE ADDRESS IS ONE ROW OF THE LIST, and the row
+                             holds everything the concept says it holds: who and
+                             where, how many gifts, and its own method. The four
+                             blocks wrap rather than stack, so a phone gets the
+                             same row folded and not a different design. -->
+                        <template x-for="a in shipment.v5Addrs" :key="'v5a-' + a.id">
+                          <article class="border border-zinc-200 rounded-[var(--radius)]">
+                            <div class="px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-3">
+                              <div class="min-w-0 flex-1 basis-[200px]">
+                                <p class="text-sm font-medium text-zinc-900 truncate" x-text="(a.deliver && a.deliver.name) || 'No name yet'"></p>
+                                <p class="text-sm text-zinc-500 truncate" :title="a.address" x-text="a.address || 'No address yet'"></p>
+                                <p x-show="a.hasError" class="text-sm text-red-600 mt-1" x-text="a.errorMsg"></p>
+                              </div>
+                              <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                <span class="gb-eyebrow">Gifts</span>
+                                <!-- THE HAND, OR ITS MIRROR. Numbers while the
+                                     gifts are alike; a read-only count the
+                                     moment the table starts naming them. -->
+                                <template x-if="shipment.v5Perso !== 'each'">
+                                  <div class="gb-inputnumber gb-inputnumber--dense" data-gb-inputnumber="host" aria-label="Gifts to this address">
+                                    <button @click="v5BumpAddr(shipment, a, -1)" type="button" aria-label="Fewer gifts" data-step="-1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                                    <input type="number" min="0" :value="v5AddrCount(shipment, a)" @change="v5SetAddrValue(shipment, a, $event.target.value, $event.target)" class="gb-inputnumber__value">
+                                    <button @click="v5BumpAddr(shipment, a, 1)" type="button" aria-label="More gifts" data-step="1" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain"><span class="gb-btn__icon" aria-hidden="true"></span></button>
+                                  </div>
+                                </template>
+                                <template x-if="shipment.v5Perso === 'each'">
+                                  <span class="text-sm text-zinc-600" x-text="v5AddrCount(shipment, a) + ' assigned'"></span>
+                                </template>
+                              </div>
+                              <!-- A METHOD OF ITS OWN, AND ONLY ONCE THE ADDRESS
+                                   IS THERE. A select rather than three cards:
+                                   five addresses would be fifteen cards of the
+                                   same three options in one section. The empty
+                                   option names the control, so no caption has
+                                   to repeat it five times down the list. -->
+                              <template x-if="a.address && !a.hasError">
+                                <div class="gba-select w-[210px] min-[2000px]:w-[270px] max-w-full">
+                                  <select class="gba-input" x-model="a.shipping" aria-label="Shipping method for this address">
+                                    <option value="">Shipping method</option>
+                                    <template x-for="opt in shippingOptions" :key="'v5m-' + a.id + '-' + opt.id">
+                                      <option :value="opt.id" x-text="opt.label + ' · $' + opt.cost"></option>
+                                    </template>
+                                  </select>
+                                  <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+                                </div>
+                              </template>
+                              <template x-if="!a.address || a.hasError">
+                                <span class="text-sm text-zinc-500 w-[210px] min-[2000px]:w-[270px] max-w-full">Finish the address to see its shipping methods.</span>
+                              </template>
+                              <div class="flex items-center gap-1 ml-auto">
+                                <button type="button" @click="v5OpenAddr(product.id, shipment.id, a.id)" aria-label="Edit this address" title="Edit this address"
+                                        class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg></span></button>
+                                <button type="button" @click="v5AskRemoveAddr(product.id, shipment.id, a)" aria-label="Remove this address" title="Remove this address"
+                                        class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span></button>
+                              </div>
+                            </div>
+
+                            <div x-show="v5Ask.pending && v5Ask.kind === 'addr' && v5Ask.addrId === a.id" x-cloak
+                                 x-transition.opacity.duration.280ms
+                                 class="mx-4 mb-3 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-blue-800 bg-blue-50 border border-blue-200 rounded-[var(--radius)] px-4 py-3">
+                              <span class="flex items-start gap-2 min-w-0">
+                                <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                                <span x-text="v5AskLine()"></span>
+                              </span>
+                              <span class="flex items-center gap-2 flex-shrink-0">
+                                <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+                                <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary"><span class="gb-btn__label">Remove</span></button>
+                              </span>
+                            </div>
+
+                          </article>
+                        </template>
+
+                        <!-- Two ways an address joins the list, and the address
+                             book is INSIDE the first one: the panel opens with
+                             every address of this order and every saved address
+                             at the top of it (Ton-6, the picker V3 built). -->
+                        <div class="flex flex-wrap items-center gap-2">
+                          <button type="button" @click="v5OpenAddr(product.id, shipment.id, null)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                            <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>
+                            <span class="gb-btn__label">Add address</span>
+                          </button>
+                          <button type="button" @click="openCSVModal(product.id, shipment.id)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                            <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></span>
+                            <span class="gb-btn__label">Import from file</span>
+                          </button>
+                        </div>
+
+                        <!-- THE VOLUME RULE, LOUD HALF. Never a block, always
+                             an offer (Ton 04.09: «ручной ввод не блокируется»). -->
+                        <div x-show="v5LoudAddr(shipment)" x-cloak class="border border-zinc-300 bg-zinc-50 rounded-[var(--radius)] px-4 py-4 flex flex-wrap items-start gap-x-4 gap-y-3">
+                          <svg class="w-5 h-5 text-zinc-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                          <div class="min-w-0 flex-1 basis-[220px]">
+                            <p class="text-base font-medium text-zinc-900">You're adding a lot of addresses.</p>
+                            <p class="text-sm text-zinc-600 mt-1">Download the template, fill it in Excel and upload it back. You can keep typing here instead.</p>
+                          </div>
+                          <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" @click="downloadTemplate()" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Download template</span></button>
+                            <button type="button" @click="openCSVModal(product.id, shipment.id)" class="gb-btn gb-btn--small gb-btn--filled gb-btn--primary"><span class="gb-btn__label">Upload a file</span></button>
+                          </div>
+                        </div>
+                        <!-- THE QUIET HALF: one line, and it says the one thing
+                             no control on screen says. -->
+                        <p x-show="v5SoftAddr(shipment)" x-cloak class="text-sm text-zinc-600">A long list is faster in a file. <button type="button" @click="downloadTemplate()" class="underline underline-offset-2 hover:text-zinc-900">Download the template</button>, or <button type="button" @click="openCSVModal(product.id, shipment.id)" class="underline underline-offset-2 hover:text-zinc-900">upload one you already have</button>.</p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- ============================================================
+                       STEP 2 · PERSONALIZATION
+                       Two answers, and the table of gifts lives HERE, under the
+                       second one. There is no third step: what the table holds
+                       is the answer to this question, not a question of its own.
+                       ============================================================ -->
+                  <section class="border-t border-zinc-200">
+                    <header class="bg-zinc-100/70 border-b border-zinc-200 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <h3 class="font-serif text-2xl leading-none">2. Personalization</h3>
+                      <p class="text-sm text-zinc-600 min-w-0" x-text="v5Sum2(shipment)"></p>
+                    </header>
+
+                    <div class="px-6 md:px-8 py-5 space-y-5">
+                      <!-- Julia, meeting 20.08: personalization is either absent
+                           or per gift. «One for everyone» exists only as a
+                           greeting card, and it is the checkbox below. -->
+                      <div class="gb-radio-group gb-radio-group--cards" role="radiogroup" aria-label="Personalization">
+                        <label class="gb-radio gb-radio--select">
+                          <input class="gb-radio__input" type="radio" :name="'v5perso-' + shipment.id" value="none"
+                                 :checked="shipment.v5Perso === 'none'" @change="v5ChoosePerso(shipment, 'none')">
+                          <span class="gb-radio__copy">
+                            <span class="gb-radio__title">No personalization</span>
+                            <span class="gb-radio__sub">Every gift in this order is the same</span>
+                          </span>
+                        </label>
+                        <label class="gb-radio gb-radio--select">
+                          <input class="gb-radio__input" type="radio" :name="'v5perso-' + shipment.id" value="each"
+                                 :checked="shipment.v5Perso === 'each'" @change="v5ChoosePerso(shipment, 'each')">
+                          <span class="gb-radio__copy">
+                            <span class="gb-radio__title">Personalize each gift</span>
+                            <span class="gb-radio__sub">Add names and details per gift</span>
+                          </span>
+                        </label>
+                      </div>
+
+                      <div x-show="shipment.v5Perso === 'none'" x-transition.opacity.duration.280ms
+                           class="border border-zinc-200 rounded-[var(--radius)]">
+                        <label class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
+                          <input type="checkbox" x-model="shipment.v5Card.on" class="accent-blue-600 w-4 h-4 flex-shrink-0">
+                          <span class="text-sm text-zinc-900">Add a greeting card to all gifts</span>
+                          <span class="text-sm text-zinc-500">One card, the same message in every box</span>
+                        </label>
+                        <div x-show="shipment.v5Card.on" x-cloak x-transition.opacity.duration.280ms class="border-t border-zinc-200 px-4 py-5 space-y-6">
+                          <div>
+                            <div class="flex justify-between items-baseline mb-1">
+                              <label class="gb-eyebrow">Message</label>
+                              <span class="text-sm text-zinc-500"><span x-text="(shipment.v5Card.message || '').length"></span> / 280</span>
+                            </div>
+                            <textarea x-model="shipment.v5Card.message" rows="3" maxlength="280" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
+                          </div>
+                          <div class="gba-inputwrap">
+                            <label class="gb-eyebrow block mb-1">From</label>
+                            <input type="text" x-model="shipment.v5Card.from" placeholder="Your name or company" class="gba-input">
+                          </div>
+                        </div>
+                      </div>
+
+                      <div x-show="shipment.v5Perso === 'each'" x-transition.opacity.duration.280ms class="space-y-4">
+
+                        <div class="flex flex-wrap items-center justify-end gap-2">
+                          <button type="button" @click="openCSVModal(product.id, shipment.id)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                            <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></span>
+                            <span class="gb-btn__label">Import from file</span>
+                          </button>
+                          <div class="relative">
+                            <button type="button" @click="tplMenuOpen = tplMenuOpen === shipment.id ? null : shipment.id"
+                                    class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
+                              <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg></span>
+                              <span class="gb-btn__label">Bulk personalize</span>
+                            </button>
+                            <div x-show="tplMenuOpen === shipment.id" x-cloak @click.outside="tplMenuOpen = null" x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute right-0 top-full mt-2 w-[300px] bg-white border border-zinc-200 rounded-[var(--radius)] shadow-xl z-50 overflow-hidden">
+                              <div class="p-2">
+                                <div class="px-3 pt-2 pb-1.5 gb-eyebrow">Apply to every gift</div>
+                                <button type="button" @click="tplMenuOpen = null; openMasterDrawer(product.id, shipment.id, 'greeting', 'all')" class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left hover:bg-zinc-50">
+                                  <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25"/></svg>
+                                  <span>Apply greeting card</span>
+                                </button>
+                                <button type="button" @click="tplMenuOpen = null; openMasterDrawer(product.id, shipment.id, 'item', 'all')" class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left hover:bg-zinc-50">
+                                  <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                                  <span>Apply gift personalization</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- THE SELECTION PANEL. It appears with the first tick
+                             and says how many rows it will write, so nothing
+                             here can act on a reach the reader has not seen. -->
+                        <div x-show="v5Selected(shipment) > 0" x-cloak x-transition.opacity.duration.280ms
+                             class="flex flex-wrap items-center gap-x-4 gap-y-2 bg-zinc-50 border border-zinc-200 rounded-[var(--radius)] px-4 py-3">
+                          <span class="text-sm text-zinc-700"><span class="font-medium" x-text="v5Selected(shipment)"></span> selected</span>
+                          <span class="flex flex-wrap items-center gap-2 ml-auto">
+                            <button type="button" @click="v5OpenAssign(product.id, shipment.id, null)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Set delivery address</span></button>
+                            <button type="button" @click="openMasterDrawer(product.id, shipment.id, 'greeting', 'selected')" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Set card message</span></button>
+                            <button type="button" @click="v5ClearSelected(shipment)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Clear</span></button>
+                          </span>
+                        </div>
+
+                        <!-- ONE TABLE OF GIFTS, GROUPED BY WHERE THEY GO. The
+                             Ships to column arrives prefilled from the layout of
+                             step 1, and the subheadings are that layout read
+                             down the page instead of across it. -->
+                        <div class="overflow-x-auto">
+                          <table class="w-full table-fixed" :style="'min-width:' + v5TableMin(product, shipment) + 'px'">
+                            <thead class="border-b border-zinc-200">
+                              <tr>
+                                <th class="w-10 py-3.5 align-top text-left"><input type="checkbox" @change="v5SelectAll(shipment, $event.target.checked)" :checked="v5AllSelected(shipment)" class="accent-blue-600 w-4 h-4" aria-label="Select every gift"></th>
+                                <th class="text-left align-top py-3.5 pr-4 w-[180px] min-[2000px]:w-[260px]" x-show="shipment.v5Mode === 'many'"><span class="gb-eyebrow">Ships to</span></th>
+                                <th class="text-left align-top py-3.5 pr-4 w-[140px]"><span class="gb-eyebrow">Name</span></th>
+                                <template x-for="i in 3" :key="'v5th-item-' + i">
+                                  <th class="text-left align-top py-3.5 pr-4" x-show="i <= productItemCount(product)"><span class="gb-eyebrow block break-words" :title="itemColumnName(product, i)" x-text="itemColumnName(product, i)"></span></th>
+                                </template>
+                                <th class="text-left align-top py-3.5 pr-4"><span class="gb-eyebrow">Card message</span></th>
+                                <th class="py-3.5 w-12"></th>
+                              </tr>
+                            </thead>
+                            <template x-for="grp in v5PageGroups(product, shipment)" :key="'v5grp-' + grp.key">
+                              <tbody>
+                                <tr x-show="shipment.v5Mode === 'many'">
+                                  <td :colspan="v5Cols(product, shipment)" class="bg-zinc-50 border-y border-zinc-200 py-2">
+                                    <span class="gb-eyebrow" x-text="grp.label"></span>
+                                  </td>
+                                </tr>
+                                <template x-for="row in grp.rows" :key="'v5row-' + row.id">
+                                  <tr class="group border-b border-zinc-100 row-enter">
+                                    <td class="py-3"><input type="checkbox" x-model="row.selected" class="accent-blue-600 w-4 h-4" aria-label="Select this gift"></td>
+
+                                    <td class="py-3 pr-4 align-top" x-show="shipment.v5Mode === 'many'">
+                                      <button type="button" @click="v5OpenAssign(product.id, shipment.id, row.id)" class="block w-full text-left cursor-pointer">
+                                        <!-- QUIET ON PURPOSE. The subheading
+                                             above the run is what NAMES the
+                                             address; this cell is the same fact
+                                             again only because a row scrolled
+                                             away from its subheading still has
+                                             to say where it goes, and because
+                                             this is where one gift is moved. So
+                                             it stands at Zinc 500 and darkens
+                                             under the cursor, the way an action
+                                             does, not a heading. -->
+                                        <template x-if="row.addrId">
+                                          <span class="block truncate text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors" x-text="v5RowAddrName(shipment, row)"></span>
+                                        </template>
+                                        <template x-if="!row.addrId">
+                                          <span class="gb-eyebrow inline-flex items-center gap-1.5 group-hover:text-zinc-900 transition-colors">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                            Assign
+                                          </span>
+                                        </template>
+                                      </button>
+                                    </td>
+
+                                    <!-- NAME — the name printed ON the box. The
+                                         person who signs for the parcel lives in
+                                         the address, and the two never meet. -->
+                                    <td class="py-3 pr-4">
+                                      <input type="text" x-model="row.name" placeholder="Optional" aria-label="Name on the gift" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
+                                    </td>
+
+                                    <template x-for="i in 3" :key="'v5cell-item-' + i">
+                                      <td class="py-3 pr-4 align-top" x-show="i <= productItemCount(product)">
+                                        <button type="button" @click="openItemDrawer(product.id, shipment.id, row.id)" class="text-left">
+                                          <template x-if="row['item' + i]">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium bg-zinc-100 text-zinc-700">
+                                              <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                              Filled
+                                            </span>
+                                          </template>
+                                          <template x-if="!row['item' + i]">
+                                            <span class="inline-flex items-center gap-1.5 text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                              Add
+                                            </span>
+                                          </template>
+                                        </button>
+                                      </td>
+                                    </template>
+
+                                    <td class="py-3 pr-4 align-top">
+                                      <button type="button" @click="openGreetingDrawer(product.id, shipment.id, row.id)" class="text-left">
+                                        <template x-if="row.greeting && row.greeting.message">
+                                          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium bg-zinc-100 text-zinc-700">
+                                            <svg class="w-2.5 h-2.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                            Filled
+                                          </span>
+                                        </template>
+                                        <template x-if="!row.greeting || !row.greeting.message">
+                                          <span class="inline-flex items-center gap-1.5 text-sm text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                            Add
+                                          </span>
+                                        </template>
+                                      </button>
+                                    </td>
+
+                                    <td class="py-3 text-right">
+                                      <button type="button" @click="v5Duplicate(shipment, row.id)" aria-label="Duplicate this gift" title="Duplicate this gift"
+                                              class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></span></button>
+                                    </td>
+                                  </tr>
+                                </template>
+                              </tbody>
+                            </template>
+                          </table>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-4 py-1">
+                          <div class="flex items-center gap-1" x-show="v5Pages(shipment) > 1">
+                            <button @click="shipment.v5Page = Math.max(1, (shipment.v5Page || 1) - 1)" type="button" aria-label="Previous page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="(shipment.v5Page || 1) === 1"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></span></button>
+                            <template x-for="pg in v5PageNumbers(shipment)" :key="'v5pg-' + pg">
+                              <button @click="shipment.v5Page = pg" type="button" :class="(shipment.v5Page || 1) === pg ? 'bg-blue-600 text-white' : 'text-zinc-600 hover:bg-zinc-100'" class="w-8 h-8 rounded-full text-sm font-medium" x-text="pg"></button>
+                            </template>
+                            <button @click="shipment.v5Page = Math.min(v5Pages(shipment), (shipment.v5Page || 1) + 1)" type="button" aria-label="Next page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="(shipment.v5Page || 1) === v5Pages(shipment)"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span></button>
+                          </div>
+                          <span class="text-sm text-zinc-500" x-text="v5Sum2(shipment)"></span>
+                        </div>
+
+                        <div x-show="v5LoudPerso(shipment)" x-cloak class="border border-zinc-300 bg-zinc-50 rounded-[var(--radius)] px-4 py-4 flex flex-wrap items-start gap-x-4 gap-y-3">
+                          <svg class="w-5 h-5 text-zinc-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                          <div class="min-w-0 flex-1 basis-[220px]">
+                            <p class="text-base font-medium text-zinc-900">You're personalizing a lot of gifts.</p>
+                            <p class="text-sm text-zinc-600 mt-1">Download the template, fill it in Excel and upload it back. You can keep typing here instead.</p>
+                          </div>
+                          <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" @click="downloadTemplate()" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Download template</span></button>
+                            <button type="button" @click="openCSVModal(product.id, shipment.id)" class="gb-btn gb-btn--small gb-btn--filled gb-btn--primary"><span class="gb-btn__label">Upload a file</span></button>
+                          </div>
+                        </div>
+                        <!-- THE QUIET HALF, this question's own. -->
+                        <p x-show="v5SoftPerso(shipment)" x-cloak class="text-sm text-zinc-600">A long list is faster in a file. <button type="button" @click="downloadTemplate()" class="underline underline-offset-2 hover:text-zinc-900">Download the template</button>, or <button type="button" @click="openCSVModal(product.id, shipment.id)" class="underline underline-offset-2 hover:text-zinc-900">upload one you already have</button>.</p>
+                      </div>
+                    </div>
+                  </section>
+
+                </div>
+              </template>
+
+            </div><!-- end the column the header and the two questions share -->
+          </div><!-- end the card's two-column grid -->
+        </article>
+      </template>
+
+      <!-- The pair at the foot, the one every version of this page stands on.
+           V5 keeps its own copy for the reason V3 and V4 do: its summary speaks
+           in addresses, and the three older versions must come out of this wave
+           byte for byte. -->
+      <section class="grid grid-cols-2 max-md:grid-cols-1 gap-6 pt-6">
+        <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
+          <h3 class="font-serif text-2xl mb-6">Payment information</h3>
+          <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
+          <div>
+            <p class="gb-eyebrow mb-2">Billing address <span class="text-red-500">*</span></p>
+            <div class="gba-select">
+              <select class="gba-input"><option>Select a billing address</option></select>
+              <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
+          <h3 class="font-serif text-2xl mb-6">Order summary</h3>
+          <!-- THE ORDER IN WORDS, NOT ONLY IN MONEY. Ton, 04.09: the same
+               three counts that verify a file are the language of the order
+               itself, so a person always sees what is being assembled. -->
+          <p class="text-base text-zinc-900 pb-4 mb-4 border-b border-zinc-200" x-text="v5Triple()"></p>
+          <div class="space-y-3 text-sm">
+            <template x-for="product in products" :key="'v5sum-' + product.id">
+              <div class="pb-2 border-b border-zinc-100">
+                <div class="flex justify-between gap-3 font-medium">
+                  <span class="min-w-0" x-text="product.name"></span>
+                  <span class="flex-shrink-0">$<span x-text="productTotal(product).toLocaleString()"></span></span>
+                </div>
+                <p class="text-sm text-zinc-500 mt-0.5">
+                  <span x-text="productGifts(product)"></span> gift<span x-show="productGifts(product) !== 1">s</span>
+                </p>
+              </div>
+            </template>
+            <div class="flex justify-between"><span class="text-zinc-600">Subtotal</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
+            <!-- One line, and it is the SUM over the addresses: six of six
+                 sources in the reconnaissance print shipping exactly once. -->
+            <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="v5Deliveries()"></span> <span x-text="v5Deliveries() === 1 ? 'address' : 'addresses'"></span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
+            <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
+          </div>
+          <button class="gb-btn gb-btn--xlarge gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button" @click="placeOrder()" :disabled="!v5Ready()"><span class="gb-btn__label">Place Order</span></button>
+          <!-- The gate says what it is waiting for. A disabled button that
+               keeps its reason to itself is the thing Russell reads first. -->
+          <p x-show="!v5Ready()" class="text-sm text-zinc-500 mt-3 text-center" x-text="v5Blocker()"></p>
+        </div>
+      </section>
+
+    </div>
+  </template>
+
   <!-- ========== PAYMENT / SUMMARY STUB ========== -->
   <!-- ============================================================
        LOOK AND FEEL, 03.09. Two hard columns at every width, 360 included:
@@ -3136,7 +3833,8 @@
        under them, so this pair is hidden there. V1 and V2 evaluate the guard
        to true on every render and are untouched. -->
   <!-- gbppl-checkout-v4-groups-1: V4 carries its own pair, above. -->
-  <section class="grid grid-cols-2 gap-6 pt-6" x-show="uiVersion !== 'v3' && uiVersion !== 'v4'" :class="uiVersion === 'v2' ? 'max-md:grid-cols-1' : ''">
+  <!-- gbppl-checkout-v5-1: V5 carries its own pair, above. -->
+  <section class="grid grid-cols-2 gap-6 pt-6" x-show="uiVersion !== 'v3' && uiVersion !== 'v4' && uiVersion !== 'v5'" :class="uiVersion === 'v2' ? 'max-md:grid-cols-1' : ''">
     <div class="bg-white border border-zinc-200 rounded-[var(--radius)] p-8">
       <h3 class="font-serif text-2xl mb-1">Payment information</h3>
       <p class="text-zinc-500 text-sm mb-6">Payment is not part of this walkthrough.</p>
@@ -3231,6 +3929,9 @@
         <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion === 'v1' || uiVersion === 'v2'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="totalShipments()"></span> shipment<span x-show="totalShipments() !== 1">s</span></span></div>
         <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion === 'v3'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="v3Deliveries()"></span> deliver<span x-text="v3Deliveries() === 1 ? 'y' : 'ies'"></span></span></div>
         <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion === 'v4'"><span class="gb-eyebrow">Gifts</span><span class="font-medium"><span x-text="products.reduce((n,p)=>n+productGifts(p),0)"></span> across <span x-text="v4GroupCount()"></span> group<span x-show="v4GroupCount() !== 1">s</span></span></div>
+        <!-- gbppl-checkout-v5-1: V5 speaks the triple it speaks everywhere
+             else, because addresses are the container it has. -->
+        <div class="flex justify-between py-2 border-b border-zinc-100" x-show="uiVersion === 'v5'"><span class="gb-eyebrow">Order</span><span class="font-medium" x-text="v5Triple()"></span></div>
         <div class="flex justify-between py-2"><span class="gb-eyebrow">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
       </div>
       <div class="mt-10 flex flex-wrap justify-center gap-4">
@@ -3679,7 +4380,10 @@
             <!-- gbppl-checkout-v4-groups-1: the same panel serves V4, where the
                  thing that owns an address is a group and not a gift. One word
                  changes with the version; V3 reads the sentence it always read. -->
-            <p class="gb-eyebrow px-4 pt-3 pb-1" x-text="uiVersion === 'v4' ? 'From another group in this order' : 'From another gift in this order'"></p>
+            <!-- gbppl-checkout-v5-1: a third owner of the same panel, and a
+                 third word for what holds an address. V3 reads the sentence it
+                 always read. -->
+            <p class="gb-eyebrow px-4 pt-3 pb-1" x-text="uiVersion === 'v5' ? 'From another address in this order' : (uiVersion === 'v4' ? 'From another group in this order' : 'From another gift in this order')"></p>
             <template x-for="a in v3OtherAddresses()" :key="'v3reuse-' + a.key">
               <button type="button" @click="v3UseAddress(a); bookOpen = false" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
                 <p class="text-sm font-medium text-zinc-900" x-text="a.name || 'No name yet'"></p>
@@ -3759,6 +4463,47 @@
   </div>
 </template>
 
+<!-- ============================================================
+     V5 · SET DELIVERY ADDRESS (gbppl-checkout-v5-1)
+     ------------------------------------------------------------
+     The panel behind «Set delivery address» on the selection bar,
+     and behind a Ships to cell. It is a LIST AND NOT A FORM: the
+     addresses of step 1, once each, with what each one already
+     holds, plus the two things a list cannot answer — «not
+     assigned yet», and a new address, which hands over to the
+     address form and lands in step 1 as well as on the ticked
+     rows. Ton, 04.09: «адрес из списка шага 1 или новый — новый
+     попадает в шаг 1».
+     ============================================================ -->
+<template id="ck-drawer-assign">
+  <div>
+    <div class="border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
+      <template x-for="a in v5AssignList()" :key="'v5assign-' + a.id">
+        <button type="button" @click="v5AssignTo(a.id)" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0 flex items-center gap-4">
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-medium text-zinc-900 truncate" x-text="a.name"></span>
+            <span class="block text-sm text-zinc-500 truncate" x-text="a.label"></span>
+          </span>
+          <span class="gb-eyebrow flex-shrink-0" x-text="a.count + (a.count === 1 ? ' gift' : ' gifts')"></span>
+        </button>
+      </template>
+      <button type="button" @click="v5AssignTo(null)" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-t border-zinc-200">
+        <span class="block text-sm font-medium text-zinc-900">Not assigned yet</span>
+        <span class="block text-sm text-zinc-500">Send the gifts back to the unassigned count</span>
+      </button>
+    </div>
+    <button type="button" @click="v5AssignNew()" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary mt-6">
+      <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>
+      <span class="gb-btn__label">Add a new address</span>
+    </button>
+  </div>
+</template>
+<template id="ck-drawer-foot-assign">
+  <div class="ck-drawer-actions">
+    <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+  </div>
+</template>
+
 <!-- ====================================================== -->
 <!-- ===== CSV UPLOAD MODAL ==== -->
 <!-- ====================================================== -->
@@ -3771,13 +4516,17 @@
              an address and a personalization, not a personalization template,
              so the panel says what it is importing. Every other version reads
              the string it always read. -->
-        <h3 class="font-serif text-2xl" x-text="uiVersion === 'v4' ? 'Import gifts from a file' : 'Upload personalization template'"></h3>
+        <!-- gbppl-checkout-v5-1: in V5 the second screen is not a preview, it
+             is the summary of what arrived plus a table that is edited in
+             place, so it is called what it does. Every other version reads
+             the string it always read, character for character. -->
+        <h3 class="font-serif text-2xl" x-text="(uiVersion === 'v4' || uiVersion === 'v5') ? 'Import gifts from a file' : 'Upload personalization template'"></h3>
         <div class="flex items-center gap-2 mt-2 text-xs">
           <span :class="csv.step >= 1 ? 'text-blue-600 font-medium' : 'text-zinc-400'">1. Select file</span>
           <svg class="w-3 h-3 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-          <span :class="csv.step >= 2 ? 'text-blue-600 font-medium' : 'text-zinc-400'">2. Preview & validate</span>
+          <span :class="csv.step >= 2 ? 'text-blue-600 font-medium' : 'text-zinc-400'" x-text="uiVersion === 'v5' ? '2. Check and edit' : '2. Preview & validate'"></span>
           <svg class="w-3 h-3 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-          <span :class="csv.step >= 3 ? 'text-blue-600 font-medium' : 'text-zinc-400'">3. Imported</span>
+          <span :class="csv.step >= 3 ? 'text-blue-600 font-medium' : 'text-zinc-400'" x-text="uiVersion === 'v5' ? '3. Added' : '3. Imported'"></span>
         </div>
       </div>
       <button @click="csv.open = false" type="button" aria-label="Close" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span></button>
@@ -3787,7 +4536,7 @@
       <button @click="simulateUpload()" class="w-full flex flex-col items-center gap-3 py-12 border-2 border-dashed border-zinc-300 rounded-[var(--radius)] hover:border-zinc-900 hover:bg-zinc-50">
         <svg class="w-12 h-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
         <p class="text-sm font-medium">Drop CSV here or click to select</p>
-        <p class="text-xs text-zinc-500" x-text="uiVersion === 'v4' ? 'Clicking loads a sample list of twenty gifts.' : 'Clicking fills the table with sample rows.'"></p>
+        <p class="text-xs text-zinc-500" x-text="(uiVersion === 'v4' || uiVersion === 'v5') ? 'Clicking loads a sample list of twenty gifts.' : 'Clicking fills the table with sample rows.'"></p>
       </button>
       <div class="mt-4 flex items-center gap-2 text-xs text-zinc-600">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -3795,7 +4544,65 @@
       </div>
     </div>
 
-    <div x-show="csv.step === 2" class="p-6">
+    <!-- ============================================================
+         gbppl-checkout-v5-1 (04.09) — V5's SECOND SCREEN, and Ton's
+         own order of it: «файл аплодится, и пользователю СРАЗУ
+         показывается саммари загрузки — есть ли ошибки, и сколько
+         каких данных заполнилось... Подробное саммари = editable
+         table, которая правится на месте, как в Google Sheets.
+         Потом Confirm.»
+
+         So the summary is one sentence and one line of counts, at
+         the top, in the ink of the answer (red if anything is
+         wrong, blue if nothing is); the detail is a table whose
+         every cell is a field, and a ZIP typed here re-counts the
+         errors as you type. Nothing lands in the order until
+         Confirm.
+         ============================================================ -->
+    <div x-show="csv.step === 2 && uiVersion === 'v5'" x-cloak class="p-6">
+      <div class="flex items-start gap-3 rounded-[var(--radius)] border px-4 py-3 mb-4"
+           :class="csv.preview.errors > 0 ? 'bg-red-50 border-red-500 text-red-700' : 'bg-blue-50 border-blue-200 text-blue-800'">
+        <template x-if="csv.preview.errors > 0">
+          <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+        </template>
+        <template x-if="csv.preview.errors === 0">
+          <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </template>
+        <div class="min-w-0">
+          <p class="text-sm font-medium" x-text="v5CsvHead()"></p>
+          <p class="text-sm" x-text="v5CsvBody()"></p>
+        </div>
+      </div>
+      <p class="gb-eyebrow mb-2">Check and edit</p>
+      <div class="border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
+        <div class="max-h-64 overflow-auto">
+          <table class="w-full text-sm" style="min-width:720px">
+            <thead class="bg-zinc-50 sticky top-0 z-10">
+              <tr>
+                <th class="p-2 text-left w-[160px]"><span class="gb-eyebrow">Ships to</span></th>
+                <th class="p-2 text-left w-[220px]"><span class="gb-eyebrow">Address</span></th>
+                <th class="p-2 text-left w-[90px]"><span class="gb-eyebrow">ZIP</span></th>
+                <th class="p-2 text-left w-[120px]"><span class="gb-eyebrow">Name on the gift</span></th>
+                <th class="p-2 text-left"><span class="gb-eyebrow">Card message</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="(row, i) in csv.preview.rows" :key="'v5csv-' + i">
+                <tr class="border-t border-zinc-100" :class="row.error ? 'bg-red-50' : ''">
+                  <td class="p-1"><input type="text" x-model="row.name" aria-label="Ships to" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.address" aria-label="Address" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.zip" @input="v5CsvTouch()" aria-label="ZIP" :class="row.error ? 'text-red-700 font-medium' : ''" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.mark" aria-label="Name on the gift" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.msg" aria-label="Card message" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div x-show="csv.step === 2 && uiVersion !== 'v5'" class="p-6">
       <div class="grid grid-cols-3 gap-3 mb-4">
         <div class="bg-zinc-50 rounded-[var(--radius)] p-3 text-center"><p class="font-serif text-2xl" x-text="csv.preview.total"></p><p class="gb-eyebrow">Total rows</p></div>
         <div class="bg-blue-50 rounded-[var(--radius)] p-3 text-center"><p class="font-serif text-2xl text-blue-700" x-text="csv.preview.valid"></p><p class="gb-eyebrow text-blue-700">Valid</p></div>
@@ -3828,17 +4635,23 @@
 
     <div x-show="csv.step === 3" class="p-8 text-center">
       <svg class="w-16 h-16 text-blue-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      <h4 class="font-serif text-2xl mt-3">Imported</h4>
+      <h4 class="font-serif text-2xl mt-3" x-text="uiVersion === 'v5' ? 'Added to your order' : 'Imported'"></h4>
       <!-- gbppl-checkout-v4-groups-1: the import is only half done when the rows
            land. What V4 says out loud is the FOLD: twenty boxes became six
            groups because six addresses and answers were distinct. -->
-      <p class="text-sm text-zinc-600 mt-1" x-show="uiVersion !== 'v4'"><span x-text="csv.preview.total"></span> recipients added to your shipment</p>
+      <p class="text-sm text-zinc-600 mt-1" x-show="uiVersion !== 'v4' && uiVersion !== 'v5'"><span x-text="csv.preview.total"></span> recipients added to your shipment</p>
       <p class="text-sm text-zinc-600 mt-1" x-show="uiVersion === 'v4'"><span x-text="csv.preview.total"></span> gifts, sorted into <span x-text="csv.imported || 0"></span> group<span x-show="(csv.imported || 0) !== 1">s</span> by address and personalization</p>
+      <!-- gbppl-checkout-v5-1: the file filled both questions, so the line
+           counts both, in the order's own three words. -->
+      <p class="text-sm text-zinc-600 mt-1" x-show="uiVersion === 'v5'" x-text="v5CsvDone()"></p>
     </div>
 
     <div class="px-6 py-4 border-t border-zinc-200 flex items-center justify-between">
       <button @click="csv.open = false" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label" x-text="csv.step === 3 ? 'Done' : 'Cancel'"></span></button>
-      <button x-show="csv.step === 2" @click="confirmCSVImport()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Import all <span x-text="csv.preview.total"></span> rows</span></button>
+      <!-- gbppl-checkout-v5-1: «Потом Confirm» (Ton 04.09). The label for every
+           other version is assembled from the same two pieces it always was,
+           so the words on the button are unchanged there. -->
+      <button x-show="csv.step === 2" @click="confirmCSVImport()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="uiVersion === 'v5' ? ('Confirm and add ' + csv.preview.total + ' gifts') : ('Import all ' + csv.preview.total + ' rows')"></span></button>
     </div>
   </div>
 </div>
@@ -4098,6 +4911,16 @@ function checkoutApp() {
               })
             ]
           }),
+          // V5: one gift to one address, and the address has not been picked
+          // yet, so the methods are shut. The personalization the customizer
+          // carried in is already the one row of step 2's table.
+          ...this.v5Fields({
+            v5Mode: 'one', v5Qty: 1, v5Perso: 'each',
+            v5Rows: [this.v5Row({
+              name: 'Alex', item1: 'AC', item2: 'Alex',
+              greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true }
+            })]
+          }),
           recipients: [
             { id: 111, name: '', qty: 1, item1: 'AC', item2: 'Alex', item3: '',
               greeting: { to: 'Alex', message: 'Congrats on the promotion. Onward and upward.', from: 'Anton', fromMaster: false, custom: true },
@@ -4138,6 +4961,10 @@ function checkoutApp() {
           // no address yet, nothing printed. The counter at the top is that
           // group's own quantity, because there is only one group to own.
           ...this.v4Fields({ groupsV4: [ this.v4BlankGroup({ qty: 12 }) ] }),
+          // V5: the shortest walk this version has and the shape the empty
+          // page opens on. Twelve identical gifts, one address, and the
+          // address not chosen yet — two touches from finished.
+          ...this.v5Fields({ v5Mode: 'one', v5Qty: 12, v5Perso: 'none' }),
           recipients: []
         }]
       };
@@ -4237,6 +5064,48 @@ function checkoutApp() {
         // 25 to office B, plain.
         v4Group(25, 'none', 'Acme LA Studio', officeB)
       ];
+      // ============================================================
+      // V5 · «8 В ОДИН, 2 В ДРУГОЙ, ОСТАЛЬНЫМ ПОРОВНУ», AS DATA
+      // (gbppl-checkout-v5-1). Ton's hundred-on-ninety case read small:
+      // TWENTY gifts, FIVE addresses, ten of them placed by hand and ten
+      // still waiting — so the line over the list says «10 of 20 gifts not
+      // assigned» and the button beside it says «Split the rest evenly».
+      // The gifts are personalized one by one, which means the TABLE is the
+      // hand and the numbers beside the addresses are its read-only mirror:
+      // one screen shows the whole rule.
+      //
+      // The buyer's own address is in the list on purpose, with other
+      // people's names printed on the boxes going there: «я могу получить
+      // гифт на себя, а на нём будет имя моей жены».
+      //
+      // The addresses are written field by field rather than parsed out of a
+      // book line: parseAddress reads «street, apt, city, state zip,
+      // country» wrong at five parts, and a demo is not the place to show a
+      // parser bug that belongs to another version.
+      // ============================================================
+      const v5Addr = (name, bits, shipping) => {
+        const d = Object.assign(this.v3BlankDeliver(), bits, { name: name });
+        return this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), shipping: shipping, qty: 0 });
+      };
+      const v5Travel = (() => {
+        const nyc  = v5Addr('Acme NYC Office',   { street: '500 5th Ave', city: 'New York', state: 'NY', zip: '10110' }, 'ground');
+        const home = v5Addr('Anton Parkhomenko', { street: '233 S Wacker Dr', apt: 'Suite 8200', city: 'Chicago', state: 'IL', zip: '60606' }, '2day');
+        const la   = v5Addr('Acme LA Studio',    { street: '1234 Sunset Blvd', city: 'Los Angeles', state: 'CA', zip: '90028' }, 'ground');
+        const bos  = v5Addr('Emma Schultz',      { street: '15 Oak Ave', city: 'Boston', state: 'MA', zip: '02115' }, 'ground');
+        const sea  = v5Addr('Marcus Lee',        { street: '42 Pine St', city: 'Seattle', state: 'WA', zip: '98101' }, 'ground');
+        const rows = ['Yuki', 'Léa', 'Henrik', 'Aisha', 'Theo', 'Nora', 'Idris', 'Mira'].map((n, i) => this.v5Row({
+          name: n, addrId: nyc.id,
+          item1: n.slice(0, 2).toUpperCase(), item2: n,
+          greeting: i < 4 ? { to: n, message: 'Thank you for a remarkable year.', from: 'Acme', fromMaster: false, custom: true } : null
+        }));
+        ['Maria', 'Sofia'].forEach(n => rows.push(this.v5Row({
+          name: n, addrId: home.id, item1: n.slice(0, 2).toUpperCase(), item2: n,
+          greeting: { to: n, message: 'Happy anniversary.', from: 'Anton', fromMaster: false, custom: true }
+        })));
+        while (rows.length < 20) rows.push(this.v5Row());
+        return { addrs: [nyc, home, la, bos, sea], rows: rows };
+      })();
+      const v5Office = this.addressBook[1] || this.addressBook[0];
       return [
         {
           id: 1,
@@ -4266,6 +5135,9 @@ function checkoutApp() {
             ...this.v3Fields({ v3Step: 3, v3Done: 3, rowsV3: v3TravelBoxes() }),
             // V4: three groups, 20 + 5 + 25, the sentence above.
             ...this.v4Fields({ groupsV4: v4TravelGroups() }),
+            // V5: twenty gifts, five addresses, 8 + 2 by hand and ten still
+            // to place. See the block above the return.
+            ...this.v5Fields({ v5Mode: 'many', v5Qty: 20, v5Perso: 'each', v5Addrs: v5Travel.addrs, v5Rows: v5Travel.rows }),
             recipients: travelPeople()
           }]
         },
@@ -4307,6 +5179,14 @@ function checkoutApp() {
                 deliver: Object.assign(this.v3BlankDeliver(), { name: 'Acme NYC Office', street: '500 5th Ave', city: 'New York', state: 'NY', zip: '10110' }),
                 address: this.v3AddressLabel({ street: '500 5th Ave', apt: '', city: 'New York', state: 'NY', zip: '10110', country: 'United States' })
               }) ]
+            }),
+            // V5: the other half of Jorge's cart, and the two-touch path. Nine
+            // plain gifts to one office already in the book, a method chosen
+            // because the address is there. Nothing else is asked.
+            ...this.v5Fields({
+              v5Mode: 'one', v5Qty: 9, v5Perso: 'none', v5Shipping: 'ground',
+              v5AddrId: v5Office ? v5Office.id : null,
+              v5AddrLabel: v5Office ? v5Office.name + ', ' + v5Office.label : ''
             }),
             recipients: [
               // One row, nine gifts, no name: "how do I proceed without customizing
@@ -4355,8 +5235,13 @@ function checkoutApp() {
       // V4 MARKUP BELOW IS UNTOUCHED and only unreachable: put the registry
       // line back (commit 0dfdb6b) and restore the branch here, and the
       // version is back whole. v1 to v3 keep meaning what they meant.
+      //
+      // gbppl-checkout-v5-1 (04.09): ?v=5 joins them, and joins them the same
+      // way — a fifth value added, no key renamed, v1 to v3 meaning exactly
+      // what they meant yesterday, ?v=4 still falling through to the default.
       const v = new URLSearchParams(location.search).get('v');
-      if (v === '3') this.uiVersion = 'v3';
+      if (v === '5') this.uiVersion = 'v5';
+      else if (v === '3') this.uiVersion = 'v3';
       else if (v === '2') this.uiVersion = 'v2';
       else if (v === '1') this.uiVersion = 'v1';
 
@@ -4412,15 +5297,20 @@ function checkoutApp() {
     // without a second lookup path in the house. Nothing writes through this
     // array: it is rebuilt on every call and the objects in it are the real
     // ones, which is exactly what a lookup needs and a mutation must not use.
+    // gbppl-checkout-v5-1: a FIFTH list, `v5Rows`, and the accessor keeps
+    // naming every version explicitly. V5 rows are gifts, and the two shared
+    // personalization drawers reach them through exactly this door.
     rows(s) {
       if (!s) return [];
+      if (this.uiVersion === 'v5') { if (!s.v5Rows) s.v5Rows = []; return s.v5Rows; }
       if (this.uiVersion === 'v4') return this.v4AllRows(s);
       if (this.uiVersion === 'v3') { if (!s.rowsV3) s.rowsV3 = []; return s.rowsV3; }
       if (this.uiVersion === 'v2') { if (!s.rowsV2) s.rowsV2 = []; return s.rowsV2; }
       return s.recipients;
     },
     setRows(s, arr) {
-      if (this.uiVersion === 'v3') s.rowsV3 = arr;
+      if (this.uiVersion === 'v5') s.v5Rows = arr;
+      else if (this.uiVersion === 'v3') s.rowsV3 = arr;
       else if (this.uiVersion === 'v2') s.rowsV2 = arr;
       else s.recipients = arr;
     },
@@ -4473,6 +5363,9 @@ function checkoutApp() {
       // of a GROUP, and v4SyncGroupRows keeps it. Nothing here has a list to
       // measure, so it stops before it can flatten one.
       if (this.uiVersion === 'v4') return;
+      // gbppl-checkout-v5-1: V5 keeps the same rule in v5SyncRows, against its
+      // own counter, so this one stops before it can reach for poolQty.
+      if (this.uiVersion === 'v5') return;
       // gbppl-checkout-v3-1: V2 has rows only when the gifts are personalized.
       // V3 has them whenever EITHER axis is open — twelve boxes to twelve
       // addresses is twelve rows even with nothing printed on any of them.
@@ -4806,6 +5699,9 @@ function checkoutApp() {
       // Ton-6. The button keeps its name and the function forwards; V3 walks
       // the line below exactly as it did before.
       if (this.uiVersion === 'v4') return this.v4SaveDeliver();
+      // gbppl-checkout-v5-1: a third owner of the same panel. Eighty lines of
+      // address form are not copied for a third time (Ton-6).
+      if (this.uiVersion === 'v5') return this.v5SaveDeliver();
       const r = this.currentRecipient();
       if (!r) { this.closeDrawer(); return; }
       const d = this.drawer.data;
@@ -4829,6 +5725,7 @@ function checkoutApp() {
       // gbppl-checkout-v4-groups-1: the same picker, over the thing that owns
       // an address in this version. See the note on v3SaveDeliver.
       if (this.uiVersion === 'v4') return this.v4OtherAddresses();
+      if (this.uiVersion === 'v5') return this.v5OtherAddresses();
       const out = [];
       const seen = new Set();
       this.products.forEach(p => p.shipments.slice(0, 1).forEach(sh => {
@@ -5157,6 +6054,633 @@ function checkoutApp() {
       return '';
     },
 
+    // ============================================================
+    // ===== V5: ADDRESSES FIRST =====
+    // gbppl-checkout-v5-1 (04.09), spec studio/docs/CHECKOUT-CONCEPT.md.
+    // Everything below is read only by uiVersion 'v5'. V1 to V4 never enter
+    // one of these functions.
+    //
+    // THE MODEL IN ONE PARAGRAPH. An order has a NUMBER OF GIFTS, a LIST OF
+    // ADDRESSES and, if it wants one, a TABLE OF GIFTS. The number is the
+    // counter's, always. The list says where the gifts go: each address holds
+    // a count of its own and a shipping method of its own, and the method
+    // exists only once the address does. The table exists only when the gifts
+    // are personalized one by one, and then it — not the counts — is what
+    // says where each gift goes, through its Ships to column. The difference
+    // between the number and what the list holds is printed at all times:
+    // «8 of 20 gifts not assigned», and while it is not zero Place Order is
+    // shut.
+    //
+    // THE WORD «GROUP» IS NOT HERE, in the code or on the screen. It was V4
+    // and the client buried it: «Нет такого понятия Delivery Group, никто не
+    // поймёт». An address is a thing a person already has a word for.
+    // ============================================================
+    v5Fields(extra) {
+      return Object.assign({
+        v5Mode: 'one',        // 'one' | 'many'
+        v5Qty: 1,             // HOW MANY GIFTS. The counter's, in every mode.
+        v5AddrId: null,       // 'one': the address book entry chosen
+        v5AddrLabel: '',
+        v5Shipping: '',       // 'one': the single method, empty until an address
+        v5Addrs: [],          // 'many': the list
+        v5Perso: 'none',      // 'none' | 'each'
+        v5Card: { on: false, message: '', from: '' },
+        v5Rows: [],           // one row per gift, only while personalizing
+        v5Page: 1,
+        v5Hand: 0             // addresses typed by hand, for the soft hint
+      }, extra || {});
+    },
+    // Date.now() alone collides: a loaded cart builds five addresses inside
+    // one millisecond. The sequence that keeps rows apart keeps these apart.
+    v5BlankAddr(o) {
+      this._rowSeq += 1;
+      return Object.assign({
+        id: Date.now() * 1000 + this._rowSeq,
+        deliver: this.v3BlankDeliver(),
+        address: '',
+        qty: 0,
+        // EMPTY, NOT 'ground'. There is no method before there is an address:
+        // NetSuite cannot even ask for the list without one, and ShipperHQ
+        // will not price a destination outside a zone (CHECKOUT-RECON.md §5).
+        shipping: '',
+        hasError: false,
+        errorMsg: ''
+      }, o || {});
+    },
+    // The same keys a V1/V2 row carries, so the two shared personalization
+    // drawers write into it without knowing which version built it, plus the
+    // one key that is V5's: which address of the list this gift ships to.
+    v5Row(o) {
+      this._rowSeq += 1;
+      return Object.assign({
+        id: Date.now() * 1000 + this._rowSeq, name: '', qty: 1,
+        item1: '', item2: '', item3: '', greeting: null,
+        address: '', selected: false, addrId: null
+      }, o || {});
+    },
+    v5Sh(p) { return (p && p.shipments && p.shipments[0]) || null; },
+    v5Total(s) { return Math.max(1, (s && s.v5Qty) || 1); },
+
+    // ===== The counter =====
+    // THE ONE GATE for the number of gifts: both buttons and the typed value.
+    v5SetQty(p, n) {
+      const s = this.v5Sh(p);
+      if (!s) return;
+      const want = Math.max(1, isNaN(n) ? 1 : n);
+      const rows = s.v5Rows || [];
+      const losing = (s.v5Perso === 'each' && want < rows.length)
+        ? rows.slice(want).filter(r => this.rowFilled(r)).length
+        : 0;
+      // Empty rows always go quietly; filled ones cost one warning, once
+      // (Ton 03.09: «предупредить ОДИН раз... после первого молча»).
+      if (losing > 0 && !this.v5Warned) {
+        this.v5Ask = { pending: true, kind: 'qty', productId: p.id, shipmentId: s.id, addrId: null, target: want, rows: rows.length - want };
+        return;
+      }
+      s.v5Qty = want;
+      if (s.v5Perso === 'each') this.v5SyncRows(s);
+      this.v5ClampNumbers(s);
+    },
+    // Lowering the counter under what the addresses hold would leave the list
+    // claiming gifts the order no longer has. The last addresses give them up.
+    v5ClampNumbers(s) {
+      if (!s || s.v5Perso === 'each') return;
+      let left = this.v5Total(s);
+      (s.v5Addrs || []).forEach(a => {
+        const q = Math.max(0, a.qty || 0);
+        a.qty = Math.min(q, left);
+        left -= a.qty;
+      });
+    },
+    v5BumpQty(p, delta) { const s = this.v5Sh(p); if (s) this.v5SetQty(p, this.v5Total(s) + delta); },
+    // The field is uncontrolled between renders, so a value the model refuses
+    // (0, "abc", or a cut the reader cancels) is read back out of the box.
+    v5SetQtyValue(p, val, el) {
+      this.v5SetQty(p, parseInt(val, 10));
+      if (el) el.value = String(this.v5Total(this.v5Sh(p)));
+    },
+    v5QtyFloor(p) { const s = this.v5Sh(p); return (s && this.v5Total(s) > 1) ? '' : 'An order needs at least one gift'; },
+
+    // ===== The one warning strip, two kinds =====
+    v5Ask: { pending: false, kind: null, productId: null, shipmentId: null, addrId: null, target: 0, rows: 0 },
+    v5Warned: false,
+    v5CancelAsk() {
+      this.v5Ask = { pending: false, kind: null, productId: null, shipmentId: null, addrId: null, target: 0, rows: 0 };
+    },
+    v5ConfirmAsk() {
+      const a = this.v5Ask;
+      if (a.kind === 'addr') { this.v5CancelAsk(); this.v5RemoveAddr(a.productId, a.shipmentId, a.addrId); return; }
+      const p = this.findProduct(a.productId);
+      const want = a.target;
+      this.v5Warned = true;
+      this.v5CancelAsk();
+      if (p) this.v5SetQty(p, want);
+    },
+    v5AskLine() {
+      const a = this.v5Ask;
+      if (a.kind === 'addr') {
+        return a.rows === 1
+          ? 'Removing this address sends its gift back to the unassigned count.'
+          : 'Removing this address sends its ' + a.rows + ' gifts back to the unassigned count.';
+      }
+      return a.rows === 1
+        ? 'Lowering the count removes the last row, and what is written in it.'
+        : 'Lowering the count removes the last ' + a.rows + ' rows, and what is written in them.';
+    },
+
+    // ===== The first question =====
+    v5ChooseMode(s, mode) {
+      if (!s) return;
+      s.v5Mode = mode;
+      // NOTHING IS THROWN AWAY EITHER WAY, and the one address a reader has
+      // already picked walks into the list rather than being asked for twice.
+      if (mode === 'many' && !(s.v5Addrs || []).length && s.v5AddrId) {
+        const b = this.addressBook.find(x => x.id === s.v5AddrId);
+        if (b) {
+          const d = Object.assign(this.v3BlankDeliver(), this.parseAddress(b.label), { name: b.name });
+          s.v5Addrs = [this.v5BlankAddr({
+            deliver: d, address: this.v3AddressLabel(d),
+            qty: this.v5Total(s), shipping: s.v5Shipping || ''
+          })];
+        }
+      }
+      if (s.v5Perso === 'each') this.v5SeedRows(s);
+    },
+    v5PickBook(s, addr) {
+      if (!s || !addr) return;
+      s.v5AddrId = addr.id;
+      s.v5AddrLabel = addr.name + ', ' + addr.label;
+    },
+
+    // ===== The second question, and the hand that changes with it =====
+    // Going TO «personalize each gift»: the table takes the layout over, and
+    // it starts prefilled from the numbers. Coming back: the numbers take it
+    // back, reading what the table ended up saying. Nothing is lost either
+    // way, and at no moment are both of them the hand.
+    v5ChoosePerso(s, mode) {
+      if (!s) return;
+      s.v5Perso = mode;
+      if (mode === 'each') { this.v5SyncRows(s); this.v5SeedRows(s); }
+      else this.v5Harvest(s);
+    },
+    v5Harvest(s) {
+      (s.v5Addrs || []).forEach(a => {
+        a.qty = (s.v5Rows || []).filter(r => r.addrId === a.id).length;
+      });
+    },
+    // The rows come into line with the counter FROM THE BOTTOM in both
+    // directions; nothing in the middle of the table ever moves.
+    v5SyncRows(s) {
+      if (!s) return;
+      if (!s.v5Rows) s.v5Rows = [];
+      const want = this.v5Total(s);
+      while (s.v5Rows.length < want) s.v5Rows.push(this.v5Row());
+      if (s.v5Rows.length > want) s.v5Rows = s.v5Rows.slice(0, want);
+      s.v5Page = Math.min(Math.max(1, s.v5Page || 1), this.v5Pages(s));
+    },
+    // NUMBERS -> ROWS, and it never moves a gift that already knows where it
+    // is going. A row keeps the address it carries; the shortfall between what
+    // an address claims and what it actually holds is taken from the rows that
+    // have none, in the order the addresses stand in.
+    v5SeedRows(s) {
+      if (!s) return;
+      this.v5SyncRows(s);
+      const rows = s.v5Rows || [];
+      const addrs = s.v5Addrs || [];
+      const live = new Set(addrs.map(a => a.id));
+      rows.forEach(r => { if (r.addrId && !live.has(r.addrId)) r.addrId = null; });
+      addrs.forEach(a => {
+        let need = Math.max(0, a.qty || 0) - rows.filter(r => r.addrId === a.id).length;
+        for (let i = 0; i < rows.length && need > 0; i++) {
+          if (!rows[i].addrId) { rows[i].addrId = a.id; need -= 1; }
+        }
+      });
+    },
+
+    // ===== The arithmetic that is never off the screen =====
+    v5AddrCount(s, a) {
+      if (!s || !a) return 0;
+      if (s.v5Perso === 'each') return (s.v5Rows || []).filter(r => r.addrId === a.id).length;
+      return Math.max(0, a.qty || 0);
+    },
+    v5Assigned(s) { return (s.v5Addrs || []).reduce((n, a) => n + this.v5AddrCount(s, a), 0); },
+    v5Left(s) { return Math.max(0, this.v5Total(s) - this.v5Assigned(s)); },
+    v5LeftLine(s) {
+      const total = this.v5Total(s);
+      const left = this.v5Left(s);
+      const gifts = n => n + ' gift' + (n === 1 ? '' : 's');
+      if (!(s.v5Addrs || []).length) return 'No addresses yet. All ' + gifts(total) + ' still need one.';
+      if (left > 0) return left + ' of ' + gifts(total) + ' not assigned';
+      return total === 1 ? 'The gift is assigned' : 'All ' + total + ' gifts are assigned';
+    },
+    v5SetAddrQty(s, a, n) {
+      if (!s || !a || s.v5Perso === 'each') return;
+      const want = Math.max(0, isNaN(n) ? 0 : n);
+      const others = this.v5Assigned(s) - Math.max(0, a.qty || 0);
+      a.qty = Math.min(want, Math.max(0, this.v5Total(s) - others));
+    },
+    v5BumpAddr(s, a, delta) { this.v5SetAddrQty(s, a, Math.max(0, a.qty || 0) + delta); },
+    v5SetAddrValue(s, a, val, el) {
+      this.v5SetAddrQty(s, a, parseInt(val, 10));
+      if (el) el.value = String(this.v5AddrCount(s, a));
+    },
+    // THE LAYOUT IS OFFERED, NEVER DONE SILENTLY (Ton 04.09: «система
+    // предлагает разложить поровну, не молча»). And it obeys the sentence he
+    // used for it — «8 в один, 2 в другой, остальным поровну»: with nothing
+    // assigned yet the whole order is divided over every address; with some of
+    // it placed by hand, only the REST is divided, and it goes to the
+    // addresses that are still empty. If none is empty, it goes over all.
+    v5SplitLabel(s) { return this.v5Assigned(s) > 0 ? 'Split the rest evenly' : 'Split evenly'; },
+    v5Split(s) {
+      const addrs = s.v5Addrs || [];
+      if (!addrs.length) return;
+      const total = this.v5Total(s);
+      const counts = addrs.map(a => this.v5AddrCount(s, a));
+      const assigned = counts.reduce((n, c) => n + c, 0);
+      addrs.forEach((a, i) => { a.qty = counts[i]; });
+      if (assigned === 0) {
+        const base = Math.floor(total / addrs.length);
+        const extra = total % addrs.length;
+        addrs.forEach((a, i) => { a.qty = base + (i < extra ? 1 : 0); });
+      } else {
+        let take = addrs.filter((a, i) => counts[i] === 0);
+        if (!take.length) take = addrs.slice();
+        const left = Math.max(0, total - assigned);
+        const base = Math.floor(left / take.length);
+        const extra = left % take.length;
+        take.forEach((a, i) => { a.qty = (a.qty || 0) + base + (i < extra ? 1 : 0); });
+      }
+      if (s.v5Perso === 'each') {
+        (s.v5Rows || []).forEach(r => { r.addrId = null; });
+        this.v5SeedRows(s);
+      }
+    },
+
+    // ===== The address list =====
+    v5OpenAddr(productId, shipmentId, addrId) {
+      const s = this.findShipment(productId, shipmentId);
+      if (!s) return;
+      const a = addrId ? (s.v5Addrs || []).find(x => x.id === addrId) : null;
+      this.drawer = {
+        open: true, type: 'deliver', productId, shipmentId, recipientId: null,
+        addrId: addrId || null, v5Target: 'list', v5Assign: false, master: false,
+        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), (a && a.deliver) || {})
+      };
+      this.showDrawer();
+    },
+    v5OpenOne(productId, shipmentId) {
+      this.drawer = {
+        open: true, type: 'deliver', productId, shipmentId, recipientId: null,
+        addrId: null, v5Target: 'one', v5Assign: false, master: false,
+        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver())
+      };
+      this.showDrawer();
+    },
+    v5SaveDeliver() {
+      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
+      if (!s) { this.closeDrawer(); return; }
+      const d = this.drawer.data;
+      const deliver = {
+        name: d.name || '', company: d.company || '', phone: d.phone || '',
+        street: d.street || '', apt: d.apt || '', city: d.city || '', state: d.state || '',
+        zip: d.zip || '', country: d.country || 'United States'
+      };
+      const label = this.v3AddressLabel(deliver);
+      // The one-address branch keeps its answer in the address book, so the
+      // next order finds it there too.
+      if (this.drawer.v5Target === 'one') {
+        if (!label) { this.closeDrawer(); return; }
+        const id = 'a' + Date.now();
+        this.addressBook.push({ id: id, name: deliver.name || 'Unnamed', label: label });
+        s.v5AddrId = id;
+        s.v5AddrLabel = (deliver.name ? deliver.name + ', ' : '') + label;
+        this.closeDrawer();
+        return;
+      }
+      let a = this.drawer.addrId ? (s.v5Addrs || []).find(x => x.id === this.drawer.addrId) : null;
+      const born = !a;
+      if (!a) { a = this.v5BlankAddr(); if (!s.v5Addrs) s.v5Addrs = []; s.v5Addrs.push(a); }
+      a.deliver = deliver;
+      a.address = label;
+      // The one validation the prototype has ever done, kept: an address
+      // without a ZIP is an address that will not be delivered.
+      a.hasError = !!(label && !deliver.zip);
+      a.errorMsg = a.hasError ? 'ZIP code required' : '';
+      // The method depends on the address, so an address taken away or left
+      // unfinished takes the method with it rather than leaving a choice made
+      // against nothing (Multiship says this out loud: «Please select a new
+      // delivery rate», CHECKOUT-RECON.md §5.1).
+      if (!a.address || a.hasError) a.shipping = '';
+      if (born) {
+        s.v5Hand = (s.v5Hand || 0) + 1;
+        if (this.drawer.v5Assign) this.v5PutAddr(s, a.id);
+      }
+      // NOTHING IS COPIED INTO ANY ROW'S NAME. The person who signs for the
+      // parcel and the name printed on the box are two facts, and this panel
+      // owns exactly one of them.
+      this.closeDrawer();
+    },
+    v5AskRemoveAddr(productId, shipmentId, a) {
+      if (!a) return;
+      const s = this.findShipment(productId, shipmentId);
+      const holds = s ? this.v5AddrCount(s, a) : 0;
+      if (!holds && !a.address) { this.v5RemoveAddr(productId, shipmentId, a.id); return; }
+      this.v5Ask = { pending: true, kind: 'addr', productId, shipmentId, addrId: a.id, target: 0, rows: holds };
+    },
+    v5RemoveAddr(productId, shipmentId, addrId) {
+      const s = this.findShipment(productId, shipmentId);
+      if (!s) return;
+      s.v5Addrs = (s.v5Addrs || []).filter(a => a.id !== addrId);
+      (s.v5Rows || []).forEach(r => { if (r.addrId === addrId) r.addrId = null; });
+    },
+    // Every address already typed into this order, once each, so the twelfth
+    // address to the same office is one click and not one more form.
+    v5OtherAddresses() {
+      const out = [];
+      const seen = new Set();
+      this.products.forEach(p => p.shipments.slice(0, 1).forEach(sh => {
+        (sh.v5Addrs || []).forEach(a => {
+          if (!a.address || a.id === this.drawer.addrId || seen.has(a.address)) return;
+          seen.add(a.address);
+          out.push({ key: a.id, name: (a.deliver && a.deliver.name) || '', label: a.address, deliver: a.deliver });
+        });
+      }));
+      return out;
+    },
+
+    // ===== The table =====
+    v5Selected(s) { return ((s && s.v5Rows) || []).filter(r => r.selected).length; },
+    v5AllSelected(s) { const rs = (s && s.v5Rows) || []; return rs.length > 0 && rs.every(r => r.selected); },
+    v5SelectAll(s, on) { ((s && s.v5Rows) || []).forEach(r => { r.selected = on; }); },
+    // Clear takes the PERSONALIZATION off the ticked gifts and leaves them
+    // where they are going: the two facts are separate everywhere else on this
+    // page, and one button may not quietly join them.
+    v5ClearSelected(s) {
+      ((s && s.v5Rows) || []).filter(r => r.selected).forEach(r => {
+        r.name = ''; r.item1 = ''; r.item2 = ''; r.item3 = ''; r.greeting = null;
+      });
+    },
+    v5PutAddr(s, addrId) {
+      if (this.drawer.recipientId) {
+        const r = ((s && s.v5Rows) || []).find(x => x.id === this.drawer.recipientId);
+        if (r) r.addrId = addrId;
+        return;
+      }
+      ((s && s.v5Rows) || []).filter(r => r.selected).forEach(r => { r.addrId = addrId; });
+    },
+    v5OpenAssign(productId, shipmentId, rowId) {
+      this.drawer = {
+        open: true, type: 'assign', productId, shipmentId, recipientId: rowId || null,
+        addrId: null, master: false, data: this.blankDrawerData()
+      };
+      this.showDrawer();
+    },
+    v5AssignList() {
+      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
+      if (!s) return [];
+      return (s.v5Addrs || []).map(a => ({
+        id: a.id,
+        name: (a.deliver && a.deliver.name) || 'No name yet',
+        label: a.address || 'No address yet',
+        count: this.v5AddrCount(s, a)
+      }));
+    },
+    v5AssignTo(addrId) {
+      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
+      if (s) this.v5PutAddr(s, addrId);
+      this.closeDrawer();
+    },
+    // The list hands over to the address form, and what that form saves lands
+    // in step 1 as well as on the gifts that were ticked.
+    v5AssignNew() {
+      const d = this.drawer;
+      this.drawer = {
+        open: true, type: 'deliver', productId: d.productId, shipmentId: d.shipmentId,
+        recipientId: d.recipientId, addrId: null, v5Target: 'list', v5Assign: true, master: false,
+        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver())
+      };
+      this.showDrawer();
+    },
+    // The rows in the order their addresses stand in, unassigned last. Array
+    // sort is stable, so gifts inside one address keep the order they were
+    // made in.
+    v5Ordered(s) {
+      const rows = (s && s.v5Rows) || [];
+      const order = new Map();
+      (s.v5Addrs || []).forEach((a, i) => order.set(a.id, i));
+      return rows.slice().sort((x, y) =>
+        (order.has(x.addrId) ? order.get(x.addrId) : 9999) -
+        (order.has(y.addrId) ? order.get(y.addrId) : 9999));
+    },
+    v5Pages(s) { return Math.max(1, Math.ceil((((s && s.v5Rows) || []).length) / 10)); },
+    v5PageNumbers(s) {
+      const total = this.v5Pages(s);
+      const current = s.v5Page || 1;
+      const pages = [];
+      const start = Math.max(1, current - 2);
+      const end = Math.min(total, start + 4);
+      for (let i = start; i <= end; i++) pages.push(i);
+      return pages;
+    },
+    // The page, cut into the runs of rows that share an address, so the table
+    // can print a subheading over each of them. One address is one run and the
+    // subheading is hidden, because there is nothing to tell apart.
+    v5PageGroups(p, s) {
+      const list = s.v5Mode === 'many' ? this.v5Ordered(s) : ((s && s.v5Rows) || []);
+      const start = ((s.v5Page || 1) - 1) * 10;
+      const out = [];
+      let cur = null;
+      list.slice(start, start + 10).forEach(r => {
+        const key = r.addrId || 'none';
+        if (!cur || cur.key !== key) {
+          cur = { key: key, label: this.v5GroupLabel(s, r.addrId), rows: [] };
+          out.push(cur);
+        }
+        cur.rows.push(r);
+      });
+      return out;
+    },
+    v5GroupLabel(s, addrId) {
+      const a = ((s && s.v5Addrs) || []).find(x => x.id === addrId);
+      if (!a) return 'Not assigned yet';
+      const who = (a.deliver && a.deliver.name) || 'No name yet';
+      return a.address ? who + ' · ' + a.address : who;
+    },
+    v5RowAddrName(s, r) {
+      const a = ((s && s.v5Addrs) || []).find(x => x.id === r.addrId);
+      if (!a) return '';
+      return (a.deliver && a.deliver.name) || a.address || '';
+    },
+    v5Cols(p, s) { return 4 + (s.v5Mode === 'many' ? 1 : 0) + this.productItemCount(p); },
+    // The floor is the sum of the columns that are actually there: 40 for the
+    // tick, 180 for Ships to, 140 for Name, 90 for each part this gift really
+    // has, 120 for the card, 48 for Duplicate. NO TOKEN, the same kind of
+    // measurement V3's and V4's numbers were.
+    v5TableMin(p, s) {
+      let w = 40 + 140 + 120 + 48;
+      if (s.v5Mode === 'many') w += 180;
+      w += 90 * this.productItemCount(p);
+      return Math.max(320, w);
+    },
+    // ONE ACTION, THE WHOLE GIFT: the name, the items, the card AND where it
+    // ships. The counter follows the new row, the same rule the import obeys.
+    v5Duplicate(s, rowId) {
+      const rows = (s && s.v5Rows) || [];
+      const i = rows.findIndex(r => r.id === rowId);
+      if (i < 0) return;
+      const copy = JSON.parse(JSON.stringify(rows[i]));
+      this._rowSeq += 1;
+      copy.id = Date.now() * 1000 + this._rowSeq;
+      copy.selected = false;
+      rows.splice(i + 1, 0, copy);
+      s.v5Qty = rows.length;
+      s.v5Page = Math.min(Math.max(1, s.v5Page || 1), this.v5Pages(s));
+    },
+
+    // ===== What the two bands say =====
+    v5Sum1(s) {
+      if (s.v5Mode === 'one') {
+        const who = s.v5AddrLabel ? s.v5AddrLabel.split(',')[0] : 'No address yet';
+        return 'One address · ' + who + ' · ' + (this.shippingLabel(s.v5Shipping) || 'No shipping method');
+      }
+      const n = (s.v5Addrs || []).length;
+      const left = this.v5Left(s);
+      return n + ' address' + (n === 1 ? '' : 'es') + ' · ' +
+        (left > 0 ? left + ' gift' + (left === 1 ? '' : 's') + ' still to assign' : 'every gift assigned');
+    },
+    v5Sum2(s) {
+      if (s.v5Perso === 'each') {
+        const n = (s.v5Rows || []).filter(r => this.v3PersoFilled(r)).length;
+        return 'Personalize each gift · ' + n + ' of ' + this.v5Total(s) + ' filled in';
+      }
+      return (s.v5Card && s.v5Card.on)
+        ? 'No personalization · one greeting card in every box'
+        : 'No personalization';
+    },
+
+    // ===== The volume rule (Ton 04.09) =====
+    // Thresholds are working numbers and say so in the concept: the loud plate
+    // at more than twenty, the quiet line from about ten or from the third
+    // address typed by hand. Neither ever blocks the keyboard.
+    // EACH QUESTION WATCHES ITS OWN NUMBER. A plate under the address list
+    // that says «you are personalizing a lot» is a plate in the wrong room,
+    // and one that says the same thing twice on one screen is noise; so step 1
+    // counts ADDRESSES (and hands typed by hand) and step 2 counts
+    // PERSONALIZED GIFTS, and neither ever prints the other's sentence.
+    v5AddrTotal(s) { return ((s && s.v5Addrs) || []).length; },
+    v5PersoTotal(s) { return (s && s.v5Perso === 'each') ? this.v5Total(s) : 0; },
+    v5LoudAddr(s) { return this.v5AddrTotal(s) > 20; },
+    v5LoudPerso(s) { return this.v5PersoTotal(s) > 20; },
+    v5SoftAddr(s) {
+      if (this.v5LoudAddr(s)) return false;
+      return this.v5AddrTotal(s) >= 10 || ((s && s.v5Hand) || 0) >= 3;
+    },
+    v5SoftPerso(s) { return !this.v5LoudPerso(s) && this.v5PersoTotal(s) >= 10; },
+
+    // ===== The order, in words and in money =====
+    v5OrderGifts() { return this.products.reduce((n, p) => n + this.v5Total(this.v5Sh(p)), 0); },
+    v5OrderAddresses() {
+      const seen = new Set();
+      this.products.forEach(p => {
+        const s = this.v5Sh(p);
+        if (!s) return;
+        if (s.v5Mode === 'one') { if (s.v5AddrLabel) seen.add(s.v5AddrLabel); return; }
+        (s.v5Addrs || []).forEach(a => { if (a.address) seen.add(a.address); });
+      });
+      return seen.size;
+    },
+    v5OrderPersonalized() {
+      return this.products.reduce((n, p) => {
+        const s = this.v5Sh(p);
+        if (!s || s.v5Perso !== 'each') return n;
+        return n + (s.v5Rows || []).filter(r => this.v3PersoFilled(r)).length;
+      }, 0);
+    },
+    v5Triple() {
+      const g = this.v5OrderGifts();
+      const a = this.v5OrderAddresses();
+      const k = this.v5OrderPersonalized();
+      return g + ' gift' + (g === 1 ? '' : 's') + ' · ' +
+             a + ' address' + (a === 1 ? '' : 'es') + ' · ' + k + ' personalized';
+    },
+    // A parcel run per address, which is what the money is charged for.
+    v5Deliveries() {
+      return this.products.reduce((n, p) => {
+        const s = this.v5Sh(p);
+        if (!s) return n;
+        return n + (s.v5Mode === 'one' ? 1 : Math.max(1, (s.v5Addrs || []).length));
+      }, 0);
+    },
+    // THE GATE, AND IT SAYS WHAT IT IS WAITING FOR. Addresses in, nothing left
+    // unassigned, a method on every address (CHECKOUT-CONCEPT.md).
+    v5Blocker() {
+      const list = this.products;
+      for (let i = 0; i < list.length; i++) {
+        const s = this.v5Sh(list[i]);
+        if (!s) continue;
+        if (s.v5Mode === 'one') {
+          if (!s.v5AddrId) return 'Choose an address in step 1 to place the order.';
+          if (!s.v5Shipping) return 'Choose a shipping method in step 1 to place the order.';
+          continue;
+        }
+        if (!(s.v5Addrs || []).length) return 'Add at least one address in step 1 to place the order.';
+        const left = this.v5Left(s);
+        if (left > 0) return left === 1
+          ? 'One gift still needs an address.'
+          : left + ' gifts still need an address.';
+        const miss = (s.v5Addrs || []).filter(a => !a.shipping).length;
+        if (miss) return miss === 1
+          ? 'One address still needs a shipping method.'
+          : miss + ' addresses still need a shipping method.';
+      }
+      return '';
+    },
+    v5Ready() { return !this.v5Blocker(); },
+
+    // ===== The file =====
+    // The summary the reader sees the moment the file lands, in Ton's own
+    // order: is anything wrong, and how much of what arrived.
+    v5CsvHead() {
+      const bad = this.csv.preview.errors || 0;
+      if (bad === 0) return 'The file looks good.';
+      return bad === 1 ? '1 row needs fixing.' : bad + ' rows need fixing.';
+    },
+    v5CsvBody() {
+      const rows = this.csv.preview.rows || [];
+      const addr = new Set();
+      let perso = 0;
+      rows.forEach(r => {
+        if (r.address) addr.add((r.address || '') + '|' + (r.zip || ''));
+        if (r.mark || r.msg) perso += 1;
+      });
+      return rows.length + ' gift' + (rows.length === 1 ? '' : 's') + ' · ' +
+             addr.size + ' recipient' + (addr.size === 1 ? '' : 's') + ' · ' +
+             perso + ' personalization' + (perso === 1 ? '' : 's');
+    },
+    // Typed in the table, counted again on the spot. Nothing else validates
+    // here: the honest minimum, exactly as V2 and V3 have it.
+    v5CsvTouch() {
+      const rows = this.csv.preview.rows || [];
+      rows.forEach(r => { r.error = r.zip ? '' : 'ZIP required'; });
+      const bad = rows.filter(r => r.error).length;
+      this.csv.preview.errors = bad;
+      this.csv.preview.valid = rows.length - bad;
+    },
+    v5CsvDone() {
+      const n = this.csv.preview.total || 0;
+      const a = this.csv.imported || 0;
+      const k = this.csv.personalized || 0;
+      return n + ' gift' + (n === 1 ? '' : 's') + ' · ' + a + ' address' + (a === 1 ? '' : 'es') +
+             ' · ' + k + ' personalized';
+    },
+    v5RowLabel() {
+      const s = this.currentShipment();
+      if (!s) return '';
+      const rows = s.v5Rows || [];
+      const i = rows.findIndex(r => r.id === this.drawer.recipientId);
+      return i < 0 ? '' : 'Gift ' + (i + 1) + ' of ' + rows.length;
+    },
+
     // Three-slot initials, on any bag of fields: the drawer's `drawer.data`.
     // It served a shipment's `uniform` too until door B died on 03.09.
     slotValue(bag, field, idx) { return ((bag && bag[field]) || '').charAt(idx) || ''; },
@@ -5185,6 +6709,10 @@ function checkoutApp() {
       // gbppl-checkout-v4-groups-1: V4 does not spend poolQty at all. Its
       // number of gifts is the sum of the group quantities and there is no
       // second place that could disagree with it.
+      // gbppl-checkout-v5-1: V5 keeps its own counter (`v5Qty`) rather than
+      // spending poolQty, because its loaded cart is a different order from
+      // V2's and V3's and a shared number would make one of them wrong.
+      if (this.uiVersion === 'v5') return this.v5Total(s);
       if (this.uiVersion === 'v4') return this.v4Gifts(s);
       if (this.uiVersion !== 'v1') return this.poolOf(s);
       if (s.detailsMode === 'later') return s.deferQty || 0;
@@ -5268,6 +6796,15 @@ function checkoutApp() {
       // group is one parcel run to one address, so it is charged once, at its
       // own method. A group with no method yet costs nothing yet, and
       // shippingCost('') is 0 without a branch.
+      // gbppl-checkout-v5-1: A METHOD PER ADDRESS, PRICED PER ADDRESS, and the
+      // summary prints the sum on one line — the answer six of six sources in
+      // the reconnaissance give. An address with no method yet costs nothing
+      // yet, and shippingCost('') is 0 without a branch.
+      if (this.uiVersion === 'v5') {
+        if (!s) return 0;
+        if (s.v5Mode === 'one') return this.shippingCost(s.v5Shipping);
+        return (s.v5Addrs || []).reduce((sum, a) => sum + this.shippingCost(a.shipping), 0);
+      }
       if (this.uiVersion === 'v4') {
         return ((s && s.groupsV4) || []).reduce((sum, g) => sum + this.shippingCost(g.shipping), 0);
       }
@@ -5343,6 +6880,9 @@ function checkoutApp() {
         // gbppl-checkout-v4-groups-1: a new shipment starts as one group of
         // one box, which is the smallest order this model can describe.
         ...this.v4Fields(),
+        // gbppl-checkout-v5-1: a new shipment starts as one gift to one
+        // address, the smallest order this model can describe.
+        ...this.v5Fields(),
         recipients: [
           { id: newId + 1, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
         ]
@@ -5377,6 +6917,7 @@ function checkoutApp() {
           ...this.v2Fields(1, 'none'),
           ...this.v3Fields(),
           ...this.v4Fields(),
+          ...this.v5Fields(),
           recipients: [
             { id: newId + 101, name: '', qty: 1, item1: '', item2: '', item3: '', greeting: null, address: '', selected: false }
           ]
@@ -5419,6 +6960,9 @@ function checkoutApp() {
          half of what is inside it, and the person who signs for the parcel
          is the other half. */
       if (this.drawer.type === 'deliver')   return 'Delivery';
+      /* gbppl-checkout-v5-1: the list of addresses of step 1, opened over the
+         gifts that were ticked. It is not a form and does not pretend to be. */
+      if (this.drawer.type === 'assign')    return 'Set delivery address';
       return '';
     },
     drawerSub() {
@@ -5440,6 +6984,26 @@ function checkoutApp() {
          version never asks of a row. */
       if (this.uiVersion === 'v4') {
         return this.drawer.type === 'deliver' ? this.v4GroupLabel() : this.v4RowLabel();
+      }
+      /* gbppl-checkout-v5-1: what the panel is addressed to. An address of the
+         list, a new one, or the gifts that were ticked; never «For this
+         recipient», which is a question V5 does not ask of a row. */
+      if (this.uiVersion === 'v5') {
+        if (this.drawer.type === 'assign') {
+          if (this.drawer.recipientId) return 'For this gift.';
+          const n = this.v5Selected(this.currentShipment());
+          return 'For the ' + n + ' gift' + (n === 1 ? '' : 's') + ' you ticked.';
+        }
+        if (this.drawer.type === 'deliver') {
+          if (this.drawer.v5Target === 'one') return 'Every gift in this order ships here.';
+          return this.drawer.addrId ? 'An address of this order.' : 'A new address for this order.';
+        }
+        if (this.drawer.master) {
+          return this.drawer.scope === 'selected'
+            ? 'Applies to the gifts you ticked.'
+            : 'Applies to every gift of this order.';
+        }
+        return this.v5RowLabel();
       }
       const forWhom = r ? 'For ' + (r.name || 'this recipient') : '';
       if (this.drawer.type === 'greeting') {
@@ -5699,7 +7263,11 @@ function checkoutApp() {
       // every order: who signs for it, where, and what is printed on it. The
       // item columns still come off the gift, so a set with two parts asks
       // for two and not three.
-      if (this.uiVersion === 'v4') {
+      // gbppl-checkout-v5-1: V5's file is a list of GIFTS and its header is
+      // the same in every order, because a gift is the same thing in every
+      // order: who signs for it, where, and what is printed on it. Which is
+      // V4's file exactly, so it is V4's branch exactly.
+      if (this.uiVersion === 'v4' || this.uiVersion === 'v5') {
         const p4 = this.findProduct(this.csv.productId) || this.products[0];
         const q4 = v => /[",]/.test(v) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
         const cols4 = [
@@ -5747,7 +7315,10 @@ function checkoutApp() {
       // gbppl-checkout-v4-groups-1: `imported` is declared here rather than
       // written into the bag on the way past, so the key exists before the
       // last screen of the panel reads it.
-      this.csv = { open: true, step: 1, productId, shipmentId, imported: 0, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
+      // gbppl-checkout-v5-1: `personalized` joins `imported` for the same
+      // reason — the last screen of the panel reads it, so it exists before
+      // anyone looks.
+      this.csv = { open: true, step: 1, productId, shipmentId, imported: 0, personalized: 0, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
     },
     simulateUpload() {
       // ============================================================
@@ -5769,6 +7340,48 @@ function checkoutApp() {
       // box. They are two columns of the file because they are two facts,
       // and the preview table shows the first, as it does for every version.
       // ============================================================
+      // ============================================================
+      // gbppl-checkout-v5-1: V5's FIXTURE IS THE SAME CORPORATE SHAPE, plus
+      // the card messages the editable table lets a reader fix in place. It
+      // is the list Ton described on 04.09 read small: a lot of boxes to a
+      // few places, some named and some plain, and one row with a missing ZIP
+      // so the summary has something honest to report.
+      //
+      // `name` is who signs for the parcel, `mark` is what is printed on the
+      // box, `msg` is the card. Three columns because they are three facts.
+      // ============================================================
+      if (this.uiVersion === 'v5') {
+        const nyc5 = '500 5th Ave, New York, NY';
+        const la5  = '1234 Sunset Blvd, Los Angeles, CA';
+        const one = (name, mark, address, zip, msg, error) =>
+          ({ name: name, mark: mark, address: address, zip: zip, msg: msg || '', error: error || undefined });
+        const v5sample = [
+          one('Acme NYC Office', 'Yuki',   nyc5, '10110', 'Thank you for a remarkable year.'),
+          one('Acme NYC Office', 'Léa',    nyc5, '10110', 'Thank you for a remarkable year.'),
+          one('Acme NYC Office', 'Henrik', nyc5, '10110', 'Thank you for a remarkable year.'),
+          one('Acme NYC Office', 'Aisha',  nyc5, '10110', 'Thank you for a remarkable year.'),
+          one('Acme NYC Office', 'Theo',   nyc5, '10110', 'Thank you for a remarkable year.'),
+          one('Acme NYC Office', 'Nora',   nyc5, '10110', ''),
+          one('Acme NYC Office', 'Idris',  nyc5, '10110', ''),
+          one('Acme NYC Office', 'Mira',   nyc5, '10110', ''),
+          one('Acme NYC Office', '', nyc5, '10110', ''),
+          one('Acme NYC Office', '', nyc5, '10110', ''),
+          one('Acme NYC Office', '', nyc5, '10110', ''),
+          one('Acme NYC Office', '', nyc5, '10110', ''),
+          one('Acme NYC Office', '', nyc5, '10110', ''),
+          one('Acme LA Studio', '', la5, '90028', ''),
+          one('Acme LA Studio', '', la5, '90028', ''),
+          one('Acme LA Studio', '', la5, '90028', ''),
+          one('Acme LA Studio', '', la5, '90028', ''),
+          one('Emma Schultz', 'Emma',   '15 Oak Ave, Boston, MA',  '02115', 'Welcome aboard.'),
+          one('Marcus Lee',   'Marcus', '42 Pine St, Seattle, WA', '98101', ''),
+          one('Sofia Romano', 'Sofia',  '88 Elm Rd, Brooklyn, NY', '',      '', 'ZIP required')
+        ];
+        const bad5 = v5sample.filter(r => r.error).length;
+        this.csv.preview = { total: v5sample.length, valid: v5sample.length - bad5, errors: bad5, rows: v5sample };
+        this.csv.step = 2;
+        return;
+      }
       if (this.uiVersion === 'v4') {
         const nyc = '500 5th Ave, New York, NY';
         const la  = '1234 Sunset Blvd, Los Angeles, CA';
@@ -5871,6 +7484,79 @@ function checkoutApp() {
       // boxes into the order. Same rule the counter obeys from the other
       // end: empty things go in silence.
       // ============================================================
+      // ============================================================
+      // gbppl-checkout-v5-1: ONE FILE FILLS BOTH QUESTIONS.
+      //
+      // A line of the file is a GIFT: who signs for it, where it goes, and
+      // what is printed on it. Lines that agree about the address are one
+      // ADDRESS of step 1 with a count; lines that print something turn step 2
+      // to «personalize each gift» and become rows of its table, already
+      // pointing at their address. Ton, 04.09: «Файл наполняет шаг 1 и шаг 2
+      // разом.»
+      //
+      // WHAT WAS CUT, AND SAID OUT LOUD: the file is still the fixture, not a
+      // parse. Column mapping and a real per-row validator are the three
+      // screens Loop & Tie and Sendoso build (CHECKOUT-RECON.md §4.1); the
+      // honest minimum here is the summary, the table that is fixed in place,
+      // and Confirm — which is what Ton asked for and one screen fewer.
+      //
+      // THE IMPORT NEVER TOUCHES WORK THAT IS ALREADY THERE. It appends. The
+      // one exception is the untouched form the page opens with — no
+      // addresses, nothing written — where the file simply IS the order,
+      // counter included. Same rule the counter obeys from the other end:
+      // empty things go in silence.
+      // ============================================================
+      if (this.uiVersion === 'v5') {
+        const rows = this.csv.preview.rows || [];
+        if (!s) { this.csv.step = 3; return; }
+        const made = new Map();
+        const list = [];
+        const keyOf = row => (row.address || '') + '|' + (row.zip || '');
+        rows.forEach(row => {
+          const key = keyOf(row);
+          if (made.has(key)) { made.get(key).qty += 1; return; }
+          const bits = (row.address || '').split(',').map(x => x.trim());
+          const deliver = Object.assign(this.v3BlankDeliver(), {
+            name: row.name || '', street: bits[0] || '', city: bits[1] || '',
+            state: bits[2] || '', zip: row.zip || ''
+          });
+          const a = this.v5BlankAddr({
+            deliver: deliver,
+            address: this.v3AddressLabel(deliver),
+            qty: 1,
+            shipping: row.error ? '' : 'ground',
+            hasError: !!row.error,
+            errorMsg: row.error || ''
+          });
+          made.set(key, a);
+          list.push(a);
+        });
+        const standing = s.v5Addrs || [];
+        const blankForm = standing.length === 0 && !(s.v5Rows || []).some(r => this.rowFilled(r));
+        s.v5Mode = 'many';
+        s.v5Addrs = (blankForm ? [] : standing).concat(list);
+        const printed = rows.some(r => r.mark || r.msg);
+        if (printed) {
+          const made5 = rows.map(row => {
+            const a = made.get(keyOf(row));
+            return this.v5Row({
+              name: row.mark || '',
+              addrId: a ? a.id : null,
+              greeting: row.msg ? { to: '', message: row.msg, from: '', fromMaster: false, custom: true } : null
+            });
+          });
+          s.v5Perso = 'each';
+          s.v5Rows = (blankForm ? [] : (s.v5Rows || [])).concat(made5);
+          s.v5Qty = s.v5Rows.length;
+        } else {
+          s.v5Qty = (blankForm ? 0 : this.v5Total(s)) + rows.length;
+        }
+        s.v5Page = 1;
+        this.csv.imported = list.length;
+        this.csv.personalized = rows.filter(r => r.mark || r.msg).length;
+        this.csv.step = 3;
+        return;
+      }
       if (this.uiVersion === 'v4') {
         const made = new Map();
         this.csv.preview.rows.forEach(row => {
