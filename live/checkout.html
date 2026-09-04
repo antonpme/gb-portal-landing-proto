@@ -105,6 +105,34 @@
         takes 80 of the 180 the lost column gave back.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-v5-gate-1 (2026-09-04) — STEP 1 DOES NOT OPEN WHILE A
+     GIFT HAS NOWHERE TO GO. Inside ?v=5 only; V1 to V4 are
+     byte-for-byte the page they were.
+
+     Ton, 04.09: «Пока все подарки не распределены, кнопка Continue
+     шага 1 должна быть disabled — нельзя пустить человека дальше с
+     нераспределёнными гифтами.» So in «multiple addresses» the
+     button now waits on the remainder as well as on the list, in
+     the house's own disabled (button.css: keeps its colour, fades,
+     stops answering, aria-disabled with it). No new sentence under
+     it: the arithmetic strip over the list already says how many
+     are unplaced and offers the split.
+
+     AND THE ONE CASE THAT WOULD HAVE BECOME A TRAP. The layout has
+     two hands and only ever one of them at a time: the numbers on
+     the address rows, or — once the gifts are personalized one by
+     one — the TABLE in step 2, with the numbers read-only beside
+     it. Raise Total gifts in that state and the new rows arrive
+     with nowhere to go, and the only place to give them one is
+     that table, behind this very button. A gate here would lock
+     the reader out of the room that holds the fix. So the
+     remainder shuts Continue ONLY while the hand is at the
+     numbers; while it is at the table the remainder stays what it
+     already was, the Place Order gate that says in words what is
+     missing — and the strip that counts it now stands over the
+     table too, where the pin and «Set delivery address» are.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-v5-image-1 (2026-09-04) — FOUR THINGS TON ASKED FOR THE
      SAME DAY, ALL OF THEM INSIDE ?v=5. V1 to V4 are not touched
      by a character; the diff outside the V5 branch is empty and
@@ -3785,9 +3813,20 @@
 
                       <!-- 24 of the ladder + 24 of its own = --space-48, and
                            the button that closes the step gets twice the air
-                           of anything inside it (Ton 04.09). -->
+                           of anything inside it (Ton 04.09).
+
+                           gbppl-v5-gate-1 (04.09): and it is now SHUT while a
+                           gift has nowhere to go. The house's disabled is one
+                           value for all nine combinations (button.css): the
+                           button keeps its colour, fades and stops answering.
+                           aria-disabled rides along for the reader who is not
+                           looking at it. NO SECOND SENTENCE under the button:
+                           the arithmetic strip four rungs above already says
+                           «8 of 20 gifts not assigned» and offers the split,
+                           and saying it twice on one screen is noise. -->
                       <div class="pt-6">
-                        <button type="button" @click="v5Continue(shipment, 1)" :disabled="!v5CanLeave(shipment, 1)"
+                        <button type="button" @click="v5Continue(shipment, 1)"
+                                :disabled="!v5CanLeave(shipment, 1)" :aria-disabled="!v5CanLeave(shipment, 1)"
                                 class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary"><span class="gb-btn__label" x-text="v5NextLabel(shipment, 1)"></span></button>
                       </div>
                     </div>
@@ -3887,6 +3926,37 @@
                       </div>
 
                       <div x-show="shipment.v5Perso === 'each'" x-transition.opacity.duration.280ms class="space-y-4">
+
+                        <!-- THE ARITHMETIC STANDS WITH THE HAND
+                             (gbppl-v5-gate-1, 04.09). While the gifts are
+                             personalized one by one, the table is what says
+                             where each one goes and the numbers in step 1 are
+                             read-only mirrors of it; so the strip that counts
+                             what is still unplaced belongs HERE, over the
+                             table, where the pin and «Set delivery address»
+                             are. It is the same alert of the house, the same
+                             two tones and the same offered split as the one
+                             over the address list, and the two are never on
+                             one screen at once: the steps are an accordion,
+                             only one of them is ever open, and each of them
+                             shows the count where its own hand can act on it.
+                             It is also the sentence behind
+                             the shut Place Order: this is where the reader is
+                             sent to make it say all assigned. -->
+                        <div x-show="shipment.v5Mode === 'many'" class="gb-alert" :class="v5Left(shipment) > 0 ? 'gb-alert--info' : 'gb-alert--success'">
+                          <span class="gb-alert__body">
+                            <template x-if="v5Left(shipment) > 0">
+                              <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/></svg></span>
+                            </template>
+                            <template x-if="v5Left(shipment) === 0">
+                              <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M8.4 12.2l2.5 2.5 4.7-5.4"/></svg></span>
+                            </template>
+                            <span class="gb-alert__text" x-text="v5LeftLine(shipment)"></span>
+                          </span>
+                          <span class="gb-alert__actions" x-show="(shipment.v5Addrs || []).length > 0 && v5Left(shipment) > 0">
+                            <button type="button" @click="v5Split(shipment)" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label" x-text="v5SplitLabel(shipment)"></span></button>
+                          </span>
+                        </div>
 
                         <div class="flex flex-wrap items-center justify-end gap-2">
                           <button type="button" @click="openCSVModal(product.id, shipment.id)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
@@ -7040,17 +7110,37 @@ function checkoutApp() {
       return 'future';
     },
     v5NextLabel(s, n) { return n === this.v5LastStep() ? 'Done' : 'Continue'; },
-    // Step 1 may be left once it has somewhere to send the gifts: an address
-    // and its method in «one address», at least one address in the list in
-    // «multiple addresses». What is still UNASSIGNED is not a gate here — it
-    // is the Place Order gate (v5Blocker), which says so in words, and the
-    // folded summary repeats it. Holding Continue on it would lock a reader
-    // who pressed Edit out of the table where the assigning is done.
+    // ============================================================
+    // THE GATE ON STEP 1, AND THE ONE CASE IT LETS THROUGH
+    // gbppl-v5-gate-1 (04.09). Ton: «Пока все подарки не
+    // распределены, кнопка Continue шага 1 должна быть disabled —
+    // нельзя пустить человека дальше с нераспределёнными гифтами.»
+    //
+    // So step 1 may be left once it has somewhere to send EVERY gift:
+    // an address and its method in «one address»; in «multiple
+    // addresses», at least one address AND nothing left over.
+    //
+    // THE ONE CASE IT LETS THROUGH IS THE HAND. The layout has two
+    // hands and only ever one at a time (v5ChoosePerso): the numbers
+    // on the address rows while the gifts are alike, the TABLE the
+    // moment they are personalized one by one — and then the numbers
+    // are read-only mirrors of it. Raise Total gifts with the table
+    // in charge and the new rows arrive with nowhere to go: the only
+    // place to give them one is the table, in step 2, behind this
+    // very button. A gate here would lock the reader out of the room
+    // that holds the fix. So the remainder gates Continue ONLY while
+    // the hand is at the numbers; while it is at the table the
+    // remainder is the Place Order gate (v5Blocker), which says in
+    // words what is missing, and the strip that counts it stands
+    // over the table, where the assigning is done.
+    // ============================================================
     v5CanLeave(s, n) {
       if (n !== 1) return true;
       if (!s) return false;
       if (s.v5Mode === 'one') return !!s.v5AddrId && !!s.v5Shipping;
-      return ((s.v5Addrs || []).length > 0);
+      if (!(s.v5Addrs || []).length) return false;
+      if (s.v5Perso === 'each') return true;
+      return this.v5Left(s) === 0;
     },
     v5Continue(s, n) {
       if (!this.v5CanLeave(s, n)) return;
