@@ -11,7 +11,8 @@
    gbppl-panel-dock-1 2026-09-01, сворачиваемые секции и Demo внутри
    прототипа gbppl-panel-sections-1 2026-09-01, отрыв от края и плоская
    полоса gbppl-panel-float-2 2026-09-01, честная принадлежность вида
-   gbppl-panel-sandbox-1 2026-09-03)
+   gbppl-panel-sandbox-1 2026-09-03, версия дропдауном и детали за
+   своей дверью gbppl-panel-version-1 2026-09-04)
    ------------------------------------------------------------
    ОДИН ПУЛЬТ. Тон 26.08, дословно: «обязательно свести язык к
    Studio, одной волной», и следом «нужно просто унифицировать всё
@@ -1390,24 +1391,62 @@
     'system/oro/index.html': 'Design System'
   };
 
+  /* ИМЯ ВЕРСИИ ВЕРНУЛОСЬ В ЭТУ СТРОКУ (gbppl-panel-version-1, Тон
+     04.09, дословно продиктованная строка: «Checkout page · Sandbox ·
+     V1 · Today's flow»).
+
+     panel-sections-1 УВЕЛА его отсюда с доводом «строкой ниже и так
+     стоит своим словом», и довод был честный, пока строка Version
+     стояла рядом. Тон вернул его сам, и в его строке нет хвоста «not
+     on Live yet»: слово Sandbox уже отвечает на тот же вопрос, а два
+     ответа подряд в 320px это не забота, а шум. Ответ 03.09 («Этот
+     чекаут не является частью лайва») строка держит по-прежнему —
+     первым же словом подписи.
+
+     ТРИ ДОЛИ, И НИ ОДНА НЕ ГОВОРИТСЯ ДВАЖДЫ: имя страницы, контейнер,
+     версия. На Live контейнер и версия — одно слово Live, и оно
+     печатается один раз. Голоса прежние: имя 16/600 белым, подпись
+     12/400 Zinc 500 (панель 2.0), поэтому строка Тона читается одной
+     фразой, но не ложится одним кеглем на три этажа. */
   function whoSection(root, pageId) {
     var rel     = relHere(root);
     var variant = variantHere(pageId, root);
     var here    = sectionNow(root, pageId);
     var name    = PLACES[rel] || '';
-    var sub     = variant ? 'Sandbox · not on Live yet' : (SECTION_WORD[here] || '');
+    var opts    = versionOptions(pageId, root);
+    var on      = opts ? chosen(opts) : null;
+    var bits    = [];
+    var word    = variant ? 'Sandbox' : (SECTION_WORD[here] || '');
+    if (word) bits.push(word);
+    if (on && on.label && bits.indexOf(on.label) < 0) bits.push(on.label);
+    var sub = bits.join(' · ');
     /* Страницы, которой нет в таблице, имя даёт её раздел: пустая
        строка 16/600 читалась бы дырой, а «неизвестно где» — неправдой,
        раздел-то известен. */
-    if (!name) { name = sub; sub = ''; }
+    if (!name) { name = word || sub; sub = ''; }
     /* И ОДНО ИМЯ НЕ ГОВОРИТСЯ ДВАЖДЫ: полка Sandboxes сама и есть
        раздел Sandboxes, и «Sandboxes · Sandboxes» было бы не ответом,
        а эхом (поймано прогоном 27 страниц). */
     if (sub === name) sub = '';
     if (!name) return '';
+    /* ДВЕРЬ В ДЕТАЛИ СТОИТ У ИМЕНИ ВЕРСИИ, А НЕ У ВЫБОРА (Тон 04.09:
+       записка «что поменялось» уезжает из выбора в иконку «детали»
+       возле названия). Её нет там, где версии нет вовсе: глиф без
+       содержимого обещал бы уровень, которого не существует. */
+    var door = opts
+      ? '<button class="gbsp-info" type="button" data-slot="version-details"' +
+          ' aria-label="Version details" title="Version details">' +
+          glyph('info', 16) +
+        '</button>'
+      : '';
     return plainSec('who', '',
       '<span class="gbsp-name">' + esc(name) + '</span>' +
-      (sub ? '<span class="gbsp-name__sub">' + esc(sub) + '</span>' : ''),
+      (sub || door
+        ? '<span class="gbsp-name__line">' +
+            (sub ? '<span class="gbsp-name__sub">' + esc(sub) + '</span>' : '') +
+            door +
+          '</span>'
+        : ''),
       'gbsp-sec--who');
   }
 
@@ -1421,7 +1460,15 @@
      которому синеет активная строка навигации; имя тихое, 14 Zinc 400,
      тот же голос, что был у .gbsp-group__title.
      ============================================================ */
-  function pickRow(name, value, slot, live) {
+  /* ПЯТЫЙ ДОВОД — ЧТО ИМЕННО ОТКРЫВАЕТ СТРОКА (gbppl-panel-version-1,
+     Тон 04.09: «выглядит как селект, а открывает второй уровень; выбор
+     должен быть просто обычным дропдауном»). Облик у строки один, а
+     обещаний теперь два, и разводит их разметка: `pop` 'listbox' даёт
+     настоящий дропдаун (aria-expanded живёт и переключается), пустой
+     `pop` оставляет прежний уход на слой. Один аргумент, потому что
+     вторая фигура строки выбора здесь не заводится: Тон просил
+     ПОВЕДЕНИЕ, а не другой вид. */
+  function pickRow(name, value, slot, live, pop) {
     var id = 'gbsp-lbl-' + String(slot || name).replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     return (
       '<div class="gbsp-row">' +
@@ -1431,10 +1478,14 @@
            значением, хотя внутри кнопки его больше нет. */
         '<span class="gbsp-row__label" id="' + id + '">' + esc(name) + '</span>' +
         '<span class="gbsp-row__ctl">' +
-          /* aria-haspopup, но НЕ aria-expanded: строка не раскрывается
-             на месте, она уводит на слой, и «expanded» было бы
-             неправдой. */
-          '<button class="gbsp-pick" type="button" aria-haspopup="true"' +
+          /* СТРОКА, УВОДЯЩАЯ НА СЛОЙ, НЕ РАСКРЫВАЕТСЯ НА МЕСТЕ, и
+             «expanded» было бы про неё неправдой: у неё только
+             aria-haspopup. Строка-дропдаун (pop) раскрывается ровно
+             там, где стоит, и обязана говорить об этом вслух —
+             haspopup="listbox" плюс живой aria-expanded. */
+          '<button class="gbsp-pick" type="button"' +
+            ' aria-haspopup="' + (pop ? esc(pop) : 'true') + '"' +
+            (pop ? ' aria-expanded="false"' : '') +
             ' aria-labelledby="' + id + '"' +
             (slot ? ' data-slot="' + esc(slot) + '"' : '') +
             /* gbppl-panel-sections-1: стоит ли строка на Live. Флаг
@@ -1575,7 +1626,10 @@
     var opts = versionOptions(pageId, root);
     if (opts) {
       var on = chosen(opts);
-      html += pickRow('Version', on.label, 'version');
+      /* gbppl-panel-version-1: единственная строка панели, которая
+         раскрывается на месте. Записка версии из неё ушла к глифу
+         деталей в строке имени (whoSection), и выбор остался выбором. */
+      html += pickRow('Version', on.label, 'version', false, 'listbox');
     }
     elementSlices(pageId, root).forEach(function (el) {
       var eo = chosen(elementOptions(el));
@@ -1650,18 +1704,179 @@
     location.href = url;
   }
 
+  /* ============================================================
+     ДРОПДАУН (gbppl-panel-version-1, Тон 04.09)
+     ------------------------------------------------------------
+     Дословно: «выглядит как селект, а открывает второй уровень; выбор
+     должен быть просто обычным дропдауном».
+
+     Строка Version носила облик селекта с panel2-build-1 (жёлоб,
+     значение, шеврон вниз) и уводила на слой, где лежал список с
+     записками. Вид обещал раскрытие на месте, механика давала
+     переход, и это расхождение читалось как сбой, а не как замысел.
+     Правится ПОВЕДЕНИЕ: вид остаётся ровно тот же.
+
+     ЛИСТ РАСКРЫВАЕТСЯ У СВОЕЙ СТРОКИ, а не поверх ящика: он лежит
+     внутри .gbsp-row__ctl, то есть в потоке прокрутки консоли, и
+     уезжает вместе с ней — ровно как список нативного селекта
+     остаётся при своём поле. Ящик прокручивается сам (max-height +
+     overflow), поэтому раскрытый лист доводится до кадра
+     scrollIntoView, а не выносится в body: слой студии, смонтированный
+     мимо островов шкалы, читает чужие --space-* (ловушка 21).
+
+     ВАРИАНТЫ ОСТАЛИСЬ ССЫЛКАМИ. Версия страницы — это адрес (?v=), и
+     ссылка честнее кнопки: средний клик открывает версию в соседней
+     вкладке, а контекстное меню копирует её адрес. Тот же выбор, что
+     на слое, и Copy link после перехода говорит про ту же сборку.
+
+     ЗАПИСОК В ЛИСТЕ НЕТ (Тон 04.09: записка уезжает в «детали»).
+     Единственное, что вариант говорит о себе здесь, — что его ещё
+     нельзя выбрать: серым, без ссылки, с тихим словом статуса.
+     ============================================================ */
+  function menuNow(host) { return host.querySelector('.gbsp-menu'); }
+
+  function closeMenu(host, giveFocus) {
+    var menu = menuNow(host);
+    if (!menu) return false;
+    var btn = menu.__btn;
+    menu.remove();
+    if (host.__menuAway) {
+      document.removeEventListener('pointerdown', host.__menuAway, true);
+      host.__menuAway = null;
+    }
+    if (btn) {
+      btn.setAttribute('aria-expanded', 'false');
+      if (giveFocus && document.contains(btn)) btn.focus();
+    }
+    return true;
+  }
+
+  /* Клавиатура листа: стрелки ходят по вариантам, Home/End на края,
+     Esc и Tab закрывают. Роль ведёт САМ ФОКУС, а не aria-activedescendant:
+     варианты — ссылки, и фокус на них честный. */
+  function menuKeys(host, menu, e) {
+    var items = Array.prototype.slice.call(menu.querySelectorAll('.gbsp-mopt[href], button.gbsp-mopt'));
+    if (!items.length) return;
+    var i = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); items[i < 0 ? 0 : Math.min(i + 1, items.length - 1)].focus(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); items[i <= 0 ? 0 : i - 1].focus(); }
+    else if (e.key === 'Home') { e.preventDefault(); items[0].focus(); }
+    else if (e.key === 'End') { e.preventDefault(); items[items.length - 1].focus(); }
+    else if (e.key === 'Tab') { closeMenu(host, false); }
+  }
+
+  function openMenu(host, btn, options, onPick) {
+    closeMenu(host, false);
+    var wrap = btn.closest ? btn.closest('.gbsp-row__ctl') : null;
+    if (!wrap || !options || !options.length) return null;
+
+    var items = options.map(function (o, i) {
+      var name = '<span class="gbsp-mopt__name">' + esc(o.label) + '</span>';
+      if (o.off) {
+        var flag = (o.status ? statusWord(o.status) + ' · ' : '') + 'not open yet';
+        return '<li role="presentation"><span class="gbsp-mopt is-off" role="option"' +
+               ' aria-disabled="true" aria-selected="false">' + name +
+               '<span class="gbsp-mopt__flag">' + esc(flag) + '</span></span></li>';
+      }
+      /* ВЫБРАННОЕ ГОВОРИТ ЦВЕТОМ, И БОЛЬШЕ НИЧЕМ. Галочка в строке
+         стояла первой сборкой и снята замером: она отнимала 24 у
+         колонки имени, и «V2 · Shared quantity pool» переносилось на
+         вторую строку ровно у того варианта, который выбран. Синий —
+         и есть язык состояния в консоли (Тон-5, тот же, что у
+         .gbsp-opt.is-on на слое и у активной ячейки навигации), а
+         второй знак для того же состояния был бы новым паттерном без
+         слова Тона (закон 0a.4). Читалке отвечает aria-selected. */
+      var body = name;
+      if (o.href) {
+        return '<li role="presentation"><a class="gbsp-mopt' + (o.current ? ' is-on' : '') + '"' +
+               ' role="option" aria-selected="' + (o.current ? 'true' : 'false') + '"' +
+               ' href="' + esc(o.href) + '">' + body + '</a></li>';
+      }
+      return '<li role="presentation"><button class="gbsp-mopt' + (o.current ? ' is-on' : '') + '"' +
+             ' type="button" role="option" aria-selected="' + (o.current ? 'true' : 'false') + '"' +
+             ' data-pick="' + i + '">' + body + '</button></li>';
+    }).join('');
+
+    var menu = document.createElement('div');
+    menu.className = 'gbsp-menu';
+    menu.__btn = btn;
+    menu.innerHTML = '<ul class="gbsp-list gbsp-menulist" role="listbox"' +
+      (btn.getAttribute('aria-labelledby')
+        ? ' aria-labelledby="' + esc(btn.getAttribute('aria-labelledby')) + '"' : '') +
+      '>' + items + '</ul>';
+    wrap.appendChild(menu);
+    btn.setAttribute('aria-expanded', 'true');
+
+    menu.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-pick]') : null;
+      if (!b) return;
+      var o = options[+b.getAttribute('data-pick')];
+      closeMenu(host, true);
+      if (o && typeof onPick === 'function') onPick(o);
+    });
+    menu.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') return;   /* лестницу Esc ведёт один слушатель на document */
+      menuKeys(host, menu, e);
+    });
+
+    /* Клик мимо листа закрывает его — и клик по своей же кнопке тоже:
+       её собственный обработчик получит уже закрытый лист и откроет
+       заново, то есть кнопка честно работает переключателем. */
+    host.__menuAway = function (e) {
+      if (menu.contains(e.target)) return;
+      if (btn.contains(e.target)) return;
+      closeMenu(host, false);
+    };
+    document.addEventListener('pointerdown', host.__menuAway, true);
+
+    /* Лист лежит в прокрутке ящика: если он вылез за нижнюю кромку,
+       ящик подъезжает сам. Ровно та же вежливость, что у нативного
+       селекта, и ни одного своего числа. */
+    if (menu.scrollIntoView) menu.scrollIntoView({ block: 'nearest' });
+    return menu;
+  }
+
   function wireProto(host, root) {
     var sec = host.querySelector('.gbsp-sec--proto');
-    if (!sec) return;
     var pageId = host.getAttribute('page');
+
+    /* ДВЕРЬ В ДЕТАЛИ ЖИВЁТ В СТРОКЕ ИМЕНИ, А НЕ В СЕКЦИИ ВЫБОРА
+       (gbppl-panel-version-1): слой с записками остался ровно тем же,
+       сменилась только ручка, которая его открывает. */
+    var door = host.querySelector('.gbsp-sec--who .gbsp-info[data-slot="version-details"]');
+    if (door) {
+      door.addEventListener('click', function () {
+        openLayer(host, {
+          /* Дверь и то, что за ней, зовутся ОДНИМ словом. Прежнее
+             «Version of this page» отвечало на вопрос «какая версия», а
+             на него теперь отвечает сама строка выбора; за дверью
+             лежит другое — что каждая версия меняет против Live. */
+          title: 'Version details',
+          build: function () { return versionOptions(pageId, root) || []; }
+        }, door);
+      });
+    }
+
+    if (!sec) return;
 
     var ver = sec.querySelector('button.gbsp-pick[data-slot="version"]');
     if (ver) {
       ver.addEventListener('click', function () {
-        openLayer(host, {
-          title: 'Version of this page',
-          build: function () { return versionOptions(pageId, root) || []; }
-        }, ver);
+        var open = menuNow(host);
+        if (open && open.__btn === ver) { closeMenu(host, true); return; }
+        openMenu(host, ver, versionOptions(pageId, root) || []);
+      });
+      /* Стрелка вниз с самой кнопки раскрывает лист и ставит руку на
+         выбранное — привычка нативного селекта. */
+      ver.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+        e.preventDefault();
+        var menu = menuNow(host);
+        if (!menu || menu.__btn !== ver) menu = openMenu(host, ver, versionOptions(pageId, root) || []);
+        if (!menu) return;
+        var pick = menu.querySelector('.gbsp-mopt.is-on') ||
+                   menu.querySelector('.gbsp-mopt[href], button.gbsp-mopt');
+        if (pick) pick.focus();
       });
     }
 
@@ -1807,6 +2022,10 @@
   function openLayer(host, spec, opener) {
     var box = panelBox(host);
     if (!box) return;
+    /* Раскрытый лист принадлежит корню, а корень уходит под слой:
+       оставить его значило бы спрятать открытый дропдаун вместо того,
+       чтобы закрыть (gbppl-panel-version-1). */
+    closeMenu(host, false);
     var under = topLayer(box);
     if (under) under.classList.add('is-under');
 
@@ -3294,7 +3513,7 @@
         /* Закрытый ящик всегда открывается корнем: слой это шаг
            внутри одного разговора, а не место, куда возвращаются.
            Стопка снимается целиком (gbppl-panel-sections-1). */
-        if (!open) { while (closeLayer(host, false)) {} }
+        if (!open) { closeMenu(host, false); while (closeLayer(host, false)) {} }
         shell.classList.toggle('is-collapsed', !open);
         tab.setAttribute('aria-expanded', String(open));
         tab.setAttribute('aria-label', openerWord(false, open));
@@ -3363,8 +3582,12 @@
            gbppl-panel-layers-1: с многослойным ящиком закрытий стало
            два, и очередь у них та же — сначала ближайшее. Открытый
            слой Esc возвращает на корень, и только следующий Esc
-           закрывает ящик. */
+           закрывает ящик.
+           gbppl-panel-version-1: ступенью ближе слоя встал раскрытый
+           дропдаун — он самое верхнее, что открыто, и закрывается
+           первым, возвращая руку на свою строку. */
         if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if (closeMenu(host, true)) return;
         if (closeLayer(host, true)) return;
         setOpen(false);
         /* ФОКУС УХОДИТ НА ТУ КНОПКУ, КОТОРАЯ ОСТАЛАСЬ ВИДНА

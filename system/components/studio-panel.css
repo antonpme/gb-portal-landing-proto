@@ -9,7 +9,8 @@
    gbppl-panel-mode-toggle-1 01.09, потолок и флип дока
    gbppl-panel-dock-1 01.09, складные полки и Demo внутри прототипа
    gbppl-panel-sections-1 01.09, отрыв от края и плоская полоса
-   gbppl-panel-float-2 01.09)
+   gbppl-panel-float-2 01.09, лист дропдауна и дверь в детали версии
+   gbppl-panel-version-1 04.09)
    ------------------------------------------------------------
    Тон, 24.08: «когда мы заходим с хаба, пропадает надпись Design
    Studio и мы не можем вернуться на хаб. Нужна точка возвращения:
@@ -890,10 +891,18 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--zinc-700); color: var(--white
    после того, как строка-титул «DESIGN STUDIO» снята.
 
    Подпись под именем отвечает на один вопрос: в каком контейнере
-   лежит то, на что смотришь (Тон-12, Тон-13). «Sandbox · not on Live
-   yet» у выбранного варианта, «Live» на живой странице, имя раздела
-   в остальной студии. Разделитель «·» — тот же, что держит пары в
-   тайтлах вкладок (правила копии, раздел 3).
+   лежит то, на что смотришь (Тон-12, Тон-13). «Sandbox», «Live», имя
+   раздела в остальной студии. Разделитель «·» — тот же, что держит
+   пары в тайтлах вкладок (правила копии, раздел 3).
+
+   И ИМЯ ВЕРСИИ ТОЙ ЖЕ ПОДПИСЬЮ (gbppl-panel-version-1, Тон 04.09,
+   продиктованная строка: «Checkout page · Sandbox · V1 · Today's
+   flow»). Хвост «not on Live yet» ушёл: слово Sandbox отвечает на тот
+   же вопрос, и место в 320px отдано тому, чего в строке не было.
+   Подпись стала РЯДОМ из двух вещей — сами слова и тихая дверь в
+   детали версии, — поэтому у неё появилась обёртка .gbsp-name__line;
+   воздух 4 сверху переехал на обёртку, чтобы у ряда была одна
+   прижимка к имени, а не две.
    ============================================================ */
 .gbsp-name {
   display: block;
@@ -902,14 +911,44 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--zinc-700); color: var(--white
   font-weight: 600;
   line-height: 1.25;
 }
+.gbsp-name__line {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-8) / 2);   /* половина ступени: глиф стоит ВОЗЛЕ слова, то же деление пополам, что у поля строки выбора */
+  margin-top: 4px;   /* NO TOKEN: пол ступени --space-8, подпись прижата к своему имени — то же число и та же причина, что у .gbsp-opt__desc */
+}
 .gbsp-name__sub {
   display: block;
-  margin-top: 4px;   /* NO TOKEN: пол ступени --space-8, подпись прижата к своему имени — то же число и та же причина, что у .gbsp-opt__desc */
+  min-width: 0;
   color: var(--zinc-500);
   font-size: 12px;
   font-weight: 400;
   line-height: 1.35;
 }
+/* ---- ДВЕРЬ В ДЕТАЛИ ВЕРСИИ (gbppl-panel-version-1) ----
+   Тон 04.09: записка «что поменялось» уезжает из выбора в иконку
+   «детали» возле названия. Фигура НЕ новая: это тот же тихий квадрат,
+   что носят .gbsp-back, .gbsp-dock и .gbsp-min (правила ниже, в блоке
+   второго слоя), с той же землёй на наведении и тем же кольцом
+   фокуса. Отличие одно и оно от места: квадрат стоит в строке 12-го
+   кегля, поэтому коробка глифа 16, а не 20. */
+.gbsp-info {
+  flex: 0 0 auto;
+  width: var(--space-24);
+  height: var(--space-24);
+  display: grid;
+  place-items: center;
+  margin: calc(var(--space-8) / -2) 0;   /* квадрат выше строки 12/1.35 на 8: половина сверху, половина снизу, ряд не растёт */
+  background: none;
+  border: 0;
+  border-radius: calc(var(--radius) - var(--gbsp-inset));
+  color: var(--zinc-500);
+  cursor: pointer;
+  transition: background var(--mo-micro) var(--mo-move),
+              color var(--mo-micro) var(--mo-move);
+}
+.gbsp-info:hover { background: var(--zinc-800); color: var(--white); }
+.gbsp-info:focus-visible { outline: 2px solid var(--blue-400); outline-offset: 2px; }
 
 /* ============================================================
    СТРОКА НАСТРОЙКИ: ПОДПИСЬ СЛЕВА, КОНТРОЛ СПРАВА
@@ -942,6 +981,12 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--zinc-700); color: var(--white
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
+  /* ЯКОРЬ РАСКРЫТОГО ЛИСТА (gbppl-panel-version-1). Дропдаун строки
+     Version лежит здесь же, у своей строки, а не в body: слой студии,
+     смонтированный мимо островов шкалы, читает чужие --space-*
+     (ловушка 21), да и уезжать при прокрутке ящика он обязан вместе
+     со своим полем. */
+  position: relative;
 }
 .gbsp-row__ctl > * { flex: 1 1 auto; min-width: 0; }
 
@@ -1134,9 +1179,121 @@ button.gbsp-link {
   display: flex;
   align-self: center;
   color: var(--zinc-500);
-  transition: color var(--mo-micro) var(--mo-move);
+  /* Поворот приехал с дропдауном (gbppl-panel-version-1): раскрытая
+     строка переворачивает шеврон, и ход у него та же ступень, что у
+     цвета. */
+  transition: color var(--mo-micro) var(--mo-move),
+              transform var(--mo-micro) var(--mo-move);
 }
 .gbsp-pick:hover .gbsp-pick__chev { color: var(--white); }
+/* РАСКРЫТАЯ СТРОКА ДЕРЖИТ ЗЕМЛЮ НАВЕДЕНИЯ (gbppl-panel-version-1):
+   пока лист открыт, рука ушла с кнопки на варианты, и без этого
+   правила поле гасло ровно в тот момент, когда оно активнее всего.
+   Шеврон переворачивается — тот же поворот и тот же довод, что у
+   кнопки складывания: глиф смотрит туда, куда поедет содержимое. */
+.gbsp-pick[aria-expanded="true"] { background: var(--zinc-800); }
+.gbsp-pick[aria-expanded="true"] .gbsp-pick__chev { color: var(--white); transform: rotate(180deg); }
+
+
+/* ============================================================
+   ЛИСТ ДРОПДАУНА (gbppl-panel-version-1, Тон 04.09: «выглядит как
+   селект, а открывает второй уровень; выбор должен быть просто
+   обычным дропдауном»)
+   ------------------------------------------------------------
+   Ни одной новой фигуры: лист — это РАЗВЁРНУТАЯ КАРТОЧКА своей
+   строки. Земля Zinc 900, рамка Zinc 800, радиус и ховер Zinc 800 —
+   ровно те же, что у .gbsp-pick над ним, поэтому список читается
+   продолжением поля, а не вторым ящиком поверх первого (Zinc 950
+   ящика дал бы лист, сливающийся с полкой под ним, и держать его
+   пришлось бы одной тенью). Строка внутри — тот же вариант, что
+   лежит на слое (.gbsp-opt), только без записки: записка уехала за
+   дверь «детали» (Тон 04.09).
+
+   ЛИСТ ВСТАЁТ ПОД СВОЮ СТРОКУ, НАКРЫВАЯ ТО, ЧТО НИЖЕ. Он абсолютный
+   внутри .gbsp-row__ctl, шириной ровно со своё поле, и на 4 ниже его
+   кромки — половина ступени, тот же зазор, каким живёт меню хедера.
+   Потолок --space-64 * 4 = 256: выше него лист прокручивается сам,
+   иначе шесть версий вытолкнули бы ящик за окно.
+
+   Z 2 — ЭТО НЕ СТОПКА СТУДИИ, А ПОРЯДОК ВНУТРИ ЯЩИКА (сцена 58,
+   булавки 56, консоль 60 остались, где были): лист обязан лечь
+   поверх соседних строк той же полки и не больше того.
+   ============================================================ */
+.gbsp-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin-top: calc(var(--space-8) / 2);
+  max-height: calc(var(--space-64) * 4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--zinc-700) transparent;
+  padding: var(--space-8);
+  background: var(--zinc-900);
+  border: 1px solid var(--zinc-800);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+  animation: gbsp-menu-in var(--mo-micro) var(--mo-enter) both;
+}
+@keyframes gbsp-menu-in {
+  from { opacity: 0; transform: translateY(calc(var(--space-8) / -2)); }
+  to   { opacity: 1; transform: none; }
+}
+.gbsp-menulist > li + li { margin-top: 2px; }   /* NO TOKEN: четверть ступени --space-8; варианты одного списка стоят плотнее, чем блоки с записками на слое (там 8), иначе лист из четырёх строк выше самой панели */
+.gbsp-mopt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  padding: calc(var(--space-8) / 2) var(--space-8);
+  background: none;
+  border: 0;
+  border-radius: calc(var(--radius) - var(--gbsp-inset));
+  color: var(--zinc-300);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--mo-micro) var(--mo-move);
+}
+a.gbsp-mopt,
+body.gb-demo a.gbsp-mopt { color: var(--zinc-300); text-decoration: none; }
+a.gbsp-mopt:hover,
+button.gbsp-mopt:hover,
+body.gb-demo a.gbsp-mopt:hover { background: var(--zinc-800); }
+.gbsp-mopt:focus-visible { outline: 2px solid var(--blue-400); outline-offset: -2px; }
+.gbsp-mopt__name { flex: 1 1 auto; min-width: 0; }
+/* Выбранное синим — состояние, а не мебель (Тон-5), ровно как имя
+   выбранного варианта на слое. Галочка повторяет это знаком: в
+   дропдауне цвет один отвечает слабо, когда список читают бегло. */
+.gbsp-mopt.is-on,
+a.gbsp-mopt.is-on,
+body.gb-demo a.gbsp-mopt.is-on { color: var(--blue-400); font-weight: 500; }
+.gbsp-mopt__tick { flex: 0 0 auto; display: flex; }
+/* Вариант, до которого страница не доросла: видно, что он есть, и
+   видно, что его нельзя выбрать. Курсор ничего не обещает — то же
+   правило и те же чернила, что у .gbsp-opt.is-off на слое.
+
+   СЛОВО СТАТУСА СТОИТ ПОД ИМЕНЕМ, А НЕ РЯДОМ: в ряду оно забирало
+   свою полную ширину (flex 0 0 auto), и «Led by the proposition»
+   ужималось в колонку по одному слову в строке (замер на
+   live/book-a-meeting.html, 1280). Имя варианта важнее подписи к
+   нему, поэтому у недоступной строки блочная раскладка и та же
+   прижимка 4, что у подвала варианта на слое. */
+.gbsp-mopt.is-off { display: block; color: var(--zinc-600); cursor: default; }
+.gbsp-mopt__flag {
+  display: block;
+  margin-top: 4px;   /* NO TOKEN: пол ступени --space-8, подпись прижата к своему имени — то же число и та же причина, что у .gbsp-opt__foot */
+  color: var(--zinc-600);
+  font-size: 12px;
+  line-height: 1.35;
+}
 
 
 /* ============================================================
