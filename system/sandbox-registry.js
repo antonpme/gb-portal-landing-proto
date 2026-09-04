@@ -434,7 +434,19 @@
              14/16/18, портал 40/48/56 при 14/14/16. V5 целиком стоит на
              портальной ступени, V1-V3 остались на сайтовой и вышли из волны
              байт в байт. `updated` stays 04.09. */
-          desc: 'The order is a number of gifts and a list of addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. The step will not close while a gift still has nowhere to go, unless the gifts are being personalized one by one, in which case the table below is where they are placed. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer, cut into runs under a subheading per address. There is no third step, and a long list is offered a file instead of a keyboard.',
+          /* gbppl-v5-recommend-1 (04.09, восьмой раз за день). Тон: «Когда
+             пользователь пересекает условный барьер (те же 20 гифтов), мы
+             подсвечиваем рекомендуемый путь и объясняем выбор. Не навалить
+             текста, а элегантно.» С двадцатого гифта пара кнопок под списком
+             перестаёт быть парой равных: Import from file надевает filled
+             primary, Add address остаётся outline, и одна строка под ними
+             объясняет ранг. Ни бейджа, ни нового цвета, ни второй плашки:
+             плашка объёма «You're adding a lot of addresses» снята, её
+             двадцать стало барьером и считается ГИФТАМИ, а не уже набранными
+             адресами (та считала список и заговаривала только на двадцать
+             первом адресе, набранном руками). Ручной ввод по-прежнему не
+             блокируется. `updated` stays 04.09. */
+          desc: 'The order is a number of gifts and a list of addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. The step will not close while a gift still has nowhere to go, unless the gifts are being personalized one by one, in which case the table below is where they are placed. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer, cut into runs under a subheading per address. There is no third step, and past twenty gifts the page recommends a way in rather than leaving the choice unmarked: Import from file takes the filled button, Add address keeps its outline, and one line under them says why.',
           status: 'in-progress',
           href: 'live/checkout.html?v=5',
           ready: true,
