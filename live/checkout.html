@@ -189,6 +189,35 @@
         stepping 0.5px between the states of one accordion.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-v5-ground-1 (2026-09-04) — THREE GROUNDS, THREE VOICES,
+     TWO GROUPS. All inside ?v=5; V1 to V4 untouched.
+
+     1. THE GROUNDS. Ton, on the card: «всё белое на белом,
+        сливается в полотно». The page is Zinc 50, the card is
+        white, and there was no third level, so every zone inside
+        the card floated in one sheet and the white counters and
+        white selects floated in it too. A zone that HOLDS
+        INSTRUMENTS now stands on Zinc 50 and the instruments in it
+        are white: the answer area of step 1 in both modes
+        (.ck-zone), the opened greeting-card block (.ck-ground),
+        the head of the gift table, and the group bands, which take
+        the rung under it at Zinc 100. No new colour: one tone the
+        page already wears, used one level deeper, the way the
+        studio does it (samples white, the tool bay grey).
+     2. THE INK. Three voices per step, and only three: the serif
+        number of the step in Zinc 900, a caps eyebrow over every
+        zone inside it, then the text. Two zones had no eyebrow and
+        have one now, «Delivery addresses» over the list of step 1
+        and «How these gifts are personalized» over the pair of
+        cards of step 2, which is the eyebrow step 1 always had.
+     3. THE PICKER. «Каша, непонятная группировка, непонятно
+        использован ли адрес.» Two named groups now, IN THIS ORDER
+        (with «8 gifts · UPS Ground» on each line) and ADDRESS
+        BOOK, and a book address already standing in the order says
+        so quietly. Reuse stays legal, Ton 04.09: «20 ground + 5
+        overnight в один офис» — the method belongs to the LINE, so
+        a picked book address joins as a line of its own.
+
      gbppl-v5-fix-1 (2026-09-04) — THREE THINGS AN HOUR BEFORE THE
      DEMO, ALL OF THEM INSIDE ?v=5. V1 to V4 are byte-for-byte the
      page they were: twelve renders (four versions x three
@@ -954,6 +983,31 @@
      where its own content stands inside it, which is exactly what a
      consumer is allowed to keep. All on the space scale.
      ============================================================ */
+  /* ===========================================================
+     THE GROUNDS OF V5 (gbppl-v5-ground-1, 04.09)
+     Ton, on the card as it stood: «всё белое на белом, сливается
+     в полотно». The page is Zinc 50 and the card is white, and
+     that stays; what was missing is the THIRD level. Inside a
+     white card, a zone that holds instruments steps back onto the
+     same Zinc 50 the page is made of, and the instruments standing
+     in it are white. It is the studio's own rule (samples white,
+     the tool bay grey), and it introduces no colour: one tone,
+     already on this page, used one level deeper.
+     .ck-ground = the ground only (a block that already has its own
+     frame, such as the greeting card body under its checkbox).
+     .ck-zone   = the ground with the frame and the pad of the
+     step's own rhythm (--space-24, the rung the step runs on).
+     The two whitening rules exist because .gba-input is
+     TRANSPARENT by birth (auth.css) and would otherwise take the
+     grey; .gb-inputnumber is already white and needs nothing. */
+  .ck-ground, .ck-zone { background: var(--zinc-50); }
+  .ck-zone {
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius);
+    padding: var(--space-24);
+  }
+  .ck-ground .gba-input, .ck-zone .gba-input { background: var(--white); }
+
   .ck-drawer-stack > * + * { margin-top: var(--space-32); }
   .ck-drawer-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-16); }
 
@@ -3587,7 +3641,7 @@
                            on 03.09 and the tick was the last of it in this
                            accordion; furniture is black (Ton-5). -->
                       <span class="w-6 flex-shrink-0 ck-band-glyph text-zinc-900" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
-                      <h3 class="font-serif text-2xl leading-none ck-band-cap">1. Delivery</h3>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap text-zinc-900">1. Delivery</h3>
                       <p class="text-sm text-zinc-600 min-w-0 ck-band-cap" x-text="v5Sum1(shipment)"></p>
                       <!-- gbppl-v5-band-1: ghost PRIMARY. Ton: «синие чернила =
                            действие». The wash on hover is the ghost's own and
@@ -3621,7 +3675,7 @@
                          steps, measured 2027-2029 at 1280). -->
                     <header class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
                       <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
-                      <h3 class="font-serif text-2xl leading-none ck-band-cap">1. Delivery</h3>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap text-zinc-900">1. Delivery</h3>
                     </header>
 
                     <!-- THE LADDER OF STEP 1 (gbppl-v5-fix-1, 04.09). Ton:
@@ -3668,13 +3722,18 @@
                         </div>
                       </div>
 
-                      <!-- ===== ONE ADDRESS: two touches and the step is done. ===== -->
-                      <div x-show="shipment.v5Mode === 'one'" class="space-y-6">
+                      <!-- ===== ONE ADDRESS: two touches and the step is done. =====
+                           gbppl-v5-ground-1 (04.09): the ANSWER to the question
+                           above stands on a ground of its own. The question
+                           (the two mode cards) is on the white of the card; what
+                           the answer needs — a select and three method cards —
+                           is a zone, and a zone is Zinc 50. -->
+                      <div x-show="shipment.v5Mode === 'one'" class="space-y-6 ck-zone">
                         <div>
                           <p class="gb-eyebrow mb-2">Address</p>
                           <div class="relative">
                             <button @click="pick = !pick" type="button"
-                                    class="w-full flex items-center justify-between gap-4 bg-zinc-50 border border-zinc-300 rounded-[var(--radius)] px-4 py-3 text-left hover:border-zinc-500 focus:outline-none focus:border-blue-600 transition-colors">
+                                    class="w-full flex items-center justify-between gap-4 bg-white border border-zinc-300 rounded-[var(--radius)] px-4 py-3 text-left hover:border-zinc-500 focus:outline-none focus:border-blue-600 transition-colors">
                               <span class="text-sm truncate" :class="shipment.v5AddrLabel ? 'text-zinc-900' : 'text-zinc-400'" x-text="shipment.v5AddrLabel || 'Select an address'"></span>
                               <svg class="w-4 h-4 text-zinc-500 flex-shrink-0 transition-transform" :class="pick ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                             </button>
@@ -3726,7 +3785,7 @@
 
                       <!-- ===== MULTIPLE ADDRESSES: the list, and the arithmetic
                                over it that is never out of sight. ===== -->
-                      <div x-show="shipment.v5Mode === 'many'" class="space-y-6">
+                      <div x-show="shipment.v5Mode === 'many'" class="space-y-6 ck-zone">
 
                         <!-- THE ARITHMETIC STRIP, AND WHY IT IS NOT BLUE ANY
                              MORE (gbppl-v5-fix-1, 04.09). Ton: «непонятно:
@@ -3783,8 +3842,14 @@
                              py-4) where it buys legibility instead of noise.
                              Nothing was rearranged: every control, every word
                              and every order is where it was. -->
-                        <div x-show="(shipment.v5Addrs || []).length > 0"
-                             class="border border-zinc-200 rounded-[var(--radius)]">
+                        <!-- gbppl-v5-ground-1: the list keeps its one frame and
+                             takes the eyebrow it never had. Three voices in one
+                             step now, and this is the middle one: the serif
+                             number names the STEP, a caps eyebrow names each
+                             ZONE inside it, the text is the text. -->
+                        <div x-show="(shipment.v5Addrs || []).length > 0">
+                        <p class="gb-eyebrow mb-2">Delivery addresses</p>
+                        <div class="border border-zinc-200 rounded-[var(--radius)]">
                         <template x-for="a in shipment.v5Addrs" :key="'v5a-' + a.id">
                           <article class="border-b border-zinc-200 last:border-b-0">
                             <div class="px-4 py-4 flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -3861,6 +3926,7 @@
                           </article>
                         </template>
                         </div>
+                        </div>
 
                         <!-- Two ways an address joins the list, and the address
                              book is INSIDE the first one: the panel opens with
@@ -3879,7 +3945,10 @@
 
                         <!-- THE VOLUME RULE, LOUD HALF. Never a block, always
                              an offer (Ton 04.09: «ручной ввод не блокируется»). -->
-                        <div x-show="v5LoudAddr(shipment)" x-cloak class="border border-zinc-300 bg-zinc-50 rounded-[var(--radius)] px-4 py-4 flex flex-wrap items-start gap-x-4 gap-y-3">
+                        <!-- gbppl-v5-ground-1: white, because it now stands ON
+                             the grey zone and a Zinc 50 card on a Zinc 50
+                             ground is nothing at all. -->
+                        <div x-show="v5LoudAddr(shipment)" x-cloak class="border border-zinc-300 bg-white rounded-[var(--radius)] px-4 py-4 flex flex-wrap items-start gap-x-4 gap-y-3">
                           <svg class="w-5 h-5 text-zinc-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
                           <div class="min-w-0 flex-1 basis-[220px]">
                             <p class="text-base font-medium text-zinc-900">You're adding a lot of addresses.</p>
@@ -3933,7 +4002,7 @@
                     <div x-show="v5State(shipment, 2) === 'done'" @click="v5Edit(shipment, 2)"
                          class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-100 transition-colors">
                       <span class="w-6 flex-shrink-0 ck-band-glyph text-zinc-900" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
-                      <h3 class="font-serif text-2xl leading-none ck-band-cap">2. Personalization</h3>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap text-zinc-900">2. Personalization</h3>
                       <p class="text-sm text-zinc-600 min-w-0 ck-band-cap" x-text="v5Sum2(shipment)"></p>
                       <button type="button" @click.stop="v5Edit(shipment, 2)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary ml-auto"><span class="gb-btn__label">Edit</span></button>
                     </div>
@@ -3948,7 +4017,7 @@
                     <div>
                     <header class="bg-zinc-100/70 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2">
                       <span class="w-6 flex-shrink-0" aria-hidden="true"></span>
-                      <h3 class="font-serif text-2xl leading-none ck-band-cap">2. Personalization</h3>
+                      <h3 class="font-serif text-2xl leading-none ck-band-cap text-zinc-900">2. Personalization</h3>
                     </header>
 
                     <!-- The ladder of step 1, unchanged: 24 is the step's
@@ -3958,6 +4027,11 @@
                       <!-- Julia, meeting 20.08: personalization is either absent
                            or per gift. «One for everyone» exists only as a
                            greeting card, and it is the checkbox below. -->
+                      <!-- gbppl-v5-ground-1: the eyebrow step 1 has always had
+                           over the same pair of cards. Two steps of one card
+                           speak in one voice or in none. -->
+                      <div>
+                      <p class="gb-eyebrow mb-2">How these gifts are personalized</p>
                       <div class="gb-radio-group gb-radio-group--cards" role="radiogroup" aria-label="Personalization">
                         <label class="gb-radio gb-radio--select">
                           <input class="gb-radio__input" type="radio" :name="'v5perso-' + shipment.id" value="none"
@@ -3976,15 +4050,20 @@
                           </span>
                         </label>
                       </div>
+                      </div>
 
                       <div x-show="shipment.v5Perso === 'none'" x-transition.opacity.duration.280ms
-                           class="border border-zinc-200 rounded-[var(--radius)]">
+                           class="border border-zinc-200 rounded-[var(--radius)] bg-white">
                         <label class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
                           <input type="checkbox" x-model="shipment.v5Card.on" class="accent-blue-600 w-4 h-4 flex-shrink-0">
                           <span class="text-sm text-zinc-900">Add a greeting card to all gifts</span>
                           <span class="text-sm text-zinc-500">One card, the same message in every box</span>
                         </label>
-                        <div x-show="shipment.v5Card.on" x-cloak x-transition.opacity.duration.280ms class="border-t border-zinc-200 px-4 py-5 space-y-6">
+                        <!-- gbppl-v5-ground-1: an OPENED nested block is a zone,
+                             and a zone is Zinc 50. The row with the checkbox
+                             stays white: it is the switch, not the room it
+                             opens. The two fields inside go white against it. -->
+                        <div x-show="shipment.v5Card.on" x-cloak x-transition.opacity.duration.280ms class="ck-ground border-t border-zinc-200 px-4 py-5 space-y-6">
                           <div>
                             <div class="flex justify-between items-baseline mb-1">
                               <label class="gb-eyebrow">Message</label>
@@ -4107,7 +4186,17 @@
                              tick the rows, «Set delivery address». -->
                         <div class="overflow-x-auto">
                           <table class="w-full table-fixed" :style="'min-width:' + v5TableMin(product, shipment) + 'px'">
-                            <thead class="border-b border-zinc-200">
+                            <!-- gbppl-v5-ground-1: the head of the table takes
+                                 the ground too, and the group bands take the
+                                 rung under it (Zinc 100). Three tones down the
+                                 table and none of them loud: white rows, a Zinc
+                                 50 head, Zinc 100 where a run of gifts is named.
+                                 No padding was added to the frame on purpose:
+                                 the scroller at 1280 is 751 against a 746 floor
+                                 (gbppl-alert-height-1 measured it), and a pad
+                                 would put the row actions back behind a sideways
+                                 scroll. The tone does the work the frame would. -->
+                            <thead class="border-b border-zinc-200 bg-zinc-50">
                               <tr>
                                 <th class="w-10 py-3.5 align-top text-left"><input type="checkbox" @change="v5SelectAll(shipment, $event.target.checked)" :checked="v5AllSelected(shipment)" class="accent-blue-600 w-4 h-4" aria-label="Select every gift"></th>
                                 <!-- gbppl-v5-image-1 (04.09). Ton: «В
@@ -4160,7 +4249,7 @@
                             <template x-for="grp in v5PageGroups(product, shipment)" :key="'v5grp-' + grp.key">
                               <tbody>
                                 <tr x-show="shipment.v5Mode === 'many'">
-                                  <td :colspan="v5Cols(product, shipment)" class="bg-zinc-50 border-y border-zinc-200 py-2">
+                                  <td :colspan="v5Cols(product, shipment)" class="bg-zinc-100 border-y border-zinc-200 py-2">
                                     <span class="gb-eyebrow" x-text="grp.label"></span>
                                   </td>
                                 </tr>
@@ -4901,8 +4990,18 @@
     <div>
       <p class="gb-eyebrow mb-2">Use an address you already entered</p>
       <div class="relative">
+        <!-- gbppl-v5-ground-1 (04.09). Ton, verbatim: «После выбора адреса он
+             должен оставаться в селекторе выбранным. Поля заполняются, но
+             селектор опять показывает Pick an address.» The label was a
+             LITERAL: the picker wrote the fields and the control it was
+             opened from never heard about it. It reads the form now, so it
+             says the same thing after a pick, after typing by hand, and
+             after the panel is closed and opened again on the same address.
+             V3 and V4 keep the literal they were shipped with: this wave
+             touches ?v=5 only. -->
         <button @click="bookOpen = !bookOpen" type="button" class="gba-input flex items-center justify-between text-left cursor-pointer">
-          <span class="text-zinc-500">Pick an address</span>
+          <span :class="(uiVersion === 'v5' && v5PickedLabel()) ? 'text-zinc-900 truncate' : 'text-zinc-500'"
+                x-text="(uiVersion === 'v5' && v5PickedLabel()) ? v5PickedLabel() : 'Pick an address'"></span>
           <svg class="w-4 h-4 text-zinc-500 transition-transform" :class="bookOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
         </button>
         <div x-show="bookOpen" @click.outside="bookOpen = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-2 bg-white border border-zinc-200 rounded-[var(--radius)] shadow-lg z-30 overflow-hidden max-h-[320px] overflow-y-auto">
@@ -5005,27 +5104,67 @@
      rows. Ton, 04.09: «адрес из списка шага 1 или новый — новый
      попадает в шаг 1».
      ============================================================ -->
+<!-- gbppl-v5-ground-1 (04.09). Ton on this panel: «каша, непонятная
+     группировка, непонятно использован ли адрес». One flat list was
+     doing two different jobs at once, so it read as neither. It is
+     TWO NAMED GROUPS now, each under its own eyebrow:
+
+       IN THIS ORDER  the addresses step 1 already holds, and each
+                      one says what it holds: «8 gifts · UPS Ground».
+                      Picking one moves the ticked gifts onto it.
+       ADDRESS BOOK   what is saved from before. Picking one puts it
+                      into the order as A LINE OF ITS OWN and moves
+                      the gifts there.
+
+     REUSE IS LEGAL (Ton, 04.09): «20 ground + 5 overnight в один
+     офис» is a real order, and the method belongs to the LINE, not
+     to the address. So a book address already standing in the order
+     is not disabled; it carries a quiet «in this order» so the
+     second pick is a decision and not an accident. -->
 <template id="ck-drawer-assign">
   <div>
-    <div class="border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
-      <template x-for="a in v5AssignList()" :key="'v5assign-' + a.id">
-        <button type="button" @click="v5AssignTo(a.id)" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 last:border-0 flex items-center gap-4">
-          <span class="min-w-0 flex-1">
-            <span class="block text-sm font-medium text-zinc-900 truncate" x-text="a.name"></span>
-            <span class="block text-sm text-zinc-500 truncate" x-text="a.label"></span>
-          </span>
-          <span class="gb-eyebrow flex-shrink-0" x-text="a.count + (a.count === 1 ? ' gift' : ' gifts')"></span>
-        </button>
-      </template>
-      <button type="button" @click="v5AssignTo(null)" class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-t border-zinc-200">
+    <div x-show="v5AssignList().length > 0">
+      <p class="gb-eyebrow mb-2">In this order</p>
+      <div class="ck-ground border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
+        <template x-for="a in v5AssignList()" :key="'v5assign-' + a.id">
+          <button type="button" @click="v5AssignTo(a.id)" class="w-full text-left px-4 py-3 bg-white hover:bg-zinc-50 border-b border-zinc-200 last:border-0 flex items-center gap-4 transition-colors">
+            <span class="min-w-0 flex-1">
+              <span class="block text-sm font-medium text-zinc-900 truncate" x-text="a.name"></span>
+              <span class="block text-sm text-zinc-500 truncate" x-text="a.label"></span>
+            </span>
+            <span class="gb-eyebrow flex-shrink-0 text-right" x-text="a.badge"></span>
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <p class="gb-eyebrow mb-2">Address book</p>
+      <div class="ck-ground border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
+        <template x-for="b in v5BookList()" :key="'v5bookpick-' + b.id">
+          <button type="button" @click="v5AssignBook(b.id)" class="w-full text-left px-4 py-3 bg-white hover:bg-zinc-50 border-b border-zinc-200 last:border-0 flex items-center gap-4 transition-colors">
+            <span class="min-w-0 flex-1">
+              <span class="block text-sm font-medium text-zinc-900 truncate" x-text="b.name"></span>
+              <span class="block text-sm text-zinc-500 truncate" x-text="b.label"></span>
+            </span>
+            <span x-show="b.used" class="text-sm text-zinc-500 flex-shrink-0">in this order</span>
+          </button>
+        </template>
+      </div>
+      <p class="text-sm text-zinc-500 mt-2">A saved address joins the order as its own line, with its own shipping method. The same place can stand twice.</p>
+    </div>
+
+    <div class="mt-6">
+      <p class="gb-eyebrow mb-2">Neither</p>
+      <button type="button" @click="v5AssignTo(null)" class="w-full text-left px-4 py-3 bg-white hover:bg-zinc-50 border border-zinc-200 rounded-[var(--radius)] transition-colors">
         <span class="block text-sm font-medium text-zinc-900">Not assigned yet</span>
         <span class="block text-sm text-zinc-500">Send the gifts back to the unassigned count</span>
       </button>
+      <button type="button" @click="v5AssignNew()" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary mt-4">
+        <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>
+        <span class="gb-btn__label">Type a new address</span>
+      </button>
     </div>
-    <button type="button" @click="v5AssignNew()" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary mt-6">
-      <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>
-      <span class="gb-btn__label">Add a new address</span>
-    </button>
   </div>
 </template>
 <template id="ck-drawer-foot-assign">
@@ -6759,6 +6898,16 @@ function checkoutApp() {
       }
       if (s.v5Perso === 'each') this.v5SeedRows(s);
     },
+    // gbppl-v5-ground-1 (04.09): what the reuse control in the delivery
+    // panel says. Not a remembered click but the FORM read back, so it
+    // survives a pick, a hand-typed address and a reopened panel alike.
+    v5PickedLabel() {
+      const d = this.drawer && this.drawer.data;
+      if (!d) return '';
+      const label = this.v3AddressLabel(d);
+      if (!label) return '';
+      return (d.name ? d.name + ', ' : '') + label;
+    },
     v5PickBook(s, addr) {
       if (!s || !addr) return;
       s.v5AddrId = addr.id;
@@ -7060,15 +7209,53 @@ function checkoutApp() {
       };
       this.showDrawer();
     },
+    // gbppl-v5-ground-1: a line of this group says both facts about
+    // itself, «8 gifts · UPS Ground», because the method belongs to the
+    // LINE and two lines to one office may carry two different methods.
     v5AssignList() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
       if (!s) return [];
-      return (s.v5Addrs || []).map(a => ({
-        id: a.id,
-        name: (a.deliver && a.deliver.name) || 'No name yet',
-        label: a.address || 'No address yet',
-        count: this.v5AddrCount(s, a)
+      return (s.v5Addrs || []).map(a => {
+        const n = this.v5AddrCount(s, a);
+        const opt = this.shippingOptions.find(o => o.id === a.shipping);
+        return {
+          id: a.id,
+          name: (a.deliver && a.deliver.name) || 'No name yet',
+          label: a.address || 'No address yet',
+          count: n,
+          badge: n + (n === 1 ? ' gift' : ' gifts') + (opt ? ' · ' + opt.label : '')
+        };
+      });
+    },
+    // The book, with the one thing the reader was asking for: is this one
+    // already in the order? It never blocks the pick, it only says so.
+    v5BookList() {
+      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
+      // Matched on street and ZIP, not on the printed line: the order writes
+      // «United States» where the book says «US», and a string compare would
+      // have called the same office two different places.
+      const key = d => String((d && d.street) || '').toLowerCase().replace(/\s+/g, ' ').trim() + '|' + String((d && d.zip) || '').trim();
+      const used = new Set(((s && s.v5Addrs) || []).filter(a => a.address).map(a => key(a.deliver)));
+      return this.addressBook.map(b => ({
+        id: b.id, name: b.name, label: b.label, used: used.has(key(this.v5ParseAddress(b.label)))
       }));
+    },
+    // A saved address becomes a LINE OF THE ORDER, always a new one: the
+    // method is the line's, so the second run to the same office is a
+    // second line and not an edit of the first (Ton, 04.09).
+    v5AssignBook(id) {
+      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
+      const b = this.addressBook.find(x => x.id === id);
+      if (!s || !b) { this.closeDrawer(); return; }
+      const deliver = Object.assign(this.v3BlankDeliver(), this.v5ParseAddress(b.label), { name: b.name || '' });
+      const a = this.v5BlankAddr({ deliver: deliver, address: b.label, shipping: '', qty: 0 });
+      a.hasError = !deliver.zip;
+      a.errorMsg = a.hasError ? 'ZIP code required' : '';
+      if (!s.v5Addrs) s.v5Addrs = [];
+      s.v5Addrs.push(a);
+      s.v5Hand = (s.v5Hand || 0) + 1;
+      this.v5PutAddr(s, a.id);
+      this.closeDrawer();
     },
     v5AssignTo(addrId) {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
