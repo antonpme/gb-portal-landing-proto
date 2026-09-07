@@ -109,6 +109,41 @@
    прямоугольнику окна (было M9 4v16 при рамке 4.5..19.5), и консоль
    спрашивает их по имени, как спрашивает шесть экранов.
    Двадцать три записи стали тридцатью.
+
+   ------------------------------------------------------------
+   AND THE TRAY, BOTH WAYS ROUND
+   (gbppl-v5-import-polish-1, 07.09)
+   ------------------------------------------------------------
+   Ton, on the import panel of ?v=5: «используй системные
+   компоненты (например, иконку "закрыть" и все такое)». The panel's
+   own two glyphs are the TRAY WITH AN ARROW, down for Download
+   template and up for the drop zone, and neither was in the record
+   while the checkout drew the pair TEN times: at 1.8 in seven
+   button slots, at 1.5 in the drop zone, at 1.8 in two 16px rows.
+   Worse, the download arrow was written TWO different ways for the
+   same shape — «M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3» in the
+   volume plate and «M12 3v13.5m0 0l4.5-4.5M12 16.5L7.5 12» in the
+   panel — which is the drift this record exists to end.
+
+   So the pair moves in, copied character for character out of
+   checkout.html (the first of the two download spellings, the one
+   the plate carries), and the import panel of V5 is the first
+   consumer: the drop zone asks for `upload` by name through
+   data-gb-icon, and the button slot pastes the recorded drawing,
+   the way inputnumber.js pastes minus and plus. Thirty one entries
+   became thirty three. The nine older copies on that page are left
+   standing: converting the drawings of V1 to V4 would move pages
+   that are in front of the team, and it is a wave of its own — the
+   same sentence gbppl-icon-consumers-1 wrote about their weights.
+
+   MEASURED WHILE DOING IT, and said out loud because it bites the
+   next reader: a recorded glyph pasted into a `.gb-btn__icon` slot
+   has NO WEIGHT. `.gb-icon > svg` is what carries stroke-width
+   1.5, and the button's slot only sets the box, so the plain output
+   of svg() renders at the SVG default of 1 — probed on the four
+   input numbers of the checkout, which come out at 1px today. A
+   consumer outside a .gb-icon box therefore names the house weight
+   on the tag it writes.
    ============================================================ */
 (function () {
   'use strict';
@@ -229,6 +264,17 @@
       from: 'system/oro/icons.html: the copy button of a glyph row',
       stroke: 1.5
     },
+    /* gbppl-v5-import-polish-1, 07.09. The tray with the arrow, and
+       the arrow is the whole difference between the two entries: down
+       is «give me the blank file», up is «here is my filled one». Both
+       bodies are the checkout's, and the two of them are one object
+       drawn twice, so they are recorded as a pair rather than one now
+       and its mirror later. */
+    'download': {
+      body: '<path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>',
+      from: 'checkout.html: the Download template buttons of the import flow',
+      stroke: 1.8
+    },
     'eye': {
       body: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z"/>' +
             '<circle cx="12" cy="12" r="2.8"/>',
@@ -341,6 +387,13 @@
       body: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
       from: 'header.js, auth.js: the magnifier of the bar',
       stroke: 1.5
+    },
+    /* The other half of the pair above. First consumer: the drop zone
+       of the V5 import panel, which asks for it by name. */
+    'upload': {
+      body: '<path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>',
+      from: 'checkout.html: the drop zone of the import panel and the Import from file buttons',
+      stroke: 1.8
     },
     'user': {
       body: '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>',
