@@ -482,6 +482,74 @@
      the autoscroll, and Duplicate at the end of the row.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-v5-oneaddr-door-1 (2026-09-07) — THE LAST PLACE THAT
+     DREW THE WHOLE BOOK. All of it inside ?v=5; V1 to V4 were
+     compared node for node against b4a4cec at 360 / 1280 / 2258 in
+     all three scenarios, page and step 1, and the diff is empty.
+
+     Ton, verbatim: «Отправь лучшего разработчика. Мне что-то не
+     нравится. Я нигде не видел, чтобы у нас все адреса вот так вот
+     группой показывались в дровере в поле Select.»
+
+     He was right, and it was the one door the picker of 9f6160a did
+     not reach. ONE ADDRESS still carried a select-shaped control
+     whose menu listed the address book entire: 53 rows and 3215
+     pixels on the Big address book scenario, measured before the
+     change. The picker built an hour earlier — search first, the
+     order's own addresses, five recent, one door to the rest, the
+     form under it — was standing right there behind two other
+     doors and not this one.
+
+     WHAT CHANGED, and it is one control:
+       · the menu is gone. The field is a DOOR that opens the
+         address panel with `v5Target: 'one'`, the bag that already
+         meant «the address of the whole order». Three doors, one
+         panel; v5OpenOne carries the argument.
+       · it wears `.gba-select` over `.gba-input`, the same select
+         the shipping method of every row in Multiple addresses
+         wears, so both controls of step 1 stand on the portal field
+         rung (40/48/56 at 14/14/16) instead of a 46px Tailwind box
+         with 16px ink. One deliberate deviation: chevron-RIGHT,
+         because nothing drops down any more.
+       · it opens ON the address the step holds, so a typo in the
+         one address of an order can be corrected at last; a second
+         press is «change this one».
+       · «Add new address» is not lost: it is the form at the foot
+         of the same panel, which is where 9 of 20 systems in
+         docs/ADDRESS-PICKER-RECON.md put it and where 0 of 20 give
+         it a step of its own.
+       · v5PickBook died with the menu. v5SaveDeliver is the only
+         hand on v5AddrId / v5AddrLabel now, and it is the one that
+         matches street and ZIP against the book (v5SameSpot), so
+         choosing a saved place cannot file a second copy of it.
+
+     AND THE SELECTION BAR OF STEP 2 IS GONE, on the same word from
+     him. Over the bar as b4a4cec shipped it: «что это за адский
+     пиздец» — its four actions sat in a span pinned to the right
+     edge, and at 1280 they do not fit, so the two ghosts fell to a
+     second line hanging off the far side with the count marooned on
+     the left. Over the offer to straighten it: «я это решение не
+     принимаю. Нам нужен обычный выпадающий список. Нажимаешь на
+     Bulk Actions — открывается список. Всё.»
+
+     So there is no bar at all. Set delivery address, Set card
+     message, Clear delivery address and Clear personalization are
+     LINES of the Bulk actions menu that already stood over the
+     table, in that order, under a second heading that names the
+     reach — «Apply to selected (N)», the heading V3's own «Edit
+     selected» menu has written since it was built, so scope is said
+     the same way twice on one page and no pattern is invented. At
+     nought ticked the four are shut, not hidden (colour kept,
+     opacity 0.4, aria-disabled); the two lines above them still
+     reach every gift. The row checkboxes and the header's «all» are
+     untouched and now feed the menu alone.
+
+     NOT TOUCHED ON PURPOSE: the inside of the picker (Recent,
+     Browse all, the People | Companies switch and the letter
+     anchors are Ton's own open question this week), the rest of
+     step 2, the import panel, and every threshold of step 1.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -4050,7 +4118,7 @@
                                property is not a rhythm, it is a coin toss.
                          Which makes the alert symmetrical as he asked: 24
                          above it and 24 below it, both sides the same rung. -->
-                    <div class="border-t-2 border-zinc-900 px-6 md:px-8 py-6 space-y-6" x-data="{ pick: false }">
+                    <div class="border-t-2 border-zinc-900 px-6 md:px-8 py-6 space-y-6">
 
                       <div>
                         <p class="gb-eyebrow mb-2">Where these gifts go</p>
@@ -4082,25 +4150,61 @@
                            is a zone, and a zone is Zinc 50. -->
                       <div x-show="shipment.v5Mode === 'one'" class="space-y-6 ck-zone">
                         <div>
-                          <p class="gb-eyebrow mb-2">Address</p>
-                          <div class="relative">
-                            <button @click="pick = !pick" type="button"
-                                    class="w-full flex items-center justify-between gap-4 bg-white border border-zinc-300 rounded-[var(--radius)] px-4 py-3 text-left hover:border-zinc-500 focus:outline-none focus:border-blue-600 transition-colors">
-                              <span class="text-sm truncate" :class="shipment.v5AddrLabel ? 'text-zinc-900' : 'text-zinc-400'" x-text="shipment.v5AddrLabel || 'Select an address'"></span>
-                              <svg class="w-4 h-4 text-zinc-500 flex-shrink-0 transition-transform" :class="pick ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                          <p class="gb-eyebrow mb-2" :id="'v5one-lab-' + product.id + '-' + shipment.id">Address</p>
+                          <!-- ============================================================
+                               THE FIELD IS A DOOR, NOT A LIST
+                                              gbppl-v5-oneaddr-door-1 (07.09)
+                               ------------------------------------------------------------
+                               Ton, verbatim: «Мне что-то не нравится. Я нигде не
+                               видел, чтобы у нас все адреса вот так вот группой
+                               показывались в дровере в поле Select.»
+
+                               He was looking at what stood here: a control in the
+                               shape of a select whose menu drew THE WHOLE BOOK. On
+                               the Big address book scenario that menu measured 3215
+                               pixels tall and held 53 rows (before/after shots in the
+                               wave folder). The reconnaissance of the same week
+                               (docs/ADDRESS-PICKER-RECON.md) counts twenty systems and
+                               finds ZERO that show hundreds of rows as a list; the one
+                               production pattern cut to our shape is Adobe Commerce,
+                               which past ten saved addresses hides the list entirely
+                               and leaves the chosen address plus a «Change Address»
+                               control that opens a search.
+
+                               So this control stops being a list and becomes a DOOR.
+                               It opens the picker the house already built one wave ago
+                               (gbppl-v5-addrpicker-1: search first, what is already in
+                               this order, five recent, one door to the rest, and the
+                               form under it) — the same panel «Add address» and «Set
+                               delivery address» open. Nothing about that panel is
+                               touched here; it only gains its third caller.
+
+                               IT IS THE HOUSE SELECT AND NOT A THIRD SHAPE. `.gba-select`
+                               over a `.gba-input`, the same wrapper the shipping method
+                               of every row in Multiple addresses wears, so the two
+                               controls of step 1 stand on one rung of the portal field
+                               ladder (40/48/56 at 14/14/16) instead of the 46px Tailwind
+                               box with 16px ink that stood here. ONE deviation from that
+                               select, and it is deliberate: the glyph is chevron-RIGHT.
+                               A chevron down promises a list under the control and
+                               nothing drops down any more; the panel arrives from the
+                               right, and the glyph says which way the door swings.
+
+                               «ADD NEW ADDRESS» IS NOT LOST, it is where the recon says
+                               every system puts it (9 of 20, and 0 of 20 give it a step
+                               of its own): the form at the foot of the same panel.
+                               ============================================================ -->
+                          <div class="gba-select">
+                            <button type="button" @click="v5OpenOne(product.id, shipment.id)"
+                                    aria-haspopup="dialog"
+                                    :aria-expanded="v5OneDoorOpen(shipment) ? 'true' : 'false'"
+                                    :aria-labelledby="'v5one-lab-' + product.id + '-' + shipment.id + ' v5one-val-' + product.id + '-' + shipment.id"
+                                    class="gba-input flex items-center text-left cursor-pointer">
+                              <span class="min-w-0 truncate" :id="'v5one-val-' + product.id + '-' + shipment.id"
+                                    :class="shipment.v5AddrLabel ? '' : 'text-zinc-400'"
+                                    x-text="shipment.v5AddrLabel || 'Pick an address'"></span>
                             </button>
-                            <div x-show="pick" @click.outside="pick = false" x-cloak x-transition:leave="menu-leave" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="menu-enter absolute left-0 right-0 top-full mt-1 bg-white border border-zinc-200 rounded-[var(--radius)] shadow-lg z-30 overflow-hidden">
-                              <template x-for="addr in addressBook" :key="'v5book-' + addr.id">
-                                <button type="button" @click="v5PickBook(shipment, addr); pick = false" class="w-full text-left px-4 py-2.5 text-sm hover:bg-zinc-50 border-b border-zinc-100 last:border-0">
-                                  <p class="font-medium" x-text="addr.name"></p>
-                                  <p class="text-sm text-zinc-500 truncate" x-text="addr.label"></p>
-                                </button>
-                              </template>
-                              <button type="button" @click="pick = false; v5OpenOne(product.id, shipment.id)" class="w-full text-left px-4 py-2.5 text-sm bg-zinc-50 hover:bg-zinc-100 flex items-center gap-2 font-medium border-t border-zinc-200">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                                Add new address
-                              </button>
-                            </div>
+                            <span data-gb-icon="chevron-right" data-gb-icon-size="20" aria-hidden="true"></span>
                           </div>
                           <!-- Ton, 03.09: the notice belongs under the address,
                                not under the methods it unlocks.
@@ -4617,60 +4721,86 @@
                                   <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
                                   <span>Apply gift personalization</span>
                                 </button>
+
+                                <!-- THE SECOND REACH, AND IT SAYS ITS OWN SIZE
+                                     (gbppl-v5-oneaddr-door-1, 07.09; the bar
+                                     that used to hold these four is retired at
+                                     its own site below). The heading is the one
+                                     V3's «Edit selected» menu has written since
+                                     it was built, word for word, so the two
+                                     menus of this page say scope the same way.
+                                     A hairline over it because the reach
+                                     changes here and nothing else does. -->
+                                <div class="mt-2 pt-2 border-t border-zinc-200">
+                                  <div class="px-3 pt-2 pb-1.5 gb-eyebrow">Apply to selected (<span x-text="v5Selected(shipment)"></span>)</div>
+                                  <button type="button" :disabled="v5Selected(shipment) === 0" :aria-disabled="v5Selected(shipment) === 0"
+                                          @click="tplMenuOpen = null; v5OpenAssign(product.id, shipment.id, null)"
+                                          class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left"
+                                          :class="v5Selected(shipment) === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-zinc-50'">
+                                    <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                                    <span>Set delivery address</span>
+                                  </button>
+                                  <button type="button" :disabled="v5Selected(shipment) === 0" :aria-disabled="v5Selected(shipment) === 0"
+                                          @click="tplMenuOpen = null; openMasterDrawer(product.id, shipment.id, 'greeting', 'selected')"
+                                          class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left"
+                                          :class="v5Selected(shipment) === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-zinc-50'">
+                                    <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25"/></svg>
+                                    <span>Set card message</span>
+                                  </button>
+                                  <button type="button" x-show="shipment.v5Mode === 'many'" :disabled="v5Selected(shipment) === 0" :aria-disabled="v5Selected(shipment) === 0"
+                                          @click="tplMenuOpen = null; v5ClearSelectedAddr(shipment)"
+                                          class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left"
+                                          :class="v5Selected(shipment) === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-zinc-50'">
+                                    <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    <span>Clear delivery address</span>
+                                  </button>
+                                  <button type="button" :disabled="v5Selected(shipment) === 0" :aria-disabled="v5Selected(shipment) === 0"
+                                          @click="tplMenuOpen = null; v5ClearSelected(shipment)"
+                                          class="w-full flex items-center gap-3 px-3 py-2 rounded-[var(--radius)] text-sm text-left"
+                                          :class="v5Selected(shipment) === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-zinc-50'">
+                                    <svg class="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    <span>Clear personalization</span>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <!-- THE SELECTION PANEL. It appears with the first tick
-                             and says how many rows it will write, so nothing
-                             here can act on a reach the reader has not seen.
+                        <!-- ============================================================
+                             THE SELECTION BAR IS GONE, AND ITS FOUR ACTIONS
+                             ARE MENU LINES   gbppl-v5-oneaddr-door-1 (07.09)
+                             ------------------------------------------------------------
+                             Here stood a Zinc 50 bar that appeared with the
+                             first tick: «N selected» and four buttons. Ton, on
+                             it, verbatim: «что это за адский пиздец», and then
+                             on the offer to straighten the bar: «я это решение
+                             не принимаю. Нам нужен обычный выпадающий список.
+                             Нажимаешь на Bulk Actions — открывается список.
+                             Всё.»
 
-                             AN ASSIGNMENT CAN BE TAKEN BACK
-                             (gbppl-v5-step2-pack-1, 07.09). Ton: «Когда я уже
-                             распределил подарки, я не вижу варианта их
-                             сбросить, если я вдруг ошибся. Это какой-то бред.»
-                             He is right, and the shape of the fix was already
-                             on this bar: every other thing a run of ticked rows
-                             can be given, it can be given AGAIN — only the
-                             address was a one-way door, because «Set delivery
-                             address» can move a gift to another address but
-                             never back to none. So the bar gets the undo of its
-                             own first button, beside it.
+                             So there is no bar. Everything a run of ticked
+                             gifts can be given or have taken away is a LINE OF
+                             THE MENU that already stood over this table, under
+                             a second heading that names the reach — the shape
+                             V3's «Edit selected» menu has carried since it was
+                             built («Apply to selected (N)»), so no pattern is
+                             invented here, one is reused. The order Ton read
+                             on the bar is kept: Set, Set, Clear, Clear.
 
-                             AND THE OLD «CLEAR» HAD TO SAY WHAT IT CLEARS. It
-                             never touched the address (see v5ClearSelected: the
-                             two facts are separate everywhere on this page and
-                             one button may not quietly join them) — but a bare
-                             «Clear» next to «Clear delivery address» reads as
-                             the bigger of the two, which is the exact opposite
-                             of the truth. So it is named for its own half:
-                             CLEAR PERSONALIZATION. Both are ghost, because
-                             taking away is never the loudest thing on a bar,
-                             and the two verbs stand together after the two
-                             «Set» so the row reads give, give, take, take. -->
-                        <div x-show="v5Selected(shipment) > 0" x-cloak x-transition.opacity.duration.280ms
-                             class="flex flex-wrap items-center gap-x-4 gap-y-2 bg-zinc-50 border border-zinc-200 rounded-[var(--radius)] px-4 py-3">
-                          <span class="text-sm text-zinc-700"><span class="font-medium" x-text="v5Selected(shipment)"></span> selected</span>
-                          <!-- FOUR ACTIONS DO NOT FIT ONE LINE IN THIS COLUMN
-                               and are not meant to: the card's right column is
-                               756 at 1280 and the four labels are 742 before a
-                               single gap. So the cluster wraps, and it wraps
-                               ANCHORED TO THE RIGHT (justify-end) — the same
-                               edge ml-auto already put it on, held on both
-                               lines, so two rows read as one block of actions
-                               rather than a line that overflowed. Measured at
-                               1280: bar 66 -> 134, and nothing under it moves,
-                               because the bar only exists while rows are
-                               ticked. -->
-                          <span class="flex flex-wrap items-center justify-end gap-2 ml-auto">
-                            <button type="button" @click="v5OpenAssign(product.id, shipment.id, null)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Set delivery address</span></button>
-                            <button type="button" @click="openMasterDrawer(product.id, shipment.id, 'greeting', 'selected')" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Set card message</span></button>
-                            <button type="button" x-show="shipment.v5Mode === 'many'" @click="v5ClearSelectedAddr(shipment)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Clear delivery address</span></button>
-                            <button type="button" @click="v5ClearSelected(shipment)" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Clear personalization</span></button>
-                          </span>
-                        </div>
+                             AT NOUGHT TICKED THE FOUR LINES ARE SHUT, not
+                             hidden: a menu whose length changes under the hand
+                             teaches nothing, and the count in the heading says
+                             why they are shut. Shut is the house's own — the
+                             colour stays, the row fades to 0.4 (radio.css:
+                             «off = ТОЛЬКО opacity 0.4»), the pointer says no
+                             and aria-disabled says it out loud. The two lines
+                             above them are untouched and still reach every
+                             gift, ticked or not.
 
+                             The row checkboxes and the header's «all» are
+                             untouched too. They feed this menu now, and
+                             nothing else. -->
                         <!-- ONE TABLE OF GIFTS, GROUPED BY WHERE THEY GO. The
                              subheadings are the layout of step 1 read down the
                              page instead of across it.
@@ -8285,14 +8415,11 @@ function checkoutApp() {
       if (!label) return '';
       return (d.name ? d.name + ', ' : '') + label;
     },
-    v5PickBook(s, addr) {
-      if (!s || !addr) return;
-      s.v5AddrId = addr.id;
-      s.v5AddrLabel = addr.name + ', ' + addr.label;
-      // gbppl-v5-prefill-1: in «one address» this IS the assignment of every
-      // row in the table, so the names follow it.
-      this.v5Prefill(s);
-    },
+    /* gbppl-v5-oneaddr-door-1 (07.09): v5PickBook stood here, and it was the
+       one line of the dropdown that has died with it — it wrote v5AddrId and
+       v5AddrLabel straight off a book row, with no form in between. Both
+       facts are still written, once, by v5SaveDeliver, which is the only
+       hand on them now and the one that also dedupes the book. */
 
     // ============================================================
     // THE PICKER APPLIES THE WHOLE ADDRESS (gbppl-v5-fix-1, 04.09)
@@ -8639,15 +8766,59 @@ function checkoutApp() {
       this.showDrawer();
       this.v5PkFocus();
     },
+    /* ============================================================
+       THE THIRD DOOR OF THE ONE PANEL  (gbppl-v5-oneaddr-door-1)
+       ------------------------------------------------------------
+       `v5Target: 'one'` was already the bag that says «what comes
+       out of this panel is THE address of the whole order», and
+       v5SaveDeliver has always read it. It used to be reached only
+       from the last row of a dropdown («Add new address»); it is
+       what the address field of step 1 opens now, and it is the one
+       of the three doors that files its answer in the address book.
+
+       Three doors, one panel, and each is told apart by the bag it
+       opens with, not by a second panel:
+         v5Target 'one'                   the address of the order
+         v5Target 'list', v5Assign false  a line of the address list
+         v5Target 'list', v5Assign true   the ticked gifts of step 2
+       v5PkPick reads v5Assign to decide whether a row is APPLIED or
+       FILLED IN; 'one' fills in, exactly as the list door does, and
+       Save is what commits — which is also where the book is
+       deduplicated (v5SameSpot), so picking a saved place and saving
+       it cannot put a second copy of that place in the book.
+
+       IT OPENS ON THE ADDRESS THE STEP ALREADY HOLDS. A second press
+       of the field means «change this one», and until now One address
+       had no way to correct a typo in its own address at all: the
+       panel came up blank and the only move was to pick a different
+       place. The book keeps a name and a line and nothing else, so a
+       company or a phone typed on the first pass does not come back
+       with them — noted in the wave report, not invented here.
+       ============================================================ */
     v5OpenOne(productId, shipmentId) {
+      const s = this.findShipment(productId, shipmentId);
+      const b = (s && s.v5AddrId) ? this.addressBook.find(x => x.id === s.v5AddrId) : null;
+      // «Unnamed» is what v5SaveDeliver files an address typed without a name
+      // as: a placeholder for a list, never a name to hand back to the form.
+      const held = b
+        ? Object.assign(this.v5ParseAddress(b.label), { name: b.name === 'Unnamed' ? '' : (b.name || '') })
+        : {};
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: null,
         addrId: null, v5Target: 'one', v5Assign: false, master: false,
         pk: this.v5BlankPk(),
-        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver())
+        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), held)
       };
       this.showDrawer();
       this.v5PkFocus();
+    },
+    // What the door tells a screen reader: whether the panel standing open is
+    // ITS panel. Same pair of attributes the house's other popup triggers
+    // carry (header.js: aria-haspopup + a live aria-expanded).
+    v5OneDoorOpen(s) {
+      const d = this.drawer;
+      if (!s || !d || !d.open || d.type !== 'deliver' || d.v5Target !== 'one') return false;
+      return this.findShipment(d.productId, d.shipmentId) === s;
     },
     v5SaveDeliver() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
