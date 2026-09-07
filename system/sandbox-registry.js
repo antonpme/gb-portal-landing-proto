@@ -462,7 +462,20 @@
              самого начала, не хватало фразы). Плюс длинные имена в таблице
              импорта обрезаются по ширине колонки и открываются целиком на
              фокусе ячейки. `updated` → 07.09. */
-          desc: 'The order is a number of gifts and a list of addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. The step will not close while a gift still has nowhere to go, unless the gifts are being personalized one by one, in which case the table below is where they are placed. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer, cut into runs under a subheading per address. There is no third step, and from ten gifts on the page recommends a way in rather than leaving the choice unmarked: Import from file takes the filled button, Add address keeps its outline, and one line under them says why. The import itself begins with the blank template, offered as the first thing on the panel, and it is one file for both answers: where every gift ships and what is printed on it. Long names in the imported table are cut to their column and open whole when the cell is focused.',
+          /* gbppl-v5-import-steps-1 (07.09, тот же день; Тон задал СТРУКТУРУ
+             первого экрана панели импорта: «1. Они должны загрузить
+             (download) себе темплейт. 2. Заполнить его. 3. Выбрать его,
+             загрузить обратно (upload) и отправить (Submit)»). Экран стал
+             явной нумерованной последовательностью трёх шагов на одной земле
+             Zinc 50, и третий шаг перестал прыгать вперёд сам: аплоад
+             ПОКАЗЫВАЕТ прикреплённый файл (галочка, имя, Remove), а на экран
+             проверки ведёт Submit подвала, до файла disabled («обычно аплоад
+             просто показывает тебе, что файл прикреплён... это такой
+             распространённый паттерн взаимодействия, который ментально
+             понятен»). Цифры прогресса в шапке панели сняты: числа = шаги
+             человека, слова с шевронами = этапы процесса. Описание меняет
+             одну фразу про импорт. `updated` остаётся 07.09. */
+          desc: 'The order is a number of gifts and a list of addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. The step will not close while a gift still has nowhere to go, unless the gifts are being personalized one by one, in which case the table below is where they are placed. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer, cut into runs under a subheading per address. There is no third step, and from ten gifts on the page recommends a way in rather than leaving the choice unmarked: Import from file takes the filled button, Add address keeps its outline, and one line under them says why. The import itself is three numbered steps on one screen: download the template, fill it in, upload it back. It is one file for both answers, where every gift ships and what is printed on it; the upload shows the attached file rather than jumping ahead, and Submit is what sends it to be checked. Long names in the imported table are cut to their column and open whole when the cell is focused.',
           status: 'in-progress',
           href: 'live/checkout.html?v=5',
           ready: true,
