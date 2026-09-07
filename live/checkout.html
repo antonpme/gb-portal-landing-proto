@@ -384,6 +384,56 @@
         telling the same truth about what is placed.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-v5-addrpicker-1 (2026-09-07) — THE ADDRESS PANEL LEARNS TO
+     HOLD A BIG BOOK, AND LOSES TWO THINGS TON STRUCK OUT. All of it
+     inside ?v=5; V1 to V4 were compared node for node against
+     2263936 at 360 / 1280 / 2258, page and address drawer, and the
+     diff is empty.
+
+     THE CONCEPT WAS WRITTEN AND APPROVED FIRST, as the house rule
+     for new logic asks: studio\docs\CHECKOUT-CONCEPT.md, «Концепт:
+     пикер адресов для большой книги», out of Ton 04.09 («десятки
+     или сотни адресов — схема со списком не подходит; нужен search
+     autocomplete и более удобный браузинг») and answered by him on
+     07.09 with «делать всё сразу» plus two decisions over the text:
+     SEARCH FIRST AT ANY SIZE, not from a threshold, and BOTH
+     groupings of the browse at once.
+
+     1. THE SELECT DIES AND A PICKER STANDS IN ITS PLACE. «Use an
+        address you already entered» drew the WHOLE book in a menu:
+        fine at three saved places, a wall at fifty. Top to bottom
+        the panel is now search, then the addresses already IN THIS
+        ORDER with what each one holds, then about five RECENT out
+        of the book, then one door into the whole of it — grouped by
+        letter, with letter anchors and a People | Companies switch —
+        and then the form, which is what it always was. Nothing
+        draws hundreds of rows unless a person asked for them.
+
+     2. ONE PICKER, TWO DOORS, ONE PANEL. The concept: «Один и тот
+        же пикер в двух дверях». «Set delivery address» no longer
+        opens a list panel of its own — it opens THIS panel with the
+        flag that already meant «and put it on the ticked gifts». The
+        old ck-drawer-assign template is retired; every part of it
+        stands here once.
+
+     3. CANCEL BECOMES CLEAR. Ton: «Кнопкой Cancel ты просто
+        закрываешь панель, но это и так можно сделать крестиком. А
+        вот очистить уже заполненную форму сейчас возможности нет.»
+        Same slot, same rung, same family; shut on an empty form.
+
+     4. THE LINE UNDER THE TITLE GOES. Ton: «Убери мелкую строчку "A
+        new address for this order"... Никогда не ставь подобные
+        тексты, это лишний визуальный шум.» All three of the panel's
+        sub-lines were the title said again more quietly, so all
+        three go; the one that stays is the one that carries a fact
+        the reader has nowhere else to read — how many ticked gifts
+        this panel is about to move.
+
+     AND A FOURTH SCENARIO, «Big address book»: 52 saved places, six
+     companies, two pairs of namesakes in different towns. The
+     default and the Loaded cart keep the three they had.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -1145,6 +1195,64 @@
 
   .ck-drawer-stack > * + * { margin-top: var(--space-32); }
   .ck-drawer-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-16); }
+
+  /* ============================================================
+     THE SEARCH FIELD OF THE ADDRESS PICKER
+                                    gbppl-v5-addrpicker-1, 07.09
+     ------------------------------------------------------------
+     A field with a glyph at its LEADING edge. The house already
+     has the trailing half of exactly this: `.gba-select` in
+     auth.css puts the chevron at `right: pad-x of the field` and
+     reserves `inset + glyph + 8` on that side so a long value
+     cannot slide under it. This is that arithmetic mirrored, name
+     for name — the same `--form-ctl-px` / `--form-ctl-glyph` the
+     portal rung declares, the same `--space-8` gap — so the
+     magnifier stands on the same vertical as the text does on the
+     other side and NOT ONE NUMBER IS INVENTED here.
+
+     WHY IT IS LOCAL AND NOT `.gba-search` IN auth.css. A second
+     dress of the field belongs to the field's owner, and that is
+     where it should end up (law 0a.2: a component enters the
+     system with a row in the map, a line in the inventory and a
+     showcase). This wave owns the checkout, not auth.css, and a
+     parallel wave may be standing in that file. So it is written
+     here, in the owner's own vocabulary, ready to be lifted
+     verbatim, and the report carries the question to Ton.
+
+     The glyph is `search`, entry of icon.js since the header bar
+     asked for it — nothing is drawn by hand.
+     ============================================================ */
+  .ck-search { position: relative; display: block; }
+  .ck-search > .gba-input {
+    padding-left: calc(var(--form-ctl-px, 12px) + var(--form-ctl-glyph, 16px) + var(--space-8));
+  }
+  /* AND THE PLACEHOLDER DOES NOT GO OUT UNDER THE CARET. `.gba-input`
+     fades its placeholder on focus (auth.css :focus::placeholder), which
+     is right for a field standing under a caps label — the label is still
+     saying what the field is. This one has no label by design, and the
+     panel puts the caret in it on open, so the fade left a lit line with
+     a magnifier and nothing else on it (caught on the screen, not in the
+     numbers). The same antidote, for the same reason, as the concierge
+     composer of live/portal.html (trap 10). */
+  .ck-search > .gba-input:focus::placeholder { opacity: 1; }
+  .ck-search > .gb-icon,
+  .ck-search > [data-gb-icon] {
+    position: absolute;
+    top: 50%;
+    left: var(--form-ctl-px, 12px);
+    transform: translateY(-50%);
+    width: var(--form-ctl-glyph, 16px);
+    height: var(--form-ctl-glyph, 16px);
+    color: var(--zinc-500);
+    pointer-events: none;
+  }
+  @media (min-width: 2000px) {
+    .ck-search > .gba-input {
+      padding-left: calc(var(--form-ctl-px-2xl, 16px) + var(--form-ctl-glyph, 16px) + var(--space-8));
+    }
+    .ck-search > .gb-icon,
+    .ck-search > [data-gb-icon] { left: var(--form-ctl-px-2xl, 16px); }
+  }
 
   /* The tab strip rides at the top of the scrolling body and stays there while
      the panel below it scrolls. It reaches back out to the drawer's own gutter
@@ -5259,8 +5367,180 @@
   <div class="ck-drawer-stack" x-data="{ bookOpen: false }" :class="uiVersion === 'v5' ? 'gba-scale-portal' : ''">
 
     <div>
-      <p class="gb-eyebrow mb-2">Use an address you already entered</p>
-      <div class="relative">
+      <!-- ============================================================
+           V5 · THE PICKER FOR A BIG BOOK (gbppl-v5-addrpicker-1, 07.09)
+           ------------------------------------------------------------
+           The concept is studio\docs\CHECKOUT-CONCEPT.md, «Концепт:
+           пикер адресов для большой книги», approved by Ton on 07.09
+           («делать всё сразу»), out of his own sentence of 04.09:
+           «десятки или сотни адресов — схема со списком не подходит;
+           нужен search autocomplete и более удобный браузинг».
+
+           THE SELECT BELOW DIES IN V5, and it is the reason the wave
+           exists: «Use an address you already entered» opens a menu
+           that draws the WHOLE book, so at fifty saved places it is a
+           320px scroller and at five hundred it is a wall. It is
+           untouched for V3 and V4, which is why both halves stand
+           here under `x-show` on the version rather than one being
+           rewritten: V3's panel comes out of this wave node for node.
+
+           SEARCH FIRST, ALWAYS (Ton, 07.09, over the concept's open
+           question «от какого порога»): the field is the first thing
+           in the panel at three addresses and at three hundred. Under
+           it, with nothing typed, only what a person can actually
+           read — the addresses ALREADY IN THIS ORDER with what each
+           holds, and about five RECENT ones out of the book. The rest
+           of the book is behind one door, and the door opens INSIDE
+           this panel (a layer over a drawer would be a third floor,
+           and the house has no such storey).
+
+           ONE PICKER, TWO DOORS. The concept: «Один и тот же пикер в
+           двух дверях: (а) дровер Add address шага 1; (б) дровер Set
+           delivery address из таблицы». So «Set delivery address» no
+           longer opens a panel of its own — it opens THIS one with
+           `drawer.v5Assign` set, which was already the flag meaning
+           «what this panel produces also lands on the ticked gifts».
+           A row click assigns instead of filling the form, the two
+           things only that door needs stand under the lists, and the
+           manual form below is what «Type a new address» used to hand
+           over to. The old `ck-drawer-assign` template is gone; what
+           was unique in it is in this panel, once.
+           ============================================================ -->
+      <!-- `drawer.pk` in the condition and not only the version: the
+           <gb-drawer> keeps the last body it was given in the DOM after it
+           closes, so these bindings go on being evaluated against whatever
+           the page's `drawer` bag has become — and closeDrawer and
+           setScenario both replace that bag wholesale. The gate caught it as
+           «Cannot read properties of undefined». -->
+      <template x-if="uiVersion === 'v5' && drawer.pk">
+        <div class="space-y-6">
+
+          <!-- 1 · THE SEARCH. Name, company, street, city, state, ZIP,
+               narrowing from the first character. No label over it: the
+               placeholder says what it is, and a caps eyebrow repeating
+               the placeholder is exactly the noise Ton struck out of
+               this panel's head the same day. Down and up walk the rows
+               that are drawn, Enter takes the lit one, Escape empties
+               the field, then closes the browse, then hands the key to
+               the drawer — the ladder every mode of the studio uses. -->
+          <div class="gba-inputwrap ck-search">
+            <input type="text" data-pk-search
+                   x-model="drawer.pk.q" @input="drawer.pk.i = -1" @keydown="v5PkKey($event)"
+                   placeholder="Search your addresses" aria-label="Search your addresses"
+                   autocomplete="off" class="gba-input">
+            <span data-gb-icon="search" data-gb-icon-size="16" aria-hidden="true"></span>
+          </div>
+
+          <!-- 2 · IN THIS ORDER. The same group, the same badge and the
+               same row this panel's list door has carried since
+               gbppl-v5-ground-1: «8 gifts · UPS Ground», because the
+               method belongs to the LINE. -->
+          <div x-show="v5PkView().order.length > 0">
+            <p class="gb-eyebrow mb-2">In this order</p>
+            <div class="ck-ground border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
+              <template x-for="r in v5PkView().order" :key="'v5pko-' + r.id">
+                <button type="button" :data-pkrow="r.k" @click="v5PkPick(r)"
+                        :class="drawer.pk.i === r.k ? 'bg-zinc-50' : 'bg-white'"
+                        class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-200 last:border-0 flex items-center gap-4 transition-colors">
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-sm font-medium text-zinc-900 truncate" x-text="r.name"></span>
+                    <span class="block text-sm text-zinc-500 truncate" x-text="r.sub"></span>
+                  </span>
+                  <span class="gb-eyebrow flex-shrink-0 text-right" x-text="r.badge"></span>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <!-- 3 · THE BOOK: five recent, or the whole thing behind the
+               door. The heading says which of the three it is showing,
+               so no second line has to. -->
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mb-2">
+              <p class="gb-eyebrow" x-text="v5PkView().title"></p>
+              <!-- THE GROUPING SWITCH IS THE HOUSE TOGGLE. Two mutually
+                   exclusive values and nothing else on the row: that is
+                   what `.gb-toggle` is for, it is the rung the checkout's
+                   own toggle already stands on (--small, Ton 02.09), and
+                   `data-gb-toggle="host"` leaves the value with Alpine
+                   exactly as the One / Different addresses control does. -->
+              <div x-show="drawer.pk.browse" class="gb-toggle gb-toggle--small" role="radiogroup"
+                   data-gb-toggle="host" aria-label="Group the book by">
+                <button class="gb-toggle__item" type="button" role="radio" data-value="people"
+                        @click="drawer.pk.by = 'people'; drawer.pk.i = -1"
+                        :class="drawer.pk.by === 'people' ? 'is-on' : ''"
+                        :aria-checked="drawer.pk.by === 'people'">People</button>
+                <button class="gb-toggle__item" type="button" role="radio" data-value="companies"
+                        @click="drawer.pk.by = 'companies'; drawer.pk.i = -1"
+                        :class="drawer.pk.by === 'companies' ? 'is-on' : ''"
+                        :aria-checked="drawer.pk.by === 'companies'">Companies</button>
+              </div>
+            </div>
+
+            <!-- THE LETTER ANCHORS. Only the letters the book actually
+                 has: an anchor to nothing is a lie. The shape is the
+                 page's own pagination pill (the round 32 at the foot of
+                 the gift table) — the same jump control, so the two do
+                 not read as two ideas. Both are waiting on a Pagination
+                 component; noted in the wave report. -->
+            <div x-show="drawer.pk.browse && v5PkView().letters.length > 1"
+                 class="flex flex-wrap items-center gap-1 mb-2">
+              <template x-for="L in v5PkView().letters" :key="'v5pkL-' + L.letter">
+                <button type="button" @click="v5PkJump(L.gi)"
+                        class="w-8 h-8 rounded-full text-sm font-medium text-zinc-600 hover:bg-zinc-100"
+                        x-text="L.letter"></button>
+              </template>
+            </div>
+
+            <div x-show="v5PkView().count > 0" class="ck-ground border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
+              <template x-for="g in v5PkView().groups" :key="'v5pkg-' + g.gi">
+                <div :data-pkanchor="g.gi">
+                  <p x-show="g.head" class="gb-eyebrow bg-zinc-100 border-b border-zinc-200 px-4 py-2" x-text="g.head"></p>
+                  <template x-for="r in g.rows" :key="'v5pkb-' + r.id">
+                    <button type="button" :data-pkrow="r.k" @click="v5PkPick(r)"
+                            :class="drawer.pk.i === r.k ? 'bg-zinc-50' : 'bg-white'"
+                            class="w-full text-left px-4 py-3 hover:bg-zinc-50 border-b border-zinc-200 last:border-0 flex items-center gap-4 transition-colors">
+                      <span class="min-w-0 flex-1">
+                        <span class="block text-sm font-medium text-zinc-900 truncate" x-text="r.name"></span>
+                        <span class="block text-sm text-zinc-500 truncate" x-text="r.sub"></span>
+                      </span>
+                      <span x-show="r.badge" class="text-sm text-zinc-500 flex-shrink-0" x-text="r.badge"></span>
+                    </button>
+                  </template>
+                </div>
+              </template>
+            </div>
+            <p x-show="v5PkView().count === 0" class="text-sm text-zinc-500">Nothing matches that.</p>
+
+            <!-- ONE DOOR, BOTH WAYS. A control that only opens leaves the
+                 reader with a wall and no way back to five rows. -->
+            <button x-show="v5PkView().door" type="button" @click="v5PkBrowse()"
+                    class="w-full mt-2 px-4 py-3 bg-white hover:bg-zinc-50 border border-zinc-200 rounded-[var(--radius)] text-sm font-medium text-left flex items-center justify-between gap-4 transition-colors">
+              <span x-text="v5PkView().doorLabel"></span>
+              <span :data-gb-icon="drawer.pk.browse ? 'chevron-up' : 'chevron-down'" data-gb-icon-size="16" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <!-- 4 · WHAT ONLY THE ASSIGN DOOR NEEDS. A list cannot answer
+               «nowhere yet», and the sentence about a saved address
+               joining as its own LINE is a rule of this version, not a
+               restatement of the group over it (Ton 04.09: «20 ground +
+               5 overnight в один офис»). -->
+          <div x-show="drawer.v5Assign">
+            <p class="gb-eyebrow mb-2">Neither</p>
+            <button type="button" @click="v5AssignTo(null)"
+                    class="w-full text-left px-4 py-3 bg-white hover:bg-zinc-50 border border-zinc-200 rounded-[var(--radius)] transition-colors">
+              <span class="block text-sm font-medium text-zinc-900">Not assigned yet</span>
+              <span class="block text-sm text-zinc-500">Send the gifts back to the unassigned count</span>
+            </button>
+            <p class="text-sm text-zinc-500 mt-2">A saved address joins the order as its own line, with its own shipping method. The same place can stand twice.</p>
+          </div>
+
+        </div>
+      </template>
+
+      <p class="gb-eyebrow mb-2" x-show="uiVersion !== 'v5'">Use an address you already entered</p>
+      <div class="relative" x-show="uiVersion !== 'v5'">
         <!-- gbppl-v5-ground-1 (04.09). Ton, verbatim: «После выбора адреса он
              должен оставаться в селекторе выбранным. Поля заполняются, но
              селектор опять показывает Pick an address.» The label was a
@@ -5356,93 +5636,72 @@
     </div>
   </div>
 </template>
+<!-- ============================================================
+     THE FOOT OF THE ADDRESS PANEL: CANCEL BECOMES CLEAR IN V5
+                                gbppl-v5-addrpicker-1 (07.09)
+     Ton, verbatim: «Кнопка Cancel нам не нужна — нужен Clear.
+     Кнопкой Cancel ты просто закрываешь панель, но это и так можно
+     сделать крестиком. А вот очистить уже заполненную форму сейчас
+     возможности нет.»
+
+     SAME SLOT, SAME RUNG, SAME FAMILY. The quiet half of a drawer
+     foot is `medium ghost secondary` (tokens.md: medium is the
+     confirm rung of drawer forms), and the house already has a
+     Clear wearing exactly that cell — the one on the selection bar
+     of step 2. Nothing about the panel's geometry moves; the button
+     stops undoing the OPENING and starts undoing the TYPING.
+
+     IT IS HONESTLY SHUT ON AN EMPTY FORM. A live button that does
+     nothing is the same lie in the other direction, and the house
+     disabled keeps its colour, fades, stops answering and says so
+     with aria-disabled (button.css).
+
+     V3 AND V4 KEEP CANCEL, and they keep it as a sibling under
+     `x-if` rather than a rewritten label: a display:none <template>
+     is not a flex item, so the foot of V3 comes out of this wave
+     with the same two buttons in the same two places.
+     ============================================================ -->
 <template id="ck-drawer-foot-deliver">
   <div class="ck-drawer-actions">
-    <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+    <template x-if="uiVersion !== 'v5'">
+      <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+    </template>
+    <template x-if="uiVersion === 'v5'">
+      <button @click="v5ClearForm()" :disabled="!v5FormDirty()" :aria-disabled="!v5FormDirty()"
+              class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Clear</span></button>
+    </template>
     <button @click="v3SaveDeliver()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Save delivery</span></button>
   </div>
 </template>
 
 <!-- ============================================================
-     V5 · SET DELIVERY ADDRESS (gbppl-checkout-v5-1)
+     V5 · SET DELIVERY ADDRESS HAS NO PANEL OF ITS OWN ANY MORE
+                                gbppl-v5-addrpicker-1 (07.09)
      ------------------------------------------------------------
-     The panel behind «Set delivery address» on the selection bar,
-     and behind the pin at the end of a row. It is a LIST AND NOT A FORM: the
-     addresses of step 1, once each, with what each one already
-     holds, plus the two things a list cannot answer — «not
-     assigned yet», and a new address, which hands over to the
-     address form and lands in step 1 as well as on the ticked
-     rows. Ton, 04.09: «адрес из списка шага 1 или новый — новый
-     попадает в шаг 1».
+     Here stood `ck-drawer-assign` and its foot: a LIST panel behind
+     the selection bar and the pin at the end of a row — IN THIS
+     ORDER, ADDRESS BOOK, «Not assigned yet» and a «Type a new
+     address» button that handed over to the address form.
+
+     The concept of 07.09 says «Один и тот же пикер в двух
+     дверях», so the door now opens the ADDRESS PANEL itself
+     with `drawer.v5Assign` — the flag that already meant «what this
+     panel produces also lands on the ticked gifts» — and the picker
+     at the top of that panel is the same one both doors get. Every
+     part of this template lives on there: the two groups became the
+     picker's own two groups, «Not assigned yet» and the sentence
+     about a saved address joining as its own line stand under them
+     behind `x-show="drawer.v5Assign"`, and «Type a new address» is
+     retired by the form that is now under the lists rather than
+     behind a button.
+
+     NOT HIDDEN BUT REMOVED, unlike the V4 markup a few hundred lines
+     up: V4 is a whole version that can be put back with two lines,
+     this was one panel whose every part now stands in the file once.
+     Its two row builders (v5AssignList, v5BookList) went with it and
+     are computed inside v5PkView instead; v5AssignBook and v5AssignTo
+     are untouched and are what the picker calls.
      ============================================================ -->
-<!-- gbppl-v5-ground-1 (04.09). Ton on this panel: «каша, непонятная
-     группировка, непонятно использован ли адрес». One flat list was
-     doing two different jobs at once, so it read as neither. It is
-     TWO NAMED GROUPS now, each under its own eyebrow:
-
-       IN THIS ORDER  the addresses step 1 already holds, and each
-                      one says what it holds: «8 gifts · UPS Ground».
-                      Picking one moves the ticked gifts onto it.
-       ADDRESS BOOK   what is saved from before. Picking one puts it
-                      into the order as A LINE OF ITS OWN and moves
-                      the gifts there.
-
-     REUSE IS LEGAL (Ton, 04.09): «20 ground + 5 overnight в один
-     офис» is a real order, and the method belongs to the LINE, not
-     to the address. So a book address already standing in the order
-     is not disabled; it carries a quiet «in this order» so the
-     second pick is a decision and not an accident. -->
-<template id="ck-drawer-assign">
-  <div>
-    <div x-show="v5AssignList().length > 0">
-      <p class="gb-eyebrow mb-2">In this order</p>
-      <div class="ck-ground border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
-        <template x-for="a in v5AssignList()" :key="'v5assign-' + a.id">
-          <button type="button" @click="v5AssignTo(a.id)" class="w-full text-left px-4 py-3 bg-white hover:bg-zinc-50 border-b border-zinc-200 last:border-0 flex items-center gap-4 transition-colors">
-            <span class="min-w-0 flex-1">
-              <span class="block text-sm font-medium text-zinc-900 truncate" x-text="a.name"></span>
-              <span class="block text-sm text-zinc-500 truncate" x-text="a.label"></span>
-            </span>
-            <span class="gb-eyebrow flex-shrink-0 text-right" x-text="a.badge"></span>
-          </button>
-        </template>
-      </div>
-    </div>
-
-    <div class="mt-6">
-      <p class="gb-eyebrow mb-2">Address book</p>
-      <div class="ck-ground border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
-        <template x-for="b in v5BookList()" :key="'v5bookpick-' + b.id">
-          <button type="button" @click="v5AssignBook(b.id)" class="w-full text-left px-4 py-3 bg-white hover:bg-zinc-50 border-b border-zinc-200 last:border-0 flex items-center gap-4 transition-colors">
-            <span class="min-w-0 flex-1">
-              <span class="block text-sm font-medium text-zinc-900 truncate" x-text="b.name"></span>
-              <span class="block text-sm text-zinc-500 truncate" x-text="b.label"></span>
-            </span>
-            <span x-show="b.used" class="text-sm text-zinc-500 flex-shrink-0">in this order</span>
-          </button>
-        </template>
-      </div>
-      <p class="text-sm text-zinc-500 mt-2">A saved address joins the order as its own line, with its own shipping method. The same place can stand twice.</p>
-    </div>
-
-    <div class="mt-6">
-      <p class="gb-eyebrow mb-2">Neither</p>
-      <button type="button" @click="v5AssignTo(null)" class="w-full text-left px-4 py-3 bg-white hover:bg-zinc-50 border border-zinc-200 rounded-[var(--radius)] transition-colors">
-        <span class="block text-sm font-medium text-zinc-900">Not assigned yet</span>
-        <span class="block text-sm text-zinc-500">Send the gifts back to the unassigned count</span>
-      </button>
-      <button type="button" @click="v5AssignNew()" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary mt-4">
-        <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>
-        <span class="gb-btn__label">Type a new address</span>
-      </button>
-    </div>
-  </div>
-</template>
-<template id="ck-drawer-foot-assign">
-  <div class="ck-drawer-actions">
-    <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
-  </div>
-</template>
 
 <!-- ====================================================== -->
 <!-- ===== CSV UPLOAD MODAL ==== -->
@@ -6155,7 +6414,12 @@
         { label: 'Loaded cart', value: 'portalLoaded',
           note: 'A mixed cart: a customized Executive Travel Set going to five people, plus nine Yeti duos to one office address with no personalization at all.' },
         { label: 'From the customizer', value: 'customizer',
-          note: 'The customer arrived from the 3D Customizer. One recipient is personalized already, but the address and the shipping are not set yet.' }
+          note: 'The customer arrived from the 3D Customizer. One recipient is personalized already, but the address and the shipping are not set yet.' },
+        /* gbppl-v5-addrpicker-1 (07.09): a fourth choice, and the only one
+           that changes the saved address book. Everything else about the
+           three above is untouched, including which one is lit on arrival. */
+        { label: 'Big address book', value: 'bigBook',
+          note: 'An account with 52 saved addresses: company offices, homes and two pairs of namesakes in different towns. Twenty four gifts across three of them, so the address picker can be walked with search, recent and browsing all in view.' }
       ],
       onChange: function (value) { app.setScenario(value); }
     });
@@ -6192,11 +6456,122 @@
 function checkoutApp() {
   return {
     // ===== ADDRESS BOOK =====
+    // gbppl-v5-addrpicker-1 (07.09): THE BOOK BELONGS TO THE SCENARIO. These
+    // three are the ordinary account and stay the value the page is born
+    // with; defaultAddressBook() below returns the same three and setScenario
+    // puts them back. The two must agree, and they are kept next to each
+    // other for the reader who changes one — the same arrangement, and the
+    // same reason, as `scenario` and the setScenario call in init().
     addressBook: [
       { id: 'a1', name: 'Anton Parkhomenko', label: '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US' },
       { id: 'a2', name: 'Acme NYC Office',   label: '500 5th Ave, New York, NY 10110, US' },
       { id: 'a3', name: 'Acme LA Studio',    label: '1234 Sunset Blvd, Los Angeles, CA 90028, US' },
     ],
+    defaultAddressBook() {
+      return [
+        { id: 'a1', name: 'Anton Parkhomenko', label: '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US' },
+        { id: 'a2', name: 'Acme NYC Office',   label: '500 5th Ave, New York, NY 10110, US' },
+        { id: 'a3', name: 'Acme LA Studio',    label: '1234 Sunset Blvd, Los Angeles, CA 90028, US' },
+      ];
+    },
+
+    /* ============================================================
+       A BOOK BIG ENOUGH TO NEED A PICKER  (gbppl-v5-addrpicker-1)
+       ------------------------------------------------------------
+       Concept, 07.09: «Чтобы пикер было ВИДНО, книга демо-заказа
+       вырастает до ~40-60 адресов... Сценарий консоли с большой
+       книгой — отдельно от Loaded cart, чтобы не грузить дефолт.»
+       Fifty two saved places, and every one of them is there to
+       make one part of the picker visible:
+
+         · FOURTEEN OFFICES OF SIX COMPANIES, four of them Acme's,
+           so «Companies» has something to group. Alphabetically
+           those four sit under A, C, N and V and are four screens
+           apart; under Companies they are one block.
+         · TWO PAIRS OF NAMESAKES in two towns each — Michael Reyes
+           in Portland OR and Portland ME, Sarah Chen in Boston and
+           Austin. The meeting of 04.09 called this the hard case;
+           the row's second line carries the town, so the two are
+           told apart without opening either.
+         · ONE NAME LONG ENOUGH to run out of its column.
+         · TEN with a `used` date, which is what RECENT reads. The
+           rest have never been shipped to and never reach the five.
+
+       The `used` field is DATA, not a guess: a book row remembers
+       the day it was last shipped to, the way a real one would.
+
+       Written as a table of tuples, so fifty two rows read as fifty
+       two rows; the label is assembled in the exact shape
+       v3AddressLabel writes and v5ParseAddress reads back (trap 25).
+       ============================================================ */
+    bigAddressBook() {
+      let n = 0;
+      const b = (name, company, street, apt, city, state, zip, used) => {
+        n += 1;
+        return {
+          id: 'b' + n, name: name, company: company, used: used || '',
+          label: [[street, apt].filter(Boolean).join(', '), city, state + ' ' + zip, 'US'].join(', ')
+        };
+      };
+      return [
+        b('Acme NYC Office',      'Acme Corp',          '500 5th Ave',          'Floor 12',    'New York',      'NY', '10110', '2026-09-05'),
+        b('Acme LA Studio',       'Acme Corp',          '1234 Sunset Blvd',     '',            'Los Angeles',   'CA', '90028', '2026-08-28'),
+        /* NOT 233 S Wacker: that is the buyer's own line two rows down, and
+           two book entries at one street and one ZIP are ONE PLACE by the
+           test the whole page uses (v5SameSpot), so the office kept
+           inheriting «in this order» from the home. Caught on the screen. */
+        b('Acme Chicago Loop',    'Acme Corp',          '155 N Wacker Dr',      'Suite 4100',  'Chicago',       'IL', '60606', '2026-09-02'),
+        b('Acme Austin Lab',      'Acme Corp',          '98 Congress Ave',      '',            'Austin',        'TX', '78701', ''),
+        b('Northwind Seattle',    'Northwind Traders',  '42 Pine St',           'Suite 300',   'Seattle',       'WA', '98101', '2026-09-04'),
+        b('Northwind Portland',   'Northwind Traders',  '710 SW Alder St',      '',            'Portland',      'OR', '97205', ''),
+        b('Northwind Denver',     'Northwind Traders',  '1600 Wynkoop St',      '',            'Denver',        'CO', '80202', ''),
+        b('Contoso Boston',       'Contoso Health',     '80 Beacon St',         '',            'Boston',        'MA', '02108', '2026-08-19'),
+        b('Contoso Providence',   'Contoso Health',     '5 Empire Plz',         '',            'Providence',    'RI', '02903', ''),
+        b('Globex Miami',         'Globex Media',       '1200 Brickell Ave',    'Suite 40',    'Miami',         'FL', '33131', ''),
+        b('Globex Atlanta',       'Globex Media',       '191 Peachtree St NE',  '',            'Atlanta',       'GA', '30303', ''),
+        b('Vertex Chicago',       'Vertex Analytics',   '120 N Racine Ave',     '',            'Chicago',       'IL', '60607', ''),
+        b('Vertex Minneapolis',   'Vertex Analytics',   '90 S 7th St',          '',            'Minneapolis',   'MN', '55402', ''),
+        b('Initech San Jose',     'Initech Labs',       '2100 N 1st St',        '',            'San Jose',      'CA', '95131', ''),
+        b('Anton Parkhomenko',    '',                   '233 S Wacker Dr',      'Suite 8200',  'Chicago',       'IL', '60606', '2026-09-06'),
+        b('Aisha Patel',          'Acme Corp',          '12 Park Ave',          'Apt 9C',      'New York',      'NY', '10016', '2026-08-30'),
+        b('Brianna Cole',         '',                   '88 Elm Rd',            '',            'Brooklyn',      'NY', '11201', ''),
+        b('Carlos Mendoza',       'Globex Media',       '455 Ocean Dr',         '',            'Miami Beach',   'FL', '33139', ''),
+        b('Dana Whitfield',       '',                   '19 Larkspur Ln',       '',            'Boulder',       'CO', '80302', ''),
+        b('Daniel Fitzgerald-Whitmore', '',             '1 Bayfront Plz',       'Suite 1100',  'San Diego',     'CA', '92101', ''),
+        b('Elena Rossi',          'Contoso Health',     '64 Hill Rd',           '',            'Boulder',       'CO', '80301', ''),
+        b('Emma Schultz',         '',                   '15 Oak Ave',           '',            'Boston',        'MA', '02115', '2026-09-01'),
+        b('Farid Haddad',         '',                   '2201 Market St',       'Apt 4',       'Philadelphia',  'PA', '19103', ''),
+        b('Grace Okoye',          'Northwind Traders',  '300 Delaware Ave',     '',            'Wilmington',    'DE', '19801', ''),
+        b('Henrik Larsson',       '',                   '145 Cherry St',        '',            'Denver',        'CO', '80203', ''),
+        b('Isabel Moreno',        '',                   '701 Brazos St',        'Unit 12',     'Austin',        'TX', '78701', ''),
+        b('Jonah Feldman',        'Initech Labs',       '19 Valley Green Rd',   '',            'Cupertino',     'CA', '95014', ''),
+        b('Kaito Nakamura',       '',                   '5 Bay St',             '',            'San Francisco', 'CA', '94103', ''),
+        b('Keisha Bryant',        '',                   '2400 Chestnut St',     '',            'Philadelphia',  'PA', '19103', ''),
+        b('Léa Bernard',          '',                   '9 River Ct',           '',            'Denver',        'CO', '80202', ''),
+        b('Liam O’Donnell',       'Vertex Analytics',   '120 N Racine Ave',     'Suite 2',     'Chicago',       'IL', '60607', ''),
+        b('Marcus Lee',           '',                   '42 Pine St',           'Apt 7',       'Seattle',       'WA', '98101', ''),
+        b('Maria Gonzalez',       '',                   '1450 Brickell Bay Dr', '',            'Miami',         'FL', '33131', ''),
+        b('Michael Reyes',        '',                   '88 SW Yamhill St',     '',            'Portland',      'OR', '97204', '2026-08-22'),
+        b('Michael Reyes',        '',                   '412 Congress St',      '',            'Portland',      'ME', '04101', ''),
+        b('Nathan Brooks',        'Globex Media',       '191 Peachtree St NE',  'Suite 20',    'Atlanta',       'GA', '30303', ''),
+        b('Nora Haddad',          '',                   '77 Beale St',          '',            'San Francisco', 'CA', '94105', ''),
+        b('Olivia Barrett',       '',                   '35 Church St',         '',            'Burlington',    'VT', '05401', ''),
+        b('Priya Raman',          'Acme Corp',          '98 Congress Ave',      'Suite 500',   'Austin',        'TX', '78701', ''),
+        b('Rachel Kim',           'Contoso Health',     '80 Beacon St',         'Apt 2B',      'Boston',        'MA', '02108', ''),
+        b('Rafael Ortiz',         '',                   '1 Riverfront Plz',     '',            'Newark',        'NJ', '07102', ''),
+        b('Sarah Chen',           '',                   '101 Federal St',       '',            'Boston',        'MA', '02110', '2026-08-15'),
+        b('Sarah Chen',           '',                   '1201 S Congress Ave',  '',            'Austin',        'TX', '78704', ''),
+        b('Sofia Almeida',        '',                   '250 Vesey St',         '',            'New York',      'NY', '10281', ''),
+        b('Theo Mendez',          '',                   '301 Mission St',       'Apt 18',      'San Francisco', 'CA', '94105', ''),
+        b('Tomas Novak',          'Northwind Traders',  '710 SW Alder St',      'Suite 6',     'Portland',      'OR', '97205', ''),
+        b('Uma Shah',             '',                   '44 Wall St',           '',            'New York',      'NY', '10005', ''),
+        b('Victor Ibarra',        '',                   '8 Sunset Way',         '',            'Santa Monica',  'CA', '90401', ''),
+        b('Wendy Kaplan',         '',                   '1 Kendall Sq',         'Bldg 300',    'Cambridge',     'MA', '02139', ''),
+        b('Xavier Dumont',        '',                   '1500 Poydras St',      '',            'New Orleans',   'LA', '70112', ''),
+        b('Yuki Tanaka',          '',                   '5 Bay St',             'Apt 3',       'San Francisco', 'CA', '94103', ''),
+        b('Zara Ahmed',           '',                   '900 N Michigan Ave',   '',            'Chicago',       'IL', '60611', '')
+      ];
+    },
 
     // ===== SCENARIO STATE =====
     // gbppl-panel-sandbox-1 (Ton, 03.09, verbatim): «А про сценарии: мы
@@ -6264,9 +6639,18 @@ function checkoutApp() {
       this.drawer = { open: false, type: null, productId: null, shipmentId: null, recipientId: null, master: false, data: this.blankDrawerData() };
       this.csv = { open: false, step: 1, productId: null, shipmentId: null, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
 
+      /* gbppl-v5-addrpicker-1 (07.09): THE BOOK IS PART OF THE SCENARIO, and
+         it is swapped BEFORE the products are built — scenarioPortalLoaded
+         reads addressBook[0] and [1] while it assembles. Three saved places
+         is the ordinary account and every scenario but one gets them back;
+         the big book comes with its own scenario so the default and the
+         Loaded cart carry exactly what they carried yesterday. */
+      this.addressBook = (name === 'bigBook') ? this.bigAddressBook() : this.defaultAddressBook();
+
       if (name === 'customizer')        this.products = [this.scenarioCustomizer()];
       else if (name === 'portalEmpty')  this.products = [this.scenarioPortalEmpty()];
       else if (name === 'portalLoaded') this.products = this.scenarioPortalLoaded(); // two products
+      else if (name === 'bigBook')      this.products = [this.scenarioBigBook()];
     },
 
     // ===== GIFT CATALOGUE =====
@@ -6400,6 +6784,65 @@ function checkoutApp() {
           // page opens on. Twelve identical gifts, one address, and the
           // address not chosen yet — two touches from finished.
           ...this.v5Fields({ v5Mode: 'one', v5Qty: 12, v5Perso: 'none' }),
+          recipients: []
+        }]
+      };
+    },
+
+    /* ============================================================
+       Scenario D: A BIG ADDRESS BOOK  (gbppl-v5-addrpicker-1, 07.09)
+       ------------------------------------------------------------
+       Ton, 04.09: «десятки или сотни адресов — схема со списком не
+       подходит». The picker built for that is invisible against
+       three saved places, so it gets a scenario of its own —
+       explicitly beside Loaded cart and not inside it, as the
+       concept asks, because nothing about the default order should
+       change to demonstrate a panel.
+
+       WHAT THE SCENARIO PUTS ON THE SCREEN: twenty four gifts in
+       «multiple addresses», three of the fifty two already standing
+       in the order with their own counts and methods, six still
+       unplaced. So the picker opens over a list that is not empty
+       (IN THIS ORDER has rows and badges), the book behind it is
+       large enough that RECENT is a real slice and the browse door
+       is a real door, and the arithmetic strip and Split the rest
+       evenly are both alive. Personalization is left at «none»: the
+       hand is on the numbers, which is the state the address list
+       is edited in.
+       ============================================================ */
+    scenarioBigBook() {
+      const addr = (name, bits, shipping, qty) => {
+        const d = Object.assign(this.v3BlankDeliver(), bits, { name: name });
+        return this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), shipping: shipping, qty: qty });
+      };
+      const v5Addrs = [
+        addr('Acme NYC Office',   { street: '500 5th Ave', apt: 'Floor 12', city: 'New York', state: 'NY', zip: '10110' }, 'ground', 8),
+        addr('Northwind Seattle', { street: '42 Pine St', apt: 'Suite 300', city: 'Seattle', state: 'WA', zip: '98101' }, '2day', 6),
+        addr('Anton Parkhomenko', { street: '233 S Wacker Dr', apt: 'Suite 8200', city: 'Chicago', state: 'IL', zip: '60606' }, 'ground', 4)
+      ];
+      return {
+        id: 1,
+        name: 'Executive Travel Set',
+        price: 145,
+        image: 'checkout-assets/prototype-gift.png',
+        items: this.catalogue.executive,
+        shipments: [{
+          id: 11,
+          addressMode: 'different',
+          detailsMode: 'now',
+          shipping: 'ground',
+          deadline: '2025-08-15',
+          page: 1,
+          shipToId: null,
+          shipToLabel: '',
+          deferQty: 1,
+          // The four older versions have no picker and no opinion about the
+          // size of a book: they get the plainest shape of this order, the
+          // one the empty cart already gives them.
+          ...this.v2Fields(24, 'none'),
+          ...this.v3Fields(),
+          ...this.v4Fields({ groupsV4: [ this.v4BlankGroup({ qty: 24 }) ] }),
+          ...this.v5Fields({ v5Mode: 'many', v5Qty: 24, v5Perso: 'none', v5Addrs: v5Addrs, v5Step: 1, v5Done: 0 }),
           recipients: []
         }]
       };
@@ -8006,17 +8449,21 @@ function checkoutApp() {
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: null,
         addrId: addrId || null, v5Target: 'list', v5Assign: false, master: false,
+        pk: this.v5BlankPk(),
         data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), (a && a.deliver) || {})
       };
       this.showDrawer();
+      this.v5PkFocus();
     },
     v5OpenOne(productId, shipmentId) {
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: null,
         addrId: null, v5Target: 'one', v5Assign: false, master: false,
+        pk: this.v5BlankPk(),
         data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver())
       };
       this.showDrawer();
+      this.v5PkFocus();
     },
     v5SaveDeliver() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
@@ -8032,8 +8479,15 @@ function checkoutApp() {
       // next order finds it there too.
       if (this.drawer.v5Target === 'one') {
         if (!label) { this.closeDrawer(); return; }
-        const id = 'a' + Date.now();
-        this.addressBook.push({ id: id, name: deliver.name || 'Unnamed', label: label });
+        /* gbppl-v5-addrpicker-1 (07.09): AND IT DOES NOT FILE IT TWICE.
+           Picking a saved address in the panel fills the form, so Save used
+           to push a second copy of the very row it had just read, under a new
+           id. Nobody saw it at three saved places; at fifty the picker's own
+           RECENT list fills up with the same office. Matched on street and
+           ZIP, the key v5BookList already uses for «in this order». */
+        const found = this.addressBook.find(b => this.v5SameSpot(this.v5ParseAddress(b.label), deliver));
+        const id = found ? found.id : ('a' + Date.now());
+        if (!found) this.addressBook.push({ id: id, name: deliver.name || 'Unnamed', label: label });
         s.v5AddrId = id;
         s.v5AddrLabel = (deliver.name ? deliver.name + ', ' : '') + label;
         // gbppl-v5-prefill-1: in «one address» this is the destination of every
@@ -8159,44 +8613,30 @@ function checkoutApp() {
       // moves with it. A cell typed by hand stays where it is.
       this.v5Prefill(s);
     },
+    // gbppl-v5-addrpicker-1 (07.09): THE SECOND DOOR OF THE ONE PANEL. It
+    // used to open a list panel of its own; it opens the address panel now,
+    // with the flag that already meant «and put what comes out of this on the
+    // ticked gifts». Everything the list panel could do, the picker at the
+    // top of that panel does, and the form under it is where «Type a new
+    // address» used to lead.
     v5OpenAssign(productId, shipmentId, rowId) {
       this.drawer = {
-        open: true, type: 'assign', productId, shipmentId, recipientId: rowId || null,
-        addrId: null, master: false, data: this.blankDrawerData()
+        open: true, type: 'deliver', productId, shipmentId, recipientId: rowId || null,
+        addrId: null, v5Target: 'list', v5Assign: true, master: false,
+        pk: this.v5BlankPk(),
+        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver())
       };
       this.showDrawer();
+      this.v5PkFocus();
     },
-    // gbppl-v5-ground-1: a line of this group says both facts about
-    // itself, «8 gifts · UPS Ground», because the method belongs to the
-    // LINE and two lines to one office may carry two different methods.
-    v5AssignList() {
-      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
-      if (!s) return [];
-      return (s.v5Addrs || []).map(a => {
-        const n = this.v5AddrCount(s, a);
-        const opt = this.shippingOptions.find(o => o.id === a.shipping);
-        return {
-          id: a.id,
-          name: (a.deliver && a.deliver.name) || 'No name yet',
-          label: a.address || 'No address yet',
-          count: n,
-          badge: n + (n === 1 ? ' gift' : ' gifts') + (opt ? ' · ' + opt.label : '')
-        };
-      });
-    },
-    // The book, with the one thing the reader was asking for: is this one
-    // already in the order? It never blocks the pick, it only says so.
-    v5BookList() {
-      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
-      // Matched on street and ZIP, not on the printed line: the order writes
-      // «United States» where the book says «US», and a string compare would
-      // have called the same office two different places.
-      const key = d => String((d && d.street) || '').toLowerCase().replace(/\s+/g, ' ').trim() + '|' + String((d && d.zip) || '').trim();
-      const used = new Set(((s && s.v5Addrs) || []).filter(a => a.address).map(a => key(a.deliver)));
-      return this.addressBook.map(b => ({
-        id: b.id, name: b.name, label: b.label, used: used.has(key(this.v5ParseAddress(b.label)))
-      }));
-    },
+    /* gbppl-v5-addrpicker-1 (07.09): v5AssignList and v5BookList stood here.
+       Both built a row for the retired list panel — the order's addresses
+       with «8 gifts · UPS Ground» on each, and the book with «in this order»
+       against the ones already standing. Both facts survive, in v5PkView,
+       which builds them in the SAME PASS as the search, the recent slice and
+       the browse groups: two functions computing half a row each is how the
+       lit row and the taken row drift apart. The «same place» test they
+       shared is v5SameSpot now, and v5SaveDeliver uses it too. */
     // A saved address becomes a LINE OF THE ORDER, always a new one: the
     // method is the line's, so the second run to the same office is a
     // second line and not an edit of the first (Ton, 04.09).
@@ -8219,16 +8659,254 @@ function checkoutApp() {
       if (s) this.v5PutAddr(s, addrId);
       this.closeDrawer();
     },
-    // The list hands over to the address form, and what that form saves lands
-    // in step 1 as well as on the gifts that were ticked.
-    v5AssignNew() {
-      const d = this.drawer;
-      this.drawer = {
-        open: true, type: 'deliver', productId: d.productId, shipmentId: d.shipmentId,
-        recipientId: d.recipientId, addrId: null, v5Target: 'list', v5Assign: true, master: false,
-        data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver())
+    /* ============================================================
+       THE PICKER FOR A BIG BOOK  (gbppl-v5-addrpicker-1, 07.09)
+       ------------------------------------------------------------
+       Concept: studio\docs\CHECKOUT-CONCEPT.md, «Концепт: пикер
+       адресов для большой книги», out of Ton 04.09 («десятки или
+       сотни адресов — схема со списком не подходит; нужен search
+       autocomplete и более удобный браузинг») and approved 07.09
+       with two decisions on top of the text: SEARCH FIRST ALWAYS,
+       not from a threshold, and BOTH groupings of the browse at
+       once, not one and a stub.
+
+       ONE COMPUTATION, ONE VISUAL ORDER. v5PkView() builds
+       everything the panel draws in the order it is drawn, and
+       every row it hands back carries `k`, its place in the flat
+       walk. The highlight, the arrow keys and Enter all read that
+       one number, so the lit row and the row Enter takes can never
+       be two different rows — the failure every hand-rolled
+       autocomplete has.
+
+       WHAT IS DRAWN WITH NOTHING TYPED, and it is the whole point:
+       the addresses ALREADY IN THIS ORDER, then about five RECENT
+       out of the book, then one door. Never the book. A list of
+       four hundred rows is not a picker, it is the problem.
+       ============================================================ */
+    v5BlankPk() { return { q: '', browse: false, by: 'people', i: -1 }; },
+    // Two places are one place when the street and the ZIP agree. Not the
+    // printed line: the order writes «United States» where the book says
+    // «US», and a string compare would call one office two.
+    v5SameSpot(a, b) {
+      const k = d => String((d && d.street) || '').toLowerCase().replace(/\s+/g, ' ').trim() +
+                     '|' + String((d && d.zip) || '').trim();
+      return k(a) === k(b);
+    },
+    v5PkView() {
+      const pk = (this.drawer && this.drawer.pk) || this.v5BlankPk();
+      const q = String(pk.q || '').trim().toLowerCase();
+      const hit = hay => !q || String(hay).toLowerCase().indexOf(q) !== -1;
+      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
+      const flat = [];
+      const put = r => { r.k = flat.length; flat.push(r); return r; };
+
+      /* IN THIS ORDER — the same row and the same badge the retired list
+         panel carried, and for the same reason: the method belongs to the
+         LINE, so a line says «8 gifts · UPS Ground» about itself. The
+         address being edited is left out of its own picker. */
+      const order = [];
+      ((s && s.v5Addrs) || []).forEach(a => {
+        if (!a.address || a.id === this.drawer.addrId) return;
+        const d = a.deliver || {};
+        if (!hit([d.name, d.company, a.address].join(' '))) return;
+        const n = this.v5AddrCount(s, a);
+        const opt = this.shippingOptions.find(o => o.id === a.shipping);
+        order.push(put({
+          kind: 'order', id: a.id, deliver: d,
+          name: d.name || 'No name yet',
+          sub: a.address,
+          badge: n + (n === 1 ? ' gift' : ' gifts') + (opt ? ' · ' + opt.label : '')
+        }));
+      });
+
+      /* THE BOOK. Search reads everything a person would type looking for a
+         place: who, which company, which street, which town, which ZIP. */
+      const inOrder = b => ((s && s.v5Addrs) || []).some(
+        a => a.address && this.v5SameSpot(a.deliver, this.v5ParseAddress(b.label)));
+      const all = this.addressBook || [];
+      const matched = all.filter(b => hit([b.name, b.company, b.label].join(' ')));
+
+      /* RECENT is a field of the data, not a guess: `used` on a book entry is
+         the day it was last shipped to. Entries that were never used sort
+         last and simply never reach the five. */
+      const RECENT = 5;
+      const browsing = !!pk.browse;
+      let shown;
+      if (q || browsing) shown = matched;           // a query already spans the book
+      /* RECENT SHOWS WHAT IS NOT ALREADY ON THE SCREEN. Five rows are five
+         rows, and an address standing in the order is one line above with
+         MORE said about it — its count and its method. Under the door and
+         under a query the whole book is the whole book, marker and all. */
+      else shown = matched.filter(b => !inOrder(b)).slice().sort((x, y) =>
+        String(y.used || '').localeCompare(String(x.used || ''))).slice(0, RECENT);
+
+      /* The company is on the row EXCEPT where the heading over it is
+         already the company: saying «Acme Corp» twice in one row is the
+         noise Ton struck out of this panel's head the same day. */
+      const dropCo = browsing && pk.by === 'companies';
+      const row = b => put({
+        kind: 'book', id: b.id,
+        name: b.name,
+        sub: (b.company && !dropCo ? b.company + ' · ' : '') + b.label,
+        badge: inOrder(b) ? 'in this order' : ''
+      });
+
+      /* GROUPS. Grouped only while browsing: over four search results an
+         alphabet is furniture, not help. By people the heading is the letter
+         of the recipient; by companies it is the company itself, which is
+         the whole reason that switch exists — four Acme offices stand
+         together instead of four letters apart. */
+      const groups = [];
+      if (!browsing) {
+        groups.push({ gi: 0, head: '', letter: '', rows: shown.map(row) });
+      } else if (pk.by === 'companies') {
+        const bag = new Map();
+        shown.forEach(b => {
+          const key = (b.company || '').trim() || 'No company';
+          if (!bag.has(key)) bag.set(key, []);
+          bag.get(key).push(b);
+        });
+        Array.from(bag.keys()).sort((x, y) => {
+          if (x === 'No company') return 1;
+          if (y === 'No company') return -1;
+          return x.localeCompare(y);
+        }).forEach(key => {
+          const rows = bag.get(key).slice().sort((x, y) => String(x.name).localeCompare(String(y.name)));
+          groups.push({ gi: groups.length, head: key, letter: this.v5PkLetter(key), rows: rows.map(row) });
+        });
+      } else {
+        const bag = new Map();
+        shown.forEach(b => {
+          const key = this.v5PkLetter(b.name);
+          if (!bag.has(key)) bag.set(key, []);
+          bag.get(key).push(b);
+        });
+        Array.from(bag.keys()).sort((x, y) => {
+          if (x === '#') return 1;
+          if (y === '#') return -1;
+          return x.localeCompare(y);
+        }).forEach(key => {
+          const rows = bag.get(key).slice().sort((x, y) => String(x.name).localeCompare(String(y.name)));
+          groups.push({ gi: groups.length, head: key, letter: key, rows: rows.map(row) });
+        });
+      }
+
+      /* THE LETTER ANCHORS: only letters the book actually has, each
+         pointing at the FIRST group under it. An anchor to nothing is a
+         lie, and in the company grouping one letter can hold several
+         companies. */
+      const letters = [];
+      const seenL = new Set();
+      groups.forEach(g => {
+        if (!g.letter || seenL.has(g.letter)) return;
+        seenL.add(g.letter);
+        letters.push({ letter: g.letter, gi: g.gi });
+      });
+
+      const more = (!q && !browsing) ? Math.max(0, all.length - shown.length) : 0;
+      return {
+        order: order,
+        groups: groups,
+        letters: letters,
+        count: shown.length,
+        flat: flat,
+        /* The heading names which of the three things is under it, so no
+           second line has to. */
+        title: browsing ? 'All addresses' : (more > 0 ? 'Recent' : 'Address book'),
+        door: browsing || more > 0,
+        doorLabel: browsing ? 'Hide the full list' : ('Browse all addresses (' + all.length + ')')
       };
-      this.showDrawer();
+    },
+    v5PkLetter(s) {
+      const c = String(s || '').trim().charAt(0).toUpperCase();
+      return /[A-Z]/.test(c) ? c : '#';
+    },
+    // Picking is applying. Which application it is belongs to the DOOR, not
+    // to the row: the same line of the book joins the order and takes the
+    // ticked gifts in one door, and fills the form to be edited in the other.
+    v5PkPick(r) {
+      if (!r) return;
+      if (this.drawer.v5Assign) {
+        if (r.kind === 'order') return this.v5AssignTo(r.id);
+        return this.v5AssignBook(r.id);
+      }
+      if (r.kind === 'order') this.v5UseAddress(r);
+      else this.v5UseBookAddress(r.id);
+      // The question has been answered, so the panel goes back to its short
+      // shape and the filled form is what the reader is looking at.
+      if (this.drawer.pk) { this.drawer.pk.q = ''; this.drawer.pk.browse = false; this.drawer.pk.i = -1; }
+    },
+    v5PkBrowse() {
+      const pk = this.drawer.pk; if (!pk) return;
+      pk.browse = !pk.browse;
+      pk.i = -1;
+    },
+    v5PkJump(gi) {
+      const el = document.querySelector('[data-pkanchor="' + gi + '"]');
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start' });
+    },
+    v5PkScroll(i) {
+      const el = document.querySelector('[data-pkrow="' + i + '"]');
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
+    },
+    /* THE KEYBOARD, AND THE ESCAPE LADDER. Down and up walk the rows that
+       are drawn and nothing else; Enter takes the lit one. Escape empties
+       the field, then closes the browse, then — and only then — stops
+       answering and lets the drawer's own Escape close the panel. Each rung
+       stops the event so the one below it cannot fire in the same press;
+       the last rung deliberately does not. */
+    v5PkKey(e) {
+      const pk = this.drawer.pk; if (!pk) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        const flat = this.v5PkView().flat;
+        if (!flat.length) return;
+        e.preventDefault(); e.stopPropagation();
+        const step = e.key === 'ArrowDown' ? 1 : -1;
+        let i = (pk.i < 0 ? (step > 0 ? -1 : 0) : pk.i) + step;
+        if (i < 0) i = flat.length - 1;
+        if (i >= flat.length) i = 0;
+        pk.i = i;
+        setTimeout(() => this.v5PkScroll(i), 0);
+        return;
+      }
+      if (e.key === 'Enter') {
+        const flat = this.v5PkView().flat;
+        if (pk.i < 0 || !flat[pk.i]) return;
+        e.preventDefault(); e.stopPropagation();
+        this.v5PkPick(flat[pk.i]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        if (pk.q) { e.preventDefault(); e.stopPropagation(); pk.q = ''; pk.i = -1; return; }
+        if (pk.browse) { e.preventDefault(); e.stopPropagation(); pk.browse = false; pk.i = -1; return; }
+      }
+    },
+    // The caret starts in the search only when the panel has nothing to read:
+    // a reader who opened Edit on a filled address came to fix a typo, not to
+    // look for another place.
+    v5PkFocus() {
+      if (this.v5FormDirty()) return;
+      setTimeout(function () {
+        const el = document.querySelector('[data-pk-search]');
+        if (el) el.focus({ preventScroll: true });
+      }, 0);
+    },
+    v5FormDirty() {
+      const d = (this.drawer && this.drawer.data) || {};
+      return !!(d.name || d.company || d.phone || d.street || d.apt || d.city || d.state || d.zip);
+    },
+    /* CLEAR, THE BUTTON THAT REPLACED CANCEL (Ton 07.09). It empties the
+       form and, with it, the picked address: the control that says which
+       address this is reads the FORM (v5PickedLabel), so there is no second
+       flag to unset. The caret goes back to the search, which is where the
+       next move is. */
+    v5ClearForm() {
+      Object.assign(this.drawer.data, this.v3BlankDeliver());
+      if (this.drawer.pk) { this.drawer.pk.q = ''; this.drawer.pk.i = -1; }
+      setTimeout(function () {
+        const el = document.querySelector('[data-pk-search]');
+        if (el) el.focus({ preventScroll: true });
+      }, 0);
     },
     // The rows in the order their addresses stand in, unassigned last. Array
     // sort is stable, so gifts inside one address keep the order they were
@@ -8832,10 +9510,13 @@ function checkoutApp() {
          one of the two sides of a box; «Shipping address» would name only
          half of what is inside it, and the person who signs for the parcel
          is the other half. */
-      if (this.drawer.type === 'deliver')   return 'Delivery';
-      /* gbppl-checkout-v5-1: the list of addresses of step 1, opened over the
-         gifts that were ticked. It is not a form and does not pretend to be. */
-      if (this.drawer.type === 'assign')    return 'Set delivery address';
+      /* gbppl-v5-addrpicker-1 (07.09): ONE PANEL, TWO DOORS, so the head says
+         which door opened it. «Delivery» is V3's and V4's word and is
+         untouched; «Set delivery address» is the name the retired list panel
+         carried and the name the button that opens it still uses. */
+      if (this.drawer.type === 'deliver') {
+        return (this.uiVersion === 'v5' && this.drawer.v5Assign) ? 'Set delivery address' : 'Delivery';
+      }
       return '';
     },
     drawerSub() {
@@ -8862,14 +9543,36 @@ function checkoutApp() {
          list, a new one, or the gifts that were ticked; never «For this
          recipient», which is a question V5 does not ask of a row. */
       if (this.uiVersion === 'v5') {
-        if (this.drawer.type === 'assign') {
+        /* ============================================================
+           THE ADDRESS PANEL SAYS NOTHING UNDER ITS TITLE ANY MORE
+                                  gbppl-v5-addrpicker-1 (07.09)
+           Ton, verbatim: «Убери мелкую строчку "A new address for this
+           order" в самом верху drawer delivery address. Никогда не
+           ставь подобные тексты, это лишний визуальный шум.»
+
+           All THREE of the panel's sub-lines go, because all three were
+           the same thing — the title said again, quieter:
+             «A new address for this order.»   the title is Delivery and
+                                               the form under it is empty
+             «An address of this order.»       the form under it is full
+                                               of that address
+             «Every gift in this order ships here.»  the radio card the
+                                               reader has just chosen
+                                               says «Every gift ships to
+                                               the same place», word for
+                                               word one line up the page
+           The rule stands from here on: an explanation earns its line
+           only with a NEW FACT.
+
+           THE ONE THAT STAYS IS THE ONE THAT CARRIES A FACT: opened from
+           the table over ticked gifts, the panel is the only place that
+           can say HOW MANY gifts it is about to move.
+           ============================================================ */
+        if (this.drawer.type === 'deliver') {
+          if (!this.drawer.v5Assign) return '';
           if (this.drawer.recipientId) return 'For this gift.';
           const n = this.v5Selected(this.currentShipment());
           return 'For the ' + n + ' gift' + (n === 1 ? '' : 's') + ' you ticked.';
-        }
-        if (this.drawer.type === 'deliver') {
-          if (this.drawer.v5Target === 'one') return 'Every gift in this order ships here.';
-          return this.drawer.addrId ? 'An address of this order.' : 'A new address for this order.';
         }
         if (this.drawer.master) {
           return this.drawer.scope === 'selected'
