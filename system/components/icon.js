@@ -136,6 +136,17 @@
    that are in front of the team, and it is a wave of its own — the
    same sentence gbppl-icon-consumers-1 wrote about their weights.
 
+   ------------------------------------------------------------
+   AND A STACK OF PLATES
+   (gbppl-v5-step2-pack-1, 07.09)
+   ------------------------------------------------------------
+   `layers` is the thirty fourth, and the second entry ever that no
+   file in the house was already drawing (`info` was the first). Ton
+   renamed the checkout's «Bulk personalize» menu to Bulk actions and
+   asked for a glyph that says so; the one it wore was a document, the
+   mark of ONE page, over a menu that writes every row of a table. The
+   argument for the stack over the other candidate is at the entry.
+
    MEASURED WHILE DOING IT, and said out loud because it bites the
    next reader: a recorded glyph pasted into a `.gb-btn__icon` slot
    has NO WEIGHT. `.gb-icon > svg` is what carries stroke-width
@@ -335,6 +346,27 @@
     'info': {
       body: '<circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/>',
       from: 'system/icons/circle-info.svg, redrawn on the grid for the properties door of the showcase',
+      stroke: 1.5
+    },
+    /* gbppl-v5-step2-pack-1, 07.09. Ton, on the checkout's bulk menu:
+       «Иконка не просто страничка, а отражающая именно Bulk Actions.» The
+       button carried a DOCUMENT — the glyph of one page — over a menu whose
+       every line does one thing to EVERY gift in the table, which is the
+       opposite of what a single sheet says. Nothing in the house drew a
+       stack, and system/icons has no export of one either (checked, 27
+       files), so this is the second entry after `info` that the record drew
+       itself, and the provenance says so rather than inventing an address.
+       WHY A STACK AND NOT A CHECKLIST, the other candidate: a checklist on
+       this screen would echo the tick column of the very table beside it,
+       where a tick already means «this row is selected» — one drawing, two
+       meanings, one row apart. A stack of plates says «many at once» and
+       says nothing else. Drawn on the 24 grid at the house weight, the top
+       plate a diamond and two passes under it, so it reads at 16. */
+    'layers': {
+      body: '<path d="M12 3.2 21 8l-9 4.8L3 8l9-4.8Z"/>' +
+            '<path d="m3.6 12.4 8.4 4.5 8.4-4.5"/>' +
+            '<path d="m3.6 16.4 8.4 4.5 8.4-4.5"/>',
+      from: 'DECLARED: Bulk actions on the checkout personalization table (Ton 07.09); no drawing in the house and none in system/icons',
       stroke: 1.5
     },
     'link': {
