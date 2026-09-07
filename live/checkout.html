@@ -5963,7 +5963,7 @@
         <p class="text-xs text-zinc-500" x-text="v5CsvBody()"></p>
       </div>
       <div class="border border-zinc-200 rounded-[var(--radius)] overflow-hidden">
-        <div class="max-h-64 overflow-auto">
+        <div class="max-h-64 overflow-auto" x-ref="v5csvScroll">
           <table class="w-full text-sm" style="min-width:720px">
             <thead class="bg-zinc-50 sticky top-0 z-10">
               <tr>
@@ -5976,10 +5976,10 @@
             </thead>
             <tbody>
               <template x-for="(row, i) in csv.preview.rows" :key="'v5csv-' + i">
-                <tr class="border-t border-zinc-100" :class="row.error ? 'bg-red-50' : ''">
+                <tr class="border-t border-zinc-100" :class="row.error ? 'bg-red-50' : ''" :data-csverr="row.error ? '1' : false">
                   <td class="p-1"><input type="text" x-model="row.name" aria-label="Ships to" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
                   <td class="p-1"><input type="text" x-model="row.address" aria-label="Address" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
-                  <td class="p-1"><input type="text" x-model="row.zip" @input="v5CsvTouch()" aria-label="ZIP" :class="row.error ? 'text-red-700 font-medium' : ''" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.zip" @input="v5CsvTouch()" @change="v5CsvNextErr(row)" aria-label="ZIP" :class="row.error ? 'text-red-700 font-medium' : ''" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
                   <td class="p-1"><input type="text" x-model="row.mark" aria-label="Name on the gift" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
                   <td class="p-1"><input type="text" x-model="row.msg" aria-label="Card message" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
                 </tr>
@@ -9270,6 +9270,30 @@ function checkoutApp() {
       const bad5 = v5sample.filter(r => r.error).length;
       this.csv.preview = { total: v5sample.length, valid: v5sample.length - bad5, errors: bad5, rows: v5sample };
       this.csv.step = 2;
+      // gbppl-v5-csv-scroll (Ton, 07.09): the fixture's broken row is the
+      // last of twenty, and he had to hunt for it by hand. The screen opens
+      // ON the first error, not on row one. One painted frame after the
+      // tick: at $nextTick the x-show has not given the box its height yet,
+      // and a scroll set on a heightless box clamps to zero.
+      this.$nextTick(() => requestAnimationFrame(() => this.v5CsvScrollErr(false)));
+    },
+    v5CsvScrollErr(smooth) {
+      const box = this.$refs.v5csvScroll;
+      if (!box) return;
+      const row = box.querySelector('tr[data-csverr]');
+      if (!row) return;
+      // The head is sticky: a row scrolled flush to the top would hide
+      // under it. Its real height plus one 8 rung of air.
+      const head = box.querySelector('thead');
+      const top = Math.max(0, row.offsetTop - (head ? head.offsetHeight : 0) - 8);
+      if (smooth) box.scrollTo({ top: top, behavior: 'smooth' });
+      else box.scrollTop = top;
+    },
+    v5CsvNextErr(row) {
+      // On @change, not @input: yanking the table while a ZIP is still
+      // being typed would scroll the cell out from under the hand. Once
+      // the hand leaves a row it just fixed, glide to the next error.
+      if (!row.error && (this.csv.preview.rows || []).some(r => r.error)) this.v5CsvScrollErr(true);
     },
     simulateUpload() {
       // ============================================================
