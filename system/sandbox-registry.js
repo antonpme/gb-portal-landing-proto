@@ -446,13 +446,29 @@
              адресами (та считала список и заговаривала только на двадцать
              первом адресе, набранном руками). Ручной ввод по-прежнему не
              блокируется. `updated` stays 04.09. */
-          desc: 'The order is a number of gifts and a list of addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. The step will not close while a gift still has nowhere to go, unless the gifts are being personalized one by one, in which case the table below is where they are placed. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer, cut into runs under a subheading per address. There is no third step, and past twenty gifts the page recommends a way in rather than leaving the choice unmarked: Import from file takes the filled button, Add address keeps its outline, and one line under them says why.',
+          /* gbppl-v5-meeting-1 (07.09, первая волна ПОСЛЕ показа команде:
+             концепт принят, дальше доводка; проработка в
+             studio\docs\CHECKOUT-CONCEPT.md, «Апдейт 07.09»). Три решения
+             встречи 04.09 меняют описание варианта. (1) Барьер стал ДЕСЯТЬ
+             и остался единственным числом на странице: за ним живой кейс —
+             человек час набивал получателей руками и потерял данные, потому
+             что импорт был спрятан; мягкая подсказка шага 2 и случай «десять
+             адресов в списке» умерли дублями на этом числе, «третий адрес
+             руками» остался как единственный ранний намёк. (2) Импорт стал
+             процессом: пустой шаблон — видимая кнопка первым элементом над
+             дропзоной, сноска подвала снята, чтобы файл не предлагался дважды
+             на одном экране. (3) Файл вслух назван ОДНИМ файлом на доставку и
+             персонализацию (два файла на встрече зарубили; код так работал с
+             самого начала, не хватало фразы). Плюс длинные имена в таблице
+             импорта обрезаются по ширине колонки и открываются целиком на
+             фокусе ячейки. `updated` → 07.09. */
+          desc: 'The order is a number of gifts and a list of addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. The step will not close while a gift still has nowhere to go, unless the gifts are being personalized one by one, in which case the table below is where they are placed. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer, cut into runs under a subheading per address. There is no third step, and from ten gifts on the page recommends a way in rather than leaving the choice unmarked: Import from file takes the filled button, Add address keeps its outline, and one line under them says why. The import itself begins with the blank template, offered as the first thing on the panel, and it is one file for both answers: where every gift ships and what is printed on it. Long names in the imported table are cut to their column and open whole when the cell is focused.',
           status: 'in-progress',
           href: 'live/checkout.html?v=5',
           ready: true,
           tags: ['flow', 'shipping', 'personalization'],
           created: '2026-09-04',
-          updated: '2026-09-04'
+          updated: '2026-09-07'
         }
         /* ЧЕТВЁРТАЯ КОМНАТА СНЯТА С ПОЛКИ (gbppl-v4-retire-1, 03.09).
            Здесь стояла строка `v4` — «Delivery groups», заказ, собранный

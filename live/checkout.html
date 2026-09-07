@@ -280,6 +280,59 @@
         the step body.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-v5-meeting-1 (2026-09-07) — THE FIRST PASS AFTER THE
+     TEAM SAW V5. The concept was accepted at the demo of 04.09
+     («разделение доставки и персонализации даёт ясность» —
+     consensus of Ton, Julia and Valerie), so nothing here is
+     architecture; these are four decisions the room made, written
+     up in studio\docs\CHECKOUT-CONCEPT.md under «Апдейт 07.09»
+     and confirmed by Ton on 07.09. ALL FOUR ARE INSIDE ?v=5 ONLY;
+     V1 to V4 were compared node for node against HEAD at 360 /
+     1280 / 2258, page and import panel, and the diff is empty.
+
+     1. THE BARRIER IS TEN, AND IT IS THE ONLY NUMBER. The room
+        told the story behind it: a client spent an hour typing
+        recipients by hand and lost the data, because the file was
+        hidden. Twenty was too late. So ten, and ten in one place
+        only — see the volume rule in the model, where the two
+        soft hints that ten made into duplicates are named as they
+        die.
+
+     2. THE IMPORT IS A PROCESS, AND THE TEMPLATE IS ITS FIRST
+        STEP. «Шаг первый — скачай шаблон, заполни, загрузи», and
+        the link to the blank file «на видном месте». It was a
+        footnote under the dropzone; in V5 it is the first thing
+        on the screen, above the drop, with one line saying what
+        the file is for. The footnote goes with it, because the
+        same offer twice on one screen is the noise 646419e
+        already retired once.
+
+     3. AND THE FILE IS ONE FILE, SAID OUT LOUD. Two files, one
+        for addresses and one for personalization, were buried at
+        the meeting. The code has been of one mind since
+        gbppl-checkout-v5-1 (the template carries the address, the
+        name on the gift, the item columns and the card message,
+        and Confirm fills both steps); what was missing was the
+        sentence. The sample row keeps both ends filled and the
+        item columns EMPTY, which is honest: their headers are
+        built off the gift in the order.
+
+     4. LONG NAMES STOP PUSHING THE REST OF THE ROW OUT OF SIGHT.
+        The complaint was checking a filled file by eye. The notes
+        say «7 символов с многоточием»; the decision recorded in
+        the concept is truncation BY THE COLUMN — text-overflow on
+        a cell that is not focused, the whole value the moment it
+        is — because the intent is to see the beginning of a name,
+        and a hard seven hides more than the column ever needed
+        to. One row of the fixture now carries a name long enough
+        to see it work.
+
+     NOT TOUCHED ON PURPOSE: the panel's foot on 360 (an older
+     defect, waiting on Ton), the Duplicate button at the end of
+     the table (its fate is being discussed), and the prefill
+     checkbox of decision 4 in the concept (next wave).
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -1173,6 +1226,29 @@
   @media (min-width: 1280px) {
     .ck-band-cap { text-box: trim-both cap alphabetic; }
   }
+
+  /* ===========================================================
+     THE CELLS OF THE IMPORT TABLE TRUNCATE (gbppl-v5-meeting-1,
+     07.09). The team, 04.09: long names made checking a filled
+     file by eye impossible — one name pushed the rest of the row
+     out of the column. The notes say «7 символов с многоточием»;
+     the intent underneath is to SEE THE BEGINNING of every name,
+     and a hard seven characters throws away column width the
+     reader already has, differently at 360 and at 2258.
+
+     So the truncation is BY THE COLUMN. An <input> already clips
+     its overflow; all it lacks is the ellipsis, and text-overflow
+     applies to an input that is not focused. Focus hands the
+     whole value back — the caret scrolls the text the way it does
+     in any field, and an ellipsis would then be a lie about where
+     the string ends, so it is switched off there.
+
+     V5 ONLY: this class is worn by the five cells of the editable
+     table of the import panel, which is V5's own markup. The
+     read-only preview V1 to V4 show prints text in a <td> and is
+     not touched. */
+  .ck-cell { text-overflow: ellipsis; }
+  .ck-cell:focus { text-overflow: clip; }
 
   [x-cloak] { display: none !important; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -3995,20 +4071,26 @@
                              the same button in the same place, one click away.
 
                              THE BARRIER IS COUNTED IN GIFTS (Ton: «выбрано 20
-                             гифтов»), and this is the same twenty the volume
-                             rule below already used — one threshold now, not
-                             two. The loud plate that used to stand right here
-                             counted the LIST, so it only spoke at the
-                             twenty-first address typed: advice to import
+                             гифтов»), and it is the one threshold of the whole
+                             step, not two. The loud plate that used to stand
+                             right here counted the LIST, so it only spoke at
+                             the twenty-first address typed: advice to import
                              arriving after the typing was done. It is retired,
                              and this pair says the same thing at the moment it
                              is still worth saying. Its Download template is
-                             not lost: it stands inside the import panel
-                             («Need a template?») and in the quiet line below,
-                             which keeps the under-barrier cases it always had
-                             (a list of ten, or a third address typed by hand)
-                             and stands down while the recommendation speaks,
-                             so the file is never offered twice on one screen. -->
+                             not lost: it stands inside the import panel, where
+                             gbppl-v5-meeting-1 made it the first step of the
+                             screen, and in the quiet line below, which keeps
+                             the one case that is true UNDER the barrier and
+                             stands down while the recommendation speaks, so
+                             the file is never offered twice on one screen.
+
+                             AND THE BARRIER IS TEN SINCE 07.09
+                             (gbppl-v5-meeting-1): the team measured it against
+                             a client who typed for an hour by hand, and twenty
+                             let that happen. The sentence under the pair reads
+                             off v5Total, so it names whatever number the
+                             reader actually has. -->
                         <div>
                           <div class="flex flex-wrap items-center gap-2">
                             <button type="button" @click="v5OpenAddr(product.id, shipment.id, null)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
@@ -4043,7 +4125,13 @@
                         <!-- THE VOLUME RULE, QUIET HALF: one line, and it says
                              the one thing no control on screen says. The loud
                              half was retired by gbppl-v5-recommend-1 above,
-                             which says it earlier and in six words. -->
+                             which says it earlier and in six words.
+                             ONE CASE LEFT SINCE 07.09 (gbppl-v5-meeting-1):
+                             the THIRD ADDRESS TYPED BY HAND, which is the only
+                             reason to speak below the barrier — the «ten
+                             addresses in the list» case can never come first
+                             now, because ten addresses hold at least ten
+                             gifts and the rank above crosses on the tenth. -->
                         <p x-show="v5SoftAddr(shipment)" x-cloak class="text-sm text-zinc-600">A long list is faster in a file. <button type="button" @click="downloadTemplate()" class="underline underline-offset-2 hover:text-zinc-900">Download the template</button>, or <button type="button" @click="openCSVModal(product.id, shipment.id)" class="underline underline-offset-2 hover:text-zinc-900">upload one you already have</button>.</p>
                       </div>
 
@@ -4437,8 +4525,17 @@
                             <button type="button" @click="openCSVModal(product.id, shipment.id)" class="gb-btn gb-btn--small gb-btn--filled gb-btn--primary"><span class="gb-btn__label">Upload a file</span></button>
                           </div>
                         </div>
-                        <!-- THE QUIET HALF, this question's own. -->
-                        <p x-show="v5SoftPerso(shipment)" x-cloak class="text-sm text-zinc-600">A long list is faster in a file. <button type="button" @click="downloadTemplate()" class="underline underline-offset-2 hover:text-zinc-900">Download the template</button>, or <button type="button" @click="openCSVModal(product.id, shipment.id)" class="underline underline-offset-2 hover:text-zinc-900">upload one you already have</button>.</p>
+                        <!-- THE QUIET HALF OF THIS QUESTION IS GONE
+                             (gbppl-v5-meeting-1, 07.09). It stood right here
+                             and read «A long list is faster in a file», for
+                             the stretch between ten and twenty. With the
+                             barrier at ten it would appear in the same breath
+                             as the plate above, offering the same file with
+                             the same two verbs one line lower: the plate says
+                             it louder and first, so the line has no work
+                             left. The under-barrier case it also carried
+                             belongs to step 1 (a third address typed by
+                             hand), and that one is still there. -->
                       </div>
 
                       <!-- The same 48 as step 1: the two steps of one card
@@ -5285,12 +5382,59 @@
     </div>
 
     <div x-show="csv.step === 1" class="p-8">
+      <!-- ============================================================
+           gbppl-v5-meeting-1 (07.09) — THE TEMPLATE IS THE FIRST STEP OF
+           THE IMPORT, NOT A FOOTNOTE UNDER IT. The team, 04.09: «шаг
+           первый — скачай шаблон, заполни, загрузи», and the link to the
+           blank file «на видном месте». It was the last thing on this
+           screen, 12px, below the drop area, which is where a reader who
+           has no file yet finds it last.
+
+           SO IT MOVES ABOVE THE DROP, AND THE FOOTNOTE GOES WITH THE
+           MOVE. Two offers of one file on one screen is exactly the
+           noise 646419e retired at the button pair, and the reason holds
+           here.
+
+           THE RUNG IS MEDIUM, AND IT IS THIS PANEL'S OWN. Cancel and
+           Confirm in the foot of this same surface stand on medium, and
+           the rule of roles reads medium as the rung of a SURFACE (small
+           is a component's own furniture, and this is not inside a
+           component). OUTLINE, because the drop area is still the main
+           gesture of the screen: a 2px dashed block ~150 tall against a
+           42-tall outline button is not a contest, and the filled
+           primary of this panel belongs to Confirm.
+
+           THE LINE UNDER IT SAYS THE FILE IS ONE FILE (decision 3 of the
+           meeting: two files, one for delivery and one for
+           personalization, were buried on sight). The word «template» is
+           in the button and nowhere else in the sentence.
+
+           AND THE LABEL IS THE PAGE'S OWN THREE WORDS. «Download the
+           blank template» was 281px of label on a 232px surface at 360:
+           it hung over the right edge of the panel (caught on the
+           screen, not in the numbers). «Download template» measures
+           205.78 and is the SAME LABEL the plate of step 2 already
+           carries for the same action, so the page says one thing one
+           way. «Blank» is not lost, it moved into the sentence, which
+           has room for it at any width.
+
+           V1 to V4 KEEP THIS SCREEN AS IT WAS: the block above is theirs
+           to not have and the footnote is theirs to keep, both bound on
+           uiVersion the way the title and the three step names in the
+           head of this panel already are. -->
+      <div x-show="uiVersion === 'v5'" x-cloak class="mb-6">
+        <button @click="downloadTemplate()" type="button" class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary">
+          <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M12 3v13.5m0 0l4.5-4.5M12 16.5L7.5 12"/></svg></span>
+          <span class="gb-btn__label">Download template</span>
+        </button>
+        <p class="text-sm text-zinc-600 mt-2">Start here. The blank file holds both answers: where every gift ships, and what is printed on it. Fill it in Excel, then drop it below.</p>
+      </div>
       <button @click="simulateUpload()" class="w-full flex flex-col items-center gap-3 py-12 border-2 border-dashed border-zinc-300 rounded-[var(--radius)] hover:border-zinc-900 hover:bg-zinc-50">
         <svg class="w-12 h-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
         <p class="text-sm font-medium">Drop CSV here or click to select</p>
         <p class="text-xs text-zinc-500" x-text="(uiVersion === 'v4' || uiVersion === 'v5') ? 'Clicking loads a sample list of twenty gifts.' : 'Clicking fills the table with sample rows.'"></p>
       </button>
-      <div class="mt-4 flex items-center gap-2 text-xs text-zinc-600">
+      <div x-show="uiVersion !== 'v5'" class="mt-4 flex items-center gap-2 text-xs text-zinc-600">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <span>Need a template? <button @click="downloadTemplate()" class="underline underline-offset-2">Download blank template</button></span>
       </div>
@@ -5341,11 +5485,11 @@
             <tbody>
               <template x-for="(row, i) in csv.preview.rows" :key="'v5csv-' + i">
                 <tr class="border-t border-zinc-100" :class="row.error ? 'bg-red-50' : ''">
-                  <td class="p-1"><input type="text" x-model="row.name" aria-label="Ships to" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
-                  <td class="p-1"><input type="text" x-model="row.address" aria-label="Address" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
-                  <td class="p-1"><input type="text" x-model="row.zip" @input="v5CsvTouch()" aria-label="ZIP" :class="row.error ? 'text-red-700 font-medium' : ''" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
-                  <td class="p-1"><input type="text" x-model="row.mark" aria-label="Name on the gift" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
-                  <td class="p-1"><input type="text" x-model="row.msg" aria-label="Card message" class="w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.name" aria-label="Ships to" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.address" aria-label="Address" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.zip" @input="v5CsvTouch()" aria-label="ZIP" :class="row.error ? 'text-red-700 font-medium' : ''" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.mark" aria-label="Name on the gift" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.msg" aria-label="Card message" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
                 </tr>
               </template>
             </tbody>
@@ -7537,32 +7681,44 @@ function checkoutApp() {
         : 'No personalization';
     },
 
-    // ===== The volume rule (Ton 04.09) =====
-    // Thresholds are working numbers and say so in the concept: twenty is the
-    // barrier, the quiet line from about ten or from the third address typed
-    // by hand. Neither ever blocks the keyboard.
-    // EACH QUESTION WATCHES ITS OWN NUMBER. A plate under the address list
-    // that says «you are personalizing a lot» is a plate in the wrong room,
-    // and one that says the same thing twice on one screen is noise; so step 1
-    // watches the ADDRESS side of the order and step 2 watches PERSONALIZED
-    // GIFTS, and neither ever prints the other's sentence.
-    v5AddrTotal(s) { return ((s && s.v5Addrs) || []).length; },
+    // ===== The volume rule (Ton 04.09; RE-CUT BY THE MEETING, gbppl-v5-meeting-1) =====
+    // ONE THRESHOLD, AND IT IS TEN. The team, 04.09: twenty is too late. The
+    // case behind the number is a real one — a client spent an hour typing
+    // recipients by hand and lost the data, because the import was hidden. So
+    // ten, counted in GIFTS, and it is the only number left on the page: it
+    // ranks the pair of buttons in step 1 (filled Import) and it raises the
+    // plate in step 2. A file can be loaded at any count; the threshold is
+    // only about how loudly the file is offered.
+    //
+    // WHAT TEN KILLED, AND WHY, because a threshold that moves turns an early
+    // hint into a duplicate of the loud one:
+    //   · v5SoftPerso, the quiet line of step 2, is GONE. At twenty it spoke
+    //     first and the plate spoke later; at ten they would speak in the same
+    //     breath and say the same thing twice on one screen. The loud signal
+    //     takes its work — same argument that retired step 1's plate in
+    //     gbppl-v5-recommend-1, from the other end.
+    //   · v5AddrTotal is GONE with the «ten addresses already in the list»
+    //     case of v5SoftAddr: ten addresses hold at least ten gifts, so the
+    //     gift-counted rank always crosses first and that case could never be
+    //     the one that spoke. THE THIRD ADDRESS TYPED BY HAND STAYS — it is
+    //     the only signal that is true UNDER the barrier, and typing by hand
+    //     is the very complaint the meeting brought.
+    //
+    // EACH QUESTION STILL WATCHES ITS OWN NUMBER. A plate under the address
+    // list that says «you are personalizing a lot» is a plate in the wrong
+    // room; so step 1 watches the gifts it has to PLACE and step 2 the gifts
+    // it has to PERSONALIZE, and neither ever prints the other's sentence.
+    // And gbppl-v5-recommend-1's finding holds: step 1's barrier is counted in
+    // gifts, not in list rows, so the advice «import this instead of typing
+    // it» is true before the list has a single row — advice after the work is
+    // no advice at all.
     v5PersoTotal(s) { return (s && s.v5Perso === 'each') ? this.v5Total(s) : 0; },
-    // gbppl-v5-recommend-1 (04.09): STEP 1's BARRIER IS COUNTED IN GIFTS.
-    // It used to count the list, which meant the advice «import this instead
-    // of typing it» could not appear until the twenty-first address had been
-    // typed. Ton measures the barrier where the reader meets it — «выбрано 20
-    // гифтов» — so it is v5Total, and it is true before the list has a single
-    // row. One threshold serves the whole step now: it ranks the pair of
-    // buttons (filled Import) and it silences the quiet line, so the file is
-    // offered once. v5LoudAddr and its plate are gone with it.
-    v5RecFile(s) { return this.v5Total(s) >= 20; },
-    v5LoudPerso(s) { return this.v5PersoTotal(s) > 20; },
+    v5RecFile(s) { return this.v5Total(s) >= 10; },
+    v5LoudPerso(s) { return this.v5PersoTotal(s) >= 10; },
     v5SoftAddr(s) {
       if (this.v5RecFile(s)) return false;
-      return this.v5AddrTotal(s) >= 10 || ((s && s.v5Hand) || 0) >= 3;
+      return ((s && s.v5Hand) || 0) >= 3;
     },
-    v5SoftPerso(s) { return !this.v5LoudPerso(s) && this.v5PersoTotal(s) >= 10; },
 
     // ===== The order, in words and in money =====
     v5OrderGifts() { return this.products.reduce((n, p) => n + this.v5Total(this.v5Sh(p)), 0); },
@@ -8362,7 +8518,17 @@ function checkoutApp() {
           one('Acme LA Studio', '', la5, '90028', ''),
           one('Emma Schultz', 'Emma',   '15 Oak Ave, Boston, MA',  '02115', 'Welcome aboard.'),
           one('Marcus Lee',   'Marcus', '42 Pine St, Seattle, WA', '98101', ''),
-          one('Sofia Romano', 'Sofia',  '88 Elm Rd, Brooklyn, NY', '',      '', 'ZIP required')
+          // gbppl-v5-meeting-1 (07.09): ONE ROW CARRIES A NAME LONGER THAN ITS
+          // COLUMN, because truncation nobody can see is truncation nobody can
+          // check. It stands where Sofia Romano stood — the fixture keeps its
+          // shape (thirteen boxes to one office, four to a studio, three to
+          // three homes), its count of twenty and its one missing ZIP, so the
+          // summary still has the same honest thing to report. The same string
+          // is in Ships to and in Name on the gift on purpose: it is what a
+          // reader who filled the template by copying the delivery name into
+          // the gift column actually produces, and it puts the ellipsis in
+          // both narrow columns, 160 and 120, at once.
+          one('Alexandriana Konstantinopolous', 'Alexandriana Konstantinopolous', '88 Elm Rd, Brooklyn, NY', '', '', 'ZIP required')
         ];
         const bad5 = v5sample.filter(r => r.error).length;
         this.csv.preview = { total: v5sample.length, valid: v5sample.length - bad5, errors: bad5, rows: v5sample };
