@@ -361,6 +361,29 @@
      2258. The diff is empty; the numbers are in the wave report.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-v5-prefill-1 (2026-09-07) — TWO THINGS OFF THE SAME
+     MEETING, BOTH INSIDE ?v=5. V1 to V4 were compared node for node
+     against 5cad15f at 360 / 1280 / 2258, page and step 2, and the
+     diff is empty.
+
+     1. THE NAMES CAN COME FROM THE ADDRESSES. Decision 4 of the
+        meeting of 04.09, in the concept under «Апдейт 07.09»: a
+        checkbox over the gift table fills Printed name — and the
+        initials, where the gift carries them — out of the RECIPIENT
+        OF THE ADDRESS EACH GIFT IS ASSIGNED TO. Matched on the
+        assignment and never on a string, which is what makes the
+        room's hard case (two people of one name in two cities) not
+        a case at all. Off by default, hand above switch cell by
+        cell. The rules and the reasons are at v5Prefill.
+
+     2. A NEW ADDRESS HOLDS ONE GIFT, not nought and not the
+        remainder. The frame of the same meeting: 95 to 99 per cent
+        of orders are one gift per address, so the ordinary layout
+        should assemble itself. Written at v5SeedNewAddr, and the
+        arithmetic strip, the Continue gate and Place Order all keep
+        telling the same truth about what is placed.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -4325,6 +4348,41 @@
                           </span>
                         </div>
 
+                        <!-- THE NAMES CAN COME FROM THE ADDRESSES
+                             (gbppl-v5-prefill-1, 07.09). Decision 4 of the
+                             meeting of 04.09: «чекбокс, который автозаполняет
+                             имена персонализации из получателей доставки, с
+                             ручным оверрайдом». The whole argument, and the
+                             four rules it obeys, are at v5Prefill in the
+                             model; two of them are visible from here.
+                             OFF BY DEFAULT, because by this page's own model
+                             the name on the box is not the person who signs
+                             for the parcel — so the tick is a reader saying
+                             out loud that here they are the same. And it
+                             stands ABOVE the tools rather than in their row:
+                             a decision about what the table holds is not a
+                             tool, and the reader meets it before the file and
+                             the bulk panel offer to fill the same column.
+                             The shape is not a new one: it is the switch this
+                             same step already carries for the greeting card,
+                             white box, tick, sentence, grey half. -->
+                        <div class="border border-zinc-200 rounded-[var(--radius)] bg-white">
+                          <label class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
+                            <!-- The one deviation from the greeting row's
+                                 markup, and it is a fix rather than a variant:
+                                 the tick and its sentence are ONE flex item,
+                                 so a label longer than the greeting's cannot
+                                 leave the tick stranded on a line of its own
+                                 at 360 (seen on the shot, which is why this
+                                 span is here). -->
+                            <span class="flex items-start gap-x-3 min-w-0">
+                              <input type="checkbox" x-model="shipment.v5NameFromAddr" @change="v5PrefillToggle(shipment)" class="accent-blue-600 w-4 h-4 flex-shrink-0 mt-0.5">
+                              <span class="text-sm text-zinc-900">Use the delivery recipient's name</span>
+                            </span>
+                            <span class="text-sm text-zinc-500">Printed names and initials come from each address</span>
+                          </label>
+                        </div>
+
                         <div class="flex flex-wrap items-center justify-end gap-2">
                           <button type="button" @click="openCSVModal(product.id, shipment.id)" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary">
                             <span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></span>
@@ -4464,7 +4522,12 @@
                                          out loud and the placeholder names both
                                          shapes the printer accepts. -->
                                     <td class="py-3 pr-4">
-                                      <input type="text" x-model="row.name" placeholder="Name or initials (optional)" aria-label="Name printed on the gift" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
+                                      <!-- gbppl-v5-prefill-1: the one keystroke
+                                           that makes this cell the reader's.
+                                           x-model has already written the
+                                           value by the time this runs; the
+                                           mark only says whose it is. -->
+                                      <input type="text" x-model="row.name" @input="v5HandEdit(row, 'name')" placeholder="Name or initials (optional)" aria-label="Name printed on the gift" class="w-full bg-transparent text-sm font-medium px-0 py-1 border-0 border-b border-zinc-300 hover:border-zinc-500 focus:outline-none focus:border-blue-600 focus:border-b-2 placeholder:text-zinc-400 placeholder:font-normal transition-colors">
                                     </td>
 
                                     <template x-for="i in 3" :key="'v5cell-item-' + i">
@@ -7474,6 +7537,11 @@ function checkoutApp() {
         v5Perso: 'none',      // 'none' | 'each'
         v5Card: { on: false, message: '', from: '' },
         v5Rows: [],           // one row per gift, only while personalizing
+        // gbppl-v5-prefill-1 (07.09): OFF, and the concept says why. The name
+        // printed on a box is not the person who signs for the parcel by this
+        // page's own model, so the switch is the reader saying out loud that
+        // here the two are the same.
+        v5NameFromAddr: false,
         v5Page: 1,
         v5Hand: 0,            // addresses typed by hand, for the soft hint
         // gbppl-v5-image-1 (04.09): the accordion, and it is V3's, not a
@@ -7507,7 +7575,10 @@ function checkoutApp() {
       return Object.assign({
         id: Date.now() * 1000 + this._rowSeq, name: '', qty: 1,
         item1: '', item2: '', item3: '', greeting: null,
-        address: '', selected: false, addrId: null
+        address: '', selected: false, addrId: null,
+        // gbppl-v5-prefill-1 (07.09): which hand owns which cell of this row.
+        // Empty is the normal state; see the block at v5Prefill.
+        pf: {}
       }, o || {});
     },
     v5Sh(p) { return (p && p.shipments && p.shipments[0]) || null; },
@@ -7600,6 +7671,7 @@ function checkoutApp() {
         }
       }
       if (s.v5Perso === 'each') this.v5SeedRows(s);
+      this.v5Prefill(s);
     },
     // gbppl-v5-ground-1 (04.09): what the reuse control in the delivery
     // panel says. Not a remembered click but the FORM read back, so it
@@ -7615,6 +7687,9 @@ function checkoutApp() {
       if (!s || !addr) return;
       s.v5AddrId = addr.id;
       s.v5AddrLabel = addr.name + ', ' + addr.label;
+      // gbppl-v5-prefill-1: in «one address» this IS the assignment of every
+      // row in the table, so the names follow it.
+      this.v5Prefill(s);
     },
 
     // ============================================================
@@ -7714,6 +7789,9 @@ function checkoutApp() {
       while (s.v5Rows.length < want) s.v5Rows.push(this.v5Row());
       if (s.v5Rows.length > want) s.v5Rows = s.v5Rows.slice(0, want);
       s.v5Page = Math.min(Math.max(1, s.v5Page || 1), this.v5Pages(s));
+      // gbppl-v5-prefill-1: a row born in «one address» already knows where it
+      // is going, so it arrives with the name if the switch is on.
+      this.v5Prefill(s);
     },
     // NUMBERS -> ROWS, and it never moves a gift that already knows where it
     // is going. A row keeps the address it carries; the shortfall between what
@@ -7731,6 +7809,133 @@ function checkoutApp() {
         for (let i = 0; i < rows.length && need > 0; i++) {
           if (!rows[i].addrId) { rows[i].addrId = a.id; need -= 1; }
         }
+      });
+      this.v5Prefill(s);
+    },
+
+    // ============================================================
+    // THE PRINTED NAMES CAN COME FROM THE ADDRESSES
+    // gbppl-v5-prefill-1 (2026-09-07) — decision 4 of the meeting of
+    // 04.09, written up in studio\docs\CHECKOUT-CONCEPT.md under
+    // «Апдейт 07.09» and confirmed by Ton the same day: «чекбокс,
+    // который автозаполняет имена персонализации из получателей
+    // доставки, с ручным оверрайдом». The case behind it is the
+    // ordinary one: the people the parcels are addressed to are very
+    // often the people whose names go on the boxes, and typing every
+    // one of them twice is the hour the team watched a client lose.
+    //
+    // FOUR RULES, AND THE THIRD IS THE WHOLE POINT.
+    //
+    // 1. MATCHED ON THE ASSIGNMENT, NEVER ON A STRING. A row takes
+    //    the name of THE ADDRESS IT IS ASSIGNED TO — in «multiple
+    //    addresses» the address of the row, in «one address» the one
+    //    address the whole order goes to. The meeting's own hard case
+    //    (two people of the same name in two cities) needs no special
+    //    handling at all: they are two addresses, and the model has
+    //    always told them apart.
+    // 2. A ROW WITH NOWHERE TO GO IS NOT TOUCHED, and takes its name
+    //    the moment it is given an address while the switch is on.
+    //    Nothing is guessed for a gift whose destination is unknown.
+    // 3. THE HAND IS ABOVE THE SWITCH, CELL BY CELL. `r.pf[field]` is
+    //    'auto' for a cell the switch filled and 'hand' for a cell a
+    //    person typed in; a 'hand' cell is never written or cleared by
+    //    anything automatic again — not by a reassigned address, not
+    //    by the switch going off and on. Switching OFF clears only the
+    //    'auto' cells. A cell with no mark and something in it is
+    //    somebody's work from before the switch was ever used, and is
+    //    left alone as well: the switch only fills what is EMPTY.
+    // 4. THE INITIALS ARE PART OF THE SAME ANSWER, and only where the
+    //    gift really carries them. The catalogue types every part of
+    //    every gift (`kind: 'initials' | 'text'`), so the monogram
+    //    goes into the initials cells and nothing is invented for a
+    //    «Name or phrase» cell, which is a different question with a
+    //    different answer. And the monogram is cut from THE NAME THE
+    //    SWITCH WROTE, never from an address whose name the row does
+    //    not carry: see the rule at the item loop.
+    //
+    // The precedent for the whole thing is V1's own, from Valerie at
+    // the meeting of 20.08 (see saveAddress): «a row that never got a
+    // name takes the one just typed into the address». This is that
+    // rule made visible, reversible and per cell.
+    // ============================================================
+    v5ProductOf(s) {
+      return this.products.find(p => (p.shipments || []).indexOf(s) >= 0) || null;
+    },
+    v5RowSource(s, r) {
+      if (!s || !r) return '';
+      if (s.v5Mode === 'many') {
+        const a = (s.v5Addrs || []).find(x => x.id === r.addrId);
+        return (a && a.deliver && a.deliver.name) || '';
+      }
+      const b = this.addressBook.find(x => x.id === s.v5AddrId);
+      const name = (b && b.name) || '';
+      // v5SaveDeliver files an address typed without a name as «Unnamed»,
+      // which is a placeholder for a list and not a name for a box.
+      return name === 'Unnamed' ? '' : name;
+    },
+    // A monogram out of a name: the first letter of up to three words, A to Z
+    // and 0 to 9, which is exactly what the initials field says it takes
+    // («Initials (3 chars · A to Z, 0 to 9)»). Accents are FOLDED, not
+    // dropped: NFD splits «é» into «e» and its mark, and the sweep of
+    // everything outside A to Z and 0 to 9 takes the mark with it, so «Léa
+    // Bernard» is LB and not B.
+    v5Initials(name) {
+      const out = [];
+      String(name || '').trim().split(/\s+/).forEach(w => {
+        if (out.length >= 3) return;
+        const c = w.normalize('NFD').replace(/[^A-Za-z0-9]/g, '');
+        if (c) out.push(c.charAt(0).toUpperCase());
+      });
+      return out.join('');
+    },
+    v5HandEdit(r, field) {
+      if (!r) return;
+      if (!r.pf) r.pf = {};
+      r.pf[field] = 'hand';
+    },
+    // The shared drawers write a whole bag of fields at once, so what counts
+    // as a hand edit there is a value that CHANGED: opening a panel and
+    // closing it with Save must not freeze a cell nobody touched.
+    v5MarkEdits(r, was) {
+      if (!r || !was) return;
+      Object.keys(was).forEach(f => {
+        if ((r[f] || '') !== (was[f] || '')) this.v5HandEdit(r, f);
+      });
+    },
+    v5PrefillToggle(s) { this.v5Prefill(s); },
+    v5Prefill(s) {
+      if (!s) return;
+      const p = this.v5ProductOf(s);
+      (s.v5Rows || []).forEach(r => this.v5PrefillRow(s, p, r));
+    },
+    v5PrefillRow(s, p, r) {
+      if (!s || !r) return;
+      if (!r.pf) r.pf = {};
+      const who = s.v5NameFromAddr ? this.v5RowSource(s, r) : '';
+      const put = (field, value) => {
+        if (r.pf[field] === 'hand') return;
+        if (!value) {
+          if (r.pf[field] === 'auto') { r[field] = ''; delete r.pf[field]; }
+          return;
+        }
+        if (r[field] && r.pf[field] !== 'auto') return;
+        r[field] = value;
+        r.pf[field] = 'auto';
+      };
+      put('name', who);
+      // THE MONOGRAM BELONGS TO THE NAME THAT IS ACTUALLY ON THE GIFT, so it
+      // is written and refreshed ONLY where the switch owns the printed name
+      // too. A row whose name came from a person or from a file keeps its own
+      // initials cell: «Yuki» from an import must never sit beside ANO,
+      // engraved off the office the parcel happens to go to. Taken back only
+      // when the switch itself is taken back, or the gift loses its address.
+      const mine = r.pf.name === 'auto';
+      const ini = who && mine ? this.v5Initials(who) : '';
+      (this.productItems(p) || []).forEach((it, i) => {
+        if (it.kind !== 'initials') return;
+        const f = 'item' + (i + 1);
+        if (!who) put(f, '');
+        else if (mine) put(f, ini);
       });
     },
 
@@ -7831,6 +8036,9 @@ function checkoutApp() {
         this.addressBook.push({ id: id, name: deliver.name || 'Unnamed', label: label });
         s.v5AddrId = id;
         s.v5AddrLabel = (deliver.name ? deliver.name + ', ' : '') + label;
+        // gbppl-v5-prefill-1: in «one address» this is the destination of every
+        // row, so the switch has its answer the moment the address is saved.
+        this.v5Prefill(s);
         this.closeDrawer();
         return;
       }
@@ -7851,11 +8059,47 @@ function checkoutApp() {
       if (born) {
         s.v5Hand = (s.v5Hand || 0) + 1;
         if (this.drawer.v5Assign) this.v5PutAddr(s, a.id);
+        else this.v5SeedNewAddr(s, a);
       }
-      // NOTHING IS COPIED INTO ANY ROW'S NAME. The person who signs for the
-      // parcel and the name printed on the box are two facts, and this panel
-      // owns exactly one of them.
+      // NOTHING IS COPIED INTO ANY ROW'S NAME BY THIS PANEL. The person who
+      // signs for the parcel and the name printed on the box are two facts,
+      // and this panel owns exactly one of them. What the sweep below does is
+      // the reader's own standing answer to the other question, asked once
+      // with a checkbox (gbppl-v5-prefill-1) — including the case where the
+      // name of an address the reader just corrected has to reach the boxes
+      // going there.
+      this.v5Prefill(s);
       this.closeDrawer();
+    },
+    // ============================================================
+    // A NEW ADDRESS HOLDS ONE GIFT (gbppl-v5-prefill-1, 07.09)
+    // ------------------------------------------------------------
+    // The frame of the meeting of 04.09: «~95-99% заказов = ОДИН гифт
+    // на адрес», optimize for that and let the rare shapes be built
+    // by hand. So an address the reader has just typed arrives
+    // holding ONE gift instead of nought: the ordinary layout, one
+    // per address, now assembles itself, and «Split the rest evenly»
+    // stays for the campaigns whose numbers are uneven. Not the
+    // REMAINDER either — a second address is not a request to move
+    // nineteen gifts out of the first one.
+    //
+    // IT NEVER TAKES A GIFT FROM ANOTHER ADDRESS. In the numbers hand
+    // it takes one out of what is still unassigned, and nothing if
+    // there is nothing left; in the table hand a claim on a row means
+    // pointing an UNASSIGNED row at it, which is the same arithmetic
+    // said in the other language. An address with no line typed into
+    // it holds nothing at all: an unfinished row of the list is not a
+    // destination, and the remainder strip and Place Order must keep
+    // saying so.
+    // ============================================================
+    v5SeedNewAddr(s, a) {
+      if (!s || !a || !a.address) return;
+      if (s.v5Perso === 'each') {
+        const r = (s.v5Rows || []).find(x => !x.addrId);
+        if (r) { r.addrId = a.id; a.qty = 1; }
+        return;
+      }
+      a.qty = Math.min(1, this.v5Left(s));
     },
     v5AskRemoveAddr(productId, shipmentId, a) {
       if (!a) return;
@@ -7869,6 +8113,9 @@ function checkoutApp() {
       if (!s) return;
       s.v5Addrs = (s.v5Addrs || []).filter(a => a.id !== addrId);
       (s.v5Rows || []).forEach(r => { if (r.addrId === addrId) r.addrId = null; });
+      // gbppl-v5-prefill-1: a gift with nowhere to go has no name to take, so
+      // the switch takes back the one it lent. Hand-typed names stay.
+      this.v5Prefill(s);
     },
     // Every address already typed into this order, once each, so the twelfth
     // address to the same office is one click and not one more form.
@@ -7895,15 +8142,22 @@ function checkoutApp() {
     v5ClearSelected(s) {
       ((s && s.v5Rows) || []).filter(r => r.selected).forEach(r => {
         r.name = ''; r.item1 = ''; r.item2 = ''; r.item3 = ''; r.greeting = null;
+        // gbppl-v5-prefill-1: emptying a cell on purpose is a hand edit like
+        // any other. The switch does not put back what a person just took out.
+        ['name', 'item1', 'item2', 'item3'].forEach(f => this.v5HandEdit(r, f));
       });
     },
     v5PutAddr(s, addrId) {
       if (this.drawer.recipientId) {
         const r = ((s && s.v5Rows) || []).find(x => x.id === this.drawer.recipientId);
         if (r) r.addrId = addrId;
+        this.v5Prefill(s);
         return;
       }
       ((s && s.v5Rows) || []).filter(r => r.selected).forEach(r => { r.addrId = addrId; });
+      // gbppl-v5-prefill-1: the gift moved, so the name the switch put on it
+      // moves with it. A cell typed by hand stays where it is.
+      this.v5Prefill(s);
     },
     v5OpenAssign(productId, shipmentId, rowId) {
       this.drawer = {
@@ -8749,10 +9003,17 @@ function checkoutApp() {
     saveRecipient() {
       const r = this.currentRecipient();
       if (!r) return;
+      // gbppl-v5-prefill-1: what a person changes in this panel becomes theirs
+      // and the name switch never writes over it again. V1 to V4 have no
+      // switch and never enter the branch.
+      const was = this.uiVersion === 'v5'
+        ? { item1: r.item1, item2: r.item2, item3: r.item3 }
+        : null;
       r.qty = Math.max(1, this.drawer.data.qty || 1);
       r.item1 = this.drawer.data.item1;
       r.item2 = this.drawer.data.item2;
       r.item3 = this.drawer.data.item3;
+      if (was) this.v5MarkEdits(r, was);
       const g = this.drawer.data.greeting;
       if (g.message || g.to || g.from) {
         r.greeting = { ...g, fromMaster: false, custom: true };
@@ -8811,9 +9072,16 @@ function checkoutApp() {
       // Apply-to-all still writes every row of the shipment, selection or not —
       // the long-standing gap between this menu's wording and its reach (ANATOMY §5).
       const write = r => {
+        // gbppl-v5-prefill-1: the same rule as the per-gift panel, and it
+        // holds for «apply to every gift» too — a value a person applied is a
+        // value the name switch leaves alone from then on.
+        const was = this.uiVersion === 'v5'
+          ? { item1: r.item1, item2: r.item2, item3: r.item3 }
+          : null;
         r.item1 = this.drawer.data.item1;
         r.item2 = this.drawer.data.item2;
         r.item3 = this.drawer.data.item3;
+        if (was) this.v5MarkEdits(r, was);
       };
       if (this.drawer.master) this.masterTargets(s).forEach(write);
       else { const r = this.currentRecipient(); if (r) write(r); }
@@ -9208,6 +9476,10 @@ function checkoutApp() {
           s.v5Qty = (blankForm ? 0 : this.v5Total(s)) + rows.length;
         }
         s.v5Page = 1;
+        // gbppl-v5-prefill-1: the file's own names are the file's and are
+        // never overwritten (the sweep only fills EMPTY cells); a line that
+        // brought an address and no printed name gets one if the switch is on.
+        this.v5Prefill(s);
         this.csv.imported = list.length;
         this.csv.personalized = rows.filter(r => r.mark || r.msg).length;
         this.csv.step = 3;
