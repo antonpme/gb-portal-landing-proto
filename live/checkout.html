@@ -8466,7 +8466,13 @@ function checkoutApp() {
         // printed on a box is not the person who signs for the parcel by this
         // page's own model, so the switch is the reader saying out loud that
         // here the two are the same.
-        v5NameFromAddr: false,
+        // gbppl-prefill-on (Ton, 08.09): ON by default. He added addresses
+        // from the book and expected the names on the gifts — «у нас адрес
+        // не может не иметь имени». The off-default was my caution, not the
+        // meeting's ask; the hand-freeze rules already protect typed work
+        // (only empty cells fill, a manual edit is never overwritten, and
+        // unticking clears only what the switch itself wrote).
+        v5NameFromAddr: true,
         v5Page: 1,
         v5Hand: 0,            // addresses typed by hand, for the soft hint
         // gbppl-v5-image-1 (04.09): the accordion, and it is V3's, not a
@@ -9594,7 +9600,13 @@ function checkoutApp() {
         return this.v5AssignBook(r.bookId);
       }
       if (this.drawer.v5Target === 'one') return this.v5PkTakeOne(r);
-      return this.v5PkAddLine(r);
+      // gbppl-pk-click-ticks (Ton, 08.09): in the door that carries the
+      // ticks, a row click TICKS — it must not commit. Two ways to add
+      // from one list («кликнул — думал заселектит, а оно сразу добавило
+      // и закрыло») is chaos; the one committing hand is Add selected (N).
+      // Enter through the keyboard walker lands here too, so it ticks the
+      // same way. The one-pick doors above keep click = take.
+      return this.v5PkTick(r, !this.v5PkTicked(r));
     },
     /* One address: the row IS the answer of the whole step, so it is taken
        and the panel goes. The book keeps the place too, so the next order
