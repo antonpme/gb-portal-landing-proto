@@ -799,3 +799,33 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
   text-overflow: ellipsis;
 }
 .gbhc-pill__end { align-self: center; margin-right: var(--space-8); }
+
+/* ============================================================
+   THE BELL WEARS THE BAR'S OWN LINE WEIGHT
+   gbppl-concierge-unify-1c
+   ------------------------------------------------------------
+   Ton, 09.09: «линии тоньше, чем у иконки поиска». Measured, and
+   he is right to the half pixel: the bell rendered at stroke-width
+   1 against the search dot's 1.5.
+
+   AND IT IS A SEAM OF THE HOUSE, NOT OF THIS MODULE. icon.css puts
+   the weight on `.gb-icon > svg` (--gbic-stroke, 1.5, declared
+   inside .gb-icon itself); button.css sizes a glyph in a control
+   through `.gb-btn__icon svg` and says nothing about weight. So a
+   glyph drawn from the record BY NAME and dropped into a button
+   slot inherits no weight at all and falls back to the SVG default
+   of 1. The header's own dots do not show it only because
+   header.js writes stroke-width="1.5" as an ATTRIBUTE in its
+   template, by hand, on every glyph it draws.
+
+   THE CANON IS NOT TOUCHED, on the rail of this wave. The one line
+   below puts the weight back for our button, scoped to it, and the
+   finding goes to the report: the real fix is one rule in
+   button.css or one line in icon.js, and it is worth a wave of its
+   own because it silently thins every glyph the record draws
+   inside a control anywhere in the house.
+
+   1.5 is not a new value: it is --gbic-stroke read out of icon.css,
+   written as a literal only because the property is declared inside
+   .gb-icon and cannot be reached from here. */
+[data-gbhc-bell] .gb-btn__icon > svg { stroke-width: 1.5; }

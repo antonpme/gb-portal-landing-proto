@@ -261,6 +261,26 @@
       btn.addEventListener('click', openHome);
       var before = ENVIRONMENT.bellBefore ? slot.querySelector(ENVIRONMENT.bellBefore) : null;
       slot.insertBefore(btn, before);   /* a null neighbour appends, which is what a bar without one wants */
+
+      /* AND THE ORGANISM IS ASKED TO LOOK AGAIN. Ton, 09.09, off a
+         screenshot of the home page: «иконка должна адаптироваться
+         так же, как и соседние, например поиска». She was black over
+         the video hero while the search dot beside her was white, and
+         the cause was a clock and not a colour: header.js already
+         re-classes every `.gbh-actions .gb-btn--icon` between
+         --inverse and --secondary in its own apply(), the bell
+         included — but apply() had run at upgrade time, BEFORE this
+         decorator put the bell in, and it only runs again on scroll
+         or resize. At the top of a page nobody has scrolled, the bell
+         had never been looked at.
+
+         So the bell does not paint itself and no rule of ours mirrors
+         the organism's steps. One resize event, and the bar dresses
+         the new glyph with the very code that dresses its own:
+         transparent-dark, is-past-hero, the portal bar, the studio
+         step and anything added later all come for free, and there is
+         no second copy of the ink logic to drift. */
+      window.dispatchEvent(new Event('resize'));
     }
     if (window.customElements && customElements.whenDefined &&
         /gb-site-header/.test(ENVIRONMENT.bellSlot || '')) {
