@@ -86,12 +86,130 @@
      .gba-*, gb-field, gb-guest-header or gb-auth-flow, so a page that has
      none of them is unchanged by it. -->
 <link rel="stylesheet" href="../system/components/auth.css">
+<!-- Book a meeting stands on the second floor of the concierge drawer
+     (gbppl-concierge-unify-1b), and booking.css names auth.css as its
+     neighbour. Scoped to .gbb-* entirely, so the page without the key is
+     untouched by it, which the node by node parity proves. -->
+<link rel="stylesheet" href="../system/components/booking.css">
 <link rel="stylesheet" href="../system/components/comments.css">
 <!-- gbppl-comments-dress-1. toggle.css and toggle.js come with
      comments.css for the same reason auth.css does: the kind switch of the
      thread drawer (Note | Suggest text) is the system Toggle button. The file
      is scoped to .gb-toggle*, so a page without one is unchanged by it. -->
 <link rel="stylesheet" href="../system/components/toggle.css">
+
+<!-- ============================================================
+     THE CONCIERGE ON THE HOME PAGE      gbppl-concierge-unify-1b
+     ------------------------------------------------------------
+     Ton, 09.09, asking the question that settled the architecture:
+     «как мы интегрируем этот прототип в НАШИ прототипы, где
+     переключение». The answer is not a room of its own with a copy
+     of this page in it — that was my shortcut and he named it («я
+     просил главную страницу, а не огрызок чего-то с одной
+     секцией»). The answer is a LAYER ON THE REAL PAGES, the same
+     way the portal wears it: the module goes on, the key turns it
+     on, and the page underneath is the page.
+
+     ?concierge=1, OFF BY DEFAULT. Without the key this file renders
+     exactly what it rendered before, node for node, and that is
+     measured rather than asserted. The key rides in KEEP so it
+     survives the header's own navigation.
+     ============================================================ -->
+<link rel="stylesheet" href="concierge/concierge.css">
+<style>
+/* ============================================================
+   THE HOVER OF THE TOP NAVIGATION — THREE CANDIDATES
+   gbppl-nav-hover-1                                  .gbh-link
+   ------------------------------------------------------------
+   Ton, 09.09: «сейчас там hover вообще какой-то никакой». He is
+   right, and the canon says so in its own words: header.css line
+   141 is `.gbh-link:hover { opacity: 0.8 }`, carried over from the
+   live bar's `transition-all duration-300` fade. A label that goes
+   eighty per cent grey over 300ms is a hover you have to be told
+   about.
+
+   THREE CANDIDATES ON THE FORKED BAR OF THIS SANDBOX ONLY. The
+   canonical header.css is not touched by a byte; everything below
+   hangs off html[data-gbhc-hover] and dies with this page. The one
+   Ton picks moves into the organism as a wave of its own.
+   ?hover=underline|ink|both, and a row of the console. Default both.
+
+   ALL THREE PUT OUT THE OLD FADE FIRST. Leaving opacity .8 under a
+   new hover gives two hovers at once, and the weaker one does the
+   talking.
+
+   1  UNDERLINE  a hairline grows left to right under the label on
+      --mo-small and retreats the same way. Provenance: the hero's
+      own underline-CTA (Discover Gifts, home.css .gbhm-underline)
+      and the rule of the controls recon that an underline means
+      navigation. It is an ::after on transform: scaleX, so it
+      cannot move the label or its neighbours by a pixel: the box
+      never changes size, only what is painted inside it.
+   2  INK        the label deepens to Zinc 900. AND THIS ONE MOVES
+      THE BAR AT REST, WHICH IS NOT A LIBERTY BUT AN ARITHMETIC:
+      the canon's resting ink IS ALREADY Zinc 900 (header.css 126,
+      and a.gbh-link at 662), so there is nothing above it to move
+      to. An ink hover exists only if rest sits a step lighter.
+      Rest becomes Zinc 600, the hovered item becomes Zinc 900.
+      That is a real change to how the bar reads when nobody is
+      pointing at it, it is a deviation from live, and it is
+      flagged in the report for Ton's eye rather than smuggled in.
+      No weight change: weight moves the width and the neighbours.
+   3  BOTH       one and two together.
+
+   THE DARK STEP. This page's bar is the plain white one, so the
+   transparent rules below are never exercised here; they are
+   written because the organism has that step and the wave that
+   moves the winner into the canon must not have to invent them.
+   There the hairline is white and the ink runs Zinc 300 -> white,
+   because the transparent bar's resting ink is already --white and
+   the same arithmetic applies upside down.
+
+   No prefers-reduced-motion branch: Ton-7, and Ton 09.09.
+   ============================================================ */
+:root { --gbhc-rule: var(--zinc-900); }
+html[data-gbhc-hover] .gbh-bar .gbh-link:hover { opacity: 1; }
+
+/* ---- 1. THE RULE ---- */
+html[data-gbhc-hover="underline"] .gbh-bar .gbh-link::after,
+html[data-gbhc-hover="both"] .gbh-bar .gbh-link::after {
+  content: '';
+  position: absolute;
+  /* 16 is not a rung of our scale here, it is THE LIVE PADDING of
+     the link (header.css .gbh-link, SYSTEM.md site chrome 12.08),
+     flat at every width. Insetting the rule by exactly the padding
+     makes it the width of the LABEL and not of the click box, which
+     is what keeps the daylight between two rules. */
+  left: 16px;
+  right: 16px;
+  bottom: var(--space-8);
+  height: 1px;
+  background: var(--gbhc-rule);
+  transform: scaleX(0);
+  transform-origin: left center;   /* out from the left, and back to the left */
+  transition: transform var(--mo-small) var(--mo-move);
+  pointer-events: none;
+}
+html[data-gbhc-hover="underline"] .gbh-bar .gbh-link:hover::after,
+html[data-gbhc-hover="both"] .gbh-bar .gbh-link:hover::after { transform: scaleX(1); }
+
+/* ---- 2. THE INK ----
+   :not(.is-active) everywhere, or the Blue 600 of the active item
+   (header.css 578) is overwritten by a selector that outweighs it.
+   Weight 0-4-1 against the 0-2-2 of body.gb-demo a.gbh-link, which
+   is the antidote every consumer of this bar has to clear. */
+html[data-gbhc-hover="ink"]  .gbh-bar .gbh-link:not(.is-active),
+html[data-gbhc-hover="both"] .gbh-bar .gbh-link:not(.is-active) { color: var(--zinc-600); }
+html[data-gbhc-hover="ink"]  .gbh-bar .gbh-link:not(.is-active):hover,
+html[data-gbhc-hover="both"] .gbh-bar .gbh-link:not(.is-active):hover { color: var(--zinc-900); }
+
+/* ---- THE DARK STEP, unexercised on this page ---- */
+html[data-gbhc-hover] .gb-header--transparent:not(.is-past-hero) .gbh-bar { --gbhc-rule: var(--white); }
+html[data-gbhc-hover="ink"]  .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active),
+html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active) { color: var(--zinc-300); }
+html[data-gbhc-hover="ink"]  .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active):hover,
+html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active):hover { color: var(--white); }
+</style>
 
 <!-- The gate. This page is the studio's front door into the walk, so
      it checks the session flag before the paint, exactly as the other
@@ -194,6 +312,7 @@
        here. It registers three custom elements and does nothing else, so a
        page that carries none of them is unchanged by it. -->
   <script src="../system/components/auth.js"></script>
+  <script src="../system/components/booking.js"></script>
   <script src="../system/components/home.js"></script>
   <script src="../system/components/footer.js"></script>
 <script src="../system/type-scale.js"></script>
@@ -201,6 +320,100 @@
 <script src="../system/components/inspect.js"></script>
 <script src="../system/components/toggle.js"></script>
 <script src="../system/components/comments.js"></script>
+<script src="concierge/concierge.js"></script>
+<script>
+/* ============================================================
+   THE CONCIERGE LAYER               gbppl-concierge-unify-1b
+   ------------------------------------------------------------
+   Two switches and a mount, and every one of them is dead without
+   ?concierge=1.
+
+   THE ENVIRONMENT IS THE WEBSITE, so FLOOR TWO IS ABSENT. Ton,
+   09.09 13:51: the personal Gift Advisor, a named human with a
+   card and a message straight to him, exists only inside the
+   portal and only for someone signed in. Off the portal that
+   floor does not exist at all: not disabled, not a stub.
+
+   THE THREE HOVER CANDIDATES for the top navigation ride the same
+   key and their own ?hover=underline|ink|both, because Ton picks
+   the hover on the REAL home page and not in a side room. The
+   canonical header.css is not touched by a byte: everything hangs
+   off html[data-gbhc-hover] in the block at the top of this file.
+   AND THIS PAGE IS WHERE THE DARK STEP FINALLY GETS EXERCISED —
+   the bar here is transparent-dark over the video hero, which the
+   sandbox never had.
+   ============================================================ */
+(function () {
+  'use strict';
+  function conciergeOn() {
+    return (new URLSearchParams(location.search)).get('concierge') === '1';
+  }
+  if (!conciergeOn()) return;
+
+  /* THE KEY TRAVELS. header.js exports its KEEP list (window.GB_KEEP) so
+     a page can widen it without the canon being edited, and Ton-12 says
+     the container a visitor is looking through survives an internal
+     link. Inside the guard, so a page without the key does not so much
+     as read the list. */
+  if (window.GB_KEEP && window.GB_KEEP.all.indexOf('concierge') < 0) {
+    window.GB_KEEP.content.push('concierge');
+    window.GB_KEEP.all.push('concierge');
+  }
+
+    /* ---- THE HOVER OF THE NAVIGATION, three candidates --------
+       gbppl-nav-hover-1. Same shape as the accent switch, same two
+       handles: ?hover=underline|ink|both and a row of the console.
+       The default is BOTH, which is the recommendation going to Ton
+       with the frames. The CSS is at the top of this file. */
+    var HOVERS = ['underline', 'ink', 'both'];
+    function readHover() {
+      var q = (new URLSearchParams(location.search)).get('hover');
+      return HOVERS.indexOf(q) > -1 ? q : 'both';
+    }
+    function setHover(v, writeUrl) {
+      document.documentElement.setAttribute('data-gbhc-hover', v);
+      if (!writeUrl) return;
+      var u = new URL(location.href);
+      u.searchParams.set('hover', v);
+      history.replaceState(null, '', u.toString());
+    }
+    setHover(readHover(), false);
+
+  if (window.GbConcierge) {
+    window.GbConcierge.mount({
+      bellSlot:     'gb-site-header .gbh-actions',
+      bellBefore:   '[aria-label="Search gifts"]',
+      anchor:       'gb-studio-panel',
+      advisorFloor: false,
+      aiDoor:       true,
+      siteHref:     'index.html?concierge=1',
+      environments: {
+        here:    'website',
+        website: 'index.html?concierge=1',
+        portal:  'portal.html?layout=band&hero=start&concierge=1'
+      }
+    });
+  }
+
+  var spanel = document.querySelector('gb-studio-panel');
+  if (spanel && typeof spanel.addGroup === 'function') {
+    spanel.addGroup({
+      type: 'choice',
+      title: 'Hover of the top navigation',
+      value: readHover(),
+      options: [
+        { label: 'Underline', value: 'underline',
+          note: 'A hairline grows out from the left under the label and retreats the same way. Nothing moves.' },
+        { label: 'Ink', value: 'ink',
+          note: 'The label deepens to Zinc 900. Rest has to sit at Zinc 600 for that to be visible, so the bar reads lighter when nobody is pointing at it.' },
+        { label: 'Both', value: 'both',
+          note: 'The rule and the ink together. The candidate this wave recommends.' }
+      ],
+      onChange: function (v) { setHover(v, true); }
+    });
+  }
+})();
+</script>
 
 </body>
 </html>

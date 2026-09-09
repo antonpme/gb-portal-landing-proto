@@ -1,456 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Help and concierge · GildedBox</title>
-<link rel="icon" href="data:,">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Moved to the home page · GildedBox</title>
+<link rel="icon" href="data:," />
+<link rel="canonical" href="index.html?concierge=1" />
+
 <!-- ============================================================
-     gbppl-concierge-1 — ONE HELP EXPERIENCE, AS A ROOM OF ITS OWN.
-     2026-09-09.
-
-     Ton, 09.09: «Давай соберём прототип и посмотрим, это очень
-     важно.» What is being looked at is the concept written and
-     approved before a line of this file existed —
-     studio\docs\HELP-CONCIERGE-CONCEPT.md — which folds three
-     things the house has today into one: Get Help (the portal
-     drawer), the HubSpot floating chat (which dies) and the AI
-     concierge of the MyGifts prototype.
-
-     THE SHAPE, in four sentences.
-       ONE WAY IN     a concierge bell in the right cluster of the
-                      bar, on every page. Nothing floats at rest,
-                      anywhere: that is the whole difference from
-                      the HubSpot button Ton wants gone.
-       THE DRAWER     the switchboard. Floor one is the options in
-                      the language of the MyGifts popup; floor two,
-                      at the foot, is your Gift Advisor.
-       A SECOND LEVEL Book a meeting opens IN THE SAME DRAWER
-                      (setBack / setTitle), because the drawer
-                      organism has had a second floor since the
-                      address panel of checkout V5.
-       THE CHAT       leaves the drawer and becomes a window at the
-                      bottom right, because a conversation outlives
-                      the page it started on and a drawer does not.
-                      Minimised it is a pill; the cross on the pill
-                      ends the session and the screen is clean again.
-
-     WHAT IS NOT TOUCHED, and this is the rail of the wave: the
-     canonical header, the drawer organism, the booking organism and
-     every existing page come out of this wave byte for byte. The bar
-     of THIS page is a fork, and the fork is additive — it decorates
-     the bar <gb-site-header> already drew rather than keeping a
-     second copy of 1200 lines that would drift by Friday. See THE
-     FORK OF THE BAR at the foot of this file.
-
-     WHAT IS REUSED, BY NAME (Ton-6, question one asked first):
-       <gb-drawer>          the surface, both floors, Esc ladder
-       <gb-booking-flow>    Book a meeting, whole: the calendar, the
-                            slots, the rules, the confirmation and
-                            its drawn check. start="slot", so the
-                            two notches of the indicator are «Pick a
-                            time» and «Confirmed», and the slots
-                            stand UNDER the calendar, which is the
-                            arrangement Ton asked for in this narrow
-                            panel. No layout="compact" here: that
-                            modifier is what puts them side by side.
-       .gb-btn / .gb-icon   every control and every glyph
-       .gba-input           every field, including the two composers
-       .gb-eyebrow          every caps label
-       <gb-banner-conversation> / <gb-advantages> / <gb-site-footer>
-                            the page under the drawer is a real page
-                            of the site, with real copy, so the bar
-                            and the floating window are seen over
-                            something rather than over a stage.
-
-     WHAT IS DRAWN HERE, and why it had nowhere else to live: the
-     option ROW (disc, title, sub, chevron), the advisor card, the
-     chat window and the pill. None of the four is in the system;
-     the row is the language of the MyGifts popup, which lives today
-     as .gsp-* inside live\portal.html and is not an organism either.
-     Promoting the row to system/components is a wave of its own and
-     a question for Ton (see the report). Every number below is a
-     rung of the scale or is marked NO TOKEN with the reason.
-
+     gbppl-concierge-unify-1b — THE ADDRESS THIS ROOM USED TO HAVE
      ------------------------------------------------------------
-     gbppl-concierge-motion-1 — THE PLATE AND THE CHOREOGRAPHY.
-     2026-09-09, on top of 85ef783. Two things Ton asked for after
-     seeing the prototype, and nothing else in the file moved.
+     2026-09-09. Ton asked the question that settled the whole
+     architecture: "how do we integrate this prototype into OUR
+     prototypes, where is the switch". The answer is not a room of
+     its own with a copy of the home page inside it, which is what
+     this file had become and which he named in one line: "I asked
+     for the home page, not a stub of something with one section
+     on it". The answer is A LAYER ON THE REAL PAGES. The concierge
+     now lives in live/concierge/ and two real prototypes put it on
+     under one key: the home page at index.html?concierge=1 and the
+     portal at portal.html?layout=band&hero=start&concierge=1.
+     Under the layer there is the actual page, all of it, because
+     there is no copy of anything.
 
-     1. THE SESSION PLATE. «Чёрное не подходит: чёрное на чёрном не
-        работает, чисто белое тоже; нужен формат, который работает и
-        на чёрном, и на белом фоне.» The pill is now a white plate
-        with a shadow and a 1px accent edge, two-tone: a Zinc 50
-        inset on the left with the name and a short status, the last
-        line of the thread and the cross on the white to the right.
-        It is 380 wide, the window's own width. TWO ACCENTS ARE
-        BUILT because Ton has not picked one: ?accent=blue|gold and
-        a row of the console. See THE PILL below.
-
-     2. THE CHOREOGRAPHY, «эстафета + морф». «Транзишн должен быть
-        очень красивый, анимация — важная часть языка.» The drawer
-        hands the window over mid-exit instead of after it, and the
-        window and the plate are one object changing height rather
-        than two objects swapping. See THE CHOREOGRAPHY below.
-
-     ------------------------------------------------------------
-     gbppl-concierge-chat-2 — THE CHAT IS THE ONE FROM MY GIFTS.
-     2026-09-09. Ton: «лайв-чат ты сделал каким-то слишком
-     маленьким. Посмотри, как это было сделано один в один на
-     странице My Gifts — экспириенс уже сделан, перенеси его оттуда
-     и интегрируй.» The reference he means is
-     live/portal.html?layout=band&hero=start, the START popup on its
-     «Chat with our team» screen, and it is carried across whole:
-     the surface (528 x 748, ITS numbers), the head's title and
-     meta, the greeting as a white card with a 40px face beside it,
-     the three suggestion chips, the ruled field with a square send,
-     and the quiet line under the composer that says who is on the
-     other end. Read off the running page with the instrument, never
-     off its source, and portal.html is not touched.
-
-     WHAT WAS INTEGRATED RATHER THAN COPIED, because it was already
-     approved this morning: the window stays in the CORNER (the
-     relay and the morph are Ton's and not up for revision), the
-     session plate and its two accents are unchanged, and the morph
-     now interpolates WIDTH as well as height, because the window
-     grew to 528 and a 528 handle is a banner. The AI start is the
-     same shape with the opposite content: its meta, its greeting
-     and above all its quiet line say it is not a person, and its
-     three chips are the same errands in an assistant's language
-     with a way out to a human as the third.
-
-     ------------------------------------------------------------
-     gbppl-concierge-chat-3 — THE NAME ARRIVES, AND A QUESTION
-     BRINGS ITS OWN ANSWERS. 2026-09-09. Both were written in
-     studio\docs\HELP-CONCIERGE-CONCEPT.md, line 55, before a line
-     of this was built, and Ton took them on that reading.
-
-     1. PERSONALISATION ON CONNECTION, the Tiffany mechanic. The
-        live room opens UNNAMED, «Chat with our team», because at
-        that moment nobody has picked the conversation up, and a
-        head that promises a person before there is one is a head
-        that lies. At the scripted turn a specialist joins, the
-        thread says so in a quiet line of its own, and the head AND
-        the plate take his name from that instant. Ending the
-        session takes the name away again with everything else. The
-        AI start has no join and never will: it is written as
-        ABSENT DATA rather than as an if, so nobody adds one by
-        accident.
-
-     2. CONTEXTUAL CHIPS. The chips at the composer are ROUTING and
-        they leave after the first thing the guest says. The second
-        answer of either voice asks a question and brings two or
-        three answers WITH IT, standing in the thread under the
-        card rather than at the composer, and they go the moment
-        the question is answered, by a tap or by anything typed
-        instead. Same recipe, different place, different life.
-
-     ------------------------------------------------------------
-     gbppl-concierge-unify-1 — THE EXPERIENCE LEFT THIS PAGE.
-     2026-09-09, for the URL Ton is sharing with Valerie. Everything
-     the concierge is now lives in live/concierge/ and TWO pages
-     consume it: this one and live/portal.html?...&concierge=1. What
-     is left in this file is what belongs to this page and to no
-     other — the three hover candidates for the top navigation — and
-     one mount call that names the environment.
-
-     THE GATE OF THE MOVE was that nothing rendered changes: the
-     element tree of this page, node by node with every box, paint
-     and hidden flag, is IDENTICAL to what it was before the
-     extraction at 360, 1280 and 2258. The only rows that differ in
-     the whole snapshot are <script> tags.
-
-     AND ONE THING DID CHANGE, on Ton's word at 13:51 and not by
-     accident: FLOOR TWO IS GONE FROM THIS DRAWER. The personal Gift
-     Advisor exists only inside the portal and only for someone
-     signed in; off the portal that floor does not exist at all, not
-     disabled and not a stub. Here the drawer is the options and
-     nothing else.
-
-     ------------------------------------------------------------
-     gbppl-nav-hover-1 — THREE HOVERS FOR THE TOP NAVIGATION.
-     2026-09-09. Ton: «сейчас там hover вообще какой-то никакой»,
-     and the canon agrees with him in writing: header.css 141 is
-     `opacity: 0.8` over 300ms. Three candidates are built on the
-     FORKED bar of this sandbox — underline, ink, both —
-     ?hover=underline|ink|both plus a row of the console, default
-     both. The canonical header.css is not touched; the winner
-     moves into the organism as a wave of its own. See THE HOVER OF
-     THE TOP NAVIGATION below, and read the note on the ink
-     candidate: it necessarily changes the bar AT REST.
-
-     AND NO POLITE BRANCH ANYWHERE. Ton, 09.09: animation is off at
-     the OS level on his machine and «мы должны принудительно
-     заставлять её работать». Ton-7 already said this and the drawer
-     organism already obeys it; this file adds nothing that could
-     read prefers-reduced-motion, and the wave proved it by running
-     the whole route twice, once with the query emulated.
+     THIS ADDRESS HAS BEEN SHARED, so it does not stop working.
+     Law 0a.5, links never break, and the precedent is
+     system/oro/stepper.html, which forwards to inputnumber.html in
+     exactly this manner. replace() rather than assign(), so a dead
+     address does not sit in the back button; the query rides
+     across, because device, studio and comment are context and not
+     decoration; and the concierge key is forced on, because the
+     concierge is what anybody following this link came to see.
+     The body below is what a reader sees with scripts off.
      ============================================================ -->
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="../system/assets/tokens.css">
-<link rel="stylesheet" href="../system/components/shell.css">
-<link rel="stylesheet" href="../system/components/header.css">
-<link rel="stylesheet" href="../system/components/button.css">
-<link rel="stylesheet" href="../system/components/icon.css">
-<link rel="stylesheet" href="../system/components/home.css">
-<link rel="stylesheet" href="../system/components/footer.css">
-<!-- The fields of both composers and of the message to the advisor are
-     the auth organism's; booking.css comes with the second floor of the
-     drawer, and it names auth.css as its neighbour. -->
-<link rel="stylesheet" href="../system/components/auth.css">
-<link rel="stylesheet" href="../system/components/booking.css">
-<link rel="stylesheet" href="../system/components/drawer.css">
-<link rel="stylesheet" href="../system/components/studio-panel.css">
-<!-- Inspect and Comment modes, the same five files every studio page
-     carries. -->
-<link rel="stylesheet" href="../system/components/docs.css">
-<link rel="stylesheet" href="../system/components/inspect.css">
-<link rel="stylesheet" href="../system/components/comments.css">
-<link rel="stylesheet" href="../system/components/toggle.css">
-
-<!-- THE CONCIERGE, and it is LAST on purpose: a page family stands on
-     top of everything the system laid down, the way live/catalog keeps
-     its own override last. -->
-<link rel="stylesheet" href="concierge/concierge.css">
-
-<!-- The studio gate, as on every page of the house. -->
-<script src="../system/components/studio.js" data-home="../index.html"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  q.set('concierge', '1');
+  location.replace('index.html?' + q.toString() + location.hash);
+})();
+</script>
 
 <style>
-/* ============================================================
-   THE HOVER OF THE TOP NAVIGATION — THREE CANDIDATES
-   gbppl-nav-hover-1                                  .gbh-link
-   ------------------------------------------------------------
-   Ton, 09.09: «сейчас там hover вообще какой-то никакой». He is
-   right, and the canon says so in its own words: header.css line
-   141 is `.gbh-link:hover { opacity: 0.8 }`, carried over from the
-   live bar's `transition-all duration-300` fade. A label that goes
-   eighty per cent grey over 300ms is a hover you have to be told
-   about.
-
-   THREE CANDIDATES ON THE FORKED BAR OF THIS SANDBOX ONLY. The
-   canonical header.css is not touched by a byte; everything below
-   hangs off html[data-gbhc-hover] and dies with this page. The one
-   Ton picks moves into the organism as a wave of its own.
-   ?hover=underline|ink|both, and a row of the console. Default both.
-
-   ALL THREE PUT OUT THE OLD FADE FIRST. Leaving opacity .8 under a
-   new hover gives two hovers at once, and the weaker one does the
-   talking.
-
-   1  UNDERLINE  a hairline grows left to right under the label on
-      --mo-small and retreats the same way. Provenance: the hero's
-      own underline-CTA (Discover Gifts, home.css .gbhm-underline)
-      and the rule of the controls recon that an underline means
-      navigation. It is an ::after on transform: scaleX, so it
-      cannot move the label or its neighbours by a pixel: the box
-      never changes size, only what is painted inside it.
-   2  INK        the label deepens to Zinc 900. AND THIS ONE MOVES
-      THE BAR AT REST, WHICH IS NOT A LIBERTY BUT AN ARITHMETIC:
-      the canon's resting ink IS ALREADY Zinc 900 (header.css 126,
-      and a.gbh-link at 662), so there is nothing above it to move
-      to. An ink hover exists only if rest sits a step lighter.
-      Rest becomes Zinc 600, the hovered item becomes Zinc 900.
-      That is a real change to how the bar reads when nobody is
-      pointing at it, it is a deviation from live, and it is
-      flagged in the report for Ton's eye rather than smuggled in.
-      No weight change: weight moves the width and the neighbours.
-   3  BOTH       one and two together.
-
-   THE DARK STEP. This page's bar is the plain white one, so the
-   transparent rules below are never exercised here; they are
-   written because the organism has that step and the wave that
-   moves the winner into the canon must not have to invent them.
-   There the hairline is white and the ink runs Zinc 300 -> white,
-   because the transparent bar's resting ink is already --white and
-   the same arithmetic applies upside down.
-
-   No prefers-reduced-motion branch: Ton-7, and Ton 09.09.
-   ============================================================ */
-:root { --gbhc-rule: var(--zinc-900); }
-html[data-gbhc-hover] .gbh-bar .gbh-link:hover { opacity: 1; }
-
-/* ---- 1. THE RULE ---- */
-html[data-gbhc-hover="underline"] .gbh-bar .gbh-link::after,
-html[data-gbhc-hover="both"] .gbh-bar .gbh-link::after {
-  content: '';
-  position: absolute;
-  /* 16 is not a rung of our scale here, it is THE LIVE PADDING of
-     the link (header.css .gbh-link, SYSTEM.md site chrome 12.08),
-     flat at every width. Insetting the rule by exactly the padding
-     makes it the width of the LABEL and not of the click box, which
-     is what keeps the daylight between two rules. */
-  left: 16px;
-  right: 16px;
-  bottom: var(--space-8);
-  height: 1px;
-  background: var(--gbhc-rule);
-  transform: scaleX(0);
-  transform-origin: left center;   /* out from the left, and back to the left */
-  transition: transform var(--mo-small) var(--mo-move);
-  pointer-events: none;
-}
-html[data-gbhc-hover="underline"] .gbh-bar .gbh-link:hover::after,
-html[data-gbhc-hover="both"] .gbh-bar .gbh-link:hover::after { transform: scaleX(1); }
-
-/* ---- 2. THE INK ----
-   :not(.is-active) everywhere, or the Blue 600 of the active item
-   (header.css 578) is overwritten by a selector that outweighs it.
-   Weight 0-4-1 against the 0-2-2 of body.gb-demo a.gbh-link, which
-   is the antidote every consumer of this bar has to clear. */
-html[data-gbhc-hover="ink"]  .gbh-bar .gbh-link:not(.is-active),
-html[data-gbhc-hover="both"] .gbh-bar .gbh-link:not(.is-active) { color: var(--zinc-600); }
-html[data-gbhc-hover="ink"]  .gbh-bar .gbh-link:not(.is-active):hover,
-html[data-gbhc-hover="both"] .gbh-bar .gbh-link:not(.is-active):hover { color: var(--zinc-900); }
-
-/* ---- THE DARK STEP, unexercised on this page ---- */
-html[data-gbhc-hover] .gb-header--transparent:not(.is-past-hero) .gbh-bar { --gbhc-rule: var(--white); }
-html[data-gbhc-hover="ink"]  .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active),
-html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active) { color: var(--zinc-300); }
-html[data-gbhc-hover="ink"]  .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active):hover,
-html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active):hover { color: var(--white); }
+  body { margin: 0; padding: 48px 24px; font: 400 16px/1.6 system-ui, sans-serif; color: #18181b; }
+  a { color: #2563eb; }
 </style>
 </head>
 <body>
-
-  <gb-site-header home-href="index.html"
-    logo-src="../system/assets/gildedbox-logo.svg"
-    catalog-href="catalog/index.html" portal-href="portal.html"
-    meeting-href="book-a-meeting.html"></gb-site-header>
-
-  <main>
-    <!-- The page under the drawer is a real page: two sections of the
-         site, with the site's own copy, so the bell, the drawer and the
-         floating window are seen over something. Nothing is written
-         here; both are the home organisms with the home attributes. -->
-    <gb-banner-conversation pill="Impressive Gifts" rest="Your Brand"
-      subtitle="For The Select Few, Envied By Most, Coveted By All"
-      cta="Discover Gifts" href="catalog/index.html"></gb-banner-conversation>
-  </main>
-
-  <gb-advantages>
-    <gb-advantage icon="present" live-icon="present" heading="Custom Gift Box">Each gift starts with an individually designed gift box.</gb-advantage>
-    <gb-advantage icon="exchange" live-icon="gift-exchange" heading="Personalized Gifts">Personalization for every recipient means each gift is unique.</gb-advantage>
-    <gb-advantage icon="monitor" live-icon="pc-monitor" heading="Gifting Portal">Send gifts to individuals, run and manage gifting campaigns.</gb-advantage>
-  </gb-advantages>
-
-  <gb-site-footer></gb-site-footer>
-
-  <!-- The switchboard's surface. One line, and it stays in the page
-       on purpose: the organism appends its panel and its scrim to the
-       body the instant it upgrades, and declaring the element here
-       keeps that instant where it has always been. -->
-  <gb-drawer id="gbhcDrawer"></gb-drawer>
-
-  <!-- The conversation and the session plate are
-       INSERTED HERE by the module, in front of this anchor: see
-       live/concierge/concierge.js. They used to be written out in
-       this file; two pages now show the same experience and two
-       copies of the markup would be two experiences by Friday. -->
-  <gb-studio-panel data-root="../" page="concierge"></gb-studio-panel>
-
-  <script src="../system/components/shell.js"></script>
-  <script src="../system/sandbox-registry.js"></script>
-  <script src="../system/components/icon.js"></script>
-  <script src="../system/components/studio-panel.js"></script>
-  <script src="../system/components/header.js"></script>
-  <script src="../system/components/footer.js"></script>
-  <script src="../system/components/home.js"></script>
-  <script src="../system/components/auth.js"></script>
-  <script src="../system/components/booking.js"></script>
-  <script src="../system/type-scale.js"></script>
-  <script src="../system/components/drawer.js"></script>
-  <script src="../system/components/inspect.js"></script>
-  <script src="../system/components/toggle.js"></script>
-  <script src="../system/components/comments.js"></script>
-
-  <script src="concierge/concierge.js"></script>
-
-  <script>
-  /* ============================================================
-     gbppl-concierge-unify-1 — THE PAGE AS A CONSUMER
-     ------------------------------------------------------------
-     Everything the concierge is lives in live/concierge/. What is
-     left here is what belongs to THIS page and to no other: the
-     three hover candidates for the top navigation, and the one
-     line that says which environment this is.
-     ============================================================ */
-  (function () {
-    'use strict';
-
-    /* ---- THE HOVER OF THE NAVIGATION, three candidates --------
-       gbppl-nav-hover-1. Same shape as the accent switch, same two
-       handles: ?hover=underline|ink|both and a row of the console.
-       The default is BOTH, which is the recommendation going to Ton
-       with the frames. The CSS is at the top of this file. */
-    var HOVERS = ['underline', 'ink', 'both'];
-    function readHover() {
-      var q = (new URLSearchParams(location.search)).get('hover');
-      return HOVERS.indexOf(q) > -1 ? q : 'both';
-    }
-    function setHover(v, writeUrl) {
-      document.documentElement.setAttribute('data-gbhc-hover', v);
-      if (!writeUrl) return;
-      var u = new URL(location.href);
-      u.searchParams.set('hover', v);
-      history.replaceState(null, '', u.toString());
-    }
-    setHover(readHover(), false);
-
-    /* ---- THE ENVIRONMENT --------------------------------------
-       This is the WEBSITE. The bell joins the header organism's
-       right cluster in front of the search dot; the AI door belongs
-       here because this page is where gifts are chosen; and FLOOR
-       TWO IS ABSENT, because Ton, 09.09 13:51: the personal Gift
-       Advisor exists only inside the portal and only for someone
-       signed in. Off the portal that floor does not exist at all.
-       The conversation is inserted in front of the studio panel,
-       which is exactly where it stood when it was written out in
-       this file. */
-    if (window.GbConcierge) {
-      window.GbConcierge.mount({
-        bellSlot:     'gb-site-header .gbh-actions',
-        bellBefore:   '[aria-label="Search gifts"]',
-        anchor:       'gb-studio-panel',
-        advisorFloor: false,
-        aiDoor:       true,
-        siteHref:     'help-concierge.html',
-        environments: {
-          here:    'website',
-          website: 'help-concierge.html',
-          portal:  'portal.html?layout=band&hero=start&concierge=1'
-        }
-      });
-    }
-
-    /* ---- THE ONE CONSOLE, the page's own row ------------------
-       The accent of the session plate is the module's row and the
-       module declares it. This one is the page's: three candidates
-       for the hover of the canonical top navigation, which dress the
-       header and not the concierge. */
-    var spanel = document.querySelector('gb-studio-panel');
-    if (spanel && typeof spanel.addGroup === 'function') {
-      spanel.addGroup({
-        type: 'choice',
-        title: 'Hover of the top navigation',
-        value: readHover(),
-        options: [
-          { label: 'Underline', value: 'underline',
-            note: 'A hairline grows out from the left under the label and retreats the same way. Nothing moves.' },
-          { label: 'Ink', value: 'ink',
-            note: 'The label deepens to Zinc 900. Rest has to sit at Zinc 600 for that to be visible, so the bar reads lighter when nobody is pointing at it.' },
-          { label: 'Both', value: 'both',
-            note: 'The rule and the ink together. The candidate this wave recommends.' }
-        ],
-        onChange: function (v) { setHover(v, true); }
-      });
-    }
-  })();
-  </script>
-
+<p>The concierge now lives on the pages themselves. This link goes to the
+<a href="index.html?concierge=1">home page with the concierge on</a>.</p>
 </body>
 </html>

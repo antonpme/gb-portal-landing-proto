@@ -252,7 +252,24 @@
          сквозного элемента, который живёт на любой странице с баром.
          Она переехала в ELEMENTS ниже и с полки никуда не делась:
          полка читает оба каталога. */
-      variants: []
+      variants: [
+        {
+          /* gbppl-concierge-unify-1b, Ton 09.09. He asked how the
+             prototype gets into OUR prototypes and where the switch
+             is; the answer is a LAYER ON THE REAL PAGES under one
+             key, not a room with a copy of a page inside it. So the
+             concierge is a variant of the pages it lands on. */
+          id: 'concierge',
+          label: 'Concierge on',
+          desc: 'The real home page with the concierge layer on it. A bell in the right cluster of the bar opens one drawer for every way of talking to us; Book a meeting stands on its second floor; chat leaves the drawer for a window in the corner and minimises into a session plate. The page under it is the home page, whole and untouched: the layer goes on the prototype rather than into a copy of it. Off the portal the drawer has one floor, because the named Gift Advisor belongs to somebody signed in. Carries the three hover candidates for the top navigation on the same key.',
+          status: 'in-progress',
+          href: 'live/index.html?concierge=1',
+          ready: true,
+          tags: ['header', 'flow'],
+          created: '2026-09-09',
+          updated: '2026-09-09'
+        }
+      ]
     },
 
     catalog: {
@@ -656,7 +673,10 @@
           label: 'One way in, from the bar',
           desc: 'Help stops being three different things. A concierge bell in the right cluster of the bar opens one drawer: the ways to talk to us upstairs, your Gift Advisor at the foot with a message that grows out of his card. Book a meeting opens on the second floor of the same drawer, with the times standing under the calendar. Chat leaves the drawer for a window at the bottom right, the same window for the AI concierge and for a person, and minimised it is a pill with the name and the state on it. Nothing floats at rest: the pill exists only while a conversation does, and its cross ends the session.',
           status: 'in-progress',
-          href: 'live/help-concierge.html',
+          /* The room's own address is a stub redirect since
+             gbppl-concierge-unify-1b (law 0a.5, the link was shared);
+             the shelf points where the redirect points. */
+          href: 'live/index.html?concierge=1',
           ready: true,
           tags: ['header', 'flow'],
           created: '2026-09-09',
