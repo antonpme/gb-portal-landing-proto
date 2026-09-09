@@ -94,6 +94,32 @@
         than two objects swapping. See THE CHOREOGRAPHY below.
 
      ------------------------------------------------------------
+     gbppl-concierge-chat-2 — THE CHAT IS THE ONE FROM MY GIFTS.
+     2026-09-09. Ton: «лайв-чат ты сделал каким-то слишком
+     маленьким. Посмотри, как это было сделано один в один на
+     странице My Gifts — экспириенс уже сделан, перенеси его оттуда
+     и интегрируй.» The reference he means is
+     live/portal.html?layout=band&hero=start, the START popup on its
+     «Chat with our team» screen, and it is carried across whole:
+     the surface (528 x 748, ITS numbers), the head's title and
+     meta, the greeting as a white card with a 40px face beside it,
+     the three suggestion chips, the ruled field with a square send,
+     and the quiet line under the composer that says who is on the
+     other end. Read off the running page with the instrument, never
+     off its source, and portal.html is not touched.
+
+     WHAT WAS INTEGRATED RATHER THAN COPIED, because it was already
+     approved this morning: the window stays in the CORNER (the
+     relay and the morph are Ton's and not up for revision), the
+     session plate and its two accents are unchanged, and the morph
+     now interpolates WIDTH as well as height, because the window
+     grew to 528 and a 528 handle is a banner. The AI start is the
+     same shape with the opposite content: its meta, its greeting
+     and above all its quiet line say it is not a person, and its
+     three chips are the same errands in an assistant's language
+     with a way out to a human as the third.
+
+     ------------------------------------------------------------
      gbppl-nav-hover-1 — THREE HOVERS FOR THE TOP NAVIGATION.
      2026-09-09. Ton: «сейчас там hover вообще какой-то никакой»,
      and the canon agrees with him in writing: header.css 141 is
@@ -479,7 +505,6 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
   right: var(--space-24);
   bottom: var(--space-24);
   z-index: 57;                    /* NO TOKEN: the house has no z scale; the neighbours are named above */
-  width: 380px;                   /* NO TOKEN: a layout measure, the width that holds a line of chat without breaking it twice; the drawer's own 520 is marked the same way. THE PILL CARRIES THE SAME ONE ON PURPOSE: two plates of one width, anchored to one corner, make the morph a change of HEIGHT and nothing else — no width to interpolate, no content to reflow sideways. */
   max-width: calc(100vw - var(--space-32));
   border-radius: var(--radius);
   box-shadow: var(--shadow-panel);
@@ -488,14 +513,30 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
 @media (max-width: 639px) {
   .gbhc-chat, .gbhc-pill { right: var(--space-16); bottom: var(--space-16); }
 }
+/* ---- THE SURFACE, MEASURED OFF THE REFERENCE ----------------
+   gbppl-concierge-chat-2. Ton, 09.09: «лайв-чат ты сделал каким-то
+   слишком маленьким. Посмотри, как это было сделано один в один на
+   странице My Gifts — экспириенс уже сделан, перенеси его оттуда».
+   The reference is live/portal.html?layout=band&hero=start, the
+   START popup on its «Chat with our team» screen, and both numbers
+   below are ITS numbers read off the running page with the
+   instrument: .start-panel is 528 wide and the chat step is 748
+   tall (--gsp-step-h). Nothing here is a taste: 380 x 520 was mine
+   and it was the thing he called small; 528 x 748 is the surface
+   that already exists in the house. */
 .gbhc-chat {
-  height: 520px;                  /* NO TOKEN: a layout measure, the same kind as the width */
+  width: 528px;                   /* MEASURED on the reference panel, 09.09 */
+  height: 748px;                  /* MEASURED, the reference's --gsp-step-h */
   max-height: calc(100dvh - var(--header-h) - var(--space-48));
   display: flex;
   flex-direction: column;
   border: 1px solid var(--zinc-200);
   overflow: hidden;
 }
+/* THE PLATE DOES NOT FOLLOW THE WINDOW UP. It is a handle, and a
+   528 handle is a banner. So the morph stopped being a change of
+   height alone and learned the width as well — see below. */
+.gbhc-pill { width: 380px; }      /* NO TOKEN: a layout measure, the width that holds a name, a status and a line of the thread */
 .gbhc-chat[hidden], .gbhc-pill[hidden] { display: none; }
 
 /* ============================================================
@@ -515,11 +556,19 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       already on its way up, which is what stops the blink a
       close-then-open would give.
 
-   2. THE MORPH, window <-> pill. The two plates share a corner, a
-      width and the 5px radius, so the only thing between them is
-      HEIGHT: the frame travels 520 -> 56 on --mo-small / --mo-move
-      while the content inside it leaves in --mo-small-out, three
-      times faster, so nothing is ever seen squashed. The pill
+   2. THE MORPH, window <-> pill. The two plates share a corner and
+      the 5px radius, and SINCE 09.09 THEY NO LONGER SHARE A WIDTH:
+      the window took the reference's 528 and the plate stayed a
+      380 handle, because a 528 handle is a banner. So the ride
+      interpolates BOTH axes on one clock rather than one axis on
+      one clock. That is the honest of the two roads and it costs
+      nothing: the content is already at opacity 0 for the whole
+      ride (it leaves in --mo-small-out, three times faster than
+      the frame), so there is no text to reflow sideways while the
+      box narrows, which was the only reason a single axis was
+      worth having. Both plates are anchored to the same corner, so
+      neither axis needs a position to interpolate either.
+      528x748 -> 380x57 on --mo-small / --mo-move. The pill
       stands BEHIND the window for the whole ride (it is earlier in
       the markup, same z), the window lands exactly on it and is
       then hidden: there is no cross-fade to flicker, because at the
@@ -547,7 +596,8 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
 /* The frame of the morph. Only the two properties that actually
    differ between the plates are animated. */
 .gbhc-chat.is-morph {
-  transition: height var(--mo-small) var(--mo-move),
+  transition: width var(--mo-small) var(--mo-move),
+              height var(--mo-small) var(--mo-move),
               border-color var(--mo-small) var(--mo-move);
 }
 .gbhc-chat.is-shut { border-color: var(--gbhc-accent); }
@@ -601,48 +651,227 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
   display: flex;
   align-items: center;
   gap: var(--space-8);
+  min-width: 0;
   font-size: 14px;
   line-height: 1.5;
   color: var(--zinc-500);
 }
+.gbhc-chat__state span:not(.gbhc-dot) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gbhc-chat__slots { flex: 0 0 auto; display: flex; align-items: center; }
+/* On the narrow step the head gives the face back to the thread. Two
+   44 circles of chrome, a 44 face and a name do not fit across 328,
+   and the greeting card two lines below already shows the same disc;
+   the reference's own narrow head carries no avatar either. */
+@media (max-width: 639px) {
+  .gbhc-chat__head { gap: var(--space-8); }
+  .gbhc-face { display: none; }
+}
 
+/* ============================================================
+   THE THREAD, CARRIED OVER FROM THE REFERENCE
+   gbppl-concierge-chat-2                             .gbhc-msg
+   ------------------------------------------------------------
+   Read off live/portal.html?layout=band&hero=start with the
+   instrument, not off the source: the greeting is a WHITE CARD
+   with a 40px round face beside it, the log stands on paper
+   rather than on white so the card reads as a card, and the
+   composer carries three suggestion chips, a ruled field with a
+   square send beside it and a quiet line under the whole thing.
+
+   FOUR THINGS DID NOT COME ACROSS AS THEY STAND THERE, and each
+   one is a house law rather than a preference:
+     the 12px bubble radius and the 999 pill of the chips became
+       --radius, 5px. Ton, 09.09, in this very file's history: «у
+       нас нет такого скругления, наш формат — 5 пикселей». The
+       bubble keeps the IDEA — the corner nearest the speaker
+       stays square, the other three are the house radius — so it
+       still points at whoever said it;
+     the green of the reference's avatar (--gh-success #276c49,
+       marked NO TOKEN on that page with the words «the system
+       owns no green») is not carried. The face is the disc this
+       file already draws twice, Zinc 100 on a Zinc 200 hairline;
+     the 15px floor of its clamp(15, .675vw, 16) became a flat 16.
+       15 is not a rung of the reading group at all, which is the
+       finding drawer.css wrote down on 28.08;
+     the reference's own @media (prefers-reduced-motion) block,
+       which kills the message entrance and the typing dots, is
+       NOT carried. Ton-7, and Ton 09.09 in as many words.
+   ============================================================ */
 .gbhc-log {
   flex: 1 1 auto;
   overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: var(--space-16);
-  padding: var(--space-16);
+  padding: var(--space-24) var(--space-24) var(--space-32);
+  background: var(--zinc-50);     /* the reference's #fbfbfc paper, which it marks NO TOKEN; Zinc 50 is the house's near-white and it is a token */
 }
-/* A short thread hugs the composer, the way every thread does: the
-   newest line is the one nearest the field you answer it in. Written
-   as an auto margin on the first row rather than justify-content,
-   because flex-end on a scrolling box has a habit of clipping the
-   top of the list once it overflows. */
-.gbhc-log > :first-child { margin-top: auto; }
-.gbhc-msg { display: flex; }
-.gbhc-msg__bubble {
-  max-width: 84%;                 /* NO TOKEN: a proportion, not a length: a bubble leaves the other side visible so the thread reads as two voices */
-  padding: var(--space-8) var(--space-16);
-  border-radius: var(--radius);
-  font-size: 14px;
-  line-height: 1.5;
+@media (max-width: 639px) {
+  .gbhc-log { padding: var(--space-24) var(--space-16) var(--space-32); }
 }
-.gbhc-msg--them .gbhc-msg__bubble { background: var(--zinc-100); color: var(--zinc-900); }
-.gbhc-msg--you { justify-content: flex-end; }
-.gbhc-msg--you .gbhc-msg__bubble { background: var(--blue-600); color: var(--white); }
+/* THE THREAD STARTS AT THE TOP, which is a reversal and the
+   reference is the reason. Until 09.09 a short thread hugged the
+   composer here (margin-top: auto on the first row), which is a
+   sound instinct in a 520 window and a wrong one in a 748 one: the
+   greeting ends up floating at the floor with two thirds of the
+   surface empty above it. The reference stands its greeting at the
+   ceiling and lets the room fill downwards, and once the thread is
+   long enough to scroll the two behave identically anyway. */
 
+/* NO TOKEN, declared ONCE and spent three times (the gap beside a
+   face, the gap in the composer row, the chip's side padding). 12
+   is the reference's number in all three places, and it is the
+   HALF OF 24 that the scale does not have — one of the five open
+   questions about the scale already on Ton's list (trap 19). One
+   entry in the NO TOKEN ledger instead of three. */
+.gbhc-chat { --gbhc-half: 12px; }
+
+.gbhc-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gbhc-half);
+  animation: gbhc-msg-in var(--mo-small) var(--mo-arrive) both;
+}
+@keyframes gbhc-msg-in { from { opacity: 0; transform: translateY(var(--space-8)); } to { opacity: 1; transform: none; } }
+.gbhc-msg__face {
+  flex: 0 0 40px;                 /* the reference's own avatar, and 40 is a rung of Ton's height grid; it is written as a literal because the grid's names are button heights and a face is not a button */
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  margin-top: 2px;                /* NO TOKEN: 2px, the optical drop that puts the face on the first line of the card rather than on its border */
+  background: var(--zinc-100);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius-circle);
+  color: var(--zinc-900);
+}
+.gbhc-msg__bubble {
+  max-width: min(84%, 360px);     /* NO TOKEN: a proportion and the reference's own ceiling; a bubble leaves the other side visible so the thread reads as two voices */
+  padding: var(--space-16);
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  /* The corner nearest the speaker stays square. */
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  color: var(--zinc-900);
+}
+.gbhc-msg__bubble p { margin: 0; font-size: 16px; line-height: 1.5; }
+.gbhc-msg__bubble p + p { margin-top: var(--space-8); }
+.gbhc-msg--you { justify-content: flex-end; }
+.gbhc-msg--you .gbhc-msg__bubble {
+  background: var(--zinc-900);    /* the reference's ink, not the Blue 600 this file used before: blue is state (Ton-5) and a guest's own line is furniture */
+  border-color: var(--zinc-900);
+  border-radius: var(--radius) 0 var(--radius) var(--radius);
+  color: var(--white);
+}
+/* The specialist is typing. An idle animation with no end, on a rung
+   (--mo-medium) rather than the reference's 700ms literal. */
+.gbhc-msg--typing .gbhc-msg__bubble {
+  min-width: 58px;                /* NO TOKEN: the reference's own, so three dots never sit in a box that reads as a word */
+  display: flex;
+  align-items: center;
+  gap: 5px;                       /* NO TOKEN: the gap between dots is the dot; see below */
+}
+.gbhc-msg--typing .gbhc-msg__bubble > span {
+  width: 5px;                     /* NO TOKEN: 5px, a dot; the space scale starts at 8 and a dot is not a space */
+  height: 5px;
+  background: var(--zinc-500);
+  border-radius: var(--radius-circle);
+  animation: gbhc-typing var(--mo-medium) var(--mo-move) infinite alternate;
+}
+.gbhc-msg--typing .gbhc-msg__bubble > span:nth-child(2) { animation-delay: 110ms; }  /* NO TOKEN: the reference's own cascade, and the 40ms step of MOTION.md is too tight to read on three dots */
+.gbhc-msg--typing .gbhc-msg__bubble > span:nth-child(3) { animation-delay: 220ms; }
+@keyframes gbhc-typing { to { opacity: 0.3; transform: translateY(-2px); } }
+
+/* ---- THE COMPOSER, THREE PARTS, ALL FROM THE REFERENCE ------
+   Chips, a ruled field with a square send beside it, and a quiet
+   line that says who is on the other end. The field itself is the
+   auth organism's (.gba-inputwrap / .gba-input); what is local is
+   LAYOUT only, exactly as the reference says of itself: the two
+   column row, the gap, and the square button. */
 .gbhc-composer {
   flex: 0 0 auto;
-  display: flex;
-  align-items: flex-end;
+  display: grid;
   gap: var(--space-8);
-  padding: var(--space-16);
+  padding: var(--space-8) var(--space-24) var(--space-16);
+  background: var(--white);
   border-top: 1px solid var(--zinc-200);
 }
-.gbhc-composer .gba-inputwrap { flex: 1 1 auto; min-width: 0; }
-.gbhc-composer .gba-input { display: block; }
+@media (max-width: 639px) {
+  .gbhc-composer { padding: var(--space-8) var(--space-16) var(--space-16); }
+}
+/* They wrap: every suggestion on screen, the surface taller by a row
+   instead of narrower by a secret. The reference's own words. */
+.gbhc-chips { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.gbhc-chips[hidden] { display: none; }
+.gbhc-chips button {
+  flex: 0 0 auto;
+  min-height: var(--gb-btn-small-h);   /* 32, the small rung */
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--gbhc-half);
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);        /* the reference is a 999 pill; the house chip in this very file is --radius, and Ton said 5 on 09.09 */
+  color: var(--zinc-800);
+  font-family: inherit;
+  font-size: 14px;                     /* the secondary rung; the reference's 13 is not one */
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--mo-micro) var(--mo-move),
+              border-color var(--mo-micro) var(--mo-move),
+              color var(--mo-micro) var(--mo-move);
+}
+.gbhc-chips button:hover,
+.gbhc-chips button:focus-visible {
+  background: var(--zinc-900);
+  border-color: var(--zinc-900);
+  color: var(--white);
+  outline: 0;
+}
+.gbhc-chips button:disabled { cursor: default; opacity: 0.45; }  /* NO TOKEN: the reference's own dimming of a control that is waiting */
+
+/* The row. One local name carries the field ladder so the button
+   stays square and level with the field at every width; a 44 icon
+   circle was the other candidate and it is the wrong one, because
+   this button is the right hand half of a form control and not
+   chrome standing alone. The reference reasons the same way. */
+.gbhc-composer__field {
+  --gbhc-ctl-h: var(--form-ctl-h);      /* 48, base */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--gbhc-ctl-h);
+  align-items: center;
+  gap: var(--gbhc-half);
+}
+@media (min-width: 1280px) { .gbhc-composer__field { --gbhc-ctl-h: var(--form-ctl-h-xl); } }   /* 56 */
+@media (min-width: 2000px) { .gbhc-composer__field { --gbhc-ctl-h: var(--form-ctl-h-2xl); } }  /* 64 */
+.gbhc-composer .gba-inputwrap { min-width: 0; }
+.gbhc-composer .gba-input:disabled { color: var(--zinc-400); cursor: wait; }
+.gbhc-send {
+  width: var(--gbhc-ctl-h);
+  height: var(--gbhc-ctl-h);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: var(--zinc-900);
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--white);
+  cursor: pointer;
+  transition: background-color var(--mo-micro) var(--mo-move), transform var(--mo-micro) var(--mo-move);
+}
+.gbhc-send:not(:disabled):hover { background: var(--zinc-800); }
+.gbhc-send:not(:disabled):active { transform: scale(0.97); }  /* NO TOKEN: a proportion, the reference's own press */
+.gbhc-send:disabled { cursor: default; opacity: 0.28; }        /* NO TOKEN: the reference's own */
+.gbhc-send:focus-visible { outline: 2px solid var(--gb-btn-focus-ring); outline-offset: 2px; }
+.gbhc-composer__hint {
+  margin: 0;
+  font-size: 14px;                /* the secondary rung; the reference clamps 13 to 14 */
+  line-height: 1.4;
+  color: var(--zinc-500);
+}
 
 /* ============================================================
    THE PILL — THE SESSION PLATE                        .gbhc-pill
@@ -828,10 +1057,14 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
     </div>
     <div class="gbhc-log" id="gbhcLog" aria-live="polite"></div>
     <form class="gbhc-composer" id="gbhcForm" autocomplete="off">
-      <div class="gba-inputwrap">
-        <input class="gba-input" id="gbhcInput" type="text" aria-label="Your message" placeholder="Type a message...">
+      <div class="gbhc-chips" id="gbhcChips" aria-label="Suggested messages"></div>
+      <div class="gbhc-composer__field">
+        <div class="gba-inputwrap">
+          <input class="gba-input" id="gbhcInput" type="text" aria-label="Your message" placeholder="Message a gifting specialist...">
+        </div>
+        <button class="gbhc-send" id="gbhcSend" type="submit" aria-label="Send message" disabled></button>
       </div>
-      <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="submit" aria-label="Send"></button>
+      <p class="gbhc-composer__hint" id="gbhcHint"></p>
     </form>
   </div>
 
@@ -1149,20 +1382,41 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
        AI concierge and the live chat are the same object with a
        different first message and a different name in the head.
        ============================================================ */
+    /* THE LIVE START IS THE REFERENCE, WORD FOR WORD. Title, meta,
+       both lines of the greeting card, all three chips, the
+       placeholder and the quiet line are read off
+       live/portal.html?layout=band&hero=start and not rewritten. The
+       advisor's own name has not gone anywhere: it is on floor two of
+       the drawer, where a named account manager belongs. The chat is
+       «our team», which is what the reference calls it and what is
+       true of a queue nobody has been assigned out of yet.
+
+       THE AI START IS THE SAME SHAPE WITH THE OPPOSITE CONTENT. Ton's
+       law stands over every line of it: a reader must never take this
+       voice for a person, so the meta, the greeting and above all the
+       quiet line say the opposite of the reference's. The chips
+       cannot be carried across as words — an assistant is not asked
+       about an existing order — so they are the same three ERRANDS in
+       the AI's own language, and the third one is the way out to a
+       human, which the AI must always offer. */
     var STARTS = {
       live: {
         icon: 'chat',
-        name: ADVISOR.name,
-        state: '<span class="gbhc-dot" aria-hidden="true"></span>Online now',
-        /* THE PLATE SPEAKS SHORTER THAN THE HEAD. The inset is a
-           third of a 380 plate and the status shares it with a name;
-           the window's own head has the room for the long form and
-           keeps it. «Online» and «AI assistant» are the same two
-           facts in the space the plate actually has. */
-        pillName: ADVISOR.name,
+        name: 'Chat with our team',
+        state: '<span class="gbhc-dot" aria-hidden="true"></span><span>Online now · A real person</span>',
+        /* THE PLATE SPEAKS SHORTER THAN THE HEAD. The inset is a third
+           of a 380 plate and the status shares it with a name; the
+           window's own head has the room for the long form and keeps
+           it. Both of these were measured against the inset, not
+           guessed: see the note on the inset proportion. */
+        pillName: 'GildedBox',      /* «GildedBox team» was measured and it is cut at 360; the brand alone over «Online» says the same thing in the room the inset has */
         pill: 'Online',
-        say: ['Hi, this is ' + ADVISOR.name + ' at GildedBox.',
-              'What are you working on today?'],
+        placeholder: 'Message a gifting specialist...',
+        hint: 'You’re chatting with a real member of the GildedBox team.',
+        say: ['Hi. You’re chatting with a GildedBox gifting specialist.\nHow can I help today?'],
+        chips: ['I need help choosing gifts',
+                'I have an existing order',
+                'I’d like a custom proposal'],
         reply: 'Got it. Give me a moment to pull up a few options for you.'
       },
       ai: {
@@ -1170,11 +1424,15 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
         /* Ton, 09.09: the window says AI as loudly as the door does —
            a reader must never take this voice for a person. */
         name: 'AI Gift Concierge',
-        state: '<span class="gbhc-dot" aria-hidden="true"></span>AI · answers right away',
+        state: '<span class="gbhc-dot" aria-hidden="true"></span><span>Always on · Not a person</span>',
         pillName: 'AI Concierge',
         pill: 'AI assistant',
-        say: ['Hi, I am the GildedBox AI concierge — an assistant, not a person.',
-              'Tell me who the gift is for and what the occasion is, and I will put a shortlist together.'],
+        placeholder: 'Ask the AI concierge...',
+        hint: 'You’re chatting with an AI assistant, not a member of the GildedBox team.',
+        say: ['Hi. You’re chatting with the GildedBox AI concierge, which is software and not a person.\nTell me who the gift is for and what the occasion is, and I will put a shortlist together.'],
+        chips: ['Help me choose a gift',
+                'What fits a set budget?',
+                'Hand me to a real person'],
         reply: 'Thank you. I am looking at what fits, and I can hand you to a live specialist at any point.'
       }
     };
@@ -1192,25 +1450,94 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('close') : '') + '</span>';
     document.getElementById('gbhcPillEnd').innerHTML =
       '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('close') : '') + '</span>';
-    document.querySelector('#gbhcForm button[type="submit"]').innerHTML =
-      '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('arrow-right') : '') + '</span>';
+    var send = document.getElementById('gbhcSend');
+    var chips = document.getElementById('gbhcChips');
+    var hint = document.getElementById('gbhcHint');
+    send.innerHTML = glyph('arrow-right', 20);
 
     var pillLast = document.getElementById('gbhcPillLast');
 
+    /* The face of the speaker, the reference's own 24px glyph in its
+       own 40px disc. Ours is drawn out of the icon record by name,
+       and its colours are the disc this file already draws twice. */
+    function faceHTML() {
+      return '<span class="gbhc-msg__face" aria-hidden="true">' + glyph('chat', 24) + '</span>';
+    }
+
+    /* ConciergeChatBubble of the reference: the face rides only on the
+       agent's side, and the text is split on newlines into one <p>
+       each, so the greeting is one card of two paragraphs and not two
+       cards. textContent per line, never innerHTML: a guest types
+       here. */
     function say(side, text) {
-      var row = document.createElement('div');
+      var row = document.createElement('article');
       row.className = 'gbhc-msg gbhc-msg--' + side;
+      if (side === 'them') row.innerHTML = faceHTML();
       var bubble = document.createElement('div');
       bubble.className = 'gbhc-msg__bubble';
-      bubble.textContent = text;      /* never innerHTML: a guest types here */
+      text.split('\n').forEach(function (line) {
+        var p = document.createElement('p');
+        p.textContent = line;
+        bubble.appendChild(p);
+      });
       row.appendChild(bubble);
       log.appendChild(row);
       log.scrollTop = log.scrollHeight;
       /* THE PLATE IS LIVE. Whatever was last said is what the pill
          shows, including an answer that lands while it is minimised:
          that is the difference between a handle on a conversation
-         and a button that says a conversation exists. */
-      pillLast.textContent = text;
+         and a button that says a conversation exists. The plate has
+         one line, so a two paragraph card arrives there as one. */
+      pillLast.textContent = text.split('\n').join(' ');
+    }
+
+    /* ---- THE CHIPS --------------------------------------------
+       In the reference they stand for the life of the conversation
+       and are only disabled while the specialist is typing. HERE
+       THEY LEAVE after the first thing the guest says, and that is a
+       deliberate divergence with a measurement behind it: the
+       reference's surface is a 748 panel with the composer pinned to
+       its floor and room to spare, and this window, at 360 wide,
+       spends three rows and 120px on three chips that have already
+       done their job. They are an opening, not a menu. Reported to
+       Ton as a divergence rather than taken quietly.
+       While a reply is pending they are disabled, which IS the
+       reference, and it is the same latch as the field. */
+    function paintChips(list) {
+      chips.innerHTML = '';
+      (list || []).forEach(function (label) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        chips.appendChild(b);
+      });
+      chips.hidden = !(list || []).length;
+    }
+
+    /* The field is dead while the other side is typing, and so is
+       every chip. Both halves of the latch are set here and cleared
+       here, in one place, in both directions (trap 22). */
+    var pending = false;
+    function syncSend() {
+      send.disabled = pending || !input.value.trim();
+    }
+    function setPending(on) {
+      pending = on;
+      input.disabled = on;
+      var all = chips.querySelectorAll('button');
+      for (var i = 0; i < all.length; i++) all[i].disabled = on;
+      syncSend();
+    }
+    function typingRow() {
+      var row = document.createElement('article');
+      row.className = 'gbhc-msg gbhc-msg--them gbhc-msg--typing';
+      row.setAttribute('role', 'status');
+      row.setAttribute('aria-label', 'Typing');
+      row.innerHTML = faceHTML() +
+        '<div class="gbhc-msg__bubble"><span></span><span></span><span></span></div>';
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+      return row;
     }
 
     /* ============================================================
@@ -1232,12 +1559,19 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       if (mode === which) return start;
       mode = which;
       log.innerHTML = '';
+      clearTimeout(replyTimer);
       document.getElementById('gbhcFace').innerHTML = glyph(start.icon, 22);
       document.getElementById('gbhcName').textContent = start.name;
       document.getElementById('gbhcState').innerHTML = start.state;
       document.getElementById('gbhcPillName').textContent = start.pillName;
       document.getElementById('gbhcPillState').innerHTML =
         '<span class="gbhc-dot" aria-hidden="true"></span><span>' + start.pill + '</span>';
+      input.placeholder = start.placeholder;
+      input.setAttribute('aria-label', start.placeholder.replace('...', ''));
+      hint.textContent = start.hint;
+      paintChips(start.chips);
+      input.value = '';
+      setPending(false);
       start.say.forEach(function (line) { say('them', line); });
       return start;
     }
@@ -1247,6 +1581,7 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       pill.hidden = true;
       chat.hidden = false;
       chat.classList.remove('is-in', 'is-morph', 'is-shut', 'is-nomo');
+      chat.style.width = '';
       chat.style.height = '';
       void chat.offsetWidth;
       chat.classList.add('is-in');
@@ -1294,23 +1629,27 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
        so the window is given a real destination rather than a
        number somebody typed. It waits there, behind the window,
        fully drawn, for the whole ride. */
+    function box(el) { var r = el.getBoundingClientRect(); return { w: r.width, h: r.height }; }
+    function setBox(el, b) { el.style.width = b.w + 'px'; el.style.height = b.h + 'px'; }
+    function clearBox(el) { el.style.width = ''; el.style.height = ''; }
+
     function minimise() {
       if (busy) return;
       busy = true;
-      chat.classList.remove('is-in');            /* the entrance animation must not own the height */
-      var from = chat.getBoundingClientRect().height;
+      chat.classList.remove('is-in');            /* the entrance animation must not own the frame */
+      var from = box(chat);
       pill.hidden = false;
-      var to = pill.getBoundingClientRect().height;
-      chat.style.height = from + 'px';
+      var to = box(pill);                        /* a real destination, measured where it will stand */
+      setBox(chat, from);
       chat.classList.add('is-morph');
-      void chat.offsetHeight;                    /* the baseline of both transitions */
+      void chat.offsetHeight;                    /* the baseline of every transition on the frame */
       chat.classList.add('is-shut');             /* the content leaves on --mo-small-out */
-      chat.style.height = to + 'px';             /* the frame leaves on --mo-small */
+      setBox(chat, to);                          /* the frame leaves on --mo-small, both axes */
       clearTimeout(rideTimer);
       rideTimer = setTimeout(function () {
         chat.hidden = true;
         chat.classList.remove('is-morph', 'is-shut');
-        chat.style.height = '';
+        clearBox(chat);
         busy = false;
       }, MO.small);
     }
@@ -1322,21 +1661,21 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
     function expand() {
       if (busy || !mode) return;
       busy = true;
-      var from = pill.getBoundingClientRect().height;
+      var from = box(pill);
       chat.hidden = false;
       chat.classList.add('is-nomo', 'is-morph', 'is-shut');
-      chat.style.height = '';
-      var to = chat.getBoundingClientRect().height;   /* the natural height, already clipped by max-height */
-      chat.style.height = from + 'px';
+      clearBox(chat);
+      var to = box(chat);                        /* the natural frame, already clipped by max-width and max-height */
+      setBox(chat, from);
       void chat.offsetHeight;
       chat.classList.remove('is-nomo');
       void chat.offsetHeight;
       chat.classList.remove('is-shut');
-      chat.style.height = to + 'px';
+      setBox(chat, to);
       clearTimeout(rideTimer);
       rideTimer = setTimeout(function () {
         chat.classList.remove('is-morph');
-        chat.style.height = '';
+        clearBox(chat);
         pill.hidden = true;
         busy = false;
         input.focus();
@@ -1352,12 +1691,13 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       busy = false;
       chat.hidden = true;
       chat.classList.remove('is-in', 'is-morph', 'is-shut', 'is-nomo');
-      chat.style.height = '';
+      clearBox(chat);
       pill.hidden = true;
       mode = null;
       log.innerHTML = '';
       pillLast.textContent = '';
       input.value = '';
+      setPending(false);
     }
 
     document.getElementById('gbhcMin').addEventListener('click', minimise);
@@ -1365,19 +1705,42 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
     document.getElementById('gbhcPillEnd').addEventListener('click', endSession);
     document.getElementById('gbhcPillOpen').addEventListener('click', expand);
 
-    document.getElementById('gbhcForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      var text = input.value.trim();
-      if (!text) return;
+    /* ---- ONE WAY IN AND OUT FOR EVERY MESSAGE -----------------
+       The typed line and the tapped chip are the same errand and go
+       through the same door, which is how the reference has it and
+       is also the only way the latch can be trusted. */
+    function send_(value) {
+      var text = (value || '').trim();
+      var start = STARTS[mode];
+      if (!text || pending || !start) return;
       say('you', text);
       input.value = '';
-      var start = STARTS[mode];
-      if (!start) return;
+      /* The opening is over: the chips have done their job. */
+      paintChips(null);
+      setPending(true);
+      var typing = typingRow();
       clearTimeout(replyTimer);
       /* One scripted answer, so the thread reads as a thread. NO
          TOKEN: 900ms of waiting is not a move, and the motion scale
-         holds the length of moves. */
-      replyTimer = setTimeout(function () { say('them', start.reply); }, 900);
+         holds the length of moves. The latch is dropped in the same
+         place it was set, and there is no other path out of it. */
+      replyTimer = setTimeout(function () {
+        if (typing.parentNode) typing.parentNode.removeChild(typing);
+        say('them', start.reply);
+        setPending(false);
+        if (!chat.hidden) input.focus();
+      }, 900);
+    }
+
+    input.addEventListener('input', syncSend);
+    document.getElementById('gbhcForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      send_(input.value);
+    });
+    chips.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('button') : null;
+      if (!chip || chip.disabled) return;
+      send_(chip.textContent);
     });
 
     /* ============================================================
