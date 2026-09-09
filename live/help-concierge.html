@@ -93,6 +93,18 @@
         window and the plate are one object changing height rather
         than two objects swapping. See THE CHOREOGRAPHY below.
 
+     ------------------------------------------------------------
+     gbppl-nav-hover-1 — THREE HOVERS FOR THE TOP NAVIGATION.
+     2026-09-09. Ton: «сейчас там hover вообще какой-то никакой»,
+     and the canon agrees with him in writing: header.css 141 is
+     `opacity: 0.8` over 300ms. Three candidates are built on the
+     FORKED bar of this sandbox — underline, ink, both —
+     ?hover=underline|ink|both plus a row of the console, default
+     both. The canonical header.css is not touched; the winner
+     moves into the organism as a wave of its own. See THE HOVER OF
+     THE TOP NAVIGATION below, and read the note on the ink
+     candidate: it necessarily changes the bar AT REST.
+
      AND NO POLITE BRANCH ANYWHERE. Ton, 09.09: animation is off at
      the OS level on his machine and «мы должны принудительно
      заставлять её работать». Ton-7 already said this and the drawer
@@ -367,6 +379,99 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
    the default the page loads on. */
 :root { --gbhc-accent: var(--blue-600); }
 html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
+
+/* ============================================================
+   THE HOVER OF THE TOP NAVIGATION — THREE CANDIDATES
+   gbppl-nav-hover-1                                  .gbh-link
+   ------------------------------------------------------------
+   Ton, 09.09: «сейчас там hover вообще какой-то никакой». He is
+   right, and the canon says so in its own words: header.css line
+   141 is `.gbh-link:hover { opacity: 0.8 }`, carried over from the
+   live bar's `transition-all duration-300` fade. A label that goes
+   eighty per cent grey over 300ms is a hover you have to be told
+   about.
+
+   THREE CANDIDATES ON THE FORKED BAR OF THIS SANDBOX ONLY. The
+   canonical header.css is not touched by a byte; everything below
+   hangs off html[data-gbhc-hover] and dies with this page. The one
+   Ton picks moves into the organism as a wave of its own.
+   ?hover=underline|ink|both, and a row of the console. Default both.
+
+   ALL THREE PUT OUT THE OLD FADE FIRST. Leaving opacity .8 under a
+   new hover gives two hovers at once, and the weaker one does the
+   talking.
+
+   1  UNDERLINE  a hairline grows left to right under the label on
+      --mo-small and retreats the same way. Provenance: the hero's
+      own underline-CTA (Discover Gifts, home.css .gbhm-underline)
+      and the rule of the controls recon that an underline means
+      navigation. It is an ::after on transform: scaleX, so it
+      cannot move the label or its neighbours by a pixel: the box
+      never changes size, only what is painted inside it.
+   2  INK        the label deepens to Zinc 900. AND THIS ONE MOVES
+      THE BAR AT REST, WHICH IS NOT A LIBERTY BUT AN ARITHMETIC:
+      the canon's resting ink IS ALREADY Zinc 900 (header.css 126,
+      and a.gbh-link at 662), so there is nothing above it to move
+      to. An ink hover exists only if rest sits a step lighter.
+      Rest becomes Zinc 600, the hovered item becomes Zinc 900.
+      That is a real change to how the bar reads when nobody is
+      pointing at it, it is a deviation from live, and it is
+      flagged in the report for Ton's eye rather than smuggled in.
+      No weight change: weight moves the width and the neighbours.
+   3  BOTH       one and two together.
+
+   THE DARK STEP. This page's bar is the plain white one, so the
+   transparent rules below are never exercised here; they are
+   written because the organism has that step and the wave that
+   moves the winner into the canon must not have to invent them.
+   There the hairline is white and the ink runs Zinc 300 -> white,
+   because the transparent bar's resting ink is already --white and
+   the same arithmetic applies upside down.
+
+   No prefers-reduced-motion branch: Ton-7, and Ton 09.09.
+   ============================================================ */
+:root { --gbhc-rule: var(--zinc-900); }
+html[data-gbhc-hover] .gbh-bar .gbh-link:hover { opacity: 1; }
+
+/* ---- 1. THE RULE ---- */
+html[data-gbhc-hover="underline"] .gbh-bar .gbh-link::after,
+html[data-gbhc-hover="both"] .gbh-bar .gbh-link::after {
+  content: '';
+  position: absolute;
+  /* 16 is not a rung of our scale here, it is THE LIVE PADDING of
+     the link (header.css .gbh-link, SYSTEM.md site chrome 12.08),
+     flat at every width. Insetting the rule by exactly the padding
+     makes it the width of the LABEL and not of the click box, which
+     is what keeps the daylight between two rules. */
+  left: 16px;
+  right: 16px;
+  bottom: var(--space-8);
+  height: 1px;
+  background: var(--gbhc-rule);
+  transform: scaleX(0);
+  transform-origin: left center;   /* out from the left, and back to the left */
+  transition: transform var(--mo-small) var(--mo-move);
+  pointer-events: none;
+}
+html[data-gbhc-hover="underline"] .gbh-bar .gbh-link:hover::after,
+html[data-gbhc-hover="both"] .gbh-bar .gbh-link:hover::after { transform: scaleX(1); }
+
+/* ---- 2. THE INK ----
+   :not(.is-active) everywhere, or the Blue 600 of the active item
+   (header.css 578) is overwritten by a selector that outweighs it.
+   Weight 0-4-1 against the 0-2-2 of body.gb-demo a.gbh-link, which
+   is the antidote every consumer of this bar has to clear. */
+html[data-gbhc-hover="ink"]  .gbh-bar .gbh-link:not(.is-active),
+html[data-gbhc-hover="both"] .gbh-bar .gbh-link:not(.is-active) { color: var(--zinc-600); }
+html[data-gbhc-hover="ink"]  .gbh-bar .gbh-link:not(.is-active):hover,
+html[data-gbhc-hover="both"] .gbh-bar .gbh-link:not(.is-active):hover { color: var(--zinc-900); }
+
+/* ---- THE DARK STEP, unexercised on this page ---- */
+html[data-gbhc-hover] .gb-header--transparent:not(.is-past-hero) .gbh-bar { --gbhc-rule: var(--white); }
+html[data-gbhc-hover="ink"]  .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active),
+html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active) { color: var(--zinc-300); }
+html[data-gbhc-hover="ink"]  .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active):hover,
+html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar .gbh-link:not(.is-active):hover { color: var(--white); }
 
 .gbhc-chat,
 .gbhc-pill {
@@ -795,6 +900,25 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
       history.replaceState(null, '', u.toString());
     }
     setAccent(readAccent(), false);
+
+    /* ---- THE HOVER OF THE NAVIGATION, three candidates --------
+       gbppl-nav-hover-1. Same shape as the accent switch, same two
+       handles: ?hover=underline|ink|both and a row of the console.
+       The default is BOTH, which is the recommendation going to Ton
+       with the frames. The CSS is at the top of this file. */
+    var HOVERS = ['underline', 'ink', 'both'];
+    function readHover() {
+      var q = (new URLSearchParams(location.search)).get('hover');
+      return HOVERS.indexOf(q) > -1 ? q : 'both';
+    }
+    function setHover(v, writeUrl) {
+      document.documentElement.setAttribute('data-gbhc-hover', v);
+      if (!writeUrl) return;
+      var u = new URL(location.href);
+      u.searchParams.set('hover', v);
+      history.replaceState(null, '', u.toString());
+    }
+    setHover(readHover(), false);
 
     /* Who the advisor is. One place, because the card, the message
        form and the live chat all speak of the same person. */
@@ -1277,6 +1401,20 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
             note: 'The gold of the Beta chip in the bar, #bea042. It is a token, and it is under the standing veto on gold in the interface.' }
         ],
         onChange: function (v) { setAccent(v, true); }
+      });
+      spanel.addGroup({
+        type: 'choice',
+        title: 'Hover of the top navigation',
+        value: readHover(),
+        options: [
+          { label: 'Underline', value: 'underline',
+            note: 'A hairline grows out from the left under the label and retreats the same way. Nothing moves.' },
+          { label: 'Ink', value: 'ink',
+            note: 'The label deepens to Zinc 900. Rest has to sit at Zinc 600 for that to be visible, so the bar reads lighter when nobody is pointing at it.' },
+          { label: 'Both', value: 'both',
+            note: 'The rule and the ink together. The candidate this wave recommends.' }
+        ],
+        onChange: function (v) { setHover(v, true); }
       });
     }
   })();
