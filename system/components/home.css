@@ -112,13 +112,27 @@
 }
 /* Ховер-обводка лайва: чистый CSS (::before из пяти градиентов,
    рисует рамку по периметру) — перенесён дословно. */
+/* ЛОВУШКА ТРАНСКРИПЦИИ, ПОЙМАНА ТОНОМ 09.09: «кнопка Discover
+   Gifts при ховере заливается сплошным белым и лейбл исчезает».
+   Пять слоёв рисуют рамку по периметру, но при переносе с лайва
+   17-18.08 ТРИ ИЗ ПЯТИ потеряли `no-repeat`. Слой 3 — белая
+   колонка шириной 1px: с repeat она размножается через каждый
+   пиксель и заливает кнопку целиком; слои 4 и 5 делают то же по
+   вертикали, как только ховер даёт им высоту. В покое всё скрыто
+   под scaleX(0), поэтому дефект жил только в ховере и не ловился
+   ни одним замером computed-стилей самого элемента: его color и
+   background-color честны, красит псевдоэлемент, у которого нет
+   z-index и который в порядке отрисовки идёт ПОВЕРХ лейбла.
+   Диагноз доказан отменой: _waves/concierge-unify-1/33-hero-cta-
+   DIAGNOSIS-A (как было) и -B (одно слово возвращено).
+   Значения не тронуты, добавлено одно свойство на три слоя. */
 .gbhm-underline.btn-underline::before {
   background:
     linear-gradient(90deg, #fff 0, #fff) 50% 100% / 100% 1px no-repeat,
     linear-gradient(0deg, #fff 50%, rgba(0, 0, 0, 0) 0) 0 0 / 1px 200% no-repeat,
-    linear-gradient(0deg, #fff 50%, rgba(0, 0, 0, 0) 0) 100% 0 / 1px 200%,
-    linear-gradient(90deg, #fff 0, #fff) 100% 0 / 0 1px,
-    linear-gradient(270deg, #fff 0, #fff) 0 0 / 0 1px;
+    linear-gradient(0deg, #fff 50%, rgba(0, 0, 0, 0) 0) 100% 0 / 1px 200% no-repeat,
+    linear-gradient(90deg, #fff 0, #fff) 100% 0 / 0 1px no-repeat,
+    linear-gradient(270deg, #fff 0, #fff) 0 0 / 0 1px no-repeat;
   content: "";
   height: calc(100% + 1px);
   left: -0.5px;
@@ -750,13 +764,17 @@
 /* Та же ховер-обводка из пяти градиентов, что у тёмной ленты, в
    чернилах. Правило переписывается целиком: background у неё один
    слот, частичной подмены цвета в нём не бывает. */
+/* Тот же дефект транскрипции, что у тёмного близнеца выше, и
+   чинится тем же одним словом на тех же трёх слоях: правило
+   переписывает background целиком, значит и опечатка приехала
+   целиком. Светлый вариант живёт на conversation-баннере. */
 .gbhm-conv--light .gbhm-underline.btn-underline::before {
   background:
     linear-gradient(90deg, var(--zinc-900) 0, var(--zinc-900)) 50% 100% / 100% 1px no-repeat,
     linear-gradient(0deg, var(--zinc-900) 50%, rgba(0, 0, 0, 0) 0) 0 0 / 1px 200% no-repeat,
-    linear-gradient(0deg, var(--zinc-900) 50%, rgba(0, 0, 0, 0) 0) 100% 0 / 1px 200%,
-    linear-gradient(90deg, var(--zinc-900) 0, var(--zinc-900)) 100% 0 / 0 1px,
-    linear-gradient(270deg, var(--zinc-900) 0, var(--zinc-900)) 0 0 / 0 1px;
+    linear-gradient(0deg, var(--zinc-900) 50%, rgba(0, 0, 0, 0) 0) 100% 0 / 1px 200% no-repeat,
+    linear-gradient(90deg, var(--zinc-900) 0, var(--zinc-900)) 100% 0 / 0 1px no-repeat,
+    linear-gradient(270deg, var(--zinc-900) 0, var(--zinc-900)) 0 0 / 0 1px no-repeat;
 }
 .gbhm-conv--light .gbhm-underline.btn-underline:hover {
   border-color: var(--zinc-900);
