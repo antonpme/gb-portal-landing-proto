@@ -635,6 +635,36 @@
       ]
     },
 
+    concierge: {
+      /* ЕДИНЫЙ HELP / CONCIERGE (gbppl-concierge-1, 09.09). Концепт
+         написан и утверждён Тоном ДО кода:
+         studio\docs\HELP-CONCIERGE-CONCEPT.md. Тон: «Давай соберём
+         прототип и посмотрим, это очень важно.»
+
+         ЧТО ЗДЕСЬ LIVE. У этого опыта живого двойника-СТРАНИЦЫ нет:
+         сегодня помощь размазана по трём местам (дровер Get Help на
+         портале, плавающая кнопка HubSpot на сайте, попап AI-консьержа
+         в прототипе MyGifts). Поэтому `live` показывает на главную
+         сайта — страницу, на которой сегодня висит ровно то, что
+         прототип заменяет: вечная плавающая кнопка чужого чата. Это
+         честная точка отсчёта, а не выдуманная страница. */
+      label: 'Help and concierge',
+      live: 'live/index.html',
+      variants: [
+        {
+          id: 'concierge',
+          label: 'One way in, from the bar',
+          desc: 'Help stops being three different things. A concierge bell in the right cluster of the bar opens one drawer: the ways to talk to us upstairs, your Gift Advisor at the foot with a message that grows out of his card. Book a meeting opens on the second floor of the same drawer, with the times standing under the calendar. Chat leaves the drawer for a window at the bottom right, the same window for the AI concierge and for a person, and minimised it is a pill with the name and the state on it. Nothing floats at rest: the pill exists only while a conversation does, and its cross ends the session.',
+          status: 'in-progress',
+          href: 'live/help-concierge.html',
+          ready: true,
+          tags: ['header', 'flow'],
+          created: '2026-09-09',
+          updated: '2026-09-09'
+        }
+      ]
+    },
+
     /* Страницы без живого двойника. У них live указывает на саму
        мерочную страницу: она и есть эталон, с которым сверяются. */
     auth: {

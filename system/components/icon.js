@@ -155,6 +155,46 @@
    input numbers of the checkout, which come out at 1px today. A
    consumer outside a .gb-icon box therefore names the house weight
    on the tag it writes.
+
+   ------------------------------------------------------------
+   AND FOUR FOR THE CONCIERGE
+   (gbppl-concierge-1, 09.09)
+   ------------------------------------------------------------
+   Ton, 09.09, on the single Help / Concierge experience: one way in
+   from the bar of every page, «иконка-звоночек (клош консьержа) в
+   хедере, ряд с аккаунтом и корзиной», by the Tiffany reference of
+   08.09. The record had nothing for it, and nothing for the three
+   doors the drawer opens either.
+
+   THREE OF THE FOUR ARE NOT NEW DRAWINGS. `chat`, `calendar` and
+   `telephone` are copied character for character out of
+   live\portal.html, where the START popup's «Talk to a gifting
+   expert» has been drawing them by hand since 19.08 — the same
+   three doors, the same three glyphs, one file that owns them. Two
+   things did not come with them, and both are the record's own
+   rule: the dots of the speech bubble carried stroke-width="2" as
+   an attribute on their path (the one case where a glyph escapes
+   the house weight, said out loud at the head of `layers`), and the
+   handset carried the popup's own caps. Inside .gb-icon all three
+   come out at the house 1.5 with round caps, like every other entry.
+
+   `telephone` and not `phone`: the name was taken on 28.08 by the
+   console's 390 preset, which is a slab with a speaker line, and a
+   set cannot hold one name for two objects.
+
+   THE FOURTH IS THE BELL, AND IT HAS AN ADDRESS. `service-bell` is
+   NOT invented and not redrawn by eye: it is
+   assets\nucleo-full\48-service-bell.svg — Nucleo, the set the house
+   already licenses and the one the home strip's advantage glyphs are
+   drawn from — adapted the way the six console screens were adapted
+   from their grid of twenty. Every coordinate halved off the 48 grid
+   (the source group carries translate(0.5 0.5), so the halving is of
+   the EFFECTIVE coordinate, not of the written one), recentred on
+   x 12 and dropped a quarter pixel so the bell stands with three
+   clear on top and three at the foot. The source's stroke 1, its
+   butt caps and its mitre joins are left behind: the record gives
+   one weight and one pair of ends to everything in it.
+   Thirty four entries became thirty eight.
    ============================================================ */
 (function () {
   'use strict';
@@ -213,11 +253,29 @@
       from: 'studio-panel.js: the 768 preset of the console',
       stroke: 1.5
     },
+    /* ---- THE FOUR OF THE CONCIERGE (gbppl-concierge-1, 09.09) ----
+       The three doors first, all three out of live\portal.html. */
+    'calendar': {
+      body: '<rect x="3.5" y="5.5" width="17" height="15" rx="1.5"/>' +
+            '<path d="M7.5 3v5M16.5 3v5M3.5 10h17M8 14h3M8 17h6"/>',
+      from: 'live/portal.html: the Book a meeting door of the START popup',
+      stroke: 1.5
+    },
     'cart': {
       body: '<circle cx="9" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/>' +
             '<path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"/>',
       from: 'header.js: the basket, drawn for the signed in bar',
       stroke: 1.5
+    },
+    /* The bubble with the tail, and the three dots that say someone is
+       there. The dots are written as three zero length segments with
+       round caps, which is what draws a dot; the popup gave them their
+       own stroke-width="2" and the record takes it off (head of file). */
+    'chat': {
+      body: '<path d="M5.5 18.5 3.8 21l.5-4A8.5 8.5 0 1 1 7 19.5"/>' +
+            '<path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01"/>',
+      from: 'live/portal.html: the Live chat door of the START popup',
+      stroke: 2
     },
     'chevron-down': {
       body: '<path d="M5 9l7 7 7-7"/>',
@@ -418,6 +476,26 @@
     'search': {
       body: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
       from: 'header.js, auth.js: the magnifier of the bar',
+      stroke: 1.5
+    },
+    /* THE CONCIERGE BELL. Nucleo 48-service-bell, halved off the 48
+       grid and recentred; the provenance and the arithmetic are at the
+       head of this file. Five strokes: the press button, its stem, the
+       dome on its plinth, the inner curve of the dome, and the tray it
+       stands on. */
+    'service-bell': {
+      body: '<path d="M9 4h6"/><path d="M12 4v3"/>' +
+            '<path d="M12 7C6.2 7 1.5 11.63 1.5 17.35V18.5h21v-1.15C22.5 11.63 17.8 7 12 7Z"/>' +
+            '<path d="M12 10.5c-2.85 0-5.3 1.64-6.4 4"/>' +
+            '<path d="M1.5 21h21"/>',
+      from: 'assets/nucleo-full/48-service-bell.svg (Nucleo, the house set): the concierge glyph of the bar, Ton 08.09',
+      stroke: 1
+    },
+    /* The handset. `phone` was taken on 28.08 by the console's 390
+       preset, and one name cannot mean two objects. */
+    'telephone': {
+      body: '<path d="M8.2 3.5 5.4 4.8c-1 .5-1.5 1.7-1.1 2.8 2.2 5.9 6.2 9.9 12.1 12.1 1.1.4 2.3-.1 2.8-1.1l1.3-2.8-4.8-2.1-1.2 2.1a12.6 12.6 0 0 1-6.3-6.3l2.1-1.2-2.1-4.8Z"/>',
+      from: 'live/portal.html: the Call us door of the START popup',
       stroke: 1.5
     },
     /* The other half of the pair above. First consumer: the drop zone

@@ -737,6 +737,10 @@
     'live/checkout.html':         'Checkout page',
     'live/portal.html':           'Portal page',
     'live/book-a-meeting.html':   'Book a meeting form',
+    /* gbppl-concierge-1, 09.09: one line, and it is the same word the
+       registry gives the page (PAGES.concierge.label) and the same word
+       the shelf prints on its card. */
+    'live/help-concierge.html':   'Help and concierge',
     'system/oro/index.html':      'About Oro',
     'system/oro/typography.html': 'Typography',
     'system/oro/colors.html':     'Colors',

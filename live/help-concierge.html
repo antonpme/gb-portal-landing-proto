@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help and concierge · GildedBox</title>
+<link rel="icon" href="data:,">
+<!-- ============================================================
+     gbppl-concierge-1 — ONE HELP EXPERIENCE, AS A ROOM OF ITS OWN.
+     2026-09-09.
+
+     Ton, 09.09: «Давай соберём прототип и посмотрим, это очень
+     важно.» What is being looked at is the concept written and
+     approved before a line of this file existed —
+     studio\docs\HELP-CONCIERGE-CONCEPT.md — which folds three
+     things the house has today into one: Get Help (the portal
+     drawer), the HubSpot floating chat (which dies) and the AI
+     concierge of the MyGifts prototype.
+
+     THE SHAPE, in four sentences.
+       ONE WAY IN     a concierge bell in the right cluster of the
+                      bar, on every page. Nothing floats at rest,
+                      anywhere: that is the whole difference from
+                      the HubSpot button Ton wants gone.
+       THE DRAWER     the switchboard. Floor one is the options in
+                      the language of the MyGifts popup; floor two,
+                      at the foot, is your Gift Advisor.
+       A SECOND LEVEL Book a meeting opens IN THE SAME DRAWER
+                      (setBack / setTitle), because the drawer
+                      organism has had a second floor since the
+                      address panel of checkout V5.
+       THE CHAT       leaves the drawer and becomes a window at the
+                      bottom right, because a conversation outlives
+                      the page it started on and a drawer does not.
+                      Minimised it is a pill; the cross on the pill
+                      ends the session and the screen is clean again.
+
+     WHAT IS NOT TOUCHED, and this is the rail of the wave: the
+     canonical header, the drawer organism, the booking organism and
+     every existing page come out of this wave byte for byte. The bar
+     of THIS page is a fork, and the fork is additive — it decorates
+     the bar <gb-site-header> already drew rather than keeping a
+     second copy of 1200 lines that would drift by Friday. See THE
+     FORK OF THE BAR at the foot of this file.
+
+     WHAT IS REUSED, BY NAME (Ton-6, question one asked first):
+       <gb-drawer>          the surface, both floors, Esc ladder
+       <gb-booking-flow>    Book a meeting, whole: the calendar, the
+                            slots, the rules, the confirmation and
+                            its drawn check. start="slot", so the
+                            two notches of the indicator are «Pick a
+                            time» and «Confirmed», and the slots
+                            stand UNDER the calendar, which is the
+                            arrangement Ton asked for in this narrow
+                            panel. No layout="compact" here: that
+                            modifier is what puts them side by side.
+       .gb-btn / .gb-icon   every control and every glyph
+       .gba-input           every field, including the two composers
+       .gb-eyebrow          every caps label
+       <gb-banner-conversation> / <gb-advantages> / <gb-site-footer>
+                            the page under the drawer is a real page
+                            of the site, with real copy, so the bar
+                            and the floating window are seen over
+                            something rather than over a stage.
+
+     WHAT IS DRAWN HERE, and why it had nowhere else to live: the
+     option ROW (disc, title, sub, chevron), the advisor card, the
+     chat window and the pill. None of the four is in the system;
+     the row is the language of the MyGifts popup, which lives today
+     as .gsp-* inside live\portal.html and is not an organism either.
+     Promoting the row to system/components is a wave of its own and
+     a question for Ton (see the report). Every number below is a
+     rung of the scale or is marked NO TOKEN with the reason.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../system/assets/tokens.css">
+<link rel="stylesheet" href="../system/components/shell.css">
+<link rel="stylesheet" href="../system/components/header.css">
+<link rel="stylesheet" href="../system/components/button.css">
+<link rel="stylesheet" href="../system/components/icon.css">
+<link rel="stylesheet" href="../system/components/home.css">
+<link rel="stylesheet" href="../system/components/footer.css">
+<!-- The fields of both composers and of the message to the advisor are
+     the auth organism's; booking.css comes with the second floor of the
+     drawer, and it names auth.css as its neighbour. -->
+<link rel="stylesheet" href="../system/components/auth.css">
+<link rel="stylesheet" href="../system/components/booking.css">
+<link rel="stylesheet" href="../system/components/drawer.css">
+<link rel="stylesheet" href="../system/components/studio-panel.css">
+<!-- Inspect and Comment modes, the same five files every studio page
+     carries. -->
+<link rel="stylesheet" href="../system/components/docs.css">
+<link rel="stylesheet" href="../system/components/inspect.css">
+<link rel="stylesheet" href="../system/components/comments.css">
+<link rel="stylesheet" href="../system/components/toggle.css">
+
+<!-- The studio gate, as on every page of the house. -->
+<script src="../system/components/studio.js" data-home="../index.html"></script>
+
+<style>
+/* ============================================================
+   THE ROOM'S OWN FOUR THINGS                        .gbhc-*
+   ------------------------------------------------------------
+   Nothing here restyles a system component. Four objects the
+   system does not have yet are drawn, and each number is either a
+   rung (--space-*, --radius, --gb-btn-*, --mo-*, the Zinc and Blue
+   ramps) or is marked NO TOKEN with what it is and why.
+   ============================================================ */
+
+/* ---- The title band of the page ----------------------------
+   Two things in a row: the name of the room and the page level
+   GET HELP, which the concept keeps beside the bar's bell («Page
+   level buttons stay, and they open THE SAME drawer»). */
+.gbhc-band { padding: var(--space-48) 0 var(--space-32); }
+@media (min-width: 768px) { .gbhc-band { padding: var(--space-64) 0 var(--space-48); } }
+.gbhc-band__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-24);
+  flex-wrap: wrap;
+}
+/* TYPE-SCALE, role H1 Hero (36 / 48 from 1280 / 52 from 2000,
+   verified-live). The page is a page of the site and wears the
+   site's biggest serif, not a heading invented here. */
+.gbhc-h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+  color: var(--zinc-900);
+}
+@media (min-width: 1280px) { .gbhc-h1 { font-size: 48px; } }
+@media (min-width: 2000px) { .gbhc-h1 { font-size: 52px; } }
+
+/* ============================================================
+   FLOOR ONE — THE OPTIONS
+   ------------------------------------------------------------
+   The row is the MyGifts popup's door, brought over as language
+   rather than as CSS: disc with a glyph, title with an optional
+   badge, one line under it, chevron at the end, hairlines between
+   and nothing around. The popup's own numbers (46 disc, 14 gap,
+   18 inset, 90 tall) are not copied: they were that popup's 1.15
+   enlargement of the source, and in a 520 drawer the row stands on
+   the scale instead — disc 44, which is the live circle the whole
+   house already draws, gap and inset --space-16.
+   ============================================================ */
+.gbhc-doors {
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+}
+.gbhc-door {
+  width: 100%;
+  display: grid;
+  grid-template-columns: var(--gb-btn-icon-size) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  background: transparent;
+  border: 0;
+  color: var(--zinc-900);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+/* Trap 1: `body.gb-demo a { color: inherit }` weighs 0-1-2 and the
+   Call us row is an <a>. The antidote is always written as a pair. */
+.gbhc-door,
+body.gb-demo a.gbhc-door { color: var(--zinc-900); }
+.gbhc-door + .gbhc-door { border-top: 1px solid var(--zinc-200); }
+.gbhc-door:hover { background: var(--zinc-50); }
+.gbhc-door:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px var(--gb-btn-focus-ring); }
+/* The disc is the live circle (44) with the live glyph (22) in it,
+   both read from the button organism so that the row and an icon
+   button of the bar are the same size by construction. It is NOT a
+   .gb-btn--icon: the row is the control, and a button inside a
+   button is the thing the icon component's own header warns about. */
+.gbhc-door__disc {
+  width: var(--gb-btn-icon-size);
+  height: var(--gb-btn-icon-size);
+  display: grid;
+  place-items: center;
+  background: var(--zinc-50);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius-circle);
+  color: var(--zinc-900);
+}
+.gbhc-door__copy { min-width: 0; display: grid; gap: 2px; }  /* NO TOKEN: 2px, half of the 4 that is itself half of --space-8; the two lines of a row are one sentence and the scale starts above them */
+.gbhc-door__title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  font-size: 16px;          /* body base, verified live */
+  font-weight: 600;
+  line-height: 1.5;
+}
+.gbhc-door__sub {
+  font-size: 14px;          /* the secondary rung, 14/21 */
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+.gbhc-door__go { color: var(--zinc-500); transition: transform var(--mo-micro) var(--mo-move); }
+.gbhc-door:hover .gbhc-door__go { transform: translateX(3px); }  /* NO TOKEN: 3px, the nudge the popup's own chevron makes; there is no distance scale under 8 */
+
+/* THE BADGE. Form of the house plate (.gbc-chip, .gbcCard-badge, the
+   «in this order» mark of the V5 picker): Zinc 100 ground, Zinc 600
+   ink, --radius. The dot is BLUE 600 and not green: being online is
+   a state, Ton-5 gives states the blue, and the system has no green
+   in :root at all (the four alert tones carry theirs on the
+   component). The MyGifts popup used its source's green — a question
+   for Ton, in the report. */
+.gbhc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: 2px var(--space-8);   /* NO TOKEN: 2px, see .gbhc-door__copy */
+  background: var(--zinc-100);
+  border-radius: var(--radius);
+  font-size: 12px;               /* the Eyebrow rung */
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: var(--zinc-600);
+  white-space: nowrap;
+}
+.gbhc-dot {
+  width: 6px;                    /* NO TOKEN: 6px, a dot; the space scale starts at 8 and a dot is not a space */
+  height: 6px;
+  border-radius: var(--radius-circle);
+  background: var(--blue-600);
+}
+
+/* ============================================================
+   FLOOR TWO — YOUR GIFT ADVISOR
+   ------------------------------------------------------------
+   The card of the portal's Get Help, minus SCHEDULE A CALL (the
+   booking door upstairs is the same errand, and two doors to one
+   place is the duplication the concept killed). In its place «Send
+   a message», and the card GROWS DOWN rather than opening a level:
+   the advisor and a message to the advisor are one subject, and a
+   level change would say they are two.
+
+   IT IS NOT PINNED TO THE FOOT, and that is a decision taken against
+   the letter of the brief with its own reason. The live Get Help
+   pins its card to the bottom of the panel, and the concept's first
+   observation about that drawer is «между free-text и карточкой
+   огромная пустота — дровер не скомпонован». Pinning is what makes
+   that hole: two blocks pushed to opposite ends of a panel taller
+   than both. Standing the card one gutter under the options gives
+   the same order — options first, advisor second — and leaves the
+   spare height where spare height belongs, under everything, where
+   it reads as a short panel rather than as a broken one. Measured
+   at 900 tall: pinned left 240px of white between the two floors.
+   A question for Ton in the report; putting the pin back is one
+   line (margin-top: auto on .gbhc-floor2).
+   ============================================================ */
+.gbhc-body { display: flex; flex-direction: column; gap: var(--space-32); }
+.gbhc-advisor {
+  background: var(--zinc-50);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  padding: var(--space-16);
+}
+.gbhc-advisor__name {
+  margin: 0 0 var(--space-8);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--zinc-900);
+}
+.gbhc-advisor__rows { display: grid; gap: var(--space-8); margin-bottom: var(--space-16); }
+.gbhc-contact,
+body.gb-demo a.gbhc-contact {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-600);
+  text-decoration: none;
+}
+.gbhc-contact:hover,
+body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
+.gbhc-contact .gb-icon { color: var(--zinc-500); }
+.gbhc-contact:hover .gb-icon { color: inherit; }
+/* THE GROWTH. A 0fr -> 1fr grid row: the panel finds its own height,
+   nothing is measured in JS and nothing is written in pixels. */
+.gbhc-grow { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--mo-small) var(--mo-move); }
+.gbhc-grow > * { overflow: hidden; }
+.gbhc-advisor.is-writing .gbhc-grow { grid-template-rows: 1fr; }
+.gbhc-advisor.is-writing .gbhc-open { display: none; }
+.gbhc-note { padding-top: var(--space-16); }
+.gbhc-note__send { margin-top: var(--space-16); }
+
+/* ---- THE TWO LABEL-LESS FIELDS, AND THEIR TWO ANTIDOTES -----
+   The message to the advisor and the chat composer are both the
+   house field with nothing written over them, which is how the live
+   Get Help composer stands too. Two things follow, and the portal's
+   own composer carries the identical pair for the identical reason
+   (its note of 26.08, trap 10 of the skill):
+
+   (a) TRAP 3. auth.css reproduces the live preflight INSIDE its own
+       scope (gb-guest-header, gb-auth-flow) and .gba-input then
+       gives a width to the bottom border only, trusting the other
+       three to be zero already. Outside those two scopes the UA's
+       full frame is still there, and the underline arrives as a box.
+   (b) THE PLACEHOLDER DOES NOT FADE ON FOCUS. The live field fades
+       it because a label has already said the field's name. Here
+       there is no label: the placeholder IS the name, and a field
+       that empties itself of words the moment you touch it is a
+       field that stops telling you what it is for. */
+.gbhc-note .gba-input,
+.gbhc-composer .gba-input { border-style: solid; border-width: 0; border-bottom-width: 1px; }
+.gbhc-note .gba-input:focus::placeholder,
+.gbhc-composer .gba-input:focus::placeholder { opacity: 1; }
+.gbhc-note .gba-input { display: block; }
+
+/* ============================================================
+   THE CHAT WINDOW AND THE PILL
+   ------------------------------------------------------------
+   Bottom right, over the page, under everything the studio owns:
+   z 57 sits above the Inspect overlay (55) and the Comment pins
+   (56) and below the device scene (58), the console (60) and the
+   drawer (80/81). A conversation is the page's furniture, not the
+   studio's.
+
+   AT REST THERE IS NOTHING HERE. Both nodes carry [hidden] until a
+   session starts, and the cross of either one ends the session and
+   takes both away.
+   ============================================================ */
+.gbhc-chat,
+.gbhc-pill {
+  position: fixed;
+  right: var(--space-24);
+  bottom: var(--space-24);
+  z-index: 57;                    /* NO TOKEN: the house has no z scale; the neighbours are named above */
+}
+@media (max-width: 639px) {
+  .gbhc-chat, .gbhc-pill { right: var(--space-16); bottom: var(--space-16); }
+}
+.gbhc-chat {
+  width: 380px;                   /* NO TOKEN: a layout measure, the width that holds a line of chat without breaking it twice; the drawer's own 520 is marked the same way */
+  max-width: calc(100vw - var(--space-32));
+  height: 520px;                  /* NO TOKEN: a layout measure, the same kind as the width */
+  max-height: calc(100dvh - var(--header-h) - var(--space-48));
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+}
+.gbhc-chat[hidden], .gbhc-pill[hidden] { display: none; }
+/* Arriving: the window comes up from where the pill stands. --mo-small
+   is the step clock; Ton-7, it plays for everyone. */
+.gbhc-chat.is-in { animation: gbhc-rise var(--mo-small) var(--mo-enter) both; }
+@keyframes gbhc-rise { from { opacity: 0; transform: translateY(var(--space-16)); } to { opacity: 1; transform: none; } }
+.gbhc-pill.is-in { animation: gbhc-rise var(--mo-small) var(--mo-enter) both; }
+
+.gbhc-chat__head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  border-bottom: 1px solid var(--zinc-200);
+}
+.gbhc-face {
+  flex: 0 0 auto;
+  width: var(--gb-btn-icon-size);
+  height: var(--gb-btn-icon-size);
+  display: grid;
+  place-items: center;
+  background: var(--zinc-100);
+  border-radius: var(--radius-circle);
+  color: var(--zinc-900);
+}
+.gbhc-chat__who { flex: 1 1 auto; min-width: 0; }
+.gbhc-chat__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--zinc-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gbhc-chat__state {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+.gbhc-chat__slots { flex: 0 0 auto; display: flex; align-items: center; }
+
+.gbhc-log {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding: var(--space-16);
+}
+/* A short thread hugs the composer, the way every thread does: the
+   newest line is the one nearest the field you answer it in. Written
+   as an auto margin on the first row rather than justify-content,
+   because flex-end on a scrolling box has a habit of clipping the
+   top of the list once it overflows. */
+.gbhc-log > :first-child { margin-top: auto; }
+.gbhc-msg { display: flex; }
+.gbhc-msg__bubble {
+  max-width: 84%;                 /* NO TOKEN: a proportion, not a length: a bubble leaves the other side visible so the thread reads as two voices */
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.gbhc-msg--them .gbhc-msg__bubble { background: var(--zinc-100); color: var(--zinc-900); }
+.gbhc-msg--you { justify-content: flex-end; }
+.gbhc-msg--you .gbhc-msg__bubble { background: var(--blue-600); color: var(--white); }
+
+.gbhc-composer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-8);
+  padding: var(--space-16);
+  border-top: 1px solid var(--zinc-200);
+}
+.gbhc-composer .gba-inputwrap { flex: 1 1 auto; min-width: 0; }
+.gbhc-composer .gba-input { display: block; }
+
+/* THE PILL. A rectangle with a strong radius, Ton's own words for
+   it (09.09): the name and the state on the left, the cross on the
+   right. It is the HANDLE OF A CONVERSATION, not an advertisement
+   for one, which is why it exists only while a session does. */
+.gbhc-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16);
+  background: var(--zinc-900);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-panel);
+  color: var(--white);
+}
+.gbhc-pill__open {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.gbhc-pill__name { font-size: 14px; font-weight: 600; line-height: 1.5; }
+.gbhc-pill__state {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--zinc-300);
+}
+/* The button organism has no family for a control on ink this dark
+   (the quiet family is an open question of 28.08), so the cross
+   borrows the inverse one, which is exactly what it is: white ink
+   on a dark ground. */
+</style>
+</head>
+<body>
+
+  <gb-site-header home-href="index.html"
+    logo-src="../system/assets/gildedbox-logo.svg"
+    catalog-href="catalog/index.html" portal-href="portal.html"
+    meeting-href="book-a-meeting.html"></gb-site-header>
+
+  <main>
+    <section class="gbhc-band">
+      <div class="gb-container gbhc-band__row">
+        <h1 class="gbhc-h1">How can we help?</h1>
+        <!-- The page level door of the concept: same drawer, second
+             way in, so a page with a title strip does not depend on
+             the reader finding the bell. -->
+        <button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" data-gbhc-open>
+          <span class="gb-btn__icon" aria-hidden="true"></span>
+          <span class="gb-btn__label" data-pc-section="label">Get help</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- The page under the drawer is a real page: two sections of the
+         site, with the site's own copy, so the bell, the drawer and the
+         floating window are seen over something. Nothing is written
+         here; both are the home organisms with the home attributes. -->
+    <gb-banner-conversation pill="Impressive Gifts" rest="Your Brand"
+      subtitle="For The Select Few, Envied By Most, Coveted By All"
+      cta="Discover Gifts" href="catalog/index.html"></gb-banner-conversation>
+  </main>
+
+  <gb-advantages>
+    <gb-advantage icon="present" live-icon="present" heading="Custom Gift Box">Each gift starts with an individually designed gift box.</gb-advantage>
+    <gb-advantage icon="exchange" live-icon="gift-exchange" heading="Personalized Gifts">Personalization for every recipient means each gift is unique.</gb-advantage>
+    <gb-advantage icon="monitor" live-icon="pc-monitor" heading="Gifting Portal">Send gifts to individuals, run and manage gifting campaigns.</gb-advantage>
+  </gb-advantages>
+
+  <gb-site-footer></gb-site-footer>
+
+  <!-- The switchboard. One surface, two floors, and the booking flow
+       stands on the second one. -->
+  <gb-drawer id="gbhcDrawer"></gb-drawer>
+
+  <!-- ---- THE CONVERSATION -------------------------------------
+       Written in the page rather than injected into the body, on
+       purpose: trap 19 asks every new STUDIO layer to mount inside
+       <gb-studio-panel> so it keeps the house scale on a page with a
+       foreign bundle. This is not a studio layer, it is the
+       prototype's own furniture, and a node that stands in the
+       markup cannot be handed the wrong scale by anybody.
+       Both nodes are [hidden] at rest. -->
+  <div class="gbhc-chat" id="gbhcChat" role="dialog" aria-label="Chat" hidden>
+    <div class="gbhc-chat__head">
+      <span class="gbhc-face" id="gbhcFace" aria-hidden="true"></span>
+      <div class="gbhc-chat__who">
+        <p class="gbhc-chat__name" id="gbhcName">Live chat</p>
+        <p class="gbhc-chat__state" id="gbhcState"></p>
+      </div>
+      <div class="gbhc-chat__slots">
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button"
+                id="gbhcMin" aria-label="Minimize the chat"></button>
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button"
+                id="gbhcEnd" aria-label="End the chat"></button>
+      </div>
+    </div>
+    <div class="gbhc-log" id="gbhcLog" aria-live="polite"></div>
+    <form class="gbhc-composer" id="gbhcForm" autocomplete="off">
+      <div class="gba-inputwrap">
+        <input class="gba-input" id="gbhcInput" type="text" aria-label="Your message" placeholder="Type a message...">
+      </div>
+      <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="submit" aria-label="Send"></button>
+    </form>
+  </div>
+
+  <div class="gbhc-pill" id="gbhcPill" hidden>
+    <button class="gbhc-pill__open" type="button" id="gbhcPillOpen">
+      <span class="gbhc-pill__name" id="gbhcPillName">Live chat</span>
+      <span class="gbhc-pill__state" id="gbhcPillState"></span>
+    </button>
+    <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--inverse" type="button"
+            id="gbhcPillEnd" aria-label="End the chat"></button>
+  </div>
+
+  <gb-studio-panel data-root="../" page="concierge"></gb-studio-panel>
+
+  <script src="../system/components/shell.js"></script>
+  <script src="../system/sandbox-registry.js"></script>
+  <script src="../system/components/icon.js"></script>
+  <script src="../system/components/studio-panel.js"></script>
+  <script src="../system/components/header.js"></script>
+  <script src="../system/components/footer.js"></script>
+  <script src="../system/components/home.js"></script>
+  <script src="../system/components/auth.js"></script>
+  <script src="../system/components/booking.js"></script>
+  <script src="../system/type-scale.js"></script>
+  <script src="../system/components/drawer.js"></script>
+  <script src="../system/components/inspect.js"></script>
+  <script src="../system/components/toggle.js"></script>
+  <script src="../system/components/comments.js"></script>
+
+  <script>
+  /* ============================================================
+     gbppl-concierge-1 — THE CONTROLLER OF THE ROOM
+     ------------------------------------------------------------
+     Four things, in this order: the fork of the bar, the drawer,
+     the second floor (booking), the conversation.
+     ============================================================ */
+  (function () {
+    'use strict';
+
+    var I = window.GbIcons;
+    var drawer = document.getElementById('gbhcDrawer');
+
+    /* Who the advisor is. One place, because the card, the message
+       form and the live chat all speak of the same person. */
+    var ADVISOR = {
+      name: 'Brad Smaling',
+      email: 'connect@gildedbox.com',
+      phone: '(847) 801-0345 ext. 8118',
+      tel: '+18478010345'
+    };
+    var DESK = { shown: '847.801.0345', tel: '+18478010345' };
+
+    function glyph(name, size) { return I ? I.html(name, size) : ''; }
+
+    /* ============================================================
+       1. THE FORK OF THE BAR
+       ------------------------------------------------------------
+       Ton asked for a fork for this sandbox and for the canonical
+       header to come out untouched. The fork is ADDITIVE: the bar is
+       the one <gb-site-header> draws, and this block puts the
+       concierge bell into its right cluster, in front of the search
+       dot, so the glyph pair reads bell then search and the cart
+       (which aims at the same dot) still lands between them.
+
+       WHY NOT A COPY OF header.js. A second 1200 line template would
+       be a second bar to keep in step with the first, and the first
+       changes weekly. The observable result is what Ton is looking
+       at, and it is the same result; if he wants the bell on Live for
+       everyone, the button moves into TEMPLATE() in one line, which
+       is a smaller change than deleting a fork.
+
+       The element upgrades while header.js is being parsed, so the
+       bar is already in the DOM here; whenDefined is belt and braces
+       for a browser that defers the script.
+       ============================================================ */
+    function forkTheBar() {
+      var slot = document.querySelector('gb-site-header .gbh-actions');
+      if (!slot || slot.querySelector('[data-gbhc-bell]')) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary';
+      btn.setAttribute('aria-label', 'Talk to us');
+      btn.setAttribute('title', 'Talk to us');
+      btn.setAttribute('aria-haspopup', 'dialog');
+      btn.setAttribute('data-gbhc-bell', '');
+      /* The slot of the organism carries the size (22 in a 44 circle);
+         the drawing comes out of the record by name. */
+      btn.innerHTML = '<span class="gb-btn__icon" aria-hidden="true">' +
+        (I ? I.svg('service-bell') : '') + '</span>';
+      btn.addEventListener('click', openHome);
+      var search = slot.querySelector('[aria-label="Search gifts"]');
+      slot.insertBefore(btn, search);
+    }
+    if (window.customElements && customElements.whenDefined) {
+      customElements.whenDefined('gb-site-header').then(forkTheBar);
+    }
+    forkTheBar();
+
+    /* The page level door. Its glyph is the concept's own: the live
+       GET HELP of the portal carries `info`. */
+    Array.prototype.forEach.call(document.querySelectorAll('[data-gbhc-open]'), function (b) {
+      var s = b.querySelector('.gb-btn__icon');
+      if (s && I) s.innerHTML = I.svg('info');
+      b.addEventListener('click', openHome);
+    });
+
+    /* ============================================================
+       2. THE DRAWER, FLOOR ONE AND FLOOR TWO
+       ============================================================ */
+    var DOORS = [
+      {
+        id: 'ai', icon: 'service-bell',
+        title: 'Gift Concierge',
+        sub: 'Ask anything, answered right away'
+      },
+      {
+        id: 'live', icon: 'chat',
+        title: 'Live chat', badge: 'Online now',
+        sub: 'Get help right now'
+      },
+      {
+        id: 'meeting', icon: 'calendar',
+        title: 'Book a meeting',
+        sub: 'Pick a time that suits you'
+      },
+      {
+        id: 'call', icon: 'telephone',
+        title: 'Call us',
+        sub: 'Prefer to talk? ' + DESK.shown,
+        href: 'tel:' + DESK.tel
+      }
+    ];
+
+    function doorHTML(d) {
+      var tag = d.href ? 'a' : 'button';
+      var attrs = d.href
+        ? ' href="' + d.href + '"'
+        : ' type="button"';
+      return '<' + tag + ' class="gbhc-door" data-door="' + d.id + '"' + attrs + '>' +
+        '<span class="gbhc-door__disc">' + glyph(d.icon, 22) + '</span>' +
+        '<span class="gbhc-door__copy">' +
+          '<span class="gbhc-door__title">' + d.title +
+            (d.badge
+              ? '<span class="gbhc-badge"><span class="gbhc-dot" aria-hidden="true"></span>' + d.badge + '</span>'
+              : '') +
+          '</span>' +
+          '<span class="gbhc-door__sub">' + d.sub + '</span>' +
+        '</span>' +
+        '<span class="gbhc-door__go">' + glyph('chevron-right', 20) + '</span>' +
+      '</' + tag + '>';
+    }
+
+    function homeHTML() {
+      return '<div class="gbhc-body">' +
+        '<div class="gbhc-doors">' + DOORS.map(doorHTML).join('') + '</div>' +
+        '<div class="gbhc-floor2">' +
+          /* The eyebrow is the live drawer's own line, word for word. */
+          '<p class="gb-eyebrow">Want to connect now?</p>' +
+          '<div class="gbhc-advisor" data-advisor>' +
+            '<p class="gbhc-advisor__name">' + ADVISOR.name + '</p>' +
+            '<div class="gbhc-advisor__rows">' +
+              '<a class="gbhc-contact" href="mailto:' + ADVISOR.email + '">' +
+                glyph('mail', 16) + ADVISOR.email + '</a>' +
+              '<a class="gbhc-contact" href="tel:' + ADVISOR.tel + '">' +
+                glyph('telephone', 16) + ADVISOR.phone + '</a>' +
+            '</div>' +
+            /* SCHEDULE A CALL is dead: the booking door upstairs is the
+               same errand (concept, floor two). */
+            '<button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary gb-btn--block gbhc-open" type="button" data-write>' +
+              '<span class="gb-btn__label" data-pc-section="label">Send a message</span></button>' +
+            '<div class="gbhc-grow"><div><div class="gbhc-note">' +
+              '<div class="gba-inputwrap">' +
+                '<textarea class="gba-input gba-textarea" id="gbhcNote" rows="3" ' +
+                  'aria-label="Your message to ' + ADVISOR.name + '" ' +
+                  'placeholder="Need help? Type your question here..."></textarea>' +
+              '</div>' +
+              '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary gb-btn--block gbhc-note__send" type="button" data-send>' +
+                '<span class="gb-btn__label" data-pc-section="label">Send</span></button>' +
+            '</div></div></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function panel() { return document.querySelector('.gbd-panel'); }
+
+    function openHome() {
+      drawer.open({ title: 'Talk to us', html: homeHTML() });
+      drawer.setBack(null);
+      wireHome();
+    }
+
+    /* THE PANEL OUTLIVES ITS CONTENT. drawer.js builds .gbd-panel once
+       and puts it on document.body; every open() only swaps the body
+       inside it. A listener added per open would therefore be added
+       again on every trip Home -> Meeting -> Home, and the second trip
+       would fire everything twice. So the delegate is fitted ONCE, to
+       the panel, and it works for whatever markup is standing in it. */
+    var homeWired = false;
+    function wireHome() {
+      var p = panel();
+      if (!p || homeWired) return;
+      homeWired = true;
+      p.addEventListener('click', function (e) {
+        var door = e.target.closest ? e.target.closest('.gbhc-door') : null;
+        if (door) {
+          var id = door.getAttribute('data-door');
+          if (id === 'meeting') { e.preventDefault(); openMeeting(); return; }
+          if (id === 'live' || id === 'ai') { e.preventDefault(); drawer.close(); openChat(id); return; }
+          return;   /* Call us is an <a href="tel:"> and stays one */
+        }
+        var write = e.target.closest ? e.target.closest('[data-write]') : null;
+        if (write) {
+          var card = p.querySelector('[data-advisor]');
+          card.classList.add('is-writing');
+          var note = p.querySelector('#gbhcNote');
+          if (note) setTimeout(function () { note.focus(); }, 80);
+          return;
+        }
+        var send = e.target.closest ? e.target.closest('[data-send]') : null;
+        if (send) {
+          /* Nothing leaves the browser: this is a prototype, and the
+             one honest thing it can do is say so and close. */
+          drawer.close();
+        }
+      });
+    }
+
+    /* ---- FLOOR TWO: THE BOOKING ORGANISM ----------------------
+       Ton, 09.09: «выбор времени у нас расположен вертикально ПОД
+       выбором даты». That is the organism's DEFAULT column, and it
+       is the reason layout="compact" is deliberately absent: compact
+       is the modifier that stands the slots BESIDE the calendar from
+       520px of host. In this drawer the host is 472 at 1280 and the
+       organism's own container query gives the 32 quarter hour chips
+       their scrolling zone, so the panel does not grow to 1100.
+
+       start="slot": two notches, «Pick a time» then «Confirmed», and
+       the confirmation is the organism's own third screen at the same
+       level, exactly as the concept asked. The back arrow of the head
+       stays on both screens and goes home to the options.
+       ------------------------------------------------------------ */
+    function openMeeting() {
+      drawer.open({
+        title: 'Book a meeting',
+        back: openHome,
+        html: '<gb-booking-flow id="gbhcBooking" start="slot"' +
+              ' guest-name="Anton Parkhomenko"' +
+              ' guest-email="anton@gildedbox-demo.com"' +
+              ' guest-company="GildedBox"' +
+              ' site-href="help-concierge.html"' +
+              ' exit-label="Back to the options"></gb-booking-flow>'
+      });
+      var flow = document.querySelector('.gbd-panel #gbhcBooking');
+      if (!flow) return;
+      /* The quiet exit of the last screen means «go back» inside a
+         panel, not «leave the site»: the organism made that the
+         host's business (gbb:exit is cancelable). */
+      flow.addEventListener('gbb:exit', function (e) { e.preventDefault(); openHome(); });
+    }
+
+    /* ============================================================
+       3. THE CONVERSATION
+       ------------------------------------------------------------
+       ONE WINDOW, TWO STARTS (the concept's strong unification): the
+       AI concierge and the live chat are the same object with a
+       different first message and a different name in the head.
+       ============================================================ */
+    var STARTS = {
+      live: {
+        icon: 'chat',
+        name: ADVISOR.name,
+        state: '<span class="gbhc-dot" aria-hidden="true"></span>Online now',
+        pill: 'Online now',
+        say: ['Hi, this is ' + ADVISOR.name + ' at GildedBox.',
+              'What are you working on today?'],
+        reply: 'Got it. Give me a moment to pull up a few options for you.'
+      },
+      ai: {
+        icon: 'service-bell',
+        name: 'Gift Concierge',
+        state: '<span class="gbhc-dot" aria-hidden="true"></span>Answers right away',
+        pill: 'Answers right away',
+        say: ['Hi, I am the GildedBox concierge.',
+              'Tell me who the gift is for and what the occasion is, and I will put a shortlist together.'],
+        reply: 'Thank you. I am looking at what fits, and I can hand you to a specialist at any point.'
+      }
+    };
+
+    var chat = document.getElementById('gbhcChat');
+    var pill = document.getElementById('gbhcPill');
+    var log = document.getElementById('gbhcLog');
+    var input = document.getElementById('gbhcInput');
+    var mode = null;
+    var replyTimer = null;
+
+    document.getElementById('gbhcMin').innerHTML =
+      '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('chevron-down') : '') + '</span>';
+    document.getElementById('gbhcEnd').innerHTML =
+      '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('close') : '') + '</span>';
+    document.getElementById('gbhcPillEnd').innerHTML =
+      '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('close') : '') + '</span>';
+    document.querySelector('#gbhcForm button[type="submit"]').innerHTML =
+      '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('arrow-right') : '') + '</span>';
+
+    function say(side, text) {
+      var row = document.createElement('div');
+      row.className = 'gbhc-msg gbhc-msg--' + side;
+      var bubble = document.createElement('div');
+      bubble.className = 'gbhc-msg__bubble';
+      bubble.textContent = text;      /* never innerHTML: a guest types here */
+      row.appendChild(bubble);
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function show(node) {
+      node.hidden = false;
+      node.classList.remove('is-in');
+      void node.offsetWidth;
+      node.classList.add('is-in');
+    }
+
+    function openChat(which) {
+      var start = STARTS[which];
+      if (mode !== which) {
+        mode = which;
+        log.innerHTML = '';
+        document.getElementById('gbhcFace').innerHTML = glyph(start.icon, 22);
+        document.getElementById('gbhcName').textContent = start.name;
+        document.getElementById('gbhcState').innerHTML = start.state;
+        document.getElementById('gbhcPillName').textContent = start.name;
+        document.getElementById('gbhcPillState').innerHTML =
+          '<span class="gbhc-dot" aria-hidden="true"></span>' + start.pill;
+        start.say.forEach(function (line) { say('them', line); });
+      }
+      pill.hidden = true;
+      show(chat);
+      setTimeout(function () { input.focus(); }, 80);
+    }
+
+    function minimise() {
+      chat.hidden = true;
+      show(pill);
+    }
+
+    /* THE CROSS ENDS THE SESSION, and the screen is clean: no window,
+       no pill, nothing floating anywhere. Next time the door is used
+       the conversation starts again from its greeting. */
+    function endSession() {
+      clearTimeout(replyTimer);
+      chat.hidden = true;
+      pill.hidden = true;
+      mode = null;
+      log.innerHTML = '';
+      input.value = '';
+    }
+
+    document.getElementById('gbhcMin').addEventListener('click', minimise);
+    document.getElementById('gbhcEnd').addEventListener('click', endSession);
+    document.getElementById('gbhcPillEnd').addEventListener('click', endSession);
+    document.getElementById('gbhcPillOpen').addEventListener('click', function () {
+      if (mode) openChat(mode);
+    });
+
+    document.getElementById('gbhcForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = input.value.trim();
+      if (!text) return;
+      say('you', text);
+      input.value = '';
+      var start = STARTS[mode];
+      if (!start) return;
+      clearTimeout(replyTimer);
+      /* One scripted answer, so the thread reads as a thread. NO
+         TOKEN: 900ms of waiting is not a move, and the motion scale
+         holds the length of moves. */
+      replyTimer = setTimeout(function () { say('them', start.reply); }, 900);
+    });
+  })();
+  </script>
+
+</body>
+</html>
