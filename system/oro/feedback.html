@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- ============================================================
+     gbppl-feedback-language-1 — THE FEEDBACK PAGE
+     ------------------------------------------------------------
+     Тон, 09.09 вечер, дословно: «нужно системное правило, часть
+     нашего языка и системы: каким языком мы говорим с пользователем
+     в разных ситуациях: 1) подтверждения, как показываем тостами;
+     2) деструктивные действия, как запрашиваем конфирмацию;
+     3) ошибки, алертами и подсветкой полей; 4) подсказки: тултипы и
+     подсказки при наведении. Этого всего у нас сейчас нет, нужно
+     описать. Отдельный раздел в дизайн-системе, начать фиксировать
+     там правила. И полноценно думать про accessibility: управление
+     с клавиатуры, шорткаты, и коммуницировать эти возможности
+     везде.»
+
+     WHAT THIS PAGE IS, AND WHAT IT IS NOT. It is not a component
+     showcase: its subject is a LANGUAGE, and the language already
+     exists in the house, scattered across five files and three
+     versions of the checkout. Every rule below was read off
+     something that is standing and running today, with the file and
+     the line beside it. Nothing here was invented for the page.
+
+     THE NUMBERS ON THIS PAGE ARE FACTS OF THE SOURCE, NOT
+     MEASUREMENTS. A showcase reads its numbers back off a rendered
+     specimen; the numbers here (a 500ms wait, a 2400ms dwell, a
+     280ms arrival) are values written in the files that own the
+     behaviour, so each one carries the file it came from. The two
+     places where a real organism stands on the page (the alert
+     strips and the field) are the organism itself and nothing else.
+
+     STATUS: DRAFT. The rules are recorded from precedent and they
+     are Ton's to approve, change or throw out. The five things the
+     house does NOT have (a toast, a tooltip organism, the dotted
+     hint, live regions on the alert, a written shortcut) are named
+     in the last section as a queue and are NOT built here: law
+     0a.4, a new pattern arrives only on Ton's word.
+
+     Ton-10: this page is a CONSUMER. Its card, tables, shelves and
+     flags are the atoms of ..\components\docs.css; its specimens
+     are the organisms themselves; the frame is oro.css.
+     ============================================================ -->
+
+<!-- THE GATE, and the one line of the shell a page still writes: a
+     parser inserted script blocks the parser, and a lock that does not
+     block the parser is a lock the page paints around. -->
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<!-- The title, the fonts, the stylesheets in their one order and the
+     reading column: system/oro/oro-page.js. -->
+<script src="oro-page.js"></script>
+<script>
+GbOro.head({
+  name: 'Feedback',
+  css: [['alert', 'the strips on this page are the organism, not a drawing of it']]
+});
+</script>
+</head>
+<body>
+
+<script src="oro.js"></script>
+<script>
+GbOro.page({
+  eyebrow: 'Foundations',
+  name: 'Feedback',
+  status: { label: 'Draft' },
+  lede: [
+    'How the product speaks to the person at the five moments it has to: when something worked, when something is about to be lost, when something is wrong, when something needs explaining, and when the hands never leave the keyboard.',
+    'Every rule below is read off what the house already does, with the owner named beside it. Where the house does nothing yet, the page says so in as many words and the rule waits in the queue at the foot of the document rather than being quietly invented here.'
+  ],
+  card: { id: 'feedback', toc: 'Feedback' },
+  sections: [
+
+    /* ---------------------------------------------------------
+       1. THE CHOICE OF CHANNEL
+       --------------------------------------------------------- */
+    { id: 'channels', toc: 'Channels', eyebrow: 'Overview',
+      h2: 'Five channels, and how to choose between them',
+      blocks: [
+        { p: 'The house already speaks in five voices. They were not designed as a set, they grew one at a time, and the point of this section is that the choice between them is not a matter of taste. Two questions decide it, in this order.' },
+        { p: '<span class="oro-strong">Does the message belong to a place on the screen?</span> If one named field is wrong, the message stands at that field. If the fact is about the block, it stands in the block. Only a message that belongs nowhere is allowed to float. <span class="oro-strong">Must the person answer before anything else happens?</span> If yes, and only then, the message takes buttons. A message with buttons stops the work; a message without them must never pretend to.' },
+        { table: {
+            head: ['Channel', 'Choose it when', 'Never for', 'Standing today'],
+            rows: [
+              ['<b>The mark on the field</b><br><code>.gba-input.invalid</code> plus <code>.gba-error</code>',
+               'One named control holds the wrong value and the person can fix it right there',
+               'Anything no single field owns. A file, a step, a total',
+               'auth.css, set by <code>GbField.setError()</code>'],
+              ['<b>The strip in place</b><br><code>.gb-alert</code>, four tones',
+               'The fact belongs to the block it stands in: a gate before an action, a count, the result of a batch',
+               'A single field. A floating message. Decoration',
+               'alert.css, six carriers on version 5 of the checkout'],
+              ['<b>The question</b><br>a strip with a pair of buttons',
+               'The action destroys something that will not obviously come back',
+               'Anything reversible, or anything whose loss is visible on screen',
+               'Five strips on the checkout, one in the concierge'],
+              ['<b>The mark on the control</b><br>the control answers in place',
+               'The result lands exactly where the hand was',
+               'Anything the person has to read after they look away',
+               'Copy turns to Copied for 1400ms, docs.css and oro.js'],
+              ['<b>The line that fades</b><br>a quiet line, or a floating plate',
+               'The result is real and it lands off screen, where nothing else can carry it',
+               'Errors. Questions. Anything that needs an answer',
+               '<code>.gbh-flash</code> in header.js; the copy plate on the Colors page. <b>No organism</b>']
+            ] } },
+        { note: 'One message, one channel. A change the person can see does not get a second announcement, and the same fact never appears in two channels at once: two voices saying one thing read as two things happening.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       2. CONFIRMATIONS
+       --------------------------------------------------------- */
+    { id: 'confirmations', toc: 'Confirmations', eyebrow: 'Confirmations',
+      h2: 'Saying that it worked',
+      blocks: [
+        { p: 'The best confirmation is the result. A pin that appears, a drawer that closes, a row that moves, a count that goes up: the interface has already said it, and a message on top of it is noise. A receipt is owed only when the change is real and invisible from where the person is standing.' },
+        { p: 'When one is owed, the house has three lengths of voice and they are ranked. Take the quietest one that can actually be seen.' },
+        { table: {
+            head: ['Receipt', 'It says', 'Dwell', 'Reader'],
+            rows: [
+              ['<b>On the control</b><br>the label answers itself',
+               'Copy becomes <b>Copied</b>, the glyph goes Blue 600',
+               '1400ms <span class="gbdoc-flag gbdoc-flag--soft">oro.js</span>',
+               'The word changes, so the reader hears it without a live region'],
+              ['<b>A quiet line beside the thing that changed</b>',
+               '<b>You are in. Your portal is under your initials.</b> The one thing that is not obvious from looking',
+               '2400ms, then 350ms to leave <span class="gbdoc-flag gbdoc-flag--soft">header.js</span>',
+               '<code>role="status" aria-live="polite"</code>, and it is the model for the rest'],
+              ['<b>A plate that floats</b>',
+               '<b>Copied #18181b</b>, or the honest failure, <b>Could not reach the clipboard</b>',
+               '1600ms <span class="gbdoc-flag gbdoc-flag--soft">colors.html</span>',
+               '<code>role="status" aria-live="polite"</code> on a container that is always in the DOM']
+            ] } },
+        { p: 'A strip is the fourth way, and it is the one to reach for when the receipt is a <span class="oro-strong">state</span> rather than an event: the success tone below does not fade, because what it reports is still true a minute later. The specimen is the organism, at the height the organism holds whether it carries a button or not.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--stack">\n'
+              + '  <div class="gbdoc-slot gbdoc-slot--wide">\n'
+              + '    <span class="gbdoc-slot__cap"><b>Success</b> the state, not the event</span>\n'
+              + '    <div class="gb-alert gb-alert--success">\n'
+              + '      <span class="gb-alert__body">\n'
+              + '        <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M8.4 12.2l2.5 2.5 4.7-5.4"/></svg></span>\n'
+              + '        <span class="gb-alert__text">All 12 gifts are assigned</span>\n'
+              + '      </span>\n'
+              + '    </div>\n'
+              + '  </div>\n'
+              + '  <div class="gbdoc-slot gbdoc-slot--wide">\n'
+              + '    <span class="gbdoc-slot__cap"><b>Info</b> the same strip, one gate earlier</span>\n'
+              + '    <div class="gb-alert gb-alert--info">\n'
+              + '      <span class="gb-alert__body">\n'
+              + '        <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/></svg></span>\n'
+              + '        <span class="gb-alert__text">Choose an address to see the shipping methods.</span>\n'
+              + '      </span>\n'
+              + '    </div>\n'
+              + '  </div>\n'
+              + '</div>' },
+        { p: '<span class="oro-strong">The voice.</span> Name the object, not the action: the person knows what they pressed. <b>Copied #18181b</b> and <b>All 12 gifts are assigned</b> both name the thing that changed and count it. Never <b>Success!</b>, never <b>Done.</b>, never a sentence under a heading that repeats the heading: a line that says what the title above it already said is visual noise and comes out (Ton, 7 September).' },
+        { p: '<span class="oro-strong">The motion.</span> A receipt is utility micro-motion, not the signature choreography, so it is allowed to be polite and it is allowed to be short: in on <code>--mo-small</code> with <code>--mo-arrive</code>, out on <code>--mo-small-out</code> with <code>--mo-exit</code>. That asymmetry is the house rule for anything that arrives and leaves: arriving is noticed, leaving is not.' },
+        { p: '<span class="oro-strong">The reader and the focus.</span> Any receipt that is not a visible change carries <code>role="status"</code> and <code>aria-live="polite"</code> on a container that was in the document before the message was, otherwise the message is written into a box nobody is listening to. And a confirmation never moves focus: the person is already somewhere, and a receipt is not an invitation.' },
+        { note: 'The house has four dwell times and no scale to hang them on: 1400 on the copy label, 1600 on the copy plate, 2400 on the quiet line, and 500 before a tooltip. The motion ladder measures MOVES, not pauses, so each of the four is written NO TOKEN where it stands. A dwell ladder (short for a word, long for a sentence) is a decision for Ton, and until it exists a new dwell copies one of the four rather than inventing a fifth.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       3. DESTRUCTIVE ACTIONS
+       --------------------------------------------------------- */
+    { id: 'destructive', toc: 'Destructive actions', eyebrow: 'Destructive actions',
+      h2: 'Asking before something is lost',
+      blocks: [
+        { p: 'Ask only when something goes that will not come back on its own, and when the person cannot see it going. The concierge is the clean case: ending a chat that has nothing in it closes without a word, and the same button on a chat with a conversation in it asks first. A question about nothing teaches the person to answer questions without reading them.' },
+        { p: 'The question stands <span class="oro-strong">in place</span>, in the block that holds the action. Not a browser dialog: a native <code>confirm()</code> is out of the language (Ton, 3 September), because it takes the page away, cannot be styled, cannot be measured and says <b>OK</b> where the house says what will happen. Not a modal over the whole screen either: the loss is local, so the question is local.' },
+        { p: 'And it is <span class="oro-strong">not red</span>. Red in this house means an error, and being asked a question is not an error (Ton-5). The strip is warning, or the quiet ground of the surface it stands on, and the destructive verb carries the ink of the strip rather than a colour of its own.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--stack">\n'
+              + '  <div class="gbdoc-slot gbdoc-slot--wide">\n'
+              + '    <span class="gbdoc-slot__cap"><b>The question</b> the organism, with the pair it is allowed to carry</span>\n'
+              + '    <div class="gb-alert gb-alert--warning">\n'
+              + '      <span class="gb-alert__body">\n'
+              + '        <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>\n'
+              + '        <span class="gb-alert__text">Removing this address sends its 3 gifts back to the unassigned count.</span>\n'
+              + '      </span>\n'
+              + '      <span class="gb-alert__actions">\n'
+              + '        <button type="button" class="gb-btn gb-btn--xsmall gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>\n'
+              + '        <button type="button" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>\n'
+              + '      </span>\n'
+              + '    </div>\n'
+              + '  </div>\n'
+              + '</div>' },
+        { p: '<span class="oro-strong">The sentence names the loss and counts it.</span> Not <b>Are you sure?</b>, which asks the person to hold the consequence in their head, but the consequence itself, in the plural the moment matters. The questions standing in the house today, verbatim:' },
+        { table: {
+            head: ['Where', 'The sentence', 'The pair'],
+            rows: [
+              ['Checkout, lowering a count',
+               '<b>Lowering the count removes the last 3 rows, and what is written in them.</b>',
+               'Cancel, then Remove'],
+              ['Checkout, removing a group',
+               '<b>Removing this group removes its address, its boxes and everything written in them.</b>',
+               'Cancel, then Remove'],
+              ['Checkout, removing an address',
+               '<b>Removing this address sends its 3 gifts back to the unassigned count.</b>',
+               'Cancel, then Remove'],
+              ['The concierge, closing a chat',
+               '<b>End this chat?</b>',
+               'Keep chatting, then End chat']
+            ] } },
+        { p: '<span class="oro-strong">The verbs.</span> The destructive button says the verb of the action, never <b>Yes</b> or <b>OK</b>: read alone, out of context, it still says what it does. The other one says the verb of staying. Where the surface already has a cross and an Escape, a bare <b>Cancel</b> in a footer is dead weight and becomes <b>Clear</b>, the action the person actually lacks (Ton, 7 September). Cancel survives only inside a question, where it is the answer to it.' },
+        { p: '<span class="oro-strong">The order and the weight.</span> The way back comes first and is the quieter of the two: <code>--ghost --secondary</code>. The destructive one comes second, one step louder but still quiet, <code>--ghost --primary</code> on a plain ground and <code>--outline --secondary</code> inside a strip, where the strip already carries the colour. Inside a strip both are <code>--xsmall</code>, because the strip owns its height and a button is not allowed to change it.' },
+        { p: '<span class="oro-strong">The keyboard.</span> When the question appears, focus goes to the way back, so a person who was typing and pressed something by accident cannot destroy anything with a second keystroke. Escape answers the question the safe way and gives focus back to where the work was. Both come off the concierge, which does exactly this.' },
+        { note: 'Four native <code>confirm()</code> and <code>alert()</code> calls are still standing on the checkout, in bulk delete and product removal. They are the oldest code on that page and they contradict this section; they are in the queue at the foot of the document, not in the language.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       4. ERRORS
+       --------------------------------------------------------- */
+    { id: 'errors', toc: 'Errors', eyebrow: 'Errors',
+      h2: 'Saying what is wrong',
+      blocks: [
+        { p: 'Where the error is, the message is. A control that holds a wrong value wears the mark and the sentence: the line under it goes Red 500 and one sentence stands under it in Red 600, 11px, on the right. That is the whole of it, and it is deliberately small: the field is already marked, the sentence only has to name the fix.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--cols" id="fbFields">\n'
+              + '  <div class="gbdoc-slot gbdoc-slot--grow">\n'
+              + '    <span class="gbdoc-slot__cap"><b>At rest</b> the field of the system</span>\n'
+              + '    <div data-fb-field="rest"></div>\n'
+              + '  </div>\n'
+              + '  <div class="gbdoc-slot gbdoc-slot--grow">\n'
+              + '    <span class="gbdoc-slot__cap"><b>Wrong</b> <code>setError()</code>, the organism doing it to itself</span>\n'
+              + '    <div data-fb-field="error"></div>\n'
+              + '  </div>\n'
+              + '</div>' },
+        { p: 'A strip carries what no single field owns: a file with rows in it, a step that cannot continue, a total that does not add up. It takes the error tone only when something is actually broken. <b>The file looks good.</b> and <b>3 rows need fixing.</b> are the same strip in two tones, and the strip does not change height between them, so the table under it does not jump.' },
+        { table: {
+            head: ['Level', 'The channel', 'The rule'],
+            rows: [
+              ['One control',
+               'The mark and the sentence at the field',
+               'Never move it into a plate or a tooltip: the person needs it while they are typing, and both of those are gone by then'],
+              ['One block, one file, one step',
+               '<code>.gb-alert--error</code>, in place',
+               'It counts what is wrong. A count is the difference between a warning and a task'],
+              ['One row of a list',
+               'The row itself is marked and the cell names the fault',
+               'The list gets a strip with the total; the row gets the word'],
+              ['The whole submission',
+               'Nothing of its own',
+               'A submission fails because its parts failed. Mark the parts, count them once at the top']
+            ] } },
+        { p: '<span class="oro-strong">The voice.</span> One sentence. It says what is wrong, and where the person cannot guess the fix, what to do. Live pages that reproduce the client site keep the live text word for word, register and all: <b>Email is required</b>, <b>this must be a valid email</b>, <b>this is a required field</b> are the running product speaking, not our copy, and correcting their case would be a lie about what the page is. Our own errors are sentence case, no exclamation mark, no apology, no blame.' },
+        { p: '<span class="oro-strong">An error does not outlive the fault.</span> After the first failed submit the form re-checks itself on every keystroke, so the sentence goes the moment the value becomes good. An error still standing over a corrected field is the interface lying, and it is the exact complaint that reached us from the running product this month.' },
+        { p: '<span class="oro-strong">Getting the person to it.</span> A failed submit puts the caret in the first broken field: the keyboard and the reader both land where the work is. A long list scrolls to its first bad row before the first paint, so the screen opens on the problem rather than on row one, and the scroll is the container it belongs to, offset by the height of its own sticky head plus one rung.' },
+        { note: 'The pair the house is missing here: <code>GbField.setError()</code> sets <code>aria-invalid="true"</code> and prints the sentence in a <code>role="alert"</code>, which is announced, but nothing ties the two together with <code>aria-describedby</code>, so the sentence is heard once and never again when the person comes back to the field. And not one <code>.gb-alert</code> in the building carries a live region, including the error tone: today an error strip is silent to a reader. Both are in the queue.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       5. HINTS
+       --------------------------------------------------------- */
+    { id: 'hints', toc: 'Hints', eyebrow: 'Hints',
+      h2: 'The quiet explanation',
+      blocks: [
+        { p: 'Two shapes, and only one of them exists. A <span class="oro-strong">tooltip</span> names a control that has no word of its own, most often a glyph. A <span class="oro-strong">hinted word</span> is a term in running prose that carries an explanation for the person who wants it, marked with a dotted underline and opened by the question glyph that appears on it. The house has three hover surfaces today and none of them is a component.' },
+        { table: {
+            head: ['What is standing', 'Where', 'The wait', 'The plate', 'The reader'],
+            rows: [
+              ['The name of a glyph<br><code>[data-gbhc-tip]</code>',
+               'The concierge head and pill',
+               '500ms in, then a 160ms fade. It leaves at once',
+               'Zinc 900, 12px 500, one line, no arrow',
+               'An <code>aria-label</code> twin on every carrier. The plate is a pseudo element and the reader never sees it'],
+              ['The text of a comment<br><code>.gbc-bubble</code>',
+               'Over a pin in Comment mode',
+               '180ms',
+               'Zinc 950, 320 wide, clamped to three lines, flips above or below and is held off the edge',
+               '<code>aria-hidden</code>: the thread itself is the accessible copy'],
+              ['The way into properties<br><code>.gbdoc-props</code>',
+               'The corner of a specimen on a showcase',
+               'None, it appears with the hover',
+               'It is a button, not a plate',
+               '<code>aria-label</code> and the one programmatic native <code>title</code> in the repository']
+            ] } },
+        { p: '<span class="oro-strong">The rules a tooltip has to obey.</span> It names, it does not instruct: nothing the person needs in order to finish the task may live only in a hint, because a hint cannot be reached by touch, cannot be printed, and is gone the moment the pointer moves. It arrives after patience and leaves without any, which is why the wait is on the way in only. It is one line: the moment it needs two, the fact belongs on the page. It never repeats a word that is already visible next to it. And every glyph that carries one also carries an <code>aria-label</code>, because the two answer different people, not the same person twice.' },
+        { p: '<span class="oro-strong">The hinted word is not built.</span> The rule it would arrive under, so that the first one built is not invented from nothing: the mark is a dotted underline on the term itself, in the ink of the running text and never in blue, because blue is a state and a hinted word is not a link; the affordance is the question glyph appearing at the end of the word; the plate is the same plate as the tooltip, one voice for both; and unlike a tooltip it has to be reachable, so it is a real button in the flow of the text, it opens on focus as well as hover, and Escape closes it. Nothing of it is built by this page.' },
+        { note: 'Touch has no hover. Any hint is a second way of knowing something, never the only one, and a phone is the test: if the interface stops making sense with every hint removed, the hint was carrying the work.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       6. KEYBOARD AND ACCESS
+       --------------------------------------------------------- */
+    { id: 'keyboard', toc: 'Keyboard and access', eyebrow: 'Keyboard and access',
+      h2: 'Everything by keyboard, and said out loud',
+      blocks: [
+        { p: 'The keyboard is not a courtesy in this house, it is how the studio is used all day. The rules below are the ones the running code already keeps; where it does not keep them, it says so.' },
+        { p: '<span class="oro-strong">The Escape ladder is law.</span> One press closes one layer, the topmost one, and every rung stops the event so the rung below it cannot fire in the same press. The last rung deliberately does not stop it, so a press that finds nothing to close falls through to whatever owns the page. Three separate files write this order down identically, which is what makes it a canon rather than three habits:' },
+        { table: {
+            head: ['Press', 'What closes', 'Owner'],
+            rows: [
+              ['1', 'A menu, a search that has text in it, a second floor of a picker: the small thing inside the open thing', 'The surface that opened it'],
+              ['2', 'The drawer', 'drawer.js, listening only while it is open'],
+              ['3', 'The console: its dropdown, then its layer, then the box itself', 'studio-panel.js, first on the document'],
+              ['4', 'The mode: Inspect or Comment goes back to View', 'inspect.js and comments.js, both standing aside while a drawer or the console is open']
+            ] } },
+        { p: '<span class="oro-strong">Keys.</span> Anything that behaves as a button is a <code>button</code>, so Enter and Space are free. A group of choices is <span class="oro-strong">one</span> tab stop and the arrows walk it: the toggle does this properly, with a roving tabindex, wrapping, Home and End, and it presses as it moves. Numbers step with the arrows. A list a person is picking from walks with the arrows and takes with Enter. The gap: the booking calendar and its time slots are plain buttons in a row, so a month is thirty tab stops and there are no arrows at all. It is in the queue.' },
+        { p: '<span class="oro-strong">Focus is visible, and it is one ring.</span> Blue 600, 2px, offset 2px, on <code>:focus-visible</code> only, because a ring around every mouse click is noise and a ring for the person who arrived by Tab is the only way they can see where they are. The ring is declared once in the token file and read by the button, the toggle and the radio through their own slots. The field is the one deliberate exception: it answers focus by taking its underline to Blue 600, which is louder on that shape than a ring around it would be. Nothing else may write the ring by hand, and a dozen places in the studio still do.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--cols">\n'
+              + '  <div class="gbdoc-slot">\n'
+              + '    <span class="gbdoc-slot__cap"><b>Tab into it</b> the ring of the system</span>\n'
+              + '    <button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button"><span class="gb-btn__label">Keep chatting</span></button>\n'
+              + '  </div>\n'
+              + '  <div class="gbdoc-slot">\n'
+              + '    <span class="gbdoc-slot__cap"><b>Tab, then arrows</b> one stop, four values</span>\n'
+              + '    <div class="gb-toggle gb-toggle--small" aria-label="Feedback demo">\n'
+              + '      <button class="gb-toggle__item is-on" type="button" data-value="info">Info</button>\n'
+              + '      <button class="gb-toggle__item" type="button" data-value="success">Success</button>\n'
+              + '      <button class="gb-toggle__item" type="button" data-value="warning">Warning</button>\n'
+              + '      <button class="gb-toggle__item" type="button" data-value="error">Error</button>\n'
+              + '    </div>\n'
+              + '  </div>\n'
+              + '</div>' },
+        { p: '<span class="oro-strong">Where focus goes after an action.</span> Five cases, and they are all decided:' },
+        { table: {
+            head: ['After', 'Focus goes', 'Why'],
+            rows: [
+              ['A drawer opens', 'Into the panel, and Tab is trapped inside it',
+               'The page behind it is not operable, so the keyboard must not be able to reach it'],
+              ['A drawer closes', 'Back to the element that opened it, if that element is still on screen and still visible',
+               'A drawer is a detour. The person comes back to where they left'],
+              ['A question appears', 'The way back, never the destructive verb',
+               'The next keystroke must not be able to destroy anything'],
+              ['A submit fails', 'The first broken field',
+               'The keyboard and the reader both land on the thing that needs the hand'],
+              ['A receipt appears', 'Nowhere. It does not move',
+               'A receipt is news, not an invitation']
+            ] } },
+        { p: '<span class="oro-strong">And the possibility is communicated.</span> A shortcut nobody can find does not exist. The studio has five and says two of them out loud, in the note under the mode it belongs to: <b>Keys: i switches, Alt drills in and measures the gaps, Esc leaves.</b> The screen presets on the number keys and the Ctrl and Enter that sends a comment are written in code comments and nowhere a person can read them. The rule from here on: a control with a key says the key where the control is explained, in the same quiet voice as the note; a mode says its key in its own note; a hint on a glyph that has a shortcut names the shortcut after the name. Nothing gets a key without a place that says so.' },
+        { note: 'Aria is the twin of every visual signal, not an afterthought on top of it: a glyph without a word carries <code>aria-label</code>, a group carries its role and its state, a region that speaks carries <code>role="status"</code> and <code>aria-live="polite"</code>, and a control that is wrong carries <code>aria-invalid</code>. The count today is five live regions in the whole building, and none of them is on a message that reports a failure.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       7. THE QUEUE
+       --------------------------------------------------------- */
+    { id: 'queue', toc: 'Not built', eyebrow: 'Not built',
+      h2: 'What is missing, and the rule it would arrive under',
+      blocks: [
+        { p: 'Nothing in this section is built by this page. Each line is a hole in the language with the rule it would be built to, so that whoever builds it is not inventing from nothing, and each one waits on a word rather than on a wave.' },
+        { table: {
+            head: ['Missing', 'The rule it would arrive under', 'Waiting on'],
+            rows: [
+              ['<b>Toast</b> <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span>',
+               'One at a time, bottom of the window, out of the way of whatever floats in that corner already; Zinc 900 plate on the brand radius; a dwell off the ladder; in on <code>--mo-small</code>, out on <code>--mo-small-out</code>; a container that is always in the DOM and carries the live region; no buttons, because a message with an action is a strip and belongs in place. Mounted inside <code>&lt;gb-studio-panel&gt;</code> or another island, or it reads the wrong spacing scale on the vendored catalog',
+               'Ton. Two page local precedents exist and disagree about the corner'],
+              ['<b>Tooltip</b> <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span>',
+               'The concierge plate, lifted as it stands: 500ms in, instant out, Zinc 900, 12px 500, one line, an <code>aria-label</code> twin required on the carrier. What it needs before it can be a component: a real flip and clamp at the window edge, which the pseudo element cannot do, and a decision about touch',
+               'Ton. The concierge file names it a candidate for the system in its own comment'],
+              ['<b>The hinted word</b> <span class="gbdoc-flag gbdoc-flag--expected">Not in the system</span>',
+               'Dotted underline in the ink of the text, question glyph on hover and focus, the tooltip plate, a real button so the keyboard can reach it, Escape closes',
+               'Ton. Nothing in the house underlines a word with dots today, so there is no precedent to measure'],
+              ['<b>A live region on the strip</b>',
+               'A <code>.gb-alert</code> that appears in answer to something the person did announces itself. A strip that was on the page from the start does not, or every page load reads its own gates aloud. The organism cannot decide which it is, so the attribute belongs to the carrier and the rule belongs here',
+               'A wave at the owner, alert.css, with the six carriers checked one by one'],
+              ['<b><code>aria-describedby</code> on the field</b>',
+               'The error sentence gets an id, the control points at it, and the two stop being strangers. One change at the owner, auth.css and auth.js',
+               'A wave at the owner. The gap is already written on the Field page'],
+              ['<b>A dwell ladder</b>',
+               'Two or three named lengths for how long a message stands, the way the motion ladder names how long a thing moves. Today: 1400, 1600, 2400 and a 500 wait, all NO TOKEN',
+               'Ton'],
+              ['<b>Arrows in the calendar</b>',
+               'A month is one tab stop, the arrows walk the days, Home and End take the ends of the week, and the slots below it walk the same way. The toggle already does exactly this and its code is the model',
+               'A wave at the owner, booking.js'],
+              ['<b>Four native dialogs on the checkout</b>',
+               'They become the strip in this document, with the sentence naming the loss and the count. Two of them already have the sentence written elsewhere on the page',
+               'A wave at the checkout']
+            ] } },
+        { note: 'Law 0a.4: new patterns are not started quietly. This section is the honest list, and it stays here until each line is either built or struck out by a decision.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       8. RELATED
+       --------------------------------------------------------- */
+    { toc: 'Related', eyebrow: 'Related',
+      h2: 'Where to go next',
+      blocks: [
+        { p: '<a href="field.html">Field</a>, which owns the mark and the sentence of an error, <a href="button.html">Button</a>, which owns the ring and the pair, <a href="drawer.html">Drawer</a>, which owns the focus trap and the way focus comes back, and <a href="colors.html">Colors</a>, where red, blue and the four alert tones are set out with their values.' }
+      ] }
+  ],
+  sources: 'Sources: <a href="../components/alert.css">alert.css</a>, <a href="../components/auth.css">auth.css</a> and <a href="../components/auth.js">auth.js</a>, <a href="../components/button.css">button.css</a>, <a href="../components/drawer.js">drawer.js</a>, <a href="../components/header.js">header.js</a>, <a href="../components/toggle.js">toggle.js</a>, <a href="../components/inspect.js">inspect.js</a>, <a href="../components/comments.js">comments.js</a>, <a href="../components/studio-panel.js">studio-panel.js</a>, <a href="../components/booking.js">booking.js</a>, the concierge of the live prototype and the five versions of the checkout · every sentence quoted on this page is the string that is running in one of them.'
+});
+</script>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/auth.js"></script>
+<script src="../components/toggle.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+<script>
+/* ============================================================
+   gbppl-feedback-language-1 — THE TWO SPECIMENS
+   ------------------------------------------------------------
+   The page prints no measurement, so it has no readout script.
+   What is here is the one thing a rules document still has to do
+   honestly: put the ERROR STATE on the page by asking the organism
+   for it, rather than by writing the marked up result of it.
+
+   Two fields of the system, and the second one is told it is wrong
+   the way a consumer tells it: setError(). That call is what sets
+   .invalid on the control, aria-invalid on it as well, and prints
+   the sentence in a role="alert" span. So the specimen beside the
+   rule is the rule being kept, including the half of it the eye
+   cannot see.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  function field(host, id, value) {
+    var f = document.createElement('gb-field');
+    f.setAttribute('input-id', id);
+    f.setAttribute('name', 'email');
+    f.setAttribute('type', 'email');
+    f.setAttribute('label', 'Email');
+    f.setAttribute('placeholder', 'you@company.com');
+    host.appendChild(f);
+    /* The element upgrades on connect, so the input exists by the
+       next line; the guard is for the load order changing under us. */
+    if (f.input && value != null) f.input.value = value;
+    return f;
+  }
+
+  function paint() {
+    var rest = document.querySelector('[data-fb-field="rest"]');
+    var bad = document.querySelector('[data-fb-field="error"]');
+    if (!rest || !bad || rest.childElementCount) return;
+    field(rest, 'fbFieldRest', 'anna@northwind.com');
+    var f = field(bad, 'fbFieldError', 'anna@');
+    if (f.setError) f.setError('Please enter a valid email address');
+  }
+
+  if (window.customElements && customElements.whenDefined) {
+    customElements.whenDefined('gb-field').then(paint);
+  } else {
+    document.addEventListener('DOMContentLoaded', paint);
+  }
+})();
+</script>
+
+<!-- The console. Its element is written by GbOro.page, with the drawer;
+     these two files give it its doors and its rooms. -->
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>

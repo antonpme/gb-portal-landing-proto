@@ -83,6 +83,15 @@
     { href: 'typography.html', label: 'Typography' },
     { href: 'colors.html', label: 'Colors' },
     { href: 'icons.html', label: 'Icons' },
+    /* gbppl-feedback-language-1 (Ton 09.09: «отдельный раздел в
+       дизайн-системе, начать фиксировать там правила»). It stands in
+       Foundations and not in a group of its own: the law of the skill
+       (0a.4) says a new layer of navigation waits on Ton's word, and
+       the neighbours here are the other things that are spent by every
+       component rather than being one. If the section grows a second
+       page (forms, empty states, loading) the group is Patterns, and
+       that is his call. */
+    { href: 'feedback.html', label: 'Feedback' },
     { soon: 'Tokens' },
     { soon: 'Motion' },
 
