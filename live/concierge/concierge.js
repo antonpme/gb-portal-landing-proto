@@ -281,7 +281,80 @@
          step and anything added later all come for free, and there is
          no second copy of the ink logic to drift. */
       window.dispatchEvent(new Event('resize'));
+      alignBell(btn);
     }
+
+    /* ---- THE OPTICAL GAP -------------------------------------
+       Ton, 09.09, on the zoom: «кривые отступы: между звонком и
+       кнопкой слева МЕНЬШЕ, чем между звонком и поиском». The
+       declared rhythm was innocent — .gbh-actions is gap: 12 and
+       every box gap measured 12, before the bell and after — and he
+       was still right, because a box gap is not what an eye reads.
+       A LABELLED BUTTON ENDS AT A DRAWN BORDER; A GLYPH BUTTON ENDS
+       11px INSIDE ITS 44 BOX. So the same 12 renders as 23 of white
+       on the button side and 34 between two glyphs, and the bell
+       looks stuck to the button it is standing next to. This is the
+       house rule «смотреть результат, не числа» (Ton 27.08) with
+       the numbers agreeing for once: the rhythm was right and the
+       picture was wrong.
+
+       NO TOKEN, and it cannot be one: the correction is not a
+       length that belongs to a scale, it is the DIFFERENCE between
+       two neighbours' ink insets, and it changes with who the
+       neighbours are. On the site bar at full width the left
+       neighbour is the outlined My Portal and the correction is 11;
+       on the portal bar the left neighbour is the cart, a bare
+       glyph like the bell, and the correction is 0; below 1024 the
+       labelled buttons leave the cluster and it is 0 again. So it
+       is MEASURED at run time, on every resize, and never written
+       down as a number anywhere.
+
+       The rule is one sentence: the white you see on the left of
+       the bell equals the white you see on its right. */
+    function inkEdge(el, side) {
+      /* Where a control visibly ENDS. A bare glyph ends at its
+         drawing; anything with a border or a fill ends at its box. */
+      var box = el.getBoundingClientRect();
+      var cs = getComputedStyle(el);
+      var drawn = cs.borderRightWidth !== '0px' || cs.borderLeftWidth !== '0px' ||
+                  (cs.backgroundColor && cs.backgroundColor !== 'rgba(0, 0, 0, 0)');
+      var svg = drawn ? null : el.querySelector('svg');
+      var r = svg ? svg.getBoundingClientRect() : box;
+      return side === 'right' ? r.right : r.left;
+    }
+    function visible(el) { return !!el && el.getClientRects().length > 0; }
+    function alignBell(btn) {
+      if (!btn || !btn.parentNode) return;
+      btn.style.marginLeft = '';
+      var kids = Array.prototype.filter.call(btn.parentNode.children, visible);
+      var i = kids.indexOf(btn);
+      var left = i > 0 ? kids[i - 1] : null;
+      var right = i > -1 && i < kids.length - 1 ? kids[i + 1] : null;
+      if (!left || !right) return;      /* nothing to be even with */
+      var mine = btn.querySelector('svg');
+      if (!mine) return;
+      var seen = mine.getBoundingClientRect();
+      var gapLeft  = seen.left - inkEdge(left, 'right');
+      var gapRight = inkEdge(right, 'left') - seen.right;
+      var add = Math.round(gapRight - gapLeft);
+      if (add > 0) btn.style.marginLeft = add + 'px';
+    }
+    /* The cluster changes with the width (the labelled buttons leave
+       it below 1024), so the correction is taken again whenever the
+       bar might have changed shape, and once more when the fonts
+       have landed — a button's width is type, and type arrives late
+       (the same fix oro.js needed for its own measurements). */
+    function realign() {
+      var btn = document.querySelector('[data-gbhc-bell]');
+      if (btn) alignBell(btn);
+    }
+    var alignTick = false;
+    window.addEventListener('resize', function () {
+      if (alignTick) return;
+      alignTick = true;
+      window.requestAnimationFrame(function () { alignTick = false; realign(); });
+    }, { passive: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(realign);
     if (window.customElements && customElements.whenDefined &&
         /gb-site-header/.test(ENVIRONMENT.bellSlot || '')) {
       customElements.whenDefined('gb-site-header').then(forkTheBar);
