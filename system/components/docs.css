@@ -834,18 +834,40 @@
    the way it does in the product; the drawer is opened by a door
    of its own, hung by inspect.js on every slot of every region.
 
-   THE DOOR IS THE ICON BUTTON, NOT A NEW ORGANISM: `.gb-btn--icon
-   --small --ghost --secondary --plain` (button.css), which is why
-   nothing here paints it. This file says only where it stands and
-   when it is seen.
+   PERMANENT, ON THE CAPTION (gbppl-oro-door-1, 09.09). Ton, with two
+   screenshots: «функционал выглядит ужасающе, нужно переделать»,
+   the glyph lying across the E of MOBILE on the toggle and a mile to
+   the right of the large row of the size matrix, on the tail of its
+   measured caption. Two things were wrong and they were one thing:
+   the door hung INSIDE the specimen's box and was pinned to the top
+   right of it, so a box that hugged a control put it on the control,
+   a box as wide as a shelf put it at the far end of the caption, and
+   a box smaller than the button put it outside on the left. 65 of the
+   107 doors on the eight engine pages overlapped something, measured.
 
-   SEEN, NOT PERMANENT. A door standing open on every specimen at
-   once would be forty pieces of furniture competing with the
-   things they belong to. So it fades in when the pointer is on
-   its box, or when the keyboard is anywhere inside it — the
-   second half is what lets it be reached by Tab at all, since it
-   keeps its place in the order while it is invisible and only
-   stops eating clicks.
+   The mark now stands at the START of the line that names the
+   specimen, which is the one place on a showcase that is never the
+   component, never moves and is in the same spot on every page: the
+   left edge of the caption. Where a specimen has no caption the
+   engine makes one, and where a specimen stands alone on a canvas
+   the mark takes the corner of the CANVAS, which centres its exhibit
+   inside its own padding and has nothing in that corner by
+   construction. inspect.js chooses between the four; this file
+   dresses them.
+
+   AND IT IS NOT THE ICON BUTTON ANY MORE. The button organism has no
+   rung under 40px and a caption line is 18 tall, so an icon button
+   on it would set the height of the line and move the page. What a
+   quiet glyph on a line of documentation IS, in this house, is the
+   copy mark five hundred lines below: 16px, Zinc 400, ink on hover,
+   the standard focus ring. The door is its sibling, written in the
+   same values, and both belong to the documentation rather than to
+   the product.
+
+   NO HOVER REVEAL. It faded in on approach so that forty doors would
+   not compete with the things they belong to; on a caption there is
+   nothing to compete with, and a mark that is always there is a mark
+   a reader can find without discovering it first.
    ============================================================ */
 [data-inspect] .gbdoc-slot,
 [data-inspect] .gbdoc-cell,
@@ -855,27 +877,77 @@
   border-radius: var(--radius);
 }
 
-/* The box that carries a door is the box the door is measured
-   from. One rule, and no page and no stage has to remember. */
-[data-inspect]:has(> .gbdoc-props),
-[data-inspect] *:has(> .gbdoc-props) { position: relative; }
-
 .gbdoc-props {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--zinc-400);
+  cursor: pointer;
+  vertical-align: -3px;               /* the 16 glyph on the 12 eyebrow line */
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.gbdoc-props svg { display: block; width: 16px; height: 16px; }
+.gbdoc-props:hover { color: var(--zinc-900); }
+.gbdoc-props:focus-visible {
+  color: var(--zinc-900);
+  outline: 2px solid var(--blue-600);
+  outline-offset: 2px;
+}
+
+/* ON A CAPTION. The mark reads before the words, and the words keep
+   their own line: one rung of air and nothing else. */
+.gbdoc-slot__cap > .gbdoc-props,
+.gbdoc-slot__cap b > .gbdoc-props,
+.gbdoc-type__name > .gbdoc-props {
+  margin-right: var(--space-8);
+  /* AND IT DOES NOT SET THE HEIGHT OF THE LINE IT STANDS ON. A 16px
+     atomic box dropped 3px below the baseline grew the 21px line of a
+     type row by three pixels, times forty six rows: measured, and the
+     one thing this wave was told not to do is move the page. The
+     margin box is pulled back inside the line and the glyph paints
+     over it, the way a marker does. */
+  margin-block: -3px;
+}
+
+/* THE CAPTION A SPECIMEN DID NOT HAVE. A matrix cell holds a control
+   and nothing else, so the engine gives it the line every other
+   specimen already has, with the mark alone on it. Full width, so it
+   wraps under the specimen in the cell's own flex row rather than
+   standing beside it. */
+.gbdoc-slot__cap--door {
+  display: block;
+  flex-basis: 100%;
+  width: 100%;
+  line-height: 1;
+}
+
+/* ON A CANVAS. A stage or a playground scene centres one exhibit
+   inside its padding: the corner is empty, so the mark takes it and
+   costs the canvas no layout at all. */
+.gbdoc-stage:has(> .gbdoc-props) { position: relative; }
+.gbdoc-stage > .gbdoc-props,
+.gbdoc-pg__scene > .gbdoc-props {
   position: absolute;
   top: var(--space-8);
-  right: var(--space-8);
+  left: var(--space-8);
   z-index: 2;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--mo-micro) var(--mo-move);
+  vertical-align: baseline;
 }
-[data-inspect]:hover > .gbdoc-props,
-[data-inspect]:focus-within > .gbdoc-props,
-[data-inspect] *:hover > .gbdoc-props,
-[data-inspect] *:focus-within > .gbdoc-props {
-  opacity: 1;
-  pointer-events: auto;
-}
+
+/* THE TWO DARK SURFACES OF THE SHOWCASE dress their captions here
+   already (the stage a few hundred lines up, the canvas in the
+   playground block below), so the mark on them is dressed in the
+   same place and inspect.js no longer measures a ground to decide. */
+.gbdoc-stage--dark .gbdoc-props,
+.gbdoc-pg__view.is-dark .gbdoc-props { color: var(--zinc-500); }
+.gbdoc-stage--dark .gbdoc-props:hover,
+.gbdoc-stage--dark .gbdoc-props:focus-visible,
+.gbdoc-pg__view.is-dark .gbdoc-props:hover,
+.gbdoc-pg__view.is-dark .gbdoc-props:focus-visible { color: var(--white); }
 
 /* INSPECT HAS ITS OWN WAY IN. There the click is the question and
    every element on the page answers it, so a door would be one
@@ -1525,17 +1597,32 @@ html.gbc-on .gbdoc-regcard__go[href]::after { pointer-events: none; }
      a specimen. */
   --gbdoc-pg-tool-size: 14px;
   --gbdoc-pg-tool-h: var(--space-32);
-  /* THE CEILING OF THE CARD (gbppl-playground-polish-1, Ton 02.09).
-     512 = --space-64 * 8, which is 64 per cent of the 800 a typical
-     1280 x 800 window gives a document, so the whole card is on one
-     screen with the sentence that introduces it and the caption under
-     it. Until this wave the card had no ceiling and took whatever the
-     rail asked for: on the icon card the rail is 890 tall, so the
-     specimen — a 44px circle — stood in the middle of 890 pixels of
-     white and read as a lost object rather than an exhibit. The rail
-     is what overflows now, inside its own column, because a rail is a
-     list and a list is a thing people scroll; a canvas is not. */
-  --gbdoc-pg-ceiling: calc(var(--space-64) * 8);
+  /* THE CEILING OF THE CARD (gbppl-playground-polish-1, Ton 02.09;
+     RAISED by gbppl-oro-door-1, Ton 09.09).
+     512 = --space-64 * 8 held the card to 64 per cent of the 800 a
+     typical 1280 x 800 window gives a document, and the price was a
+     rail that scrolled inside the card on every page of the engine:
+     natural heights measured 521 to 892, so all eight of them had a
+     nested scrollbar. Ton: the rail should not scroll and the preview
+     area should look better for it. So the ceiling stops being the
+     working height and becomes what a ceiling is, the honest maximum:
+     896 = --space-64 * 14, the first rung of the ladder above the
+     tallest rail in the house (892, the icons card, measured). The
+     rung below it, 832, would leave that one card scrolling and the
+     rung below that, 768, would leave the button card scrolling by
+     three pixels, which is a scrollbar for nothing. The row takes the
+     taller of its two
+     columns, which is the rail, so the canvas now grows to the rail
+     instead of the rail shrinking into the canvas, and the exhibit
+     stays in the middle of it by the same construction as before. A
+     rail that one day outgrows 896 scrolls rather than making a card
+     no window can show whole; that is the case the number is for.
+     THE PRICE, ON THE TALLEST CARD ONLY, and it is on Ton's desk: a
+     44px glyph in the middle of 892 pixels of canvas is the very
+     «lost object» the 512 ceiling was invented against. The answer is
+     a shorter rail on that one page (its six axes and the fold), not
+     a shorter card everywhere. */
+  --gbdoc-pg-ceiling: calc(var(--space-64) * 14);
 }
 
 .gbdoc-pg {

@@ -2103,25 +2103,105 @@
      Idempotent, and run again whenever a region redraws itself: a
      playground rewrites its hold on every change of an axis, and a
      door that is not put back is a door that worked once. */
-  var DOOR_CLS = 'gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain gbdoc-props';
+  /* THE DOOR IS A MARK ON THE CAPTION, NOT A BUTTON ON THE SPECIMEN
+     (gbppl-oro-door-1, Ton 09.09: «функционал выглядит ужасающе»,
+     with two screenshots: the glyph lying across the E of MOBILE on
+     the toggle, and the glyph a mile to the right of the large row of
+     the size matrix, on the tail of the measured caption).
+
+     WHY IT LANDED THERE. It was hung inside the specimen's own box
+     and pinned top right of it, so its place was decided by the box:
+     a box that hugs a control put it ON the control, a box as wide as
+     a shelf put it at the far end of a caption, and a box smaller
+     than the button itself (a 44px icon slot) put it outside on the
+     left. Measured before this wave: 65 of the 107 doors on the eight
+     engine pages overlapped either the component or its caption.
+
+     WHERE IT STANDS NOW. Every specimen in the showcase already has a
+     line that names it, and that line is the one place on the page
+     that is never the component and never moves: the door goes at the
+     START of it, permanently, in the quiet ink of the copy mark it is
+     the sibling of. One place, the same on every page, at the left
+     edge of the specimen rather than at the right edge of whatever
+     box happens to hold it. The hover reveal is gone with the
+     absolute corner: a mark that is always there is a mark a reader
+     can find, and it costs the page no layout, because a caption line
+     already stands there.
+
+     Four homes, in this order, and the last one is made here:
+       1. the specimen's own caption;
+       2. the caption of the SLOT it stands in, which is also what
+          keeps a hold inside a slot from growing a second door for
+          the same specimen (field.html had twelve of those);
+       3. the name line of a type row;
+       4. the corner of the canvas, for a specimen that stands alone
+          on a stage or on the playground scene: the canvas centres
+          its exhibit inside its own padding, so the top left corner
+          of it is empty by construction;
+       5. a caption row of its own, for a box that has none. */
+  var DOOR_CLS = 'gbdoc-props';
+
+  function doorHome(box) {
+    function capIn(el) {
+      var cap = el.querySelector(':scope > .gbdoc-slot__cap');
+      if (!cap) return null;
+      /* The name is the first line of a caption and it is a block, so
+         a mark put on the caption itself would sit on a line of its
+         own above the name. It goes in the name. */
+      return cap.querySelector(':scope > b') || cap;
+    }
+    var own = capIn(box);
+    if (own) return own;
+
+    var slot = box.parentElement && box.parentElement.closest('.gbdoc-slot');
+    if (slot) {
+      var outer = capIn(slot);
+      if (outer) return outer;
+    }
+
+    var row = box.closest('.gbdoc-type__row');
+    if (row) {
+      var name = row.querySelector('.gbdoc-type__name');
+      if (name) return name;
+    }
+
+    var canvas = box.closest('.gbdoc-pg__scene') ||
+                 (box.classList.contains('gbdoc-stage') ? box : box.closest('.gbdoc-stage'));
+    if (canvas) return canvas;
+
+    var made = box.querySelector(':scope > .gbdoc-slot__cap--door');
+    if (!made) {
+      made = document.createElement('span');
+      made.className = 'gbdoc-slot__cap gbdoc-slot__cap--door';
+      box.appendChild(made);
+    }
+    return made;
+  }
 
   function addDoor(box, slot, part) {
-    if (!box || box.querySelector(':scope > .gbdoc-props')) return;
+    if (!box) return;
+    var home = doorHome(box);
+    if (!home || home.querySelector(':scope > .gbdoc-props')) return;
     var b = document.createElement('button');
     b.type = 'button';
     b.className = DOOR_CLS;
     b.setAttribute('aria-label', 'Properties');
     b.setAttribute('title', 'Properties');
-    b.innerHTML = '<span class="gb-btn__icon" aria-hidden="true">' +
-                  window.GbIcons.svg('info') + '</span>';
+    b.innerHTML = window.GbIcons.svg('info');
     b.gbSlot = slot;
     b.gbPart = part || null;
-    box.appendChild(b);
-    inkFor(b, box);
+    /* First in the caption, last on the canvas: on a line the mark
+       reads before the words it belongs to, and in a corner there is
+       nothing to read it before. */
+    if (home.classList.contains('gbdoc-stage') ||
+        home.classList.contains('gbdoc-pg__scene')) home.appendChild(b);
+    else home.insertBefore(b, home.firstChild);
   }
 
   /* The stage, when it holds this one specimen and nothing else;
-     the slot otherwise. */
+     the slot otherwise. doorHome has the last word on where the mark
+     actually lands, and a stage without a caption sends it to the
+     corner of the canvas either way. */
   function boxFor(region, slot) {
     var stage = slot.closest('.gbdoc-stage');
     if (stage && region.contains(stage) && stage.querySelectorAll(SLOT_SEL).length === 1) return stage;
@@ -2166,35 +2246,18 @@
     });
   }
 
-  /* WHICH INK, MEASURED RATHER THAN ASSUMED. A stage takes a dark
-     ground on a switch, and the switch belongs to the page. So the
-     door reads the ground it is standing on with the same composite
-     the contrast row uses and wears the colour family that belongs
-     there. No page's class is named here, which is why a dark
-     ground invented tomorrow needs no line in this file. */
-  function inkFor(btn, box) {
-    var dark = lum(groundOf(box).colour) < 0.25;
-    btn.classList.toggle('gb-btn--inverse', dark);
-    btn.classList.toggle('gb-btn--secondary', !dark);
-  }
+  /* WHICH INK: NOT MEASURED ANY MORE, AND NOT DECIDED HERE
+     (gbppl-oro-door-1). While the door hung on the specimen it had to
+     read the ground under itself with getComputedStyle and swap
+     between two button families, on every approach of the pointer,
+     because the ground under a specimen changes with a switch on the
+     rail. A mark that lives on the CAPTION stands on the page's own
+     surface, and the two dark surfaces in the showcase already dress
+     their captions in docs.css. So the colour goes with them, two
+     rules in the file that owns the grounds, and this file loses a
+     measurement, two document listeners and a class swap.
 
-  /* The ink is settled the moment before the door is seen: the
-     pointer arriving on the box, or the keyboard arriving in it. */
-  function inkOnApproach(e) {
-    var t = e.target;
-    if (!t || !t.closest || !t.closest('[data-inspect]')) return;
-    var n = t;
-    while (n && n.nodeType === 1) {
-      var b = n.querySelector(':scope > .gbdoc-props');
-      if (b) { inkFor(b, n); return; }
-      if (n.hasAttribute('data-inspect')) return;
-      n = n.parentElement;
-    }
-  }
-  document.addEventListener('pointerover', inkOnApproach, { passive: true });
-  document.addEventListener('focusin', inkOnApproach);
-
-  /* A region that redraws itself gets its doors back on the next
+     A region that redraws itself gets its doors back on the next
      frame. Our own buttons are ignored, or hanging one would ask
      for another. */
   var doorsQueued = false;
