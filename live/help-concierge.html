@@ -111,34 +111,11 @@
    ramps) or is marked NO TOKEN with what it is and why.
    ============================================================ */
 
-/* ---- The title band of the page ----------------------------
-   Two things in a row: the name of the room and the page level
-   GET HELP, which the concept keeps beside the bar's bell («Page
-   level buttons stay, and they open THE SAME drawer»). */
-.gbhc-band { padding: var(--space-48) 0 var(--space-32); }
-@media (min-width: 768px) { .gbhc-band { padding: var(--space-64) 0 var(--space-48); } }
-.gbhc-band__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-24);
-  flex-wrap: wrap;
-}
-/* TYPE-SCALE, role H1 Hero (36 / 48 from 1280 / 52 from 2000,
-   verified-live). The page is a page of the site and wears the
-   site's biggest serif, not a heading invented here. */
-.gbhc-h1 {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 36px;
-  font-weight: 400;
-  line-height: 1.5;
-  letter-spacing: 0.025em;
-  color: var(--zinc-900);
-}
-@media (min-width: 1280px) { .gbhc-h1 { font-size: 48px; } }
-@media (min-width: 2000px) { .gbhc-h1 { font-size: 52px; } }
-
+/* ---- No title band. Ton, 09.09: the bell in the sticky bar is
+   THE way in; the page under the drawer is a plain page of the
+   site, and a second Get help door is not drawn. The band that
+   stood here («How can we help?» + Get help) was cut on his word:
+   «все эти секции — просто игнорируй, мы такого делать не будем». */
 /* ============================================================
    FLOOR ONE — THE OPTIONS
    ------------------------------------------------------------
@@ -491,19 +468,6 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
     meeting-href="book-a-meeting.html"></gb-site-header>
 
   <main>
-    <section class="gbhc-band">
-      <div class="gb-container gbhc-band__row">
-        <h1 class="gbhc-h1">How can we help?</h1>
-        <!-- The page level door of the concept: same drawer, second
-             way in, so a page with a title strip does not depend on
-             the reader finding the bell. -->
-        <button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" data-gbhc-open>
-          <span class="gb-btn__icon" aria-hidden="true"></span>
-          <span class="gb-btn__label" data-pc-section="label">Get help</span>
-        </button>
-      </div>
-    </section>
-
     <!-- The page under the drawer is a real page: two sections of the
          site, with the site's own copy, so the bell, the drawer and the
          floating window are seen over something. Nothing is written
@@ -651,23 +615,20 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
     }
     forkTheBar();
 
-    /* The page level door. Its glyph is the concept's own: the live
-       GET HELP of the portal carries `info`. */
-    Array.prototype.forEach.call(document.querySelectorAll('[data-gbhc-open]'), function (b) {
-      var s = b.querySelector('.gb-btn__icon');
-      if (s && I) s.innerHTML = I.svg('info');
-      b.addEventListener('click', openHome);
-    });
+    /* No page level door: the sticky bar's bell is THE way in
+       (Ton, 09.09), so nothing on the canvas opens the drawer. */
 
     /* ============================================================
        2. THE DRAWER, FLOOR ONE AND FLOOR TWO
        ============================================================ */
+    /* Ton, 09.09: Live chat leads, the meeting follows, the AI door is
+       third and says AI out loud — a reader must never take it for a
+       person. The AI door is also contextual: it only belongs where
+       gifts are being chosen (portal gift pages, catalog), and is
+       absent — not disabled — everywhere else. This sandbox shows it
+       present; the flag is the one word below. */
+    var AI_DOOR_HERE = true;
     var DOORS = [
-      {
-        id: 'ai', icon: 'service-bell',
-        title: 'Gift Concierge',
-        sub: 'Ask anything, answered right away'
-      },
       {
         id: 'live', icon: 'chat',
         title: 'Live chat', badge: 'Online now',
@@ -679,12 +640,18 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
         sub: 'Pick a time that suits you'
       },
       {
+        id: 'ai', icon: 'service-bell',
+        title: 'AI Gift Concierge',
+        sub: 'Instant answers from our AI assistant',
+        hidden: !AI_DOOR_HERE
+      },
+      {
         id: 'call', icon: 'telephone',
         title: 'Call us',
         sub: 'Prefer to talk? ' + DESK.shown,
         href: 'tel:' + DESK.tel
       }
-    ];
+    ].filter(function (d) { return !d.hidden; });
 
     function doorHTML(d) {
       var tag = d.href ? 'a' : 'button';
@@ -833,12 +800,14 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
       },
       ai: {
         icon: 'service-bell',
-        name: 'Gift Concierge',
-        state: '<span class="gbhc-dot" aria-hidden="true"></span>Answers right away',
-        pill: 'Answers right away',
-        say: ['Hi, I am the GildedBox concierge.',
+        /* Ton, 09.09: the window says AI as loudly as the door does —
+           a reader must never take this voice for a person. */
+        name: 'AI Gift Concierge',
+        state: '<span class="gbhc-dot" aria-hidden="true"></span>AI · answers right away',
+        pill: 'AI · answers right away',
+        say: ['Hi, I am the GildedBox AI concierge — an assistant, not a person.',
               'Tell me who the gift is for and what the occasion is, and I will put a shortlist together.'],
-        reply: 'Thank you. I am looking at what fits, and I can hand you to a specialist at any point.'
+        reply: 'Thank you. I am looking at what fits, and I can hand you to a live specialist at any point.'
       }
     };
 
