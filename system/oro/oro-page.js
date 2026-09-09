@@ -114,11 +114,14 @@
      drawer:  true                the properties drawer. Default true
    })
 
-   A SECTION:
+   A SECTION (the two head fields changed places on 09.09, see
+   sectionHTML):
      { id: 'playground',          optional. No id, no entry in the contents
        toc: 'Playground',         optional. The name in the contents
-       eyebrow: 'Playground',     the Eyebrow over the heading
-       h2: 'Build a button and read it back',
+       eyebrow: 'Build a button and read it back',
+                                  the describing phrase, set in the Eyebrow
+                                  ABOVE the heading
+       name: 'Playground',        the heading: what the section IS
        blocks: [ ... ] }
 
    A BLOCK is an object with exactly one of:
@@ -378,13 +381,28 @@
      point at and the name they print. This is the drift the wave
      was called for: five showcases wrote it this way, three wrote a
      .gbdoc-sub over an .oro-h3 with no section at all, and the
-     reader had to learn two documents. */
+     reader had to learn two documents.
+
+     WHICH STRING GOES IN WHICH (gbppl-oro-heads-2, Ton 09.09, on the
+     toggle page: «ровно наоборот: Overview должен быть шрифтом
+     заголовка, eyebrow должен говорить where the toggle lives and
+     what it defaults to»). The showcase had it mirrored: the caps
+     line said OVERVIEW and the serif heading carried the describing
+     sentence, so the eyebrow was doing the naming and the heading was
+     doing the explaining. A heading names, always; an eyebrow is
+     never a heading (Ton-21) and it is exactly the place for the line
+     that explains. So `name` is the serif heading and `eyebrow` is
+     the phrase above it, on every section of every page of the
+     engine, and the eight pages were rewritten in the same commit.
+     `h2` is still read as the heading for anything that has not been
+     migrated, and nothing in the tree uses it now. */
   function sectionHTML(s) {
+    var head = s.name != null ? s.name : s.h2;
     return '<section class="oro-section"' +
       (s.id ? ' id="' + esc(s.id) + '"' : '') +
       (s.toc ? ' data-toc="' + esc(s.toc) + '"' : '') + '>\n' +
       (s.eyebrow ? '<span class="gb-eyebrow">' + esc(s.eyebrow) + '</span>\n' : '') +
-      (s.h2 ? '<h2 class="oro-h2">' + s.h2 + '</h2>\n' : '') +
+      (head ? '<h2 class="oro-h2">' + head + '</h2>\n' : '') +
       (s.blocks || []).map(blockHTML).join('\n') +
       '\n</section>';
   }
