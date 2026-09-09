@@ -120,6 +120,32 @@
      with a way out to a human as the third.
 
      ------------------------------------------------------------
+     gbppl-concierge-chat-3 — THE NAME ARRIVES, AND A QUESTION
+     BRINGS ITS OWN ANSWERS. 2026-09-09. Both were written in
+     studio\docs\HELP-CONCIERGE-CONCEPT.md, line 55, before a line
+     of this was built, and Ton took them on that reading.
+
+     1. PERSONALISATION ON CONNECTION, the Tiffany mechanic. The
+        live room opens UNNAMED, «Chat with our team», because at
+        that moment nobody has picked the conversation up, and a
+        head that promises a person before there is one is a head
+        that lies. At the scripted turn a specialist joins, the
+        thread says so in a quiet line of its own, and the head AND
+        the plate take his name from that instant. Ending the
+        session takes the name away again with everything else. The
+        AI start has no join and never will: it is written as
+        ABSENT DATA rather than as an if, so nobody adds one by
+        accident.
+
+     2. CONTEXTUAL CHIPS. The chips at the composer are ROUTING and
+        they leave after the first thing the guest says. The second
+        answer of either voice asks a question and brings two or
+        three answers WITH IT, standing in the thread under the
+        card rather than at the composer, and they go the moment
+        the question is answered, by a tap or by anything typed
+        instead. Same recipe, different place, different life.
+
+     ------------------------------------------------------------
      gbppl-nav-hover-1 — THREE HOVERS FOR THE TOP NAVIGATION.
      2026-09-09. Ton: «сейчас там hover вообще какой-то никакой»,
      and the canon agrees with him in writing: header.css 141 is
@@ -746,8 +772,26 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
   border-radius: var(--radius-circle);
   color: var(--zinc-900);
 }
-.gbhc-msg__bubble {
+/* THE STACK is what a message becomes once it can carry more than a
+   bubble: the words, and under them the choices the words asked for.
+   It holds the width, so the chips line up with the card above them
+   and not with the face beside it. */
+.gbhc-msg__stack {
+  min-width: 0;
   max-width: min(84%, 360px);     /* NO TOKEN: a proportion and the reference's own ceiling; a bubble leaves the other side visible so the thread reads as two voices */
+  display: grid;
+  gap: var(--space-8);
+  justify-items: start;
+}
+.gbhc-msg--you .gbhc-msg__stack { justify-items: end; }
+@media (max-width: 639px) {
+  /* The reference's own narrow rule with our face and our gap in it:
+     a percentage cannot know about the 40 disc standing beside the
+     stack, and across 328 the difference is an overflow. */
+  .gbhc-msg__stack { max-width: calc(100% - 40px - var(--gbhc-half)); }
+}
+.gbhc-msg__bubble {
+  max-width: 100%;
   padding: var(--space-16);
   background: var(--white);
   border: 1px solid var(--zinc-200);
@@ -764,6 +808,36 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
   border-radius: var(--radius) 0 var(--radius) var(--radius);
   color: var(--white);
 }
+/* ---- THE LINE THAT IS NOT A VOICE --------------------------
+   gbppl-concierge-chat-3. «Brad Smaling joined the chat.» is the
+   room reporting on itself, not somebody speaking, so it is not a
+   bubble and has no face: a quiet centred line between two turns,
+   the way every chat in the world says this. It also never reaches
+   the session plate, because the plate carries what was SAID. */
+.gbhc-sys {
+  align-self: center;
+  max-width: 100%;
+  padding: 0 var(--space-8);
+  color: var(--zinc-500);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  animation: gbhc-msg-in var(--mo-small) var(--mo-arrive) both;
+}
+
+/* ---- THE CHIPS THAT BELONG TO A MESSAGE --------------------
+   gbppl-concierge-chat-3, and the distinction is the whole point.
+   The chips at the composer are ROUTING: they say what the visit is
+   about and they leave after the first thing the guest says. These
+   ones are an ANSWER SHEET: they belong to the question that was
+   just asked, they stand in the thread under it, and they go when
+   the question is answered — by a tap or by anything typed instead.
+   Same recipe (.gbhc-chips), a different place and a different
+   life. They leave on --mo-small-out, the quiet leave before a
+   step, which is exactly what this is. */
+.gbhc-msg__ask { margin: 0; transition: opacity var(--mo-small-out) var(--mo-exit); }
+.gbhc-msg__ask.is-out { opacity: 0; pointer-events: none; }
+
 /* The specialist is typing. An idle animation with no end, on a rung
    (--mo-medium) rather than the reference's 700ms literal. */
 .gbhc-msg--typing .gbhc-msg__bubble {
@@ -1417,7 +1491,28 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
         chips: ['I need help choosing gifts',
                 'I have an existing order',
                 'I’d like a custom proposal'],
-        reply: 'Got it. Give me a moment to pull up a few options for you.'
+        /* THE PERSON ARRIVES WHEN A PERSON ARRIVES (the Tiffany
+           mechanic, concept line 55, Ton 09.09). The room opens
+           unnamed, because at that moment nobody has picked the
+           conversation up; the name lands in the head and on the
+           plate at the exact turn a specialist joins, and the thread
+           says so in its own quiet line. Nothing is promised before
+           it is true. The AI start has no `join` at all, and that is
+           the difference stated as data rather than as an if. */
+        join: {
+          line: 'Brad Smaling joined the chat.',
+          name: 'Brad Smaling',
+          state: 'Online now · Gifting specialist',
+          pillName: 'Brad Smaling',
+          pill: 'Online'
+        },
+        turns: [
+          { say: 'Got it, I can help with that.' },
+          /* Turn two asks, and the choices come WITH the question. */
+          { say: 'What’s the occasion?',
+            ask: ['A client thank you', 'An onboarding gift', 'A holiday send'] },
+          { say: 'Understood. I am putting a shortlist together and will send it over in a moment.' }
+        ]
       },
       ai: {
         icon: 'service-bell',
@@ -1433,7 +1528,14 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
         chips: ['Help me choose a gift',
                 'What fits a set budget?',
                 'Hand me to a real person'],
-        reply: 'Thank you. I am looking at what fits, and I can hand you to a live specialist at any point.'
+        /* No join, ever. Nobody is going to walk into this room, and
+           the head must not one day say a name. */
+        turns: [
+          { say: 'Thank you. Let me narrow that down.' },
+          { say: 'What’s the occasion?',
+            ask: ['A client thank you', 'An onboarding gift', 'A holiday send'] },
+          { say: 'Understood. I am pulling a shortlist together, and I can hand you to a live specialist at any point.' }
+        ]
       }
     };
 
@@ -1469,10 +1571,12 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
        each, so the greeting is one card of two paragraphs and not two
        cards. textContent per line, never innerHTML: a guest types
        here. */
-    function say(side, text) {
+    function say(side, text, ask) {
       var row = document.createElement('article');
       row.className = 'gbhc-msg gbhc-msg--' + side;
       if (side === 'them') row.innerHTML = faceHTML();
+      var stack = document.createElement('div');
+      stack.className = 'gbhc-msg__stack';
       var bubble = document.createElement('div');
       bubble.className = 'gbhc-msg__bubble';
       text.split('\n').forEach(function (line) {
@@ -1480,7 +1584,24 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
         p.textContent = line;
         bubble.appendChild(p);
       });
-      row.appendChild(bubble);
+      stack.appendChild(bubble);
+      /* The answer sheet, if the question came with one. It is part
+         of the message and lives inside it, so it scrolls with the
+         thread and dies with it. */
+      if (ask && ask.length) {
+        var sheet = document.createElement('div');
+        sheet.className = 'gbhc-chips gbhc-msg__ask';
+        sheet.setAttribute('data-ask', '');
+        sheet.setAttribute('aria-label', 'Answers');
+        ask.forEach(function (label) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = label;
+          sheet.appendChild(b);
+        });
+        stack.appendChild(sheet);
+      }
+      row.appendChild(stack);
       log.appendChild(row);
       log.scrollTop = log.scrollHeight;
       /* THE PLATE IS LIVE. Whatever was last said is what the pill
@@ -1518,6 +1639,7 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
        every chip. Both halves of the latch are set here and cleared
        here, in one place, in both directions (trap 22). */
     var pending = false;
+    var turn = 0;              /* which scripted answer is next */
     function syncSend() {
       send.disabled = pending || !input.value.trim();
     }
@@ -1534,10 +1656,53 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       row.setAttribute('role', 'status');
       row.setAttribute('aria-label', 'Typing');
       row.innerHTML = faceHTML() +
-        '<div class="gbhc-msg__bubble"><span></span><span></span><span></span></div>';
+        '<div class="gbhc-msg__stack"><div class="gbhc-msg__bubble">' +
+        '<span></span><span></span><span></span></div></div>';
       log.appendChild(row);
       log.scrollTop = log.scrollHeight;
       return row;
+    }
+
+    /* The room says a thing about itself. Not a voice, so not a
+       bubble, and it never reaches the plate. */
+    function note(text) {
+      var p = document.createElement('p');
+      p.className = 'gbhc-sys';
+      p.setAttribute('role', 'status');
+      p.textContent = text;
+      log.appendChild(p);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    /* A question is answered once. Every answer sheet standing in the
+       thread leaves the moment anything is said, whether it was
+       tapped or typed: a list of answers under a question that has
+       already been answered is a list that lies. */
+    function closeAsks() {
+      var open = log.querySelectorAll('[data-ask]');
+      for (var i = 0; i < open.length; i++) {
+        (function (sheet) {
+          sheet.removeAttribute('data-ask');
+          var all = sheet.querySelectorAll('button');
+          for (var k = 0; k < all.length; k++) all[k].disabled = true;
+          sheet.classList.add('is-out');
+          setTimeout(function () { if (sheet.parentNode) sheet.parentNode.removeChild(sheet); }, MO.smallOut);
+        })(open[i]);
+      }
+    }
+
+    /* THE PERSON ARRIVES. The head and the plate are re-dressed at
+       the one moment it becomes true, and never before. */
+    var joined = false;
+    function joinNow(join) {
+      joined = true;
+      note(join.line);
+      document.getElementById('gbhcName').textContent = join.name;
+      document.getElementById('gbhcState').innerHTML =
+        '<span class="gbhc-dot" aria-hidden="true"></span><span>' + join.state + '</span>';
+      document.getElementById('gbhcPillName').textContent = join.pillName;
+      document.getElementById('gbhcPillState').innerHTML =
+        '<span class="gbhc-dot" aria-hidden="true"></span><span>' + join.pill + '</span>';
     }
 
     /* ============================================================
@@ -1571,6 +1736,8 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       hint.textContent = start.hint;
       paintChips(start.chips);
       input.value = '';
+      joined = false;
+      turn = 0;
       setPending(false);
       start.say.forEach(function (line) { say('them', line); });
       return start;
@@ -1697,6 +1864,8 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       log.innerHTML = '';
       pillLast.textContent = '';
       input.value = '';
+      joined = false;
+      turn = 0;
       setPending(false);
     }
 
@@ -1713,20 +1882,25 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       var text = (value || '').trim();
       var start = STARTS[mode];
       if (!text || pending || !start) return;
+      closeAsks();                 /* the question in the thread is answered, whichever way */
       say('you', text);
       input.value = '';
-      /* The opening is over: the chips have done their job. */
+      /* The opening is over: the routing chips have done their job. */
       paintChips(null);
       setPending(true);
       var typing = typingRow();
+      var step = start.turns[Math.min(turn, start.turns.length - 1)];
+      turn++;
       clearTimeout(replyTimer);
-      /* One scripted answer, so the thread reads as a thread. NO
+      /* The scripted answer, so the thread reads as a thread. NO
          TOKEN: 900ms of waiting is not a move, and the motion scale
          holds the length of moves. The latch is dropped in the same
          place it was set, and there is no other path out of it. */
       replyTimer = setTimeout(function () {
         if (typing.parentNode) typing.parentNode.removeChild(typing);
-        say('them', start.reply);
+        /* The room reports the arrival BEFORE the arrival speaks. */
+        if (start.join && !joined) joinNow(start.join);
+        say('them', step.say, step.ask);
         setPending(false);
         if (!chat.hidden) input.focus();
       }, 900);
@@ -1739,6 +1913,15 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
     });
     chips.addEventListener('click', function (e) {
       var chip = e.target.closest ? e.target.closest('button') : null;
+      if (!chip || chip.disabled) return;
+      send_(chip.textContent);
+    });
+    /* The answer sheets live in the thread, and the thread is
+       rewritten on every turn, so the listener sits on the log once
+       and reads whatever is standing in it (the same reason the
+       drawer's delegate is fitted to the panel and not to a body). */
+    log.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('.gbhc-msg__ask button') : null;
       if (!chip || chip.disabled) return;
       send_(chip.textContent);
     });
