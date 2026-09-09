@@ -661,6 +661,20 @@
           tags: ['header', 'flow'],
           created: '2026-09-09',
           updated: '2026-09-09'
+        },
+        {
+          /* gbppl-concierge-unify-1. Ton, 09.09, before showing Valerie:
+             the experience has to be ONE experience, the same on the site
+             and inside the portal. The variant is the portal wearing it. */
+          id: 'concierge-portal',
+          label: 'The same concierge, inside the portal',
+          desc: 'The portal signed in, with the concierge it shares with the website: the bell in its own bar, and the blue Start button in the middle of the band hero opening that drawer instead of the centre popup. Everything under it comes from one module, so the two environments cannot drift. One thing differs, and it differs on purpose: the personal Gift Advisor stands under the options here and nowhere else, because a named human belongs to somebody who is signed in.',
+          status: 'in-progress',
+          href: 'live/portal.html?layout=band&hero=start&concierge=1',
+          ready: true,
+          tags: ['flow', 'portal'],
+          created: '2026-09-09',
+          updated: '2026-09-09'
         }
       ]
     },

@@ -156,6 +156,15 @@
 <!-- gbppl-comments-dress-1: the thread's note | suggest switch wears the system Toggle button. -->
 <link rel="stylesheet" href="../system/components/toggle.css">
 <link rel="stylesheet" href="../system/components/comments.css">
+
+<!-- THE CONCIERGE (gbppl-concierge-unify-1, Ton 09.09). The same module
+     the website's help page consumes, so Valerie can click between the
+     two and see one experience. LOADED ALWAYS, TURNED ON BY ?concierge=1:
+     the file declares nothing but .gbhc-* and one custom property, so a
+     page without the key is untouched by it, and that is measured node by
+     node rather than asserted. Last, on top of the system, the way a page
+     family goes. -->
+<link rel="stylesheet" href="concierge/concierge.css">
 <style>
   /* ============ TOKENS ============
      GONE, AND THAT IS THE POINT (2026-08-25). This block used to be a
@@ -4118,6 +4127,14 @@
      there is nothing to upgrade, and it styles nothing (header.css
      was linked in the head back on 25.08). -->
 <script src="../system/components/header.js"></script>
+<script>
+  /* gbppl-concierge-unify-1. One reader for the one key, declared before
+     anything asks: ?concierge=1 turns the unified concierge on and
+     nothing else in this file changes without it (law 0a.5). */
+  function conciergeOn() {
+    return (new URLSearchParams(location.search)).get('concierge') === '1';
+  }
+</script>
 
 <script>
 (function () {
@@ -4882,6 +4899,14 @@
   }
 
   function openStartPanel(opener) {
+    /* gbppl-concierge-unify-1. Ton, 09.09: «по клику на синюю кнопку в
+       центре открывается тот же дровер вместо той панели посередине».
+       The guard sits HERE and not on the four call sites on purpose:
+       under the key the old centre popup must not be reachable BY ANY
+       ROAD, and one door closed is safer than four doors watched. The
+       key is read at the use site rather than kept in a variable of
+       another script block, so no load order can make it stale. */
+    if (conciergeOn() && window.GbConcierge) { window.GbConcierge.open(); return; }
     startOpener = opener || null;
     setStartView('doors');
     document.documentElement.style.setProperty('--scrollbar-width',
@@ -5301,7 +5326,7 @@
 
   /* Same list the wordmark of <gb-site-header> carries, minus the
      portal-only keys that mean nothing on the public home. */
-  var KEEP = ['device', 'studio'];
+  var KEEP = ['device', 'studio', 'concierge'];
 
   var exit = document.querySelector('[data-gbppl-signout]');
   if (!exit) return;
@@ -5611,6 +5636,52 @@
 <script src="../system/components/inspect.js"></script>
 <script src="../system/components/toggle.js"></script>
 <script src="../system/components/comments.js"></script>
+
+<!-- ============================================================
+     THE CONCIERGE IN THE PORTAL          gbppl-concierge-unify-1
+     ------------------------------------------------------------
+     Ton, 09.09, for Valerie: the help experience is ONE experience,
+     the same on the website and inside the portal. So this page
+     mounts the very module live/help-concierge.html mounts, with a
+     different ENVIRONMENT and not a different copy:
+
+       the bell joins the portal's own bar, in front of its search
+         dot, exactly as it joins the site header on the other page;
+       the blue START button in the middle of the band hero opens
+         THAT drawer instead of the centre popup, and the old popup
+         is shut at its own door so no road reaches it (see the
+         guard in openStartPanel above);
+       FLOOR TWO IS HERE AND ONLY HERE. Ton, 09.09 13:51: the
+         personal Gift Advisor, a named human with a card and a
+         message straight to him, exists only inside the portal and
+         only for someone signed in. This page is signed in;
+       the chat, the plate, the relay, the morph and the booking
+         flow are the module's, unchanged.
+
+     UNDER A KEY AND OFF BY DEFAULT (law 0a.5): every address that
+     exists today renders as it did, and ?concierge=1 is the only
+     thing that turns any of this on. The key rides in KEEP so it
+     survives the console's own navigation, the way device and
+     studio do.
+     ============================================================ -->
+<script src="concierge/concierge.js"></script>
+<script>
+  if (conciergeOn() && window.GbConcierge) {
+    window.GbConcierge.mount({
+      bellSlot:     '.gb-header--sticky .gbh-actions',
+      bellBefore:   '[aria-label="Search gifts"]',
+      anchor:       'gb-studio-panel',
+      advisorFloor: true,
+      aiDoor:       true,
+      siteHref:     'portal.html?layout=band&hero=start&concierge=1',
+      environments: {
+        here:    'portal',
+        website: 'help-concierge.html',
+        portal:  'portal.html?layout=band&hero=start&concierge=1'
+      }
+    });
+  }
+</script>
 
 </body>
 </html>
