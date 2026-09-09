@@ -84,16 +84,35 @@
       '<button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbhc-pill__end" type="button" id="gbhcPillEnd" aria-label="End the chat"></button>' +
     '</div>' +
     '<div class="gbhc-chat" id="gbhcChat" role="dialog" aria-label="Chat" hidden>' +
+      /* THE HEAD IS THE DRAWER ORGANISM'S HEAD, in grammar and in
+         order. Ton, 09.09: «не фанат этого хедера, выглядит как
+         притянутая за уши архитектура», and the diagnosis is right —
+         three bare glyphs of one weight in a row had navigation, a
+         window state and a destruction leaning on each other with
+         nothing to say which was which.
+
+         .gbd-head reads: back FIRST, on the left; then the subject,
+         which takes the room; then the cross, on the right. Every
+         control is the button organism wearing --icon --ghost
+         --secondary in a .gbd-slot, and the back glyph is the
+         organism's own. This head says the same sentence with one
+         word more, because a window has a state a drawer does not:
+         BACK · who you are talking to · MINIMISE + CLOSE.
+
+         THE TWO ON THE RIGHT ARE A PAIR AND ARE SPACED AS ONE. The
+         head's own gap (16) separates ZONES; the pair holds together
+         on 8, so the eye reads two things on the right and not two
+         more items in a list of five. And the cross is outermost:
+         the destructive one sits where nothing follows it. */
       '<div class="gbhc-chat__head">' +
-        '<span class="gbhc-face" id="gbhcFace" aria-hidden="true"></span>' +
-        '<div class="gbhc-chat__who">' +
-          '<p class="gbhc-chat__name" id="gbhcName">Live chat</p>' +
-          '<p class="gbhc-chat__state" id="gbhcState"></p>' +
-        '</div>' +
+        '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcBack" aria-label="Back to the options"></button>' +
+        '<h2 class="gbhc-chat__title">' +
+          '<span class="gbhc-chat__name" id="gbhcName">Live chat</span>' +
+          '<span class="gbhc-dot gbhc-chat__dot" id="gbhcPresence" aria-hidden="true"></span>' +
+        '</h2>' +
         '<div class="gbhc-chat__slots">' +
-          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="gbhcBack" aria-label="Back to the options"></button>' +
-          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="gbhcMin" aria-label="Minimize the chat"></button>' +
-          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="gbhcEnd" aria-label="End the chat"></button>' +
+          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcMin" aria-label="Minimize the chat"></button>' +
+          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcEnd" aria-label="End the chat"></button>' +
         '</div>' +
       '</div>' +
       '<div class="gbhc-log" id="gbhcLog" aria-live="polite"></div>' +
@@ -723,7 +742,7 @@
       live: {
         icon: 'chat',
         name: 'Chat with our team',
-        state: '<span class="gbhc-dot" aria-hidden="true"></span><span>Online now · A real person</span>',
+        presence: true,
         /* THE PLATE SPEAKS SHORTER THAN THE HEAD. The inset is a third
            of a 380 plate and the status shares it with a name; the
            window's own head has the room for the long form and keeps
@@ -748,7 +767,6 @@
         join: {
           line: 'Brad Smaling joined the chat.',
           name: 'Brad Smaling',
-          state: 'Online now · Gifting specialist',
           pillName: 'Brad Smaling',
           pill: 'Online'
         },
@@ -765,7 +783,7 @@
         /* Ton, 09.09: the window says AI as loudly as the door does —
            a reader must never take this voice for a person. */
         name: 'AI Gift Concierge',
-        state: '<span class="gbhc-dot" aria-hidden="true"></span><span>Always on · Not a person</span>',
+        presence: false,
         pillName: 'AI Concierge',
         pill: 'AI assistant',
         placeholder: 'Ask the AI concierge...',
@@ -792,8 +810,16 @@
     var mode = null;
     var replyTimer = null;
 
+    /* THE ORGANISM'S OWN ARROW, character for character (drawer.js
+       GLYPH_BACK). The record has a chevron-left of its own and it is
+       drawn on the same grid, but the arrow beside a drawer title and
+       the arrow beside a chat title must be the SAME arrow, and the
+       one the reader already knows is the drawer's. */
     document.getElementById('gbhcBack').innerHTML =
-      '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('chevron-left') : '') + '</span>';
+      '<span class="gb-btn__icon" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
+      'stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M15 5l-7 7 7 7"/></svg></span>';
     document.getElementById('gbhcMin').innerHTML =
       '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('chevron-down') : '') + '</span>';
     document.getElementById('gbhcEnd').innerHTML =
@@ -945,9 +971,11 @@
     function joinNow(join) {
       joined = true;
       note(join.line);
+      /* THE NAME IS THE ANSWER. Until somebody picks the conversation
+         up the head says «Chat with our team»; the moment one does, it
+         says who. There is no line under it explaining that a person
+         is a person. */
       document.getElementById('gbhcName').textContent = join.name;
-      document.getElementById('gbhcState').innerHTML =
-        '<span class="gbhc-dot" aria-hidden="true"></span><span>' + join.state + '</span>';
       document.getElementById('gbhcPillName').textContent = join.pillName;
       document.getElementById('gbhcPillState').innerHTML =
         '<span class="gbhc-dot" aria-hidden="true"></span><span>' + join.pill + '</span>';
@@ -973,9 +1001,14 @@
       mode = which;
       log.innerHTML = '';
       clearTimeout(replyTimer);
-      document.getElementById('gbhcFace').innerHTML = glyph(start.icon, 22);
       document.getElementById('gbhcName').textContent = start.name;
-      document.getElementById('gbhcState').innerHTML = start.state;
+      /* PRESENCE IS ONE DOT, AND ONLY WHERE PRESENCE IS A FACT. Ton,
+         09.09: «в online now вместо a real person должно быть ИМЯ»,
+         and after that the second line had nothing left to say. So
+         the head carries the subject and a dot, and nothing else. The
+         AI has no dot: nobody is there, the name already says AI, and
+         a green light beside it would be the one lie in the room. */
+      document.getElementById('gbhcPresence').hidden = !start.presence;
       document.getElementById('gbhcPillName').textContent = start.pillName;
       document.getElementById('gbhcPillState').innerHTML =
         '<span class="gbhc-dot" aria-hidden="true"></span><span>' + start.pill + '</span>';

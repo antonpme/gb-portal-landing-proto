@@ -387,53 +387,133 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
 .gbhc-chat.is-nomo .gbhc-log,
 .gbhc-chat.is-nomo .gbhc-composer { transition: none; }
 
+/* ============================================================
+   THE HEAD, IN THE DRAWER ORGANISM'S GRAMMAR
+   gbppl-concierge-head-2
+   ------------------------------------------------------------
+   Every number below is .gbd-head's, read out of drawer.css and
+   spent the same way, so the head of the window and the head of
+   the drawer are the same object at two sizes:
+
+     the height constant   80, which drawer.css marks NO TOKEN as
+                           the one number the live catalogue states
+     the vertical padding  half of what is left after a 44 circle,
+                           written as the same calc so the circles
+                           are centred by construction and not by a
+                           number somebody rounded
+     the gutter            --space-24, and the reason drawer.css
+                           gives for it holds here too: the head and
+                           the body share one left edge
+     the gap               --space-16 between zones
+     the hairline          1px Zinc 200 under the whole head
+     flex-start            so the first line of a two line subject
+                           sits on the circles and the second hangs
+                           below it, which is exactly what
+                           .gbd-title's padding-block buys for one
+
+   AND IT IS ONE LINE, which is the second half of the answer.
+   Ton, 09.09, on the two storey version: «занимает слишком много по
+   высоте, раздутое; вторая нижняя строка оторвана от реальности; в
+   online now вместо a real person должно быть ИМЯ; иконка слева и
+   точка всё сбивают». Every one of those is the same fault seen from
+   a different side: the head was explaining itself. A drawer head
+   does not. It carries a way back, a subject and a way out, on one
+   line, and so does this one now — the avatar is gone, the status
+   line is gone, and presence is a single dot beside the subject.
+   The name IS the status: before anyone picks the conversation up
+   the subject is «Chat with our team», and the moment somebody does
+   it becomes their name.
+
+   With one line the organism's own centring works unchanged:
+   flex-start plus .gbd-title's padding-block calc, and the subject
+   sits on the circles by construction.
+   ============================================================ */
 .gbhc-chat__head {
+  --gbhc-head-h: 80px;            /* .gbd-head's own constant, borrowed by name */
   flex: 0 0 auto;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-16);
-  padding: var(--space-16);
+  padding:
+    calc((var(--gbhc-head-h) - var(--gb-btn-icon-size)) / 2)
+    var(--space-24);
   border-bottom: 1px solid var(--zinc-200);
 }
-.gbhc-face {
-  flex: 0 0 auto;
-  width: var(--gb-btn-icon-size);
-  height: var(--gb-btn-icon-size);
-  display: grid;
-  place-items: center;
-  background: var(--zinc-100);
-  border-radius: var(--radius-circle);
-  color: var(--zinc-900);
-}
-.gbhc-chat__who { flex: 1 1 auto; min-width: 0; }
-.gbhc-chat__name {
+/* THE AVATAR IS GONE FROM THE HEAD. Ton, 09.09: «иконка слева и
+   точка всё сбивают». Two round things saying two different kinds of
+   thing, forty pixels apart, and neither of them the subject. The
+   disc still lives in the thread, beside what the speaker actually
+   said (.gbhc-msg__face), which is where a face means something. */
+/* THE SUBJECT, in .gbd-title's place and by its calc: flex 1, min
+   width 0, and padded so its single line is centred on the 44
+   circles beside it. The type stays the reference's own head type
+   (16/600, .gsp-head-title of the START popup) rather than the
+   drawer's serif 24: this head sits INSIDE a floating window that is
+   itself a level below the drawer, and Ton's word on it was that it
+   was too big, not too small. The alternative is one line away and
+   is named in the report. */
+.gbhc-chat__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
   margin: 0;
+  padding-block: calc((var(--gb-btn-icon-size) - 1.5 * 16px) / 2);
   font-size: 16px;
   font-weight: 600;
   line-height: 1.5;
   color: var(--zinc-900);
+}
+.gbhc-chat__name {
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.gbhc-chat__state {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  min-width: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--zinc-500);
-}
-.gbhc-chat__state span:not(.gbhc-dot) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gbhc-chat__slots { flex: 0 0 auto; display: flex; align-items: center; }
-/* On the narrow step the head gives the face back to the thread. Two
-   44 circles of chrome, a 44 face and a name do not fit across 328,
-   and the greeting card two lines below already shows the same disc;
-   the reference's own narrow head carries no avatar either. */
+/* Presence, and nothing else, in the one place a reader is already
+   looking. It is hidden outright where there is nobody to be
+   present: [hidden] has to be told, because the dot declares its
+   own display. */
+.gbhc-chat__dot[hidden] { display: none; }
+/* THE PAIR ON THE RIGHT. The head's gap separates zones; these two
+   are one zone and hold together on half of it, so the eye reads
+   «who» and «what the window can do» rather than a row of four. The
+   cross is outermost: the destructive one sits where nothing follows
+   it. */
+.gbhc-chat__slots { flex: 0 0 auto; display: flex; align-items: center; gap: var(--space-8); }
+
+/* On the narrow step the head closes to the body's own gutter and
+   the pair on the right closes up entirely: two 44 circles standing
+   shoulder to shoulder still read as two controls, and the 8 they
+   were holding is the 8 the subject needs to print «Chat with our
+   team» whole across 326. Measured, not guessed. */
 @media (max-width: 639px) {
-  .gbhc-chat__head { gap: var(--space-8); }
-  .gbhc-face { display: none; }
+  .gbhc-chat__head { gap: var(--space-8); padding-inline: var(--space-16); }
+  .gbhc-chat__slots { gap: 0; }
+  /* AND THE THREE CONTROLS STEP DOWN A RUNG. A drawer head at 360
+     carries two 44 circles and a subject; this one carries three,
+     and the third costs the subject exactly the room it needs to
+     print «Chat with our team» whole. 40 is not a compromise
+     invented here: it is the small rung of the icon button
+     (.gb-btn--icon.gb-btn--small, 40 with a 20 glyph), the rung the
+     session plate's own cross already stands on, so the head shrinks
+     ONTO THE LADDER rather than off it. The head keeps its 80,
+     because the height is the padding plus the tallest thing in the
+     row and the subject is unchanged. */
+  .gbhc-chat__head .gbd-slot {
+    --gbb-circle: var(--gb-btn-small-h-2xl);
+    --gbb-icon:   var(--gb-btn-large-icon-xl);
+  }
+  /* AND THE LAST TWO PIXELS. With the small rung the subject has 144
+     and «Chat with our team» wants 146, which is a two pixel
+     ellipsis and therefore a five letter one. The two come off the
+     gap that holds the dot to the word, and that gap is not a space
+     of the layout scale any more than the 6px dot is: it is part of
+     the dot. NO TOKEN, 4px, same family and same argument as the dot
+     it belongs to, spent only on the narrow step where it buys the
+     whole subject. */
+  .gbhc-chat__title { gap: 4px; }
 }
 
 /* ============================================================
