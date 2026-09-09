@@ -91,6 +91,7 @@
           '<p class="gbhc-chat__state" id="gbhcState"></p>' +
         '</div>' +
         '<div class="gbhc-chat__slots">' +
+          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="gbhcBack" aria-label="Back to the options"></button>' +
           '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="gbhcMin" aria-label="Minimize the chat"></button>' +
           '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="gbhcEnd" aria-label="End the chat"></button>' +
         '</div>' +
@@ -376,7 +377,12 @@
     var AI_DOOR_HERE = ENVIRONMENT.aiDoor;
     var DOORS = [
       {
-        id: 'live', icon: 'chat',
+        /* THE ONE TINTED DISC, read off the reference. In the START
+           popup only the live door is coloured (.gsp-door-icon--live):
+           the other three keep the neutral disc, and gbppl-demo-polish-1
+           took the paint off them on purpose. So one tint here too,
+           and it is the same green the badge and the dot now carry. */
+        id: 'live', icon: 'chat', tint: 'live',
         title: 'Live chat', badge: 'Online now',
         sub: 'Get help right now'
       },
@@ -405,7 +411,8 @@
         ? ' href="' + d.href + '"'
         : ' type="button"';
       return '<' + tag + ' class="gbhc-door" data-door="' + d.id + '"' + attrs + '>' +
-        '<span class="gbhc-door__disc">' + glyph(d.icon, 22) + '</span>' +
+        '<span class="gbhc-door__disc' + (d.tint ? ' gbhc-door__disc--' + d.tint : '') +
+          '">' + glyph(d.icon, 22) + '</span>' +
         '<span class="gbhc-door__copy">' +
           '<span class="gbhc-door__title">' + d.title +
             (d.badge
@@ -444,12 +451,22 @@
               '<span class="gb-btn__label" data-pc-section="label">Send a message</span></button>' +
             '<div class="gbhc-grow"><div><div class="gbhc-note">' +
               '<div class="gba-inputwrap">' +
-                '<textarea class="gba-input gba-textarea" id="gbhcNote" rows="3" ' +
+                '<textarea class="gba-input gba-textarea" id="gbhcNote" rows="2" ' +
                   'aria-label="Your message to ' + ADVISOR.name + '" ' +
                   'placeholder="Need help? Type your question here..."></textarea>' +
               '</div>' +
-              '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary gb-btn--block gbhc-note__send" type="button" data-send>' +
-                '<span class="gb-btn__label" data-pc-section="label">Send</span></button>' +
+            /* Ton: the Send was the biggest thing in the card. It was
+               already `medium`, which is the rung the house gives a
+               confirm inside a drawer form (checkout carries fifteen of
+               them at that size); what made it shout was --block. The
+               checkout's own drawer confirms are NOT block — the four
+               that are, are the page's single closing action — so the
+               modifier goes and the button becomes the size of its
+               word, standing at the end of the row it belongs to. */
+              '<div class="gbhc-note__foot">' +
+                '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary gbhc-note__send" type="button" data-send>' +
+                  '<span class="gb-btn__label" data-pc-section="label">Send</span></button>' +
+              '</div>' +
             '</div></div></div>' +
           '</div>' +
         '</div>';
@@ -464,8 +481,95 @@
 
     function panel() { return document.querySelector('.gbd-panel'); }
 
+    /* ============================================================
+       THE LEVELS OF THE DRAWER          gbppl-concierge-levels-1
+       ------------------------------------------------------------
+       Ton, 09.09: «анимация вообще не работает: жму Book a Meeting —
+       форма открывается сразу». It did open at once: drawer.open()
+       swaps the body in one frame and the organism has no opinion
+       about what happens inside it. So the module gives its own
+       content a choreography, on its own containers, and the organism
+       is not touched: open() is called ONCE, to bring the surface in;
+       every level after that is a swap inside .gbd-body that this
+       code owns.
+
+       THE SPATIAL LOGIC IS THE DRAWER'S OWN. The panel lives on the
+       right and travels from the right, so going DEEPER brings the
+       new level in from the right and pushes the old one out to the
+       left; coming BACK reverses both. Arriving is --mo-small on
+       --mo-arrive, leaving is --mo-small-out on --mo-exit: the old
+       level is gone before the new one has finished, which is the
+       same overlap the relay uses.
+
+       The title and the arrow change WITH the ride and not before it:
+       setTitle and setBack are called at the same moment the level
+       starts moving, so nothing in the head jumps ahead of the body.
+       ============================================================ */
+    function levels() { var p = panel(); return p ? p.querySelector('.gbhc-levels') : null; }
+
+    /* THE RIDE TAKES A NODE, NOT A STRING, and that distinction is
+       the whole of the calendar fix. A level that is built here and
+       now starts empty and fills up while it travels; a level that
+       was assembled off stage is ALREADY WHOLE and only has to be
+       let out of the wings. Both roads end in this function, and it
+       never rebuilds what it is given. */
+    function goLevelWith(next, dir, title, back) {
+      var box = levels();
+      if (!box || !next) return;
+      var old = null;
+      Array.prototype.forEach.call(box.children, function (c) {
+        if (c !== next && c.classList.contains('gbhc-level')) old = c;
+      });
+      /* THE START OF A RIDE IS NOT PART OF THE RIDE, and that is what
+         went wrong the first time. The level standing in the wings is
+         already at opacity 1; putting the start state on it with the
+         clock running made the browser ANIMATE INTO the start — it
+         read as a level fading out, then snapping back, and by the
+         time anything looked it was home again (measured: the class
+         said from-right while the computed opacity was 0.798 and
+         falling). So the start state is applied with no clock at all,
+         one frame is allowed to paint it, and the ride begins on the
+         next. The same two-step the morph uses. */
+      next.classList.add('gbhc-level--nomo',
+        dir === 'back' ? 'gbhc-level--from-left' : 'gbhc-level--from-right');
+      next.classList.remove('gbhc-offstage');
+      window.requestAnimationFrame(function () {
+        next.classList.remove('gbhc-level--nomo');
+        window.requestAnimationFrame(function () {
+          /* the head turns at the same instant the body starts moving */
+          drawer.setTitle(title);
+          drawer.setBack(back || null);
+          next.classList.remove('gbhc-level--from-left', 'gbhc-level--from-right');
+          if (old) {
+            old.classList.add(dir === 'back' ? 'gbhc-level--to-right' : 'gbhc-level--to-left');
+            window.setTimeout(function () { if (old.parentNode) old.parentNode.removeChild(old); }, MO.small);
+          }
+        });
+      });
+    }
+
+    function goLevel(dir, title, back, html, after) {
+      var box = levels();
+      if (!box) return;
+      var next = document.createElement('div');
+      next.className = 'gbhc-level gbhc-offstage';
+      next.innerHTML = html;
+      box.appendChild(next);
+      if (after) after(next);
+      goLevelWith(next, dir, title, back);
+    }
+
     function openHome() {
-      drawer.open({ title: 'Talk to us', html: homeHTML() });
+      var p = panel();
+      /* Already open on another level: this is a step back, not a door. */
+      if (p && levels() && p.classList.contains('is-open')) {
+        goLevel('back', 'Talk to us', null, homeHTML());
+        return;
+      }
+      drawer.open({
+        title: 'Talk to us',
+        html: '<div class="gbhc-levels"><div class="gbhc-level">' + homeHTML() + '</div></div>'
+      });
       drawer.setBack(null);
       wireHome();
     }
@@ -485,7 +589,7 @@
         var door = e.target.closest ? e.target.closest('.gbhc-door') : null;
         if (door) {
           var id = door.getAttribute('data-door');
-          if (id === 'meeting') { e.preventDefault(); openMeeting(); return; }
+          if (id === 'meeting') { e.preventDefault(); openMeeting(door); return; }
           if (id === 'live' || id === 'ai') { e.preventDefault(); relay(id, door); return; }
           return;   /* Call us is an <a href="tel:"> and stays one */
         }
@@ -521,18 +625,69 @@
        level, exactly as the concept asked. The back arrow of the head
        stays on both screens and goes home to the options.
        ------------------------------------------------------------ */
-    function openMeeting() {
-      drawer.open({
-        title: 'Book a meeting',
-        back: openHome,
-        html: '<gb-booking-flow id="gbhcBooking" start="slot"' +
+    /* THE CALENDAR IS BUILT BEFORE THE LEVEL MOVES. Ton, same
+       sentence: «календарь появляется с задержкой». The booking
+       organism upgrades and lays itself out on its own clock, so a
+       level that carried it started travelling with an empty box and
+       the calendar flashed in halfway. The cure is not a skeleton
+       standing in for it: the level is assembled OFF STAGE — built,
+       laid out, its grid measured, the fonts landed — and only a
+       finished level is asked to move. Nothing is invented to look
+       at while waiting, because nothing is waiting on screen. */
+    function whenBuilt(host, done) {
+      var tries = 0, fonts = !(document.fonts && document.fonts.ready);
+      if (!fonts) document.fonts.ready.then(function () { fonts = true; });
+      /* The poll starts NOW and the fonts are a condition inside it, not
+         a gate in front of it: waiting for the font promise before even
+         looking added a whole frame of nothing to every trip. The cap
+         is a second, because a level that will not build is still a
+         level the guest asked for and must be shown. */
+      var look = function () {
+        var grid = host.querySelector('.gbb-cal-grid');
+        var ready = fonts && grid && grid.getBoundingClientRect().height > 0;
+        if (ready || ++tries > 60) { done(); return; }
+        window.requestAnimationFrame(look);
+      };
+      look();
+    }
+
+    function bookingHTML() {
+      return '<gb-booking-flow id="gbhcBooking" start="slot"' +
               ' guest-name="Anton Parkhomenko"' +
               ' guest-email="anton@gildedbox-demo.com"' +
               ' guest-company="GildedBox"' +
               ' site-href="' + ENVIRONMENT.siteHref + '"' +
-              ' exit-label="Back to the options"></gb-booking-flow>'
+              ' exit-label="Back to the options"></gb-booking-flow>';
+    }
+
+    function openMeeting(row) {
+      var box = levels();
+      if (!box) return;
+      /* THE CLICK IS ANSWERED AT ONCE even though the level cannot be.
+         Assembling the calendar off stage costs real milliseconds, and
+         a row that does nothing while it happens is the same silence
+         the relay was built to remove. So the row lights the moment it
+         is hit, exactly as the doors into the chat do, and it stays lit
+         until its level walks on. */
+      if (row) row.classList.add('is-chosen');
+      /* Off stage: in the panel, so it has a real width to lay out in,
+         but not on the ride and not readable until it is whole. */
+      var stage = document.createElement('div');
+      stage.className = 'gbhc-level gbhc-offstage';
+      stage.innerHTML = bookingHTML();
+      box.appendChild(stage);
+      wireBooking(stage);
+      /* When the organism has laid its calendar out, THAT VERY NODE
+         walks on. Building a second one here would hand the ride an
+         empty box again and the flash would come straight back. */
+      whenBuilt(stage, function () {
+        if (row) row.classList.remove('is-chosen');
+        goLevelWith(stage, 'forward', 'Book a meeting', openHome);
       });
-      var flow = document.querySelector('.gbd-panel #gbhcBooking');
+    }
+
+    function wireBooking(level) {
+      var flow = level.querySelector('#gbhcBooking');
       if (!flow) return;
       /* The quiet exit of the last screen means «go back» inside a
          panel, not «leave the site»: the organism made that the
@@ -637,6 +792,8 @@
     var mode = null;
     var replyTimer = null;
 
+    document.getElementById('gbhcBack').innerHTML =
+      '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('chevron-left') : '') + '</span>';
     document.getElementById('gbhcMin').innerHTML =
       '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('chevron-down') : '') + '</span>';
     document.getElementById('gbhcEnd').innerHTML =
@@ -960,6 +1117,36 @@
       setPending(false);
     }
 
+    /* ---- THE WAY BACK ------------------------------------------
+       Ton, 09.09: «есть закрыть и свернуть, а вернуться назад нет —
+       конфуз». The arrow does BOTH halves of what going back means
+       here, and the order matters: the conversation is not ended and
+       not thrown away, it MORPHS INTO THE PLATE exactly as the
+       minimise does, and the switchboard opens over it. The thread is
+       alive, the plate is on screen holding it, and the options are
+       in front of you. Esc inside the window is the same gesture,
+       because Esc has meant «up one level» in this house since the
+       drawer's own ladder.
+
+       The plate is what makes this honest. Without it, going back
+       would look like the chat was closed. */
+    function backToOptions() {
+      if (!mode) return;
+      minimise();
+      openHome();
+    }
+    document.getElementById('gbhcBack').addEventListener('click', backToOptions);
+    chat.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      /* AND IT STOPS HERE. The drawer organism listens for Escape on
+         the document and closes itself; without this the switchboard
+         we are opening would be shut again by the same keystroke,
+         inside the same tick. The gesture belongs to the window it
+         was pressed in. */
+      e.stopPropagation();
+      backToOptions();
+    });
     document.getElementById('gbhcMin').addEventListener('click', minimise);
     document.getElementById('gbhcEnd').addEventListener('click', endSession);
     document.getElementById('gbhcPillEnd').addEventListener('click', endSession);

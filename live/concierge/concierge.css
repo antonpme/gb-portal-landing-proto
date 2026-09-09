@@ -829,3 +829,117 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
    written as a literal only because the property is declared inside
    .gb-icon and cannot be reached from here. */
 [data-gbhc-bell] .gb-btn__icon > svg { stroke-width: 1.5; }
+
+/* ============================================================
+   THE GREEN OF BEING THERE            gbppl-concierge-pack-1
+   ------------------------------------------------------------
+   Ton, 09.09, plainly: the online dot is GREEN, not blue. That
+   overrules the reasoning this file carried until now (Ton-5 gives
+   state the blue, and the system owns no green at all), and it is
+   his call to make.
+
+   THE VALUE IS NOT INVENTED, IT IS THE REFERENCE'S. The START
+   popup of live/portal.html?layout=band&hero=start paints its live
+   door and its «Online now» badge with --gh-success #276c49, and
+   its two derivatives, and that page marks all three NO TOKEN in
+   its own words: «the system owns no green». The alternative was
+   alert.css, which does own a success family — #f0fdf4 / #bbf7d0 /
+   #14532d out of the Tailwind green ramp, Figma Alertbox 9293-2260
+   — but that green belongs to a MESSAGE BOX and is far paler; the
+   thing being copied here is the reference's presence dot, so the
+   reference's green comes with it.
+
+   NO TOKEN, three values, one provenance: read off
+   live/portal.html (--gh-success and its two color-mix children,
+   09.09). The question of promoting «online green» to the palette
+   goes to Ton in the report; until he answers, it lives here and
+   is spent on exactly two things, the dot and the disc of the one
+   door that is a person.
+   ============================================================ */
+.gbhc-doors, .gbhc-chat, .gbhc-pill {
+  --gbhc-online:      #276c49;
+  --gbhc-online-bg:   color-mix(in srgb, #276c49 9%, var(--white));
+  --gbhc-online-line: color-mix(in srgb, #276c49 32%, var(--v1-border));
+}
+.gbhc-dot { background: var(--gbhc-online); }
+/* The badge beside the door's title goes with its dot: the
+   reference's «Online now» is a green chip, not a grey one. */
+.gbhc-doors .gbhc-badge {
+  background: var(--gbhc-online-bg);
+  border: 1px solid var(--gbhc-online-line);
+  color: var(--gbhc-online);
+}
+/* THE ONE TINTED DISC. In the reference only the live door is
+   coloured; the other three keep the neutral disc on purpose. */
+.gbhc-door__disc--live {
+  background: var(--gbhc-online-bg);
+  border-color: var(--gbhc-online-line);
+  color: var(--gbhc-online);
+}
+
+/* ---- The advisor's note, shorter at rest ------------------
+   Ton: the free text box starts too tall. rows=2 instead of 3 is
+   the whole change; the field grows with what is typed exactly as
+   it did, because the growth was never in the row count. */
+/* THE FLOOR OF THE LIVE FIELD IS NOT THIS CARD'S FLOOR. auth.css
+   gives a plain .gba-textarea a min-height of 80 (96 from 2000), and
+   that number is a LIVE measurement of the message box on the sign-in
+   form, where the box is the subject of the screen. Here it is a note
+   at the foot of an advisor's card inside a drawer, and Ton asked it
+   to start smaller. Releasing the floor lets `rows` say the height,
+   which is what rows is for; the growth is untouched, because the
+   growth was never in the floor — it is field-sizing: content in
+   auth.css with a JS fallback, and both raise the height from
+   wherever it starts. */
+.gbhc-note .gba-textarea { min-height: 0; }
+.gbhc-note__foot { display: flex; justify-content: flex-end; margin-top: var(--space-16); }
+.gbhc-note__send { margin-top: 0; }
+
+/* ============================================================
+   THE LEVELS OF THE DRAWER            gbppl-concierge-levels-1
+   ------------------------------------------------------------
+   Two levels share one cell of a grid while one replaces the
+   other, so nothing stacks and nothing reflows the panel. Deeper
+   arrives from the right, back arrives from the left, and the
+   leaving level goes the other way and faster. Every clock is a
+   rung. No prefers-reduced-motion branch: Ton-7.
+   ============================================================ */
+.gbhc-levels { display: grid; }
+.gbhc-level {
+  grid-area: 1 / 1;
+  min-width: 0;
+  transition: transform var(--mo-small) var(--mo-arrive),
+              opacity var(--mo-small) var(--mo-arrive);
+}
+/* NO TOKEN: 24px of travel, and it is --space-24 spent as a
+   distance rather than as a gap — the same short slide MOTION.md
+   gives a step of a flow, far enough to read as a direction and
+   near enough not to look like a second door. */
+.gbhc-level--from-right { transform: translateX(var(--space-24)); opacity: 0; }
+.gbhc-level--from-left  { transform: translateX(calc(-1 * var(--space-24))); opacity: 0; }
+.gbhc-level--to-left,
+.gbhc-level--to-right {
+  pointer-events: none;
+  opacity: 0;
+  transition: transform var(--mo-small-out) var(--mo-exit),
+              opacity var(--mo-small-out) var(--mo-exit);
+}
+.gbhc-level--nomo     { transition: none; }
+.gbhc-level--to-left  { transform: translateX(calc(-1 * var(--space-24))); }
+.gbhc-level--to-right { transform: translateX(var(--space-24)); }
+/* Off stage: laid out at full width so the calendar can measure
+   itself, and unreadable and untouchable until it is whole. */
+.gbhc-offstage {
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  inset: 0 0 auto 0;
+}
+
+/* ---- Three glyphs in the chat head ------------------------
+   Back, minimise, close. At 360 the head has already given up its
+   face (see the rule further up), which frees 60px, and three 44
+   circles plus the name fit across 328 with room to spare: the
+   slots measure 132 against a head of 296. Nothing had to be
+   folded away, which is the honest answer to the question. */
+.gbhc-chat__slots { gap: 0; }
