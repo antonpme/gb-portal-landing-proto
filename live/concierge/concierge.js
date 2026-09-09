@@ -75,13 +75,11 @@
   var MARKUP =
     '<div class="gbhc-pill" id="gbhcPill" hidden>' +
       '<button class="gbhc-pill__open" type="button" id="gbhcPillOpen" aria-label="Open the chat">' +
-        '<span class="gbhc-pill__who">' +
-          '<span class="gbhc-pill__name" id="gbhcPillName">Live chat</span>' +
-          '<span class="gbhc-pill__state" id="gbhcPillState"></span>' +
-        '</span>' +
-        '<span class="gbhc-pill__last" id="gbhcPillLast"></span>' +
+        '<span class="gbhc-dot gbhc-pill__dot" id="gbhcPillDot" aria-hidden="true"></span>' +
+        '<span class="gbhc-pill__name" id="gbhcPillName">Live chat</span>' +
+        '<span class="gbhc-pill__last"><span id="gbhcPillLast"></span></span>' +
       '</button>' +
-      '<button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbhc-pill__end" type="button" id="gbhcPillEnd" aria-label="End the chat"></button>' +
+      '<button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbhc-pill__end" type="button" id="gbhcPillEnd" data-gbhc-tip="End chat" aria-label="End the chat"></button>' +
     '</div>' +
     '<div class="gbhc-chat" id="gbhcChat" role="dialog" aria-label="Chat" hidden>' +
       /* THE HEAD IS THE DRAWER ORGANISM'S HEAD, in grammar and in
@@ -105,20 +103,37 @@
          more items in a list of five. And the cross is outermost:
          the destructive one sits where nothing follows it. */
       '<div class="gbhc-chat__head">' +
-        '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcBack" aria-label="Back to the options"></button>' +
+        '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcBack" data-gbhc-tip="Back to options" aria-label="Back to the options"></button>' +
         '<h2 class="gbhc-chat__title">' +
           '<span class="gbhc-chat__name" id="gbhcName">Live chat</span>' +
           '<span class="gbhc-dot gbhc-chat__dot" id="gbhcPresence" aria-hidden="true"></span>' +
         '</h2>' +
         '<div class="gbhc-chat__slots">' +
-          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcMin" aria-label="Minimize the chat"></button>' +
-          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcEnd" aria-label="End the chat"></button>' +
+          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcMin" data-gbhc-tip="Minimize" aria-label="Minimize the chat"></button>' +
+          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcEnd" data-gbhc-tip="End chat" aria-label="End the chat"></button>' +
         '</div>' +
       '</div>' +
       '<div class="gbhc-log" id="gbhcLog" aria-live="polite"></div>' +
+      /* THE CONFIRMATION IS A STRIP, NOT A MODAL. Ton: «на закрытие
+         подтверждение всё-таки нужно». A dialog over a dialog is two
+         surfaces asking one question, so the question stands where
+         the answer will be lost: a quiet band over the composer,
+         inside the window it is about. The pair is the checkout's
+         own (Cancel then Remove, both --ghost, the destructive one
+         --primary), on the small rung because this is furniture of a
+         panel and not a page's closing act. */
+      '<div class="gbhc-confirm" id="gbhcConfirm" hidden>' +
+        '<p class="gbhc-confirm__q">End this chat?</p>' +
+        '<div class="gbhc-confirm__acts">' +
+          '<button class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary" type="button" data-keep>' +
+            '<span class="gb-btn__label" data-pc-section="label">Keep chatting</span></button>' +
+          '<button class="gb-btn gb-btn--small gb-btn--ghost gb-btn--primary" type="button" data-endnow>' +
+            '<span class="gb-btn__label" data-pc-section="label">End chat</span></button>' +
+        '</div>' +
+      '</div>' +
       '<form class="gbhc-composer" id="gbhcForm" autocomplete="off">' +
         '<div class="gbhc-chips" id="gbhcChips" aria-label="Suggested messages"></div>' +
-        '<div class="gbhc-composer__field">' +
+        '<div class="gbhc-composer__field gba-scale-portal">' +
           '<div class="gba-inputwrap">' +
             '<input class="gba-input" id="gbhcInput" type="text" aria-label="Your message" placeholder="Message a gifting specialist...">' +
           '</div>' +
@@ -878,12 +893,18 @@
       row.appendChild(stack);
       log.appendChild(row);
       log.scrollTop = log.scrollHeight;
-      /* THE PLATE IS LIVE. Whatever was last said is what the pill
-         shows, including an answer that lands while it is minimised:
-         that is the difference between a handle on a conversation
-         and a button that says a conversation exists. The plate has
-         one line, so a two paragraph card arrives there as one. */
-      pillLast.textContent = text.split('\n').join(' ');
+      /* THE PLATE SAYS SOMETHING ONLY WHEN THERE IS SOMETHING TO
+         SAY. A permanent echo of the last line was noise by the
+         house's own law, and a clipped echo of a greeting nobody had
+         answered was worse. So the plate carries a line in ONE case:
+         an answer arrived while the window was down. Then it widens
+         under it, which is the signal; opening it again makes it
+         short. Anything the guest said themselves is never echoed —
+         they know what they wrote. */
+      if (side === 'them' && chat.hidden && !pill.hidden) {
+        pillLast.textContent = text.split('\n').join(' ');
+        pill.classList.add('is-unread');
+      }
     }
 
     /* ---- THE CHIPS --------------------------------------------
@@ -914,6 +935,7 @@
        here, in one place, in both directions (trap 22). */
     var pending = false;
     var turn = 0;              /* which scripted answer is next */
+    var joinTimer = null;
     function syncSend() {
       send.disabled = pending || !input.value.trim();
     }
@@ -977,8 +999,6 @@
          is a person. */
       document.getElementById('gbhcName').textContent = join.name;
       document.getElementById('gbhcPillName').textContent = join.pillName;
-      document.getElementById('gbhcPillState').innerHTML =
-        '<span class="gbhc-dot" aria-hidden="true"></span><span>' + join.pill + '</span>';
     }
 
     /* ============================================================
@@ -1010,8 +1030,7 @@
          a green light beside it would be the one lie in the room. */
       document.getElementById('gbhcPresence').hidden = !start.presence;
       document.getElementById('gbhcPillName').textContent = start.pillName;
-      document.getElementById('gbhcPillState').innerHTML =
-        '<span class="gbhc-dot" aria-hidden="true"></span><span>' + start.pill + '</span>';
+      document.getElementById('gbhcPillDot').hidden = !start.presence;
       input.placeholder = start.placeholder;
       input.setAttribute('aria-label', start.placeholder.replace('...', ''));
       hint.textContent = start.hint;
@@ -1021,6 +1040,25 @@
       turn = 0;
       setPending(false);
       start.say.forEach(function (line) { say('them', line); });
+      /* THE SPECIALIST PICKS IT UP AT ONCE. Ton: «не хватает имени».
+         The generic subject was honest but it was the whole of what
+         the head ever said, because the join was waiting for the
+         guest to speak first. It waits for nothing now: the greeting
+         lands, the dots run, and within a beat somebody has the
+         conversation and the head and the plate carry their name.
+         «Chat with our team» is the moment before that, and it is
+         supposed to be a moment.
+
+         NO TOKEN: 1200ms of waiting is not a move, the same reason
+         the scripted answer's 900 is not one. */
+      if (start.join) {
+        var wait = typingRow();
+        clearTimeout(joinTimer);
+        joinTimer = setTimeout(function () {
+          if (wait.parentNode) wait.parentNode.removeChild(wait);
+          if (mode === which && !joined) joinNow(start.join);
+        }, 1200);
+      }
       return start;
     }
 
@@ -1125,6 +1163,8 @@
         chat.classList.remove('is-morph');
         clearBox(chat);
         pill.hidden = true;
+        pill.classList.remove('is-unread');   /* it has been read */
+        pillLast.textContent = '';
         busy = false;
         input.focus();
       }, MO.small);
@@ -1133,7 +1173,28 @@
     /* THE CROSS ENDS THE SESSION, and the screen is clean: no window,
        no pill, nothing floating anywhere. Next time the door is used
        the conversation starts again from its greeting. */
+    /* A conversation worth confirming is one the guest has spoken in.
+       A window holding nothing but the greeting has nothing to lose,
+       and asking about it would be a ceremony over an empty room. */
+    function hasConversation() { return !!log.querySelector('.gbhc-msg--you'); }
+    function askToEnd(on) {
+      var bar = document.getElementById('gbhcConfirm');
+      if (!bar) return;
+      bar.hidden = !on;
+      if (on) { var k = bar.querySelector('[data-keep]'); if (k) k.focus(); }
+    }
+    function confirmOpen() {
+      var bar = document.getElementById('gbhcConfirm');
+      return !!bar && !bar.hidden;
+    }
+    function tryEnd() {
+      if (!hasConversation()) { endSession(); return; }
+      askToEnd(true);
+    }
+
     function endSession() {
+      clearTimeout(joinTimer);
+      askToEnd(false);
       clearTimeout(replyTimer);
       clearTimeout(rideTimer);
       busy = false;
@@ -1141,6 +1202,7 @@
       chat.classList.remove('is-in', 'is-morph', 'is-shut', 'is-nomo');
       clearBox(chat);
       pill.hidden = true;
+      pill.classList.remove('is-unread');
       mode = null;
       log.innerHTML = '';
       pillLast.textContent = '';
@@ -1172,6 +1234,9 @@
     chat.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       e.preventDefault();
+      /* With the question standing, Escape answers it and nothing
+         else: the quiet way out of being asked is «keep chatting». */
+      if (confirmOpen()) { e.stopPropagation(); askToEnd(false); input.focus(); return; }
       /* AND IT STOPS HERE. The drawer organism listens for Escape on
          the document and closes itself; without this the switchboard
          we are opening would be shut again by the same keystroke,
@@ -1180,10 +1245,26 @@
       e.stopPropagation();
       backToOptions();
     });
-    document.getElementById('gbhcMin').addEventListener('click', minimise);
-    document.getElementById('gbhcEnd').addEventListener('click', endSession);
-    document.getElementById('gbhcPillEnd').addEventListener('click', endSession);
+    document.getElementById('gbhcMin').addEventListener('click', function () {
+      askToEnd(false);
+      minimise();
+    });
+    document.getElementById('gbhcEnd').addEventListener('click', tryEnd);
+    /* THE PLATE'S CROSS ASKS IN THE WINDOW. Confirming something you
+       cannot see is not confirming, so the cross on a minimised chat
+       brings the window back up with the question already standing in
+       it. An empty thread still closes without a word. */
+    document.getElementById('gbhcPillEnd').addEventListener('click', function () {
+      if (!hasConversation()) { endSession(); return; }
+      expand();
+      window.setTimeout(function () { askToEnd(true); }, MO.small);
+    });
     document.getElementById('gbhcPillOpen').addEventListener('click', expand);
+    chat.addEventListener('click', function (e) {
+      if (!e.target.closest) return;
+      if (e.target.closest('[data-keep]')) { askToEnd(false); input.focus(); return; }
+      if (e.target.closest('[data-endnow]')) { endSession(); }
+    });
 
     /* ---- ONE WAY IN AND OUT FOR EVERY MESSAGE -----------------
        The typed line and the tapped chip are the same errand and go
@@ -1209,8 +1290,6 @@
          place it was set, and there is no other path out of it. */
       replyTimer = setTimeout(function () {
         if (typing.parentNode) typing.parentNode.removeChild(typing);
-        /* The room reports the arrival BEFORE the arrival speaks. */
-        if (start.join && !joined) joinNow(start.join);
         say('them', step.say, step.ask);
         setPending(false);
         if (!chat.hidden) input.focus();

@@ -305,7 +305,15 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
 /* THE PLATE DOES NOT FOLLOW THE WINDOW UP. It is a handle, and a
    528 handle is a banner. So the morph stopped being a change of
    height alone and learned the width as well — see below. */
-.gbhc-pill { width: 380px; }      /* NO TOKEN: a layout measure, the width that holds a name, a status and a line of the thread */
+/* WIDTH BY CONTENT. The plate is a handle: as wide as the name it
+   holds, and the only thing that ever widens it is an unread answer,
+   which is the whole point of the widening. The ceiling is the old
+   fixed width, so a long reply cannot let a handle grow into a
+   banner. */
+.gbhc-pill {
+  width: auto;
+  max-width: min(380px, calc(100vw - var(--space-32)));
+}
 .gbhc-chat[hidden], .gbhc-pill[hidden] { display: none; }
 
 /* ============================================================
@@ -735,15 +743,39 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
    circle was the other candidate and it is the wrong one, because
    this button is the right hand half of a form control and not
    chrome standing alone. The reference reasons the same way. */
+/* THE COMPOSER STEPS DOWN A LADDER, AND STOPS CLIMBING.
+   Ton, 09.09, off the screenshot: the field and its grey square were
+   the biggest thing in the window. Two faults, and the second is the
+   one that matters.
+
+   THE LADDER. The row wore the SITE field ladder, 48/56/64. The house
+   owns a smaller one and it is not invented here: .gba-scale-portal
+   (auth.css, Ton 04.09, the portal keeps its fields smaller) is
+   40/48/56 with 14/14/16 type, a flat 12 pad-x and a 16 glyph. The
+   class goes on the row, so the type, the padding and the glyph come
+   down together with the height instead of being restated.
+
+   AND IT IS HELD FLAT AT THE BASE RUNG, 40. The window does not grow
+   with the viewport: it is 528 by 748 at every width above 640, so
+   nothing inside it may climb. A control going 40 to 48 to 56 in a
+   box that never changes size is the mismatch that made this read
+   huge, and it is why the head's own circles are flat too. Forty also
+   puts the composer UNDER the head rather than over it: 44 circles
+   above, a 40 row below.
+
+   No new number: the two rungs above are pinned to the rung below
+   them, which is the ladder being told to stay. */
 .gbhc-composer__field {
-  --gbhc-ctl-h: var(--form-ctl-h);      /* 48, base */
+  --form-ctl-h-xl:  var(--form-ctl-h);
+  --form-ctl-h-2xl: var(--form-ctl-h);
+  --form-ctl-fs-xl:  var(--form-ctl-fs);
+  --form-ctl-fs-2xl: var(--form-ctl-fs);
+  --gbhc-ctl-h: var(--form-ctl-h);
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--gbhc-ctl-h);
   align-items: center;
   gap: var(--gbhc-half);
 }
-@media (min-width: 1280px) { .gbhc-composer__field { --gbhc-ctl-h: var(--form-ctl-h-xl); } }   /* 56 */
-@media (min-width: 2000px) { .gbhc-composer__field { --gbhc-ctl-h: var(--form-ctl-h-2xl); } }  /* 64 */
 .gbhc-composer .gba-inputwrap { min-width: 0; }
 .gbhc-composer .gba-input:disabled { color: var(--zinc-400); cursor: wait; }
 .gbhc-send {
@@ -801,33 +833,34 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
    above), which is both what Ton asked for — «плашка шире» — and
    what makes the morph honest.
    ============================================================ */
+/* No overflow clipping any more: the inset that needed trimming is
+   gone, and the tooltip on the cross has to be able to leave the
+   box. */
 .gbhc-pill {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   border: 1px solid var(--gbhc-accent);
-  overflow: hidden;               /* the inset is a full-bleed block; the plate's radius is what trims it */
   color: var(--zinc-900);
 }
-/* The plate is one target with one exception: everything but the
-   cross opens the window again. */
+/* ONE ZONE, AND THE WIDTH IS WHATEVER THE NAME NEEDS.
+   The two tone plate is dead and both halves of it earned it. The
+   Zinc 50 inset was invisible on a dark ground, so on the hero and
+   the footer, the two places the plate was built for, it read as two
+   cards glued together rather than one handle. And the clipped echo
+   of a greeting nobody had answered was noise by the house own law
+   about microcopy that repeats what is already on screen.
+
+   What is left is the handle: a dot if somebody is there, the name,
+   and the way out. It is as wide as that and no wider. Everything Ton
+   approved about the plate stays, the white ground, the shadow, the
+   1px accent edge, the 5px radius; only the two things doing no work
+   are gone. */
 .gbhc-pill__open {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
-  display: grid;
-  /* NO TOKEN: a proportion, not a length, the same kind of value as
-     the bubble's 84%. Ton asked for «примерно на четверть», AND A
-     QUARTER WAS MEASURED AND DOES NOT HOLD: at 380 the click area is
-     330 (the plate less its border and the cross), a quarter of it
-     is 82, and the two names this room actually has — «Brad Smaling»
-     89 and «AI Concierge» 86 at 14/600 Inter — are both cut by it.
-     42 per cent gives 138.6, which is 36.5 per cent of the whole
-     plate and holds every name at every width down to 360. A plate
-     whose left half is a name with an ellipsis in it is worse than a
-     plate whose inset is a third: the inset exists to say WHO, and a
-     name it cannot print is an inset with no job. */
-  grid-template-columns: 42% minmax(0, 1fr);
-  align-items: stretch;
-  padding: 0;
+  display: flex;
+  align-items: center;
+  padding: var(--space-8) 0 var(--space-8) var(--space-16);
   border: 0;
   background: transparent;
   color: inherit;
@@ -835,19 +868,12 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
   text-align: left;
   cursor: pointer;
 }
+
 .gbhc-pill__open:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px var(--gb-btn-focus-ring); }
-.gbhc-pill__who {
-  min-width: 0;
-  display: grid;
-  align-content: center;
-  /* The edge of the plate gets the full gutter, the hairline gets
-     half of it: a rule is a boundary and wants less air than an
-     outside edge. Both are rungs. */
-  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16);
-  background: var(--zinc-50);
-  border-right: 1px solid var(--zinc-200);
-}
+.gbhc-pill__dot { margin-right: var(--space-8); }
+.gbhc-pill__dot[hidden] { display: none; }
 .gbhc-pill__name {
+  min-width: 0;
   font-size: 14px;                /* the secondary rung; the plate is furniture, not a heading */
   font-weight: 600;
   line-height: 1.5;
@@ -855,30 +881,29 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.gbhc-pill__state {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  min-width: 0;
-  font-size: 12px;                /* the Eyebrow rung, without the caps: this is a status, not a label */
-  line-height: 1.5;
-  color: var(--zinc-500);
-}
-.gbhc-pill__state span:not(.gbhc-dot) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* The living half. It says what was last said, so a minimised
-   conversation is still a conversation and not a closed door. */
+/* THE UNREAD LINE HAS NO WIDTH UNTIL THERE IS ONE.
+   A 0fr track that becomes 1fr: the plate finds its own width,
+   nothing is measured in JS and nothing is written in pixels. It is
+   the same growth the advisor card uses further up, for the same
+   reason. The padding lives INSIDE the track, so at 0fr it is clipped
+   along with the text and the short plate carries no dead air. */
 .gbhc-pill__last {
-  align-self: center;
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns var(--mo-small) var(--mo-move);
+}
+.gbhc-pill__last > span {
   min-width: 0;
-  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16);
+  overflow: hidden;
+  padding-left: var(--space-8);
   font-size: 14px;
   line-height: 1.5;
   color: var(--zinc-500);
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
-.gbhc-pill__end { align-self: center; margin-right: var(--space-8); }
+.gbhc-pill.is-unread .gbhc-pill__last { grid-template-columns: minmax(0, 1fr); }
+.gbhc-pill__end { flex: 0 0 auto; align-self: center; margin: 0 var(--space-8); }
 
 /* ============================================================
    THE BELL WEARS THE BAR'S OWN LINE WEIGHT
@@ -1023,3 +1048,86 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
    slots measure 132 against a head of 296. Nothing had to be
    folded away, which is the honest answer to the question. */
 .gbhc-chat__slots { gap: 0; }
+
+/* ============================================================
+   A GLYPH THAT SAYS ITS NAME              gbppl-concierge-tip-1
+   ------------------------------------------------------------
+   Ton, 09.09: every icon in the head should show a hint on hover.
+   THE HOUSE HAS NO TOOLTIP. There is no recipe in system/components
+   to reuse and no measurement to copy, so this is a NEW PATTERN and
+   it goes to Ton as a candidate for the system rather than as a
+   thing that quietly appeared: law 0a.4 makes a new interaction
+   pattern his word to give. The word above is that word; the FORM
+   below is mine until he has looked at it.
+
+   Built as quietly as it can be: the ink plate the house already
+   uses for a pressed state, the Eyebrow 12, the one radius,
+   --mo-micro to arrive and half a second of patience first, so a
+   pointer crossing the head never lights three of them. It is a
+   pseudo element, so it costs no markup and cannot be tabbed into,
+   and every carrier keeps the aria-label it already had: the
+   tooltip is for the eye, the label for the reader that has none.
+
+   NO TOKEN: 4px of vertical padding, the same half-of-8 the badge on
+   a door spends and for the same reason, the scale starting above
+   the height this plate wants.
+   ============================================================ */
+[data-gbhc-tip] { position: relative; }
+[data-gbhc-tip]::after {
+  content: attr(data-gbhc-tip);
+  position: absolute;
+  top: calc(100% + var(--space-8));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  padding: 4px var(--space-8);
+  background: var(--zinc-900);
+  border-radius: var(--radius);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--mo-micro) var(--mo-move);
+}
+[data-gbhc-tip]:hover::after,
+[data-gbhc-tip]:focus-visible::after { opacity: 1; transition-delay: var(--mo-medium); }
+/* The plate stands at the foot of the screen, so its own tip goes
+   above it; below, it would be off the bottom of the window. */
+.gbhc-pill [data-gbhc-tip]::after { top: auto; bottom: calc(100% + var(--space-8)); }
+
+/* ============================================================
+   THE QUESTION BEFORE THE END            gbppl-concierge-end-1
+   ------------------------------------------------------------
+   Ton: closing should ask. A dialog over a dialog is two surfaces
+   asking one question, so the question stands where the answer will
+   be lost: a band over the composer, inside the window it is about.
+
+   The pair is the checkout own confirm pair, read off that page:
+   Cancel then Remove, both --ghost, the destructive one --primary
+   and never red (the bin there lost its red hover for the same
+   reason). Small rung, because this is furniture of a panel and not
+   a page closing act. And it only ever appears over a conversation
+   the guest has spoken in: a window holding nothing but the greeting
+   has nothing to lose and closes without ceremony.
+   ============================================================ */
+.gbhc-confirm {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-8) var(--space-24);
+  background: var(--zinc-50);
+  border-top: 1px solid var(--zinc-200);
+}
+.gbhc-confirm[hidden] { display: none; }
+.gbhc-confirm__q { margin: 0; font-size: 14px; line-height: 1.5; color: var(--zinc-900); }
+.gbhc-confirm__acts { display: flex; align-items: center; gap: var(--space-8); }
+@media (max-width: 639px) {
+  .gbhc-confirm { padding-inline: var(--space-16); }
+}
