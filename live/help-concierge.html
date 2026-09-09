@@ -71,6 +71,34 @@
      Promoting the row to system/components is a wave of its own and
      a question for Ton (see the report). Every number below is a
      rung of the scale or is marked NO TOKEN with the reason.
+
+     ------------------------------------------------------------
+     gbppl-concierge-motion-1 — THE PLATE AND THE CHOREOGRAPHY.
+     2026-09-09, on top of 85ef783. Two things Ton asked for after
+     seeing the prototype, and nothing else in the file moved.
+
+     1. THE SESSION PLATE. «Чёрное не подходит: чёрное на чёрном не
+        работает, чисто белое тоже; нужен формат, который работает и
+        на чёрном, и на белом фоне.» The pill is now a white plate
+        with a shadow and a 1px accent edge, two-tone: a Zinc 50
+        inset on the left with the name and a short status, the last
+        line of the thread and the cross on the white to the right.
+        It is 380 wide, the window's own width. TWO ACCENTS ARE
+        BUILT because Ton has not picked one: ?accent=blue|gold and
+        a row of the console. See THE PILL below.
+
+     2. THE CHOREOGRAPHY, «эстафета + морф». «Транзишн должен быть
+        очень красивый, анимация — важная часть языка.» The drawer
+        hands the window over mid-exit instead of after it, and the
+        window and the plate are one object changing height rather
+        than two objects swapping. See THE CHOREOGRAPHY below.
+
+     AND NO POLITE BRANCH ANYWHERE. Ton, 09.09: animation is off at
+     the OS level on his machine and «мы должны принудительно
+     заставлять её работать». Ton-7 already said this and the drawer
+     organism already obeys it; this file adds nothing that could
+     read prefers-reduced-motion, and the wave proved it by running
+     the whole route twice, once with the query emulated.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -211,11 +239,21 @@ body.gb-demo a.gbhc-door { color: var(--zinc-900); }
   white-space: nowrap;
 }
 .gbhc-dot {
+  flex: 0 0 auto;
   width: 6px;                    /* NO TOKEN: 6px, a dot; the space scale starts at 8 and a dot is not a space */
   height: 6px;
   border-radius: var(--radius-circle);
   background: var(--blue-600);
 }
+
+/* THE MARK OF THE CHOICE, the first beat of the relay. A door that
+   has been chosen says so for --mo-micro before the drawer starts
+   to leave, so the hand sees WHICH row it hit and the window that
+   rises afterwards is understood as that row's answer. Blue 50 in
+   both accent variants: this is a selection, and Ton-5 gives
+   selection the blue whatever colour the plate is wearing. */
+.gbhc-door.is-chosen,
+.gbhc-door.is-chosen:hover { background: var(--blue-50); }
 
 /* ============================================================
    FLOOR TWO — YOUR GIFT ADVISOR
@@ -315,35 +353,115 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
    session starts, and the cross of either one ends the session and
    takes both away.
    ============================================================ */
+/* ---- THE ACCENT OF THE PLATE, one property, two values ------
+   Ton, 09.09, has not picked the colour yet, so both are built and
+   the switch is a key of the address (?accent=blue|gold) and a row
+   of the one console. BLUE is --blue-600, the house colour of state
+   and action (Ton-5). GOLD is --gold-beta #bea042, WHICH IS A TOKEN
+   AND NOT A FREE COLOUR: it is the gold of the Beta chip in the bar
+   (system/components/header.css .gbh-beta, measured live 12.08) and
+   tokens.css carries it under a standing veto — «новых золотых
+   элементов не заводить» (BRAND.md, Russell 30.07, Ton-5 «золота в
+   UI нет»). Building the variant is not lifting the veto; the
+   question goes to Ton in the report, and until he answers, blue is
+   the default the page loads on. */
+:root { --gbhc-accent: var(--blue-600); }
+html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
+
 .gbhc-chat,
 .gbhc-pill {
   position: fixed;
   right: var(--space-24);
   bottom: var(--space-24);
   z-index: 57;                    /* NO TOKEN: the house has no z scale; the neighbours are named above */
+  width: 380px;                   /* NO TOKEN: a layout measure, the width that holds a line of chat without breaking it twice; the drawer's own 520 is marked the same way. THE PILL CARRIES THE SAME ONE ON PURPOSE: two plates of one width, anchored to one corner, make the morph a change of HEIGHT and nothing else — no width to interpolate, no content to reflow sideways. */
+  max-width: calc(100vw - var(--space-32));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+  background: var(--white);
 }
 @media (max-width: 639px) {
   .gbhc-chat, .gbhc-pill { right: var(--space-16); bottom: var(--space-16); }
 }
 .gbhc-chat {
-  width: 380px;                   /* NO TOKEN: a layout measure, the width that holds a line of chat without breaking it twice; the drawer's own 520 is marked the same way */
-  max-width: calc(100vw - var(--space-32));
   height: 520px;                  /* NO TOKEN: a layout measure, the same kind as the width */
   max-height: calc(100dvh - var(--header-h) - var(--space-48));
   display: flex;
   flex-direction: column;
-  background: var(--white);
   border: 1px solid var(--zinc-200);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-panel);
   overflow: hidden;
 }
 .gbhc-chat[hidden], .gbhc-pill[hidden] { display: none; }
-/* Arriving: the window comes up from where the pill stands. --mo-small
-   is the step clock; Ton-7, it plays for everyone. */
-.gbhc-chat.is-in { animation: gbhc-rise var(--mo-small) var(--mo-enter) both; }
-@keyframes gbhc-rise { from { opacity: 0; transform: translateY(var(--space-16)); } to { opacity: 1; transform: none; } }
-.gbhc-pill.is-in { animation: gbhc-rise var(--mo-small) var(--mo-enter) both; }
+
+/* ============================================================
+   THE CHOREOGRAPHY                       Ton, 09.09: «транзишн
+   должен быть очень красивый, анимация — важная часть языка»
+   ------------------------------------------------------------
+   TWO MOVES, and every clock below is a rung of --mo-*.
+
+   1. THE RELAY, drawer -> window. The chosen row lights for
+      --mo-micro; the drawer leaves on its own exit (--mo-medium-out,
+      the organism's clock, untouched); HALF WAY THROUGH THAT EXIT
+      the window rises out of the bottom right corner on --mo-medium
+      / --mo-enter. The two rides overlap, so the eye is handed from
+      one object to the next instead of watching a queue. There is
+      ONE scrim for the whole relay — the drawer's own, dimming on
+      the same 350 — and it is still dimming while the window is
+      already on its way up, which is what stops the blink a
+      close-then-open would give.
+
+   2. THE MORPH, window <-> pill. The two plates share a corner, a
+      width and the 5px radius, so the only thing between them is
+      HEIGHT: the frame travels 520 -> 56 on --mo-small / --mo-move
+      while the content inside it leaves in --mo-small-out, three
+      times faster, so nothing is ever seen squashed. The pill
+      stands BEHIND the window for the whole ride (it is earlier in
+      the markup, same z), the window lands exactly on it and is
+      then hidden: there is no cross-fade to flicker, because at the
+      moment of the swap the two plates occupy the same rectangle to
+      the pixel. Opening is the same ride backwards, with the
+      content arriving on --mo-arrive after the frame has started.
+      The border colour rides with it, zinc-200 <-> the accent, so
+      the 1px does not pop at the swap.
+
+   NO prefers-reduced-motion BRANCH, and this is Ton-7 read strictly
+   (Ton, 09.09: animation is off at the OS level on his machine and
+   «мы должны принудительно заставлять её работать»). The drawer
+   organism has no branch either, by the same principle, and it is
+   written into drawer.css.
+   ============================================================ */
+.gbhc-chat.is-in {
+  transform-origin: 100% 100%;    /* the bottom right corner: the window grows out of the corner it lives in */
+  animation: gbhc-raise var(--mo-medium) var(--mo-enter) both;
+}
+@keyframes gbhc-raise {
+  from { opacity: 0; transform: translateY(var(--space-16)) scale(0.96); }  /* NO TOKEN: 0.96, a proportion and not a length — the plate is a hair smaller than itself, which is what «growing» reads as without becoming a zoom */
+  to   { opacity: 1; transform: none; }
+}
+
+/* The frame of the morph. Only the two properties that actually
+   differ between the plates are animated. */
+.gbhc-chat.is-morph {
+  transition: height var(--mo-small) var(--mo-move),
+              border-color var(--mo-small) var(--mo-move);
+}
+.gbhc-chat.is-shut { border-color: var(--gbhc-accent); }
+/* The content. Arriving it follows the frame (--mo-arrive, delayed
+   by --mo-small-out); leaving it goes first and fast. */
+.gbhc-chat__head,
+.gbhc-log,
+.gbhc-composer { transition: opacity var(--mo-small) var(--mo-arrive) var(--mo-small-out); }
+.gbhc-chat.is-shut .gbhc-chat__head,
+.gbhc-chat.is-shut .gbhc-log,
+.gbhc-chat.is-shut .gbhc-composer { opacity: 0; transition: opacity var(--mo-small-out) var(--mo-exit); }
+/* One frame with no clock at all, so the window can be PLACED on the
+   pill's rectangle before it is asked to grow off it. Written after
+   the two rules above because it ties them on specificity and the
+   later one wins. */
+.gbhc-chat.is-nomo,
+.gbhc-chat.is-nomo .gbhc-chat__head,
+.gbhc-chat.is-nomo .gbhc-log,
+.gbhc-chat.is-nomo .gbhc-composer { transition: none; }
 
 .gbhc-chat__head {
   flex: 0 0 auto;
@@ -421,45 +539,115 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
 .gbhc-composer .gba-inputwrap { flex: 1 1 auto; min-width: 0; }
 .gbhc-composer .gba-input { display: block; }
 
-/* THE PILL — the handle of a conversation, not an advertisement
-   for one, which is why it exists only while a session does. The
-   name and the state on the left, the cross on the right. Ton,
-   09.09, on seeing the Tiffany-strong radius: «у нас нет такого
-   скругления, наш формат — 5 пикселей» — so it wears the house
-   --radius like every other plate, not --radius-pill. */
+/* ============================================================
+   THE PILL — THE SESSION PLATE                        .gbhc-pill
+   ------------------------------------------------------------
+   Ton, 09.09, rejecting the black one: «чёрное не подходит:
+   чёрное на чёрном не работает, чисто белое тоже; нужен формат,
+   который работает и на чёрном, и на белом фоне». The black plate
+   dissolved into the dark hero and the dark footer; a plain white
+   one dissolves into every light section of the same page. What
+   reads on both grounds is a WHITE PLATE WITH A DRAWN EDGE and a
+   shadow: the shadow lifts it off the light, the coloured hairline
+   draws it out of the dark, and the plate never changes colour, so
+   the guest keeps looking at one object while the page scrolls
+   under it.
+
+   THE FORMULA, and each half is doing a job:
+     white ground --white, --shadow-panel, --radius (5px — Ton,
+       09.09: «у нас нет такого скругления, наш формат — 5
+       пикселей», so no --radius-pill, ever), and a 1px border in
+       the accent;
+     LEFT INSET, Zinc 50 with a hairline of Zinc 200 down its right
+       edge: who you are talking to and whether they are there.
+       Two-tone is what makes the plate read as a HANDLE with a
+       label rather than as a floating banner;
+     RIGHT ZONE, on the white: the last line of the thread, live,
+       clipped with an ellipsis, and the cross that ends the
+       session.
+
+   IT IS 380 WIDE, THE WINDOW'S OWN WIDTH (declared with the window
+   above), which is both what Ton asked for — «плашка шире» — and
+   what makes the morph honest.
+   ============================================================ */
 .gbhc-pill {
   display: flex;
-  align-items: center;
-  gap: var(--space-16);
-  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16);
-  background: var(--zinc-900);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-panel);
-  color: var(--white);
+  align-items: stretch;
+  border: 1px solid var(--gbhc-accent);
+  overflow: hidden;               /* the inset is a full-bleed block; the plate's radius is what trims it */
+  color: var(--zinc-900);
 }
+/* The plate is one target with one exception: everything but the
+   cross opens the window again. */
 .gbhc-pill__open {
+  flex: 1 1 auto;
+  min-width: 0;
   display: grid;
-  gap: 0;
+  /* NO TOKEN: a proportion, not a length, the same kind of value as
+     the bubble's 84%. Ton asked for «примерно на четверть», AND A
+     QUARTER WAS MEASURED AND DOES NOT HOLD: at 380 the click area is
+     330 (the plate less its border and the cross), a quarter of it
+     is 82, and the two names this room actually has — «Brad Smaling»
+     89 and «AI Concierge» 86 at 14/600 Inter — are both cut by it.
+     42 per cent gives 138.6, which is 36.5 per cent of the whole
+     plate and holds every name at every width down to 360. A plate
+     whose left half is a name with an ellipsis in it is worse than a
+     plate whose inset is a third: the inset exists to say WHO, and a
+     name it cannot print is an inset with no job. */
+  grid-template-columns: 42% minmax(0, 1fr);
+  align-items: stretch;
   padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
+  font: inherit;
   text-align: left;
   cursor: pointer;
 }
-.gbhc-pill__name { font-size: 14px; font-weight: 600; line-height: 1.5; }
+.gbhc-pill__open:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px var(--gb-btn-focus-ring); }
+.gbhc-pill__who {
+  min-width: 0;
+  display: grid;
+  align-content: center;
+  /* The edge of the plate gets the full gutter, the hairline gets
+     half of it: a rule is a boundary and wants less air than an
+     outside edge. Both are rungs. */
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16);
+  background: var(--zinc-50);
+  border-right: 1px solid var(--zinc-200);
+}
+.gbhc-pill__name {
+  font-size: 14px;                /* the secondary rung; the plate is furniture, not a heading */
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .gbhc-pill__state {
   display: flex;
   align-items: center;
   gap: var(--space-8);
-  font-size: 12px;
+  min-width: 0;
+  font-size: 12px;                /* the Eyebrow rung, without the caps: this is a status, not a label */
   line-height: 1.5;
-  color: var(--zinc-300);
+  color: var(--zinc-500);
 }
-/* The button organism has no family for a control on ink this dark
-   (the quiet family is an open question of 28.08), so the cross
-   borrows the inverse one, which is exactly what it is: white ink
-   on a dark ground. */
+.gbhc-pill__state span:not(.gbhc-dot) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The living half. It says what was last said, so a minimised
+   conversation is still a conversation and not a closed door. */
+.gbhc-pill__last {
+  align-self: center;
+  min-width: 0;
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gbhc-pill__end { align-self: center; margin-right: var(--space-8); }
 </style>
 </head>
 <body>
@@ -498,7 +686,27 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
        foreign bundle. This is not a studio layer, it is the
        prototype's own furniture, and a node that stands in the
        markup cannot be handed the wrong scale by anybody.
-       Both nodes are [hidden] at rest. -->
+       Both nodes are [hidden] at rest.
+
+       THE PILL STANDS FIRST IN THE MARKUP, and that is the whole
+       mechanism of the morph's last frame: the two plates carry the
+       same z-index, so paint order is document order, and the
+       window is therefore always ABOVE the pill. The window can
+       shrink onto the pill and be taken away without anything
+       showing through, and the pill can wait behind it, already
+       drawn, instead of being faded in over the top. -->
+  <div class="gbhc-pill" id="gbhcPill" hidden>
+    <button class="gbhc-pill__open" type="button" id="gbhcPillOpen" aria-label="Open the chat">
+      <span class="gbhc-pill__who">
+        <span class="gbhc-pill__name" id="gbhcPillName">Live chat</span>
+        <span class="gbhc-pill__state" id="gbhcPillState"></span>
+      </span>
+      <span class="gbhc-pill__last" id="gbhcPillLast"></span>
+    </button>
+    <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbhc-pill__end" type="button"
+            id="gbhcPillEnd" aria-label="End the chat"></button>
+  </div>
+
   <div class="gbhc-chat" id="gbhcChat" role="dialog" aria-label="Chat" hidden>
     <div class="gbhc-chat__head">
       <span class="gbhc-face" id="gbhcFace" aria-hidden="true"></span>
@@ -520,15 +728,6 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
       </div>
       <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="submit" aria-label="Send"></button>
     </form>
-  </div>
-
-  <div class="gbhc-pill" id="gbhcPill" hidden>
-    <button class="gbhc-pill__open" type="button" id="gbhcPillOpen">
-      <span class="gbhc-pill__name" id="gbhcPillName">Live chat</span>
-      <span class="gbhc-pill__state" id="gbhcPillState"></span>
-    </button>
-    <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--inverse" type="button"
-            id="gbhcPillEnd" aria-label="End the chat"></button>
   </div>
 
   <gb-studio-panel data-root="../" page="concierge"></gb-studio-panel>
@@ -560,6 +759,42 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
 
     var I = window.GbIcons;
     var drawer = document.getElementById('gbhcDrawer');
+
+    /* ---- THE CLOCKS COME OUT OF THE TOKENS ---------------------
+       Every wait in this controller is READ from --mo-*, so there is
+       no second copy of a duration in JavaScript that can drift from
+       the one in CSS. Change the rung in tokens.css and both the
+       ride and the hand-off that follows it move together. */
+    var ROOT_CS = getComputedStyle(document.documentElement);
+    function ms(name) { return parseFloat(ROOT_CS.getPropertyValue(name)) || 0; }
+    var MO = {
+      micro:     ms('--mo-micro'),       /* 160 */
+      smallOut:  ms('--mo-small-out'),   /* 90  */
+      small:     ms('--mo-small'),       /* 280 */
+      mediumOut: ms('--mo-medium-out'),  /* 350 — the drawer's exit */
+      medium:    ms('--mo-medium')       /* 500 — the window's rise */
+    };
+
+    /* ---- THE ACCENT OF THE SESSION PLATE -----------------------
+       Two variants, because Ton has not chosen. The address carries
+       it (?accent=blue|gold) so a screenshot can be asked for by
+       link, and the one console carries the same switch as a Demo
+       row, which is the house rule for a page level toggle (Ton
+       26.08, «один пульт»). Nothing else on the page reads the
+       property: the accent is the plate's edge and only that. */
+    var ACCENTS = ['blue', 'gold'];
+    function readAccent() {
+      var q = (new URLSearchParams(location.search)).get('accent');
+      return ACCENTS.indexOf(q) > -1 ? q : 'blue';
+    }
+    function setAccent(v, writeUrl) {
+      document.documentElement.setAttribute('data-gbhc-accent', v);
+      if (!writeUrl) return;
+      var u = new URL(location.href);
+      u.searchParams.set('accent', v);
+      history.replaceState(null, '', u.toString());
+    }
+    setAccent(readAccent(), false);
 
     /* Who the advisor is. One place, because the card, the message
        form and the live chat all speak of the same person. */
@@ -730,7 +965,7 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
         if (door) {
           var id = door.getAttribute('data-door');
           if (id === 'meeting') { e.preventDefault(); openMeeting(); return; }
-          if (id === 'live' || id === 'ai') { e.preventDefault(); drawer.close(); openChat(id); return; }
+          if (id === 'live' || id === 'ai') { e.preventDefault(); relay(id, door); return; }
           return;   /* Call us is an <a href="tel:"> and stays one */
         }
         var write = e.target.closest ? e.target.closest('[data-write]') : null;
@@ -795,7 +1030,13 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
         icon: 'chat',
         name: ADVISOR.name,
         state: '<span class="gbhc-dot" aria-hidden="true"></span>Online now',
-        pill: 'Online now',
+        /* THE PLATE SPEAKS SHORTER THAN THE HEAD. The inset is a
+           third of a 380 plate and the status shares it with a name;
+           the window's own head has the room for the long form and
+           keeps it. «Online» and «AI assistant» are the same two
+           facts in the space the plate actually has. */
+        pillName: ADVISOR.name,
+        pill: 'Online',
         say: ['Hi, this is ' + ADVISOR.name + ' at GildedBox.',
               'What are you working on today?'],
         reply: 'Got it. Give me a moment to pull up a few options for you.'
@@ -806,7 +1047,8 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
            a reader must never take this voice for a person. */
         name: 'AI Gift Concierge',
         state: '<span class="gbhc-dot" aria-hidden="true"></span>AI · answers right away',
-        pill: 'AI · answers right away',
+        pillName: 'AI Concierge',
+        pill: 'AI assistant',
         say: ['Hi, I am the GildedBox AI concierge — an assistant, not a person.',
               'Tell me who the gift is for and what the occasion is, and I will put a shortlist together.'],
         reply: 'Thank you. I am looking at what fits, and I can hand you to a live specialist at any point.'
@@ -829,6 +1071,8 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
     document.querySelector('#gbhcForm button[type="submit"]').innerHTML =
       '<span class="gb-btn__icon" aria-hidden="true">' + (I ? I.svg('arrow-right') : '') + '</span>';
 
+    var pillLast = document.getElementById('gbhcPillLast');
+
     function say(side, text) {
       var row = document.createElement('div');
       row.className = 'gbhc-msg gbhc-msg--' + side;
@@ -838,36 +1082,141 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
       row.appendChild(bubble);
       log.appendChild(row);
       log.scrollTop = log.scrollHeight;
+      /* THE PLATE IS LIVE. Whatever was last said is what the pill
+         shows, including an answer that lands while it is minimised:
+         that is the difference between a handle on a conversation
+         and a button that says a conversation exists. */
+      pillLast.textContent = text;
     }
 
-    function show(node) {
-      node.hidden = false;
-      node.classList.remove('is-in');
-      void node.offsetWidth;
-      node.classList.add('is-in');
-    }
+    /* ============================================================
+       THE TWO RIDES
+       ------------------------------------------------------------
+       riseChat  — the end of the relay: the window comes up out of
+                   the corner while the drawer is still leaving.
+       minimise / expand — the morph: one plate becomes the other by
+                   changing its height onto the other's rectangle.
+       Only one of them may be in the air at a time; `busy` is the
+       latch, and every path clears it (trap 22's rule, applied to a
+       ride rather than to a request).
+       ============================================================ */
+    var busy = false;
+    var rideTimer = null;
 
-    function openChat(which) {
+    function dress(which) {
       var start = STARTS[which];
-      if (mode !== which) {
-        mode = which;
-        log.innerHTML = '';
-        document.getElementById('gbhcFace').innerHTML = glyph(start.icon, 22);
-        document.getElementById('gbhcName').textContent = start.name;
-        document.getElementById('gbhcState').innerHTML = start.state;
-        document.getElementById('gbhcPillName').textContent = start.name;
-        document.getElementById('gbhcPillState').innerHTML =
-          '<span class="gbhc-dot" aria-hidden="true"></span>' + start.pill;
-        start.say.forEach(function (line) { say('them', line); });
-      }
-      pill.hidden = true;
-      show(chat);
-      setTimeout(function () { input.focus(); }, 80);
+      if (mode === which) return start;
+      mode = which;
+      log.innerHTML = '';
+      document.getElementById('gbhcFace').innerHTML = glyph(start.icon, 22);
+      document.getElementById('gbhcName').textContent = start.name;
+      document.getElementById('gbhcState').innerHTML = start.state;
+      document.getElementById('gbhcPillName').textContent = start.pillName;
+      document.getElementById('gbhcPillState').innerHTML =
+        '<span class="gbhc-dot" aria-hidden="true"></span><span>' + start.pill + '</span>';
+      start.say.forEach(function (line) { say('them', line); });
+      return start;
     }
 
+    function riseChat(which) {
+      dress(which);
+      pill.hidden = true;
+      chat.hidden = false;
+      chat.classList.remove('is-in', 'is-morph', 'is-shut', 'is-nomo');
+      chat.style.height = '';
+      void chat.offsetWidth;
+      chat.classList.add('is-in');
+      setTimeout(function () { input.focus(); }, MO.smallOut);
+    }
+
+    /* ---- THE RELAY, drawer -> window --------------------------
+       Three beats, and the third begins before the second has
+       finished, which is the whole point of it.
+
+         1  the row says it was the one that was hit  (--mo-micro)
+         2  the drawer leaves on its own exit         (--mo-medium-out)
+         3  HALF WAY through beat 2, the window rises (--mo-medium)
+
+       The half is not a new duration and is not on the scale: it is
+       a POINT INSIDE a rung, read off --mo-medium-out at run time,
+       and there is nothing on the motion scale that could name it
+       without inventing a clock. NO TOKEN, and the reason it is
+       half and not a rung is that a rung would either land before
+       the drawer has moved (--mo-small-out) or after it has gone
+       (--mo-small, 280 of 350) and the overlap Ton asked for would
+       be a queue again.
+
+       ONE SCRIM FOR THE WHOLE RELAY. The drawer's own backdrop is
+       never closed and reopened here: drawer.close() is called once
+       and the scrim fades on its 350 while the window is already on
+       its way up. Nothing dims a second time, so there is nothing
+       to blink. */
+    function relay(id, row) {
+      if (busy) return;
+      busy = true;
+      if (row) row.classList.add('is-chosen');
+      setTimeout(function () {
+        drawer.close();
+        setTimeout(function () {
+          if (row) row.classList.remove('is-chosen');
+          riseChat(id);
+          busy = false;
+        }, MO.mediumOut / 2);
+      }, MO.micro);
+    }
+
+    /* ---- THE MORPH, window -> pill ----------------------------
+       The pill is unhidden FIRST and measured where it will stand,
+       so the window is given a real destination rather than a
+       number somebody typed. It waits there, behind the window,
+       fully drawn, for the whole ride. */
     function minimise() {
-      chat.hidden = true;
-      show(pill);
+      if (busy) return;
+      busy = true;
+      chat.classList.remove('is-in');            /* the entrance animation must not own the height */
+      var from = chat.getBoundingClientRect().height;
+      pill.hidden = false;
+      var to = pill.getBoundingClientRect().height;
+      chat.style.height = from + 'px';
+      chat.classList.add('is-morph');
+      void chat.offsetHeight;                    /* the baseline of both transitions */
+      chat.classList.add('is-shut');             /* the content leaves on --mo-small-out */
+      chat.style.height = to + 'px';             /* the frame leaves on --mo-small */
+      clearTimeout(rideTimer);
+      rideTimer = setTimeout(function () {
+        chat.hidden = true;
+        chat.classList.remove('is-morph', 'is-shut');
+        chat.style.height = '';
+        busy = false;
+      }, MO.small);
+    }
+
+    /* ---- THE MORPH, pill -> window ----------------------------
+       The same ride read backwards. The window is placed ON the
+       pill's rectangle with the clocks off, so nothing is seen
+       jumping there, and only then is it asked to grow. */
+    function expand() {
+      if (busy || !mode) return;
+      busy = true;
+      var from = pill.getBoundingClientRect().height;
+      chat.hidden = false;
+      chat.classList.add('is-nomo', 'is-morph', 'is-shut');
+      chat.style.height = '';
+      var to = chat.getBoundingClientRect().height;   /* the natural height, already clipped by max-height */
+      chat.style.height = from + 'px';
+      void chat.offsetHeight;
+      chat.classList.remove('is-nomo');
+      void chat.offsetHeight;
+      chat.classList.remove('is-shut');
+      chat.style.height = to + 'px';
+      clearTimeout(rideTimer);
+      rideTimer = setTimeout(function () {
+        chat.classList.remove('is-morph');
+        chat.style.height = '';
+        pill.hidden = true;
+        busy = false;
+        input.focus();
+      }, MO.small);
     }
 
     /* THE CROSS ENDS THE SESSION, and the screen is clean: no window,
@@ -875,19 +1224,22 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
        the conversation starts again from its greeting. */
     function endSession() {
       clearTimeout(replyTimer);
+      clearTimeout(rideTimer);
+      busy = false;
       chat.hidden = true;
+      chat.classList.remove('is-in', 'is-morph', 'is-shut', 'is-nomo');
+      chat.style.height = '';
       pill.hidden = true;
       mode = null;
       log.innerHTML = '';
+      pillLast.textContent = '';
       input.value = '';
     }
 
     document.getElementById('gbhcMin').addEventListener('click', minimise);
     document.getElementById('gbhcEnd').addEventListener('click', endSession);
     document.getElementById('gbhcPillEnd').addEventListener('click', endSession);
-    document.getElementById('gbhcPillOpen').addEventListener('click', function () {
-      if (mode) openChat(mode);
-    });
+    document.getElementById('gbhcPillOpen').addEventListener('click', expand);
 
     document.getElementById('gbhcForm').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -903,6 +1255,30 @@ body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
          holds the length of moves. */
       replyTimer = setTimeout(function () { say('them', start.reply); }, 900);
     });
+
+    /* ============================================================
+       4. THE ONE CONSOLE
+       ------------------------------------------------------------
+       The page's only switch, declared to <gb-studio-panel> the way
+       every page switch is (addGroup, type choice). It writes the
+       key back into the address so the state Ton is looking at is
+       the state a link reproduces.
+       ============================================================ */
+    var spanel = document.querySelector('gb-studio-panel');
+    if (spanel && typeof spanel.addGroup === 'function') {
+      spanel.addGroup({
+        type: 'choice',
+        title: 'Accent of the session plate',
+        value: readAccent(),
+        options: [
+          { label: 'Blue', value: 'blue',
+            note: 'Blue 600, the house colour of state and action. Nothing new is spent.' },
+          { label: 'Gold', value: 'gold',
+            note: 'The gold of the Beta chip in the bar, #bea042. It is a token, and it is under the standing veto on gold in the interface.' }
+        ],
+        onChange: function (v) { setAccent(v, true); }
+      });
+    }
   })();
   </script>
 
