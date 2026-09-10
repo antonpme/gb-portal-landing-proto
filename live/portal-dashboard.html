@@ -1281,14 +1281,26 @@ a.snav-val:hover, body.gb-demo a.snav-val:hover { text-decoration: underline; }
   border-top-color: var(--blue-200);
 }
 .snav-item.active .snav-label { color: var(--blue-600); }
-/* AND THE GLYPH OF THE CHOSEN ROW STAYS INK (Ton 10.09). Measured
-   here rather than assumed: the active icon renders rgb(140,141,150)
-   against a neighbour's rgb(127,127,136), and the whole difference is
-   the Blue 50 plate showing through the antialiasing of the same
-   #71717A strokes. Nothing tints it, and nothing should: the plate
-   and the label carry the state, the mark stays a mark. The other
-   carrier of this rail, live\portal.html, DID paint its active glyph
-   Blue 600 in the ren skin, and that was fixed in the same wave. */
+/* AND THE GLYPH OF THE CHOSEN ROW IS THE SAME BLUE AS ITS LABEL
+   (Ton, 10.09, correcting the morning's reading of his screenshot).
+   The rail's glyphs are <img> of static SVGs with their own #71717A
+   strokes, so CSS cannot tint them: the recipe is live\portal.html's
+   own, a masked pseudo painted in the ink we want, with the image
+   held at opacity 0 underneath. The mask URL is copied onto each
+   chosen .snav-icon by the script at the foot of the page, exactly
+   as the portal does it, so no glyph is redrawn and no second copy
+   of the artwork exists. Resting rows are untouched. */
+.snav-item.active .snav-icon { position: relative; }
+.snav-item.active .snav-icon img { opacity: 0; }
+.snav-item.active .snav-icon::after {
+  content: "";
+  position: absolute;
+  inset: 3px;                       /* LIVE portal ren: the 18px the image is capped at, centred in the 24 box */
+  background-color: var(--blue-600);
+  -webkit-mask: var(--snav-icon-url) center / contain no-repeat;
+  mask: var(--snav-icon-url) center / contain no-repeat;
+  pointer-events: none;
+}
 .snav-icon {
   width: 24px;
   height: 24px;
@@ -2862,6 +2874,14 @@ html[data-gbppd-state="empty"] .gbppd-filled { display: none; }
   else if (window.customElements) customElements.whenDefined('gb-studio-panel').then(function () {
     panel = document.querySelector('gb-studio-panel');
     setTimeout(wirePanel, 0);
+  });
+
+  /* THE CHOSEN ROW'S GLYPH GETS ITS MASK. One line, the portal's own:
+     the image's src is copied onto its .snav-icon as --snav-icon-url,
+     and the CSS paints that shape in the active colour. */
+  [].forEach.call(document.querySelectorAll('.snav-item.active .snav-icon'), function (box) {
+    var img = box.querySelector('img');
+    if (img) box.style.setProperty('--snav-icon-url', 'url("' + img.getAttribute('src') + '")');
   });
 
   /* On load: say the empty ones, hold the heights, drop empty columns. */
