@@ -15,15 +15,18 @@
      the order is dictated, not designed:
 
        1  METRICS, the top row of the page
-       2  SHORTCUTS right under them, never below the fold
-          («Go straight to» is the one block he liked: same doors)
+       2  QUICK ACTIONS right under them, never below the fold
+          (the block he liked, same doors; the title stopped saying
+          «Go straight to» on 10.09 because these doors START things
+          now, they do not only lead somewhere: a campaign begins
+          here and the concierge opens here)
        3  THE BOARD, three equal columns, ~30 / 30 / 30
             LEFT    gifts on their way, one row per shipment
             CENTER  campaigns, both of them, one consistent card
             RIGHT   ONE activity feed, with «Needs your action»
                     pinned at its top as alert strips, not as a
                     separate zone upstairs
-       4  Saved for later, and the rest
+       4  the rest, and the favourites live in the gift zone
 
      WHAT WENT OUT: the «Ask AI about your account» banner with its
      disabled button. His own rule decided it: something important is
@@ -124,6 +127,9 @@
 <link rel="stylesheet" href="../system/components/icon.css">
 <!-- The four tones and the strip itself. -->
 <link rel="stylesheet" href="../system/components/alert.css">
+<!-- The status badge, born this wave off Figma «Gifting Portal»
+     3761-6514 by Ton's word. Owner: system/components/badge.css. -->
+<link rel="stylesheet" href="../system/components/badge.css">
 <link rel="stylesheet" href="../system/components/tooltip.css">
 <link rel="stylesheet" href="../system/components/auth.css">
 <link rel="stylesheet" href="../system/components/studio-panel.css">
@@ -132,6 +138,25 @@
 <link rel="stylesheet" href="../system/components/inspect.css">
 <link rel="stylesheet" href="../system/components/comments.css">
 <link rel="stylesheet" href="../system/components/toggle.css">
+<!-- Book a meeting stands on the second floor of the concierge drawer
+     (gbppl-concierge-unify-1b), and booking.css names auth.css as its
+     neighbour. Both files are scoped whole, so nothing else moves. -->
+<link rel="stylesheet" href="../system/components/booking.css">
+<!-- ============================================================
+     THE CONCIERGE, ON THE DASHBOARD        gbppl-portal-dashboard-4
+     ------------------------------------------------------------
+     Ton, 10.09: «Talk to us обязан открывать консьерж-дровер».
+     It used to throw the person at the home page with ?concierge=1,
+     which is not a door, it is an exit. The module is the layer the
+     house already has (live\concierge), the portal is its authed
+     environment, and the dashboard mounts it the way live\index.html
+     does: link, script, one mount call, and the door calls open().
+
+     THE TWO BELLS WILL STAND SIDE BY SIDE, and that is on purpose
+     for this showing: the module puts its cloche in the bar next to
+     the notifications bell. Ton asked to see the pair live before
+     deciding which of them owns that corner. -->
+<link rel="stylesheet" href="concierge/concierge.css">
 
 <style>
 /* ============================================================
@@ -216,18 +241,34 @@ html { scroll-padding-top: calc(var(--header-h) + var(--space-16)); }
 .gbppd-widget__head .gbppd-more { margin-left: auto; }
 .gbppd-widget + .gbppd-widget { margin-top: var(--space-32); }
 
-/* A quiet door at the end of a widget title: «See all», «Manage».
-   Sentence case against the caps of the eyebrow, the same way
-   .gbh-away stands against the buttons of the portal bar. */
+/* THE «SEE ALL» LINK, AND A FINDING WITH IT (Ton, 10.09: it has to
+   read as a link, and it has to stay smaller and quieter than the
+   title of the column, because the campaign dominates, not the way
+   out of it).
+
+   THE HOUSE HAS NO INLINE LINK COMPONENT. Grep says so: header.css
+   owns .gbh-link (navigation), .gbh-away (the door out of the
+   portal), auth.css owns the links inside its flow, and the studio
+   has .gbdoc-* of its own. A plain textual link in page content has
+   never been born, and every page that needed one dressed it by
+   hand. So this one takes the nearest canon rather than inventing a
+   fourth: Blue 600, the house's own language of state and of a live
+   link (Ton-5, the rail's chosen row, .gbh-link.is-active), at the
+   secondary size 14 with the underline appearing on hover.
+
+   IT GOES IN THE REPORT as a candidate component (.gb-link, sizes 14
+   and 16, tones default / quiet / inverse), because five pages are
+   already carrying hand-dressed links. */
 .gbppd-more {
   font-size: 14px;
   font-weight: 400;
-  color: var(--zinc-500);
+  line-height: 1.5;
+  color: var(--blue-600);
   text-decoration: none;
   transition: color var(--mo-micro) var(--mo-move);
 }
-a.gbppd-more, body.gb-demo a.gbppd-more { color: var(--zinc-500); }
-a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
+a.gbppd-more, body.gb-demo a.gbppd-more { color: var(--blue-600); }
+a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--blue-700); text-decoration: underline; }
 
 /* --- The card, the one box this page draws. --- */
 .gbppd-card {
@@ -256,6 +297,16 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
    WHICH FOUR STAND HERE IS A PROPOSAL, and the page says so in a
    quiet line under the row rather than in a report Julia will not
    be reading over Ton's shoulder. */
+/* TWO NATURES, TWO CLOTHES (Ton, 10.09). Metrics and doors were the
+   same white card, and they are not the same kind of thing. THE DATA
+   KEEPS THE PLATE: a white card on the page's grey ground is what a
+   fact looks like in this house, and taking the plate off the numbers
+   was tried and rejected the same hour. What changes clothes is the
+   DOOR, further down this file: an action speaks in the language of
+   a control, not of a card.
+
+   The tiles are doors all the same (each opens the drawer with the
+   things it counted), so they keep the card's own hover. */
 .gbppd-stats {
   display: grid;
   gap: var(--space-16);
@@ -264,11 +315,20 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
 @container board (max-width: 719px) {
   .gbppd-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-.gbppd-stat { padding: var(--space-16); }
-/* The name is the eyebrow, worn as the widget titles wear it. */
+.gbppd-stat {
+  display: block;
+  width: 100%;
+  padding: var(--space-16);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: box-shadow var(--mo-micro) var(--mo-move), border-color var(--mo-micro) var(--mo-move);
+}
+.gbppd-stat:hover { border-color: var(--zinc-300); box-shadow: var(--shadow-card); }
+.gbppd-stat--alarm:hover { border-color: var(--gb-alert-ink); }
 /* The number is the subject of its tile, and it says so with size and
    ink rather than with a second serif weight: the page has ONE serif
-   register now, the portal's own 300 (law of the surface, 10.09). */
+   register, the portal's own 300 (law of the surface, 10.09). */
 .gbppd-stat__num {
   display: block;
   margin-top: var(--space-8);
@@ -286,8 +346,8 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
   color: var(--zinc-500);
 }
 /* The tile that counts problems is coloured BY the problems, in the
-   alert's own error triple. Nothing else on the row is tinted, so
-   the one tinted thing means what it says. */
+   alert's own error triple. Nothing else in the row is tinted, so the
+   one tinted thing means what it says. */
 .gbppd-stat--alarm {
   background: var(--gb-alert-bg);
   border-color: var(--gb-alert-line);
@@ -313,33 +373,57 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
   color: var(--zinc-400);
 }
 
-/* ============ 2 · SHORTCUTS, UNDER THE METRICS ============
+/* ============ 2 · QUICK ACTIONS, UNDER THE METRICS ============
    The one block Ton liked, moved to where he put it: the same four
    doors, above the fold, a strip of errands rather than a second
    menu beside the real one. A glyph and a name, and nothing under
    the name: a door that explains itself is a door nobody trusts. */
+/* ONE DOOR, TWO DENSITIES, BOTH STATES (Ton 10.09: the shortcuts of
+   the new account and of the working account must read as kin). The
+   empty state's doors used to be a different object with a different
+   shape; now they are this one with a line of help under the name.
+
+   THE FILLED SET IS HIS: Explore gifts · Create a campaign · Talk to
+   us. Address book and Payment methods left it, because both stand in
+   the Admin block of the rail three inches to the left, and a door
+   that duplicates the menu teaches nobody where things live. */
 .gbppd-doors {
   display: grid;
   gap: var(--space-16);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 @container board (max-width: 719px) {
-  .gbppd-doors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@container board (max-width: 379px) {
   .gbppd-doors { grid-template-columns: minmax(0, 1fr); }
 }
+/* AN OUTLINE DOOR, NOT A CARD (Ton, 10.09: «двери действий уходят в
+   кнопочный язык дома»). White plate = data; a hairline frame with
+   the page showing through = a control. The recipe is the outline
+   button's, borrowed rather than invented: Zinc 300 hairline, no
+   fill, --radius, and a wash on hover instead of a shadow. Nothing
+   here lifts: a door is pressed, not picked up.
+
+   THE SECOND CANDIDATE, shot side by side for Ton and NOT in the
+   code, is the tool shelf: Zinc 100 ground with a Zinc 200 hairline.
+   Squinted at on this page, the outline reads as a control and the
+   shelf reads as a third kind of card, which is one kind too many. */
 .gbppd-door {
   display: flex;
   align-items: center;
   gap: var(--space-16);
+  width: 100%;
   padding: var(--space-16);
+  border: 1px solid var(--zinc-300);
+  border-radius: var(--radius);
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
   text-decoration: none;
   color: var(--zinc-900);
-  transition: box-shadow var(--mo-micro) var(--mo-move), border-color var(--mo-micro) var(--mo-move);
+  cursor: pointer;
+  transition: background var(--mo-micro) var(--mo-move), border-color var(--mo-micro) var(--mo-move);
 }
 a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
-.gbppd-door:hover { border-color: var(--zinc-300); box-shadow: var(--shadow-card); }
+.gbppd-door:hover { background: var(--zinc-100); border-color: var(--zinc-400); }
 /* The glyph is written with data-gb-icon and icon.js rewrites that
    node's className, so the ink is asked for by the door. */
 .gbppd-door .gb-icon { color: var(--zinc-500); }
@@ -348,6 +432,21 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
   font-weight: 500;
   line-height: 1.4;
 }
+/* The taller density: a new account is choosing between three things
+   it has never done, so each door explains itself in one line. The
+   working account's doors are errands and need no explanation. */
+.gbppd-door--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+.gbppd-door--stacked .gbppd-door__name { font-size: 16px; font-weight: 600; color: var(--zinc-900); }
+.gbppd-door__say { font-size: 14px; line-height: 1.5; color: var(--zinc-500); }
+/* THE FIRST DOOR LEADS, and it says so with ink rather than with a
+   fourth type role: everything in this house starts at the catalogue,
+   and a new account has nothing to campaign with until it has chosen
+   a gift. One step of ink, no new voice. */
+.gbppd-door--lead .gb-icon { color: var(--zinc-900); }
 
 /* ============ 3 · THE BOARD, THREE EQUAL COLUMNS ============
    Ton, 10.09: «основной экран тремя равными колонками». Equal
@@ -393,7 +492,56 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
    pack it is faster than its name does, and in a 277px column the
    name cost every row two extra lines and pushed the state off the
    first line. Measured on the frame, not guessed. */
+/* THE TABS OF THE GIFT ZONE            gbppl-portal-dashboard-4
+   Ton, 10.09: the left zone is one place with three tabs. The live
+   portal has no tab component to copy (its pages are separate
+   screens), so the marker is the quiet one he proposed and the
+   Cartier precedent uses: a text label with a line under the chosen
+   one, never a plate.
+
+   AND THE LABELS ARE THE EYEBROW. The other two columns are titled
+   with .gb-eyebrow, so the tabs of this one are the same voice with
+   one of them chosen: three heads on one line, and the surface still
+   has two voices plus the eyebrow.
+
+   THE ORDER IS THE LIFE OF A GIFT: on the way, then delivered, then
+   the ones only wished for. The law of the surface says the order of
+   headings is the order of meaning, and the chosen tab is the first,
+   because a dashboard opens on today. */
+.gbppd-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  /* Measured: the three labels are 90.7 + 78.8 + 78.4 in a 272 column,
+     so the gutter between them is the rung below, not above. */
+  gap: var(--space-8);
+  align-items: baseline;
+}
+.gbppd-tab {
+  padding: 0 0 var(--space-8);
+  border: 0;
+  border-bottom: 2px solid transparent;   /* NO TOKEN 2: the underline of a chosen label, the thinnest mark that reads */
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color var(--mo-micro) var(--mo-move);
+}
+.gbppd-tab:hover { color: var(--zinc-900); }
+/* Blue is the language of state in this house (Ton-5), which is what
+   a chosen tab is. Same answer as the chosen row of the rail. */
+.gbppd-tab[aria-selected="true"] { color: var(--blue-600); border-bottom-color: var(--blue-600); }
+
 .gbppd-rows { display: grid; }
+/* [hidden] LOSES TO A display RULE (the same trap the bell's badge
+   fell into, ловушка of this page's own head comment). A tab panel is
+   hidden by the attribute, and a display:grid on the same element
+   outranks the UA sheet, so all three panes stood open at once until
+   this line. Caught by looking at the frame, not by the console. */
+.gbppd-rows[hidden] { display: none; }
+/* A favourite in the column is a ROW like everything else in this
+   zone: the same thumb, the same two lines. The picture shelf that
+   used to stand at the foot of the page went in here with it, and
+   the zone is the one place a gift is looked for. */
+.gbppd-favrow .gbppd-row__what { font-weight: 500; }
 .gbppd-row {
   display: grid;
   grid-template-columns: var(--space-48) minmax(0, 1fr);
@@ -411,14 +559,8 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
    of the mock: the feed really does take you to the row. */
 .gbppd-row:target, .gbppd-camp:target { background: var(--blue-50); border-color: var(--blue-200); }
 .gbppd-row, .gbppd-camp { scroll-margin-top: calc(var(--header-h) + var(--space-16)); }
-/* In a wide column the state stands at the end of the first line;
-   in a narrow one it drops under the pair rather than squeezing the
-   names into two words a row. */
-@container col (min-width: 420px) {
-  .gbppd-row { grid-template-columns: var(--space-48) minmax(0, 1fr) auto; align-items: center; }
-  .gbppd-row .gbppd-state { grid-column: 3; }
-}
-.gbppd-row .gbppd-state { grid-column: 2; }
+/* No third cell any more: the status rides on the name line as a
+   badge, so the row is a thumb and a pair of lines at every width. */
 .gbppd-thumb {
   width: var(--space-48);
   height: var(--space-48);
@@ -443,32 +585,21 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
   color: var(--zinc-500);
 }
 
-/* THE STATE, IN WORDS. The same five words everywhere on this page:
-   On hold · Out for delivery · In transit · Delivered · Delivering.
-   The client's own list does not exist in a readable form yet (the
-   concept's open question 3), so these are the plainest English for
-   the states the demo needs and they are one find and replace away
-   from the real ones.
+/* THE STATUS BADGE IS A SYSTEM ORGANISM NOW (gbppl-portal-dashboard-4).
+   Ton, 10.09, gave the drawing (Figma «Gifting Portal» 3761-6514) and
+   the instruction: take it as the base and improve it here. It went
+   where a component goes, system/components/badge.css, and this page
+   writes nothing but WHERE the plate stands.
 
-   Colour: none, on purpose. A running shipment is not a status
-   light, and a page where every row is tinted has no way left to
-   say that one of them is stopped. The single exception is the
-   stopped one. */
-.gbppd-state {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--zinc-700);
-}
-.gbppd-state--stopped {
-  align-self: center;
-  justify-self: start;
-  padding: var(--space-8) var(--space-16);
-  border-radius: var(--radius-pill);
-  background: var(--gb-alert-bg);
-  color: var(--gb-alert-ink);
-  white-space: nowrap;
-}
+   AND IT STANDS ON THE TITLE LINE, never on a floor of its own: a
+   status parked under a card pushes the card's content around every
+   time it changes (the alert height law, said again). Counts and
+   dates are not statuses and stay in the working line under the name.
+
+   NO NEW VOICE: 12px is the eyebrow's rung, and the eyebrow is the
+   one third voice the law of the surface allows. */
+.gbppd-row__what .gb-badge,
+.gbppd-camp__name .gb-badge { margin-left: var(--space-8); }
 
 /* ============ CENTER · CAMPAIGNS ============
    Both campaigns, ONE card shape, whatever their type and whatever
@@ -617,56 +748,10 @@ a.gbppd-problem__title:hover { text-decoration: underline; }
    own, and the favourites pattern of the live category page lives
    inside the vendored v1 bundle (.favorites-panel), so there is no
    house component to reuse. */
-.gbppd-favs {
-  display: grid;
-  gap: var(--space-16);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-@container board (max-width: 719px) {
-  .gbppd-favs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-.gbppd-fav {
-  position: relative;
-  display: block;
-  padding: var(--space-16);
-  text-decoration: none;
-  color: inherit;
-  transition: box-shadow var(--mo-micro) var(--mo-move);
-}
-.gbppd-fav:hover { box-shadow: var(--shadow-card); }
-.gbppd-fav__media {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: var(--radius);
-  background: var(--zinc-100);
-}
-.gbppd-fav__name {
-  margin: var(--space-16) 0 0;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.4;
-  color: var(--zinc-900);
-}
-.gbppd-fav__price {
-  margin: var(--space-8) 0 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--zinc-500);
-}
-.gbppd-fav__mark {
-  position: absolute;
-  top: var(--space-24);
-  right: var(--space-24);
-  display: grid;
-  place-items: center;
-  width: var(--space-32);
-  height: var(--space-32);
-  border-radius: var(--radius-circle);
-  background: var(--white);
-  color: var(--zinc-900);
-}
+/* The picture shelf of favourites lived here until 10.09; its gifts
+   are rows in the gift zone now (gbppl-portal-dashboard-4), and the
+   rules that drew the shelf went with it rather than staying behind
+   as a set nobody wears. */
 
 /* ============ THE FOOT: PHASE 2, IN ONE SENTENCE ============
    Including the account assistant, which used to be a banner with a
@@ -749,6 +834,17 @@ html[data-gbppd-state="empty"] #gbppdCustomize { display: none; }
   text-decoration: none;
 }
 .gbppd-dr__mini + .gbppd-dr__mini { margin-top: var(--space-8); }
+/* The list behind a number: one row per thing, the same two lines and
+   the same state word the board uses. Nothing new is drawn. */
+.gbppd-dr__row {
+  display: block;
+  padding-block: var(--space-16);
+  border-top: 1px solid var(--zinc-200);
+  text-decoration: none;
+  color: inherit;
+}
+.gbppd-dr__row:first-child { border-top: 0; }
+.gbppd-dr__say { font-size: 14px; line-height: 1.6; color: var(--zinc-500); }
 .gbppd-dr__mini b { display: block; font-size: 15px; font-weight: 600; line-height: 1.4; }
 .gbppd-dr__mini span { display: block; margin-top: 2px; font-size: 14px; line-height: 1.5; opacity: .8; }
 
@@ -879,6 +975,14 @@ a.snav-val:hover, body.gb-demo a.snav-val:hover { text-decoration: underline; }
   border-top-color: var(--blue-200);
 }
 .snav-item.active .snav-label { color: var(--blue-600); }
+/* AND THE GLYPH OF THE CHOSEN ROW STAYS INK (Ton 10.09). Measured
+   here rather than assumed: the active icon renders rgb(140,141,150)
+   against a neighbour's rgb(127,127,136), and the whole difference is
+   the Blue 50 plate showing through the antialiasing of the same
+   #71717A strokes. Nothing tints it, and nothing should: the plate
+   and the label carry the state, the mark stays a mark. The other
+   carrier of this rail, live\portal.html, DID paint its active glyph
+   Blue 600 in the ren skin, and that was fixed in the same wave. */
 .snav-icon {
   width: 24px;
   height: 24px;
@@ -1128,7 +1232,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
       <div class="gbppd-head">
         <img class="gbppd-head__icon" src="../system/icons/metrics.svg" alt="" aria-hidden="true">
         <h1 class="gbppd-title">Dashboard</h1>
-        <button class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary" type="button" id="gbppdCustomize"><span class="gb-btn__label">Customize</span></button>
+        <button class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary" type="button" id="gbppdCustomize"><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="filters" data-gb-icon-size="16"></span></span><span class="gb-btn__label">Customize</span></button>
       </div>
 
       <!-- ============ THE NEW ACCOUNT ============
@@ -1143,22 +1247,22 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
            the meeting and the concierge, in that order. -->
       <section class="gbppd-emptyzone" aria-label="Getting started">
         <p class="gbppd-empty__say"><b>Welcome, Anton.</b> Start with your first gift.</p>
-        <div class="gbppd-empty__doors">
-          <a class="gbppd-card gbppd-empty__door gbppd-empty__door--lead" href="catalog/index.html">
+        <div class="gbppd-doors">
+          <a class="gbppd-door gbppd-door--stacked gbppd-door--lead" href="catalog/index.html">
             <span data-gb-icon="grid" data-gb-icon-size="24"></span>
-            <b>Explore gifts</b>
-            <span>See what we curate, by occasion and by budget.</span>
+            <span class="gbppd-door__name">Explore gifts</span>
+            <span class="gbppd-door__say">See what we curate, by occasion and by budget.</span>
           </a>
-          <a class="gbppd-card gbppd-empty__door" href="book-a-meeting.html">
+          <a class="gbppd-door gbppd-door--stacked" href="book-a-meeting.html">
             <span data-gb-icon="calendar" data-gb-icon-size="24"></span>
-            <b>Book a meeting</b>
-            <span>Pick a time with a gifting expert.</span>
+            <span class="gbppd-door__name">Book a meeting</span>
+            <span class="gbppd-door__say">Pick a time with a gifting expert.</span>
           </a>
-          <a class="gbppd-card gbppd-empty__door" href="index.html?concierge=1">
+          <button class="gbppd-door gbppd-door--stacked" type="button" data-gbppd-concierge>
             <span data-gb-icon="service-bell" data-gb-icon-size="24"></span>
-            <b>Talk to us</b>
-            <span>Ask the concierge, and get an answer now.</span>
-          </a>
+            <span class="gbppd-door__name">Talk to us</span>
+            <span class="gbppd-door__say">Ask the concierge, and get an answer now.</span>
+          </button>
         </div>
       </section>
 
@@ -1168,123 +1272,179 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
       <section class="gbppd-widget gbppd-filled" data-gbppd-widget="metrics" aria-label="Your numbers today">
         <div class="gbppd-stats">
 
-          <div class="gbppd-card gbppd-stat">
+          <button class="gbppd-card gbppd-stat" type="button" data-gbppd-metric="campaigns">
             <span class="gb-eyebrow">Active campaigns</span>
             <span class="gbppd-stat__num">1</span>
             <span class="gbppd-stat__sub">1 more on hold</span>
-          </div>
+          </button>
 
-          <div class="gbppd-card gbppd-stat">
+          <button class="gbppd-card gbppd-stat" type="button" data-gbppd-metric="transit">
             <span class="gb-eyebrow">Gifts in transit</span>
-            <span class="gbppd-stat__num">4</span>
-            <span class="gbppd-stat__sub">48 more packed and held</span>
-          </div>
+            <span class="gbppd-stat__num">13</span>
+            <span class="gbppd-stat__sub">48 more held</span>
+          </button>
 
-          <div class="gbppd-card gbppd-stat">
+          <button class="gbppd-card gbppd-stat" type="button" data-gbppd-metric="delivered">
             <span class="gb-eyebrow">Delivered</span>
-            <span class="gbppd-stat__num">5</span>
-            <span class="gbppd-stat__sub">This month</span>
-          </div>
+            <span class="gbppd-stat__num">23</span>
+            <span class="gbppd-stat__sub">Gifts, this month</span>
+          </button>
 
-          <div class="gbppd-card gbppd-stat gbppd-stat--alarm gb-alert--error">
+          <button class="gbppd-card gbppd-stat gbppd-stat--alarm gb-alert--error" type="button" data-gbppd-metric="attention">
             <span class="gb-eyebrow">Needs attention</span>
             <span class="gbppd-stat__num">2</span>
             <span class="gbppd-stat__sub">Both on one campaign</span>
-          </div>
+          </button>
 
         </div>
         <p class="gbppd-note">Which four numbers stand here is a proposal, not a decision yet.</p>
       </section>
 
-      <!-- ============ 2 · SHORTCUTS, RIGHT UNDER THE METRICS ============ -->
+      <!-- ============ 2 · QUICK ACTIONS, RIGHT UNDER THE METRICS ============ -->
       <section class="gbppd-widget gbppd-filled" data-gbppd-widget="actions" aria-labelledby="gbppdDoorsTitle">
         <div class="gbppd-widget__head">
-          <span class="gb-eyebrow" id="gbppdDoorsTitle">Go straight to</span>
+          <span class="gb-eyebrow" id="gbppdDoorsTitle">Quick actions</span>
         </div>
         <div class="gbppd-doors gbppd-widget__body">
-          <a class="gbppd-card gbppd-door" href="#">
-            <span data-gb-icon="user" data-gb-icon-size="20"></span>
-            <span class="gbppd-door__name">Address book</span>
+          <a class="gbppd-door" href="catalog/index.html">
+            <span data-gb-icon="grid" data-gb-icon-size="20"></span>
+            <span class="gbppd-door__name">Explore gifts</span>
           </a>
-          <a class="gbppd-card gbppd-door" href="#">
-            <span data-gb-icon="credit-card" data-gb-icon-size="20"></span>
-            <span class="gbppd-door__name">Payment methods</span>
-          </a>
-          <a class="gbppd-card gbppd-door" href="#">
+          <a class="gbppd-door" href="#">
             <span data-gb-icon="plus" data-gb-icon-size="20"></span>
-            <span class="gbppd-door__name">New campaign</span>
+            <span class="gbppd-door__name">Create a campaign</span>
           </a>
           <!-- The concierge, and it wears the concierge's own glyph:
-               the cloche is his mark everywhere else in the house. -->
-          <a class="gbppd-card gbppd-door" href="index.html?concierge=1">
+               the cloche is his mark everywhere else in the house. It
+               opens the drawer here, on this page, rather than
+               throwing the person at the home page. -->
+          <button class="gbppd-door" type="button" data-gbppd-concierge>
             <span data-gb-icon="service-bell" data-gb-icon-size="20"></span>
             <span class="gbppd-door__name">Talk to us</span>
-          </a>
+          </button>
         </div>
       </section>
 
       <!-- ============ 3 · THE BOARD, THREE EQUAL COLUMNS ============ -->
       <div class="gbppd-cols gbppd-filled">
 
-        <!-- ---------- LEFT: WHAT IS MOVING ---------- -->
+        <!-- ---------- LEFT: THE GIFTS, IN THREE TABS ----------
+             gbppl-portal-dashboard-4. Ton, 10.09: the gift zone is
+             tabbed, and Favorites is one of the tabs. The name is the
+             live catalogue's own («My Favorites» there, the possessive
+             dropped here because the tab already stands inside the
+             person's own portal and the three labels have one line
+             between them), not our invented «Saved for later». The picture shelf that used
+             to stand at the foot of the page is gone into this tab:
+             one place where a gift is looked for, three states of it.
+
+             AND THE DEMO DATA IS THE BUSINESS (Ton, 10.09). A normal
+             order is ONE GIFT SENT TO MANY PEOPLE, the way the
+             checkout V5 sends a Coffee Lover Set to 24 recipients,
+             not a basket of different things for different people. So
+             a row is an ORDER: the gift, where it came from, how many
+             recipients, and how far along the shipments are.
+
+             «DIRECT ORDER» IS A CANDIDATE WORD. An order placed
+             straight through the checkout, with no campaign around
+             it, has no name in our vocabulary yet and «single gift»
+             was wrong (it is one gift for 24 people). Named neutrally
+             until the live portal's own term is brought back from
+             recon. -->
         <div class="gbppd-col" data-gbppd-widget="gifts">
-          <section class="gbppd-widget" aria-labelledby="gbppdGiftsTitle">
+          <section class="gbppd-widget" aria-label="Your gifts">
             <div class="gbppd-widget__head">
-              <span class="gb-eyebrow" id="gbppdGiftsTitle">Gifts on their way</span>
-              <a class="gbppd-more" href="portal.html">See all</a>
+              <div class="gbppd-tabs" role="tablist" aria-label="Your gifts">
+                <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-way"  aria-selected="true"  aria-controls="pane-way"  data-gbppd-tab="way">On the way</button>
+                <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-done" aria-selected="false" aria-controls="pane-done" data-gbppd-tab="done">Delivered</button>
+                <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-fav"  aria-selected="false" aria-controls="pane-fav"  data-gbppd-tab="fav">Favorites</button>
+              </div>
             </div>
-            <div class="gbppd-card gbppd-rows gbppd-widget__body">
 
-              <a class="gbppd-row" id="ship-aisha" href="#ship-aisha">
-                <img class="gbppd-thumb" src="../system/assets/products/1112-main.webp" alt="" loading="lazy">
-                <span>
-                  <span class="gbppd-row__what">Aisha Patel</span>
-                  <span class="gbppd-row__who">New Hire Welcome</span>
-                </span>
-                <span class="gbppd-state">Out for delivery</span>
-              </a>
+            <!-- ON THE WAY: three orders, and every one of them is one
+                 gift to many people. -->
+            <div class="gbppd-card gbppd-rows gbppd-widget__body" id="pane-way" role="tabpanel" aria-labelledby="tab-way">
 
-              <a class="gbppd-row" id="ship-daniel" href="#ship-daniel">
+              <a class="gbppd-row" id="ord-coffee" href="#ord-coffee">
                 <img class="gbppd-thumb" src="../system/assets/products/1094-main.webp" alt="" loading="lazy">
                 <span>
-                  <span class="gbppd-row__what">Daniel Okafor</span>
-                  <span class="gbppd-row__who">New Hire Welcome</span>
+                  <span class="gbppd-row__what">Coffee Lover Set<span class="gb-badge gb-badge--info">On the way</span></span>
+                  <span class="gbppd-row__who">Direct order &middot; 24 recipients &middot; 18 delivered</span>
                 </span>
-                <span class="gbppd-state">In transit</span>
               </a>
 
-              <!-- A SINGLE GIFT IS A NORMAL ROW (Ton 10.09). No parent
-                   campaign, and the second line says so in the same
-                   place the campaign name would stand. -->
-              <a class="gbppd-row" id="ship-marcus" href="#ship-marcus">
+              <a class="gbppd-row" id="ord-amalfi" href="#ord-amalfi">
                 <img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy">
                 <span>
-                  <span class="gbppd-row__what">Marcus Lee</span>
-                  <span class="gbppd-row__who">Single gift</span>
+                  <span class="gbppd-row__what">Taste of Amalfi<span class="gb-badge gb-badge--info">On the way</span></span>
+                  <span class="gbppd-row__who">New Hire Welcome &middot; 12 recipients &middot; 5 delivered</span>
                 </span>
-                <span class="gbppd-state">In transit</span>
               </a>
 
-              <a class="gbppd-row" id="ship-nina" href="#ship-nina">
-                <img class="gbppd-thumb" src="../system/assets/products/1106-main.webp" alt="" loading="lazy">
-                <span>
-                  <span class="gbppd-row__what">Nina Alvarez</span>
-                  <span class="gbppd-row__who">Single gift</span>
-                </span>
-                <span class="gbppd-state">Out for delivery</span>
-              </a>
-
-              <!-- The held batch. It is not in transit, so it is not in
-                   the transit number; it stands here because the
-                   question this column answers is «where are my gifts»
-                   and the honest answer for 48 of them is «nowhere». -->
-              <a class="gbppd-row" id="ship-holiday" href="#camp-holiday">
+              <a class="gbppd-row" id="ord-holiday" href="#camp-holiday">
                 <img class="gbppd-thumb" src="../system/assets/products/1118-main.webp" alt="" loading="lazy">
                 <span>
-                  <span class="gbppd-row__what">48 gifts, packed</span>
-                  <span class="gbppd-row__who">Holiday Client Gifts</span>
+                  <span class="gbppd-row__what">Winter Reserve Box<span class="gb-badge gb-badge--error">On hold</span></span>
+                  <span class="gbppd-row__who">Holiday Client Gifts &middot; 48 recipients &middot; none shipped</span>
                 </span>
-                <span class="gbppd-state gbppd-state--stopped gb-alert--error">On hold</span>
+              </a>
+
+            </div>
+
+            <!-- DELIVERED: orders that finished, and they finished
+                 last month, which is why the metric above counts 23
+                 gifts delivered THIS one. -->
+            <div class="gbppd-card gbppd-rows gbppd-widget__body" id="pane-done" role="tabpanel" aria-labelledby="tab-done" hidden>
+
+              <a class="gbppd-row" id="ord-founders" href="#ord-founders">
+                <img class="gbppd-thumb" src="../system/assets/products/1106-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Founders Day Box<span class="gb-badge gb-badge--success">Delivered</span></span>
+                  <span class="gbppd-row__who">Direct order &middot; 30 recipients &middot; 22 August</span>
+                </span>
+              </a>
+
+              <a class="gbppd-row" id="ord-thankyou" href="#ord-thankyou">
+                <img class="gbppd-thumb" src="../system/assets/products/1112-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Client Thank You<span class="gb-badge gb-badge--success">Delivered</span></span>
+                  <span class="gbppd-row__who">Direct order &middot; 15 recipients &middot; 2 August</span>
+                </span>
+              </a>
+
+            </div>
+
+            <!-- MY FAVORITES: the live catalogue's own name, and the
+                 live catalogue's own four gifts. -->
+            <div class="gbppd-card gbppd-rows gbppd-widget__body" id="pane-fav" role="tabpanel" aria-labelledby="tab-fav" hidden>
+
+              <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
+                <img class="gbppd-thumb" src="../system/assets/products/1112-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Famous Caymus Collection</span>
+                  <span class="gbppd-row__who">$130 - $195</span>
+                </span>
+              </a>
+              <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
+                <img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Taste of Amalfi</span>
+                  <span class="gbppd-row__who">$200</span>
+                </span>
+              </a>
+              <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
+                <img class="gbppd-thumb" src="../system/assets/products/1094-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Beats Solo Buds</span>
+                  <span class="gbppd-row__who">$150</span>
+                </span>
+              </a>
+              <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
+                <img class="gbppd-thumb" src="../system/assets/products/1106-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Stags' Leap Wine Night and Day</span>
+                  <span class="gbppd-row__who">$195 - $290</span>
+                </span>
               </a>
 
             </div>
@@ -1311,10 +1471,9 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <img src="../system/assets/products/925-main.webp" alt="" loading="lazy">
                 </div>
                 <span class="gb-eyebrow gbppd-camp__type">Fulfillment</span>
-                <h3 class="gbppd-camp__name">Holiday Client Gifts</h3>
+                <h3 class="gbppd-camp__name">Holiday Client Gifts<span class="gb-badge gb-badge--error">On hold</span></h3>
                 <div class="gbppd-camp__foot">
-                  <span class="gbppd-camp__count">48 gifts &middot; none shipped</span>
-                  <span class="gbppd-state gbppd-state--stopped gb-alert--error">On hold</span>
+                  <span class="gbppd-camp__count">Winter Reserve Box &middot; 48 recipients &middot; none shipped</span>
                 </div>
               </a>
 
@@ -1328,10 +1487,9 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <img src="../system/assets/products/1081-main.webp" alt="" loading="lazy">
                 </div>
                 <span class="gb-eyebrow gbppd-camp__type">Email</span>
-                <h3 class="gbppd-camp__name">New Hire Welcome</h3>
+                <h3 class="gbppd-camp__name">New Hire Welcome<span class="gb-badge gb-badge--info">Delivering</span></h3>
                 <div class="gbppd-camp__foot">
-                  <span class="gbppd-camp__count">12 recipients &middot; 5 delivered, 2 on the way</span>
-                  <span class="gbppd-state">Delivering</span>
+                  <span class="gbppd-camp__count">Taste of Amalfi &middot; 12 recipients &middot; 5 delivered</span>
                 </div>
               </a>
 
@@ -1388,25 +1546,25 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-event__dot gbppd-event__dot--alarm" aria-hidden="true"></span>
                   <p class="gbppd-event__say">The payment for <b>Holiday Client Gifts</b> was declined.<span class="gbppd-event__when">Today, 10:42</span></p>
                 </a>
-                <a class="gbppd-event" href="#ship-aisha">
+                <a class="gbppd-event" href="#ord-coffee">
                   <span class="gbppd-event__dot" aria-hidden="true"></span>
-                  <p class="gbppd-event__say">Aisha Patel's gift is out for delivery in New York.<span class="gbppd-event__when">Today, 09:20</span></p>
+                  <p class="gbppd-event__say">6 of the <b>Coffee Lover Set</b> gifts are out for delivery.<span class="gbppd-event__when">Today, 09:20</span></p>
                 </a>
-                <a class="gbppd-event" href="#ship-nina">
+                <a class="gbppd-event" href="#ord-amalfi">
                   <span class="gbppd-event__dot" aria-hidden="true"></span>
-                  <p class="gbppd-event__say">Nina Alvarez's gift is out for delivery in Austin.<span class="gbppd-event__when">Today, 08:40</span></p>
+                  <p class="gbppd-event__say">Priya Raman received her gift in Seattle.<span class="gbppd-event__when">Today, 08:40</span></p>
                 </a>
-                <a class="gbppd-event" href="#camp-newhire">
+                <a class="gbppd-event" href="#ord-coffee">
                   <span class="gbppd-event__dot" aria-hidden="true"></span>
-                  <p class="gbppd-event__say">Priya Raman received her gift in Seattle.<span class="gbppd-event__when">Yesterday, 16:05</span></p>
+                  <p class="gbppd-event__say"><b>Coffee Lover Set</b> was ordered for 24 people.<span class="gbppd-event__when">Yesterday, 16:05</span></p>
                 </a>
                 <a class="gbppd-event" href="#camp-holiday">
                   <span class="gbppd-event__dot" aria-hidden="true"></span>
                   <p class="gbppd-event__say">48 addresses were imported into <b>Holiday Client Gifts</b>.<span class="gbppd-event__when">Yesterday, 11:30</span></p>
                 </a>
-                <a class="gbppd-event" href="#ship-marcus">
+                <a class="gbppd-event" href="#camp-newhire">
                   <span class="gbppd-event__dot" aria-hidden="true"></span>
-                  <p class="gbppd-event__say">A single gift for Marcus Lee was placed.<span class="gbppd-event__when">5 September, 12:15</span></p>
+                  <p class="gbppd-event__say"><b>New Hire Welcome</b> was created with 12 recipients.<span class="gbppd-event__when">5 September, 12:15</span></p>
                 </a>
 
               </div>
@@ -1416,44 +1574,12 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
 
       </div>
 
-      <!-- ============ 4 · SAVED FOR LATER ============ -->
-      <section class="gbppd-widget gbppd-filled" data-gbppd-widget="favorites" aria-labelledby="gbppdFavsTitle">
-        <div class="gbppd-widget__head">
-          <span class="gb-eyebrow" id="gbppdFavsTitle">Saved for later</span>
-          <a class="gbppd-more" href="catalog/index.html">Open the catalog</a>
-        </div>
-        <div class="gbppd-favs gbppd-widget__body">
-
-          <a class="gbppd-card gbppd-fav" href="catalog/index.html">
-            <img class="gbppd-fav__media" src="../system/assets/products/1112-main.webp" alt="Famous Caymus Collection" loading="lazy">
-            <span class="gbppd-fav__mark" aria-hidden="true"><span data-gb-icon="heart" data-gb-icon-size="16"></span></span>
-            <p class="gbppd-fav__name">Famous Caymus Collection</p>
-            <p class="gbppd-fav__price">$130 - $195</p>
-          </a>
-
-          <a class="gbppd-card gbppd-fav" href="catalog/index.html">
-            <img class="gbppd-fav__media" src="../system/assets/products/1081-main.webp" alt="Taste of Amalfi" loading="lazy">
-            <span class="gbppd-fav__mark" aria-hidden="true"><span data-gb-icon="heart" data-gb-icon-size="16"></span></span>
-            <p class="gbppd-fav__name">Taste of Amalfi</p>
-            <p class="gbppd-fav__price">$200</p>
-          </a>
-
-          <a class="gbppd-card gbppd-fav" href="catalog/index.html">
-            <img class="gbppd-fav__media" src="../system/assets/products/1094-main.webp" alt="Beats Solo Buds" loading="lazy">
-            <span class="gbppd-fav__mark" aria-hidden="true"><span data-gb-icon="heart" data-gb-icon-size="16"></span></span>
-            <p class="gbppd-fav__name">Beats Solo Buds</p>
-            <p class="gbppd-fav__price">$150</p>
-          </a>
-
-          <a class="gbppd-card gbppd-fav" href="catalog/index.html">
-            <img class="gbppd-fav__media" src="../system/assets/products/1106-main.webp" alt="Stags' Leap Wine Night and Day Collection" loading="lazy">
-            <span class="gbppd-fav__mark" aria-hidden="true"><span data-gb-icon="heart" data-gb-icon-size="16"></span></span>
-            <p class="gbppd-fav__name">Stags' Leap Wine Night and Day Collection</p>
-            <p class="gbppd-fav__price">$195 - $290</p>
-          </a>
-
-        </div>
-      </section>
+      <!-- THE PICTURE SHELF OF FAVOURITES USED TO STAND HERE, and it
+           moved into the gift zone as the My Favorites tab
+           (gbppl-portal-dashboard-4). One place where a gift is looked
+           for beats a second shelf of the same gifts at the foot of
+           the page; if Ton wants the pictures back, the shelf is one
+           zone and it returns whole. -->
 
       <!-- THE PHASE 2 LINE. The account assistant is in it, and it is a
            line rather than a banner with a dead button on purpose. -->
@@ -1477,7 +1603,11 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
   <script src="../system/components/inspect.js"></script>
   <script src="../system/components/toggle.js"></script>
   <script src="../system/components/comments.js"></script>
+  <script src="../system/components/booking.js"></script>
+  <!-- tooltip.js before the concierge: the organism listens on the
+       document, and the module writes its carriers late. -->
   <script src="../system/components/tooltip.js"></script>
+  <script src="concierge/concierge.js"></script>
 
 <script>
 /* ============================================================
@@ -1507,9 +1637,9 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
      same doors behind them. */
   var EVENTS = [
     { alarm: true,  href: '#camp-holiday', say: 'The payment for <b>Holiday Client Gifts</b> was declined.', when: 'Today, 10:42' },
-    { alarm: false, href: '#ship-aisha',   say: "Aisha Patel's gift is out for delivery in New York.", when: 'Today, 09:20' },
-    { alarm: false, href: '#ship-nina',    say: "Nina Alvarez's gift is out for delivery in Austin.", when: 'Today, 08:40' },
-    { alarm: false, href: '#camp-newhire', say: 'Priya Raman received her gift in Seattle.', when: 'Yesterday, 16:05' }
+    { alarm: false, href: '#ord-coffee',   say: '6 of the <b>Coffee Lover Set</b> gifts are out for delivery.', when: 'Today, 09:20' },
+    { alarm: false, href: '#ord-amalfi',   say: 'Priya Raman received her gift in Seattle.', when: 'Today, 08:40' },
+    { alarm: false, href: '#ord-coffee',   say: '<b>Coffee Lover Set</b> was ordered for 24 people.', when: 'Yesterday, 16:05' }
   ];
 
   function body() {
@@ -1594,11 +1724,10 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
      ============================================================ */
   var WIDGETS = [
     { id: 'metrics',   name: 'Metrics' },
-    { id: 'actions',   name: 'Go straight to' },
-    { id: 'gifts',     name: 'Gifts on their way' },
+    { id: 'actions',   name: 'Quick actions' },
+    { id: 'gifts',     name: 'Your gifts' },
     { id: 'campaigns', name: 'Campaigns' },
-    { id: 'activity',  name: 'Activity' },
-    { id: 'favorites', name: 'Saved for later' }
+    { id: 'activity',  name: 'Activity' }
   ];
   var off = {};
 
@@ -1624,6 +1753,148 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
     html += '<p class="gbppd-cz__foot">Which numbers stand in the metrics row, and the order of the zones: phase 2. Nothing here is saved yet, so the board comes back whole on the next load.</p>';
     return html;
   }
+
+  /* ============================================================
+     THE TABS OF THE GIFT ZONE            gbppl-portal-dashboard-4
+     ------------------------------------------------------------
+     Three panels, one chosen, and the chosen one is remembered by
+     nothing: a tab is a look, not a state of the account. Keyboard
+     gets the arrows, because a tablist without them is a row of
+     buttons wearing a role it does not honour.
+     ============================================================ */
+  var tabs = [].slice.call(document.querySelectorAll('[data-gbppd-tab]'));
+  function showTab(id) {
+    tabs.forEach(function (t) {
+      var on = t.getAttribute('data-gbppd-tab') === id;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      var pane = document.getElementById(t.getAttribute('aria-controls'));
+      if (pane) pane.hidden = !on;
+    });
+  }
+  tabs.forEach(function (t, i) {
+    t.tabIndex = t.getAttribute('aria-selected') === 'true' ? 0 : -1;
+    t.addEventListener('click', function () { showTab(t.getAttribute('data-gbppd-tab')); });
+    t.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var n = tabs[(i + d + tabs.length) % tabs.length];
+      n.focus();
+      showTab(n.getAttribute('data-gbppd-tab'));
+    });
+  });
+
+  /* ============================================================
+     A METRIC IS A DOOR                   gbppl-portal-dashboard-4
+     ------------------------------------------------------------
+     Ton, 10.09: «метрики кликабельны, плитка = дверь». The drawer
+     behind a number is the SAME SHAPE as the bell's: a list of the
+     things that were counted, said in the board's own words and
+     states, and one way onward at the foot. Nothing here is a second
+     version of the truth, and every number below is the number on
+     the tile it came from.
+     ============================================================ */
+  var METRICS = {
+    campaigns: {
+      title: 'Active campaigns',
+      say: 'One campaign is running. The second is stopped and is at the top of the feed.',
+      rows: [
+        { what: 'New Hire Welcome',    who: 'Email &middot; Taste of Amalfi &middot; 12 recipients', state: 'Delivering', tone: 'info' },
+        { what: 'Holiday Client Gifts', who: 'Fulfillment &middot; Winter Reserve Box &middot; 48 recipients', state: 'On hold', tone: 'error' }
+      ],
+      door: 'View all campaigns'
+    },
+    transit: {
+      title: 'Gifts in transit',
+      /* The quiet line Ton asked for: the number counts shipments,
+         wherever they come from. */
+      say: 'Counted across campaigns and direct orders alike, one line per shipment on the road.',
+      rows: [
+        { what: 'Coffee Lover Set', who: 'Direct order &middot; 24 recipients', state: '6 on the way', tone: 'info' },
+        { what: 'Taste of Amalfi',  who: 'New Hire Welcome &middot; 12 recipients', state: '7 on the way', tone: 'info' }
+      ],
+      door: 'View all gifts'
+    },
+    delivered: {
+      title: 'Delivered this month',
+      say: 'Gifts that reached a person in September. Orders that finished earlier stand in the Delivered tab.',
+      rows: [
+        { what: 'Coffee Lover Set', who: 'Direct order', state: '18 delivered', tone: 'success' },
+        { what: 'Taste of Amalfi',  who: 'New Hire Welcome', state: '5 delivered', tone: 'success' }
+      ],
+      door: 'View all gifts'
+    },
+    attention: {
+      title: 'Needs your action',
+      say: 'Both of them belong to the same campaign, and the second will stop it again the moment the first clears.',
+      rows: [
+        { what: 'Holiday Client Gifts is on hold', who: 'The card on file was declined', state: 'Since 8 Sep', tone: 'error' },
+        { what: '3 gifts have no recipient address', who: 'Holiday Client Gifts', state: 'Waiting', tone: 'warning' }
+      ],
+      door: 'View all campaigns'
+    }
+  };
+
+  function metricBody(m) {
+    var html = '<p class="gbppd-dr__say">' + m.say + '</p>' +
+               '<div class="gbppd-card" style="margin-top: var(--space-16); padding: 0 var(--space-16)">';
+    m.rows.forEach(function (r) {
+      html += '<a class="gbppd-dr__row" href="#dashboard">' +
+              '<span><span class="gbppd-row__what">' + r.what +
+              '<span class="gb-badge gb-badge--' + (r.tone || 'quiet') + '">' + r.state + '</span></span>' +
+              '<span class="gbppd-row__who">' + r.who + '</span></span></a>';
+    });
+    return html + '</div>';
+  }
+
+  document.addEventListener('click', function (e) {
+    var tile = e.target.closest ? e.target.closest('[data-gbppd-metric]') : null;
+    if (!tile) return;
+    var m = METRICS[tile.getAttribute('data-gbppd-metric')];
+    var drawer = document.querySelector('gb-drawer');
+    if (!m || !drawer || !drawer.open) return;
+    drawer.open({
+      title: m.title,
+      html: metricBody(m),
+      foot: '<a class="gb-btn gb-btn--large gb-btn--outline gb-btn--secondary gb-btn--block" href="#dashboard">' +
+            '<span class="gb-btn__label">' + m.door + '</span></a>'
+    });
+  });
+
+  /* ============================================================
+     TALK TO US OPENS THE CONCIERGE       gbppl-portal-dashboard-4
+     ------------------------------------------------------------
+     Ton, 10.09: the door has to open the drawer, not throw the
+     person at the home page. The module is live\concierge, mounted
+     here the way live\index.html mounts it, in the PORTAL
+     environment and signed in, which is the floor where the named
+     Gift Advisor exists at all. The cloche lands in the bar beside
+     the notifications bell, and the pair is deliberately left
+     standing for Ton to look at.
+     ============================================================ */
+  if (window.GbConcierge) {
+    window.GbConcierge.mount({
+      bellSlot:   '.gbh-pbar__actions',
+      bellBefore: '#gbppdBell',
+      anchor:     'gb-studio-panel',
+      aiDoor:     true,
+      auth:       'user',
+      authSwitch: false,
+      siteHref:   'index.html',
+      environments: {
+        here:    'portal',
+        website: 'index.html?concierge=1',
+        portal:  'portal-dashboard.html'
+      }
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var door = e.target.closest ? e.target.closest('[data-gbppd-concierge]') : null;
+    if (!door) return;
+    e.preventDefault();
+    if (window.GbConcierge && window.GbConcierge.open) window.GbConcierge.open();
+  });
 
   var czBtn = document.getElementById('gbppdCustomize');
   if (czBtn) czBtn.addEventListener('click', function () {

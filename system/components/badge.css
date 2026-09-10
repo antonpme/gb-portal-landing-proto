@@ -1,0 +1,87 @@
+/* ============================================================
+   gbppl-portal-dashboard-4 — THE STATUS BADGE
+   ------------------------------------------------------------
+   Ton, 10.09, handing over the drawing: «взять за основу и
+   улучшить у нас». The source is Figma «Gifting Portal», node
+   3761-6514: a FILLED plate with white text, six tones, and a
+   square icon-only twin of each tone.
+
+   WHAT THE MOCK SAYS, measured and carried:
+     type      Footnotes role, Inter 12 / 400 / lh 1.5 / ls 0.5
+     fill      one flat colour, white ink on it
+     tones     lime 600  #65a30d   success
+               cyan 500  #06b6d4   info
+               amber 500 #f59e0b   warning
+               red 500   #ef4444   error
+               zinc 800  #27272a   neutral, dark
+               a light neutral: white plate, zinc 300 hairline,
+                                zinc 700 ink
+     twins     icon-only squares of the same six tones. NOT BUILT:
+               the dashboard has no carrier for one, and a variant
+               without a carrier is not born (law 0a.4). Documented
+               here so the next wave does not rediscover it.
+
+   WHAT WE IMPROVED, and each one on purpose:
+     1. RADIUS IS OURS. The mock rounds its own way; every plate in
+        this house is --radius (5px, the radius audit of 12.08).
+     2. PADDING IS THE HOUSE CHIP'S. 0 / --space-8 across, and 2px
+        down the sides (NO TOKEN: a quarter of --space-8, the same
+        quarter this house already writes for the second line of a
+        two line row). The sum lands the plate on 24px exactly, the
+        row the alert and the icon grid are already built on.
+     3. THE TONES ARE RECONCILED WITH THE ALERT CANON. alert.css
+        carries the SAME four families off node 9293-2260 at the
+        50 / 200 / 900 rungs; this component is the loud half of the
+        same set at the 500 / 600 rung. Info is CYAN in both, which
+        is not a coincidence but the same decision twice: blue stays
+        with state (Ton-5), cyan carries information.
+
+   OPEN, AND MEASURED RATHER THAN GUESSED (report, 10.09): white ink
+   on the mock's own fills gives 4.4:1 on red 500, 3.0:1 on lime 600
+   and 2.0:1 on amber 500, so two of the six tones do not reach AA
+   for 12px text. The fills are kept exactly as drawn (Ton-3, the
+   source wins) and the question goes to Ton with the numbers: darken
+   those two by a rung, or give the light tones dark ink. The
+   dashboard's own statuses use info, success and error today.
+
+   OWNER OF THE LOOK: this file. Consumers write class names, and
+   the margin between a badge and the words beside it belongs to the
+   page, not to the badge.
+   ============================================================ */
+
+.gb-badge {
+  display: inline-block;
+  padding: 2px var(--space-8);          /* NO TOKEN 2: a quarter of --space-8; 2 + 18 + 2 + 2 borders = the 24 row */
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--gb-badge-bg);
+  color: var(--gb-badge-ink);
+  font-family: var(--font-sans);
+  font-size: 12px;                      /* Figma 3761-6514: Footnotes */
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.5px;                /* NO TOKEN: the mock's tracking, as measured */
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+/* The six tones. Five are filled and speak in white; the sixth is
+   the quiet one and keeps its hairline. */
+.gb-badge--success { --gb-badge-bg: #65a30d; --gb-badge-ink: #ffffff; }  /* tailwind/lime/600  · Figma 3761-6514 */
+.gb-badge--info    { --gb-badge-bg: #06b6d4; --gb-badge-ink: #ffffff; }  /* tailwind/cyan/500 */
+.gb-badge--warning { --gb-badge-bg: #f59e0b; --gb-badge-ink: #ffffff; }  /* tailwind/amber/500 */
+.gb-badge--error   { --gb-badge-bg: #ef4444; --gb-badge-ink: #ffffff; }  /* tailwind/red/500 */
+.gb-badge--neutral { --gb-badge-bg: #27272a; --gb-badge-ink: #ffffff; }  /* tailwind/zinc/800 */
+.gb-badge--quiet {
+  --gb-badge-bg: var(--white);
+  --gb-badge-ink: var(--zinc-700);
+  border-color: var(--zinc-300);
+}
+
+/* A badge without a tone is the quiet one: a bare plate with no
+   ground would read as a piece of the text it sits in. */
+.gb-badge:not([class*="gb-badge--"]) {
+  --gb-badge-bg: var(--white);
+  --gb-badge-ink: var(--zinc-700);
+  border-color: var(--zinc-300);
+}
