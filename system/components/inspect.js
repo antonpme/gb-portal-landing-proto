@@ -1485,7 +1485,8 @@
               'one rung of tracking off the chip role; a question with Ton'),
           row('Wrapping', cs.whiteSpace, null, 'one line, by construction'),
           row('Answers the pointer', cs.pointerEvents === 'none' ? 'no' : 'yes', null,
-              'a plate is never a target'),
+              d.float ? 'a floating plate is never a target'
+                      : 'standing in a document it is ordinary text, and selectable'),
           row('Side', d.float ? (d.side || 'not placed yet') : 'in the flow of the document', null,
               d.float ? 'asked for ' + (d.asked || 'bottom') : 'this one is the plate, not the tooltip'),
           row('Name for the reader', el.getAttribute('aria-hidden') === 'true'
