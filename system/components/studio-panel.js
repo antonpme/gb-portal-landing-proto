@@ -741,6 +741,9 @@
        registry gives the page (PAGES.concierge.label) and the same word
        the shelf prints on its card. */
     'live/help-concierge.html':   'Help and concierge',
+    /* gbppl-tabs-menu-lab-1, 10.09: the same word the registry gives the
+       page (PAGES.tabsmenu.label) and the same word the shelf prints. */
+    'live/tabs-menu-lab.html':    'Tabs and menu variants',
     'system/oro/index.html':      'About Oro',
     'system/oro/typography.html': 'Typography',
     'system/oro/colors.html':     'Colors',

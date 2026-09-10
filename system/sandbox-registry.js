@@ -699,6 +699,31 @@
       ]
     },
 
+    tabsmenu: {
+      /* gbppl-tabs-menu-lab-1, Тон 10.09: «покажите на одной странице
+         несколько вариантов дизайна табов и несколько вариантов
+         дизайна верхнего меню». Обе вещи живут на ГЛАВНОЙ — полоса
+         логотипов «Curated Gifts For:» и верхний бар, — поэтому live
+         указывает туда: это та композиция, с которой сравнивают
+         кандидатов, а сами кандидаты пришли из живой люкс-разведки
+         Элиана (studio\docs\TABS-MENU-LUXURY-RECON.md). */
+      label: 'Tabs and menu variants',
+      live: 'live/index.html',
+      variants: [
+        {
+          id: 'lab',
+          label: 'Seven candidates on one composition',
+          desc: 'The bar and the strip of logos in one frame, with three ways for a logo tab to say which brand is chosen and four ways for the top navigation to answer the pointer, all of them out of the live luxury recon. The console switches the two axes and carries the three pairs to judge first, plus a row that takes the movement away.',
+          status: 'in-progress',
+          href: 'live/tabs-menu-lab.html',
+          ready: true,
+          tags: ['header', 'navigation', 'colour'],
+          created: '2026-09-10',
+          updated: '2026-09-10'
+        }
+      ]
+    },
+
     /* Страницы без живого двойника. У них live указывает на саму
        мерочную страницу: она и есть эталон, с которым сверяются. */
     auth: {
