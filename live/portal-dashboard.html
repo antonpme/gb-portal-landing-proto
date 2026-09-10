@@ -209,13 +209,6 @@ html { scroll-padding-top: calc(var(--header-h) + var(--space-16)); }
   gap: var(--space-16);
   margin-bottom: var(--space-32);
 }
-.gbppd-head__icon {
-  width: 40px;                  /* LIVE 12.08 portal .title-icon */
-  height: 40px;
-  flex-shrink: 0;
-  display: block;
-  opacity: .7;                  /* the rail draws this glyph at 24; at 40 the same line needs its ink taken down a step */
-}
 .gbppd-title {
   margin: 0;
   font-family: var(--font-serif);
@@ -419,6 +412,13 @@ a.gbppd-act, body.gb-demo a.gbppd-act { color: var(--zinc-900); }
 /* THE EMPTY ACCOUNT: no tabs, no lists, and the door grown up. */
 html[data-gbppd-state="empty"] .gbppd-tabs,
 html[data-gbppd-state="empty"] .gbppd-panes { display: none; }
+/* AND A NEW ACCOUNT HAS NO CAMPAIGNS BLOCK AT ALL (Ton, 10.09): a
+   campaign is a gift plus a distribution, so there is nothing to
+   invite anyone to create before they own a gift. The block does not
+   exist, and the board re-splits into the two that do, by the
+   standard mechanism: a display:none grid item leaves the auto
+   tracks and the rest divide the width. */
+html[data-gbppd-state="empty"] [data-gbppd-widget="campaigns"] { display: none; }
 html[data-gbppd-state="empty"] .gbppd-act {
   flex-direction: column;
   align-items: flex-start;
@@ -1400,7 +1400,14 @@ body[data-nav="ton"] .snav-icon img { max-width: 18px; max-height: 18px; opacity
    at all. Carried across verbatim rather than re-decided. */
 @media (max-width: 1023px) {
   .layout { flex-wrap: wrap; }
-  .sidebar { order: 2; width: 100%; }
+  /* THE BOXLESS RAIL HAS TO BE NAMED HERE TOO, and this is a bug the
+     default caught the moment it changed: body[data-nav="ton"]
+     .sidebar sets 280px at a higher specificity than a bare
+     .sidebar, so under 1024 the rail kept its 280 and the content
+     column was squeezed to ONE PIXEL. Measured, not guessed: at 360
+     the layout was 345 wide, the rail 280 and the board 1. */
+  .sidebar,
+  body[data-nav="ton"] .sidebar { order: 2; width: 100%; }
 }
 
 /* ============================================================
@@ -1417,64 +1424,6 @@ body[data-nav="ton"] .snav-icon img { max-width: 18px; max-height: 18px; opacity
    console row «Account · Active | New».
    ============================================================ */
 html[data-gbppd-state="empty"] .gbppd-filled { display: none; }
-html:not([data-gbppd-state="empty"]) .gbppd-emptyzone { display: none; }
-
-/* THE NEW ACCOUNT, AFTER THE LAW OF THE SURFACE. What stood here was
-   the page title, then a BIGGER serif «Welcome, Anton» under it, then
-   two lines in a third register. Now: the page title, one working
-   line that opens with the welcome, and the doors.
-
-   The greeting is the working voice on purpose. A portal page is
-   named by what it is (the rail says Dashboard and so does the
-   title); who is looking is a fact of the sentence, not a headline. */
-.gbppd-emptyzone { padding-block: 0 var(--space-16); }
-/* THE WELCOME IS THE LEADING CONTENT OF AN EMPTY PAGE (Ton, 10.09,
-   on the under-weighted line: it has nothing to compete with here and
-   it deserves the weight). Serif 24/300 in the ink, rhyming with the
-   .hs-title of live\portal.html (serif 32/300, one step up because it
-   owns a hero); the page title above it stays the grey 32 that names
-   the place, and this is the zone's own subject. Two voices on the
-   surface: this one leads, the line under it works. */
-.gbppd-empty__hi {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 24px;
-  line-height: 1.4;
-  font-weight: 300;
-  color: var(--zinc-900);
-}
-@media (min-width: 1280px) { .gbppd-empty__hi { font-size: 28px; } }
-/* One section from the welcome to the doors, half of it inside the
-   welcome: the same 2:1 the filled page keeps. */
-.gbppd-emptyzone .gbppd-doors { margin-top: var(--space-32); }
-.gbppd-empty__say {
-  /* The welcome is a heading and this is its content, so the law
-     measures this gap too: 16 inside, 32 between. */
-  margin: var(--space-16) 0 0;
-  max-width: 44rem;
-  font-size: 16px;
-  line-height: 1.7;
-  color: var(--zinc-600);
-}
-.gbppd-empty__door {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-  padding: var(--space-24);
-  text-decoration: none;
-  color: var(--zinc-900);
-  transition: box-shadow var(--mo-micro) var(--mo-move), border-color var(--mo-micro) var(--mo-move);
-}
-a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); }
-.gbppd-empty__door:hover { border-color: var(--zinc-300); box-shadow: var(--shadow-card); }
-.gbppd-empty__door .gb-icon { color: var(--zinc-500); }
-/* THE FIRST DOOR LEADS, and it says so with ink rather than with a
-   fourth type role: everything in this house starts at the catalogue,
-   and a new account has nothing to campaign with until it has chosen
-   a gift. One step of ink, no new voice. */
-.gbppd-empty__door--lead .gb-icon { color: var(--zinc-900); }
-.gbppd-empty__door b { font-size: 16px; font-weight: 600; line-height: 1.4; }
-.gbppd-empty__door span { font-size: 14px; line-height: 1.5; color: var(--zinc-500); }
 
 /* The rows of the Customize drawer. The switch is the house toggle,
    small, the same object the checkout uses for One / Different
@@ -1642,29 +1591,25 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
       <main class="content" id="dashboard">
 
       <!-- One line, and it is the name of the place. -->
-      <!-- The portal's own title card: glyph, ONE heading, one control
-           at the far end. The role is live portal.html's .page-title,
-           value for value. -->
+      <!-- THE GREETING IS THE TITLE (10.09, Ton on the recon in
+           studio\docs\DASHBOARD-GREETING-RECON.md). «Dashboard» left
+           the canvas: the rail already says where you are, and of the
+           two products whose first line the recon could confirm word
+           for word, both print a greeting and neither prints the page
+           name. One large line, nothing under it, and the glyph went
+           with the word it accompanied: a speedometer beside «Good
+           evening» is a picture of nothing. The role and the slot are
+           the live portal's .page-title, unchanged. -->
       <div class="gbppd-head">
-        <img class="gbppd-head__icon" src="../system/icons/metrics.svg" alt="" aria-hidden="true">
-        <h1 class="gbppd-title">Dashboard</h1>
+        <h1 class="gbppd-title" id="gbppdHello">Good day, Anton</h1>
         <button class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary" type="button" id="gbppdCustomize"><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="sliders" data-gb-icon-size="16"></span></span><span class="gb-btn__label">Customize</span></button>
       </div>
 
-      <!-- ============ THE NEW ACCOUNT ============
-           One heading (the page title above it), one working line that
-           opens with the welcome, three doors.
-
-           AND «CREATE A CAMPAIGN» IS NOT ONE OF THEM (Ton, 10.09). The
-           domain says why: a campaign is a GIFT plus a distribution,
-           and an account that has not chosen a gift has nothing to
-           distribute. Offering it first is offering the second step.
-           The first moves a new account really has are the catalogue,
-           the meeting and the concierge, in that order. -->
-      <section class="gbppd-emptyzone" aria-label="Getting started">
-        <h2 class="gbppd-empty__hi">Welcome, Anton</h2>
-        <p class="gbppd-empty__say">Start with your first gift.</p>
-      </section>
+      <!-- THE WELCOME BLOCK OF THE EMPTY ACCOUNT IS GONE (10.09):
+           the greeting in the title says the same thing to everyone,
+           and two welcomes on one screen was the noise this page has
+           spent the day taking off itself. What a new account has
+           instead is its blocks with their doors grown up. -->
 
       <!-- ============ 1 · METRICS, THE TOP ROW ============
            Four numbers, and they agree with every row on the board.
@@ -2266,6 +2211,26 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
     writeKey('nav', nav);
   }
   setNav(nav);
+
+  /* ============================================================
+     THE TIME OF DAY, HONESTLY                gbppl-portal-dashboard-9
+     ------------------------------------------------------------
+     One rule for both states, read off the machine's own clock:
+       05:00 - 11:59  Good morning
+       12:00 - 17:59  Good afternoon
+       18:00 - 04:59  Good evening
+     The ordinary English boundaries, nothing personalised beyond the
+     hour and the name, and no second line under it.
+     ============================================================ */
+  function greet() {
+    var h = new Date().getHours();
+    var word = (h >= 5 && h < 12) ? 'Good morning'
+             : (h >= 12 && h < 18) ? 'Good afternoon'
+             : 'Good evening';
+    var el = document.getElementById('gbppdHello');
+    if (el) el.textContent = word + ', Anton';
+  }
+  greet();
 
   var startState = 'filled';
   try {
