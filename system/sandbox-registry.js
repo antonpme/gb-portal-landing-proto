@@ -630,7 +630,16 @@
     },
 
     dashboard: {
-      /* gbppl-portal-dashboard-1, 10.09. The first screen the portal
+      /* gbppl-portal-dashboard-2, 10.09, rebuilds the sketch to Ton's
+         own layout after «полный хаос, не соответствует тому, как
+         работает GildedBox»: metrics, shortcuts, three equal columns,
+         one feed with the problems pinned inside it. The domain model
+         he corrected the same hour is the law of the demo data: a gift
+         can stand alone, a campaign is that gift with a distribution
+         around it, and campaigns come in two types (fulfillment and
+         email). Claim gift is deliberately not drawn.
+
+         gbppl-portal-dashboard-1, 10.09. The first screen the portal
          does not have: a place that answers «what is happening, and
          does anything need me». Words before code, and the words are
          studio\docs\PORTAL-DASHBOARD-CONCEPT.md, approved as the
@@ -647,8 +656,8 @@
       variants: [
         {
           id: 'sketch',
-          label: 'First sketch of the dashboard',
-          desc: 'The screen the portal opens on after signing in, sketched to the approved concept: what needs you, what is moving, what happened, what you saved, and where to go next. The top of it is the case that started this, a campaign on hold because a payment failed, said as a card with one button instead of a tinted row in a table three screens down. A bell in the bar carries the same two problems and the last events into a drawer. Fixed assembly: choosing your own widgets, filter tabs and notification settings are named on the page as phase 2 and not drawn.',
+          label: 'The dashboard, second pass',
+          desc: 'The screen the portal opens on after signing in, rebuilt to the layout Ton dictated on 10.09: four numbers across the top, the shortcuts he liked right under them and above the fold, then the board in three equal columns, gifts on their way beside the campaigns beside one activity feed with the problems pinned at its top. Every event in the feed is a door to the thing it is about. The account it shows is the shape of a real one: one fulfillment campaign on hold because a payment failed (Julia\'s case), one quiet email campaign, and two single gifts in the air. The bell carries the same two problems out of the room. Fixed assembly: an account assistant, choosing your own widgets, filter tabs and notification settings are one quiet line in the foot and are not drawn.',
           status: 'in-progress',
           href: 'live/portal-dashboard.html',
           ready: true,

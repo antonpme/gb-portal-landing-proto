@@ -7,109 +7,83 @@
 <link rel="icon" href="data:,">
 
 <!-- ============================================================
-     gbppl-portal-dashboard-1 — THE FIRST SKETCH OF THE DASHBOARD
+     gbppl-portal-dashboard-2 — REBUILT TO TON'S OWN LAYOUT
      ------------------------------------------------------------
-     WORDS BEFORE CODE, and the words are approved. The concept this
-     page draws is studio\docs\PORTAL-DASHBOARD-CONCEPT.md (10.09),
-     written to the house rule that new flow logic goes to Ton as
-     text before it is built. Nothing below invents a zone, a term or
-     a level that is not in that document.
+     Ton on the first sketch (10.09): «визуально вроде сделано, но
+     полный хаос, не соответствует тому, как работает GildedBox».
+     So this pass does not decorate the sketch, it re-orders it, and
+     the order is dictated, not designed:
 
-     THE STORY THIS PAGE EXISTS FOR is Julia's, 09.09: a client's
-     campaign went quiet because a payment failed, the portal said so
-     with a yellow row in a table on the third screen, the client
-     read the email as noise and waited. The concept's diagnosis is
-     the whole design brief: THE LEVEL OF AN EVENT DECIDES ITS
-     CHANNEL. «A campaign is stopped» is not a tinted table row, it
-     is the top of the dashboard and a badge in the bar.
+       1  METRICS, the top row of the page
+       2  SHORTCUTS right under them, never below the fold
+          («Go straight to» is the one block he liked: same doors)
+       3  THE BOARD, three equal columns, ~30 / 30 / 30
+            LEFT    gifts on their way, one row per shipment
+            CENTER  campaigns, both of them, one consistent card
+            RIGHT   ONE activity feed, with «Needs your action»
+                    pinned at its top as alert strips, not as a
+                    separate zone upstairs
+       4  Saved for later, and the rest
 
-     So the page opens on the Resolution Center, and the first card
-     in it is that exact case, by name: Holiday Client Gifts, on
-     hold, payment failed. Julia is meant to recognise it at a
-     glance, without being told what she is looking at.
+     WHAT WENT OUT: the «Ask AI about your account» banner with its
+     disabled button. His own rule decided it: something important is
+     either shown properly or not shown at all. The phase 2 intent
+     survives as ONE QUIET LINE in the foot of the page, with no
+     control attached to it.
 
-     THE CONCEPT'S OWN VOCABULARY, kept letter for letter:
-       EVENT     something that HAPPENED and ages. Lives in the
-                 Activity feed and in the bell.
-       PROBLEM   something that LASTS and waits for the person.
-                 Does not age until it is solved. Lives in the
-                 Resolution Center and never sinks into the feed.
-     The critical one appears in both, and it LIVES in the Center.
+     ------------------------------------------------------------
+     THE DOMAIN MODEL THIS PAGE OBEYS (Ton, corrected 10.09)
 
-     WHAT IS BUILT, in the order of the concept's anatomy:
-       1  Resolution Center      two problems, critical first
-       2  Happening now          active gifts, and active campaigns
-       3  Activity feed          seven events, newest on top
-       4  Favourites             a quiet shelf of four
-       5  Quick actions          four doors
-       + the bell in the bar, with a drawer behind it.
+       A GIFT can stand alone. A single gift on its way is a normal
+       line of a normal account.
+       A CAMPAIGN is the same gift with a DISTRIBUTION around it: it
+       hands the gift to many recipients inside an event or an
+       activity. Campaigns come in TWO TYPES, fulfillment and email,
+       and the card says which one quietly, in one word.
+       CLAIM GIFT exists as a mechanism and is NOT drawn here: it is
+       not researched yet, and a sketch that invents it would be
+       teaching the client our guess.
 
-     WHAT IS DELIBERATELY NOT BUILT, and says so ON THE PAGE in the
-     words «Phase 2», per the concept's last section: customisable
-     widgets, filter tabs in the Center, notification settings, feed
-     depth, realtime pushes. A sketch that quietly grows the phase 2
-     surface is a sketch nobody can judge.
-
-     THE EMPTY STATE IS NOT DRAWN, and that is the concept's rule
-     rather than an omission: «пусто = зоны нет, не рисуем пустую
-     коробку». This demo HAS problems, so the Center exists. A demo
-     without them would have no Center at all, and the widgets under
-     it would close the gap.
+     THE DEMO IS THEREFORE: one fulfillment campaign on hold (Julia's
+     case, 09.09), one email campaign running quietly, two single
+     gifts in the air, and four numbers at the top that agree with
+     every row below them. The arithmetic is written out at the
+     metrics block so the next wave cannot drift it.
 
      ------------------------------------------------------------
      WHAT THIS PAGE OWNS AND WHAT IT ONLY WEARS
 
      THE CANON IS NOT TOUCHED. header.css does not gain a byte. The
-     portal bar at the top is the CLASSES of .gbh-pbar, worn the way
-     live\portal.html wears them, with two things added AS PAGE
-     DECORATION under .gbppd-*: the notification bell and the signed
-     in identity. If Ton keeps them they move into header.css as a
-     wave of their own, exactly as the three hover candidates on
-     live\index.html are waiting to.
+     portal bar is the CLASSES of .gbh-pbar, worn the way
+     live\portal.html wears them, with two page decorations under
+     .gbppd-*: the bell and the signed in identity.
 
      WORN AS THEY ARE, by name (Ton-6, name the component before you
      draw one):
        .gb-container   the one ruler of the page
-       .gb-eyebrow     every widget title, and nothing else is caps
-       .gb-btn         every control, on the five-rung ladder
+       .gb-eyebrow     every widget title and every quiet type word
+       .gb-btn         every control, on the five rung ladder
        .gb-icon        every glyph, from the record in icon.js
-       .gb-alert--*    the TONES, see the next paragraph
-       <gb-drawer>     the bell's drawer, the house organism
+       .gb-alert--*    the TONES, and the strips themselves
+       .gb-toggle      the switches of the Customize drawer
+       <gb-drawer>     the bell's drawer and Customize, one organism
        <gb-studio-panel>, Inspect, Comment: the studio's own chrome
+       .snav-*         the portal rail, lifted from live\portal.html
 
-     THE TONES ARE BORROWED, NOT INVENTED. The concept's open
-     question 2 asks whether the house should grow a status palette;
-     until Ton answers it, this page uses the ONE set of status
-     colours the house already measured: the four tones of
-     alert.css, off Figma Alertbox 9293-2260. A problem card carries
-     the class .gb-alert--error or .gb-alert--warning for its three
-     custom properties ALONE — those modifiers set nothing but
-     --gb-alert-bg / --gb-alert-line / --gb-alert-ink — and the card
-     paints itself from them. So the levels here are the same red
-     and the same orange as the strips in the checkout, in the
-     language of a card instead of a bar, and the day the palette is
-     promoted to :root this page follows without a repaint.
+     THE TONES ARE BORROWED, NOT INVENTED. Until Ton answers whether
+     the house grows a status palette, the only measured status
+     colours we have are the four tones of alert.css (Figma Alertbox
+     9293-2260). The problem strips ARE alerts. The «Needs attention»
+     tile and the two «On hold» words borrow the same triple of
+     custom properties and nothing else, so the day the palette is
+     promoted this page follows without a repaint.
 
-     THE ONE PLACE THAT ASKS TON A COLOUR QUESTION is the badge on
-     the bell. .gbh-count is the house badge and it is Blue 600
-     (Ton-5, blue = state, the cart's count). The concept says the
-     notification badge is coloured BY PROBLEMS and that critical
-     takes the loudest tone the house has. So the badge wears
-     .gbh-count unmodified plus .gbppd-count--alarm, which swaps the
-     ground for --red-500 — an EXISTING token (tokens.css, measured
-     off the live invalid field 18.08), not a new colour. Whether the
-     alarm badge belongs to the system is in the report.
-
-     NO TOKEN on this page, the whole list, and each one at its site:
-       48   the size of the identity disc in the bar and of a
-            favourite's thumb frame. Both are --space-48 written as
-            the rung, so strictly this is not an exception; noted so
-            the reader does not go looking.
-       2px  the hairline offsets of the bell badge, inherited from
-            .gbh-count, not written here.
-       There is no other bare number below. Every gap, pad and
-       radius is a rung of --space-* or --radius, and every size is
-       a role of the type scale.
+     NO TOKEN on this page, the whole list:
+       2px  the second line offset inside a two line row (a quarter
+            of --space-8), and the hairline offsets of .gbh-count,
+            which are inherited and not written here.
+       Every other gap, pad and radius is a rung of --space-* or
+       --radius, and every size is a role of the type scale.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,8 +95,7 @@
 <link rel="stylesheet" href="../system/components/header.css">
 <link rel="stylesheet" href="../system/components/button.css">
 <link rel="stylesheet" href="../system/components/icon.css">
-<!-- The four tones, borrowed for their custom properties. See the
-     head block: the modifiers set colours and nothing else. -->
+<!-- The four tones and the strip itself. -->
 <link rel="stylesheet" href="../system/components/alert.css">
 <link rel="stylesheet" href="../system/components/tooltip.css">
 <link rel="stylesheet" href="../system/components/auth.css">
@@ -135,16 +108,16 @@
 
 <style>
 /* ============================================================
-   THE DASHBOARD, .gbppd-*                gbppl-portal-dashboard-1
+   THE DASHBOARD, .gbppd-*                gbppl-portal-dashboard-2
    ------------------------------------------------------------
    Every rule here hangs off .gbppd- and dies with this page. The
-   widgets are written as INDEPENDENT BLOCKS on purpose (concept,
-   last section): a widget is an eyebrow and a body, it knows
-   nothing about its neighbours, and the day customisation arrives
-   the order of the zones is the only thing that has to move.
+   zones are INDEPENDENT BLOCKS on purpose: a zone is an eyebrow and
+   a body, it knows nothing about its neighbours, and the day
+   customisation arrives the order of the zones is the only thing
+   that has to move.
    ============================================================ */
 
-/* --- The ground. The portal's own near-white is --live-body; a
+/* --- The ground. The portal's near-white is --live-body; a
        dashboard is a surface with cards ON it, so the ground steps
        one rung down the grey ramp and the cards stay white. --- */
 .gbppd-page {
@@ -153,14 +126,17 @@
   padding-block: var(--space-32) var(--space-64);
 }
 
+/* The bar is sticky and 80 tall, so anything an anchor lands on
+   stops one rung clear of it instead of under it. */
+html { scroll-padding-top: calc(var(--header-h) + var(--space-16)); }
+
 /* --- Page head. One line, and it is the name of the place. No
        sentence under it: a strapline that retells the title is the
-       noise Ton named on 07.09. The H2 role of the scale, 28 -> 40
-       at 1280. --- */
+       noise Ton named on 07.09. --- */
 .gbppd-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-16);
   margin-bottom: var(--space-32);
@@ -174,15 +150,13 @@
   color: var(--zinc-900);
 }
 @media (min-width: 1280px) { .gbppd-title { font-size: 40px; } }
+/* Editing the board is a thing you go looking for, not a thing that
+   competes with the numbers under it. */
+.gbppd-head .gb-btn { margin-left: auto; }
 
-/* --- The widget. The whole architecture of the page is this two
-       part thing: a caps title and a body. --- */
+/* --- The widget: a caps title and a body, and that is the whole
+       architecture of the page. --- */
 .gbppd-widget { display: block; }
-/* The title row reads LEFT TO RIGHT: the eyebrow, then whatever
-   qualifies it, and only the door is pushed to the far end. A note
-   parked at the right edge of a full width widget lands under the
-   console's own STUDIO tab, which is fixed to the window and cares
-   nothing for the container. */
 .gbppd-widget__head {
   display: flex;
   align-items: baseline;
@@ -206,86 +180,173 @@
 a.gbppd-more, body.gb-demo a.gbppd-more { color: var(--zinc-500); }
 a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
 
-/* --- The card, the one box this page draws. Everything that is
-       not a problem stands in it. --- */
+/* --- The card, the one box this page draws. --- */
 .gbppd-card {
   background: var(--white);
   border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
 }
 
-/* ============ 1 · RESOLUTION CENTER ============
-   REBUILT AS STRIPS, gbppl-portal-dashboard-3.
+/* ============ 1 · THE METRICS, TOP ROW ============
+   Ton, 10.09: «метрики и виджеты верхним рядом». Four tiles, and
+   the numbers agree with the board underneath them by arithmetic,
+   not by luck:
 
-   Ton, 10.09, on the frames: «блоки RC слишком большие, сдвигают
-   весь контент вниз». He is right and the diagnosis is plain: the
-   first screen of a dashboard is an OVERVIEW, and two problem cards
-   a hundred and seventy pixels tall each pushed everything the
-   overview is made of below the fold. A problem that eats the
-   dashboard has replaced the dashboard.
+     Active campaigns 1   New Hire Welcome runs; Holiday Client
+                          Gifts is the second campaign and it is on
+                          hold, so it is not active. Sub says so.
+     Gifts in transit 4   two shipments of New Hire Welcome plus two
+                          single gifts = the four rows of the left
+                          column that are moving. The 48 packed
+                          gifts of the held campaign are NOT in
+                          transit, and the sub says where they are.
+     Delivered 5          this month, all of them New Hire Welcome.
+     Needs attention 2    the two strips pinned at the top of the
+                          feed, and the two behind the bell.
 
-   So the Center now speaks in the house's own alert language. Not
-   «like an alert»: it IS <div class="gb-alert">, the organism off
-   Figma Alertbox 9293-2260, with its height law (min-height 48, the
-   24 row, xsmall furniture that cannot grow the strip) doing exactly
-   the job it was written for. What this page adds is four lines: a
-   bold first line, a quiet second one for the critical strip only,
-   and the alignment that keeps a two-line strip readable.
-
-   THE MEASURE THAT DECIDES IT (1280 x 700, the window Ton judged in):
-   both strips plus the head of both columns are on the first screen.
-   Numbers in the wave report. */
-.gbppd-rc { display: grid; gap: var(--space-8); }
-
-/* A two line strip stops centring: the glyph and the button belong
-   to the FIRST line, which is the sentence, not to the middle of a
-   paragraph. One line strips are untouched by this. */
-.gbppd-rc .gb-alert { align-items: flex-start; }
-.gbppd-rc .gb-alert__body { align-items: flex-start; }
-.gbppd-rc .gb-alert__icon { margin-top: calc((var(--gb-alert-row) - 24px) / 2); }
-.gbppd-rc .gb-alert__actions { align-self: flex-start; }
-
-.gbppd-problem__title {
-  display: block;
-  font-weight: 600;
-  line-height: var(--gb-alert-row);   /* the strip's own row: one line is exactly 48 tall */
+   WHICH FOUR STAND HERE IS A PROPOSAL, and the page says so in a
+   quiet line under the row rather than in a report Julia will not
+   be reading over Ton's shoulder. */
+.gbppd-stats {
+  display: grid;
+  gap: var(--space-16);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
-/* The detail, and the age of the problem with it. Critical only: the
-   quieter strip says everything it has to say in its title. */
-.gbppd-problem__sub {
+@container board (max-width: 719px) {
+  .gbppd-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.gbppd-stat { padding: var(--space-16); }
+/* The name is the eyebrow, worn as the widget titles wear it. */
+.gbppd-stat__num {
   display: block;
-  margin-top: 2px;                    /* a quarter of --space-8: two lines of one sentence */
+  margin-top: var(--space-8);
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--zinc-900);
+}
+.gbppd-stat__sub {
+  display: block;
+  margin-top: var(--space-8);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-500);
+}
+/* The tile that counts problems is coloured BY the problems, in the
+   alert's own error triple. Nothing else on the row is tinted, so
+   the one tinted thing means what it says. */
+.gbppd-stat--alarm {
+  background: var(--gb-alert-bg);
+  border-color: var(--gb-alert-line);
+}
+.gbppd-stat--alarm .gb-eyebrow,
+.gbppd-stat--alarm .gbppd-stat__num,
+.gbppd-stat--alarm .gbppd-stat__sub { color: var(--gb-alert-ink); }
+.gbppd-stat--alarm .gbppd-stat__sub { opacity: .8; }
+
+/* The proposal line under the metrics. Quiet register, sentence
+   case: caps is the eyebrow's voice and a caps note reads as a
+   second title (the mistake the first frames made). */
+.gbppd-p2 {
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
-  opacity: .8;
+  color: var(--zinc-400);
+}
+.gbppd-note {
+  margin: var(--space-8) 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--zinc-400);
 }
 
-/* ============ THE TWO COLUMN BODY ============
-   Left: what is moving. Right: what happened. One column when the
-   content box is narrow: the two are a reading order, not a layout,
-   and stacking them keeps that order. Measured on the CONTENT box
-   because the rail took the window away from it. */
-.gbppd-grid {
+/* ============ 2 · SHORTCUTS, UNDER THE METRICS ============
+   The one block Ton liked, moved to where he put it: the same four
+   doors, above the fold, a strip of errands rather than a second
+   menu beside the real one. A glyph and a name, and nothing under
+   the name: a door that explains itself is a door nobody trusts. */
+.gbppd-doors {
   display: grid;
-  gap: var(--space-32);
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-16);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@container board (max-width: 719px) {
+  .gbppd-doors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container board (max-width: 379px) {
+  .gbppd-doors { grid-template-columns: minmax(0, 1fr); }
+}
+.gbppd-door {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  text-decoration: none;
+  color: var(--zinc-900);
+  transition: box-shadow var(--mo-micro) var(--mo-move), border-color var(--mo-micro) var(--mo-move);
+}
+a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
+.gbppd-door:hover { border-color: var(--zinc-300); box-shadow: var(--shadow-card); }
+/* The glyph is written with data-gb-icon and icon.js rewrites that
+   node's className, so the ink is asked for by the door. */
+.gbppd-door .gb-icon { color: var(--zinc-500); }
+.gbppd-door__name {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ============ 3 · THE BOARD, THREE EQUAL COLUMNS ============
+   Ton, 10.09: «основной экран тремя равными колонками». Equal
+   tracks, and they are AUTO tracks rather than three fixed ones so
+   that a column switched off in Customize takes its width with it
+   instead of leaving a hole a third of the board wide.
+
+   MEASURED ON THE CONTENT BOX, not the window: the portal rail took
+   320px away from the page, so at 1280 the board is 880 wide and a
+   media query would give 1280 and 2258 the same answer. Named
+   containers, the way booking.css measures its compact layout. */
+.gbppd-cols {
+  display: grid;
+  gap: var(--space-24);
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   margin-top: var(--space-32);
 }
-@container (max-width: 719px) {
-  .gbppd-grid { grid-template-columns: minmax(0, 1fr); }
+/* The board is not a widget, so the rhythm between zones is said
+   again on both of its edges. One gap between zones, everywhere. */
+.gbppd-cols + .gbppd-widget { margin-top: var(--space-32); }
+/* Below the three column step the zones stack in their reading
+   order: what needs doing, what is moving, what happened. */
+@container board (max-width: 839px) {
+  .gbppd-cols { grid-auto-flow: row; grid-auto-columns: auto; }
 }
+/* Each column measures its own content: a row inside a 277px column
+   cannot ask the board how wide the board is. */
+.gbppd-col { container-type: inline-size; container-name: col; }
 
-/* ============ 2 · HAPPENING NOW ============
-   Rows, and every row carries the gift it is about. «Превью, не
-   текст» (Ton 28.08): a line of prose about an order is a line
-   nobody reads; the pack, the order, the people and the state are
-   four columns of one glance. */
+/* ============ LEFT · GIFTS ON THEIR WAY ============
+   One row per shipment. «Превью, не текст» (Ton 28.08): the pack,
+   who it is for, where it comes from and what state it is in are
+   four things at a glance, not a sentence.
+
+   A SINGLE GIFT IS A NORMAL ROW (Ton, 10.09). Rows that belong to a
+   campaign name their parent on the second line; rows that do not
+   say «Single gift» in the same place, because the second line
+   answers one question for every row: where did this come from.
+
+   AND THE PRODUCT IS NOT NAMED IN WORDS. It is the thumb, which is
+   the whole argument of «превью, не текст»: the picture says which
+   pack it is faster than its name does, and in a 277px column the
+   name cost every row two extra lines and pushed the state off the
+   first line. Measured on the frame, not guessed. */
 .gbppd-rows { display: grid; }
 .gbppd-row {
   display: grid;
-  grid-template-columns: var(--space-48) minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--space-16);
+  grid-template-columns: var(--space-48) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-8) var(--space-16);
   padding: var(--space-16);
   text-decoration: none;
   color: inherit;
@@ -293,6 +354,19 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
 }
 .gbppd-row + .gbppd-row { border-top: 1px solid var(--zinc-200); }
 .gbppd-row:hover { background: var(--zinc-50); }
+/* An anchor that was jumped to says so, quietly and in the house
+   language of state (Ton-5: blue is state). This is the honest half
+   of the mock: the feed really does take you to the row. */
+.gbppd-row:target, .gbppd-camp:target { background: var(--blue-50); border-color: var(--blue-200); }
+.gbppd-row, .gbppd-camp { scroll-margin-top: calc(var(--header-h) + var(--space-16)); }
+/* In a wide column the state stands at the end of the first line;
+   in a narrow one it drops under the pair rather than squeezing the
+   names into two words a row. */
+@container col (min-width: 420px) {
+  .gbppd-row { grid-template-columns: var(--space-48) minmax(0, 1fr) auto; align-items: center; }
+  .gbppd-row .gbppd-state { grid-column: 3; }
+}
+.gbppd-row .gbppd-state { grid-column: 2; }
 .gbppd-thumb {
   width: var(--space-48);
   height: var(--space-48);
@@ -301,9 +375,6 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
   object-fit: cover;
   display: block;
 }
-/* Both are spans inside a grid cell, so both are told to be blocks:
-   an inline pair runs the order and the people into one sentence,
-   which is the prose this widget exists not to be. */
 .gbppd-row__what {
   display: block;
   margin: 0;
@@ -314,69 +385,56 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
 }
 .gbppd-row__who {
   display: block;
-  margin: 2px 0 0;                  /* a quarter of --space-8: two lines of ONE thought, not two things */
+  margin: 2px 0 0;                  /* a quarter of --space-8: two lines of ONE thought */
   font-size: 14px;
   line-height: 1.5;
   color: var(--zinc-500);
 }
-/* On a phone the state cannot share the line: it drops under the
-   pair and stands with it, left aligned, rather than squeezing the
-   names into two words a row. */
-@media (max-width: 520px) {
-  .gbppd-row {
-    grid-template-columns: var(--space-48) minmax(0, 1fr);
-    align-items: start;
-  }
-  .gbppd-row .gbppd-state { grid-column: 2; margin-top: var(--space-8); }
-}
 
-/* THE STATE, IN WORDS. The concept forbids new status words («те же
-   слова-статусы, что в таблицах, никаких новых»), and the live
-   portal has no table of them to read yet — that is its open
-   question 3. So the words here are the plainest English for the
-   states the demo needs, they are the SAME words in every zone of
-   this page, and the day the client's list arrives they are one
-   find and replace.
+/* THE STATE, IN WORDS. The same five words everywhere on this page:
+   On hold · Out for delivery · In transit · Delivered · Delivering.
+   The client's own list does not exist in a readable form yet (the
+   concept's open question 3), so these are the plainest English for
+   the states the demo needs and they are one find and replace away
+   from the real ones.
 
-   Colour: none, on purpose. A running order is not a status light,
-   and a page where every row is tinted has no way left to say that
-   one of them is stopped. The single exception is the stopped one,
-   which wears the error tone and thereby ties itself to the card at
-   the top of the page by eye alone. */
+   Colour: none, on purpose. A running shipment is not a status
+   light, and a page where every row is tinted has no way left to
+   say that one of them is stopped. The single exception is the
+   stopped one. */
 .gbppd-state {
   font-size: 14px;
   font-weight: 500;
   line-height: 1.5;
   color: var(--zinc-700);
-  white-space: nowrap;
 }
 .gbppd-state--stopped {
+  align-self: center;
+  justify-self: start;
   padding: var(--space-8) var(--space-16);
   border-radius: var(--radius-pill);
   background: var(--gb-alert-bg);
   color: var(--gb-alert-ink);
+  white-space: nowrap;
 }
 
-/* --- Campaigns. Cards, because a campaign is a thing with a shape:
-       what is in it, how far it has gone, and whether it moves. --- */
-.gbppd-camps {
-  display: grid;
-  gap: var(--space-16);
-/* TWO TRACKS, FIXED, NOT auto-fit.
-   Ton, 10.09: «у людей редко бывает много гифтов и кампаний
-   одновременно, обычно одна», and the demo now says so. auto-fit
-   would hand a single campaign the whole shelf, and a card stretched
-   to a metre of white is the lone radio card of the checkout all
-   over again (V5: one option in a --cards group takes HALF the
-   container, never the row). Same answer, same reason: the track
-   count is the shelf's, not the content's, so one card is a card and
-   two are a pair. */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+/* ============ CENTER · CAMPAIGNS ============
+   Both campaigns, ONE card shape, whatever their type and whatever
+   their state: a strip of what is in it, the type word, the name,
+   the count, the state. A dashboard where the broken thing is drawn
+   differently from the working thing teaches nobody to compare
+   them. The held one is tied to the feed by its anchor: the strips
+   at the top of the feed and the events about it all land here. */
+.gbppd-camps { display: grid; gap: var(--space-16); grid-template-columns: minmax(0, 1fr); }
+/* Stacked board, wide page: two tracks, so a pair of cards is a
+   pair and not two metres of white (the lone radio card lesson of
+   the checkout, V5). */
+@container board (min-width: 520px) and (max-width: 839px) {
+  .gbppd-camps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@container (max-width: 479px) {
-  .gbppd-camps { grid-template-columns: minmax(0, 1fr); }
-}
-.gbppd-camp { padding: var(--space-16); }
+.gbppd-camp { display: block; padding: var(--space-16); text-decoration: none; color: inherit; transition: box-shadow var(--mo-micro) var(--mo-move); }
+a.gbppd-camp, body.gb-demo a.gbppd-camp { color: inherit; }
+.gbppd-camp:hover { box-shadow: var(--shadow-card); }
 .gbppd-camp__strip {
   display: flex;
   gap: var(--space-8);
@@ -390,6 +448,11 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
   object-fit: cover;
   display: block;
 }
+/* THE TYPE WORD. Fulfillment or Email, and it is the eyebrow role
+   rather than a badge with a ground: the type is a label on the
+   card, not a state of it, and the only coloured word a campaign
+   card is allowed is the one that says it stopped. */
+.gbppd-camp__type { display: block; margin-bottom: var(--space-8); }
 .gbppd-camp__name {
   margin: 0;
   font-size: 16px;
@@ -399,7 +462,7 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
 }
 /* The count and the state STACK, always. Side by side they fit at
    one width and wrap at the next, and a card that decides its own
-   height by accident is three cards of three heights on one shelf. */
+   height by accident is two cards of two heights on one shelf. */
 .gbppd-camp__foot {
   display: flex;
   flex-direction: column;
@@ -413,17 +476,63 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
   color: var(--zinc-500);
 }
 
-/* ============ 3 · ACTIVITY FEED ============
-   Quiet by instruction. Newest on top, one dot, one line, one time.
-   The critical event is repeated here because it happened, and it
-   is not shouted here because it LIVES upstairs. */
-.gbppd-feed { padding: var(--space-8) var(--space-16); }
+/* ============ RIGHT · ONE ACTIVITY FEED ============
+   Ton, 10.09: «правая колонка = единый activity feed: Needs Your
+   Attention внутри фида закреплённым верхом, ниже события».
+
+   So there is no Resolution Center upstairs any more. The problems
+   live at the TOP OF THE FEED, as the house's own alert strips, and
+   the events run under them in the same card. What lasts is pinned;
+   what happened ages below it. One shelf, two ranks. */
+.gbppd-feed { display: block; }
+.gbppd-pin {
+  padding: var(--space-16);
+  border-bottom: 1px solid var(--zinc-200);
+}
+.gbppd-pin__head { display: block; margin-bottom: var(--space-8); }
+.gbppd-pin .gb-alert + .gb-alert { margin-top: var(--space-8); }
+/* A two line strip stops centring: the glyph and the button belong
+   to the FIRST line, which is the sentence, not to the middle of a
+   paragraph. One line strips are untouched by this. */
+.gbppd-pin .gb-alert { align-items: flex-start; }
+.gbppd-pin .gb-alert__body { align-items: flex-start; }
+.gbppd-pin .gb-alert__icon { margin-top: calc((var(--gb-alert-row) - 24px) / 2); }
+.gbppd-pin .gb-alert__actions { align-self: flex-start; }
+.gbppd-problem__title {
+  display: block;
+  font-weight: 600;
+  line-height: var(--gb-alert-row);   /* the strip's own row: one line is exactly 48 tall */
+  text-decoration: none;
+  color: inherit;
+}
+a.gbppd-problem__title, body.gb-demo a.gbppd-problem__title { color: inherit; }
+a.gbppd-problem__title:hover { text-decoration: underline; }
+.gbppd-problem__sub {
+  display: block;
+  margin-top: 2px;                    /* a quarter of --space-8: two lines of one sentence */
+  font-weight: 400;
+  line-height: 1.5;
+  opacity: .8;
+}
+
+/* THE EVENTS, AND EVERY ONE OF THEM IS A DOOR. Ton, 10.09:
+   «события кликабельны, некликабельных мёртвых строк нет». Each row
+   is an <a> to the thing it is about — a shipment row on the left, a
+   campaign card in the middle — with the hover of the house. */
+.gbppd-events { padding: var(--space-8) var(--space-16); }
 .gbppd-event {
   display: grid;
   grid-template-columns: var(--space-8) minmax(0, 1fr);
   gap: var(--space-16);
   padding-block: var(--space-16);
+  padding-inline: var(--space-8);
+  margin-inline: calc(var(--space-8) * -1);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--mo-micro) var(--mo-move);
 }
+.gbppd-event:hover { background: var(--zinc-50); }
 .gbppd-event + .gbppd-event { border-top: 1px solid var(--zinc-200); }
 .gbppd-event__dot {
   width: var(--space-8);
@@ -432,8 +541,8 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
   border-radius: var(--radius-circle);
   background: var(--zinc-300);
 }
-/* The one loud dot on the shelf, and it is loud because the thing it
-   marks is a problem that is still open upstairs. */
+/* The one loud dot on the shelf, and it is loud because the thing
+   it marks is a problem still standing at the top of this feed. */
 .gbppd-event__dot--alarm { background: var(--red-500); }
 .gbppd-event__say {
   margin: 0;
@@ -444,26 +553,24 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
 .gbppd-event__say b { font-weight: 600; color: var(--zinc-900); }
 .gbppd-event__when {
   display: block;
-  margin-top: 2px;                  /* the half of --space-8: one thought, two lines */
+  margin-top: 2px;                  /* a quarter of --space-8: one thought, two lines */
   font-size: 14px;
   line-height: 1.5;
   color: var(--zinc-500);
 }
 
-/* ============ 4 · FAVOURITES ============
-   A quiet shelf, not the catalogue. <gb-listing-card> is 436 tall
-   and is a page of its own; what a dashboard can carry is the mark,
-   the name and the price. Named rather than assumed: the favourites
-   PATTERN on the live category page lives inside the vendored v1
-   bundle (.favorites-panel), so there is no house component to
-   reuse, and this shelf is the smallest honest thing until one
-   exists. Its heart is the record's own glyph, added this wave. */
+/* ============ 4 · SAVED FOR LATER ============
+   Ton liked it, so it is kept as it was. A quiet shelf, not the
+   catalogue: <gb-listing-card> is 436 tall and is a page of its
+   own, and the favourites pattern of the live category page lives
+   inside the vendored v1 bundle (.favorites-panel), so there is no
+   house component to reuse. */
 .gbppd-favs {
   display: grid;
   gap: var(--space-16);
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
-@container (max-width: 719px) {
+@container board (max-width: 719px) {
   .gbppd-favs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .gbppd-fav {
@@ -496,9 +603,6 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
   line-height: 1.5;
   color: var(--zinc-500);
 }
-/* The mark sits ON the picture, which is where the bundle puts it
-   and where the eye looks for it. It is a state, not a control, in
-   this sketch: taking a thing off the shelf is Phase 2. */
 .gbppd-fav__mark {
   position: absolute;
   top: var(--space-24);
@@ -512,97 +616,27 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--zinc-900); }
   color: var(--zinc-900);
 }
 
-/* ============ THE ACCOUNT ASSISTANT, PHASE 2 ============
-   Ton, 10.09, added to the brief while this page was being drawn:
-   put the AI agent of the account into the sketch AS A PLACEHOLDER.
-   His own list of what it would be for: get through checkout faster,
-   build a campaign, summarise what is happening, resolve errors.
-
-   AND IT IS NOT BUILT, ON PURPOSE. A working chat here would be the
-   loudest thing on a page whose whole argument is that the loudest
-   thing must be the problem. So this is a DOOR with a preview of
-   what would come through it: one line of the summary the agent
-   would open with, written out of the demo data on this very page,
-   and a control that says «phase 2» by being disabled rather than by
-   apologising in a sentence. That is the house rule from
-   gbppl-comments-c: a control that cannot act does not pretend to.
-
-   Quiet by construction: no tint, no blue, no motion. It stands at
-   the head of the right rail because that is where the errands live,
-   and it must never outrank the Resolution Center. */
-.gbppd-ai {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-16);
-  padding: var(--space-16);
-}
-.gbppd-ai .gb-icon { color: var(--zinc-500); flex: 0 0 auto; }
-.gbppd-ai__say {
-  flex: 1 1 20rem;
-  min-width: 0;
-  margin: 0;
-  font-size: 15px;
+/* ============ THE FOOT: PHASE 2, IN ONE SENTENCE ============
+   Including the account assistant, which used to be a banner with a
+   disabled button in the middle of the page. Ton's rule: important
+   is shown properly or not shown. A line in the foot is the honest
+   size of an intention. */
+.gbppd-p2--foot {
+  display: block;
+  margin-top: var(--space-48);
+  padding-top: var(--space-24);
+  border-top: 1px solid var(--zinc-200);
   line-height: 1.6;
-  color: var(--zinc-600);
-}
-.gbppd-ai__say b { font-weight: 600; color: var(--zinc-900); }
-.gbppd-ai .gb-btn { flex: 0 0 auto; margin-left: auto; }
-
-/* ============ 5 · QUICK ACTIONS ============
-   Doors. A glyph and a name, and nothing under the name: a door
-   that explains itself is a door nobody trusts. */
-/* TWO BY TWO, not auto-fit. Four doors in one row squeeze «Payment
-   methods» and «Address book» onto two lines each while the column
-   still has room to spare; the pair of pairs is the same block at
-   every width the column has, and it drops to one below 520 where
-   the label would break anyway. */
-/* FOUR ACROSS, one strip. They were a 2x2 block in the right rail
-   until the portal rail arrived and took 320 off the page; a strip
-   under the two columns is the same four doors with room for their
-   names, and it reads as a row of errands rather than a second
-   menu beside the real one. */
-.gbppd-doors {
-  display: grid;
-  gap: var(--space-16);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-@container (max-width: 719px) {
-  .gbppd-doors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@container (max-width: 479px) {
-  .gbppd-doors { grid-template-columns: minmax(0, 1fr); }
-}
-.gbppd-door {
-  display: flex;
-  align-items: center;
-  gap: var(--space-16);
-  padding: var(--space-16);
-  text-decoration: none;
-  color: var(--zinc-900);
-  transition: box-shadow var(--mo-micro) var(--mo-move), border-color var(--mo-micro) var(--mo-move);
-}
-a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
-.gbppd-door:hover { border-color: var(--zinc-300); box-shadow: var(--shadow-card); }
-/* The glyph of a door is written with data-gb-icon, and icon.js
-   rewrites that node's className to .gb-icon when it mounts. So the
-   ink is asked for by the door, not by a class on the glyph: a class
-   there would be swept away by the record. */
-.gbppd-door .gb-icon { color: var(--zinc-500); }
-.gbppd-door__name {
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.4;
+  color: var(--zinc-500);
 }
 
 /* ============ THE BAR: TWO ADDITIONS, AS DECORATION ============
    Both hang off .gbppd- and neither is in header.css. */
 
-/* The signed in person. The portal bar has never carried one: the
-   live portal puts the account at the foot of the sidebar, and a
-   dashboard that says «Anton, GildedBox» in the bar is a proposal.
-   Quiet by construction: a disc of initials and one line of text,
-   no chevron, no menu — the menu is Phase 2. */
+/* The signed in person. The live portal puts the account at the
+   foot of the sidebar, and a dashboard that says «Anton, GildedBox»
+   in the bar is a proposal: a disc of initials and one line, no
+   chevron, no menu (the menu is phase 2). */
 .gbppd-me {
   display: flex;
   align-items: center;
@@ -634,59 +668,23 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
   font-weight: 400;
   color: var(--zinc-500);
 }
-/* Below the bar's own compact step the glyph cluster goes and the
-   burger stands in; the identity follows the glyphs, and the disc
-   stays, because who you are is the last thing a portal should
-   drop. */
 @media (max-width: 900px) {
   .gbppd-me__who { display: none; }
 }
 
-/* The badge of the bell. .gbh-count unmodified, plus this: the
-   count is coloured BY PROBLEMS (concept), and red is a token the
-   house already owns. Open question in the report. */
+/* The badge of the bell: .gbh-count unmodified, plus the count of
+   PROBLEMS in the loudest tone the house owns. --red-500 is an
+   existing token, not a new colour. */
 .gbppd-count--alarm { background: var(--red-500); }
 /* [hidden] LOSES TO A display RULE, and .gbh-count declares
-   display:grid. A new account has nothing behind the bell, so the
-   badge goes; without this line the UA's [hidden] is outranked and
-   the empty state kept a red 2 over an empty drawer. */
+   display:grid. A new account has nothing behind the bell. */
 .gbh-count[hidden] { display: none; }
 /* Nothing to arrange on a board that has not been built yet. */
 html[data-gbppd-state="empty"] #gbppdCustomize { display: none; }
 
-/* ============ THE PHASE 2 NOTE ============
-   Said out loud, on the page, where the thing would have been. */
-/* SENTENCE CASE, AND THAT IS THE POINT. Caps is one voice in this
-   house and the eyebrow owns it (Ton 27.08). A caps note sitting at
-   the other end of a widget's title row reads as a SECOND widget
-   title; the first frames showed exactly that. So the note speaks
-   quietly, in the same register as .gbppd-more beside it. */
-.gbppd-p2 {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--zinc-400);
-}
-/* Below the two column step the notes come off the title rows. They
-   have nowhere left to stand: the right end of a narrow row is where
-   the console's own STUDIO tab lives, and a grey note half under a
-   dark tab is worse than no note. The foot of the page says the whole
-   list in one sentence, and it says it on every width. */
-@media (max-width: 1023px) {
-  .gbppd-widget__head .gbppd-p2 { display: none; }
-}
-.gbppd-p2--foot {
-  display: block;
-  margin-top: var(--space-48);
-  padding-top: var(--space-24);
-  border-top: 1px solid var(--zinc-200);
-  line-height: 1.6;
-  color: var(--zinc-500);
-}
-
 /* ============ THE BELL'S DRAWER ============
    The organism draws the panel; these are the two shelves inside
-   it, in the same two-part shape as the page: problems on top,
+   it, in the same two part shape as the feed: problems on top,
    events under them. */
 .gbppd-dr__group + .gbppd-dr__group { margin-top: var(--space-32); }
 .gbppd-dr__mini {
@@ -701,51 +699,37 @@ html[data-gbppd-state="empty"] #gbppdCustomize { display: none; }
 .gbppd-dr__mini + .gbppd-dr__mini { margin-top: var(--space-8); }
 .gbppd-dr__mini b { display: block; font-size: 15px; font-weight: 600; line-height: 1.4; }
 .gbppd-dr__mini span { display: block; margin-top: 2px; font-size: 14px; line-height: 1.5; opacity: .8; }
+
 /* ============================================================
    THE PORTAL RAIL                        gbppl-portal-dashboard-2
    ------------------------------------------------------------
-   Ton, 10.09, on the first frames: «где левое меню портала на
-   странице?» Right: every page of the live portal stands beside its
-   own left rail, and a dashboard without it is not a portal page, it
-   is a poster of one.
+   Ton, 10.09: «где левое меню портала на странице?» Every page of
+   the live portal stands beside its own left rail, and a dashboard
+   without it is not a portal page, it is a poster of one.
 
    NOTHING IS DRAWN HERE. The rail is live\portal.html's, class for
    class and value for value: .layout / .sidebar / .snav-block /
    .snav-header / .snav-title / .snav-info / .snav-row / .snav-key /
    .snav-val / .snav-menu / .snav-item / .snav-icon / .snav-label,
-   whose provenance is Figma «Gifting Portal» node 3550-26803 (blocks)
-   and 3561-3633 (item states), measured and written on 12.08. The
-   copy below is a VERBATIM lift of that page's block, comments and
-   deviations included, because the rail lives in a page stylesheet
-   and not yet in system\components — it has never had a second
-   carrier before today.
+   provenance Figma «Gifting Portal» 3550-26803 (blocks) and
+   3561-3633 (item states), measured 12.08. Lifted verbatim,
+   deviations and comments included, because the rail lives in a page
+   stylesheet and not yet in system\components.
 
    AND THAT IS THE FINDING, said out loud rather than fixed at
-   speed: the second carrier now exists, so the rail has earned its
-   promotion to an organism (portal-nav.css, `.snav-*` kept). Doing it
-   inside this wave would put a canon move under a meeting deadline,
-   which is exactly what the house forbids. It goes up in the report
-   as the next wave.
+   speed: a second carrier now exists, so the rail has earned its
+   promotion to an organism (portal-nav.css, `.snav-*` kept). Doing
+   it under a meeting deadline is exactly what the house forbids. It
+   goes up in the report as the next wave.
 
-   THE ONE THING THAT IS NEW IS A MENU ITEM. Dashboard stands first
-   in Account and is the active row, because after this sketch the
-   dashboard EXISTS and it is where signing in lands you. Its glyph is
-   system/icons/metrics.svg, already in the portal's own icon folder
-   and in the same Figma export language as the other sixteen; no
-   glyph was invented and none was borrowed from the record, whose
-   drawings are currentColor and would sit a shade darker than its
-   neighbours in this rail.
-
-   THE VARIANTS DO NOT COME WITH IT. live\portal.html's rail carries
-   three navigation forks (nav=live | russell | ton) and their
-   ton-only and live-only blocks. This page shows ONE rail, the live
-   one, because the question here is the dashboard and not the menu;
-   the fork stays where it is switched, on the portal page.
+   THE ONE NEW MENU ITEM is Dashboard, first in Account and active:
+   after this sketch the dashboard exists and it is where signing in
+   lands you. Its glyph is system/icons/metrics.svg, already in the
+   portal's own icon folder and in the same export language as the
+   other sixteen.
    ============================================================ */
 .layout {
   display: flex;
-  padding-top: var(--space-32);
-  padding-bottom: var(--space-32);
   gap: var(--space-32);
   align-items: flex-start;
 }
@@ -864,51 +848,37 @@ a.snav-val:hover, body.gb-demo a.snav-val:hover { text-decoration: underline; }
 }
 a.snav-item, body.gb-demo a.snav-item { color: var(--zinc-900); }
 
-/* THE CONTENT COLUMN IS THE RULER NOW, NOT THE WINDOW.
-   With a 320px rail beside it the dashboard's own width no longer
-   follows the screen: at 1280 the content is 880 and at 2258 it is
-   1568, and a media query would give both of them the same two
-   columns. So the widgets are measured against THEIR OWN BOX, the
-   way booking.css does it for the compact meeting layout
-   (container-type + @container, gbppl-booking-3). */
+/* THE CONTENT COLUMN IS THE RULER, NOT THE WINDOW. With a 320 rail
+   beside it the board is 880 at 1280 and 1568 at 2258, and a media
+   query would give both the same three columns. */
 .content {
   flex: 1;
   min-width: 0;
   container-type: inline-size;
+  container-name: board;
 }
 
 /* BELOW 1024 THE RAIL GOES UNDER THE CONTENT, which is what the live
-   portal does: its own rule at this width is `.layout { flex-wrap }`
-   with `.sidebar { order: 2; width: 100% }`, and it was written by
-   measurement, not taste. A dashboard whose first screen on a phone
-   is a menu of seventeen rows answers no question at all; the
-   problems come first and the menu waits under them. Carried across
-   verbatim rather than re-decided. */
+   portal does, by its own measured rule. A dashboard whose first
+   screen on a phone is a menu of seventeen rows answers no question
+   at all. Carried across verbatim rather than re-decided. */
 @media (max-width: 1023px) {
   .layout { flex-wrap: wrap; }
   .sidebar { order: 2; width: 100%; }
 }
 
 /* ============================================================
-   TWO STATES, AND A WAY TO EDIT THE PAGE   gbppl-portal-dashboard-3
+   TWO STATES, AND A WAY TO EDIT THE PAGE
    ------------------------------------------------------------
-   Ton, 10.09: Julia's first question will be «what do they see when
-   there is nothing yet», and the second will be «how does a person
-   change this page». Both are answered here, both are switched from
-   the console, and neither is faked.
-
-   THE EMPTY ACCOUNT IS NOT EMPTY SHELVES. The concept's rule («пусто
-   = зоны нет, не рисуем пустую коробку») says the Resolution Center
-   does not exist without problems; the same rule applied to a NEW
-   account says the whole board of widgets does not exist yet either.
-   What stands in its place is a welcome by name, one line about what
-   will appear here, and the three first things a person can do. The
-   bell loses its badge because there is nothing behind it. That is a
-   finished composition, not a broken one.
+   THE EMPTY ACCOUNT IS NOT EMPTY SHELVES, and above all it is NOT
+   FOUR ZEROES: a metric with nothing behind it teaches the reader
+   that the number means nothing. What stands in its place is a
+   welcome by name, one line about what will appear here, and the
+   three first things a person can do. The bell loses its badge.
+   That is a finished composition, not a broken one.
 
    Key: ?state=filled | empty, attribute data-gbppd-state on <html>,
-   console row «Account · Active | New». The key is one of THIS
-   page's, like ?v= on the checkout, and it is read once on load.
+   console row «Account · Active | New».
    ============================================================ */
 html[data-gbppd-state="empty"] .gbppd-filled { display: none; }
 html:not([data-gbppd-state="empty"]) .gbppd-emptyzone { display: none; }
@@ -936,7 +906,7 @@ html:not([data-gbppd-state="empty"]) .gbppd-emptyzone { display: none; }
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: var(--space-32);
 }
-@container (max-width: 719px) {
+@container board (max-width: 719px) {
   .gbppd-empty__doors { grid-template-columns: minmax(0, 1fr); }
 }
 .gbppd-empty__door {
@@ -954,16 +924,10 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
 .gbppd-empty__door b { font-size: 16px; font-weight: 600; line-height: 1.4; }
 .gbppd-empty__door span { font-size: 14px; line-height: 1.5; color: var(--zinc-500); }
 
-/* The head of the page carries one control, and it is quiet: editing
-   the board is a thing you go looking for, not a thing that competes
-   with the problem at the top of it. */
-.gbppd-head { align-items: center; }
-.gbppd-head .gb-btn { margin-left: auto; }
-
 /* The rows of the Customize drawer. The switch is the house toggle,
    small, the same object the checkout uses for One / Different
    addresses: the system has no checkbox yet (one of the four holes),
-   and a two value toggle is what a widget's on and off actually is. */
+   and a two value toggle is what a zone's on and off actually is. */
 .gbppd-cz__row {
   display: flex;
   align-items: center;
@@ -996,8 +960,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
        them, in the order the third pass fixed (Ton 19.08): the quiet
        door out, the meeting, then the utilities hard against the edge.
        TWO THINGS ARE NEW AND BOTH ARE THIS PAGE'S DECORATION: the bell
-       between help and cart, and the identity at the corner. Neither
-       is in header.css and neither pretends to be. -->
+       between help and cart, and the identity at the corner. -->
   <header class="gbh-pbar">
     <div class="gb-container gbh-pbar__row">
       <a class="gbh-lock" href="portal.html" aria-label="GildedBox Portal, home">
@@ -1014,10 +977,9 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
         <button class="gbh-icon-button gbh-pbar__icon" type="button" aria-label="Search your portal">
           <span data-gb-icon="search" data-gb-icon-size="22"></span>
         </button>
-        <!-- THE BELL. Glyph `bell` from the record (icon.js, added by
-             this wave off Nucleo 48-bell). The badge counts what is
-             unread AND what is open: two problems are standing, so the
-             badge is two and it is red. Click opens the drawer. -->
+        <!-- THE BELL. Glyph `bell` from the record (icon.js). The badge
+             counts the two problems that are standing, and it is red
+             because they are problems. Click opens the drawer. -->
         <button class="gbh-icon-button gbh-pbar__icon" type="button"
                 id="gbppdBell" aria-label="Notifications, 2 need your action">
           <span data-gb-icon="bell" data-gb-icon-size="22"></span>
@@ -1042,9 +1004,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
   <div class="gbppd-page">
     <!-- ============ THE PORTAL LAYOUT ============
          The rail and the content, the way every page of the live
-         portal stands. Both classes are live\portal.html's own; see
-         THE PORTAL RAIL in the stylesheet for the provenance and for
-         the one thing this page adds to the menu. -->
+         portal stands. Both classes are live\portal.html's own. -->
     <div class="layout gb-container">
 
       <aside class="sidebar">
@@ -1058,10 +1018,8 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
             <div class="snav-row"><span class="snav-key">Company:</span><span class="snav-val">GildedBox</span></div>
             <div class="snav-row"><span class="snav-key">Email:</span><span class="snav-val">anton@gildedbox-demo.com<img class="snav-check" src="../system/icons/c-check.svg" alt=""></span></div>
           </div>
-          <!-- DASHBOARD IS THE NEW ROW, and it is the chosen one: after
-               this sketch the dashboard exists, it is where signing in
-               lands, and the rail has to be able to say so. Everything
-               under it is the live list in the live order. -->
+          <!-- DASHBOARD IS THE NEW ROW, and it is the chosen one.
+               Everything under it is the live list in the live order. -->
           <nav class="snav-menu">
           <a class="snav-item active" href="#"><span class="snav-icon"><img src="../system/icons/metrics.svg" alt=""></span><span class="snav-label">Dashboard</span></a>
           <a class="snav-item" href="#"><span class="snav-icon"><img src="../system/icons/gift.svg" alt=""></span><span class="snav-label">My Gifts</span></a>
@@ -1111,8 +1069,8 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
       </div>
 
       <!-- ============ THE NEW ACCOUNT ============
-           Not empty shelves: a welcome, one line, and the three first
-           doors. See the two states block in the stylesheet. -->
+           Not empty shelves and not four zeroes: a welcome, one line,
+           and the three first doors. -->
       <section class="gbppd-emptyzone" aria-labelledby="gbppdHi">
         <h2 class="gbppd-empty__hi" id="gbppdHi">Welcome, Anton</h2>
         <p class="gbppd-empty__say">Your picture of the day will stand here: what is on its way, what needs you, and what happened while you were gone. Start with one of these.</p>
@@ -1125,7 +1083,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
           <a class="gbppd-card gbppd-empty__door" href="#">
             <span data-gb-icon="plus" data-gb-icon-size="24"></span>
             <b>Create a campaign</b>
-            <span>Send to a list of people on one schedule.</span>
+            <span>Send one gift to a list of people, on one schedule.</span>
           </a>
           <a class="gbppd-card gbppd-empty__door" href="book-a-meeting.html">
             <span data-gb-icon="calendar" data-gb-icon-size="24"></span>
@@ -1135,233 +1093,261 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
         </div>
       </section>
 
-      <!-- ============ 1 · RESOLUTION CENTER ============
-           It exists because there ARE problems. Critical first, and
-           the critical one is Julia's case by name.
+      <!-- ============ 1 · METRICS, THE TOP ROW ============
+           Four numbers, and they agree with every row on the board.
+           The arithmetic is in the stylesheet above .gbppd-stats. -->
+      <section class="gbppd-widget gbppd-filled" data-gbppd-widget="metrics" aria-label="Your numbers today">
+        <div class="gbppd-stats">
 
-           BOTH PROBLEMS BELONG TO ONE CAMPAIGN, and that is the demo
-           being honest rather than the wave being lazy (Ton, 10.09:
-           one campaign is the normal shape of an account, and two
-           problems can perfectly well live on it: the payment and the
-           addresses). It also makes the second card sharper: the
-           addresses are what will stop it AGAIN the moment the
-           payment clears. -->
-      <section class="gbppd-widget gbppd-filled" aria-labelledby="gbppdRcTitle">
-        <div class="gbppd-widget__head">
-          <span class="gb-eyebrow" id="gbppdRcTitle">Needs your action</span>
-          <span class="gbppd-p2">Filters: phase 2</span>
-        </div>
-        <div class="gbppd-rc gbppd-widget__body">
-
-          <!-- JULIA'S CASE, and it is one strip. Two lines, because
-               the critical one owes an explanation and the age of the
-               problem; the button is xsmall by the alert height law,
-               so it cannot make the strip taller than its own text. -->
-          <div class="gb-alert gb-alert--error">
-            <span class="gb-alert__body">
-              <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
-              <span class="gb-alert__text">
-                <span class="gbppd-problem__title">Holiday Client Gifts is on hold</span>
-                <span class="gbppd-problem__sub">The card on file was declined. 48 gifts are packed and nothing ships until it clears. Since 8 September, 10:42.</span>
-              </span>
-            </span>
-            <span class="gb-alert__actions">
-              <a class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label">Update payment method</span></a>
-            </span>
+          <div class="gbppd-card gbppd-stat">
+            <span class="gb-eyebrow">Active campaigns</span>
+            <span class="gbppd-stat__num">1</span>
+            <span class="gbppd-stat__sub">1 more on hold</span>
           </div>
 
-          <!-- The quieter one says everything in its title, so it is
-               one line and exactly 48 tall. -->
-          <div class="gb-alert gb-alert--warning">
-            <span class="gb-alert__body">
-              <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
-              <span class="gb-alert__text">
-                <span class="gbppd-problem__title">3 gifts in this campaign have no recipient address</span>
-              </span>
-            </span>
-            <span class="gb-alert__actions">
-              <a class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label">Assign addresses</span></a>
-            </span>
+          <div class="gbppd-card gbppd-stat">
+            <span class="gb-eyebrow">Gifts in transit</span>
+            <span class="gbppd-stat__num">4</span>
+            <span class="gbppd-stat__sub">48 more packed and held</span>
+          </div>
+
+          <div class="gbppd-card gbppd-stat">
+            <span class="gb-eyebrow">Delivered</span>
+            <span class="gbppd-stat__num">5</span>
+            <span class="gbppd-stat__sub">This month</span>
+          </div>
+
+          <div class="gbppd-card gbppd-stat gbppd-stat--alarm gb-alert--error">
+            <span class="gb-eyebrow">Needs attention</span>
+            <span class="gbppd-stat__num">2</span>
+            <span class="gbppd-stat__sub">Both on one campaign</span>
           </div>
 
         </div>
+        <p class="gbppd-note">Which four numbers stand here is a proposal, not a decision yet.</p>
       </section>
 
-      <div class="gbppd-grid gbppd-filled">
-
-        <!-- ============ LEFT: WHAT IS MOVING ============ -->
-        <div>
-
-          <!-- 2a · active gifts.
-               THREE ROWS, AND THE ACCOUNT HAS ONE CAMPAIGN (Ton 10.09).
-               The stopped campaign's own order stands first because it
-               is the one the page is about; the two under it are one
-               off gifts, which is what the rest of a real account
-               looks like between campaigns. -->
-          <section class="gbppd-widget" data-gbppd-widget="orders" aria-labelledby="gbppdGiftsTitle">
-            <div class="gbppd-widget__head">
-              <span class="gb-eyebrow" id="gbppdGiftsTitle">Gifts on their way</span>
-              <a class="gbppd-more" href="portal.html">See all gifts</a>
-            </div>
-            <div class="gbppd-card gbppd-rows gbppd-widget__body">
-
-              <a class="gbppd-row" href="#">
-                <img class="gbppd-thumb" src="../system/assets/products/1118-main.webp" alt="" loading="lazy">
-                <span>
-                  <span class="gbppd-row__what">Order GB-10465 &middot; 48 gifts</span>
-                  <span class="gbppd-row__who">Holiday Client Gifts &middot; 6 companies</span>
-                </span>
-                <span class="gbppd-state gbppd-state--stopped gb-alert--error">On hold</span>
-              </a>
-
-              <a class="gbppd-row" href="#">
-                <img class="gbppd-thumb" src="../system/assets/products/1112-main.webp" alt="" loading="lazy">
-                <span>
-                  <span class="gbppd-row__what">Order GB-10482 &middot; 2 gifts</span>
-                  <span class="gbppd-row__who">One off &middot; Aisha Patel, Priya Raman</span>
-                </span>
-                <span class="gbppd-state">Out for delivery</span>
-              </a>
-
-              <a class="gbppd-row" href="#">
-                <img class="gbppd-thumb" src="../system/assets/products/1094-main.webp" alt="" loading="lazy">
-                <span>
-                  <span class="gbppd-row__what">Order GB-10477 &middot; 1 gift</span>
-                  <span class="gbppd-row__who">One off &middot; Marcus Lee</span>
-                </span>
-                <span class="gbppd-state">Delivered</span>
-              </a>
-
-            </div>
-          </section>
-
-          <!-- 2b · the one campaign. The shelf keeps two tracks, so a
-               single card is a card and not a metre of white; see the
-               note at .gbppd-camps. -->
-          <section class="gbppd-widget" data-gbppd-widget="campaigns" aria-labelledby="gbppdCampsTitle">
-            <div class="gbppd-widget__head">
-              <span class="gb-eyebrow" id="gbppdCampsTitle">Your campaign</span>
-              <a class="gbppd-more" href="#">See all campaigns</a>
-            </div>
-            <div class="gbppd-camps gbppd-widget__body">
-
-              <article class="gbppd-card gbppd-camp">
-                <div class="gbppd-camp__strip" aria-hidden="true">
-                  <img src="../system/assets/products/1118-main.webp" alt="" loading="lazy">
-                  <img src="../system/assets/products/1106-main.webp" alt="" loading="lazy">
-                  <img src="../system/assets/products/925-main.webp" alt="" loading="lazy">
-                </div>
-                <h3 class="gbppd-camp__name">Holiday Client Gifts</h3>
-                <div class="gbppd-camp__foot">
-                  <span class="gbppd-camp__count">48 gifts &middot; none shipped</span>
-                  <span class="gbppd-state gbppd-state--stopped gb-alert--error">On hold</span>
-                </div>
-              </article>
-
-            </div>
-          </section>
-
-        </div>
-
-        <!-- ============ RIGHT: THE RECORD ============ -->
-        <div>
-
-          <!-- 3 · activity feed -->
-          <section class="gbppd-widget" data-gbppd-widget="activity" aria-labelledby="gbppdFeedTitle">
-            <div class="gbppd-widget__head">
-              <span class="gb-eyebrow" id="gbppdFeedTitle">Lately</span>
-              <span class="gbppd-p2">Older than 7 days: phase 2</span>
-            </div>
-            <div class="gbppd-card gbppd-feed gbppd-widget__body">
-
-              <div class="gbppd-event">
-                <span class="gbppd-event__dot gbppd-event__dot--alarm" aria-hidden="true"></span>
-                <p class="gbppd-event__say">The payment for <b>Holiday Client Gifts</b> was declined.<span class="gbppd-event__when">Today, 10:42</span></p>
-              </div>
-              <div class="gbppd-event">
-                <span class="gbppd-event__dot" aria-hidden="true"></span>
-                <p class="gbppd-event__say">Aisha Patel's gift is out for delivery in New York.<span class="gbppd-event__when">Today, 09:20</span></p>
-              </div>
-              <div class="gbppd-event">
-                <span class="gbppd-event__dot" aria-hidden="true"></span>
-                <p class="gbppd-event__say">Marcus Lee received his gift in Seattle.<span class="gbppd-event__when">Yesterday, 16:05</span></p>
-              </div>
-              <div class="gbppd-event">
-                <span class="gbppd-event__dot" aria-hidden="true"></span>
-                <p class="gbppd-event__say">48 addresses were imported into <b>Holiday Client Gifts</b>.<span class="gbppd-event__when">Yesterday, 11:30</span></p>
-              </div>
-              <div class="gbppd-event">
-                <span class="gbppd-event__dot" aria-hidden="true"></span>
-                <p class="gbppd-event__say">Invoice 2026-0841 was paid.<span class="gbppd-event__when">8 September, 09:00</span></p>
-              </div>
-              <!-- «Aisha Patel changed her delivery address» stood here
-                   and was taken out on purpose. It is the concept's own
-                   open question 6 in one line: not every save is an
-                   event, and a record that logs them has no room left
-                   for the things that are. -->
-              <div class="gbppd-event">
-                <span class="gbppd-event__dot" aria-hidden="true"></span>
-                <p class="gbppd-event__say"><b>Holiday Client Gifts</b> was created with 48 recipients.<span class="gbppd-event__when">5 September, 12:15</span></p>
-              </div>
-
-            </div>
-          </section>
-
-        </div>
-      </div>
-
-      <!-- THE ASSISTANT MOVED DOWN HERE (gbppl-portal-dashboard-3).
-           It stood between the Center and the columns, and at
-           1280 x 700 its 143 pixels were the difference between a
-           first screen that shows the overview and a first screen
-           that shows two problems and a promise. A phase 2 door does
-           not outrank live content: it sits with the other errands. -->
-      <!-- THE ACCOUNT ASSISTANT, phase 2 and said so. A strip, not a
-           card in a rail: with the portal's own rail on the left the
-           page has one column of content, and the assistant is one
-           line of it. The line is written out of this page's own demo
-           data, so the preview and the dashboard cannot disagree; the
-           control is honestly disabled rather than a fake chat. -->
-      <section class="gbppd-widget gbppd-filled" data-gbppd-widget="assistant" aria-labelledby="gbppdAiTitle">
-        <div class="gbppd-widget__head">
-          <span class="gb-eyebrow" id="gbppdAiTitle">Your account assistant</span>
-          <span class="gbppd-p2">Phase 2</span>
-        </div>
-        <div class="gbppd-card gbppd-ai gbppd-widget__body">
-          <span data-gb-icon="chat" data-gb-icon-size="20"></span>
-          <p class="gbppd-ai__say">Today: <b>your one campaign is on hold</b> and 3 of its gifts still have no address. I can fix the payment, chase the addresses, start the next campaign or take you through checkout.</p>
-          <button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" disabled><span class="gb-btn__label">Ask AI about your account</span></button>
-        </div>
-      </section>
-
-      <!-- 5 · quick actions, a strip under the two columns. -->
+      <!-- ============ 2 · SHORTCUTS, RIGHT UNDER THE METRICS ============ -->
       <section class="gbppd-widget gbppd-filled" data-gbppd-widget="actions" aria-labelledby="gbppdDoorsTitle">
         <div class="gbppd-widget__head">
           <span class="gb-eyebrow" id="gbppdDoorsTitle">Go straight to</span>
         </div>
         <div class="gbppd-doors gbppd-widget__body">
           <a class="gbppd-card gbppd-door" href="#">
-            <span class="gbppd-door__glyph"><span data-gb-icon="user" data-gb-icon-size="20"></span></span>
+            <span data-gb-icon="user" data-gb-icon-size="20"></span>
             <span class="gbppd-door__name">Address book</span>
           </a>
           <a class="gbppd-card gbppd-door" href="#">
-            <span class="gbppd-door__glyph"><span data-gb-icon="credit-card" data-gb-icon-size="20"></span></span>
+            <span data-gb-icon="credit-card" data-gb-icon-size="20"></span>
             <span class="gbppd-door__name">Payment methods</span>
           </a>
           <a class="gbppd-card gbppd-door" href="#">
-            <span class="gbppd-door__glyph"><span data-gb-icon="plus" data-gb-icon-size="20"></span></span>
+            <span data-gb-icon="plus" data-gb-icon-size="20"></span>
             <span class="gbppd-door__name">New campaign</span>
           </a>
           <!-- The concierge, and it wears the concierge's own glyph:
                the cloche is his mark everywhere else in the house. -->
           <a class="gbppd-card gbppd-door" href="index.html?concierge=1">
-            <span class="gbppd-door__glyph"><span data-gb-icon="service-bell" data-gb-icon-size="20"></span></span>
+            <span data-gb-icon="service-bell" data-gb-icon-size="20"></span>
             <span class="gbppd-door__name">Talk to us</span>
           </a>
         </div>
       </section>
 
-      <!-- ============ 4 · FAVOURITES ============ -->
+      <!-- ============ 3 · THE BOARD, THREE EQUAL COLUMNS ============ -->
+      <div class="gbppd-cols gbppd-filled">
+
+        <!-- ---------- LEFT: WHAT IS MOVING ---------- -->
+        <div class="gbppd-col" data-gbppd-widget="gifts">
+          <section class="gbppd-widget" aria-labelledby="gbppdGiftsTitle">
+            <div class="gbppd-widget__head">
+              <span class="gb-eyebrow" id="gbppdGiftsTitle">Gifts on their way</span>
+              <a class="gbppd-more" href="portal.html">See all</a>
+            </div>
+            <div class="gbppd-card gbppd-rows gbppd-widget__body">
+
+              <a class="gbppd-row" id="ship-aisha" href="#ship-aisha">
+                <img class="gbppd-thumb" src="../system/assets/products/1112-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Aisha Patel</span>
+                  <span class="gbppd-row__who">New Hire Welcome</span>
+                </span>
+                <span class="gbppd-state">Out for delivery</span>
+              </a>
+
+              <a class="gbppd-row" id="ship-daniel" href="#ship-daniel">
+                <img class="gbppd-thumb" src="../system/assets/products/1094-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Daniel Okafor</span>
+                  <span class="gbppd-row__who">New Hire Welcome</span>
+                </span>
+                <span class="gbppd-state">In transit</span>
+              </a>
+
+              <!-- A SINGLE GIFT IS A NORMAL ROW (Ton 10.09). No parent
+                   campaign, and the second line says so in the same
+                   place the campaign name would stand. -->
+              <a class="gbppd-row" id="ship-marcus" href="#ship-marcus">
+                <img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Marcus Lee</span>
+                  <span class="gbppd-row__who">Single gift</span>
+                </span>
+                <span class="gbppd-state">In transit</span>
+              </a>
+
+              <a class="gbppd-row" id="ship-nina" href="#ship-nina">
+                <img class="gbppd-thumb" src="../system/assets/products/1106-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">Nina Alvarez</span>
+                  <span class="gbppd-row__who">Single gift</span>
+                </span>
+                <span class="gbppd-state">Out for delivery</span>
+              </a>
+
+              <!-- The held batch. It is not in transit, so it is not in
+                   the transit number; it stands here because the
+                   question this column answers is «where are my gifts»
+                   and the honest answer for 48 of them is «nowhere». -->
+              <a class="gbppd-row" id="ship-holiday" href="#camp-holiday">
+                <img class="gbppd-thumb" src="../system/assets/products/1118-main.webp" alt="" loading="lazy">
+                <span>
+                  <span class="gbppd-row__what">48 gifts, packed</span>
+                  <span class="gbppd-row__who">Holiday Client Gifts</span>
+                </span>
+                <span class="gbppd-state gbppd-state--stopped gb-alert--error">On hold</span>
+              </a>
+
+            </div>
+          </section>
+        </div>
+
+        <!-- ---------- CENTER: THE CAMPAIGNS ---------- -->
+        <div class="gbppd-col" data-gbppd-widget="campaigns">
+          <section class="gbppd-widget" aria-labelledby="gbppdCampsTitle">
+            <div class="gbppd-widget__head">
+              <span class="gb-eyebrow" id="gbppdCampsTitle">Campaigns</span>
+              <a class="gbppd-more" href="#">See all</a>
+            </div>
+            <div class="gbppd-camps gbppd-widget__body">
+
+              <!-- THE FULFILLMENT CAMPAIGN, AND JULIA'S CASE. Everything
+                   that is wrong with this account is wrong here, and
+                   the two strips at the top of the feed both land on
+                   this card by anchor. -->
+              <a class="gbppd-card gbppd-camp" id="camp-holiday" href="#camp-holiday">
+                <div class="gbppd-camp__strip" aria-hidden="true">
+                  <img src="../system/assets/products/1118-main.webp" alt="" loading="lazy">
+                  <img src="../system/assets/products/1106-main.webp" alt="" loading="lazy">
+                  <img src="../system/assets/products/925-main.webp" alt="" loading="lazy">
+                </div>
+                <span class="gb-eyebrow gbppd-camp__type">Fulfillment</span>
+                <h3 class="gbppd-camp__name">Holiday Client Gifts</h3>
+                <div class="gbppd-camp__foot">
+                  <span class="gbppd-camp__count">48 gifts &middot; none shipped</span>
+                  <span class="gbppd-state gbppd-state--stopped gb-alert--error">On hold</span>
+                </div>
+              </a>
+
+              <!-- THE EMAIL CAMPAIGN, quietly. Same card, same order of
+                   the same four things: the type word is the only thing
+                   that changes, because the type is what changed. -->
+              <a class="gbppd-card gbppd-camp" id="camp-newhire" href="#camp-newhire">
+                <div class="gbppd-camp__strip" aria-hidden="true">
+                  <img src="../system/assets/products/1112-main.webp" alt="" loading="lazy">
+                  <img src="../system/assets/products/1094-main.webp" alt="" loading="lazy">
+                  <img src="../system/assets/products/1081-main.webp" alt="" loading="lazy">
+                </div>
+                <span class="gb-eyebrow gbppd-camp__type">Email</span>
+                <h3 class="gbppd-camp__name">New Hire Welcome</h3>
+                <div class="gbppd-camp__foot">
+                  <span class="gbppd-camp__count">12 recipients &middot; 5 delivered, 2 on the way</span>
+                  <span class="gbppd-state">Delivering</span>
+                </div>
+              </a>
+
+            </div>
+          </section>
+        </div>
+
+        <!-- ---------- RIGHT: ONE FEED, PROBLEMS PINNED ON TOP ---------- -->
+        <div class="gbppd-col" data-gbppd-widget="activity">
+          <section class="gbppd-widget" aria-labelledby="gbppdFeedTitle">
+            <div class="gbppd-widget__head">
+              <span class="gb-eyebrow" id="gbppdFeedTitle">Activity</span>
+              <a class="gbppd-more" href="#dashboard">See all</a>
+            </div>
+            <div class="gbppd-card gbppd-feed gbppd-widget__body">
+
+              <!-- PINNED: WHAT LASTS. Two alert strips, the house
+                   organism, at the top of the same shelf the events
+                   run down. They do not age and they do not sink. -->
+              <div class="gbppd-pin">
+                <span class="gb-eyebrow gbppd-pin__head">Needs your action</span>
+
+                <div class="gb-alert gb-alert--error">
+                  <span class="gb-alert__body">
+                    <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
+                    <span class="gb-alert__text">
+                      <a class="gbppd-problem__title" href="#camp-holiday">Holiday Client Gifts is on hold</a>
+                      <span class="gbppd-problem__sub">The card on file was declined. 48 gifts are packed and waiting. Since 8 September.</span>
+                    </span>
+                  </span>
+                  <span class="gb-alert__actions">
+                    <a class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label">Update payment</span></a>
+                  </span>
+                </div>
+
+                <div class="gb-alert gb-alert--warning">
+                  <span class="gb-alert__body">
+                    <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
+                    <span class="gb-alert__text">
+                      <a class="gbppd-problem__title" href="#camp-holiday">3 gifts have no recipient address</a>
+                    </span>
+                  </span>
+                  <span class="gb-alert__actions">
+                    <a class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label">Assign addresses</span></a>
+                  </span>
+                </div>
+              </div>
+
+              <!-- WHAT HAPPENED. Newest on top, and every row is a door
+                   to the thing it is about. -->
+              <div class="gbppd-events">
+
+                <a class="gbppd-event" href="#camp-holiday">
+                  <span class="gbppd-event__dot gbppd-event__dot--alarm" aria-hidden="true"></span>
+                  <p class="gbppd-event__say">The payment for <b>Holiday Client Gifts</b> was declined.<span class="gbppd-event__when">Today, 10:42</span></p>
+                </a>
+                <a class="gbppd-event" href="#ship-aisha">
+                  <span class="gbppd-event__dot" aria-hidden="true"></span>
+                  <p class="gbppd-event__say">Aisha Patel's gift is out for delivery in New York.<span class="gbppd-event__when">Today, 09:20</span></p>
+                </a>
+                <a class="gbppd-event" href="#ship-nina">
+                  <span class="gbppd-event__dot" aria-hidden="true"></span>
+                  <p class="gbppd-event__say">Nina Alvarez's gift is out for delivery in Austin.<span class="gbppd-event__when">Today, 08:40</span></p>
+                </a>
+                <a class="gbppd-event" href="#camp-newhire">
+                  <span class="gbppd-event__dot" aria-hidden="true"></span>
+                  <p class="gbppd-event__say">Priya Raman received her gift in Seattle.<span class="gbppd-event__when">Yesterday, 16:05</span></p>
+                </a>
+                <a class="gbppd-event" href="#camp-holiday">
+                  <span class="gbppd-event__dot" aria-hidden="true"></span>
+                  <p class="gbppd-event__say">48 addresses were imported into <b>Holiday Client Gifts</b>.<span class="gbppd-event__when">Yesterday, 11:30</span></p>
+                </a>
+                <a class="gbppd-event" href="#ship-marcus">
+                  <span class="gbppd-event__dot" aria-hidden="true"></span>
+                  <p class="gbppd-event__say">A single gift for Marcus Lee was placed.<span class="gbppd-event__when">5 September, 12:15</span></p>
+                </a>
+
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+
+      <!-- ============ 4 · SAVED FOR LATER ============ -->
       <section class="gbppd-widget gbppd-filled" data-gbppd-widget="favorites" aria-labelledby="gbppdFavsTitle">
         <div class="gbppd-widget__head">
           <span class="gb-eyebrow" id="gbppdFavsTitle">Saved for later</span>
@@ -1400,7 +1386,9 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
         </div>
       </section>
 
-      <p class="gbppd-p2 gbppd-p2--foot gbppd-filled">Phase 2, and none of it is drawn here on purpose: choosing and reordering your widgets, filter tabs in the action list, the account assistant behind its door, notification settings, how far back the record goes, and live updates without a reload.</p>
+      <!-- THE PHASE 2 LINE. The account assistant is in it, and it is a
+           line rather than a banner with a dead button on purpose. -->
+      <p class="gbppd-p2 gbppd-p2--foot gbppd-filled">Phase 2, and none of it is drawn here on purpose: an account assistant that answers questions about the account and acts on them, choosing and reordering your own widgets, filter tabs over the action list, notification settings, how far back the record goes, and live updates without a reload.</p>
 
       </main>
     </div>
@@ -1424,16 +1412,15 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
 
 <script>
 /* ============================================================
-   THE BELL'S DRAWER                      gbppl-portal-dashboard-1
+   THE BELL, THE TWO STATES, AND CUSTOMIZE
+                                          gbppl-portal-dashboard-2
    ------------------------------------------------------------
-   One behaviour on this page, and it is the concept's: the bell
-   opens <gb-drawer> with the problems on top, the last events under
-   them, and one door at the foot to the whole record.
-
-   The two shelves are the SAME DATA as the page, said shorter. That
-   is the point of the pair: the bell is where you find the problem
-   when you are not on the dashboard, and the dashboard is where you
-   act on it. Nothing in the drawer is a second version of the truth.
+   The bell opens <gb-drawer> with the two problems on top and the
+   last events under them: the SAME data as the feed, said shorter.
+   That is the point of the pair. The bell is where you find the
+   problem when you are not on the dashboard, and the dashboard is
+   where you act on it. Nothing in the drawer is a second version of
+   the truth.
    ============================================================ */
 (function () {
   'use strict';
@@ -1441,19 +1428,19 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
   var bell = document.getElementById('gbppdBell');
   if (!bell) return;
 
-  /* The problems, in the Center's own order and words, cut to the
-     two lines a drawer can carry. */
+  /* The problems, in the feed's own order and words. */
   var PROBLEMS = [
     { tone: 'error',   title: 'Holiday Client Gifts is on hold', say: 'The card was declined. 48 gifts are waiting.' },
     { tone: 'warning', title: '3 gifts have no recipient address', say: 'They will hold the campaign a second time.' }
   ];
 
-  /* The four newest events off the feed, in its order. */
+  /* The four newest events off the feed, in its order and with the
+     same doors behind them. */
   var EVENTS = [
-    { alarm: true,  say: 'The payment for <b>Holiday Client Gifts</b> was declined.', when: 'Today, 10:42' },
-    { alarm: false, say: "Aisha Patel's gift is out for delivery in New York.", when: 'Today, 09:20' },
-    { alarm: false, say: 'Marcus Lee received his gift in Seattle.', when: 'Yesterday, 16:05' },
-    { alarm: false, say: '48 addresses were imported into <b>Holiday Client Gifts</b>.', when: 'Yesterday, 11:30' }
+    { alarm: true,  href: '#camp-holiday', say: 'The payment for <b>Holiday Client Gifts</b> was declined.', when: 'Today, 10:42' },
+    { alarm: false, href: '#ship-aisha',   say: "Aisha Patel's gift is out for delivery in New York.", when: 'Today, 09:20' },
+    { alarm: false, href: '#ship-nina',    say: "Nina Alvarez's gift is out for delivery in Austin.", when: 'Today, 08:40' },
+    { alarm: false, href: '#camp-newhire', say: 'Priya Raman received her gift in Seattle.', when: 'Yesterday, 16:05' }
   ];
 
   function body() {
@@ -1461,18 +1448,18 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                '<span class="gb-eyebrow">Needs your action</span>' +
                '<div style="margin-top: var(--space-16)">';
     PROBLEMS.forEach(function (p) {
-      html += '<a class="gbppd-dr__mini gb-alert--' + p.tone + '" href="#">' +
+      html += '<a class="gbppd-dr__mini gb-alert--' + p.tone + '" href="#camp-holiday">' +
               '<b>' + p.title + '</b><span>' + p.say + '</span></a>';
     });
     html += '</div></div>';
 
     html += '<div class="gbppd-dr__group"><span class="gb-eyebrow">Lately</span>' +
-            '<div class="gbppd-card gbppd-feed" style="margin-top: var(--space-16)">';
+            '<div class="gbppd-card gbppd-events" style="margin-top: var(--space-16)">';
     EVENTS.forEach(function (e) {
-      html += '<div class="gbppd-event">' +
+      html += '<a class="gbppd-event" href="' + e.href + '">' +
               '<span class="gbppd-event__dot' + (e.alarm ? ' gbppd-event__dot--alarm' : '') + '" aria-hidden="true"></span>' +
               '<p class="gbppd-event__say">' + e.say +
-              '<span class="gbppd-event__when">' + e.when + '</span></p></div>';
+              '<span class="gbppd-event__when">' + e.when + '</span></p></a>';
     });
     html += '</div></div>';
     return html;
@@ -1484,18 +1471,17 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
      Ton, 10.09: «первый вопрос Юли — что видят, когда ничего нет».
      ?state=filled|empty, and the same choice as a row of the one
      remote control of the prototype (Ton 26.08: the studio panel is
-     the only console). The key is read once and written back with
-     replaceState, so a shared link opens the state it was shared in
-     and the address never grows a second copy of the key.
+     the only console). Read once on load, written back with
+     replaceState so a shared link opens the state it was shared in.
      ============================================================ */
   var root = document.documentElement;
 
   function setState(value) {
     if (value === 'empty') root.setAttribute('data-gbppd-state', 'empty');
     else root.removeAttribute('data-gbppd-state');
-    /* The badge counts problems, and a new account has none. The
-       bell itself stays: the drawer is where notifications live
-       whether or not there are any today. */
+    /* The badge counts problems, and a new account has none. The bell
+       itself stays: the drawer is where notifications live whether or
+       not there are any today. */
     var badge = bell.querySelector('.gbh-count');
     if (badge) badge.hidden = (value === 'empty');
     bell.setAttribute('aria-label', value === 'empty'
@@ -1520,28 +1506,21 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
      ------------------------------------------------------------
      Ton, 10.09: editing the dashboard has to be understandable, so
      the switch has to actually switch. Each row hides and shows its
-     zone for real, in front of the person looking at it. What it
-     does NOT do is remember: nothing is persisted, and the drawer
-     says so at its foot alongside the parts that are not built.
-     A mock that saves is a feature nobody wrote a backend for.
+     zone for real, in front of the person looking at it, and the
+     three columns of the board share their width out again when one
+     of them goes (grid-auto-columns, see .gbppd-cols). What it does
+     NOT do is remember: nothing is persisted and the drawer says so.
 
-     The switch is the house toggle at its small rung, the same
-     object the checkout uses for One / Different addresses: the
-     system has no checkbox (one of the four holes, section 8), and
-     on and off is exactly a two value toggle. In its DEFAULT mode,
-     not host: host mode is for a page that already holds the value
-     somewhere else (the checkout's Alpine store), and in that mode
-     the organism deliberately dispatches nothing. Here the drawer is
-     the only owner there is, so the component keeps its own value
-     and this page listens.
+     The rows are the ZONES OF THE NEW LAYOUT, in the order they
+     stand on the page.
      ============================================================ */
   var WIDGETS = [
-    { id: 'orders',    name: 'Gifts on their way' },
+    { id: 'metrics',   name: 'Metrics' },
+    { id: 'actions',   name: 'Go straight to' },
+    { id: 'gifts',     name: 'Gifts on their way' },
     { id: 'campaigns', name: 'Campaigns' },
-    { id: 'favorites', name: 'Favourites' },
     { id: 'activity',  name: 'Activity' },
-    { id: 'actions',   name: 'Quick actions' },
-    { id: 'assistant', name: 'Account assistant' }
+    { id: 'favorites', name: 'Saved for later' }
   ];
   var off = {};
 
@@ -1564,7 +1543,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
               ' data-value="off" aria-checked="' + (on ? 'false' : 'true') + '">Hidden</button>' +
               '</div></div>';
     });
-    html += '<p class="gbppd-cz__foot">Layout and metrics: phase 2. Nothing here is saved yet, so the board comes back whole on the next load.</p>';
+    html += '<p class="gbppd-cz__foot">Which numbers stand in the metrics row, and the order of the zones: phase 2. Nothing here is saved yet, so the board comes back whole on the next load.</p>';
     return html;
   }
 
@@ -1575,8 +1554,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
     drawer.open({ title: 'Customize', html: czBody() });
   });
 
-  /* The organism publishes gbtg:change on the group; host mode means
-     the page owns the value, which is what «working mock» means here. */
+  /* The organism publishes gbtg:change on the group. */
   document.addEventListener('gbtg:change', function (e) {
     var g = e.target && e.target.closest ? e.target.closest('[data-gbppd-cz]') : null;
     if (!g) return;
@@ -1612,11 +1590,9 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
     drawer.open({
       title: 'Notifications',
       html: body(),
-      /* A DOOR, NOT THE ANSWER. The one thing the drawer offers at
-         its foot is a way to the whole record, and a way somewhere is
-         outline: filled primary here would shout louder than the two
-         problems above it, which is the inversion this page exists to
-         fix. */
+      /* A DOOR, NOT THE ANSWER. Outline: filled primary here would
+         shout louder than the two problems above it, which is the
+         inversion this page exists to fix. */
       foot: '<a class="gb-btn gb-btn--large gb-btn--outline gb-btn--secondary gb-btn--block" href="#dashboard">' +
             '<span class="gb-btn__label">View all activity</span></a>'
     });
