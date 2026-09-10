@@ -311,6 +311,19 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--blue-700); te
 
    The tiles are doors all the same (each opens the drawer with the
    things it counted), so they keep the card's own hover. */
+/* FOUR POSITIONS, AND THE ROW WRAPS INTO MORE OF THEM. The metrics
+   are a SET now (Ton, 10.09): the catalogue in the Customize drawer
+   decides which tiles exist, and the row lays out whatever it is
+   given. Four fixed tracks rather than auto-fit on purpose: auto-fit
+   collapses the empty tracks, so a set of two would stretch each
+   tile across half the board and a number would look like a banner.
+   With fixed tracks two tiles stay tile-sized and six wrap into a
+   second row of the same width. Measured at 1280 and 360.
+
+   PLACEMENT IS AUTOMATIC: the order of the row is the order of the
+   catalogue, which is the order of the DOM. Dragging a tile by hand
+   is phase 2 and is not built, not drawn, and not mentioned on the
+   canvas or in the drawer. */
 .gbppd-stats {
   display: grid;
   gap: var(--space-16);
@@ -584,12 +597,30 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
 .gbppd-tab[aria-selected="true"] { color: var(--blue-600); border-bottom-color: var(--blue-600); }
 
 .gbppd-rows { display: grid; }
-/* [hidden] LOSES TO A display RULE (the same trap the bell's badge
-   fell into, ловушка of this page's own head comment). A tab panel is
-   hidden by the attribute, and a display:grid on the same element
-   outranks the UA sheet, so all three panes stood open at once until
-   this line. Caught by looking at the frame, not by the console. */
-.gbppd-rows[hidden] { display: none; }
+/* [hidden] LOSES TO A display RULE, AND IT HAS NOW BITTEN FOUR TIMES
+   ON ONE PAGE: the bell's badge (display:grid), the tab panels
+   (display:grid), the campaign rows and the feed events of the
+   filters (display:grid again). Every one of them was «hidden» in
+   the DOM and visible on the screen, because the UA sheet's
+   [hidden]{display:none} loses to any author rule of the same
+   specificity — and every row and panel on this page has one.
+
+   So the page states it once, for everything under its own roots,
+   and with the !important the UA sheet cannot carry. Anything this
+   page hides is hidden, whatever display it was given. */
+.gbppd-page [hidden],
+.gbd-panel [hidden] { display: none !important; }
+
+/* AND THE LEAVING IS SEEN (Ton, 10.09: a toggle that changes nothing
+   visible is a broken toggle). A zone or a tile switched off fades
+   out over --mo-small-out and then leaves the layout, so the board
+   re-splitting under the open drawer is something the eye catches
+   rather than something it discovers later. Coming back is instant:
+   the thing you asked for does not keep you waiting. */
+.gbppd-col,
+.gbppd-stat,
+[data-gbppd-widget] { transition: opacity var(--mo-small-out) var(--mo-move); }
+.is-leaving { opacity: 0; }
 /* A favourite in the column is a ROW like everything else in this
    zone: the same thumb, the same two lines. The picture shelf that
    used to stand at the foot of the page went in here with it, and
@@ -1298,6 +1329,10 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
 }
 .gbppd-cz__row:first-child { border-top: 0; }
 .gbppd-cz__name { font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--zinc-900); }
+/* The caption of a row that cannot be switched: a rule for the person,
+   said in their language, under the name it belongs to. */
+.gbppd-cz__note { display: block; font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--zinc-500); }
+.gbppd-cz__group { margin-top: var(--space-32); }
 .gbppd-cz__foot {
   margin-top: var(--space-24);
   padding-top: var(--space-16);
@@ -1515,6 +1550,37 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
             <span class="gb-eyebrow">Needs attention</span>
             <span class="gbppd-stat__num">2</span>
             <span class="gbppd-stat__sub">Both on one campaign</span>
+          </button>
+
+          <!-- THE CANDIDATES, off until someone turns them on in the
+               Customize drawer. Their numbers come out of the same
+               demo the board is built from: 84 recipients is 24 + 12
+               + 48 across the three live orders, 12 redeemed is all
+               of New Hire Welcome, the approval is the logo proof on
+               Winter Reserve Box, and 4 is what stands in the
+               Favorites tab. -->
+          <button class="gbppd-card gbppd-stat" type="button" data-gbppd-metric="reached" hidden>
+            <span class="gb-eyebrow">Recipients reached</span>
+            <span class="gbppd-stat__num">84</span>
+            <span class="gbppd-stat__sub">Across every open order</span>
+          </button>
+
+          <button class="gbppd-card gbppd-stat" type="button" data-gbppd-metric="redeemed" hidden>
+            <span class="gb-eyebrow">Redeemed</span>
+            <span class="gbppd-stat__num">12</span>
+            <span class="gbppd-stat__sub">All of New Hire Welcome</span>
+          </button>
+
+          <button class="gbppd-card gbppd-stat" type="button" data-gbppd-metric="approval" hidden>
+            <span class="gb-eyebrow">Awaiting my approval</span>
+            <span class="gbppd-stat__num">1</span>
+            <span class="gbppd-stat__sub">A logo proof</span>
+          </button>
+
+          <button class="gbppd-card gbppd-stat" type="button" data-gbppd-metric="saved" hidden>
+            <span class="gb-eyebrow">Saved for later</span>
+            <span class="gbppd-stat__num">4</span>
+            <span class="gbppd-stat__sub">In My Gifts</span>
           </button>
 
         </div>
@@ -2071,32 +2137,98 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
   var WIDGETS = [
     { id: 'metrics',   name: 'Metrics' },
     { id: 'actions',   name: 'Quick actions' },
-    { id: 'gifts',     name: 'Your gifts' },
+    { id: 'gifts',     name: 'My Gifts' },
     { id: 'campaigns', name: 'Campaigns' },
     { id: 'activity',  name: 'Activity' }
   ];
   var off = {};
 
+  /* THE METRICS ARE A SET (Ton, 10.09). The catalogue is the order of
+     the row: turning one on puts its tile in the position the
+     catalogue gives it, because the row lays out the DOM and the DOM
+     is this list. Dragging a tile into another place is phase 2, and
+     it is said here and nowhere else.
+
+     NEEDS ATTENTION CANNOT BE SWITCHED OFF, and the drawer says so in
+     the person's own language rather than in ours: a dashboard whose
+     alarm can be muted is a dashboard that will one day be quiet
+     while a campaign is stopped. That is a rule for the user, so it
+     is a caption on the row, not a note about the prototype. */
+  var METRIC_SET = [
+    { id: 'campaigns', name: 'Active campaigns', on: true },
+    { id: 'transit',   name: 'Gifts in transit', on: true },
+    { id: 'delivered', name: 'Delivered',        on: true },
+    { id: 'attention', name: 'Needs attention',  on: true, locked: 'Always on' },
+    { id: 'reached',   name: 'Recipients reached', on: false },
+    { id: 'redeemed',  name: 'Redeemed',           on: false },
+    { id: 'approval',  name: 'Awaiting my approval', on: false },
+    { id: 'saved',     name: 'Saved for later',     on: false }
+  ];
+  var metricOn = {};
+  METRIC_SET.forEach(function (m) { metricOn[m.id] = m.on; });
+
+  function applyMetric(id) {
+    reveal(document.querySelector('[data-gbppd-metric="' + id + '"]'), !!metricOn[id]);
+  }
+
+  /* SHOW AND HIDE, VISIBLY. Off fades first and leaves the layout when
+     the fade is done; on comes back at once. One helper for zones,
+     tiles and anything else this page switches. */
+  function reveal(el, on) {
+    if (!el) return;
+    if (on) {
+      el.hidden = false;
+      el.classList.remove('is-leaving');
+      return;
+    }
+    if (el.hidden) return;
+    el.classList.add('is-leaving');
+    window.setTimeout(function () {
+      if (el.classList.contains('is-leaving')) { el.hidden = true; el.classList.remove('is-leaving'); }
+      if (typeof window.__gbppdReflow === 'function') window.__gbppdReflow();
+    }, 90);                                   /* --mo-small-out, read as a number because setTimeout cannot read a token */
+  }
+
   function apply(id) {
     var zone = document.querySelector('[data-gbppd-widget="' + id + '"]');
-    if (zone) zone.hidden = !!off[id];
+    if (!zone) return;
+    /* THE SWITCH IS MARKED BEFORE THE FADE, and this is the bug Ton
+       clicked: reflow() re-decides which columns exist by counting
+       their rows, it ran when the fade finished, it found the rows
+       still there and turned the column back on. The mark says «a
+       person switched this off» and reflow leaves it alone. It has
+       to be set here, not from the toggle event, because at event
+       time the element is still visible. */
+    zone.setAttribute('data-gbppd-off', off[id] ? '1' : '0');
+    reveal(zone, !off[id]);
+  }
+
+  function switchRow(key, id, name, on, note, locked) {
+    return '<div class="gbppd-cz__row">' +
+           '<span class="gbppd-cz__name">' + name +
+           (note ? '<span class="gbppd-cz__note">' + note + '</span>' : '') + '</span>' +
+           '<div class="gb-toggle gb-toggle--small" role="radiogroup"' +
+           ' ' + key + '="' + id + '" aria-label="' + name + ' on the dashboard">' +
+           '<button class="gb-toggle__item' + (on ? ' is-on' : '') + '" type="button" role="radio"' +
+           (locked ? ' disabled' : '') +
+           ' data-value="on" aria-checked="' + (on ? 'true' : 'false') + '">Shown</button>' +
+           '<button class="gb-toggle__item' + (on ? '' : ' is-on') + '" type="button" role="radio"' +
+           (locked ? ' disabled' : '') +
+           ' data-value="off" aria-checked="' + (on ? 'false' : 'true') + '">Hidden</button>' +
+           '</div></div>';
   }
 
   function czBody() {
-    var html = '';
-    WIDGETS.forEach(function (w) {
-      var on = !off[w.id];
-      html += '<div class="gbppd-cz__row">' +
-              '<span class="gbppd-cz__name">' + w.name + '</span>' +
-              '<div class="gb-toggle gb-toggle--small" role="radiogroup"' +
-              ' data-gbppd-cz="' + w.id + '" aria-label="' + w.name + ' on the dashboard">' +
-              '<button class="gb-toggle__item' + (on ? ' is-on' : '') + '" type="button" role="radio"' +
-              ' data-value="on" aria-checked="' + (on ? 'true' : 'false') + '">Shown</button>' +
-              '<button class="gb-toggle__item' + (on ? '' : ' is-on') + '" type="button" role="radio"' +
-              ' data-value="off" aria-checked="' + (on ? 'false' : 'true') + '">Hidden</button>' +
-              '</div></div>';
+    var html = '<span class="gb-eyebrow">Metrics</span><div style="margin-top: var(--space-16)">';
+    METRIC_SET.forEach(function (m) {
+      html += switchRow('data-gbppd-mz', m.id, m.name, !!metricOn[m.id], m.locked || '', !!m.locked);
     });
-    html += '<p class="gbppd-cz__foot">Which numbers stand in the metrics row, and the order of the zones: phase 2. Nothing here is saved yet, so the board comes back whole on the next load.</p>';
+    html += '</div><div class="gbppd-cz__group"><span class="gb-eyebrow">Zones</span><div style="margin-top: var(--space-16)">';
+    WIDGETS.forEach(function (w) {
+      html += switchRow('data-gbppd-cz', w.id, w.name, !off[w.id], '', false);
+    });
+    html += '</div></div>';
+    html += '<p class="gbppd-cz__foot">Nothing here is saved yet, so the board comes back whole on the next load.</p>';
     return html;
   }
 
@@ -2319,6 +2451,32 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
       ],
       door: 'View all gifts'
     },
+    reached: {
+      title: 'Recipients reached',
+      say: 'Everyone an open order is addressed to, campaigns and direct orders together.',
+      rows: [ { what: '48 people', who: 'Holiday Client Gifts', state: 'On hold', tone: 'error' },
+              { what: '24 people', who: 'Coffee Lover Set, direct order', state: 'On the way', tone: 'info' },
+              { what: '12 people', who: 'New Hire Welcome', state: 'Delivering', tone: 'info' } ],
+      door: 'View all gifts'
+    },
+    redeemed: {
+      title: 'Redeemed',
+      say: 'Recipients who chose their gift and gave an address this month.',
+      rows: [ { what: '12 of 12', who: 'New Hire Welcome, 3 gift options', state: 'Complete', tone: 'success' } ],
+      door: 'View all campaigns'
+    },
+    approval: {
+      title: 'Awaiting my approval',
+      say: 'Proofs the studio has sent and nobody has answered yet.',
+      rows: [ { what: 'Logo proof', who: 'Winter Reserve Box, sent 8 September', state: 'Waiting', tone: 'warning' } ],
+      door: 'Open Gift Design Approvals'
+    },
+    saved: {
+      title: 'Saved for later',
+      say: 'What you kept from the catalogue. They live in the Favorites tab of My Gifts.',
+      rows: [ { what: '4 gifts', who: 'Caymus, Amalfi, Beats, Stags\' Leap', state: 'Saved', tone: 'quiet' } ],
+      door: 'Open the catalog'
+    },
     attention: {
       title: 'Needs your action',
       say: 'Both of them belong to the same campaign, and the second will stop it again the moment the first clears.',
@@ -2402,11 +2560,21 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
 
   /* The organism publishes gbtg:change on the group. */
   document.addEventListener('gbtg:change', function (e) {
-    var g = e.target && e.target.closest ? e.target.closest('[data-gbppd-cz]') : null;
-    if (!g) return;
-    var id = g.getAttribute('data-gbppd-cz');
-    off[id] = (e.detail && e.detail.value) === 'off';
-    apply(id);
+    var t = e.target && e.target.closest ? e.target : null;
+    if (!t) return;
+    var zone = t.closest('[data-gbppd-cz]');
+    if (zone) {
+      var id = zone.getAttribute('data-gbppd-cz');
+      off[id] = (e.detail && e.detail.value) === 'off';
+      apply(id);
+      return;
+    }
+    var tile = t.closest('[data-gbppd-mz]');
+    if (tile) {
+      var mid = tile.getAttribute('data-gbppd-mz');
+      metricOn[mid] = (e.detail && e.detail.value) !== 'off';
+      applyMetric(mid);
+    }
   });
 
   /* One row in the console, in the studio's own words. */
@@ -2466,13 +2634,6 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
   setCamps(camps);
   tellEmpty();
   reflow();
-  /* The Customize drawer marks a zone off by hand; reflow must not
-     bring it back. */
-  document.addEventListener('gbtg:change', function () {
-    [].forEach.call(document.querySelectorAll('.gbppd-col'), function (c) {
-      c.setAttribute('data-gbppd-off', c.hidden ? '1' : '0');
-    });
-  });
 
   bell.addEventListener('click', function () {
     var drawer = document.querySelector('gb-drawer');
