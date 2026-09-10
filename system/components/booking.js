@@ -461,6 +461,12 @@
      копия разошлась бы с первой на первой же правке копии. */
   var MEETING_FACT = '15 minutes with a gifting specialist, on Zoom.';
 
+  /* Вопрос лид-формы, дословно живой (LIVE 27.08). На странице он
+     стоит ЛЕЙБЛОМ поля, как на лайве; в дровере он плейсхолдер, а
+     лейблом стоит короткое системное имя — см. поле brief ниже. */
+  var BRIEF_QUESTION = 'How can GildedBox help with gifting in your business?';
+  var BRIEF_LABEL = 'Gifting needs';
+
   /* ШАПКА УРОВНЯ В ДРОВЕРЕ (layout="embedded", gbppl-concierge-auth-1).
      Порядок читается сверху вниз ровно так, как просил Тон: факт
      встречи первой строкой СРАЗУ ПОД ШАПКОЙ ДРОВЕРА, под ним айбрау
@@ -491,8 +497,40 @@
     }
     /* Отступ между полями живой формы: mb-6 / md:mb-8 / xl:mb-10 =
        24 / 32 / 40. У auth.css это ровно .gba-field--flow, заводить
-       второе имя незачем (LIVE 27.08). */
-    var FLOW = ' wrap-mod="gba-field--flow" label-style="floating"';
+       второе имя незачем (LIVE 27.08).
+
+       В ДРОВЕРЕ ОБЛИК ПОЛЯ — ДЕФОЛТНЫЙ, И ЭТО СЛОВО ТОНА
+       (gbppl-concierge-auth-2, 10.09): «каждое поле обязано нести
+       системный лейбл»; утверждённый компонент побеждает хаос
+       живого портала, а живая лид-форма стоит вообще без лейблов —
+       решение, продавленное на лайве, и слушать его мы не обязаны.
+       Поэтому здесь снимается ДВА атрибута сразу, и оба тянут за
+       собой цепочку у владельца:
+
+         label-style   без него <gb-field> рисует канон: капс-айбрау
+                       НАД полем плюс звёздочка обязательности
+                       (auth.css, .gba-field.required .gba-label::after
+                       — с 10.09 без золота, голосом лейбла).
+         wrap-mod      живой ритм 24/32/40 считает ВЬЮПОРТ, а в
+                       дровере ширина 520 при вьюпорте 2258; на
+                       большом экране это давало 40 между полями
+                       внутри узкой панели. Ритм формы в дровере
+                       задаёт сама форма, ступенью --form-block-gap
+                       (booking.css, блок embedded).
+
+       И ТРЕТЬЕ, САМОЕ ВАЖНОЕ, ПРИХОДИТ БЕСПЛАТНО: без
+       .gba-field--floating многострочник перестаёт быть живым
+       исключением и получает рецепт ВЛАДЕЛЬЦА — display: block
+       (никакого strut'а под боксом), field-sizing: content,
+       потолок, тихая прокрутка, снятая ручка. Ровно то, что Тон
+       просил 01.09 («непонятно, куда ставить курсор») и что тогда
+       получили все многострочники дома, кроме этого одного. */
+    var FLOW = emb ? '' : ' wrap-mod="gba-field--flow" label-style="floating"';
+    /* Лейбл телефона: в дровере он стоит НАД строкой, как у соседей
+       по колонке, и потому вынесен из .gba-inputwrap. Один и тот же
+       узел, разное место в DOM — ровно как это делает fieldHTML у
+       владельца (inside ? '' : label). */
+    var PHONE_LABEL = '<label for="gbb_phone" class="active gba-label">Phone</label>';
     return (
       '<div class="gbb-panel">' +
         /* Заголовка у живой карточки НЕТ: она открывается сразу
@@ -517,16 +555,18 @@
              в floating: без него :placeholder-shown не работает и
              лейбл не поднимается (gbppl-field-floating-1). */
           '<div class="input-field col active staticLabel required gba-field' +
-              ' gba-field--floating gba-field--flow gbb-phone-field" data-role="phone-field">' +
+              (emb ? '' : ' gba-field--floating gba-field--flow') +
+              ' gbb-phone-field" data-role="phone-field">' +
+            (emb ? PHONE_LABEL : '') +
             '<div class="relative gba-inputwrap gbb-phone" data-role="phone">' +
               '<button class="gbb-phone-trigger" type="button" data-role="phone-trigger"' +
                 ' aria-haspopup="listbox" aria-expanded="false" aria-label="Country calling code">' +
                 '<span data-role="phone-code">' + esc(COUNTRIES[0].code) + '</span>' + ICON_CARET +
               '</button>' +
               '<input type="tel" name="phone" id="gbb_phone" autocomplete="tel"' +
-                ' placeholder=" " class="valid browser-default gba-input"' +
+                ' placeholder="' + (emb ? '' : ' ') + '" class="valid browser-default gba-input"' +
                 (values.phone ? ' value="' + esc(values.phone) + '"' : '') + '>' +
-              '<label for="gbb_phone" class="active gba-label">Phone</label>' +
+              (emb ? '' : PHONE_LABEL) +
               '<div class="gbb-phone-menu" role="listbox" aria-label="Country" data-role="phone-menu" hidden>' +
                 options +
               '</div>' +
@@ -542,9 +582,23 @@
           '<gb-field input-id="gbb_company" name="company" type="text" label="Company Name"' + FLOW +
             ' autocomplete="organization" optional' +
             (values.company ? ' value="' + esc(values.company) + '"' : '') + '></gb-field>' +
+          /* ДЛИННЫЙ ВОПРОС — НЕ ЛЕЙБЛ (Тон, 10.09, «делаем как
+             положено»). На лайве заголовком этого поля стоит целая
+             фраза, и это тоже расселовская правка живой страницы:
+             лейбл обязан говорить, ЧТО это за поле, одним-двумя
+             словами, а объяснение живёт в плейсхолдере или в
+             подсказке под полем. В дровере вопрос уезжает в
+             ПЛЕЙСХОЛДЕР, а лейблом встаёт короткий системный капс.
+             GIFTING NEEDS, а не YOUR MESSAGE, по трём причинам:
+             лейблы этой формы называют СОДЕРЖИМОЕ (Email, Phone,
+             Your Name, Company Name), и это поле держит нужду в
+             подарках, а не письмо; «Your …» в колонке уже дважды, и
+             третий был бы ритмом, а не именем; и слово «gifting» —
+             ровно то, которым дом говорит об этом деле везде, от
+             двери «Book a meeting» до самого вопроса. */
           '<gb-field input-id="gbb_brief" name="brief" type="textarea"' + FLOW +
-            ' label="How can GildedBox help with gifting in your business?"' +
-            ' placeholder="" autocomplete="off" optional' +
+            ' label="' + (emb ? BRIEF_LABEL : BRIEF_QUESTION) + '"' +
+            ' placeholder="' + (emb ? BRIEF_QUESTION : '') + '" autocomplete="off" optional' +
             (values.brief ? ' value="' + esc(values.brief) + '"' : '') + '></gb-field>' +
         '</form>' +
         /* Ряд кнопки: живой div.flex.items-center, кнопка flex-auto.
@@ -798,9 +852,40 @@
       this.handFoot(['continue']);
       var self = this;
 
+      /* ---- МНОГОСТРОЧНИК В ДРОВЕРЕ ЖИВЁТ ПО РЕЦЕПТУ ВЛАДЕЛЬЦА ----
+         gbppl-concierge-auth-2, 10.09. Тон по скрину: «textarea
+         выглядит ужасающе, курсор ставится куда-то вверху».
+         Диагноз, снятый прибором: поле носило .gba-field--floating,
+         то есть ЖИВОЕ ИСКЛЮЧЕНИЕ владельца — display: inline-block
+         (6px strut'а под боксом, подчёркивание висит выше низа
+         обёртки), field-sizing: fixed с высотой от rows=3 (пустая
+         коробка ~86px, текст начинается вверху, под ним воздух),
+         уголок resize и никакого потолка. Ровно тот дефект, на
+         который Тон жаловался ещё 01.09 («непонятно, куда ставить
+         курсор») и который владелец тогда вылечил ВСЕМ, кроме
+         этого поля: лид-форму держал замок «Live имитирует лайв
+         целиком». В дровере живой страницы нет, и замка нет тоже.
+
+         Ничего нового не пишется: облик снят вместе с
+         label-style (STEP1_TEMPLATE), и поле стало обычной
+         .gba-textarea владельца. Остаётся поставить ОСЬ, которую
+         владелец завёл ровно для этого случая: .gba-textarea--line,
+         «пол = ступень контрола», чтобы многострочник начинал
+         строкой в один рост с соседями по колонке и глазу не
+         приходилось решать, куда целиться. Ось ставит ПОТРЕБИТЕЛЬ,
+         знающий свою форму, — так это и записано у владельца. */
+      if (this.embedded()) {
+        var area = this.querySelector('#gbb_brief');
+        if (area) area.classList.add('gba-textarea--line');
+      }
+
       /* Ротация плейсхолдера — живой паттерн страницы. Стартуем со
-         случайной строки, как лайв, и идём по кругу. */
-      var brief = this.querySelector('#gbb_brief');
+         случайной строки, как лайв, и идём по кругу.
+         В ДРОВЕРЕ ЕЁ НЕТ: там плейсхолдер занят вопросом (Тон
+         10.09), а подсказка, которая меняется каждые четыре
+         секунды под курсором, — это подсказка, которую не дочитать.
+         Рост поля тоже не наш: его ведёт field-sizing владельца. */
+      var brief = this.embedded() ? null : this.querySelector('#gbb_brief');
       if (brief) {
         var i = Math.floor(Math.random() * PLACEHOLDERS.length);
         brief.setAttribute('placeholder', PLACEHOLDERS[i]);
