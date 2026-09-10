@@ -713,7 +713,7 @@
         {
           id: 'lab',
           label: 'Seven candidates on one composition',
-          desc: 'The bar and the strip of logos in one frame, with three ways for a logo tab to say which brand is chosen and four ways for the top navigation to answer the pointer, all of them out of the live luxury recon. The console switches the two axes and carries the three pairs to judge first, plus a row that takes the movement away.',
+          desc: 'The bar and the strip of logos in one frame, with three ways for a logo tab to say which brand is chosen and four ways for the top navigation to answer the pointer, all of them out of the live luxury recon. The strip keeps the live geometry cell for cell and opens on the live rule under the cell; the console switches the two axes, carries the pairs in one click and takes the movement away on request.',
           status: 'in-progress',
           href: 'live/tabs-menu-lab.html',
           ready: true,
