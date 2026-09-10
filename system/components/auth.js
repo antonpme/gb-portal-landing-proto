@@ -197,6 +197,30 @@
                                читаться без JS. Пробел невидим и
                                ничего не печатает.
 
+     ЧЕТВЁРТОЕ РАСШИРЕНИЕ: helper           gbppl-concierge-auth-2
+     (10.09). Правило Тона, дословно по смыслу: ЛЕЙБЛ ВСЕГДА
+     КОРОТКИЙ и говорит, ЧТО это за поле; объяснение живёт в
+     плейсхолдере или в ПОДСКАЗКЕ ПОД ПОЛЕМ. Подсказка под полем в
+     доме фактически была (тихая строка формы треда, .gbc-hint;
+     подсказка шага у авторизации, .gba-hint), но у САМОГО ПОЛЯ её
+     не было, и каждый, кому она была нужна, писал свою. Теперь
+     она параметр поля:
+
+       helper="…"   печатает <p class="gba-helper"> ПОСЛЕ контрола
+                    и связывает её с ним через aria-describedby,
+                    поэтому подсказку слышит и тот, кто поле не
+                    видит. Порядок в обёртке: лейбл, контрол,
+                    подсказка, ошибка — ошибка приходит последней
+                    (setError дописывает в конец .gba-field) и
+                    подсказку не гасит: одна говорит, что писать,
+                    другая — что не так с написанным.
+
+     Облик — из существующих прецедентов, не новый: 14/1.5 Zinc 500
+     с отступом 8, ровно .gbc-hint формы треда. Не 12/Zinc 400 от
+     .gba-hint: та подсказка стоит по центру под ШАГОМ, а не под
+     полем, и мелкий блеклый текст — то, на что у Рассела прямой
+     запрет («я не важен»). Провенанс и числа в auth.css.
+
      У textarea живая страница floating НЕ применяет: единственное
      поле формы со статичным лейблом над полем — комментарий
      (harvest label-comment-static, 11/12 600 ls .5 zinc-500). Так
@@ -214,9 +238,18 @@
        потребитель: он служебный (см. шапку), а видимую подсказку в
        покое несёт сам лейбл. */
     var placeholder = (floating && !isArea) ? ' ' : opts.placeholder;
+    /* Подсказка под полем (gbppl-concierge-auth-2): её id называется
+       от id контрола, потому что связь между ними держит
+       aria-describedby, а не соседство в разметке. */
+    var helperId = opts.helper ? esc(opts.id) + '-helper' : '';
+    var describe = helperId ? ' aria-describedby="' + helperId + '"' : '';
+    var helper = opts.helper
+      ? '<p class="gba-helper" id="' + helperId + '">' + esc(opts.helper) + '</p>'
+      : '';
     var common =
       ' name="' + esc(opts.name) + '" id="' + esc(opts.id) + '"' +
       ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' +
+      describe +
       ' placeholder="' + esc(placeholder) + '"';
     /* gbppl-oro-select-stepper-1: ЧЕТВЁРТОЕ РАСШИРЕНИЕ, type=select.
        Тот же аргумент, что у textarea (Тон-6, шаг 2): не второе
@@ -246,7 +279,7 @@
     }
     var control = isSelect
       ? '<select name="' + esc(opts.name) + '" id="' + esc(opts.id) + '"' +
-          ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' +
+          ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' + describe +
           ' class="valid browser-default gba-input">' + options + '</select>' + chev
       : isArea
       ? '<textarea' + common + ' rows="3" class="valid browser-default gba-input gba-textarea">' +
@@ -267,6 +300,7 @@
           eye +
           (inside ? label : '') +
         '</div>' +
+        helper +
       '</div>'
     );
   }
@@ -281,6 +315,7 @@
         type: this.getAttribute('type') || 'text',
         label: this.getAttribute('label') || 'Field',
         placeholder: this.getAttribute('placeholder') || '',
+        helper: this.getAttribute('helper') || '',
         autocomplete: this.getAttribute('autocomplete') || '',
         value: this.getAttribute('value') || '',
         wrapMod: this.getAttribute('wrap-mod') || '',
