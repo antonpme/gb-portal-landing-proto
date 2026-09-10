@@ -16,6 +16,8 @@
                zinc 800  #27272a   neutral, dark
                a light neutral: white plate, zinc 300 hairline,
                                 zinc 700 ink
+     skins     ONE in the mock, filled. A second, --quiet, was born
+               here on 10.09 for light surfaces; see its own block.
      twins     icon-only squares of the same six tones. NOT BUILT:
                the dashboard has no carrier for one, and a variant
                without a carrier is not born (law 0a.4). Documented
@@ -65,23 +67,63 @@
   vertical-align: baseline;
 }
 
-/* The six tones. Five are filled and speak in white; the sixth is
-   the quiet one and keeps its hairline. */
-.gb-badge--success { --gb-badge-bg: #65a30d; --gb-badge-ink: #ffffff; }  /* tailwind/lime/600  · Figma 3761-6514 */
-.gb-badge--info    { --gb-badge-bg: #06b6d4; --gb-badge-ink: #ffffff; }  /* tailwind/cyan/500 */
-.gb-badge--warning { --gb-badge-bg: #f59e0b; --gb-badge-ink: #ffffff; }  /* tailwind/amber/500 */
-.gb-badge--error   { --gb-badge-bg: #ef4444; --gb-badge-ink: #ffffff; }  /* tailwind/red/500 */
-.gb-badge--neutral { --gb-badge-bg: #27272a; --gb-badge-ink: #ffffff; }  /* tailwind/zinc/800 */
-.gb-badge--quiet {
-  --gb-badge-bg: var(--white);
-  --gb-badge-ink: var(--zinc-700);
-  border-color: var(--zinc-300);
-}
+/* ------------------------------------------------------------
+   THE SIX TONES. Each one carries THREE values now, because the
+   badge has two skins and they need different things from a tone:
+     --gb-badge-fill  the mock's flat colour (the 500/600 rung)
+     --gb-badge-on    what is legible ON that fill: white
+     --gb-badge-quiet the ink the same tone speaks in ON WHITE, and
+                      it is the alert canon's own 900 rung, so a
+                      strip and a badge of one meaning are one ink
+   ------------------------------------------------------------ */
+.gb-badge--success { --gb-badge-fill: #65a30d; --gb-badge-quiet: #365314; }  /* tailwind/lime 600 · Figma 3761-6514; quiet = lime 900 */
+.gb-badge--info    { --gb-badge-fill: #06b6d4; --gb-badge-quiet: #164e63; }  /* tailwind/cyan 500; quiet = cyan 900, the alert's info ink */
+.gb-badge--warning { --gb-badge-fill: #f59e0b; --gb-badge-quiet: #7c2d12; }  /* tailwind/amber 500; quiet = orange 900, the alert's warning ink */
+.gb-badge--error   { --gb-badge-fill: #ef4444; --gb-badge-quiet: #7f1d1d; }  /* tailwind/red 500; quiet = red 900, the alert's error ink */
+.gb-badge--neutral { --gb-badge-fill: #27272a; --gb-badge-quiet: var(--zinc-700); }  /* tailwind/zinc 800 */
 
-/* A badge without a tone is the quiet one: a bare plate with no
-   ground would read as a piece of the text it sits in. */
-.gb-badge:not([class*="gb-badge--"]) {
-  --gb-badge-bg: var(--white);
-  --gb-badge-ink: var(--zinc-700);
-  border-color: var(--zinc-300);
+/* A badge with no tone is the neutral one. */
+.gb-badge:not([class*="gb-badge--"]) { --gb-badge-fill: #27272a; --gb-badge-quiet: var(--zinc-700); }
+
+/* THE FILLED SKIN, the mock's own: the flat plate and white on it. */
+.gb-badge { --gb-badge-bg: var(--gb-badge-fill); --gb-badge-ink: #ffffff; }
+
+/* ------------------------------------------------------------
+   THE QUIET SKIN, --quiet (10.09).
+   ------------------------------------------------------------
+   A dot of the tone and the word in the tone's own dark ink, with
+   no ground at all. Born because a row of filled plates on white
+   cards shouts: five saturated chips down a column read as five
+   alarms, and only one of them is one.
+
+   WHERE EACH SKIN BELONGS, and this is the rule, not a preference:
+     QUIET on light plates and paper — cards, rows, tables, drawers.
+     FILLED on dark ground and over photographs, where a hairline
+       word would disappear and only a plate survives.
+
+   AND IT ANSWERS THE CONTRAST QUESTION the filled skin left open:
+   white on lime 600 measured 3.0:1 and on amber 500 2.0:1, both
+   under AA for 12px. The quiet skin speaks in the 900 rung on
+   white, which clears AA with room to spare, so the two tones that
+   could not be trusted filled are safe here. The filled skin keeps
+   the mock's values untouched for the surfaces it is for.
+   ------------------------------------------------------------ */
+.gb-badge--quiet {
+  --gb-badge-bg: transparent;
+  --gb-badge-ink: var(--gb-badge-quiet);
+  padding-inline: 0;
+  border-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+/* The dot is the tone at full voice: the colour still carries the
+   meaning, it just stops being the size of a plate. */
+.gb-badge--quiet::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;                          /* NO TOKEN: the smallest mark that still reads as a colour, a quarter of the 24 row */
+  height: 6px;
+  border-radius: var(--radius-circle);
+  background: var(--gb-badge-fill);
 }

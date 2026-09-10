@@ -461,7 +461,13 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
    containers, the way booking.css measures its compact layout. */
 .gbppd-cols {
   display: grid;
-  gap: var(--space-24);
+  /* THE SAME 2:1 LAW, LYING DOWN (10.09). These three columns are
+     SECTIONS standing side by side, not widgets inside one, so the
+     gutter between them is twice the gutter inside a section: 32
+     between the blocks, 16 between the tiles of the metrics row and
+     between the doors of Quick actions. The rail keeps the same 32,
+     because the rail and the board are two sections too. */
+  gap: var(--space-32);
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
   margin-top: var(--space-32);
@@ -639,10 +645,15 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
    that empties gives its width back to its neighbours, and auto
    tracks are what make that possible), and a working behaviour beats
    eight pixels of comfort. Said out loud rather than quietly traded. */
+/* THE ENTITY CARD, SECOND PASS (10.09, «лениво» and it was): the
+   preview stands in a frame like an object on a shelf, the status
+   speaks in the quiet skin of the badge, how far it has got is a
+   real element rather than a sentence, and the right edge promises
+   the drawer with a chevron. One skeleton, two skins, as before. */
 .gbppd-row {
   display: grid;
-  grid-template-columns: var(--space-64) minmax(0, 1fr);
-  align-items: start;
+  grid-template-columns: 72px minmax(0, 1fr) var(--space-16);   /* 72 = the frame; NO TOKEN, measured by eye against the 64 rung: 64 left the object cramped inside its own hairline */
+  align-items: center;
   gap: var(--space-8) var(--space-16);
   padding: var(--space-16);
   text-decoration: none;
@@ -658,12 +669,29 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
 .gbppd-row, .gbppd-camp { scroll-margin-top: calc(var(--header-h) + var(--space-16)); }
 /* No third cell any more: the status rides on the name line as a
    badge, so the row is a thumb and a pair of lines at every width. */
-.gbppd-thumb {
-  width: var(--space-64);
-  height: var(--space-64);
+/* THE FRAME. A photograph dropped on a white card is a picture; the
+   same photograph on a quiet ground inside a hairline is an OBJECT,
+   which is what a gift is. Zinc 50 ground, Zinc 200 hairline, a
+   fixed 72 square, and the thing itself centred inside with room to
+   breathe rather than cropped to the edges. */
+.gbppd-thumbwrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  padding: var(--space-8);
+  border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
-  background: var(--zinc-100);
-  object-fit: cover;
+  background: var(--zinc-50);
+  overflow: hidden;
+}
+.gbppd-thumb {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
 }
 .gbppd-row__what {
@@ -676,7 +704,7 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
 }
 .gbppd-row__who {
   display: block;
-  margin: 2px 0 0;                  /* a quarter of --space-8: two lines of ONE thought */
+  margin: var(--space-8) 0 0;       /* the rung: the context is its own line of the ladder, not a whisper under the name */
   font-size: 14px;
   line-height: 1.5;
   color: var(--zinc-500);
@@ -684,12 +712,53 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
 /* How far it has got. The working voice, one rung quieter than the
    name, and it never becomes a badge: a badge is a state, a fraction
    is a measurement. */
+/* HOW FAR IT HAS GOT, AS AN ELEMENT. A 4px track on the grey ramp
+   with the ink filling it, and the words under it. The stopped
+   campaign fills in the alert's error tone, so the one red line on
+   the page is the one thing that is not moving. */
+.gbppd-far { display: block; margin-top: var(--space-8); }
+.gbppd-far__track {
+  display: block;
+  height: 4px;                       /* NO TOKEN: half of --space-8, the thinnest bar that still reads as a bar */
+  border-radius: var(--radius-pill);
+  background: var(--zinc-100);
+  overflow: hidden;
+}
+.gbppd-far__fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--zinc-900);
+}
+.gbppd-far--stopped .gbppd-far__fill { background: #ef4444; }   /* the badge's error fill, the same red the strip and the tile use */
 .gbppd-row__far {
   display: block;
   margin-top: var(--space-8);
   font-size: 14px;
   line-height: 1.5;
   color: var(--zinc-700);
+}
+/* THE PROMISE OF THE DOOR. A quiet chevron at the right edge, on the
+   axis of the row: the card opens an overview, and the eye should
+   know that before the hand tries. */
+.gbppd-row__go {
+  display: grid;
+  place-items: center;
+  color: var(--zinc-400);
+}
+.gbppd-row:hover .gbppd-row__go { color: var(--zinc-700); }
+
+/* AND IN A NARROW COLUMN THE ROW GIVES BACK WHAT IT CANNOT AFFORD.
+   Measured at 1280: the board column is 277, and a 72 frame plus a
+   chevron leave 125px of text, which breaks «Coffee Lover Set» over
+   two lines and pushes the badge onto the second. So under 340 the
+   frame steps down to 56 and the chevron goes: the row still opens,
+   the whole plate is the door, and the name gets its line back
+   (173px). Above 340 both come back. Squinted at, not derived. */
+@container col (max-width: 339px) {
+  .gbppd-row { grid-template-columns: 56px minmax(0, 1fr); }
+  .gbppd-thumbwrap { width: 56px; height: 56px; padding: 4px; }   /* 4 = half the rung, the frame keeps its inset proportion */
+  .gbppd-row__go { display: none; }
 }
 
 /* THE STATUS BADGE IS A SYSTEM ORGANISM NOW (gbppl-portal-dashboard-4).
@@ -749,8 +818,8 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
 .gbppd-thumbwrap { position: relative; }
 .gbppd-thumbwrap .gbppd-more-count {
   position: absolute;
-  right: 2px;
-  bottom: 2px;
+  right: 0;
+  bottom: 0;
   padding: 0 var(--space-8);
   border-radius: var(--radius);
   background: rgb(9 9 11 / .72);      /* NO TOKEN: the scrim of the house drawer, reused so a chip on a photograph is legible on any photograph */
@@ -1657,28 +1726,31 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
               <a class="gbppd-row" id="ord-coffee" href="#ord-coffee" data-gbppd-order="ord-coffee">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1094-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Coffee Lover Set<span class="gb-badge gb-badge--info">On the way</span></span>
+                  <span class="gbppd-row__what">Coffee Lover Set<span class="gb-badge gb-badge--quiet gb-badge--info">On the way</span></span>
                   <span class="gbppd-row__who">Direct order</span>
-                  <span class="gbppd-row__far">18 of 24 delivered</span>
+                  <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 75%"></span></span><span class="gbppd-row__far">18 of 24 delivered</span></span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <a class="gbppd-row" id="ord-amalfi" href="#ord-amalfi" data-gbppd-order="ord-amalfi">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Taste of Amalfi<span class="gb-badge gb-badge--info">On the way</span></span>
+                  <span class="gbppd-row__what">Taste of Amalfi<span class="gb-badge gb-badge--quiet gb-badge--info">On the way</span></span>
                   <span class="gbppd-row__who">New Hire Welcome</span>
-                  <span class="gbppd-row__far">5 of 12 delivered</span>
+                  <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 42%"></span></span><span class="gbppd-row__far">5 of 12 delivered</span></span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <a class="gbppd-row" id="ord-holiday" href="#camp-holiday" data-gbppd-order="ord-holiday">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1118-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Winter Reserve Box<span class="gb-badge gb-badge--error">On hold</span></span>
+                  <span class="gbppd-row__what">Winter Reserve Box<span class="gb-badge gb-badge--quiet gb-badge--error">On hold</span></span>
                   <span class="gbppd-row__who">Holiday Client Gifts</span>
-                  <span class="gbppd-row__far">Nothing shipped yet</span>
+                  <span class="gbppd-far gbppd-far--stopped"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 2%"></span></span><span class="gbppd-row__far">Nothing shipped yet</span></span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
             </div>
@@ -1691,19 +1763,21 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
               <a class="gbppd-row" id="ord-founders" href="#ord-founders" data-gbppd-order="ord-founders">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1106-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Founders Day Box<span class="gb-badge gb-badge--success">Delivered</span></span>
+                  <span class="gbppd-row__what">Founders Day Box<span class="gb-badge gb-badge--quiet gb-badge--success">Delivered</span></span>
                   <span class="gbppd-row__who">Direct order &middot; 22 August</span>
-                  <span class="gbppd-row__far">All 30 delivered</span>
+                  <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 100%"></span></span><span class="gbppd-row__far">All 30 delivered</span></span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <a class="gbppd-row" id="ord-thankyou" href="#ord-thankyou" data-gbppd-order="ord-thankyou">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1112-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Client Thank You<span class="gb-badge gb-badge--success">Delivered</span></span>
+                  <span class="gbppd-row__what">Client Thank You<span class="gb-badge gb-badge--quiet gb-badge--success">Delivered</span></span>
                   <span class="gbppd-row__who">Direct order &middot; 2 August</span>
-                  <span class="gbppd-row__far">All 15 delivered</span>
+                  <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 100%"></span></span><span class="gbppd-row__far">All 15 delivered</span></span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
             </div>
@@ -1718,6 +1792,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-row__what">Famous Caymus Collection</span>
                   <span class="gbppd-row__who">$130 - $195</span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
               <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy"></span>
@@ -1725,6 +1800,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-row__what">Taste of Amalfi</span>
                   <span class="gbppd-row__who">$200</span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
               <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1094-main.webp" alt="" loading="lazy"></span>
@@ -1732,6 +1808,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-row__what">Beats Solo Buds</span>
                   <span class="gbppd-row__who">$150</span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
               <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1106-main.webp" alt="" loading="lazy"></span>
@@ -1739,6 +1816,7 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-row__what">Stags' Leap Wine Night and Day</span>
                   <span class="gbppd-row__who">$195 - $290</span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <p class="gbppd-none" hidden>Nothing saved yet. <a href="catalog/index.html">Explore gifts</a> and tap the heart on anything you like.</p>
@@ -1774,10 +1852,11 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1118-main.webp" alt="" loading="lazy"></span>
                 <span>
                   <span class="gb-eyebrow gbppd-row__type">Fulfillment</span>
-                  <span class="gbppd-row__what">Holiday Client Gifts<span class="gb-badge gb-badge--error">On hold</span></span>
+                  <span class="gbppd-row__what">Holiday Client Gifts<span class="gb-badge gb-badge--quiet gb-badge--error">On hold</span></span>
                   <span class="gbppd-row__who">Winter Reserve Box &middot; 48 recipients</span>
-                  <span class="gbppd-row__far">Nothing shipped yet</span>
+                  <span class="gbppd-far gbppd-far--stopped"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 2%"></span></span><span class="gbppd-row__far">Nothing shipped yet</span></span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <!-- THE EMAIL CAMPAIGN, AND IT IS THE MULTI GIFT ONE.
@@ -1794,10 +1873,11 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy"><span class="gbppd-more-count" aria-hidden="true">+2</span></span>
                 <span>
                   <span class="gb-eyebrow gbppd-row__type">Email</span>
-                  <span class="gbppd-row__what">New Hire Welcome<span class="gb-badge gb-badge--info">Delivering</span></span>
+                  <span class="gbppd-row__what">New Hire Welcome<span class="gb-badge gb-badge--quiet gb-badge--info">Delivering</span></span>
                   <span class="gbppd-row__who">3 gift options &middot; 12 recipients</span>
-                  <span class="gbppd-row__far">5 of 12 delivered</span>
+                  <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 42%"></span></span><span class="gbppd-row__far">5 of 12 delivered</span></span>
                 </span>
+                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <p class="gbppd-none" hidden>No campaign of this type yet. <a href="#">Create a campaign</a> and it will stand here.</p>
@@ -2207,7 +2287,15 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
     return '<div class="gbppd-cz__row">' +
            '<span class="gbppd-cz__name">' + name +
            (note ? '<span class="gbppd-cz__note">' + note + '</span>' : '') + '</span>' +
-           '<div class="gb-toggle gb-toggle--small" role="radiogroup"' +
+           /* THE SMALLEST RUNG THE HOUSE HAS, and this drawer is its
+              FIRST CARRIER: --xsmall was drawn on 02.09 and has been
+              waiting for a control with a reason. A drawer of
+              thirteen switches is that reason; --small made every
+              row look like a decision. Semantically Ton wants a
+              Switch, and the house has none yet: the report carries
+              the request and the Figma source it should be born
+              from. */
+           '<div class="gb-toggle gb-toggle--xsmall" role="radiogroup"' +
            ' ' + key + '="' + id + '" aria-label="' + name + ' on the dashboard">' +
            '<button class="gb-toggle__item' + (on ? ' is-on' : '') + '" type="button" role="radio"' +
            (locked ? ' disabled' : '') +
