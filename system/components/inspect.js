@@ -440,6 +440,9 @@
        the купчая down, one prefix like every other row. */
     [/^gb-inputnumber/, 'system/components/inputnumber.css'],
     [/^gb-icon/, 'system/components/icon.css'],
+    /* gbppl-tooltip-1. One prefix for both halves: the plate and
+       the floating look of it. */
+    [/^gb-tip/, 'system/components/tooltip.css'],
     [/^gbsp-/, 'system/components/studio-panel.css'],
     [/^gbdoc-/, 'system/components/docs.css'],
     [/^gbd-/, 'system/components/drawer.css'],
@@ -658,6 +661,16 @@
     { sel: '.gba-error', name: 'Field error' },
     { sel: '.gba-submit', name: 'Form submit' },
     { sel: '.gba-form', name: 'Form' },
+
+    /* gbppl-tooltip-1. One row, and it names the plate wherever it
+       is met: floating over a glyph, or standing in a document as a
+       specimen of itself. */
+    { sel: '.gb-tip', name: 'Tooltip', kind: 'tooltip', oro: 'tooltip.html#tooltip',
+      detail: function (el) {
+        return el.classList.contains('gb-tip--float')
+          ? (el.getAttribute('data-side') || 'floating')
+          : 'the plate';
+      } },
 
     { sel: '.gb-eyebrow', name: 'Eyebrow', oro: 'eyebrow.html#eyebrow' },
     { sel: '.gbh-count', name: 'Count badge', oro: 'badge.html#badge' },
@@ -1426,6 +1439,68 @@
             return c.indexOf('gb-icon') === 0;
           }))) +
           block('Markup', snippet(code));
+      }
+    },
+
+    /* ---------- gbppl-tooltip-1: the tooltip plate ----------
+       A tooltip is only on screen while a pointer is on its
+       carrier, and a pointer that has gone to click a properties
+       door is a pointer that has left. So what stands on the
+       plinth is THE PLATE — the same .gb-tip the floating one is
+       made of, standing in the flow of the document — and the
+       drawer says which of the two it is looking at rather than
+       pretending they are one thing. */
+    tooltip: {
+      name: 'Tooltip',
+      owner: 'system/components/tooltip.css',
+      find: function (slot) { return slot.querySelector('.gb-tip'); },
+
+      describe: function (el) {
+        return {
+          float: el.classList.contains('gb-tip--float'),
+          side: el.getAttribute('data-side') || '',
+          asked: el.getAttribute('data-asked') || ''
+        };
+      },
+
+      title: function (el, d) {
+        if (!d.float) return 'the plate, standing in the document';
+        return d.side
+          ? 'floating, ' + d.side + (d.asked && d.asked !== d.side ? ', flipped from ' + d.asked : '')
+          : 'floating';
+      },
+
+      body: function (el, d) {
+        var cs = getComputedStyle(el);
+        var r = el.getBoundingClientRect();
+        var rowsList = [
+          row('Plate', px(r.width) + ' by ' + px(r.height), null,
+              'as wide as its word: a tooltip is one line'),
+          row('Ground', cs.backgroundColor, ['--zinc-900'], null),
+          row('Ink', cs.color, ['--white'], null),
+          row('Radius', px(cs.borderTopLeftRadius), ['--radius'], null),
+          row('Padding', px(cs.paddingTop) + ' and ' + px(cs.paddingLeft), ['--space-8'],
+              'the vertical half is off the scale, and says so in the stylesheet'),
+          row('Word', px(cs.fontSize) + ' / ' + cs.fontWeight + ' / ' + px(cs.lineHeight), null,
+              'one rung of tracking off the chip role; a question with Ton'),
+          row('Wrapping', cs.whiteSpace, null, 'one line, by construction'),
+          row('Answers the pointer', cs.pointerEvents === 'none' ? 'no' : 'yes', null,
+              'a plate is never a target'),
+          row('Side', d.float ? (d.side || 'not placed yet') : 'in the flow of the document', null,
+              d.float ? 'asked for ' + (d.asked || 'bottom') : 'this one is the plate, not the tooltip'),
+          row('Name for the reader', el.getAttribute('aria-hidden') === 'true'
+              ? 'hidden: the carrier\'s aria-label is the reader\'s copy'
+              : 'announced, and it should not be', null,
+              'the plate is for the eye, the label for the reader')
+        ];
+        return block('Properties, measured on this specimen', table(rowsList)) +
+          block('Modifiers', chips(String(el.className).split(/\s+/).filter(function (c) {
+            return c.indexOf('gb-tip') === 0;
+          }))) +
+          block('Markup', snippet(
+            '<button class="gb-btn gb-btn--icon" type="button"\n' +
+            '        data-gb-tip="End chat" data-gb-tip-place="bottom"\n' +
+            '        aria-label="End the chat">...</button>'));
       }
     },
 

@@ -1,0 +1,191 @@
+/* ============================================================
+   gbppl-tooltip-1 — THE TOOLTIP, AND THE PLATE IT IS MADE OF
+   ------------------------------------------------------------
+   Ton, 09.09: «каждая иконка в шапке должна показывать подсказку
+   при наведении», and, on the language of feedback as a whole,
+   «подсказки: тултипы и подсказки при наведении. Этого всего у нас
+   сейчас нет, нужно описать». The rules were written down first,
+   on system/oro/feedback.html, section Hints; this file is those
+   rules built, and it is the answer to the line the same page
+   keeps in its queue:
+
+     «Tooltip — the concierge plate, lifted as it stands: 500ms in,
+      instant out, Zinc 900, 12px 500, one line, an aria-label twin
+      required on the carrier. What it needs before it can be a
+      component: a real flip and clamp at the window edge, which
+      the pseudo element cannot do, and a decision about touch.»
+
+   BOTH OF THOSE ARE SETTLED HERE. The flip is arithmetic and it
+   lives in tooltip.js; the decision about touch is that there is
+   no tooltip on touch at all, and the reason is written in the
+   Keyboard and touch section of the showcase and again below.
+
+   WHAT WAS LIFTED, AND WHAT WAS NOT. The plate is the concierge's,
+   value for value: Zinc 900, white, --radius, 12 / 500, one line,
+   4 of vertical padding and 8 of horizontal, arriving on --mo-micro
+   after --mo-medium of patience and leaving without any. What is
+   NOT lifted is the pseudo element it was drawn with: a ::after
+   lives inside its carrier, so it cannot leave an overflow, cannot
+   be measured before it is shown, and cannot therefore be flipped
+   or held off the edge of the window. The organism is one plate,
+   moved and re-aimed by a script, and the carrier keeps nothing but
+   an attribute.
+
+   THIS FILE IS TWO THINGS, AND THE SPLIT IS THE WHOLE STRUCTURE.
+     .gb-tip           THE PLATE. Ink, radius, type, padding, one
+                       line. It has no position of its own, so a
+                       page can stand one in the flow of a document
+                       — which is exactly what the showcase and the
+                       registry tile do, and why neither of them has
+                       to draw a picture of a tooltip.
+     .gb-tip--float    THE TOOLTIP. The same plate, fixed to the
+                       window at coordinates tooltip.js measures,
+                       invisible until .is-in.
+
+   TON-7: NO REDUCED MOTION BRANCH. The house motion plays for
+   everybody; the only movement here is a 160ms fade of opacity,
+   which is the micro-courtesy end of the ladder to begin with.
+
+   NO TOKEN, three of them, each argued:
+     4px       the vertical padding, half of --space-8. The same
+               half the badge on a door and the concierge plate
+               spend, and for the same reason: the scale starts
+               above the height this plate wants.
+     z-index   the system has no z-index scale (comments.css says
+               the same thing at its own layer). 90 is above every
+               layer the house declares — header 31, the catalog's
+               sticky bar 32, the instrument 55, the pins 56, the
+               device stage 58, the console 60, the drawer 80 and
+               its panel 81 — because a glyph that carries a tip can
+               stand in any one of them. It is only ever consulted
+               where the browser has no top layer: see tooltip.js,
+               which puts the plate in the top layer with the
+               popover API wherever that exists and never has to
+               argue about a number at all.
+     the wait  --mo-medium spent as PATIENCE rather than as
+               movement. It is the concierge's own 500 and it is
+               read from the token so the two cannot drift, but a
+               wait is not a duration of motion, and the house has
+               no ladder of waits (1400, 1600, 2400 and this 500 are
+               all loose). Named in the queue on the Feedback page;
+               a rung of a dwell ladder is Ton's to give.
+
+   ONE OPEN QUESTION, AND IT IS VISIBLE ON THE SHOWCASE. The plate
+   carries no shadow, because the concierge's did not. Over a dark
+   photograph or the black hero of the home page a Zinc 900 plate
+   loses its edge, which is the argument that gave .gbc-bubble its
+   --shadow-panel. The Dark ground of the playground shows it
+   happening rather than describing it. Adding the shadow is one
+   line and a decision, and the decision is not this wave's.
+   ============================================================ */
+
+/* ============================================================
+   THE PLATE
+   ------------------------------------------------------------
+   THE WORD IS 12 / 500, and it is one rung of tracking off a role
+   the register already has. `chip` in system/type-scale.js is
+   12 / 500 / 0.5px; the concierge plate renders 12 / 500 / 0 with a
+   1.5 line, and that is what is kept here, because the queue line
+   on the Feedback page promised the plate as it stands and 0.5px of
+   tracking is a change of the drawing, not a repair of it. Naming
+   this a role of its own, or moving it onto `chip`, is a question
+   standing with Ton and it is printed on the showcase.
+
+   ONE LINE, AND THE CLAMP THAT PROVES IT. white-space: nowrap is
+   the rule made mechanical: a tooltip that needs two lines is a
+   fact that belongs on the page. The max-width is the window less
+   the two margins the script holds it off the edge by, so a plate
+   whose text broke the rule is cut with an ellipsis instead of
+   running out of the screen. An ellipsis on a tooltip is a defect
+   and reads as one; that is the point of it.
+   ============================================================ */
+.gb-tip {
+  box-sizing: border-box;
+  display: inline-block;
+  max-width: calc(100vw - var(--space-16) * 2);
+  padding: 4px var(--space-8);   /* NO TOKEN on the 4: see the header */
+  border-radius: var(--radius);
+  background: var(--zinc-900);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   THE TOOLTIP: THE SAME PLATE, AIMED AT A CARRIER
+   ------------------------------------------------------------
+   position: fixed because the coordinates come from
+   getBoundingClientRect, which is the viewport's frame of
+   reference; anything else would need the page's scroll added back
+   in and would then be wrong the moment the page scrolled under it.
+
+   pointer-events: none, always. The plate is never a target: it
+   cannot be hovered off its carrier, cannot swallow the click the
+   carrier exists for, and cannot cover the glyph it is naming
+   (which is also why the script never places it ON the carrier,
+   only a gap away from it).
+
+   inset: auto and the two zeroes are the reset for the popover API:
+   a [popover] element in the top layer starts centred by the user
+   agent stylesheet, with a border, a padding and a background of
+   its own, and every one of those has to be taken off before the
+   plate is the plate again.
+   ============================================================ */
+.gb-tip--float {
+  position: fixed;
+  inset: auto;
+  top: 0;
+  left: 0;
+  margin: 0;
+  border: 0;
+  z-index: 90;                   /* NO TOKEN: see the header */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--mo-micro) var(--mo-move);
+}
+.gb-tip--float.is-in { opacity: 1; }
+
+/* The top layer, where the browser has one. Nothing about the plate
+   changes; what changes is that no z-index in any document can put
+   anything over it, and no overflow can cut it. */
+.gb-tip--float:popover-open {
+  display: block;
+  overflow: hidden;              /* the UA sheet does not set it, the ellipsis needs it */
+}
+
+/* ============================================================
+   TOUCH HAS NO HOVER, AND THIS IS THE SECOND HALF OF THE ANSWER
+   ------------------------------------------------------------
+   tooltip.js does not arm a pointer that cannot hover, so on a
+   phone the plate is never built. This rule is the belt to that
+   brace: a plate that reached a touch screen by any other road —
+   a page that wrote one into its own markup, a device that reports
+   two pointers and then uses the coarse one — does not stand there
+   flickering under a thumb.
+
+   The rule of the house behind both: a hint is a SECOND way of
+   knowing something and never the only one. The name of a glyph
+   lives in its aria-label, which is on the carrier whatever the
+   pointer is, and the phone is the test of it — if the interface
+   stops making sense with every hint removed, the hint was
+   carrying the work.
+
+   A long press is the other industry answer (Material draws one;
+   Apple, Polaris, Carbon and Atlassian all decline). It is a NEW
+   GESTURE, and law 0a.4 says a new interaction pattern arrives on
+   Ton's word and not on a wave's. So it is asked for, not taken.
+   ============================================================ */
+@media (hover: none) {
+  /* Both halves, because the top layer rule above is the more
+     specific one and would otherwise win inside this query. */
+  .gb-tip--float,
+  .gb-tip--float:popover-open { display: none; }
+}
