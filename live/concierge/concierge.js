@@ -68,6 +68,23 @@
      riseChat hid the plate without reading it, so an answer that
        arrived while the chat was down stayed marked unread and the
        next minimise quoted a line the guest had already seen.
+
+   gbppl-tooltip-1 (10.09). THE HINT ON A GLYPH IS AN ORGANISM NOW,
+   and this file stops owning one. The recipe drawn here on 09.09
+   said out loud that it was a candidate for the system rather than
+   a thing that had quietly appeared; it was taken, and what came
+   back is system/components/tooltip.css and tooltip.js, with the
+   plate lifted value for value. Four carriers change one attribute
+   name, `data-gbhc-tip` becomes `data-gb-tip`, every aria-label is
+   untouched, and fifty lines of pseudo element leave
+   concierge.css.
+   ONE SPECIAL CASE DIES WITH THEM, and it is the point of the whole
+   exchange: the plate on the pill used to be told BY HAND to stand
+   above its glyph, because a plate below it would have fallen off
+   the bottom of the window. The organism is told nothing. It asks
+   for the side it always asks for, measures, finds no room, and
+   flips. A rule that had to be written for one button is now
+   arithmetic that is true for every button.
    ============================================================ */
 (function () {
   'use strict';
@@ -89,7 +106,7 @@
         '<span class="gbhc-pill__name" id="gbhcPillName">Live chat</span>' +
         '<span class="gbhc-pill__last"><span id="gbhcPillLast"></span></span>' +
       '</button>' +
-      '<button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbhc-pill__end" type="button" id="gbhcPillEnd" data-gbhc-tip="End chat" aria-label="End the chat"></button>' +
+      '<button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbhc-pill__end" type="button" id="gbhcPillEnd" data-gb-tip="End chat" aria-label="End the chat"></button>' +
     '</div>' +
     '<div class="gbhc-chat" id="gbhcChat" role="dialog" aria-label="Chat" hidden>' +
       /* THE HEAD IS THE DRAWER ORGANISM'S HEAD, in grammar and in
@@ -113,14 +130,14 @@
          more items in a list of five. And the cross is outermost:
          the destructive one sits where nothing follows it. */
       '<div class="gbhc-chat__head">' +
-        '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcBack" data-gbhc-tip="Back to options" aria-label="Back to the options"></button>' +
+        '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcBack" data-gb-tip="Back to options" aria-label="Back to the options"></button>' +
         '<h2 class="gbhc-chat__title">' +
           '<span class="gbhc-chat__name" id="gbhcName">Live chat</span>' +
           '<span class="gbhc-dot gbhc-chat__dot" id="gbhcPresence" aria-hidden="true"></span>' +
         '</h2>' +
         '<div class="gbhc-chat__slots">' +
-          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcMin" data-gbhc-tip="Minimize" aria-label="Minimize the chat"></button>' +
-          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcEnd" data-gbhc-tip="End chat" aria-label="End the chat"></button>' +
+          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcMin" data-gb-tip="Minimize" aria-label="Minimize the chat"></button>' +
+          '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot" type="button" id="gbhcEnd" data-gb-tip="End chat" aria-label="End the chat"></button>' +
         '</div>' +
       '</div>' +
       '<div class="gbhc-log" id="gbhcLog" aria-live="polite"></div>' +
