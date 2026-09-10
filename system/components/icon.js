@@ -195,6 +195,16 @@
    butt caps and its mitre joins are left behind: the record gives
    one weight and one pair of ends to everything in it.
    Thirty four entries became thirty eight.
+
+   THREE MORE OFF THE SAME SET (gbppl-portal-dashboard-1, 10.09):
+   `bell`, `credit-card` and `heart`, for the first sketch of the
+   portal dashboard. All three are Nucleo files in
+   assets\nucleo-full, and all three are adapted by the arithmetic
+   `service-bell` established above: halve the WRITTEN coordinate,
+   which is (w + 0.5) / 2 recentred by the quarter pixel the group's
+   translate puts in. Nothing is drawn by eye and nothing is
+   invented. The bell in particular is NOT the concierge's bell and
+   is not a redraw of it: see its own note at the entry.
    ============================================================ */
 (function () {
   'use strict';
@@ -252,6 +262,30 @@
       body: '<rect x="5.5" y="2.5" width="13" height="19" rx="1.5"/><path d="M10 18.5h4"/>',
       from: 'studio-panel.js: the 768 preset of the console',
       stroke: 1.5
+    },
+    /* THE OTHER BELL (gbppl-portal-dashboard-1, 10.09). The concierge
+       took `service-bell`, the cloche on its tray, on 08.09; the
+       portal's notification bell is a DIFFERENT OBJECT and gets its
+       own name and its own address:
+       assets\nucleo-full\48-bell.svg, the same Nucleo set, adapted by
+       the same arithmetic as its neighbour (halve the written
+       coordinate: the source group carries translate(0.5 0.5), so
+       (w + 0.5) / 2 recentred by a quarter pixel is exactly w / 2).
+       Two strokes: the dome on its shoulder line, and the clapper arc
+       under it. The source's stroke 1, butt caps and mitre joins are
+       left behind, as the record leaves them behind for everything.
+
+       TWO BELLS IN ONE BAR IS AN OPEN QUESTION, and it is Ton's, not
+       this file's: the concept (studio\docs\PORTAL-DASHBOARD-CONCEPT.md,
+       question 1) asks whether notifications take the classic bell or
+       the concierge moves to another glyph. The record can hold both
+       drawings while the question is open; a bar that shows both at
+       once is a decision, and it is not made here. */
+    'bell': {
+      body: '<path d="M21 18.5V17C21 17 18.5 15 18.5 10V8C18.5 4.41 15.59 1.5 12 1.5C8.41 1.5 5.5 4.41 5.5 8V10C5.5 15 3 17 3 17V18.5C9 19.83 15 19.83 21 18.5Z"/>' +
+            '<path d="M9.53 19.43C9.5 19.61 9.5 19.8 9.5 20C9.5 21.38 10.62 22.5 12 22.5C13.38 22.5 14.5 21.38 14.5 20C14.5 19.8 14.47 19.61 14.43 19.43"/>',
+      from: 'assets/nucleo-full/48-bell.svg (Nucleo, the house set): the notification bell of the portal bar',
+      stroke: 1
     },
     /* ---- THE FOUR OF THE CONCIERGE (gbppl-concierge-1, 09.09) ----
        The three doors first, all three out of live\portal.html. */
@@ -333,6 +367,19 @@
       from: 'system/oro/icons.html: the copy button of a glyph row',
       stroke: 1.5
     },
+    /* THE CARD (gbppl-portal-dashboard-1, 10.09). The house had no
+       glyph for a payment method: the checkout says the word and the
+       portal's Payment methods door had nothing to wear. Address:
+       assets\nucleo-full\48-credit-card.svg, halved off the 48 grid
+       the same way as `bell` above. Three strokes and a body: the
+       magnetic band, the line under it, the short number group at the
+       foot, and the rounded plate they sit on. */
+    'credit-card': {
+      body: '<path d="M1.5 7H22.5"/><path d="M1.5 10.5H22.5"/><path d="M5.5 16.5H8"/>' +
+            '<path d="M4 20.5H20C21.38 20.5 22.5 19.38 22.5 18V6C22.5 4.62 21.38 3.5 20 3.5H4C2.62 3.5 1.5 4.62 1.5 6V18C1.5 19.38 2.62 20.5 4 20.5Z"/>',
+      from: 'assets/nucleo-full/48-credit-card.svg (Nucleo, the house set): the Payment methods door of the portal dashboard',
+      stroke: 1
+    },
     /* gbppl-v5-import-polish-1, 07.09. The tray with the arrow, and
        the arrow is the whole difference between the two entries: down
        is «give me the blank file», up is «here is my filled one». Both
@@ -382,6 +429,20 @@
             '<rect x="13.4" y="13.4" width="7.2" height="7.2" rx="1.6"/>',
       from: 'DECLARED: the Design System section of the console navigation (panel 2.0 mockup, Ton 03.09)',
       stroke: 1.5
+    },
+    /* THE HEART (gbppl-portal-dashboard-1, 10.09). Favourites exist on
+       the live category page inside the vendored v1 bundle, which
+       draws its own; the house record had none, and the shelf of
+       favourites on the portal dashboard is the first thing outside
+       that bundle to ask for one. Address:
+       assets\nucleo-full\48-heart.svg, halved off the 48 grid like
+       `bell` and `credit-card`. One stroke, outline only: a filled
+       heart is a STATE (saved) and states are the consumer's business,
+       not the record's. */
+    'heart': {
+      body: '<path d="M12 22 15.35 19.55C16.54 18.69 20.53 15.56 22.09 11.59C23.27 8.56 21.83 5.13 18.87 3.92C16.34 2.89 13.51 3.82 12 6C10.49 3.82 7.66 2.89 5.13 3.92C2.17 5.13 0.73 8.56 1.91 11.59C3.47 15.56 7.46 18.69 8.65 19.55L12 22Z"/>',
+      from: 'assets/nucleo-full/48-heart.svg (Nucleo, the house set): the saved mark of the favourites shelf',
+      stroke: 1
     },
     'home': {
       body: '<path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.8 9.4V20h12.4V9.4"/>',

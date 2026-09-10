@@ -629,6 +629,36 @@
       variants: []
     },
 
+    dashboard: {
+      /* gbppl-portal-dashboard-1, 10.09. The first screen the portal
+         does not have: a place that answers «what is happening, and
+         does anything need me». Words before code, and the words are
+         studio\docs\PORTAL-DASHBOARD-CONCEPT.md, approved as the
+         basis of the sketch.
+
+         WHAT `live` POINTS AT, and why it is not a lie. There is no
+         live dashboard to compare against: today the portal opens on
+         My Gifts, and Julia's case (09.09) is that a stopped campaign
+         is visible there only as a tinted row in a table. So live is
+         live\portal.html, the screen this one is measured against and
+         the screen a stopped campaign hides in today. */
+      label: 'Portal dashboard',
+      live: 'live/portal.html',
+      variants: [
+        {
+          id: 'sketch',
+          label: 'First sketch of the dashboard',
+          desc: 'The screen the portal opens on after signing in, sketched to the approved concept: what needs you, what is moving, what happened, what you saved, and where to go next. The top of it is the case that started this, a campaign on hold because a payment failed, said as a card with one button instead of a tinted row in a table three screens down. A bell in the bar carries the same two problems and the last events into a drawer. Fixed assembly: choosing your own widgets, filter tabs and notification settings are named on the page as phase 2 and not drawn.',
+          status: 'in-progress',
+          href: 'live/portal-dashboard.html',
+          ready: true,
+          tags: ['portal', 'flow', 'header'],
+          created: '2026-09-10',
+          updated: '2026-09-10'
+        }
+      ]
+    },
+
     booking: {
       label: 'Book a meeting form',
       live: 'live/book-a-meeting.html',

@@ -736,6 +736,10 @@
     'live/catalog/index.html':    'Category page',
     'live/checkout.html':         'Checkout page',
     'live/portal.html':           'Portal page',
+    /* gbppl-portal-dashboard-1, 10.09: the same word the registry gives
+       the page (PAGES.dashboard.label) and the same word the shelf
+       prints on its card. */
+    'live/portal-dashboard.html': 'Portal dashboard',
     'live/book-a-meeting.html':   'Book a meeting form',
     /* gbppl-concierge-1, 09.09: one line, and it is the same word the
        registry gives the page (PAGES.concierge.label) and the same word
