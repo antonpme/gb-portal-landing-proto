@@ -119,6 +119,11 @@
        boolean one, which the page says out loud. Renaming it moves
        a class the checkout wears, so it waits on Ton. */
     { href: 'toggle.html', label: 'Toggle button' },
+    /* gbppl-tooltip-1. Alphabetical, so it stands after the toggle
+       and the name is everybody's: PrimeVue calls it a Tooltip, so
+       does every other house, and the Feedback page had already
+       written the word into its queue. */
+    { href: 'tooltip.html', label: 'Tooltip' },
 
     { group: 'Composite', sub: true },
     { href: 'drawer.html', label: 'Drawer' }
@@ -551,6 +556,7 @@ window.ORO_AXES = {
     kind: 'type', style: 'type', emphasis: 'type', fill: 'type',
     appearance: 'look', face: 'look', labelstyle: 'look',
     theme: 'ground', background: 'ground', surface: 'ground',
+    placement: 'place', side: 'place',
     screen: 'device', well: 'density', backing: 'wash',
     iconposition: 'iconpos'
   },
@@ -647,6 +653,19 @@ window.ORO_AXES = {
        drawn, so a toggle; the input number calls it Well today. */
     density: { label: 'Density', group: 'shape', control: 'toggle', upTo: 4,
                note: 'standard or dense; the plain word, not the anatomy part' },
+
+    /* WHERE A FLOATING THING STANDS RELATIVE TO WHAT IT BELONGS TO
+       (gbppl-tooltip-1). Four sides, four of the shortest words in
+       the house, and the one axis of a tooltip a person compares
+       rather than picks: a toggle. It is named here rather than left
+       to nature and budget because the house grows a second floating
+       thing the moment the hinted word, a menu or a popover arrives,
+       and one word with one control on all of them is the whole
+       purpose of this table. Not to be confused with `iconpos`,
+       which is where a glyph stands INSIDE a control, or with
+       `position`, which is where a number stands on its scale. */
+    place:   { label: 'Place', group: 'shape', control: 'toggle', upTo: 4,
+               note: 'top, right, bottom or left of the carrier; four short words, a toggle' },
 
     /* WHERE THE GLYPH STANDS, three short words, always a toggle;
        and WHICH GLYPH, which is a Select wherever it appears: the

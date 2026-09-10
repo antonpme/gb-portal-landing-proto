@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- ============================================================
+     gbppl-tooltip-1 — THE TOOLTIP PAGE
+     ------------------------------------------------------------
+     Ton, 09.09: «каждая иконка в шапке должна показывать подсказку
+     при наведении», and, on the language of feedback as a whole,
+     «подсказки: тултипы и подсказки при наведении. Этого всего у
+     нас сейчас нет, нужно описать».
+
+     THE RULES CAME FIRST AND THIS PAGE DOES NOT REWRITE THEM. The
+     Feedback page (feedback.html, section Hints) wrote down what a
+     tooltip may say and what it may not, and it put a Tooltip in
+     its own queue with the two things missing before it could be a
+     component: a real flip at the edge of the window and a decision
+     about touch. Both are settled by this wave and both are shown
+     happening on this page rather than asserted.
+
+     Ton-10: this page is a CONSUMER. Its card, tables, shelves and
+     chips are the atoms of ..\components\docs.css; every specimen
+     is the organism itself, including the plates standing still in
+     the shelves, which are the same .gb-tip the floating one is
+     made of.
+
+     NOTHING HERE PRINTS A NUMBER THAT WAS TYPED. Every measurement
+     is read off a rendered specimen with getComputedStyle, and the
+     four edges of the placement table are read off the real
+     organism placing itself against the real window.
+     ============================================================ -->
+
+<!-- THE GATE, and the one line of the shell a page still writes: a
+     parser inserted script blocks the parser, and a lock that does not
+     block the parser is a lock the page paints around. -->
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<!-- The title, the fonts, the stylesheets in their one order and the
+     reading column: system/oro/oro-page.js. -->
+<script src="oro-page.js"></script>
+<script>
+GbOro.head({
+  name: 'Tooltip',
+  css: [['tooltip', 'the subject of the page']],
+  /* THE ONE PAGE LOCAL RULE, AND IT IS ROOM RATHER THAN LOOK. A
+     tooltip lands 8 below its carrier and is 26 tall, so on a shelf
+     of ordinary height the plate of the first row falls across the
+     caption of the second and the demonstration reads as a defect.
+     The slots of the placement shelf are given the room to hold
+     their own plate: --space-48 above the specimen and --space-48
+     below it, rungs of the scale rather than numbers, and enough
+     by measurement (8 of gap plus a 26 plate is 34). Nothing about
+     the component changes; this is the plinth being tall enough
+     for the exhibit. Checked by rectangle rather than by eye, on
+     all three widths and on all four sides: no caption on the
+     shelf is covered by any plate it raises. */
+  style: '#sideShelf .gbdoc-slot { gap: var(--space-48); padding-bottom: var(--space-48); }'
+});
+</script>
+</head>
+<body>
+
+<script src="oro.js"></script>
+<script>
+GbOro.page({
+  eyebrow: 'Base component',
+  name: 'Tooltip',
+  status: { label: 'Declared', kind: 'declared' },
+  lede: [
+    'The name of a control that has no word of its own. A dark plate, one line, half a second of patience on the way in and none on the way out, standing on whichever side of the glyph the window has room for.',
+    'It names, it does not instruct. Nothing a person needs in order to finish what they are doing may live only here: a hint cannot be reached by touch, cannot be printed, and is gone the moment the pointer moves.'
+  ],
+  readout: 'Window width right now: <b id="wnow">measuring</b>. Every number in the tables below is read off a specimen at that width, and the placement table is read off the organism aiming itself at this window.',
+  card: { id: 'tooltip', toc: 'Tooltip' },
+  sections: [
+
+    /* ---------------------------------------------------------
+       1. OVERVIEW
+       --------------------------------------------------------- */
+    { id: 'overview', toc: 'Overview', eyebrow: 'Where the tooltip lives, and what it defaults to',
+      name: 'Overview',
+      blocks: [
+        { table: {
+            rows: '<tr><td>Owner</td><td><code>system/components/tooltip.css</code> for the plate, <code>system/components/tooltip.js</code> for the aim. The script is not optional: the flip is arithmetic, and arithmetic needs a measurement</td></tr>\n'
+                  + '<tr><td>Class</td><td><code>.gb-tip</code> is the plate. <code>.gb-tip--float</code> is the plate fixed to the window, which is the tooltip. A page never writes either: the script builds one plate for the whole document</td></tr>\n'
+                  + '<tr><td>What a page writes</td><td><code>data-gb-tip="End chat"</code> on the control, and an <code>aria-label</code> beside it. Nothing else</td></tr>\n'
+                  + '<tr><td>Where it stands</td><td><code>data-gb-tip-place="top | right | bottom | left"</code>, and it is a REQUEST: the organism flips it when that side has no room</td></tr>\n'
+                  + '<tr><td>Defaults</td><td>Below the control, half a second of patience, a plate of Zinc 900 with one line of white on it, gone the moment the pointer leaves</td></tr>\n'
+                  + '<tr><td>Worn by</td><td>The concierge: four glyphs in the head of the chat window and the one on the pill. They were the first tooltips in the house, drawn as a pseudo element on 9 September, and they are what this organism was lifted from</td></tr>\n'
+                  + '<tr><td>Status</td><td>Declared 10 September. There is no tooltip on the live site to measure, so the plate is the concierge\'s own values and the behaviour is the rule written on the Feedback page</td></tr>' } },
+        { note: 'THE NAME IS EVERYBODY\'S. PrimeVue, the client\'s own stack, calls this a <b>Tooltip</b> and so does every other house we checked, so there is nothing to argue about and nothing to translate. The other shape named on the Feedback page, the <b>hinted word</b>, a term in running prose with a dotted underline and a question glyph, is <b>not</b> built here and is not a look of this control: it has to be reachable by keyboard, it opens on focus, and it is a button in the flow of a sentence. It waits on Ton, and the rule it would arrive under is written on that page.' },
+        { p: 'What this component is for, in one sentence: <span class="oro-strong">a glyph that would otherwise be a guess</span>. Everything else the house has for speaking to a person (the mark on a field, the strip in place, the question with two buttons, the line that fades) is on the <a href="feedback.html#channels">Feedback</a> page, and the first question is always whether the fact belongs on the page instead.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       2. PLAYGROUND
+       --------------------------------------------------------- */
+    { id: 'playground', toc: 'Playground', eyebrow: 'Build one, hover it, and read it back',
+      name: 'Playground',
+      blocks: [
+        { p: 'Set the axes on the rail and the specimen rebuilds itself. <span class="oro-strong">Hover it, or tab to it,</span> and the real organism raises the real plate; the table under the card is measured on that plate, not on a drawing of one. Type a sentence into Word and watch the one line rule bite: the plate does not grow a second line, it is cut with an ellipsis, and an ellipsis on a tooltip is a defect that is supposed to look like one.' },
+        { pg: { name: 'tooltip', inspect: 'tooltip', hold: 'gbdoc-hold--block' } },
+        { table: {
+            head: ['Measured on the plate', 'Value', 'Measured on the plate', 'Value'],
+            rows: '<tr><td>Plate</td><td class="gbdoc-num" id="pgBox"></td><td>Ground and ink</td><td class="gbdoc-num" id="pgPaint"></td></tr>\n'
+                  + '<tr><td>Word</td><td class="gbdoc-num" id="pgType"></td><td>Padding and radius</td><td class="gbdoc-num" id="pgPad"></td></tr>\n'
+                  + '<tr><td>Asked for</td><td class="gbdoc-num" id="pgAsked"></td><td>Standing</td><td class="gbdoc-num" id="pgSide"></td></tr>\n'
+                  + '<tr><td>Wait in</td><td class="gbdoc-num" id="pgWait"></td><td>Fade</td><td class="gbdoc-num" id="pgFade"></td></tr>' } },
+        { note: 'The Dark ground is not decoration here, it is the one open question of this component standing where it can be seen: <b>the plate carries no shadow</b>, because the concierge\'s did not, and on a dark ground a Zinc 900 plate loses its edge. The comment bubble in the studio solved the same problem with <code>--shadow-panel</code> and it floats over exactly the same unpredictable grounds. One line and a decision, and the decision is Ton\'s.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       3. PLACEMENT
+       --------------------------------------------------------- */
+    { id: 'placement', toc: 'Placement', eyebrow: 'Four sides, a request rather than an instruction',
+      name: 'Placement',
+      blocks: [
+        { p: 'A side is <span class="oro-strong">asked for</span>, never dictated. The organism measures the plate, tests the side that was asked for against the room that side actually has, and flips to the opposite side when it does not fit. Only the opposite: a bottom that flipped to the left would move the plate to a different part of the control and read as a different control. If neither side fits, the request is kept and the plate is pushed back inside the window instead, because a plate half off the screen is still more use than a plate over the thing it names.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="tooltip" id="sideShelf">\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Bottom</b> the default, and where a bar puts it</span>\n'
+                  + '            <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="sideBottom" data-gb-tip="End chat" data-gb-tip-place="bottom" aria-label="End the chat"><span class="gb-btn__icon" aria-hidden="true" data-glyph="close"></span></button>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Top</b> for a control at the foot of the screen</span>\n'
+                  + '            <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="sideTop" data-gb-tip="End chat" data-gb-tip-place="top" aria-label="End the chat"><span class="gb-btn__icon" aria-hidden="true" data-glyph="close"></span></button>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Right</b> for a glyph in a column</span>\n'
+                  + '            <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="sideRight" data-gb-tip="Minimize" data-gb-tip-place="right" aria-label="Minimize the chat"><span class="gb-btn__icon" aria-hidden="true" data-glyph="chevron-down"></span></button>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Left</b> for a glyph at the right edge of a panel</span>\n'
+                  + '            <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="sideLeft" data-gb-tip="Minimize" data-gb-tip-place="left" aria-label="Minimize the chat"><span class="gb-btn__icon" aria-hidden="true" data-glyph="chevron-down"></span></button>\n'
+                  + '          </div>\n'
+                  + '        </div>' },
+        { p: '<span class="oro-strong">The flip, proved at all four edges of this window, right now.</span> The table below is not a description. Four carriers are put at the four edges of the window, each asking for the side that has no room there, the organism aims itself at each one, and the answer it came to is read off the plate. They are built and taken away inside one task, so nothing of the demonstration is ever painted; what you are reading is the same code path a glyph in the corner of a real page goes through.' },
+        { table: {
+            head: ['A carrier at the', 'Asks for', 'Stands', 'Flipped', 'Why'],
+            body: 'edgeBody',
+            rows: '' } },
+        { note: 'THE WALL IS THE WINDOW, NOT A CONTAINER, and that is a decision rather than an omission. The plate is put in the browser\'s top layer wherever the browser has one, which is exactly what stops an <code>overflow: hidden</code> panel from cutting a tooltip in half; the same property means the edge of that panel is not a wall the plate can be held off. A tooltip inside a scrolling list therefore leaves the list, which is what every other house does with them and what a person expects. What the organism does watch is whether its carrier is still in the window at all: scrolled out of sight, the plate goes with it.' },
+        { table: {
+            head: ['The distances, measured on this window', 'Value'],
+            rows: '<tr><td>Gap between the control and the plate</td><td class="gbdoc-num" id="mGap"></td></tr>\n'
+                  + '<tr><td>Margin the plate is held off the window edge by</td><td class="gbdoc-num" id="mEdge"></td></tr>\n'
+                  + '<tr><td>The widest a plate may be here</td><td class="gbdoc-num" id="mMax"></td></tr>\n'
+                  + '<tr><td>The window the arithmetic is done against</td><td class="gbdoc-num" id="mWin"></td></tr>' } },
+        { note: 'Both distances are rungs of the space scale, and both are <b>read off the carrier</b> with <code>getComputedStyle</code> rather than written into the script as 8 and 16. On the vendored catalog those two names belong to the bundle and mean 32 and 64 (trap 21 of the skill), and a tooltip that measured itself with typed numbers would be wrong on that one page and right everywhere else, which is the hardest kind of wrong to find.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       4. VOICE
+       --------------------------------------------------------- */
+    { id: 'voice', toc: 'Voice', eyebrow: 'It names the control, it does not explain the task',
+      name: 'Voice',
+      blocks: [
+        { p: 'One rule, and everything else follows from it: <span class="oro-strong">a tooltip says what the control IS, not what to do with it or what will happen.</span> A hint is the second way of knowing something and never the only one, so anything a person needs in order to finish the task has to be on the page where touch, print and a screen reader can all reach it. The two plates below are the same organism carrying the same fact; the difference is the sentence.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="tooltip">\n'
+                  + '          <div class="gbdoc-slot gbdoc-slot--grow">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Do</b> the name of the control</span>\n'
+                  + '            <span class="gb-tip" id="voiceDo">End chat</span>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot gbdoc-slot--grow">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Do not</b> the instruction, and the plate it takes</span>\n'
+                  + '            <span class="gb-tip" id="voiceDont">Click here to end this chat and close the window</span>\n'
+                  + '          </div>\n'
+                  + '        </div>' },
+        { table: {
+            head: ['Write', 'Do not write', 'Why'],
+            rows: '<tr><td>End chat</td><td>Click here to end the chat</td><td>The person can see it is a control. The plate has one job, which is to say which one</td></tr>\n'
+                  + '<tr><td>Minimize</td><td>Minimizes the window so you can keep browsing</td><td>The moment it needs two lines, the fact belongs on the page</td></tr>\n'
+                  + '<tr><td>Back to options</td><td>Back</td><td>Back to what. A name that is not specific is a name the plate did not need to say</td></tr>\n'
+                  + '<tr><td>Copy link</td><td>Copy link (Ctrl and C)</td><td>A key is named where the control is EXPLAINED, not on the plate; only a mode names its key in its own note</td></tr>\n'
+                  + '<tr><td>Remove</td><td>Remove &middot; This cannot be undone</td><td>A consequence is a question with two buttons, and it stops the work. A plate that warns has warned nobody who uses a phone</td></tr>' } },
+        { p: 'Three more rules of the sentence, in the order they get broken. <span class="oro-strong">Sentence case, no full stop</span>: it is a name, and names do not end in punctuation. <span class="oro-strong">It never repeats a word already visible beside it</span>: a plate saying Search over a control labelled Search is a plate that has told nobody anything. And <span class="oro-strong">it is the same word everywhere the control appears</span>: the cross in the chat head and the cross on the pill are one control in two places, so they say one thing.' },
+        { note: 'THE PLATE AND THE LABEL ARE NOT THE SAME SENTENCE, on purpose. The concierge\'s cross says <b>End chat</b> to the eye and <code>aria-label="End the chat"</code> to the reader: a plate is a name and a label is an act, and copying one into the other would look like care while making one of the two worse. This is also why the organism does not write an <code>aria-label</code> for you.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       5. KEYBOARD AND TOUCH
+       --------------------------------------------------------- */
+    { id: 'keyboard', toc: 'Keyboard and touch', eyebrow: 'Who gets a plate, who gets a word, and who gets neither',
+      name: 'Keyboard and touch',
+      blocks: [
+        { p: 'Three people are standing at this control and only one of them can hover. The plate answers the pointer; the <code>aria-label</code> answers the reader; and the person holding a phone gets whatever is on the page, which is why nothing that matters is allowed to live in a hint.' },
+        { table: {
+            head: ['Who', 'What they get', 'How'],
+            rows: '<tr><td><b>The pointer</b></td><td>The plate, after half a second</td><td>The wait is on the way in only, so a pointer crossing a row of five glyphs lights none of them; a pointer that has left has already said what it meant, so there is no wait on the way out</td></tr>\n'
+                  + '<tr><td><b>The keyboard</b></td><td>The plate, at once</td><td><code>:focus-visible</code> only, and with no wait at all: the patience exists because a pointer CROSSES things and a Tab press is an arrival. This is the one deliberate change from the concierge original, which spent the same 500 on focus</td></tr>\n'
+                  + '<tr><td><b>The screen reader</b></td><td>The <code>aria-label</code> on the control</td><td>The plate carries <code>aria-hidden</code> and is never announced. Two announcements of one fact are two facts</td></tr>\n'
+                  + '<tr><td><b>The thumb</b></td><td>Nothing, and that is the decision</td><td>The script never arms a pointer that cannot hover, and the stylesheet refuses to draw the plate under <code>(hover: none)</code> as well. See below</td></tr>' } },
+        { p: '<span class="oro-strong">Escape closes it, and does not stop the event.</span> The Escape ladder of this house has four rungs and every rung swallows the press so the rung below cannot fire in the same keystroke. A tooltip is below all four: it holds nothing, it loses nothing, and a press that dismisses a plate must still reach the drawer standing behind it. It is dismissible because <a href="feedback.html#keyboard">content that appears on hover has to be</a>; it is not hoverable in the WCAG sense for the honest reason that there is nothing in it to reach: one line, no controls, no pointer events, and it never covers the control it names.' },
+        { p: '<span class="oro-strong">Touch: no tooltip at all.</span> A long press is the other answer in the industry, and it is one house against four: Material draws a long press tooltip; Apple, Polaris, Carbon and Atlassian all decline and say the same sentence we do, that a hint is never the only way to know something. Two things settle it here. A long press is a NEW GESTURE, and the law of this studio says a new interaction pattern arrives on Ton\'s word rather than on a wave\'s. And a gesture nobody is told about is a gesture nobody uses, so it would have to be announced somewhere, which is another page and another decision. The plate stays off the phone, the name stays in the label, and the question goes to Ton with the rest.' },
+        { note: 'The test, and it is the same one the Feedback page sets: remove every hint from the interface and see whether it still makes sense. If it does not, the hint was carrying the work, and the work belongs on the page.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       6. STATES
+       --------------------------------------------------------- */
+    { id: 'states', toc: 'States', eyebrow: 'Five moments, and only two of them are visible',
+      name: 'States',
+      blocks: [
+        { p: 'A tooltip has almost no states of its own: it is either not there, on its way, there, or on its way out. What it does have is a <span class="oro-strong">timeline</span>, and the timeline is the component. Every duration below is read out of the token it is spent from, so the table cannot drift from the stylesheet.' },
+        { table: {
+            head: ['Moment', 'What is on screen', 'How long', 'Read from'],
+            rows: '<tr><td><b>Rest</b></td><td>Nothing. The control alone</td><td class="gbdoc-num">&mdash;</td><td>There is one plate for the whole document and it is empty until asked</td></tr>\n'
+                  + '<tr><td><b>Waiting</b></td><td>Still nothing. The pointer is on the control and the patience is being spent</td><td class="gbdoc-num" id="stWait"></td><td><code>--mo-medium</code>, spent as patience rather than as movement</td></tr>\n'
+                  + '<tr><td><b>Arriving</b></td><td>The plate fades up where the arithmetic put it</td><td class="gbdoc-num" id="stIn"></td><td><code>--mo-micro</code> on <code>--mo-move</code></td></tr>\n'
+                  + '<tr><td><b>Shown</b></td><td>One line of white on Zinc 900, a gap away from the control</td><td class="gbdoc-num">as long as the pointer stays</td><td>No dwell, no timeout: a plate is not a message</td></tr>\n'
+                  + '<tr><td><b>Leaving</b></td><td>The same fade, starting immediately</td><td class="gbdoc-num" id="stOut"></td><td>The same <code>--mo-micro</code>, with no patience in front of it</td></tr>' } },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--cols" data-inspect="tooltip" id="stateShelf">\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Shown</b> the plate, held still</span>\n'
+                  + '            <span class="gb-tip" id="stPlate">End chat</span>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Rest</b> hover it, or tab to it</span>\n'
+                  + '            <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="stRest" data-gb-tip="Back to options" aria-label="Back to the options"><span class="gb-btn__icon" aria-hidden="true" data-glyph="chevron-left"></span></button>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot gbdoc-slot--grow">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Over the line</b> what a second line looks like instead</span>\n'
+                  + '            <span class="gb-tip" style="max-width: 220px" id="stCut">Click here to end this chat and close the window</span>\n'
+                  + '          </div>\n'
+                  + '        </div>' },
+        { note: 'THE FIRST AND THIRD SPECIMENS ARE THE ORGANISM STANDING STILL, not a picture of it. <code>.gb-tip</code> is the plate and <code>.gb-tip--float</code> is the plate aimed at a window, so a document can put one in a paragraph and it is the same ink, the same radius, the same word. The one thing written by this page is the 220 on the third slot, which cuts the line where a narrow window would cut it; the ellipsis itself is the organism\'s.' },
+        { note: 'TON-7: THERE IS NO REDUCED MOTION BRANCH ANYWHERE IN THIS COMPONENT, and the wave filmed it rather than claiming it. The fade was recorded frame by frame on a bare page with the preference off and then on: the declared duration is <b>0.16s in both</b>, the two opacity curves agree to three decimals from the second frame on, and the settled frames are byte for byte identical. <b>On this page it is polite anyway</b>, and that is the frame rather than the component: <code>oro.css</code> flattens every transition on a showcase under that preference, by its own argument that the documentation\'s hovers are utility motion. A tooltip is utility motion too, so nothing here is broken by it; but a showcase of a SIGNATURE choreography would be flattened by the same rule, and that is a question about oro.css rather than about this file.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       7. PROPERTIES
+       --------------------------------------------------------- */
+    { id: 'properties', toc: 'Properties', eyebrow: 'The two attributes, the two classes, and the drawer',
+      name: 'Properties',
+      blocks: [
+        { table: {
+            head: ['Name', 'Where it goes', 'What it does'],
+            rows: '<tr><td><code>data-gb-tip</code></td><td>the control</td><td>The word on the plate. Empty or absent, and there is no tooltip: the attribute IS the component</td></tr>\n'
+                  + '<tr><td><code>data-gb-tip-place</code></td><td>the control</td><td><code>top</code>, <code>right</code>, <code>bottom</code> or <code>left</code>. The side asked for; the organism flips it when that side has no room. Default <code>bottom</code></td></tr>\n'
+                  + '<tr><td><code>aria-label</code></td><td>the control</td><td>Not ours, and not optional on a glyph. The plate is for the eye and the label for the reader, and the organism deliberately does not write one for you</td></tr>\n'
+                  + '<tr><td><code>.gb-tip</code></td><td>the plate</td><td>The ink, the radius, the padding, the one line. A page may stand one in a document as a specimen of itself; that is what this page does twice</td></tr>\n'
+                  + '<tr><td><code>.gb-tip--float</code></td><td>the plate</td><td>The same plate fixed to the window, invisible until <code>.is-in</code>. Built by the script, never by a page</td></tr>\n'
+                  + '<tr><td><code>data-side</code>, <code>data-asked</code>, <code>data-flipped</code></td><td>the plate, written by the script</td><td>What it was asked for and what it decided. They exist so the decision can be read back by a table, by Inspect and by anyone debugging a corner</td></tr>\n'
+                  + '<tr><td><code>window.GbTip</code></td><td>the document</td><td><code>show(el)</code>, <code>hide()</code>, <code>place()</code> and <code>plate()</code>. The showcase uses them to measure the real organism; a product page should need none of them</td></tr>' } },
+        { note: 'The Properties mark at the head of a caption reads that specimen into the drawer. The table is for reading the whole thing at once; the drawer answers about one plate, including which side it is standing on and whether it got there by flipping.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       8. CODE
+       --------------------------------------------------------- */
+    { id: 'code', toc: 'Code', eyebrow: 'One attribute, and the two files under it',
+      name: 'Code',
+      blocks: [
+        { code: { id: 'codeBasics',
+            text: '&lt;!-- a glyph that says its name --&gt;\n'
+                  + '&lt;button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button"\n'
+                  + '        data-gb-tip="End chat"\n'
+                  + '        aria-label="End the chat"&gt;\n'
+                  + '  &lt;span data-gb-icon="close" data-gb-icon-size="22" aria-hidden="true"&gt;&lt;/span&gt;\n'
+                  + '&lt;/button&gt;\n'
+                  + '\n'
+                  + '&lt;!-- a control at the foot of the window asks for the side above it --&gt;\n'
+                  + '&lt;button class="gb-btn gb-btn--icon" type="button"\n'
+                  + '        data-gb-tip="Minimize" data-gb-tip-place="top"\n'
+                  + '        aria-label="Minimize the chat"&gt;&amp;hellip;&lt;/button&gt;\n'
+                  + '\n'
+                  + '&lt;!-- the plate standing in a document, as a specimen of itself --&gt;\n'
+                  + '&lt;span class="gb-tip"&gt;End chat&lt;/span&gt;\n'
+                  + '\n'
+                  + '&lt;!-- the two files. tooltip.js needs no boot call and no scan: it\n'
+                  + '     listens on the document, so a glyph rendered an hour from now\n'
+                  + '     works the moment it is in the DOM --&gt;\n'
+                  + '&lt;link rel="stylesheet" href="system/components/tooltip.css"&gt;\n'
+                  + '&lt;script src="system/components/tooltip.js"&gt;&lt;/script&gt;' } },
+        { note: 'There is no <code>enhance()</code> and nothing to call when a template redraws. The toggle needs an observer because it rewrites the markup it finds; this rewrites nothing, so one delegated listener on the document is the whole of the wiring.' }
+      ] },
+
+    /* ---------------------------------------------------------
+       9. CHANGELOG
+       --------------------------------------------------------- */
+    { id: 'changelog', toc: 'Changelog', eyebrow: 'What the tooltip used to be',
+      name: 'Changelog',
+      blocks: [
+        { table: {
+            head: ['When', 'What'],
+            rows: '<tr><td>Before 9 September</td><td>Nothing. Four places on the checkout wanted one and leaned on the browser\'s own <code>title</code>, which appears when it likes, looks like nothing else in the house and cannot be styled at all</td></tr>\n'
+                  + '<tr><td>9 September</td><td>Ton asked for a hint on every glyph in the concierge head. The house had no recipe, so the concierge drew one as a <code>::after</code> on <code>[data-gbhc-tip]</code> and said so in its own comment: a new pattern, going to Ton as a candidate for the system rather than quietly appearing</td></tr>\n'
+                  + '<tr><td>9 September</td><td>The <a href="feedback.html#hints">Feedback</a> page wrote the rules down: names rather than instructs, patience in and none out, one line, an <code>aria-label</code> twin required, and a phone as the test. It also put the two missing halves in its queue: a real flip and a decision about touch</td></tr>\n'
+                  + '<tr><td>10 September</td><td>The component. The plate lifted from the concierge value for value, the pseudo element replaced by one plate the script aims, the flip and the clamp measured against the window at four edges, the top layer where the browser has one, focus without the wait, Escape without swallowing it, and no tooltip on touch. The concierge moves onto it and deletes its own recipe</td></tr>' } }
+      ] },
+
+    /* ---------------------------------------------------------
+       10. RELATED
+       --------------------------------------------------------- */
+    { toc: 'Related', eyebrow: 'Where to go next',
+      name: 'Related',
+      blocks: [
+        { p: '<a href="feedback.html#hints">Feedback</a>, where the rule this component obeys is written down beside the other four ways the house speaks; <a href="icons.html#iconbutton">Icon button</a>, the control that needs a tooltip more than any other because it has no word of its own; and <a href="drawer.html">Drawer</a>, whose head is a row of exactly those glyphs.' }
+      ] }
+  ],
+  sources: 'Sources: <a href="../components/tooltip.css">tooltip.css</a>, <a href="../components/tooltip.js">tooltip.js</a>, <a href="../components/button.css">button.css</a> and <a href="../components/icon.css">icon.css</a> (the carriers on this page), <a href="../components/docs.css">docs.css</a>, <a href="../components/drawer.css">drawer.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> &middot; the rules are <a href="feedback.html#hints">Feedback, section Hints</a>, and the plate was lifted from <code>live/concierge/concierge.css</code>.'
+});
+</script>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/auth.js"></script>
+<script src="../components/toggle.js"></script>
+<script src="../components/tooltip.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+<script>
+/* ============================================================
+   gbppl-tooltip-1 — THE TOOLTIP READOUT
+   ------------------------------------------------------------
+   Five small scripts of the showcase template come from oro.js
+   (window.GbOro): px, txt, the width readout, the clipboard and
+   the contents. What is here is the playground, the timeline
+   table and the one thing this page exists to prove: the flip,
+   measured at all four edges of the window the reader is holding.
+
+   HOW A TOOLTIP IS MEASURED WITHOUT BEING SEEN. GbTip.show()
+   places the plate synchronously and only ADDS the visible class
+   on the next animation frame; GbTip.hide() clears the carrier, so
+   a show and a hide inside the same task place the plate, let it
+   be measured, and never paint it. Every number below is off the
+   real organism at its real size, and nothing flashes.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
+
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function ms(name, el) {
+    var raw = String(getComputedStyle(el || document.documentElement)
+      .getPropertyValue(name) || '').trim();
+    return raw || 'no token';
+  }
+
+  /* Place the real plate on a real carrier, read it, put it away.
+     Returns the plate's own reading, or null when the organism
+     declined (no word, or a pointer that cannot hover). */
+  function readOn(el) {
+    var tip = window.GbTip;
+    if (!tip || !el) return null;
+    tip.show(el);
+    var plate = tip.plate();
+    if (!plate) { tip.hide(); return null; }
+    var cs = getComputedStyle(plate);
+    /* A pointer that cannot hover gets no tooltip, and the stylesheet
+       says so by refusing to draw the plate at all. Measuring a box
+       that is not drawn would print numbers describing nothing, so
+       the page says what happened instead (Ton, 27.08: the
+       instrument does not invent). */
+    if (cs.display === 'none') { tip.hide(); return null; }
+    var r = plate.getBoundingClientRect();
+    var out = {
+      w: Math.round(r.width), h: Math.round(r.height),
+      left: Math.round(r.left), top: Math.round(r.top),
+      side: plate.getAttribute('data-side') || '',
+      asked: plate.getAttribute('data-asked') || '',
+      flipped: plate.getAttribute('data-flipped') === 'yes',
+      bg: cs.backgroundColor, ink: cs.color,
+      size: px(cs.fontSize), weight: cs.fontWeight, line: px(cs.lineHeight),
+      pad: px(cs.paddingTop) + ' and ' + px(cs.paddingLeft),
+      radius: px(cs.borderTopLeftRadius),
+      max: px(cs.maxWidth)
+    };
+    tip.hide();
+    return out;
+  }
+
+  /* ---------- the playground ----------
+     Place is a canonical axis since this wave (ORO_AXES.place):
+     four short words, one axis a person compares rather than picks,
+     so a row of segments on every showcase that grows a floating
+     thing. Word and On a glyph are settled by their nature, a text
+     box and a switch, and never consult the canon at all. */
+  var PG_AXES = [
+    { id: 'place', label: 'Place', group: 'shape', def: 'bottom',
+      values: [['top', 'Top'], ['right', 'Right'], ['bottom', 'Bottom'], ['left', 'Left']] },
+    { id: 'glyph', label: 'On a glyph', group: 'shape', kind: 'bool',
+      on: 'yes', off: 'no', def: 'yes' },
+    { id: 'word', label: 'Word', group: 'content', kind: 'text', def: 'End chat' }
+  ];
+
+  function pgSample(S, forCode) {
+    var nl = forCode ? '\n  ' : ' ';
+    var word = String(S.word == null ? '' : S.word).trim() || 'End chat';
+    var place = S.place === 'bottom' ? '' : ' data-gb-tip-place="' + esc(S.place) + '"';
+    if (S.glyph === 'yes') {
+      return '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" id="pgTip"' + nl +
+             'data-gb-tip="' + esc(word) + '"' + place + nl +
+             'aria-label="' + esc(word) + ', and this is the label the reader hears">' + nl +
+             '<span class="gb-btn__icon" aria-hidden="true" data-glyph="close"></span>' +
+             (forCode ? '\n' : ' ') + '</button>';
+    }
+    return '<button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" id="pgTip"' + nl +
+           'data-gb-tip="' + esc(word) + '"' + place + '>' + nl +
+           '<span class="gb-btn__label">Chat</span>' +
+           (forCode ? '\n' : ' ') + '</button>';
+  }
+
+  /* THE DRAWING COMES OUT OF THE RECORD, never off a page. The
+     declaration above writes an empty .gb-btn__icon with the NAME
+     of the glyph on it, and this fills it from icon.js the moment
+     the record is loaded — including after the playground rebuilds
+     its specimen. Pasting a path into a showcase would put a
+     fourteenth copy of the close cross in the house. */
+  function glyphs(root) {
+    var I = window.GbIcons;
+    if (!I) return;
+    Array.prototype.forEach.call(
+      (root || document).querySelectorAll('[data-glyph]'),
+      function (n) {
+        var g = I.svg(n.getAttribute('data-glyph'));
+        if (g && !n.firstElementChild) n.innerHTML = g;
+      });
+  }
+
+  /* AND THE CARD RAISES IT ITSELF WHEN AN AXIS MOVES. A tooltip that
+     only ever appears under a pointer makes a playground that looks
+     empty, and the answer is not to draw a picture of one in the
+     scene: it is to raise the real plate on the real specimen the
+     moment the reader changes something. Everything after that is
+     the ordinary behaviour — leave the carrier and it goes, scroll
+     it out of the window and it goes with it. On load the specimen
+     is below the fold, so the organism takes it away by itself,
+     which is the same rule doing the same thing. */
+  function pgAfter(S, hold) {
+    glyphs(hold);
+    paintPlayground();
+    var el = document.getElementById('pgTip');
+    if (el && window.GbTip) window.GbTip.show(el);
+  }
+
+  function paintPlayground() {
+    var el = document.getElementById('pgTip');
+    var d = readOn(el);
+    if (!d) {
+      ['pgBox', 'pgPaint', 'pgType', 'pgPad', 'pgAsked', 'pgSide'].forEach(function (id) {
+        txt(id, 'no plate on this pointer');
+      });
+      txt('pgWait', ms('--mo-medium', el || document.body));
+      txt('pgFade', ms('--mo-micro', el || document.body));
+      return;
+    }
+    txt('pgBox', d.w + ' by ' + d.h);
+    txt('pgPaint', d.bg + ' under ' + d.ink);
+    txt('pgType', d.size + ' / ' + d.weight + ' / ' + d.line);
+    txt('pgPad', d.pad + ', radius ' + d.radius);
+    txt('pgAsked', d.asked || 'bottom');
+    txt('pgSide', d.side + (d.flipped ? ', flipped' : ''));
+    txt('pgWait', ms('--mo-medium', el) + ', as patience');
+    txt('pgFade', ms('--mo-micro', el) + ' on the way in and on the way out');
+  }
+
+  /* ---------- the four edges ----------
+     A carrier is put at each edge of the window asking for the side
+     that has no room there, the organism aims at it, and the answer
+     is read off the plate. Built and removed inside one task, so
+     none of it is ever painted; the carriers are the same size as
+     the smallest icon button the house draws, so the arithmetic is
+     the arithmetic of a real control. */
+  var EDGES = [
+    ['Top edge', 'top', 'top: 0; left: 50%; transform: translateX(-50%);',
+     'there is no room above a control touching the top of the window'],
+    ['Bottom edge', 'bottom', 'bottom: 0; left: 50%; transform: translateX(-50%);',
+     'and none below one touching the bottom'],
+    ['Left edge', 'left', 'left: 0; top: 50%; transform: translateY(-50%);',
+     'the plate is wider than the strip of window left of the control'],
+    ['Right edge', 'right', 'right: 0; top: 50%; transform: translateY(-50%);',
+     'and wider than the strip right of it']
+  ];
+
+  function paintEdges() {
+    var body = document.getElementById('edgeBody');
+    if (!body || !window.GbTip) return;
+    var html = '';
+    EDGES.forEach(function (e) {
+      var probe = document.createElement('button');
+      probe.type = 'button';
+      probe.className = 'gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary';
+      probe.setAttribute('data-gb-tip', 'End chat');
+      probe.setAttribute('data-gb-tip-place', e[1]);
+      probe.setAttribute('aria-hidden', 'true');
+      probe.tabIndex = -1;
+      probe.style.cssText = 'position: fixed; ' + e[2] + ' opacity: 0; pointer-events: none;';
+      document.body.appendChild(probe);
+      var d = readOn(probe);
+      document.body.removeChild(probe);
+      if (!d) return;
+      html += '<tr><td>' + e[0] + '</td><td><code>' + e[1] + '</code></td>' +
+        '<td class="gbdoc-num">' + esc(d.side) + '</td>' +
+        '<td class="gbdoc-num">' + (d.flipped ? 'yes' : 'no') + '</td>' +
+        '<td>' + e[3] + '</td></tr>';
+    });
+    body.innerHTML = html ||
+      '<tr><td colspan="5">This pointer cannot hover, so the organism draws nothing to measure. That is the answer, not a failure.</td></tr>';
+  }
+
+  /* ---------- the distances, and the timeline ---------- */
+  function paintMeasures() {
+    var el = document.getElementById('sideBottom') || document.body;
+    var cs = getComputedStyle(el);
+    txt('mGap', px(cs.getPropertyValue('--space-8')) + ', the rung read off the carrier');
+    txt('mEdge', px(cs.getPropertyValue('--space-16')) + ', the rung read off the carrier');
+    var plate = window.GbTip && window.GbTip.plate();
+    txt('mMax', plate ? px(getComputedStyle(plate).maxWidth) : 'no plate raised yet');
+    txt('mWin', document.documentElement.clientWidth + ' by ' +
+        document.documentElement.clientHeight + ', without the scrollbars');
+  }
+
+  function paintStates() {
+    var el = document.getElementById('stRest') || document.body;
+    txt('stWait', ms('--mo-medium', el));
+    txt('stIn', ms('--mo-micro', el));
+    txt('stOut', ms('--mo-micro', el));
+  }
+
+  function paintAll() {
+    glyphs();
+    paintStates();
+    paintMeasures();
+    paintEdges();
+    paintPlayground();
+    ORO.widthNow('wnow');
+  }
+
+  function start() {
+    if (window.GbOro && window.GbOro.controls) {
+      window.GbOro.controls({
+        root: document.querySelector('[data-pg="tooltip"]'),
+        axes: PG_AXES,
+        sample: pgSample,
+        after: pgAfter
+      });
+    }
+    paintAll();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(paintAll, 120);
+  });
+})();
+</script>
+
+<!-- The console. Its element is written by GbOro.page, with the drawer
+     and the probes; these two files give it its doors and its rooms. -->
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>
