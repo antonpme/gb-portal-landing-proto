@@ -374,7 +374,63 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--blue-700); te
 .gbppd-stat--alarm .gbppd-stat__sub { color: var(--gb-alert-ink); }
 .gbppd-stat--alarm .gbppd-stat__sub { opacity: .8; }
 
-/* ============ 2 · QUICK ACTIONS, UNDER THE METRICS ============
+/* ============ THE ACTION OF A BLOCK ============
+   gbppl-portal-dashboard-7, Ton's own architecture (10.09): every
+   block is name (+ its way out) → ACTION → tabs → content, and the
+   action is the door that belongs to that entity. Explore gifts over
+   My Gifts, Create a campaign over Campaigns, Talk to us over
+   Activity. The Quick actions strip is gone, because it was those
+   same three doors standing away from the things they act on.
+
+   THE DOOR IS GREY, THE DATA IS WHITE, and now the law of the zones
+   is visible in every column at once: a tool has a ground, a fact
+   has a plate.
+
+   AND AN EMPTY BLOCK DOES NOT VANISH, IT GROWS ITS DOOR (his rule,
+   and it replaces the «empty zone stops existing» of the morning):
+   a new account is three big invitations under one welcome, not
+   three holes. The same door, one size up, with its own line of
+   help under it. */
+.gbppd-act {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  width: 100%;
+  margin-bottom: var(--space-16);
+  padding: var(--space-16);
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  background: var(--zinc-100);
+  text-align: left;
+  font-family: inherit;
+  text-decoration: none;
+  color: var(--zinc-900);
+  cursor: pointer;
+  transition: background var(--mo-micro) var(--mo-move), border-color var(--mo-micro) var(--mo-move);
+}
+a.gbppd-act, body.gb-demo a.gbppd-act { color: var(--zinc-900); }
+.gbppd-act:hover { background: var(--zinc-200); border-color: var(--zinc-300); }
+.gbppd-act .gb-icon { color: var(--zinc-500); flex: 0 0 auto; }
+.gbppd-act__name { font-size: 15px; font-weight: 500; line-height: 1.4; }
+/* The line of help is for the empty block only: a working account
+   knows what «Create a campaign» means. */
+.gbppd-act__say { display: none; font-size: 14px; line-height: 1.5; color: var(--zinc-500); }
+
+/* THE EMPTY ACCOUNT: no tabs, no lists, and the door grown up. */
+html[data-gbppd-state="empty"] .gbppd-tabs,
+html[data-gbppd-state="empty"] .gbppd-panes { display: none; }
+html[data-gbppd-state="empty"] .gbppd-act {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  margin-bottom: 0;
+  padding: var(--space-24);
+}
+html[data-gbppd-state="empty"] .gbppd-act__name { font-size: 16px; font-weight: 600; }
+html[data-gbppd-state="empty"] .gbppd-act__say { display: block; }
+
+/* ============ THE OLD QUICK ACTIONS STRIP, kept for the empty
+   state's own doors until 10.09 and now unused by the board ============
    The one block Ton liked, moved to where he put it: the same four
    doors, above the fold, a strip of errands rather than a second
    menu beside the real one. A glyph and a name, and nothing under
@@ -413,9 +469,18 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--blue-700); te
   gap: var(--space-16);
   width: 100%;
   padding: var(--space-16);
-  border: 1px solid var(--zinc-300);
+  /* THE TOOL SHELF, AND THE LAW OF THE ZONES IS FINALLY VISIBLE
+     (Ton, 10.09: the outline doors «не выглядят как действия,
+     выглядят как карточки ниже»). Grey ground for the tools, white
+     plates for the data, and nothing else has to explain which is
+     which. Zinc 100 rather than Zinc 50, because the page ground IS
+     Zinc 50 and a door in the ground colour is a door nobody sees:
+     both candidates were shot side by side and this is the one that
+     reads as an object you press. The hairline stays a rung quieter
+     than the ground it sits on, and the hover deepens one step. */
+  border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
-  background: transparent;
+  background: var(--zinc-100);
   text-align: left;
   font-family: inherit;
   text-decoration: none;
@@ -424,7 +489,7 @@ a.gbppd-more:hover, body.gb-demo a.gbppd-more:hover { color: var(--blue-700); te
   transition: background var(--mo-micro) var(--mo-move), border-color var(--mo-micro) var(--mo-move);
 }
 a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
-.gbppd-door:hover { background: var(--zinc-100); border-color: var(--zinc-400); }
+.gbppd-door:hover { background: var(--zinc-200); border-color: var(--zinc-300); }
 /* The glyph is written with data-gb-icon and icon.js rewrites that
    node's className, so the ink is asked for by the door. */
 .gbppd-door .gb-icon { color: var(--zinc-500); }
@@ -652,7 +717,7 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
    the drawer with a chevron. One skeleton, two skins, as before. */
 .gbppd-row {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) var(--space-16);   /* 72 = the frame; NO TOKEN, measured by eye against the 64 rung: 64 left the object cramped inside its own hairline */
+  grid-template-columns: 72px minmax(0, 1fr);   /* 72 = the frame; NO TOKEN, measured by eye against the 64 rung: 64 left the object cramped inside its own hairline */
   align-items: center;
   gap: var(--space-8) var(--space-16);
   padding: var(--space-16);
@@ -694,13 +759,37 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
   object-fit: contain;
   display: block;
 }
+/* THE TOP LINE OF A CARD: the name on the left, the status hard
+   against the right edge of the same line, and the two locked on one
+   axis. align-items:center centres the badge on the LINE BOX, and a
+   16/1.4 line box has more room under the baseline than over the
+   caps, so the badge sits a pixel low: the half-leading disease. The
+   name's box is trimmed to its cap and baseline (Chrome 152 does
+   this on static Inter, ловушка 26), so the two boxes centre on the
+   same axis and the drift measures zero. */
 .gbppd-row__what {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
   color: var(--zinc-900);
+  text-box: trim-both cap alphabetic;
+}
+.gbppd-row__what { flex-wrap: wrap; }
+.gbppd-row__title { min-width: 0; margin-right: auto; }
+.gbppd-row__what .gb-badge { flex: 0 0 auto; margin-left: auto; line-height: 1; }
+/* IN A NARROW COLUMN THE NAME TAKES THE WHOLE LINE and the badge
+   wraps under it, still hard against the right edge (margin-left is
+   auto in both cases). Measured at 1280: the text column of a board
+   column is 163px and «On the way» is 88 of it, so a name sharing
+   that line is squeezed to 67 and breaks over three lines. One rule,
+   two outcomes, no second floor invented: the badge simply lands on
+   the next line of the same ladder. */
+@container col (max-width: 339px) {
+  .gbppd-row__title { flex: 1 0 100%; }
 }
 .gbppd-row__who {
   display: block;
@@ -738,15 +827,11 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
   line-height: 1.5;
   color: var(--zinc-700);
 }
-/* THE PROMISE OF THE DOOR. A quiet chevron at the right edge, on the
-   axis of the row: the card opens an overview, and the eye should
-   know that before the hand tries. */
-.gbppd-row__go {
-  display: grid;
-  place-items: center;
-  color: var(--zinc-400);
-}
-.gbppd-row:hover .gbppd-row__go { color: var(--zinc-700); }
+/* THE CHEVRON IS GONE, and the taxonomy is the reason: in this house
+   an overview plate has no arrow on it. The metric tiles open the
+   same kind of drawer and never wore one, so a chevron here would
+   say that these two doors are different kinds of door. The
+   affordance is the row's own hover wash and the pointer. */
 
 /* AND IN A NARROW COLUMN THE ROW GIVES BACK WHAT IT CANNOT AFFORD.
    Measured at 1280: the board column is 277, and a 72 frame plus a
@@ -755,10 +840,12 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
    frame steps down to 56 and the chevron goes: the row still opens,
    the whole plate is the door, and the name gets its line back
    (173px). Above 340 both come back. Squinted at, not derived. */
+/* A narrow column steps the frame down: measured at 1280 the board
+   column is 267, and a 72 frame left the name fighting for its line.
+   Above 340 the frame is 72. */
 @container col (max-width: 339px) {
   .gbppd-row { grid-template-columns: 56px minmax(0, 1fr); }
   .gbppd-thumbwrap { width: 56px; height: 56px; padding: 4px; }   /* 4 = half the rung, the frame keeps its inset proportion */
-  .gbppd-row__go { display: none; }
 }
 
 /* THE STATUS BADGE IS A SYSTEM ORGANISM NOW (gbppl-portal-dashboard-4).
@@ -774,8 +861,10 @@ a.gbppd-door, body.gb-demo a.gbppd-door { color: var(--zinc-900); }
 
    NO NEW VOICE: 12px is the eyebrow's rung, and the eyebrow is the
    one third voice the law of the surface allows. */
-.gbppd-row__what .gb-badge,
-.gbppd-row__what .gb-badge { margin-left: var(--space-8); }
+/* The badge's placement belongs to the name line's own flex now (gap
+   8, margin-left auto pinning it right). The fixed margin that used
+   to stand here quietly beat that auto, which is why the badge sat
+   at the start of the wrapped line instead of its end. */
 
 /* ============ CENTER · CAMPAIGNS ============
    ONE ENTITY CARD, TWO SKINS OF ONE SKELETON (10.09, the last piece
@@ -1572,23 +1661,6 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
       <section class="gbppd-emptyzone" aria-label="Getting started">
         <h2 class="gbppd-empty__hi">Welcome, Anton</h2>
         <p class="gbppd-empty__say">Start with your first gift.</p>
-        <div class="gbppd-doors">
-          <a class="gbppd-door gbppd-door--stacked gbppd-door--lead" href="catalog/index.html">
-            <span data-gb-icon="grid" data-gb-icon-size="24"></span>
-            <span class="gbppd-door__name">Explore gifts</span>
-            <span class="gbppd-door__say">See what we curate, by occasion and by budget.</span>
-          </a>
-          <a class="gbppd-door gbppd-door--stacked" href="book-a-meeting.html">
-            <span data-gb-icon="calendar" data-gb-icon-size="24"></span>
-            <span class="gbppd-door__name">Book a meeting</span>
-            <span class="gbppd-door__say">Pick a time with a gifting expert.</span>
-          </a>
-          <button class="gbppd-door gbppd-door--stacked" type="button" data-gbppd-concierge>
-            <span data-gb-icon="service-bell" data-gb-icon-size="24"></span>
-            <span class="gbppd-door__name">Talk to us</span>
-            <span class="gbppd-door__say">Ask the concierge, and get an answer now.</span>
-          </button>
-        </div>
       </section>
 
       <!-- ============ 1 · METRICS, THE TOP ROW ============
@@ -1655,33 +1727,15 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
         </div>
       </section>
 
-      <!-- ============ 2 · QUICK ACTIONS, RIGHT UNDER THE METRICS ============ -->
-      <section class="gbppd-widget gbppd-filled" data-gbppd-widget="actions" aria-labelledby="gbppdDoorsTitle">
-        <div class="gbppd-widget__head">
-          <span class="gb-eyebrow" id="gbppdDoorsTitle">Quick actions</span>
-        </div>
-        <div class="gbppd-doors gbppd-widget__body">
-          <a class="gbppd-door" href="catalog/index.html">
-            <span data-gb-icon="grid" data-gb-icon-size="20"></span>
-            <span class="gbppd-door__name">Explore gifts</span>
-          </a>
-          <a class="gbppd-door" href="#">
-            <span data-gb-icon="plus" data-gb-icon-size="20"></span>
-            <span class="gbppd-door__name">Create a campaign</span>
-          </a>
-          <!-- The concierge, and it wears the concierge's own glyph:
-               the cloche is his mark everywhere else in the house. It
-               opens the drawer here, on this page, rather than
-               throwing the person at the home page. -->
-          <button class="gbppd-door" type="button" data-gbppd-concierge>
-            <span data-gb-icon="service-bell" data-gb-icon-size="20"></span>
-            <span class="gbppd-door__name">Talk to us</span>
-          </button>
-        </div>
-      </section>
+      <!-- THE QUICK ACTIONS STRIP DISSOLVED HERE (10.09, Ton's own
+           architecture). Its three doors did not die: each one went
+           home to the block it belongs to, because an action about
+           gifts belongs over the gifts and an action about campaigns
+           over the campaigns. A shelf of errands standing apart from
+           the things they act on was one zone too many. -->
 
       <!-- ============ 3 · THE BOARD, THREE EQUAL COLUMNS ============ -->
-      <div class="gbppd-cols gbppd-filled">
+      <div class="gbppd-cols">
 
         <!-- ---------- LEFT: THE GIFTS, IN THREE TABS ----------
              gbppl-portal-dashboard-4. Ton, 10.09: the gift zone is
@@ -1712,6 +1766,11 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
               <h2 class="gbppd-zone" id="gbppdGiftsTitle">My Gifts</h2>
               <a class="gbppd-more" href="portal.html">See all</a>
             </div>
+            <a class="gbppd-act" href="catalog/index.html">
+                <span data-gb-icon="grid" data-gb-icon-size="20"></span>
+                <span class="gbppd-act__name">Explore gifts</span>
+                <span class="gbppd-act__say">See what we curate, by occasion and by budget.</span>
+              </a>
             <div class="gbppd-tabs" role="tablist" aria-label="Gifts by state">
                 <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-way"  aria-selected="true"  aria-controls="pane-way"  data-gbppd-tab="way">On the way</button>
                 <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-done" aria-selected="false" aria-controls="pane-done" data-gbppd-tab="done">Delivered</button>
@@ -1726,31 +1785,28 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
               <a class="gbppd-row" id="ord-coffee" href="#ord-coffee" data-gbppd-order="ord-coffee">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1094-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Coffee Lover Set<span class="gb-badge gb-badge--quiet gb-badge--info">On the way</span></span>
+                  <span class="gbppd-row__what"><span class="gbppd-row__title">Coffee Lover Set</span><span class="gb-badge gb-badge--quiet gb-badge--info">On the way</span></span>
                   <span class="gbppd-row__who">Direct order</span>
                   <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 75%"></span></span><span class="gbppd-row__far">18 of 24 delivered</span></span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <a class="gbppd-row" id="ord-amalfi" href="#ord-amalfi" data-gbppd-order="ord-amalfi">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Taste of Amalfi<span class="gb-badge gb-badge--quiet gb-badge--info">On the way</span></span>
+                  <span class="gbppd-row__what"><span class="gbppd-row__title">Taste of Amalfi</span><span class="gb-badge gb-badge--quiet gb-badge--info">On the way</span></span>
                   <span class="gbppd-row__who">New Hire Welcome</span>
                   <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 42%"></span></span><span class="gbppd-row__far">5 of 12 delivered</span></span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <a class="gbppd-row" id="ord-holiday" href="#camp-holiday" data-gbppd-order="ord-holiday">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1118-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Winter Reserve Box<span class="gb-badge gb-badge--quiet gb-badge--error">On hold</span></span>
+                  <span class="gbppd-row__what"><span class="gbppd-row__title">Winter Reserve Box</span><span class="gb-badge gb-badge--quiet gb-badge--error">On hold</span></span>
                   <span class="gbppd-row__who">Holiday Client Gifts</span>
                   <span class="gbppd-far gbppd-far--stopped"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 2%"></span></span><span class="gbppd-row__far">Nothing shipped yet</span></span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
             </div>
@@ -1763,21 +1819,19 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
               <a class="gbppd-row" id="ord-founders" href="#ord-founders" data-gbppd-order="ord-founders">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1106-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Founders Day Box<span class="gb-badge gb-badge--quiet gb-badge--success">Delivered</span></span>
+                  <span class="gbppd-row__what"><span class="gbppd-row__title">Founders Day Box</span><span class="gb-badge gb-badge--quiet gb-badge--success">Delivered</span></span>
                   <span class="gbppd-row__who">Direct order &middot; 22 August</span>
                   <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 100%"></span></span><span class="gbppd-row__far">All 30 delivered</span></span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <a class="gbppd-row" id="ord-thankyou" href="#ord-thankyou" data-gbppd-order="ord-thankyou">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1112-main.webp" alt="" loading="lazy"></span>
                 <span>
-                  <span class="gbppd-row__what">Client Thank You<span class="gb-badge gb-badge--quiet gb-badge--success">Delivered</span></span>
+                  <span class="gbppd-row__what"><span class="gbppd-row__title">Client Thank You</span><span class="gb-badge gb-badge--quiet gb-badge--success">Delivered</span></span>
                   <span class="gbppd-row__who">Direct order &middot; 2 August</span>
                   <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 100%"></span></span><span class="gbppd-row__far">All 15 delivered</span></span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
             </div>
@@ -1792,7 +1846,6 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-row__what">Famous Caymus Collection</span>
                   <span class="gbppd-row__who">$130 - $195</span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
               <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy"></span>
@@ -1800,7 +1853,6 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-row__what">Taste of Amalfi</span>
                   <span class="gbppd-row__who">$200</span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
               <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1094-main.webp" alt="" loading="lazy"></span>
@@ -1808,7 +1860,6 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-row__what">Beats Solo Buds</span>
                   <span class="gbppd-row__who">$150</span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
               <a class="gbppd-row gbppd-favrow" href="catalog/index.html">
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1106-main.webp" alt="" loading="lazy"></span>
@@ -1816,7 +1867,6 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                   <span class="gbppd-row__what">Stags' Leap Wine Night and Day</span>
                   <span class="gbppd-row__who">$195 - $290</span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <p class="gbppd-none" hidden>Nothing saved yet. <a href="catalog/index.html">Explore gifts</a> and tap the heart on anything you like.</p>
@@ -1837,6 +1887,11 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                  researched, and a tab for it would be us teaching the
                  client our guess. It is the first candidate to join
                  this row after the portal recon. -->
+            <a class="gbppd-act" href="#">
+                <span data-gb-icon="plus" data-gb-icon-size="20"></span>
+                <span class="gbppd-act__name">Create a campaign</span>
+                <span class="gbppd-act__say">Send one gift to a list of people, on one schedule.</span>
+              </a>
             <div class="gbppd-tabs" role="tablist" aria-label="Campaigns by type">
               <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-camp-all"  aria-selected="true"  aria-controls="pane-camp" data-gbppd-filter="all">All</button>
               <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-camp-ful"  aria-selected="false" aria-controls="pane-camp" data-gbppd-filter="fulfillment">Fulfillment</button>
@@ -1852,11 +1907,10 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1118-main.webp" alt="" loading="lazy"></span>
                 <span>
                   <span class="gb-eyebrow gbppd-row__type">Fulfillment</span>
-                  <span class="gbppd-row__what">Holiday Client Gifts<span class="gb-badge gb-badge--quiet gb-badge--error">On hold</span></span>
+                  <span class="gbppd-row__what"><span class="gbppd-row__title">Holiday Client Gifts</span><span class="gb-badge gb-badge--quiet gb-badge--error">On hold</span></span>
                   <span class="gbppd-row__who">Winter Reserve Box &middot; 48 recipients</span>
                   <span class="gbppd-far gbppd-far--stopped"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 2%"></span></span><span class="gbppd-row__far">Nothing shipped yet</span></span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <!-- THE EMAIL CAMPAIGN, AND IT IS THE MULTI GIFT ONE.
@@ -1873,11 +1927,10 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                 <span class="gbppd-thumbwrap"><img class="gbppd-thumb" src="../system/assets/products/1081-main.webp" alt="" loading="lazy"><span class="gbppd-more-count" aria-hidden="true">+2</span></span>
                 <span>
                   <span class="gb-eyebrow gbppd-row__type">Email</span>
-                  <span class="gbppd-row__what">New Hire Welcome<span class="gb-badge gb-badge--quiet gb-badge--info">Delivering</span></span>
+                  <span class="gbppd-row__what"><span class="gbppd-row__title">New Hire Welcome</span><span class="gb-badge gb-badge--quiet gb-badge--info">Delivering</span></span>
                   <span class="gbppd-row__who">3 gift options &middot; 12 recipients</span>
                   <span class="gbppd-far"><span class="gbppd-far__track"><span class="gbppd-far__fill" style="width: 42%"></span></span><span class="gbppd-row__far">5 of 12 delivered</span></span>
                 </span>
-                <span class="gbppd-row__go" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span>
               </a>
 
               <p class="gbppd-none" hidden>No campaign of this type yet. <a href="#">Create a campaign</a> and it will stand here.</p>
@@ -1914,6 +1967,11 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                  The count in the bell, the red tile in the metrics and
                  these two strips are one set of facts said three
                  times, never three sets. -->
+            <button class="gbppd-act" type="button" data-gbppd-concierge>
+                <span data-gb-icon="service-bell" data-gb-icon-size="20"></span>
+                <span class="gbppd-act__name">Talk to us</span>
+                <span class="gbppd-act__say">Ask the concierge, and get an answer now.</span>
+              </button>
             <div class="gbppd-tabs" role="tablist" aria-label="Activity by state">
               <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-act-all"  aria-selected="true"  aria-controls="pane-act" data-gbppd-act="all">All</button>
               <button class="gb-eyebrow gbppd-tab" type="button" role="tab" id="tab-act-need" aria-selected="false" aria-controls="pane-act" data-gbppd-act="need">Needs action</button>
@@ -2364,6 +2422,9 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
   /* A column with nothing in any of its states is not drawn, and the
      board re-splits into the columns that are left. */
   function reflow() {
+    /* In the empty account every block is its own invitation, so
+       nothing is dropped: the door IS the content (Ton, 10.09). */
+    if (document.documentElement.getAttribute('data-gbppd-state') === 'empty') return;
     [].forEach.call(document.querySelectorAll('.gbppd-col'), function (col) {
       if (col.getAttribute('data-gbppd-off') === '1') return;   /* Customize owns that one */
       var live = 0;
@@ -2477,8 +2538,8 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                '<div class="gbppd-card" style="margin-top: var(--space-16); padding: 0 var(--space-16)">';
     o.rows.forEach(function (r) {
       html += '<div class="gbppd-dr__row">' +
-              '<span><span class="gbppd-row__what">' + r.what +
-              '<span class="gb-badge gb-badge--' + r.tone + '">' + r.state + '</span></span>' +
+              '<span><span class="gbppd-row__what"><span class="gbppd-row__title">' + r.what +
+              '</span><span class="gb-badge gb-badge--' + r.tone + '">' + r.state + '</span></span>' +
               '<span class="gbppd-row__who">' + r.who + '</span></span></div>';
     });
     return html + '</div>';
@@ -2581,8 +2642,8 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
                '<div class="gbppd-card" style="margin-top: var(--space-16); padding: 0 var(--space-16)">';
     m.rows.forEach(function (r) {
       html += '<a class="gbppd-dr__row" href="#dashboard">' +
-              '<span><span class="gbppd-row__what">' + r.what +
-              '<span class="gb-badge gb-badge--' + (r.tone || 'quiet') + '">' + r.state + '</span></span>' +
+              '<span><span class="gbppd-row__what"><span class="gbppd-row__title">' + r.what +
+              '</span><span class="gb-badge gb-badge--' + (r.tone || 'quiet') + '">' + r.state + '</span></span>' +
               '<span class="gbppd-row__who">' + r.who + '</span></span></a>';
     });
     return html + '</div>';
