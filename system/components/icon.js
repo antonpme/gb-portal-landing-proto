@@ -402,6 +402,24 @@
       from: 'catalog.js: the filters toggle',
       stroke: 1.5
     },
+    /* SLIDERS (gbppl-portal-dashboard-8, 10.09). Ton off the
+       dashboard's Customize button: the glyph there read as a FILTER,
+       and it was one — `filters` is literally the catalogue's own
+       funnel of three lines. This is the настройка motif instead:
+       three tracks with a handle on each, which says «arrange what
+       you see» and cannot be mistaken for narrowing a list.
+       Nucleo 48-sliders-2.svg, halved to the 24 grid coordinate for
+       coordinate (43->21.5, 38->19, 5->2.5, r 5.5->2.75): the drawing
+       is the set's, the arithmetic is exact, nothing is redrawn by
+       hand. First carrier: the Customize button of the dashboard. */
+    'sliders': {
+      body: '<path d="M21.5 12h-2.5M11 12H2.5M2.5 19.5H5M21.5 19.5H13M2.5 4.5H5M21.5 4.5H13"/>' +
+            '<circle cx="16.25" cy="12" r="2.75"/>' +
+            '<circle cx="7.75" cy="19.5" r="2.75"/>' +
+            '<circle cx="7.75" cy="4.5" r="2.75"/>',
+      from: 'assets/nucleo-full/48-sliders-2.svg -> the dashboard Customize button, 10.09',
+      stroke: 1.5
+    },
     /* ---- СЕМЬ ГЛИФОВ КОНСОЛИ 2.0 (gbppl-panel2-build-1, 03.09) ----
        Первые четыре — разделы студии: дом = Hub, глобус = Live
        Prototype (то, что опубликовано миру), колба = Sandbox (то, что
