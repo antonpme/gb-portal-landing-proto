@@ -125,6 +125,52 @@
                gbb:exit {href} (cancelable)
      свойство  el.adapter (submitLead / fetchSlots / book)
    ============================================================ */
+
+/* ============================================================
+   gbppl-concierge-auth-1 — ОРГАНИЗМ УЧИТСЯ СТОЯТЬ В ДРОВЕРЕ.
+   2026-09-10. layout="embedded".
+
+   Тон, по скрину букинга внутри дровера консьержа: внутренний
+   тайтл «Pick a time» становится айбрау, второй крупный заголовок
+   умирает (роль заголовка забрала шапка дровера), подпись про
+   пятнадцать минут — важный факт и обязана звучать нормальным
+   вторичным голосом сразу под шапкой, степпер из дровера снимается
+   целиком («2 шага мебели не заслуживают»), а CONFIRM переезжает в
+   ПОДВАЛ ДРОВЕРА.
+
+   САМОСТОЯТЕЛЬНАЯ СТРАНИЦА БУКИНГА НЕ МЕНЯЕТСЯ НИ ПИКСЕЛЕМ, и это
+   гейт волны: без атрибута ни одна ветка ниже не исполняется, ни
+   один шаблон не отдаёт другой строки, ни один узел не уезжает.
+   Проверено поузлово на трёх ширинах.
+
+   ЧТО ДЕЛАЕТ РЕЖИМ
+     степпер   не рисуется вовсе. Информация из него не теряется:
+               ИМЯ ШАГА СТАНОВИТСЯ АЙБРАУ уровня («Details», «Pick
+               a time»), то есть каждый уровень называет себя сам —
+               и трёхшаговый гостевой поток в дровере не остаётся
+               без ориентира, потеряв рельсу.
+     шапка     .gbb-head = факт встречи вторичным голосом ПЕРВОЙ
+               строкой (сразу под шапкой дровера), под ним айбрау с
+               именем шага. Серифного h2 в режиме нет.
+     подвал    организм НЕ рисует свою кнопку в теле. Он собирает
+               подвал шага (.gbb-footbar: строка таймзоны и сабмит)
+               и ОТДАЁТ ЕГО ХОЗЯИНУ событием gbb:cta {node}. Дровер
+               рисует подвал сам, тело между шапкой и подвалом
+               скроллится, Confirm виден всегда, строка таймзоны
+               стоит над ним и не уезжает со скроллом.
+               Шаг 3 отдаёт node: null — подвала у конфирмации нет.
+     страница  paint() в этом режиме не двигает страницу скроллом:
+               уровень живёт внутри чужой прокручиваемой панели.
+
+   Узлы подвала — ТЕ ЖЕ САМЫЕ узлы шаблона, а не копии: они
+   переезжают целиком, поэтому вся проводка шага (слушатель Confirm,
+   syncConfirm, paintTz) работает без единой ветки. Найти их после
+   переезда помогает role(), у которой появился ящик __loose.
+
+   Публичный API организма после этой волны:
+     атрибуты  + layout="embedded"
+     события   + gbb:cta {node} — подвал шага или null
+   ============================================================ */
 (function () {
   'use strict';
 
@@ -410,9 +456,30 @@
     return '<div class="gbb-steps" role="group" aria-label="Booking steps">' + html + '</div>';
   }
 
+  /* ФАКТ ВСТРЕЧИ, ОДНОЙ СТРОКОЙ И В ОДНОМ МЕСТЕ. Он стоял литералом
+     в шаблоне шага 2; с embedded его носят два шаблона, и вторая
+     копия разошлась бы с первой на первой же правке копии. */
+  var MEETING_FACT = '15 minutes with a gifting specialist, on Zoom.';
+
+  /* ШАПКА УРОВНЯ В ДРОВЕРЕ (layout="embedded", gbppl-concierge-auth-1).
+     Порядок читается сверху вниз ровно так, как просил Тон: факт
+     встречи первой строкой СРАЗУ ПОД ШАПКОЙ ДРОВЕРА, под ним айбрау
+     с именем шага. Крупного заголовка нет — он у дровера.
+     Капс-голос здесь ЕДИНСТВЕННЫЙ системный: .gb-eyebrow (12 / 600 /
+     0.12em / Zinc 500, shell.css). Своего капса организм не заводит,
+     .gbb-eyebrow держит только поле. */
+  var EMB_HEAD = function (name) {
+    return (
+      '<header class="gbb-head">' +
+        '<p class="gbb-sub">' + MEETING_FACT + '</p>' +
+        '<p class="gb-eyebrow gbb-eyebrow">' + esc(name) + '</p>' +
+      '</header>'
+    );
+  };
+
   /* ---------------- ШАГ 1: ЛИД-ФОРМА ---------------- */
 
-  var STEP1_TEMPLATE = function (values) {
+  var STEP1_TEMPLATE = function (values, emb) {
     var options = '';
     for (var i = 0; i < COUNTRIES.length; i++) {
       options +=
@@ -430,7 +497,13 @@
       '<div class="gbb-panel">' +
         /* Заголовка у живой карточки НЕТ: она открывается сразу
            полем Email. Наш h2 «Tell us about yourself» снят вместе с
-           правилом компакта, которое его прятало (gbppl-booking-4). */
+           правилом компакта, которое его прятало (gbppl-booking-4).
+           В ДРОВЕРЕ (embedded) шапка уровня есть, и это не отход от
+           лайва: живой страницы в дровере нет вовсе, а уровень без
+           имени в трёхшаговом потоке без рельсы — это уровень, о
+           котором нечего сказать. Имя берётся из имён самого
+           степпера, который режим снял. */
+        (emb ? EMB_HEAD(STEP_NAMES[0]) : '') +
         '<form novalidate class="gba-form gbb-lead" autocomplete="on" data-role="form">' +
           '<gb-field input-id="gbb_email" name="email" type="email" label="Email"' + FLOW +
             ' autocomplete="email"' +
@@ -499,13 +572,19 @@
 
   /* ---------------- ШАГ 2: КАЛЕНДАРЬ И СЛОТЫ ---------------- */
 
-  var STEP2_TEMPLATE = function (known) {
+  var STEP2_TEMPLATE = function (known, emb) {
     return (
       '<div class="gbb-panel">' +
-        '<header class="gbb-head">' +
-          '<h2 class="gbb-title">Pick a time</h2>' +
-          '<p class="gbb-sub">15 minutes with a gifting specialist, on Zoom.</p>' +
-        '</header>' +
+        /* Тон, 10.09, по скрину букинга в дровере: «Pick a time» —
+           айбрау, второй крупный заголовок умирает, факт про
+           пятнадцать минут звучит нормальным вторичным голосом
+           сразу под шапкой дровера. Вне дровера шапка шага та же,
+           что была: серифный h2 и подпись под ним. */
+        (emb ? EMB_HEAD(STEP_NAMES[1]) :
+          '<header class="gbb-head">' +
+            '<h2 class="gbb-title">Pick a time</h2>' +
+            '<p class="gbb-sub">' + MEETING_FACT + '</p>' +
+          '</header>') +
         '<div class="gbb-cal-head">' +
           '<span class="gbb-cal-month" data-role="month">&nbsp;</span>' +
           '<span class="gbb-cal-arrows">' +
@@ -652,21 +731,71 @@
        предыдущего, и страница остаётся прокрученной туда, где
        больше ничего нет. Первая отрисовка не двигает страницу — на
        неё только что пришли. */
+    /* Читается ЖИВЬЁМ, а не кэшируется в connectedCallback: хозяин
+       вправе поставить организм в дровер и снять оттуда, а атрибут
+       — единственный источник правды о том, где он сейчас стоит. */
+    embedded() { return this.getAttribute('layout') === 'embedded'; }
+
     paint(active, html) {
-      this.innerHTML = stepsHTML(active, this.__names) + html;
+      var emb = this.embedded();
+      /* Степпер в дровере снят целиком (Тон 10.09). Не спрятан
+         правилом: две засечки мебели не заслуживают, а спрятанный
+         узел всё равно стоит в разметке для того, кто её читает. */
+      this.innerHTML = (emb ? '' : stepsHTML(active, this.__names)) + html;
       if (!this.__painted) { this.__painted = true; return; }
+      /* Уровень внутри дровера страницу под собой не двигает: он
+         живёт в чужой прокручиваемой панели, и «вернуть верх флоу
+         под шапку» здесь значит дёрнуть документ, который вообще не
+         виден. Прокрутку тела ведёт дровер. */
+      if (emb) return;
       var top = this.getBoundingClientRect().top;
       var bar = parseInt(getComputedStyle(document.documentElement)
         .getPropertyValue('--header-h'), 10) || 80;
       if (top > bar && top < window.innerHeight * 0.5) return;
       window.scrollTo({ top: window.scrollY + top - bar - 24, behavior: 'smooth' });
     }
-    role(name) { return this.querySelector('[data-role="' + name + '"]'); }
+
+    /* Роль ищется СНАЧАЛА среди отданных наружу узлов. В embedded
+       подвал шага уезжает в чужой контейнер (.gbd-foot дровера), и
+       querySelector по себе его уже не находит; ящик __loose держит
+       те же самые узлы, поэтому syncConfirm и paintTz работают без
+       единой ветки на режим. */
+    role(name) {
+      var loose = this.__loose && this.__loose[name];
+      return loose || this.querySelector('[data-role="' + name + '"]');
+    }
+
+    /* ---- ПОДВАЛ ШАГА УЕЗЖАЕТ К ХОЗЯИНУ ----------------------
+       gbppl-concierge-auth-1. Канон чекаут-дроверов: подвал рисует
+       дровер, а организм отдаёт ему содержимое. Отдаются ТЕ ЖЕ
+       узлы шаблона (не копии), поэтому проводка шага их не теряет.
+       Событие летит и с пустой рукой: node null означает «у этого
+       шага подвала нет», и хозяин обязан свой подвал очистить. */
+    handFoot(names) {
+      this.__loose = null;
+      if (!this.embedded()) return;
+      var bar = null, i, n;
+      for (i = 0; i < names.length; i++) {
+        n = this.querySelector('[data-role="' + names[i] + '"]');
+        if (!n) continue;
+        if (!bar) { bar = document.createElement('div'); bar.className = 'gbb-footbar'; }
+        if (!this.__loose) this.__loose = {};
+        bar.appendChild(n);
+        this.__loose[names[i]] = n;
+      }
+      /* Ряд, из которого забрали кнопку, — уже не ряд. */
+      var row = this.querySelector('.gbb-leadcta');
+      if (row && !row.children.length && row.parentNode) row.parentNode.removeChild(row);
+      this.dispatchEvent(new CustomEvent('gbb:cta', {
+        bubbles: true, detail: { node: bar }
+      }));
+    }
 
     /* ============ ШАГ 1 ============ */
 
     renderStep1() {
-      this.paint(0, STEP1_TEMPLATE(this.__lead));
+      this.paint(0, STEP1_TEMPLATE(this.__lead, this.embedded()));
+      this.handFoot(['continue']);
       var self = this;
 
       /* Ротация плейсхолдера — живой паттерн страницы. Стартуем со
@@ -825,7 +954,11 @@
     /* ============ ШАГ 2 ============ */
 
     renderStep2() {
-      this.paint(this.__known ? 0 : 1, STEP2_TEMPLATE(this.__known));
+      this.paint(this.__known ? 0 : 1, STEP2_TEMPLATE(this.__known, this.embedded()));
+      /* Порядок в подвале — сначала факт, потом действие: строка
+         таймзоны стоит НАД кнопкой и остаётся на виду, пока
+         календарь и слоты скроллятся над ней. */
+      this.handFoot(['tz', 'confirm']);
       var self = this;
       this.__pickedDay = null;
       this.__pickedSlot = null;
@@ -992,6 +1125,8 @@
       var href = this.getAttribute('site-href') || '#';
       this.paint(this.__known ? 1 : 2,
         STEP3_TEMPLATE(view, href, this.getAttribute('exit-label') || EXIT_LABEL));
+      /* Конфирмация ничего не просит: подвал дровера пустеет. */
+      this.handFoot([]);
 
       /* Заглушка «Add to calendar»: .ics соберётся вместе с API,
          сейчас ссылка честно ничего не делает. */
