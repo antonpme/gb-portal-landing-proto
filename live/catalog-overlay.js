@@ -95,8 +95,34 @@
     mount();
     if (!frame.getAttribute('src')) frame.setAttribute('src', frame.getAttribute('data-src'));
   }
+  /* THE SHOWCASE IS NAV AND GIFTS, NOTHING ELSE (Ton, night of
+     10.09). ?embed=1 is v1's own flag and it takes the bundle's
+     header off, but the page we frame is OUR wrapper: it wears the
+     system header and the catalogue hero on top of the app, and in
+     a panel that opens over a portal both are furniture the person
+     already has. The frame is same-origin, so the overlay says so
+     to the document inside it, once per load, and nothing in the
+     vendored copy has to be forked for a showcase. */
+  var STRIP =
+    'gb-site-header,gb-site-footer,gb-catalog-hero,' +
+    '#root header.site-header,#root footer.footer,#root section.category-hero,' +
+    '#root section.experience,gb-banner-conversation,gb-advantages,' +
+    'button.back-to-top,button.floating-gifting-help{display:none!important}' +
+    '.category-nav{top:0!important}' +
+    'html{scroll-padding-top:0!important}';
+  function strip() {
+    try {
+      var d = frame.contentDocument;
+      if (!d || d.getElementById('gbppd-cat-strip')) return;
+      var st = d.createElement('style');
+      st.id = 'gbppd-cat-strip';
+      st.textContent = STRIP;
+      (d.head || d.documentElement).appendChild(st);
+    } catch (e) {}   /* a cross-origin frame keeps its own chrome, and that is honest */
+  }
   frame.addEventListener('load', function () {
     loaded = true;
+    strip();
     if (overlay.classList.contains('open')) reveal();
   });
   function reveal() {
