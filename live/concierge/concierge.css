@@ -28,6 +28,11 @@
    three hover candidates for the top navigation. They dress the
    canonical header, not the concierge, and they are a question in
    flight rather than a part of this experience.
+
+   gbppl-concierge-check-1 (10.09, the acceptance run before the
+   showing): one rule changed here, .gbhc-pill__name stops shrinking,
+   because the unread plate was cutting the speaker's name to make
+   room for the message. Two more sit in concierge.js.
    ============================================================ */
 
 /* ============================================================
@@ -872,8 +877,18 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
 .gbhc-pill__open:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px var(--gb-btn-focus-ring); }
 .gbhc-pill__dot { margin-right: var(--space-8); }
 .gbhc-pill__dot[hidden] { display: none; }
+/* THE NAME IS NOT THE PART THAT GIVES WAY (gbppl-concierge-check-1,
+   10.09). The name and the echo were both shrinkable flex items, so
+   when the unread line arrived the browser took width off BOTH in
+   proportion and «Brad Smaling» became «Bra…» beside two hundred
+   pixels of quoted message — at 1280 and at 360 alike. The plate is
+   there to say WHO is talking; the echo is the extra. So the name
+   holds its ground and the echo takes what is left, which is what its
+   own minmax(0, 1fr) track was already written to do. The ellipsis
+   below stays as the last resort for a name longer than the plate. */
 .gbhc-pill__name {
   min-width: 0;
+  flex: 0 0 auto;
   font-size: 14px;                /* the secondary rung; the plate is furniture, not a heading */
   font-weight: 600;
   line-height: 1.5;

@@ -58,6 +58,16 @@
    NO prefers-reduced-motion BRANCH ANYWHERE, and that is Ton-7 read
    strictly plus Ton 09.09: animation is off at the OS level on his
    machine and it has to play anyway.
+
+   gbppl-concierge-check-1 (10.09, the acceptance run before the
+   showing). Two things this file was getting wrong, both found with
+   the instrument and neither visible at a desk with a 60Hz screen:
+     whenBuilt capped the wait for the calendar in ANIMATION FRAMES,
+       so on a fast display the cap fired before the organism had
+       drawn and the level set off with an empty box;
+     riseChat hid the plate without reading it, so an answer that
+       arrived while the chat was down stayed marked unread and the
+       next minimise quoted a line the guest had already seen.
    ============================================================ */
 (function () {
   'use strict';
@@ -668,8 +678,21 @@
        laid out, its grid measured, the fonts landed — and only a
        finished level is asked to move. Nothing is invented to look
        at while waiting, because nothing is waiting on screen. */
+    /* AND THE CAP IS A CLOCK, NOT A COUNT OF FRAMES (gbppl-concierge-
+       check-1, 10.09). The line above says «the cap is a second» and
+       it meant it; sixty animation frames only ARE a second on a 60Hz
+       screen. Measured on a 166Hz display: sixty frames run out at
+       368ms, the booking organism's own adapter answers at 420 and the
+       grid gets its height at 487 — so the cap fired first, the level
+       set off with an empty box, and «календарь появляется с
+       задержкой» came straight back on exactly the machines nobody
+       tests on. The wait it is protecting against is measured in
+       milliseconds of a person's patience, so it is written in them.
+       Родня ловушки 27: the measuring machine's display is not the
+       world's, and here it reached inside the product. */
+    function now() { return window.performance ? performance.now() : Date.now(); }
     function whenBuilt(host, done) {
-      var tries = 0, fonts = !(document.fonts && document.fonts.ready);
+      var deadline = now() + 1000, fonts = !(document.fonts && document.fonts.ready);
       if (!fonts) document.fonts.ready.then(function () { fonts = true; });
       /* The poll starts NOW and the fonts are a condition inside it, not
          a gate in front of it: waiting for the font promise before even
@@ -679,7 +702,7 @@
       var look = function () {
         var grid = host.querySelector('.gbb-cal-grid');
         var ready = fonts && grid && grid.getBoundingClientRect().height > 0;
-        if (ready || ++tries > 60) { done(); return; }
+        if (ready || now() > deadline) { done(); return; }
         window.requestAnimationFrame(look);
       };
       look();
@@ -1064,6 +1087,17 @@
 
     function riseChat(which) {
       dress(which);
+      /* THE WINDOW IS THE READING OF THE PLATE, whichever road brought
+         it up (gbppl-concierge-check-1, 10.09). expand() clears the
+         unread mark because the plate was tapped; coming back through
+         the bell and the Live chat door left it set, and the NEXT
+         minimise showed a wide plate quoting a line the guest had
+         already read. The plate's own rule is that it says something
+         in one case only — an answer arrived while the window was
+         down — and a stale echo breaks it. One place to clear it is
+         wrong; both places are the window coming up. */
+      pill.classList.remove('is-unread');
+      pillLast.textContent = '';
       pill.hidden = true;
       chat.hidden = false;
       chat.classList.remove('is-in', 'is-morph', 'is-shut', 'is-nomo');
