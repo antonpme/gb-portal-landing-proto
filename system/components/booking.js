@@ -467,17 +467,19 @@
   var BRIEF_QUESTION = 'How can GildedBox help with gifting in your business?';
   var BRIEF_LABEL = 'Gifting needs';
 
-  /* ШАПКА УРОВНЯ В ДРОВЕРЕ (layout="embedded", gbppl-concierge-auth-1).
-     Порядок читается сверху вниз ровно так, как просил Тон: факт
-     встречи первой строкой СРАЗУ ПОД ШАПКОЙ ДРОВЕРА, под ним айбрау
-     с именем шага. Крупного заголовка нет — он у дровера.
-     Капс-голос здесь ЕДИНСТВЕННЫЙ системный: .gb-eyebrow (12 / 600 /
-     0.12em / Zinc 500, shell.css). Своего капса организм не заводит,
-     .gbb-eyebrow держит только поле. */
+  /* ШАПКА УРОВНЯ В ДРОВЕРЕ (layout="embedded").
+     gbppl-concierge-auth-1 поставил сюда ДВЕ строки: факт встречи
+     вторичным голосом и айбрау с именем шага.
+     gbppl-concierge-auth-3 (10.09) СНЯЛ ФАКТ. Тон по скрину уровня:
+     «три разных шрифта рядом, никакой иерархии, позор, показывать
+     стыдно», и про саму строку — «эти 15 минут нафиг не нужны».
+     Замены нет и не искалась: строка ушла, а не переехала.
+     Осталась ОДНА строка и ОДИН голос — .gb-eyebrow (12 / 600 /
+     0.12em / Zinc 500, shell.css), единственный капс системы.
+     Своего капса организм не заводит, .gbb-eyebrow держит поле. */
   var EMB_HEAD = function (name) {
     return (
       '<header class="gbb-head">' +
-        '<p class="gbb-sub">' + MEETING_FACT + '</p>' +
         '<p class="gb-eyebrow gbb-eyebrow">' + esc(name) + '</p>' +
       '</header>'
     );
@@ -629,12 +631,16 @@
   var STEP2_TEMPLATE = function (known, emb) {
     return (
       '<div class="gbb-panel">' +
-        /* Тон, 10.09, по скрину букинга в дровере: «Pick a time» —
-           айбрау, второй крупный заголовок умирает, факт про
-           пятнадцать минут звучит нормальным вторичным голосом
-           сразу под шапкой дровера. Вне дровера шапка шага та же,
-           что была: серифный h2 и подпись под ним. */
-        (emb ? EMB_HEAD(STEP_NAMES[1]) :
+        /* ДВА ШАГА, ДВА ЗАГОЛОВКА, ОДИН ГОЛОС (gbppl-concierge-auth-3,
+           Тон 10.09). До этой правки уровень врал порядком: над
+           КАЛЕНДАРЁМ стояло «Pick a time», а над слотами «TIME,
+           CENTRAL», и два заголовка спорили, кто из них про время.
+           Сначала выбирают ДАТУ, потом ВРЕМЯ, и подписи теперь
+           говорят ровно это: PICK A DATE над сеткой месяца, PICK A
+           TIME над чипами. Оба айбрау, оба одной ролью.
+           Вне дровера шапка шага та же, что была: серифный h2 и
+           подпись под ним. */
+        (emb ? EMB_HEAD('Pick a date') :
           '<header class="gbb-head">' +
             '<h2 class="gbb-title">Pick a time</h2>' +
             '<p class="gbb-sub">' + MEETING_FACT + '</p>' +
@@ -647,9 +653,22 @@
           '</span>' +
         '</div>' +
         '<div class="gbb-cal-grid" data-role="grid"></div>' +
-        '<p class="gb-eyebrow gbb-slot-label" data-role="slot-label">Time, Central</p>' +
+        /* ЗОНА СТОИТ ПРИ ЗАГОЛОВКЕ ВРЕМЕНИ И БОЛЬШЕ НИГДЕ
+           (gbppl-concierge-auth-3). Тон: пилюли зон и автоперевод в
+           пояс гостя убрать целиком — «99% клиентов в США, сами
+           переведут». Осталось одно тихое пояснение справа от
+           заголовка: те же 12 и тот же Zinc 500, что у айбрау, без
+           капса и без 600 — это айбрау, который не кричит, а не
+           третий шрифт (см. закон поверхности в booking.css). */
+        (emb
+          ? '<p class="gbb-slot-label gbb-slot-head" data-role="slot-label">' +
+              '<span class="gb-eyebrow">Pick a time</span>' +
+              '<span class="gbb-zone">Central time</span>' +
+            '</p>'
+          : '<p class="gb-eyebrow gbb-slot-label" data-role="slot-label">Time, Central</p>') +
         '<div data-role="slots"></div>' +
-        '<p class="gbb-tz" data-role="tz"></p>' +
+        /* Строка перевода зон живёт только вне дровера. */
+        (emb ? '' : '<p class="gbb-tz" data-role="tz"></p>') +
         btnHTML('Confirm', { id: 'confirm', disabled: true }) +
         /* Дорога назад существует, только если сзади есть шаг:
            своему возвращаться некуда, форму он не заполнял. */
@@ -1040,10 +1059,11 @@
 
     renderStep2() {
       this.paint(this.__known ? 0 : 1, STEP2_TEMPLATE(this.__known, this.embedded()));
-      /* Порядок в подвале — сначала факт, потом действие: строка
-         таймзоны стоит НАД кнопкой и остаётся на виду, пока
-         календарь и слоты скроллятся над ней. */
-      this.handFoot(['tz', 'confirm']);
+      /* В подвале дровера теперь ОДНА кнопка. Строка таймзоны
+         стояла здесь с gbppl-concierge-auth-1 и снята вместе со
+         всем переводом зон (Тон 10.09): зона говорится один раз,
+         тихо, при заголовке времени. */
+      this.handFoot(['confirm']);
       var self = this;
       this.__pickedDay = null;
       this.__pickedSlot = null;
@@ -1174,6 +1194,10 @@
        — часы гостя. Совпали зоны, второй строки нет. */
     paintTz() {
       var out = this.role('tz');
+      /* В дровере строки перевода зон нет вовсе (Тон 10.09), и
+         шаблон её не печатает. Метод остаётся один на оба облика и
+         просто молчит, когда говорить некуда. */
+      if (!out) return;
       var sameZone = this.__guestTz === HOST_TZ;
       if (!this.__pickedSlot) {
         out.innerHTML = 'Times are shown in Central time (Chicago).' +
