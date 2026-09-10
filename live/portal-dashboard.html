@@ -770,43 +770,55 @@ a.gbppd-problem__title:hover { text-decoration: underline; }
 /* ============ THE BAR: TWO ADDITIONS, AS DECORATION ============
    Both hang off .gbppd- and neither is in header.css. */
 
-/* The signed in person. The live portal puts the account at the
-   foot of the sidebar, and a dashboard that says «Anton, GildedBox»
-   in the bar is a proposal: a disc of initials and one line, no
-   chevron, no menu (the menu is phase 2). */
-.gbppd-me {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  padding-left: var(--space-8);
-}
-.gbppd-me__disc {
-  display: grid;
-  place-items: center;
-  width: var(--space-32);
-  height: var(--space-32);
-  border-radius: var(--radius-circle);
-  background: var(--zinc-900);
-  color: var(--white);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .04em;
-}
-.gbppd-me__who {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.2;
-  color: var(--zinc-900);
-  white-space: nowrap;
-}
-.gbppd-me__org {
-  display: block;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--zinc-500);
-}
+/* THE IDENTITY IN THE BAR IS GONE (Ton, 10.09: «не обсуждался и не
+   планировался»). It was this page's own proposal, a disc of initials
+   and a name after the cart, and the answer is that the account
+   already stands in the rail exactly where the live portal puts it:
+   Anton, Company, Email, in the first block. Saying it twice on one
+   screen made the bar the second place to look for the same fact.
+
+   Nothing else in the bar moves: the cluster is .gbh-pbar__actions
+   with its own gap of 12, and the identity was one more child of it,
+   so removing it takes its gap with it. Measured after, at 1280 and
+   at 360, both signed in and guest. */
+
+/* ONE CHROME AT A TIME (the pth-rule of live\portal.html, carried).
+   The page holds both bars in the DOM and shows exactly one. */
+body[data-pth] .gb-header { display: none; }
+body:not([data-pth]) .gbh-pbar { display: none; }
+
+/* ============ THE GLYPH ROW IS ONE RECIPE ============
+   gbppl-portal-dashboard-5. Ton, off the frame: «иконки ряда
+   разнобойные, корзинка маленькая, лупа кажется поломанной, все кроме
+   клоша слишком светлые».
+
+   MEASURED BEFORE THE FIX, and the surprise is that the geometry was
+   already equal: search, bell and cart all stood in 44x44 slots with
+   22px glyphs at stroke 1.5, exactly like the concierge's cloche. The
+   whole difference was INK: .gbh-pbar__icon paints Zinc 500 and the
+   cloche, which is a .gb-btn--icon, paints Zinc 900. One row, two
+   inks, and the lighter three read as faded and half-broken next to
+   the black one.
+
+   SO THE ROW GOES ON THE ONE RECIPE THE CLOCHE ALREADY WEARS:
+   .gb-btn--icon --ghost --secondary, the organism's own 44 circle,
+   22 glyph, hover wash and Zinc 900 ink, with the drawing coming out
+   of the record by name (search, bell, cart, menu). The stroke seam
+   of the button slot is stepped around the same way the cloche steps
+   around it: the glyph is the record's own svg inside .gb-btn__icon,
+   which sets width and height and never touches stroke.
+
+   The pbar class stays on the buttons for ONE reason: the compact bar
+   at 900 hides the cluster by that name, and header.css loads before
+   button.css, so the display rule needs restating at a specificity
+   the organism cannot outrank. The ink rule of .gbh-pbar__icon is
+   already outranked by the button's two-class ink, which is the point
+   of keeping both names on one element. */
+.gbh-pbar__actions .gb-btn--icon { position: relative; }
 @media (max-width: 900px) {
-  .gbppd-me__who { display: none; }
+  .gbh-pbar__actions .gb-btn--icon.gbh-pbar__icon,
+  .gbh-pbar__actions [data-gbhc-bell] { display: none; }
+  .gbh-pbar__actions .gb-btn--icon.gbh-pbar__burger { display: inline-flex; }
 }
 
 /* The badge of the bell: .gbh-count unmodified, plus the count of
@@ -1004,6 +1016,109 @@ a.snav-val:hover, body.gb-demo a.snav-val:hover { text-decoration: underline; }
 }
 a.snav-item, body.gb-demo a.snav-item { color: var(--zinc-900); }
 
+/* ============================================================
+   TWO AXES OF THE RAIL AND THE BAR      gbppl-portal-dashboard-5
+   ------------------------------------------------------------
+   Ton, 10.09: the portal prototype has variants in its console and
+   the dashboard has none, and he wants to click through them and
+   assemble the final setup himself.
+
+   THE KEYS ARE THE PORTAL'S OWN, values and all: ?pth= for the bar
+   (live\portal.html raises its portal bar with pth=1) and ?nav= for
+   the rail (live | russell | ton). Both ride in GB_KEEP.content
+   already, both are written back with replaceState, and both survive
+   the Active | New switch because that switch only ever touches its
+   own key.
+
+   THE DEFAULTS ARE WHAT THE PAGE ALREADY WAS: pth=1, the portal bar,
+   and nav=live, the card rail.
+
+   WHAT IS FORKED AND WHAT IS NOT. The recipes are copied class for
+   class from live\portal.html, which is where both live. The rail's
+   CONTENT forks of that page (the ton masthead, the company block,
+   the live-only rows, Upload Logo) are NOT carried: the dashboard's
+   rail has its own content, including the Dashboard row this page
+   added, and the axis here dresses the rail rather than rewriting
+   it. Said out loud so nobody reads a missing masthead as a bug.
+   ============================================================ */
+
+/* ---- nav=russell and nav=ton share the row geometry of the fork:
+        the item grows to a second line instead of truncating, and the
+        glyph stays on the first line. Numbers verbatim from
+        live\portal.html (live: h 46 = 1 + 8 + 29; here: 10.5 padding
+        puts the 24 glyph top at 11.5 and the label at 13). ---- */
+body[data-nav="russell"] .snav-item,
+body[data-nav="ton"] .snav-item {
+  height: auto;
+  min-height: 46px;
+  align-items: flex-start;
+  padding-top: 10.5px;            /* LIVE portal fork, gbppl-nav-2 */
+  padding-bottom: 10.5px;
+}
+body[data-nav="russell"] .snav-label,
+body[data-nav="ton"] .snav-label { margin-top: 1.5px; }
+
+/* ---- nav=ton: THE BOXLESS RAIL, the ren skin of live\portal.html
+        carried whole. Cards dissolve, sections separate by air, the
+        section title becomes an eyebrow, labels step up to 16/500,
+        glyphs step back to 18 at 0.8, and the chosen row is a 2px
+        inset rule instead of a blue plate. Every value below is that
+        page's, not a new decision. ---- */
+body[data-nav="ton"] .sidebar { gap: 0; width: 280px; }
+body[data-nav="ton"] .snav-block {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+body[data-nav="ton"] .snav-block + .snav-block { margin-top: 40px; }   /* LIVE portal ren: sections separate by air alone */
+body[data-nav="ton"] .snav-header {
+  background: transparent;
+  min-height: 0;
+  padding: 0 var(--space-16);
+  margin-bottom: 10px;
+}
+body[data-nav="ton"] .snav-title {
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--eyebrow-color);
+  line-height: 1.6;
+}
+body[data-nav="ton"] .snav-info { border-top: none; padding: 0 var(--space-16) 12px; }
+body[data-nav="ton"] .snav-name { font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--zinc-900); }
+body[data-nav="ton"] .snav-key,
+body[data-nav="ton"] .snav-val { font-size: 13px; font-weight: 400; letter-spacing: .3px; color: var(--zinc-500); padding: 0; }
+body[data-nav="ton"] .snav-item {
+  background: transparent;
+  border-top-color: transparent;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+body[data-nav="ton"] .snav-item:hover {
+  background: var(--zinc-100);
+  border-top-color: transparent;
+  border-radius: var(--radius);
+}
+body[data-nav="ton"] .snav-item.active {
+  background: transparent;
+  border-top-color: transparent;
+  box-shadow: inset 2px 0 0 var(--blue-600);   /* LIVE portal ren: the rule replaces the plate */
+}
+body[data-nav="ton"] .snav-item.active:hover { border-radius: 0; }
+body[data-nav="ton"] .snav-label {
+  text-transform: none;
+  font-size: 16px;
+  line-height: 21px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  color: var(--zinc-800);
+}
+body[data-nav="ton"] .snav-item.active .snav-label { font-weight: 500; color: var(--blue-600); }
+/* The glyph steps back, and it STAYS INK on the chosen row: the same
+   correction this wave made to live\portal.html itself. */
+body[data-nav="ton"] .snav-icon img { max-width: 18px; max-height: 18px; opacity: .8; }
+
 /* THE CONTENT COLUMN IS THE RULER, NOT THE WINDOW. With a 320 rail
    beside it the board is 880 at 1280 and 1568 at 2258, and a media
    query would give both the same three columns. */
@@ -1135,30 +1250,51 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
           <svg width="13" height="13" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M7.00002 41L41 7L40.801 7.19902" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M25 7H41V23" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
         </a>
         <a class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" href="book-a-meeting.html"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>
-        <button class="gbh-icon-button gbh-pbar__icon" type="button" aria-label="Search your portal">
-          <span data-gb-icon="search" data-gb-icon-size="22"></span>
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-pbar__icon" type="button" aria-label="Search your portal">
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="search" data-gb-icon-size="22"></span></span>
         </button>
         <!-- THE BELL. Glyph `bell` from the record (icon.js). The badge
              counts the two problems that are standing, and it is red
              because they are problems. Click opens the drawer. -->
-        <button class="gbh-icon-button gbh-pbar__icon" type="button"
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-pbar__icon" type="button"
                 id="gbppdBell" aria-label="Notifications, 2 need your action">
-          <span data-gb-icon="bell" data-gb-icon-size="22"></span>
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="bell" data-gb-icon-size="22"></span></span>
           <span class="gbh-count gbppd-count--alarm" aria-hidden="true">2</span>
         </button>
         <!-- The cart, and its count is DATA: a new account has an empty
              one, so the badge goes with the state (see setState). -->
-        <button class="gbh-icon-button gbh-pbar__icon" type="button" id="gbppdCart" aria-label="Cart, 3 items">
-          <span data-gb-icon="cart" data-gb-icon-size="22"></span>
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-pbar__icon" type="button" id="gbppdCart" aria-label="Cart, 3 items">
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="cart" data-gb-icon-size="22"></span></span>
           <span class="gbh-count" aria-hidden="true">3</span>
         </button>
-        <!-- Who is signed in. Anton, at GildedBox. -->
-        <div class="gbppd-me">
-          <span class="gbppd-me__disc" aria-hidden="true">AP</span>
-          <span class="gbppd-me__who">Anton Parkhomenko<span class="gbppd-me__org">GildedBox</span></span>
-        </div>
-        <button class="gbh-icon-button gbh-pbar__burger" type="button" aria-label="Menu">
-          <span data-gb-icon="menu" data-gb-icon-size="22"></span>
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-pbar__burger" type="button" aria-label="Menu">
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="menu" data-gb-icon-size="22"></span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ THE LIVE PORTAL HEADER (?pth=0) ============
+       Forked from live\portal.html class for class: this is what the
+       live portal wears above its rail today, the site header made
+       sticky. Off unless the console asks for it. -->
+  <header class="gb-header gb-header--sticky">
+    <div class="gb-container gbh-bar">
+      <a href="index.html" class="gbh-brand" aria-label="GildedBox home"><img src="../system/icons/gildedbox-logo.svg" alt="GildedBox"></a>
+      <nav class="gbh-nav" aria-label="Primary navigation">
+        <button class="gbh-link" type="button">Gifts</button>
+        <button class="gbh-link" type="button">Customize <span class="gbh-beta">Beta</span></button>
+        <button class="gbh-link" type="button">Portal</button>
+        <button class="gbh-link" type="button">Explore</button>
+      </nav>
+      <div class="gbh-actions">
+        <a class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" href="book-a-meeting.html"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>
+        <a class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" href="portal.html"><span class="gb-btn__label" data-pc-section="label">My Portal</span></a>
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" aria-label="Cart, 3 items">
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="cart" data-gb-icon-size="22"></span></span>
+        </button>
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" aria-label="Search gifts">
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="search" data-gb-icon-size="22"></span></span>
         </button>
       </div>
     </div>
@@ -1703,6 +1839,43 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
     } catch (e) {}
   }
 
+  /* ============================================================
+     THE TWO AXES                         gbppl-portal-dashboard-5
+     ------------------------------------------------------------
+     ?pth=1|0 for the bar and ?nav=live|russell|ton for the rail, the
+     portal's own keys and values. Both are read once, written back
+     with replaceState, and offered as choice rows of the one console.
+     Neither is remembered anywhere but the address: a variant is a
+     view, and the address is how a view is shared.
+     ============================================================ */
+  var params = new URLSearchParams(location.search);
+
+  function writeKey(key, value) {
+    try {
+      var u = new URL(location.href);
+      u.searchParams.set(key, value);
+      history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+    } catch (e) {}
+  }
+
+  var pth = params.get('pth') === '0' ? '0' : '1';          /* default: the portal bar, what the page already wore */
+  function setPth(v) {
+    pth = v === '0' ? '0' : '1';
+    if (pth === '1') document.body.setAttribute('data-pth', '1');
+    else document.body.removeAttribute('data-pth');
+    writeKey('pth', pth);
+  }
+  setPth(pth);
+
+  var NAVS = { live: 1, russell: 1, ton: 1 };
+  var nav = NAVS[params.get('nav')] ? params.get('nav') : 'live';
+  function setNav(v) {
+    nav = NAVS[v] ? v : 'live';
+    document.body.setAttribute('data-nav', nav);
+    writeKey('nav', nav);
+  }
+  setNav(nav);
+
   var startState = 'filled';
   try {
     if (new URLSearchParams(location.search).get('state') === 'empty') startState = 'empty';
@@ -1875,7 +2048,10 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
      ============================================================ */
   if (window.GbConcierge) {
     window.GbConcierge.mount({
-      bellSlot:   '.gbh-pbar__actions',
+      /* Whichever bar the header axis raised is the one the cloche
+         lands in: the module reads the slot once, at mount, and the
+         axis is settled before this line runs. */
+      bellSlot:   document.body.hasAttribute('data-pth') ? '.gbh-pbar__actions' : '.gb-header .gbh-actions',
       bellBefore: '#gbppdBell',
       anchor:     'gb-studio-panel',
       aiDoor:     true,
@@ -1916,6 +2092,27 @@ a.gbppd-empty__door, body.gb-demo a.gbppd-empty__door { color: var(--zinc-900); 
   var panel = document.querySelector('gb-studio-panel');
   function wirePanel() {
     if (!panel || typeof panel.addGroup !== 'function') return;
+    panel.addGroup({
+      type: 'choice',
+      title: 'Header',
+      value: pth,
+      options: [
+        { label: 'Portal bar', value: '1', note: 'The portal\'s own bar, the one this page has worn since the first sketch.' },
+        { label: 'Site header', value: '0', note: 'What the live portal wears above its rail today.' }
+      ],
+      onChange: setPth
+    });
+    panel.addGroup({
+      type: 'choice',
+      title: 'Rail',
+      value: nav,
+      options: [
+        { label: 'Live',    value: 'live',    note: 'The card rail, as the live portal draws it.' },
+        { label: 'Russell', value: 'russell', note: 'The fork of 12.08: rows grow instead of truncating.' },
+        { label: 'Boxless', value: 'ton',     note: 'Ours: no cards, air between sections, a rule on the chosen row.' }
+      ],
+      onChange: setNav
+    });
     panel.addGroup({
       type: 'choice',
       title: 'Account',
