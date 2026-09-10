@@ -225,6 +225,53 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
      decision. -->
 <script src="../system/components/studio.js" data-home="../index.html"></script>
 
+<!-- ============================================================
+     THE AUTH AXIS OF THE CONCIERGE LAYER   gbppl-concierge-auth-1
+     ------------------------------------------------------------
+     Ton, 10.09: the unified help experience has to be shown for a
+     GUEST as well as for someone signed in, «сейчас всё показано
+     одним сценарием». On the website that axis is ?auth=guest|user,
+     and it is read by the module at the foot of this file.
+
+     THIS BLOCK EXISTS FOR ONE REASON: the bar. Ton asks the guest
+     state to be «как живой хедер умеет», and the bar that knows how
+     to be a guest or an account is the auth variant of the header
+     organism (?hdr=auth, gbppl-header-auth-1) — the plain Live bar
+     has no account control at all, so there would be nothing to
+     dress. So under the concierge key the page states hdr=auth in
+     its own address, BEFORE header.js parses and the element
+     upgrades; a script at the foot of the body would be a bar
+     redrawn in front of the reader.
+
+     NOTHING IS INVENTED HERE. `hdr` is the organism's own key and
+     rides in KEEP already; `auth` is written into the address so
+     the state is a link, the way every other axis of this prototype
+     is. WITHOUT ?concierge=1 not one line of this runs and the page
+     is the page it was, node for node.
+
+     The default is GUEST, and that is the live page read literally:
+     the front door of gildedbox.com is where people who have never
+     signed in arrive. The console row and the address both move it.
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+  var q;
+  try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  if (q.get('concierge') !== '1') return;
+  var auth = q.get('auth') === 'user' ? 'user' : 'guest';
+  var dirty = false;
+  if (q.get('hdr') !== 'auth') { q.set('hdr', 'auth'); dirty = true; }
+  if (q.get('auth') !== auth) { q.set('auth', auth); dirty = true; }
+  if (!dirty) return;
+  /* file:// refuses replaceState; the bar then simply stays the
+     plain one and the module still runs its own scenario. */
+  try {
+    history.replaceState(null, '', location.pathname + '?' + q.toString() + location.hash);
+  } catch (e) { /* nothing to do */ }
+})();
+</script>
+
 <style>
   /* Композиция страницы, не компонент: у лайва хедер fixed поверх
      потока (плейсхолдер h-0), герой главной начинается с y=0 под
@@ -369,6 +416,15 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
     window.GB_KEEP.content.push('concierge');
     window.GB_KEEP.all.push('concierge');
   }
+  /* gbppl-concierge-auth-1: and so does the person. Who is looking
+     is content, not view — it changes the floors of the drawer, the
+     length of the booking road and the first line of the chat — so
+     it belongs beside `concierge` and `hdr` and rides internal
+     links with them. */
+  if (window.GB_KEEP && window.GB_KEEP.all.indexOf('auth') < 0) {
+    window.GB_KEEP.content.push('auth');
+    window.GB_KEEP.all.push('auth');
+  }
 
     /* ---- THE HOVER OF THE NAVIGATION, three candidates --------
        gbppl-nav-hover-1. Same shape as the accent switch, same two
@@ -394,8 +450,17 @@ html[data-gbhc-hover="both"] .gb-header--transparent:not(.is-past-hero) .gbh-bar
       bellSlot:     'gb-site-header .gbh-actions',
       bellBefore:   '[aria-label="Search gifts"]',
       anchor:       'gb-studio-panel',
-      advisorFloor: false,
+      /* gbppl-concierge-auth-1. `advisorFloor` is gone from the
+         environment: Ton moved floor two from the SURFACE onto the
+         PERSON, so the module builds it for anyone signed in, here
+         as much as in the portal. THE WEBSITE OWNS THE AXIS —
+         ?auth=guest|user and the console row — and the default is
+         guest, the state the front door of a public site is in.
+         THE AI DOOR STAYS ON: the whole site is a surface where
+         gifts are chosen (Ton 10.09), and only the checkout is not. */
       aiDoor:       true,
+      auth:         'guest',
+      authSwitch:   true,
       siteHref:     'index.html?concierge=1',
       environments: {
         here:    'website',

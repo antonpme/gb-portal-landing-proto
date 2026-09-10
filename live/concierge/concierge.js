@@ -34,15 +34,10 @@
                   layer dropped at the end of a body can be handed a
                   foreign scale, and both pages have a studio panel
                   to stand in front of.
-     advisorFloor FLOOR TWO, and this is Ton 09.09 13:51: the drawer
-                  is the same everywhere, but the personal Gift
-                  Advisor, a named human with a card and a message
-                  box, EXISTS ONLY IN THE PORTAL and only for
-                  someone signed in. Off the portal that floor does
-                  not exist at all: not disabled, not a stub,
-                  ABSENT. So it is a flag on the environment and the
-                  drawer is built without it, rather than built and
-                  then hidden.
+     auth         WHO IS LOOKING: 'guest' | 'user'. It decides the
+                  length of the booking road, the first breath of
+                  the chat, and FLOOR TWO. See gbppl-concierge-auth-1
+                  at the foot of this block.
      aiDoor       the AI door belongs where gifts are being chosen.
      siteHref     the address the booking flow returns to.
      panelRow     register the accent switch on the one console.
@@ -85,6 +80,66 @@
    for the side it always asks for, measures, finds no room, and
    flips. A rule that had to be written for one button is now
    arithmetic that is true for every button.
+
+   ============================================================
+   gbppl-concierge-auth-1 (10.09). THE AXIS THAT WAS MISSING, and
+   Ton calls it «самый большой пробел»: everything here was shown in
+   ONE scenario, a person who is already known. «Унифицированное
+   решение обязано жить и для гостя, и для вошедшего.»
+
+   So the environment gains one more word, `auth`, and it is the
+   only thing that differs between the two runs:
+
+     auth: 'user'   the scenario that existed. The booking flow
+                    starts at the calendar because the host knows
+                    the name and the address; the chat is picked up
+                    by a named specialist within a beat.
+     auth: 'guest'  nobody knows who this is, and nothing pretends
+                    otherwise. The booking flow is the organism's
+                    OWN three step road, lead form first — the same
+                    road live/book-a-meeting.html walks, in the
+                    drawer's clothes. The chat asks for a name and
+                    an address in its first breath, and NOBODY JOINS
+                    until it has one: a specialist who walks in
+                    before there is any way to write back would make
+                    the greeting a lie.
+
+   THE PORTAL IS ALWAYS `user` and says so at the mount. The website
+   carries the axis on ?auth=guest|user and a row of the one console
+   beside Environment, so the two can be clicked through in front of
+   Valerie the way the two environments already can.
+
+   FLOOR TWO MOVED ONTO THIS AXIS THE SAME DAY, and it is Ton's
+   correction of his own line of 09.09. It used to be a property of
+   the SURFACE — «the Gift Advisor exists only in the portal» — and
+   the environment carried a flag for it. It is a property of the
+   PERSON: a client with an account manager has one wherever they
+   are standing. So `advisorFloor` is gone from the environment and
+   the floor is built for anyone signed in, on the website as much
+   as in the portal; for a guest it does not exist anywhere, and
+   still not as a stub. The matrix is three cells, not four:
+     website + guest   one floor, the options
+     website + user    two floors, Brad's card and Send a message
+     portal            always signed in, two floors
+
+   THE DEFAULT ON THE WEBSITE IS GUEST, and that is the live page
+   read literally: gildedbox.com/index is a public front page, the
+   bar there offers a way IN rather than an account, and the
+   overwhelming majority of the people who see the bell on it have
+   never signed in. `user` is the state you arrive in from the
+   portal, and it is one click away in the console.
+
+   THE BAR IS PART OF THE SCENARIO, not decoration beside it: the
+   module writes the state through window.GbAuth, the ONE place of
+   truth header.js publishes, and every bar on the page dresses
+   itself off it (guest -> the person glyph and Sign in, signed in
+   -> the initials and the cart). No second copy of the flag, and no
+   line of header.js is touched.
+
+   AND THE BOOKING LEVEL LOST ITS FOOT TO THE DRAWER (Ton's feedback
+   on the same screenshot, 10.09). <gb-booking-flow layout="embedded">
+   hands its step's footer over as a node on gbb:cta, and this file
+   puts it in .gbd-foot. See the block at openMeeting.
    ============================================================ */
 (function () {
   'use strict';
@@ -174,10 +229,14 @@
     bellSlot:     'gb-site-header .gbh-actions',
     bellBefore:   '[aria-label="Search gifts"]',
     anchor:       'gb-studio-panel',
-    advisorFloor: false,
     aiDoor:       true,
     siteHref:     '',
     panelRow:     true,
+    /* WHO IS LOOKING (gbppl-concierge-auth-1). 'user' | 'guest'.
+       The portal states 'user' and means it; the website hands over
+       authSwitch and lets the address and the console decide. */
+    auth:         'user',
+    authSwitch:   false,
     /* THE ENVIRONMENT SWITCH, so Valerie can click between the two
        and see that it is one experience. The module draws the row
        because the row is about the module; the ADDRESSES stay with
@@ -266,6 +325,35 @@
       history.replaceState(null, '', u.toString());
     }
     setAccent(readAccent(), false);
+
+    /* ---- WHO IS LOOKING ---------------------------------------
+       gbppl-concierge-auth-1. The address wins over the environment
+       ONLY where the environment said it may (authSwitch): the
+       portal is signed in by construction and ?auth=guest on it
+       would be a page lying about itself.
+
+       AND THE BAR IS TOLD, ONCE. window.GbAuth is header.js's one
+       place of truth for the flag; writing it here means the bar
+       dresses itself with the very code that dresses it for the
+       sign in drawer — guest keeps the person glyph and its Sign
+       in, a signed in visitor gets the initials and the cart. The
+       write happens before the bar's own arrival clock has started
+       (header.js arms __authLive on a setTimeout 0 and this module
+       mounts inside the same parse turn), so nothing animates into
+       a state it was already in. */
+    var AUTHS = ['guest', 'user'];
+    function readAuth() {
+      if (!ENVIRONMENT.authSwitch) return ENVIRONMENT.auth;
+      var q = (new URLSearchParams(location.search)).get('auth');
+      return AUTHS.indexOf(q) > -1 ? q : ENVIRONMENT.auth;
+    }
+    var AUTH = readAuth();
+    var GUEST = AUTH === 'guest';
+    if (ENVIRONMENT.authSwitch && window.GbAuth &&
+        typeof window.GbAuth.setSignedIn === 'function') {
+      window.GbAuth.setSignedIn(!GUEST);
+    }
+
     /* Who the advisor is. One place, because the card, the message
        form and the live chat all speak of the same person. */
     var ADVISOR = {
@@ -486,15 +574,18 @@
       '</' + tag + '>';
     }
 
-    /* FLOOR TWO IS PORTAL ONLY. Ton, 09.09 13:51: the drawer is the
-       same switchboard everywhere, but the personal Gift Advisor — a
-       named human, his card, a message straight to him — belongs to
-       the portal and to somebody signed in. Off the portal the floor
-       DOES NOT EXIST: not disabled, not a stub, not an empty box with
-       a promise in it. So the function returns nothing at all and the
-       drawer is built one floor tall. */
+    /* FLOOR TWO BELONGS TO THE PERSON, NOT TO THE SURFACE
+       (gbppl-concierge-auth-1, Ton 10.09, correcting his own line of
+       09.09 13:51). It read «the personal Gift Advisor exists only in
+       the portal»; it is now «only for someone signed in, and then
+       everywhere the drawer opens». A client with an account manager
+       has one on the website too, and hiding the card there was the
+       surface answering a question about the person.
+       For a guest the floor still DOES NOT EXIST: not disabled, not a
+       stub, not an empty box with a promise in it. The function
+       returns nothing at all and the drawer is built one floor tall. */
     function floorTwoHTML() {
-      if (!ENVIRONMENT.advisorFloor) return '';
+      if (GUEST) return '';
       return '<div class="gbhc-floor2">' +
           /* The eyebrow is the live drawer's own line, word for word. */
           '<p class="gb-eyebrow">Want to connect now?</p>' +
@@ -624,6 +715,10 @@
       var p = panel();
       /* Already open on another level: this is a step back, not a door. */
       if (p && levels() && p.classList.contains('is-open')) {
+        /* The foot belongs to the level that asked for it, and the
+           options floor asks for nothing. It goes at the same
+           instant the level starts leaving. */
+        setFoot(null);
         goLevel('back', 'Talk to us', null, homeHTML());
         return;
       }
@@ -716,22 +811,79 @@
          looking added a whole frame of nothing to every trip. The cap
          is a second, because a level that will not build is still a
          level the guest asked for and must be shown. */
+      /* WHAT «BUILT» MEANS DEPENDS ON WHO IS LOOKING
+         (gbppl-concierge-auth-1). The calendar is the first screen
+         of the SIGNED IN road only; a guest opens on the lead form,
+         which has no .gbb-cal-grid in it and never will. Waiting
+         for one meant the guest's level sat off stage for the whole
+         one second cap and then walked on anyway — the delay this
+         function exists to remove, reintroduced by a selector.
+         So the condition names the first screen of whichever road
+         is being walked, and there are only two. */
       var look = function () {
-        var grid = host.querySelector('.gbb-cal-grid');
-        var ready = fonts && grid && grid.getBoundingClientRect().height > 0;
+        var body = host.querySelector('.gbb-cal-grid') || host.querySelector('.gbb-lead');
+        var ready = fonts && body && body.getBoundingClientRect().height > 0;
         if (ready || now() > deadline) { done(); return; }
         window.requestAnimationFrame(look);
       };
       look();
     }
 
-    function bookingHTML() {
-      return '<gb-booking-flow id="gbhcBooking" start="slot"' +
-              ' guest-name="Anton Parkhomenko"' +
-              ' guest-email="anton@gildedbox-demo.com"' +
-              ' guest-company="GildedBox"' +
-              ' site-href="' + ENVIRONMENT.siteHref + '"' +
-              ' exit-label="Back to the options"></gb-booking-flow>';
+    /* THE LEVEL IS THE ORGANISM WEARING layout="embedded", and the
+       length of the road is the auth axis and nothing else.
+
+       GUEST: no start, no guest-* — the organism's own three step
+       road, the lead form first. It is the same road the public
+       page walks; Ton, 25.08: «когда ты уже внутри портала, мы не
+       показываем форму, а сразу показываем слот, потому что уже
+       знаем, кто ты», and off the portal we do not know.
+       SIGNED IN: start="slot" and the persona, exactly as before. */
+    /* AND IT IS BUILT AS A NODE, NOT AS A STRING, which is not a
+       style: a defined custom element UPGRADES THE INSTANT it is
+       written into a connected tree, so a level assembled with
+       innerHTML has already rendered its first step — and already
+       handed its footer over — before the host has had a chance to
+       listen. The first gbb:cta went to nobody, the foot stayed
+       empty, and Confirm and the timezone line were simply gone
+       from the page (measured: .gbd-foot 0x0). Made by hand, the
+       listeners are fitted while the element is still detached and
+       the very first handover is heard. */
+    function bookingEl() {
+      var el = document.createElement('gb-booking-flow');
+      el.id = 'gbhcBooking';
+      el.setAttribute('layout', 'embedded');
+      if (!GUEST) {
+        el.setAttribute('start', 'slot');
+        el.setAttribute('guest-name', 'Anton Parkhomenko');
+        el.setAttribute('guest-email', 'anton@gildedbox-demo.com');
+        el.setAttribute('guest-company', 'GildedBox');
+      }
+      el.setAttribute('site-href', ENVIRONMENT.siteHref);
+      el.setAttribute('exit-label', 'Back to the options');
+      return el;
+    }
+
+    /* ---- THE DRAWER DRAWS THE FOOT ----------------------------
+       gbppl-concierge-auth-1, Ton on the screenshot of the booking
+       level: CONFIRM belongs in the FOOT OF THE DRAWER, the way
+       every checkout drawer in this house has it. The organism does
+       not reach into the panel and this file does not rebuild its
+       button: <gb-booking-flow layout="embedded"> hands over the
+       step's footer as a NODE on gbb:cta, and the host puts it
+       where the host's footer is. `null` means this step has no
+       footer, and .gbd-foot:empty takes the band away by itself.
+
+       Reaching into .gbd-panel .gbd-foot is the drawer's own
+       documented contract for a consumer that redraws part of the
+       surface (drawer.js, the note on the body: «consumers reach
+       into .gbd-panel .gbd-body by hand»). Nothing of drawer.js
+       changes for this. */
+    function footBox() { var p = panel(); return p ? p.querySelector('.gbd-foot') : null; }
+    function setFoot(node) {
+      var f = footBox();
+      if (!f) return;
+      f.innerHTML = '';
+      if (node) f.appendChild(node);
     }
 
     function openMeeting(row) {
@@ -748,25 +900,47 @@
          but not on the ride and not readable until it is whole. */
       var stage = document.createElement('div');
       stage.className = 'gbhc-level gbhc-offstage';
-      stage.innerHTML = bookingHTML();
+      var flow = bookingEl();
+      /* THE FOOT WAITS FOR THE LEVEL IT BELONGS TO. The organism
+         hands its footer over while it is still being assembled off
+         stage, and a Confirm that appeared under the list of
+         options a beat before the calendar arrived would be a
+         button for a screen nobody is looking at. So the first
+         handover is held and let out at the exact frame the level
+         starts moving; every handover after that (a step changes)
+         goes straight through, because by then the level is on. */
+      var held = null, live = false;
+      wireBooking(flow, function (node) {
+        if (live) setFoot(node); else held = node;
+      });
+      /* Listeners first, then the element joins the document and
+         renders its first step. */
+      stage.appendChild(flow);
       box.appendChild(stage);
-      wireBooking(stage);
       /* When the organism has laid its calendar out, THAT VERY NODE
          walks on. Building a second one here would hand the ride an
          empty box again and the flash would come straight back. */
       whenBuilt(stage, function () {
         if (row) row.classList.remove('is-chosen');
         goLevelWith(stage, 'forward', 'Book a meeting', openHome);
+        live = true;
+        setFoot(held);
+        held = null;
       });
     }
 
-    function wireBooking(level) {
-      var flow = level.querySelector('#gbhcBooking');
+    function wireBooking(flow, onFoot) {
       if (!flow) return;
       /* The quiet exit of the last screen means «go back» inside a
          panel, not «leave the site»: the organism made that the
          host's business (gbb:exit is cancelable). */
       flow.addEventListener('gbb:exit', function (e) { e.preventDefault(); openHome(); });
+      /* The step's footer, whenever the step changes. The disabled
+         state of the button is NOT an event: the organism keeps the
+         very node it handed over and toggles it in place. */
+      flow.addEventListener('gbb:cta', function (e) {
+        onFoot(e.detail ? e.detail.node : null);
+      });
     }
 
     /* ============================================================
@@ -847,6 +1021,20 @@
         chips: ['Help me choose a gift',
                 'What fits a set budget?',
                 'Hand me to a real person'],
+        /* THE WAY OUT TO A HUMAN IS ANSWERED BY THE WAY OUT, not by
+           the next line of a script (gbppl-concierge-auth-1, Ton
+           10.09). The AI itself asks nobody who they are — it
+           answers a stranger and that is the point of it — but the
+           moment the errand is handed to a PERSON the same rule as
+           the live chat applies: a specialist needs somewhere to
+           write back to. So a guest is asked for a name and an
+           address at the hand-off and only there; someone signed in
+           already has both and is simply passed along. */
+        handoff: {
+          chip: 'Hand me to a real person',
+          guest: 'Of course. Leave your name and email, and I will pass this conversation, and everything in it, to a gifting specialist.',
+          user: 'Of course. I am passing this conversation, and everything in it, to a gifting specialist now.'
+        },
         /* No join, ever. Nobody is going to walk into this room, and
            the head must not one day say a name. */
         turns: [
@@ -857,6 +1045,65 @@
         ]
       }
     };
+
+    /* ---- THE GUEST'S LIVE CHAT --------------------------------
+       gbppl-concierge-auth-1, Ton: the unified solution has to live
+       for a guest as well as for someone signed in, and the chat is
+       where the difference is real. A signed in visitor is already
+       reachable: the queue knows the account, so the room can open
+       with a greeting and a specialist can walk in a beat later. A
+       GUEST IS NOT REACHABLE AT ALL, and the honest first sentence
+       says so and asks.
+
+       ASKED IN THE THREAD, NOT IN A FORM IN FRONT OF IT, and the
+       argument is the house's own language rather than taste:
+         · this window has ONE input, the composer, and the whole of
+           the reference start (portal ?hero=start) is a card of
+           speech with a field under it. A mini form before the
+           thread would put a second input paradigm inside a room
+           that already has one, and the guest would meet a form
+           where they came to talk;
+         · the concept fixes the window as ONE object with two
+           starts «differing by a first message and a name»
+           (HELP-CONCIERGE-CONCEPT, the strong unification). A guest
+           gate is a THIRD start only if it changes the machinery;
+           as a first message it is the same object;
+         · the thread already knows how to ask a question and take a
+           tapped answer (the ask sheet), so «say who you are» and
+           «what can we help with» are one conversation, not a form
+           followed by a conversation;
+         · and the drawer's own second floor makes the same choice
+           from the other side: writing to the advisor grows inside
+           the card it belongs to, it does not open a level.
+
+       NOBODY JOINS UNTIL THERE IS AN ADDRESS. The signed in room
+       has a specialist within 1200ms; here the join waits for the
+       guest's first line, because a person walking in before there
+       is any way to write back would make the greeting a lie. That
+       is the whole of `joinAt`. */
+    var GUEST_LIVE = {
+      say: ['Hi. You’re chatting with the GildedBox team.\n' +
+            'Leave your name and email first, so a specialist can write back even if you leave this page.'],
+      /* No routing chips in the opening: the first thing to say is
+         who you are, and three shortcuts past that question would
+         be three ways to answer the wrong one. They come back as an
+         ask sheet the moment the address is in. */
+      chips: null,
+      joinAt: 'reply',
+      turns: [
+        { say: 'Thank you, I have your details.\nWhat can we help you with?',
+          ask: ['Choosing gifts', 'An existing order', 'A custom proposal'] },
+        { say: 'Got it, I can help with that.' },
+        { say: 'What’s the occasion?',
+          ask: ['A client thank you', 'An onboarding gift', 'A holiday send'] },
+        { say: 'Understood. I am putting a shortlist together and will send it over in a moment.' }
+      ]
+    };
+    if (GUEST) {
+      for (var gk in GUEST_LIVE) {
+        if (GUEST_LIVE.hasOwnProperty(gk)) STARTS.live[gk] = GUEST_LIVE[gk];
+      }
+    }
 
     var chat = document.getElementById('gbhcChat');
     var pill = document.getElementById('gbhcPill');
@@ -1091,7 +1338,12 @@
 
          NO TOKEN: 1200ms of waiting is not a move, the same reason
          the scripted answer's 900 is not one. */
-      if (start.join) {
+      /* A GUEST IS NOT PICKED UP BEFORE THERE IS AN ADDRESS
+         (gbppl-concierge-auth-1). joinAt: 'reply' moves the arrival
+         from the opening beat to the first answer, so the room says
+         «leave your name and email», the guest does, and only then
+         does somebody walk in. See the guest start above. */
+      if (start.join && start.joinAt !== 'reply') {
         var wait = typingRow();
         clearTimeout(joinTimer);
         joinTimer = setTimeout(function () {
@@ -1332,8 +1584,12 @@
       paintChips(null);
       setPending(true);
       var typing = typingRow();
-      var step = start.turns[Math.min(turn, start.turns.length - 1)];
-      turn++;
+      /* The hand-off is answered by the hand-off and does not spend
+         a turn: the errand has not moved on, it has changed hands. */
+      var hand = start.handoff && text === start.handoff.chip
+        ? { say: start.handoff[GUEST ? 'guest' : 'user'] } : null;
+      var step = hand || start.turns[Math.min(turn, start.turns.length - 1)];
+      if (!hand) turn++;
       clearTimeout(replyTimer);
       /* The scripted answer, so the thread reads as a thread. NO
          TOKEN: 900ms of waiting is not a move, and the motion scale
@@ -1341,6 +1597,8 @@
          place it was set, and there is no other path out of it. */
       replyTimer = setTimeout(function () {
         if (typing.parentNode) typing.parentNode.removeChild(typing);
+        /* The specialist walks in with the answer, not before it. */
+        if (start.join && start.joinAt === 'reply' && !joined) joinNow(start.join);
         say('them', step.say, step.ask);
         setPending(false);
         if (!chat.hidden) input.focus();
@@ -1389,6 +1647,44 @@
       }
     }
 
+    /* ---- WHO IS LOOKING, AS A ROW -----------------------------
+       gbppl-concierge-auth-1. It stands immediately before
+       Environment because the two are one question asked twice:
+       WHERE you are and WHO you are. Only the environment that owns
+       the axis draws it — on the portal there is nothing to choose,
+       and a row with one honest answer is a row that lies about
+       having two.
+
+       A SWITCH RELOADS, and that is not laziness: the axis changes
+       the drawer's floors, the length of the booking road, the
+       first breath of the chat and the bar itself. Half of that is
+       built at mount. The address is the state, exactly as it is
+       for the environment row, and the accent rides along for the
+       same reason. */
+    if (ENVIRONMENT.authSwitch) {
+      var sp3 = document.querySelector('gb-studio-panel');
+      if (sp3 && typeof sp3.addGroup === 'function') {
+        sp3.addGroup({
+          type: 'choice',
+          title: 'Who is looking',
+          value: AUTH,
+          options: [
+            { label: 'Guest', value: 'guest',
+              note: 'Nobody knows who this is. No Gift Advisor floor, the booking flow opens on its own lead form, and the chat asks for a name and an email before anyone answers.' },
+            { label: 'Signed in', value: 'user',
+              note: 'The bar carries the initials and the cart. The Gift Advisor floor is here, the booking flow opens straight on the calendar, and a named specialist picks the chat up.' }
+          ],
+          onChange: function (v) {
+            if (v === AUTH) return;
+            var u = new URL(location.href);
+            u.searchParams.set('auth', v);
+            u.searchParams.set('accent', readAccent());
+            location.href = u.toString();
+          }
+        });
+      }
+    }
+
     /* ---- ONE EXPERIENCE, TWO ENVIRONMENTS ---------------------
        Ton, 09.09, showing Valerie: the help experience is the same on
        the website and inside the portal. The row is the proof she can
@@ -1413,9 +1709,15 @@
             if (!to || v === envs.here) return;
             /* The accent travels: it is what Ton is choosing between,
                and a switch of environment that resets it would make
-               the two look different for the wrong reason. */
+               the two look different for the wrong reason.
+               AND SO DOES THE PERSON (gbppl-concierge-auth-1): the
+               row changes the SURFACE, so the one thing that must
+               not change under it is who is standing on it. Coming
+               off the portal that is always «signed in», which is
+               how the website's second cell gets shown at all. */
             var u = new URL(to, location.href);
             u.searchParams.set('accent', readAccent());
+            u.searchParams.set('auth', AUTH);
             location.href = u.toString();
           }
         });
