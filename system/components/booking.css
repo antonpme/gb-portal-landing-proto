@@ -341,27 +341,54 @@ gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
 @media (min-width: 768px)  { .gbb-panel { padding: 28px 24px; } }
 @media (min-width: 1280px) { .gbb-panel { padding: 36px 32px; } }
 
-.gbb-head { margin-bottom: 20px; }
-@media (min-width: 768px) { .gbb-head { margin-bottom: 28px; } }
-.gbb-title {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.4px;
-  color: var(--zinc-900);
-}
-@media (min-width: 768px)  { .gbb-title { font-size: 26px; } }
-@media (min-width: 1280px) { .gbb-title { font-size: 28px; } }
-/* 16px базовый текст — на всех ширинах, без «мелкого блеклого». */
-.gbb-sub {
-  margin: 8px 0 0;
-  font-size: 16px;
-  font-weight: 300;
-  line-height: 1.5;
-  color: var(--zinc-500);
-}
+/* ============================================================
+   ЗАКОН ПОВЕРХНОСТИ ШАГА 2       gbppl-concierge-auth-3 / auth-4
+   ------------------------------------------------------------
+   Тон, 10.09, по скрину букинга: «три разных шрифта рядом, никакой
+   иерархии, позор, показывать стыдно». Он считал верно: на шаге
+   стояло пять типографических голосов и два заголовка, спорящих о
+   том, кто из них про время. Правки прошли сперва в дровере
+   (auth-3), а потом на самой странице (auth-4) — «я уже всё
+   сказал», закон применяется ко всем носителям без второго слова.
+
+   НА ЭТОЙ ПОВЕРХНОСТИ РОВНО ДВА ГОЛОСА:
+
+     АЙБРАУ    12 / 600 / 0.12em / caps / Zinc 500 — роль Eyebrow
+               (shell.css). Носят: PICK A DATE над сеткой месяца,
+               PICK A TIME над чипами, буквы дней недели, ярлыки
+               сводки шага 3.
+     КОНТЕНТ   Inter, 15, Zinc 900 — то, что выбирают. Носят: месяц
+               (600, ступенью тяжелее, потому что называет сетку
+               под собой), числа дней (400), в той же семье чипы
+               слотов (14/400 Zinc 700 — лестница чипа, не второй
+               шрифт) и строка пустого дня (15/400 Zinc 500).
+
+   ТРЕТЬЕГО НЕТ. Пояснение зоны при заголовке времени — айбрау БЕЗ
+   КРИКА: те же 12 и тот же Zinc 500, снятые капс и вес. Одна роль
+   в двух состояниях, а не новая.
+
+   ЧТО СНЯТО ЭТИМИ ДВУМЯ ВОЛНАМИ (было в этом файле):
+     .gbb-title  серифный h2 22/26/28 «Pick a time» над КАЛЕНДАРЁМ.
+                 Третье имя одного и того же: страница уже носит
+                 живой h1 «Book a Meeting», а шаг называет степпер.
+                 Он же и врал: над календарём выбирают дату.
+     .gbb-sub    16/300 Zinc 500, «15 minutes with a gifting
+                 specialist, on Zoom.» Тон: «эти 15 минут нафиг не
+                 нужны». Длительность осталась там, где она факт, —
+                 в сводке шага 3.
+   Конфирмация (шаг 3) свои .gbb-booked-* голоса сохраняет: это
+   отдельное состояние со своей типографикой (Тон 19.08), и о нём
+   речи не было.
+
+   МЕСЯЦ НЕ ПЕРЕОДЕВАЛСЯ, И ЭТО ЗАМЕР: .gbb-cal-month стоит 15/600
+   Zinc 900 — та же семья, кегль и цвет, что у чисел под ним,
+   ступенью тяжелее. Серифа в нём нет и не было; опустить его до 14
+   значило бы развести его с сеткой, которую он подписывает.
+   ============================================================ */
+
+/* Шапка участка: одна строка айбрау, связанная вниз, к сетке. */
+.gbb-head { margin-bottom: var(--space-8); }
+.gbb-eyebrow { margin: 0; }
 
 /* ---------------- ТЕЛЕФОН: КОД СТРАНЫ + НОМЕР ----------------
                                                  gbppl-booking-4
@@ -583,7 +610,28 @@ gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
 .gbb-day.sel { background: var(--blue-600); color: var(--white); }
 
 /* ---------------- СЛОТЫ ---------------- */
-.gbb-slot-label { margin: 22px 0 10px; }
+/* Заголовок времени и зона в одной строке (gbppl-concierge-auth-3
+   в дровере, auth-4 везде). Ритм тот же, что у шапки участка:
+   айбрау связано вниз, к чипам, и 24 сверху отделяют его от сетки.
+   Было 22 / 10 — те же две ступени мимо шкалы. */
+.gbb-slot-label { margin: var(--space-24) 0 var(--space-8); }
+.gbb-slot-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+/* Айбрау, снявшее крик: кегль, цвет и семья те же, ушли капс и 600.
+   Поэтому зона — не третий голос, а вторая форма первого. */
+.gbb-zone {
+  flex: 0 0 auto;
+  font-size: var(--eyebrow-size);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--eyebrow-color);
+}
 /* Встреча 15-минутная, поэтому рабочий день даёт 32 чипа, а не
    восемь: ряд из flex-wrap превращался в рваную лесенку, и слоты
    встают сеткой равных дорожек. Геометрия чипа — из попапа. */
@@ -613,9 +661,12 @@ gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
 }
 /* Пустой день (всё занято или день ещё не выбран) говорит словами,
    а не пустотой. */
+/* gbppl-concierge-auth-4: было 16/300 — пятый голос ради одной
+   строки. Теперь это голос КОНТЕНТА, тише чернилами: тот же кегль
+   и тот же вес, что у чисел календаря, Zinc 500 вместо Zinc 900. */
 .gbb-slots-empty {
-  font-size: 16px;
-  font-weight: 300;
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1.5;
   color: var(--zinc-500);
 }
@@ -639,16 +690,13 @@ gb-booking-flow *, gb-booking-flow *::before, gb-booking-flow *::after {
     padding-right: 4px;
   }
 }
-/* Две таймзоны: чья встреча в Чикаго и сколько это по часам гостя.
-   16px, потому что это текст, а не подпись. */
-.gbb-tz {
-  margin: 14px 0 0;
-  font-size: 16px;
-  font-weight: 300;
-  line-height: 1.5;
-  color: var(--zinc-500);
-}
-.gbb-tz strong { font-weight: 500; color: var(--zinc-900); }
+/* СНЯТО gbppl-concierge-auth-4 (10.09): .gbb-tz, строка «две
+   таймзоны» под слотами. Правило Тона — зону УКАЗАТЬ, время НЕ
+   переводить («99% клиентов в США, сами переведут»). Зона сказана
+   один раз и тихо, у заголовка времени (.gbb-zone ниже); узел,
+   правило и весь пересчёт в booking.js ушли вместе.
+   Здесь же жил четвёртый голос шага: 16/300 Zinc 500 с 500/900
+   внутри <strong>. */
 
 /* ---------------- КОНФИРМАЦИЯ ----------------
    Перенос gbppl-start-booked (Тон, 19.08: конфирмация — состояние
@@ -902,7 +950,10 @@ gb-booking-flow[layout="compact"] .gbb-slot:hover:not(.sel) {
 
 /* ---- Вертикальный ритм ---- */
 gb-booking-flow[layout="compact"] .gbb-steps { margin-bottom: var(--space-48); }   /* gbppl-space-1; Ton 25.08 15:38: still pressed, stepper gets 48 */
-gb-booking-flow[layout="compact"] .gbb-head { margin-bottom: var(--form-block-gap); }  /* head → fields 32 */
+/* СНЯТО gbppl-concierge-auth-4: компакт давал шапке 32 снизу, пока
+   она была серифным заголовком с подписью. Теперь это одна строка
+   айбрау, которая принадлежит сетке под собой, и 8 базового
+   правила верны в любой раскладке. */
 /* СНЯТО gbppl-booking-4: здесь стояло правило, которое прятало
    заголовок карточки на шаге формы («Ton 25.08 15:39: the title and
    lede repeat what the page already says to the left»). С 27.08
@@ -916,10 +967,8 @@ gb-booking-flow[layout="compact"] .gbb-head { margin-bottom: var(--form-block-ga
    контейнерного запроса ниже); в одноколоночной он ей нужен — она
    стоит под сеткой месяца. */
 gb-booking-flow[layout="compact"] .gbb-slot-label { margin: 16px 0; }
-gb-booking-flow[layout="compact"] .gbb-title { font-size: 22px; }
-@media (min-width: 1280px) {
-  gb-booking-flow[layout="compact"] .gbb-title { font-size: 24px; }
-}
+/* СНЯТО gbppl-concierge-auth-4 вместе с .gbb-title: компакт ужимал
+   серифный заголовок до 22/24, а заголовка больше нет. */
 /* Отступ от содержимого шага до сабмита. Правило ОСТАЁТСЯ: его
    носит Confirm шага 2 (замер до и после: 32px, y совпал число в
    число). Шага 1 оно больше не касается — у живой лид-формы кнопка
@@ -961,11 +1010,11 @@ gb-booking-flow[layout="compact"] .gba-submit { margin-top: var(--form-block-gap
     display: grid;
     grid-template-columns: calc(var(--gbb-day) * 7 + 12px) minmax(0, 1fr);
     column-gap: 24px;
+    /* Ряд "tz tz" снят вместе со строкой перевода зон (auth-4). */
     grid-template-areas:
       "head    head"
       "calhead slotlab"
       "cal     slots"
-      "tz      tz"
       "exits   cta";
   }
   gb-booking-flow[layout="compact"] .gbb-panel:has(.gbb-cal-grid) > .gbb-head { grid-area: head; }
@@ -990,7 +1039,6 @@ gb-booking-flow[layout="compact"] .gba-submit { margin-top: var(--form-block-gap
     overflow-y: auto;
     padding-right: 4px;
   }
-  gb-booking-flow[layout="compact"] .gbb-tz { grid-area: tz; }
   gb-booking-flow[layout="compact"] .gbb-panel:has(.gbb-cal-grid) > .gba-submit { grid-area: cta; }
   gb-booking-flow[layout="compact"] .gbb-panel:has(.gbb-cal-grid) > .gbb-exits {
     grid-area: exits;
@@ -1008,7 +1056,6 @@ gb-booking-flow[layout="compact"] .gba-submit { margin-top: var(--form-block-gap
   gb-booking-flow[layout="compact"] .gbb-head { margin-bottom: 8px; }
   gb-booking-flow[layout="compact"] .gbb-cal-head { margin-bottom: 12px; }
   gb-booking-flow[layout="compact"] .gbb-slot-label { margin-bottom: 12px; }
-  gb-booking-flow[layout="compact"] .gbb-tz { margin-top: 10px; }
   gb-booking-flow[layout="compact"] .gba-submit { margin-top: 8px; }
 }
 
@@ -1070,74 +1117,15 @@ gb-booking-flow[layout="embedded"] .gbb-panel {
   padding: 0;
 }
 
-/* ============================================================
-   ЗАКОН ПОВЕРХНОСТИ УРОВНЯ        gbppl-concierge-auth-3, 10.09
-   ------------------------------------------------------------
-   Тон по скрину букинга в дровере: «три разных шрифта рядом,
-   никакой иерархии, позор, показывать стыдно». Он считал верно.
-   На уровне стояло четыре типографических голоса: айбрау шага,
-   вторичная строка про пятнадцать минут (16/400 Zinc 600), контент
-   календаря (15 Zinc 900) и строка перевода зон в подвале (14 Zinc
-   600), а пятым — «Pick a day to see the open times» на 16/300
-   Zinc 500. Плюс два заголовка спорили, кто из них про время.
-
-   НА ЭТОМ УРОВНЕ РОВНО ДВА ГОЛОСА, и это правило, а не уборка:
-
-     АЙБРАУ    12 / 600 / 0.12em / caps / Zinc 500 — роль Eyebrow
-               (shell.css). Носят: PICK A DATE над сеткой месяца,
-               PICK A TIME над чипами, буквы дней недели.
-     КОНТЕНТ   Inter, 15, Zinc 900 — то, что выбирают. Носят: месяц
-               (600, на ступень тяжелее, потому что он называет
-               сетку под собой), числа дней (400), и в той же
-               семье чипы слотов (14/400 Zinc 700 — лестница чипа,
-               не второй шрифт) и строка пустого дня (15/400 Zinc
-               500, тот же кегль, тише чернилами).
-
-   ТРЕТЬЕГО НЕТ. Пояснение зоны при заголовке времени — это айбрау
-   БЕЗ КРИКА: те же 12 и тот же Zinc 500, снятые капс и вес. Оно
-   делит с айбрау кегль, цвет и семью и отличается ровно тем, что
-   делает подпись заголовком; поэтому это одна роль в двух
-   состояниях, а не новая.
-
-   МЕСЯЦ НЕ ПЕРЕОДЕВАЛСЯ, И ЭТО ЗАМЕР: .gbb-cal-month уже стоит
-   15/600 Zinc 900 — та же семья, тот же кегль и тот же цвет, что
-   у чисел под ним, ступенью тяжелее. Серифа в нём нет и не было.
-   Опустить его до 14 значило бы РАЗВЕСТИ его с числами, которые
-   он подписывает. Оставлен как есть, число названо здесь.
-   ============================================================ */
-
-/* ---- Шапка уровня ----
-   Одна строка, одно айбрау, и оно принадлежит сетке под собой:
-   8 снизу. Верхнего отступа нет — над ним шапка дровера. */
-gb-booking-flow[layout="embedded"] .gbb-head { margin-bottom: var(--space-8); }
-/* Айбрау носит .gb-eyebrow целиком; здесь только поле. */
-gb-booking-flow[layout="embedded"] .gbb-eyebrow { margin: 0; }
-
-/* ---- Заголовок времени и зона в одной строке ----
-   Ритм тот же, что у шапки уровня: айбрау связано вниз, к чипам. */
-gb-booking-flow[layout="embedded"] .gbb-slot-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-8);
-  margin: var(--space-24) 0 var(--space-8);
-}
-/* Айбрау, снявшее крик: кегль, цвет и семья те же, ушли капс и 600. */
-gb-booking-flow[layout="embedded"] .gbb-zone {
-  flex: 0 0 auto;
-  font-size: var(--eyebrow-size);
-  font-weight: 400;
-  line-height: 1.5;
-  letter-spacing: normal;
-  text-transform: none;
-  color: var(--eyebrow-color);
-}
-/* Пустой день говорит голосом контента, а не пятым шрифтом. */
-gb-booking-flow[layout="embedded"] .gbb-slots-empty {
-  font-size: 15px;
-  font-weight: 400;
-  color: var(--zinc-500);
-}
+/* ЗАКОН ПОВЕРХНОСТИ УЕХАЛ ОТСЮДА В БАЗУ ОРГАНИЗМА
+   (gbppl-concierge-auth-4). Он родился в этом блоке как «на уровне
+   дровера ровно два голоса», и здесь же стояли четыре его правила:
+   поле шапки участка, поле айбрау, строка «заголовок времени +
+   зона» и голос пустого дня. С 10.09 это правило ШАГА, а не
+   режима — Тон: «я уже всё сказал» — и живёт в блоке «ЗАКОН
+   ПОВЕРХНОСТИ ШАГА 2» рядом с .gbb-head. Режим embedded больше
+   НИЧЕГО не говорит о голосах: только о поверхности, о ритме
+   формы и о подвале. */
 
 /* ---- Ритм лид-формы в дровере ----          gbppl-concierge-auth-2
    Живой ритм .gba-field--flow — 24 / 32 с 768 / 40 с 1280 — считает
