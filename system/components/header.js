@@ -693,7 +693,12 @@
   /* gbppl-header-auth-1: `hdr` joins content, not view. Which bar the page
      wears IS what you are looking at, so it rides along the wordmark and the
      Gifts link like the checkout scenario and the portal head do. */
-  var KEEP_CONTENT = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock', 'prefooter', 'hdr'];
+  /* gbppl-design-share-4 (11.09): `c` = WHICH CONCEPT of the shared
+     design page is being looked at. Content, not view: four concepts
+     are four designs of one page, exactly as `v` is two checkouts,
+     and a link handed to somebody has to keep showing the one it
+     promised. */
+  var KEEP_CONTENT = ['v', 'nav', 'hero', 'grid', 'layout', 'pth', 'lock', 'prefooter', 'hdr', 'c'];
   var KEEP_VIEW    = ['device', 'studio'];   /* gbppl-panel-10: panel ушёл со второй компоновкой */
   window.GB_KEEP = {
     content: KEEP_CONTENT,

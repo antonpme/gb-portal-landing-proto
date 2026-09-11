@@ -552,6 +552,27 @@
       from: 'checkout.html: the four quantity input numbers',
       stroke: 2.5
     },
+    /* THE THIRD GESTURE (gbppl-design-share-4, 11.09). «Right-drag to
+       move», the line the shared design stage was missing while the
+       gesture itself worked: a right-button drag on the instrument
+       moves model-viewer's camera-target and leaves the orbit alone,
+       so the hint was short one fact and the record short one glyph.
+       assets\nucleo-full\48-drag-move.svg, adapted by the same
+       arithmetic as its neighbours (halve the written coordinate:
+       the source group carries translate(0.5 0.5), so (w + 0.5) / 2
+       recentred by a quarter pixel is exactly w / 2). Whole file,
+       nothing dropped: four stems, four heads and the ring between
+       them. The set's other move (48-drag-move-2.svg) puts a square
+       where the ring is, and a square inside a 16px box reads as a
+       second frame. */
+    'move': {
+      body: '<path d="M12 1.5V8M12 22.5V16M22.5 12H16M1.5 12H8"/>' +
+            '<path d="M9.375 4.125 12 1.5l2.625 2.625M9.375 19.875 12 22.5l2.625-2.625"/>' +
+            '<path d="M19.875 9.375 22.5 12l-2.625 2.625M4.125 9.375 1.5 12l2.625 2.625"/>' +
+            '<circle cx="12" cy="12" r="4"/>',
+      from: 'assets/nucleo-full/48-drag-move.svg (Nucleo, the house set): «Right-drag to move» on the shared design stage',
+      stroke: 1
+    },
     /* THE MOUSE (gbppl-design-share-3, 11.09). Half of «Scroll to
        zoom», the gesture hint that now stands inside the 3D scene.
        assets\nucleo-full\48-mouse-2.svg, halved: the shell, the seam
