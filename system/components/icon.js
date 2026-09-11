@@ -205,6 +205,26 @@
    translate puts in. Nothing is drawn by eye and nothing is
    invented. The bell in particular is NOT the concierge's bell and
    is not a redraw of it: see its own note at the entry.
+
+   ------------------------------------------------------------
+   AND THREE FOR THE SHARED DESIGN STAGE
+   (gbppl-design-share-3, 11.09)
+   ------------------------------------------------------------
+   Ton, 11.09, on live\design-share.html: the two viewer utilities
+   leave the podium and become glyphs in the corner of the scene,
+   and the gesture hint moves inside the scene «с иконками». Three
+   drawings the record did not have: a wand for «See it
+   personalized», and a turn and a mouse for the two gestures.
+
+   All three are Nucleo files out of assets\nucleo-full, adapted by
+   the arithmetic `service-bell` established and `bell`,
+   `credit-card`, `heart` and `sliders` have used since: halve the
+   WRITTEN coordinate, which is (w + 0.5) / 2 recentred by the
+   quarter pixel the source group's translate(0.5 0.5) puts in.
+   Nothing is drawn by eye, nothing is composited out of two files,
+   and no path is dropped: each entry is one whole source file. The
+   sources' stroke 1, butt caps and mitre joins are left behind, as
+   the record leaves them behind for everything.
    ============================================================ */
 (function () {
   'use strict';
@@ -532,6 +552,21 @@
       from: 'checkout.html: the four quantity input numbers',
       stroke: 2.5
     },
+    /* THE MOUSE (gbppl-design-share-3, 11.09). Half of «Scroll to
+       zoom», the gesture hint that now stands inside the 3D scene.
+       assets\nucleo-full\48-mouse-2.svg, halved: the shell, the seam
+       between the two buttons, and the stem up to it. The set's other
+       mouse (48-mouse.svg) draws the wheel as a capsule four units
+       wide on the 24 grid, which at the 16px this hint renders at is
+       a filled blob; two buttons and a seam survive the size, and the
+       words beside the glyph say which gesture is meant. Whole file,
+       nothing dropped. */
+    'mouse': {
+      body: '<path d="M12 1.5V11"/><path d="M3.49 11H20.43"/>' +
+            '<path d="M3.5 10V14C3.5 18.6944 7.3056 22.5 12 22.5C16.6944 22.5 20.5 18.6944 20.5 14V10C20.5 5.3056 16.6944 1.5 12 1.5C7.3056 1.5 3.5 5.3056 3.5 10Z"/>',
+      from: 'assets/nucleo-full/48-mouse-2.svg (Nucleo, the house set): «Scroll to zoom» on the shared design stage',
+      stroke: 1
+    },
     /* Кнопка дока консоли, обе стороны. Рисунок тот же, что жил
        инлайном в studio-panel.js: прямоугольник окна (тот же, что у
        пресета Full) и одна вертикаль, отрезающая полосу пульта. Имя
@@ -551,6 +586,19 @@
       body: '<path d="M12 4.5v15m7.5-7.5h-15"/>',
       from: 'checkout.html: the four quantity input numbers',
       stroke: 2.5
+    },
+    /* THE TURN (gbppl-design-share-3, 11.09). The other half of the
+       gesture hint: «Drag to turn». A ring open at the top right with
+       the arrow head closing it, which is the one motif a reader
+       cannot mistake for anything but rotation.
+       assets\nucleo-full\48-arrow-rotate-clockwise.svg, halved. Two
+       paths, whole file. It is NOT `arrows-rotate-center`, the other
+       candidate: two arrows and a hub is three objects at 16px. */
+    'rotate': {
+      body: '<path d="M22 12C22 17.5229 17.5229 22 12 22C6.4772 22 2 17.5229 2 12C2 6.4772 6.4772 2 12 2C16.1007 2 19.6248 4.4682 21.1679 8L21.0915 7.8294"/>' +
+            '<path d="M21.5 2V8H15.5"/>',
+      from: 'assets/nucleo-full/48-arrow-rotate-clockwise.svg (Nucleo, the house set): «Drag to turn» on the shared design stage',
+      stroke: 1
     },
     'search': {
       body: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
@@ -588,6 +636,26 @@
       body: '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>',
       from: 'header.js: the guest face that opens the sign in drawer',
       stroke: 1.5
+    },
+    /* THE WAND (gbppl-design-share-3, 11.09). «See it personalized»,
+       the door that rewrites the words on the gift. Ton named the
+       candidates — wand, sparkle, pen tool — and the wand is the one
+       that says CHANGE THIS THING rather than «new» (sparkle, which
+       reads as AI everywhere now) or «edit a document» (a pen).
+       assets\nucleo-full\48-wand.svg, halved. Whole file: the body,
+       the collar, and five sparks. The sparks are two units long in
+       the source, so on the 24 grid they are one unit with the
+       house's round caps — the very construction `chat` uses for the
+       three dots of its bubble, and at 20px they read as sparks
+       around the tip, which is what the drawing means. */
+    'wand': {
+      body: '<path d="M1.71 18.71L3.5 20.5L5.29 22.29L18.21 9.38L14.62 5.79L1.71 18.71Z"/>' +
+            '<path d="M11 9.5L14.5 13"/>' +
+            '<path d="M15.25 1V2"/><path d="M23 8.75H22"/>' +
+            '<path d="M20.73 3.27L20.02 3.98"/><path d="M20.73 14.23L20.02 13.52"/>' +
+            '<path d="M10.48 3.98L9.77 3.27"/>',
+      from: 'assets/nucleo-full/48-wand.svg (Nucleo, the house set): «See it personalized» on the shared design stage',
+      stroke: 1
     }
   };
 
