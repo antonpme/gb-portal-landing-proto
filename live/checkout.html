@@ -1019,6 +1019,52 @@
      same Reset; only the shell changed — and the site header is now
      the first thing on the page, exactly as gildedbox.com renders it.
      ============================================================ -->
+<!-- ============================================================
+     gbppl-checkbox-1 (2026-09-11) — THE THIRD HOLE OF THE 27.08
+     CENSUS IS FILLED, AND IT IS FILLED THE WAY THE SECOND ONE WAS
+     ------------------------------------------------------------
+     The census of 27.08 named four things this page renders that
+     the system did not own: select, icon-only, checkbox/radio and
+     the input number. The radio went into the system on 03.09, out
+     of Figma «Gifting Portal» 10056:14561, together with the law
+     Ton's own question produced that day — off is an opacity and
+     nothing else, because `accent-color` has no effect on a control
+     Chrome considers disabled. Every checkbox on this page was a
+     native box on `accent-color`, which is to say every one of them
+     was one `disabled` away from the same bug.
+
+     WHAT MOVED, and only on ?v=5. Five controls:
+       · the greeting card switch of step two;
+       · the prefill switch above the gift table (07.09);
+       · the «select every gift» box in the head of that table;
+       · the tick on each of its rows;
+       · the tick beside a row of the address picker in the drawer.
+     The first two become .gb-checkbox rows: the flex, the wrap and
+     the two gaps they invented HERE are the component's now, and
+     what is left on the markup is the carrier's own chrome — the
+     padding, the wash on hover, the corner. The other three are a
+     box with no row at all, which is why the organism declares its
+     colour cell on the BOX and not on the row: a select column has
+     no words to be its label, and it still has to be a whole
+     control.
+
+     WHAT CHANGED ON THE SCREEN, measured before and after at 390 /
+     1280 / 2258 and reported rather than discovered later: the two
+     rows with a sentence take the system's `small-400` label —
+     14 / 400 / line 1.5 / tracking 0.5 — where they used to take
+     Tailwind's `text-sm`, 14 / 400 / line 20 / no tracking. That is
+     one pixel of row height and half a pixel of tracking per
+     character, and it is the price of the sentence beside a
+     checkbox being set the same way as the sentence beside the
+     radio two rows above it. The box, the 12 gap, the 4 drop and
+     every rectangle around them are unchanged.
+
+     V1-V4 ARE NOT TOUCHED. Their boxes keep the native accent they
+     were signed off with; every selector of checkbox.css begins
+     with .gb-checkbox, so the link in the head costs them nothing,
+     and the four were checked node by node to prove it. Moving them
+     is a decision rather than a migration, and it is Ton's.
+     ============================================================ -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1301,6 +1347,12 @@
      here: every selector in the file begins with .gb-radio and collides with
      nothing on this page. -->
 <link rel="stylesheet" href="../system/components/radio.css">
+<!-- gbppl-checkbox-1: the checkbox, the radio's sibling out of the same
+     Figma file, lifted out of THIS page the same way. No script comes with
+     it either. Only ?v=5 wears it today: V1-V4 keep the native boxes on
+     accent-color they were signed off with, and every selector in the file
+     begins with .gb-checkbox, so linking it costs the other four nothing. -->
+<link rel="stylesheet" href="../system/components/checkbox.css">
 <!-- gbppl-v5-fix-1: the alert box, measured off Figma «Gifting Portal»
      node 9293-2260 (ALERT COLORS). Only ?v=5 wears it today; V1-V4 keep
      the strips they were signed off with, and every selector in the file
@@ -4852,10 +4904,15 @@
 
                       <div x-show="shipment.v5Perso === 'none'" x-transition.opacity.duration.280ms
                            class="border border-zinc-200 rounded-[var(--radius)] bg-white">
-                        <label class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
-                          <input type="checkbox" x-model="shipment.v5Card.on" class="accent-blue-600 w-4 h-4 flex-shrink-0">
-                          <span class="text-sm text-zinc-900">Add a greeting card to all gifts</span>
-                          <span class="text-sm text-zinc-500">One card, the same message in every box</span>
+                        <!-- gbppl-checkbox-1: the organism. The row's own
+                             flex, wrap and two gaps came out of THIS markup
+                             and are the component's now, so what is left
+                             here is the carrier's chrome: the padding, the
+                             pointer, the wash on hover and the corner. -->
+                        <label class="gb-checkbox px-4 py-3 hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
+                          <input type="checkbox" x-model="shipment.v5Card.on" class="gb-checkbox__input">
+                          <span class="gb-checkbox__label">Add a greeting card to all gifts</span>
+                          <span class="gb-checkbox__note">One card, the same message in every box</span>
                         </label>
                         <!-- gbppl-v5-ground-1: an OPENED nested block is a zone,
                              and a zone is Zinc 50. The row with the checkbox
@@ -4943,19 +5000,23 @@
                              same step already carries for the greeting card,
                              white box, tick, sentence, grey half. -->
                         <div class="border border-zinc-200 rounded-[var(--radius)] bg-white">
-                          <label class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
+                          <label class="gb-checkbox px-4 py-3 hover:bg-zinc-50 transition-colors rounded-[var(--radius)]">
                             <!-- The one deviation from the greeting row's
                                  markup, and it is a fix rather than a variant:
                                  the tick and its sentence are ONE flex item,
                                  so a label longer than the greeting's cannot
                                  leave the tick stranded on a line of its own
                                  at 360 (seen on the shot, which is why this
-                                 span is here). -->
-                            <span class="flex items-start gap-x-3 min-w-0">
-                              <input type="checkbox" x-model="shipment.v5NameFromAddr" @change="v5PrefillToggle(shipment)" class="accent-blue-600 w-4 h-4 flex-shrink-0 mt-0.5">
-                              <span class="text-sm text-zinc-900">Use the delivery recipient's name</span>
+                                 span is here). gbppl-checkbox-1 kept it and
+                                 kept its gap on the organism's own slot, so
+                                 the inner pair and the outer row cannot drift
+                                 apart; mt-0.5 is gone, because the box is put
+                                 on the sentence's line by arithmetic now. -->
+                            <span class="flex items-start gap-[var(--gbc-gap)] min-w-0">
+                              <input type="checkbox" x-model="shipment.v5NameFromAddr" @change="v5PrefillToggle(shipment)" class="gb-checkbox__input">
+                              <span class="gb-checkbox__label">Use the delivery recipient's name</span>
                             </span>
-                            <span class="text-sm text-zinc-500">Printed names and initials come from each address</span>
+                            <span class="gb-checkbox__note">Printed names and initials come from each address</span>
                           </label>
                         </div>
 
@@ -5120,7 +5181,13 @@
                                  scroll. The tone does the work the frame would. -->
                             <thead class="border-b border-zinc-200 bg-zinc-50">
                               <tr>
-                                <th class="w-10 py-3.5 align-top text-left"><input type="checkbox" @change="v5SelectAll(shipment, $event.target.checked)" :checked="v5AllSelected(shipment)" class="accent-blue-600 w-4 h-4" aria-label="Select every gift"></th>
+                                <!-- gbppl-checkbox-1: a box with no row, which
+                                     is what a select column is. The organism's
+                                     colour cell lives on the box for exactly
+                                     this case, so the class is the whole
+                                     migration and the cell keeps its place on
+                                     the line to the pixel. -->
+                                <th class="w-10 py-3.5 align-top text-left"><input type="checkbox" @change="v5SelectAll(shipment, $event.target.checked)" :checked="v5AllSelected(shipment)" class="gb-checkbox__input" aria-label="Select every gift"></th>
                                 <!-- gbppl-v5-image-1 (04.09). Ton: «В
                                      персонализации колонка Name должна явно
                                      быть шире. Явно.» 140 to 220, and to 280
@@ -5177,7 +5244,7 @@
                                 </tr>
                                 <template x-for="row in grp.rows" :key="'v5row-' + row.id">
                                   <tr class="group border-b border-zinc-100 row-enter">
-                                    <td class="py-3"><input type="checkbox" x-model="row.selected" class="accent-blue-600 w-4 h-4" aria-label="Select this gift"></td>
+                                    <td class="py-3"><input type="checkbox" x-model="row.selected" class="gb-checkbox__input" aria-label="Select this gift"></td>
 
                                     <!-- PRINTED NAME — the name that gets
                                          printed on the gift. The person who
@@ -6031,7 +6098,7 @@
                      it: a checkbox in a button is neither, and this way the
                      row keeps one hit area and the box keeps its own. -->
                 <span class="ck-pk__tick" x-show="v5PkTicks() && r.kind !== 'none'">
-                  <input type="checkbox" class="accent-blue-600 w-4 h-4"
+                  <input type="checkbox" class="gb-checkbox__input"
                          :checked="v5PkTicked(r)" @change="v5PkTick(r, $event.target.checked)"
                          :aria-label="'Select ' + r.name">
                 </span>

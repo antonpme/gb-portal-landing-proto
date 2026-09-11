@@ -1,0 +1,525 @@
+/* ============================================================
+   gbppl-checkbox-1 — THE CHECKBOX, AND THE THIRD THING IT CAN SAY
+   ------------------------------------------------------------
+   The radio was lifted out of the same Figma file on 03.09 and the
+   two controls stand side by side on the very same step of the
+   checkout, so this file is the radio's SIBLING and says so in
+   every line: the same native input with its paint taken off, the
+   same 12 between the mark and the word, the same label role, the
+   same focus ring, the same law about what «off» is allowed to
+   change. What is genuinely different is the SHAPE of the mark and
+   the fact that a checkbox has three things to say instead of two.
+
+   NO JAVASCRIPT, AND IT IS THE SAME DECISION radio.css TOOK.
+   Everything this control owes the keyboard — the tab stop, Space,
+   a real `disabled` the tab order respects, the label that answers
+   a click, the announced role and the announced mixed state — is
+   the browser's, written by nobody and breakable by nobody. A
+   `checkbox.js` would have exactly one job, which is to
+   re-implement what is already there. The ONE thing script has to
+   do is the one thing markup cannot say at all: `indeterminate` is
+   a PROPERTY and not an attribute, so the third status is set with
+   `el.indeterminate = true` by whoever owns the value, and this
+   file only draws it.
+
+   ------------------------------------------------------------
+   WHERE EVERY NUMBER COMES FROM
+   ------------------------------------------------------------
+   THE MOCK. Figma «Gifting Portal», fileKey jb9S38HV3lWnfqERtrV3Y0,
+   component set `checkbox` 1066:7748, read 11.09 through the MCP
+   connector (get_design_context, get_variable_defs, and the six
+   exported glyphs measured off their own path data). NINE variants:
+   status unselected / selected / semi-selected crossed with state
+   enabled / disabled / hovered. That is five more than the radio
+   had, and two of the extra three are the thing this control has
+   that the radio does not: a third status.
+
+     box            18 by 18. Variables `checkbox/icon/size/width`
+                    and `/height`, both 18.
+     ring           2. Not typed in the file: the unselected glyph
+                    is a frame path whose outer rectangle is 18 wide
+                    with a corner radius of 2, and whose inner hole
+                    runs 2 to 16 on both axes with SHARP corners.
+                    18 minus 16, halved, is 2 — and CSS draws
+                    exactly that shape by itself, because a 2px
+                    border inside a 2px radius leaves an inner
+                    radius of nought.
+     corner         2. The path's corner cubic leaves (2,0) through
+                    (0.9,0) and (0,0.9) to (0,2); a quarter circle
+                    of r 2 wants its controls at 2 − 2×0.5523 =
+                    0.896. It is r 2 to three decimal places. NOT
+                    --radius (5): this is the glyph's own corner and
+                    not the brand's, and 5 on an 18 box reads as a
+                    pill.
+     check          the Material tick, 2 wide, from (2,9) through
+                    (7,14) to (16,5). Path
+                    `M7 14L2 9L3.41 7.59L7 11.17L14.59 3.58L16 5L7 14Z`,
+                    knocked OUT of the filled box.
+     mixed          a bar 10 by 2, centred: x 4..14, y 8..10. Path
+                    `M14 10H4V8H14V10Z`, knocked out the same way.
+     rest ink       #18181B, `tailwind/zinc/900`. The resting frame
+                    is ink, not a grey hairline — the same reading
+                    the radio's ring gave, and Russell's rule for
+                    the page: the thing being chosen should be as
+                    readable as the words beside it.
+     chosen         #2563EB, `tailwind/blue/600`, and it takes the
+                    WHOLE box: frame and fill together. Ton-5, blue
+                    is state.
+     gap            12 between the box and the label.
+     label          `Body/BP: XL/Small - 400`: Inter 400, 14, line
+                    1.5, tracking 0.5, Zinc 900. Already a role in
+                    our register — `small-400` in
+                    system/type-scale.js — and already what
+                    .gb-radio__label spends, so nothing is named
+                    here that the radio did not name first.
+     box on line    the 18 box sits at y 1.5 inside a 21 line box,
+                    which is (21 − 18) / 2 exactly. The rule below
+                    writes that as arithmetic rather than as 1.5, so
+                    the same expression puts a 16 box at 2.5 and
+                    nobody has to keep a second number in step.
+
+   THE LIVE PROTOTYPE, live/checkout.html ?v=5, measured 11.09 with
+   the harvest Chrome at 390 / 1280 / 2258 before this wave touched
+   it. Five carriers: the greeting card switch and the prefill
+   switch of step two, the «select every gift» box in the head of
+   the table, the tick on every row of it, and the tick beside a row
+   of the address picker inside the drawer.
+
+     box            16 by 16 (`w-4 h-4`), `accent-color` Blue 600,
+                    drawn by the browser and by nothing else.
+     row            `flex flex-wrap items-center gap-x-3 gap-y-1`:
+                    12 across, 4 down, and the quiet half drops
+                    under the sentence when the row runs out.
+     label          14 / 400 / line 20 / Zinc 900 (`text-sm`).
+     quiet half     14 / 400 / line 20 / Zinc 500.
+     box on line    2 from the top of the label's 20 line box, which
+                    is what `items-center` computes and what the
+                    prefill row spells out as `mt-0.5`.
+
+   THE TWO READINGS PUT SIDE BY SIDE:
+
+     source            box   ring   corner   gap
+     live checkout     16    (UA)   (UA)     12
+     Figma DS 2K       18    2      2        12
+
+   The gap agrees to the pixel across a design file and a rendered
+   page, which is the same two-witness case the radio's own 12 had,
+   and it is the reason 12 is a slot here rather than a taste.
+
+   TWO RUNGS, THE RADIO'S OWN: 16 at the bottom, which is what all
+   five carriers render today, and 18 from 2000, which is the mock.
+   That is the house model spelled out — «то, что есть в Фигме,
+   самый большой вариант, под разрешение 2К; нам нужно уменьшать
+   интерфейс под малые экраны» (Ton, 01.09).
+
+   AND THE BOTTOM RUNG'S RING IS DERIVED, WHICH IS SAID OUT LOUD.
+   The radio could measure both ends: a designed 16 radio existed on
+   the live sign in flow. A designed 16 CHECKBOX does not exist
+   anywhere — every 16 box in the house is the browser's own, and
+   the browser's frame is not a number anybody chose. So the ring
+   and the corner are written as the mock's own proportion, 2 of 18,
+   and the media query moves ONE number: the box. At 16 that is
+   1.778, and Chrome floors a border to whole device pixels, so on a
+   1× screen it draws 2 and on a 2× screen it draws its true width.
+   Whether the ladder should be rounded to a flat 2 and 2 is a
+   question standing with Ton, and it is the same question his radio
+   note already carries about 1.5 and 1.8.
+
+   ------------------------------------------------------------
+   THE FOUR DISAGREEMENTS, AND WHICH SIDE WON
+   ------------------------------------------------------------
+   1. WHAT «OFF» IS ALLOWED TO CHANGE. The mock recolours: every
+      disabled variant swaps its ink to #A1A1AA, `tailwind/zinc/400`,
+      box and label together. The house's law, written into
+      radio.css on 03.09 after Ton found the bug on the live page,
+      is that OFF IS AN OPACITY AND NOTHING ELSE.
+
+      THE HOUSE WINS, and the arithmetic is most of the argument.
+      Zinc 900 at 0.4 over white is rgb(163, 163, 164); Zinc 400 is
+      rgb(161, 161, 170). For the UNSELECTED box and for the label —
+      seven of the mock's nine variants — the two answers are the
+      same colour to within six units of one channel, so the mock is
+      not saying anything different from the fade, it is saying the
+      fade with a variable.
+
+      Where they genuinely part is a box that is TICKED and off: the
+      mock paints it neutral Zinc 400, the fade leaves it Blue 600
+      seen through 0.4, rgb(168, 193, 247). And that exact pair is
+      the thing Ton looked at on 03.09 and called a bug: «Disabled
+      радиоселекты для UPS Ground и для No Personalization выглядят
+      по-разному. UPS Ground выбран, но почему-то чёрным цветом, а No
+      Personalization — синим, как положено.» He asked for «единый
+      вид с No Personalization с поправкой на дим». A chosen thing
+      that has been switched off is still a chosen thing, and the
+      radio beside this control on the same step of the same page
+      already says so. Two laws for «off» in one form is the defect,
+      not the fix.
+
+      RECORDED, NOT SMOOTHED OVER: the mock's Zinc 400 goes to Ton
+      as a question, together with the one the radio left standing
+      (the house has 0.4 here and --gb-btn-disabled-opacity 0.6 on
+      the button).
+
+   2. THE COLOUR OF THE MARK. The mock KNOCKS the tick out of the
+      fill, so on the white sheet it was drawn on the tick is white
+      and on any other ground it would be that ground. We paint it
+      --white. Two reasons, both measured rather than preferred: the
+      five live carriers render a white tick, because that is what
+      `accent-color` draws; and a mark whose colour is whatever
+      happens to be behind the control is not a mark. The one place
+      the two answers differ is a ticked box standing on a coloured
+      card, which is exactly where a knockout would disappear.
+
+   3. THE LABEL'S LINE AND TRACKING. Mock 1.5 and 0.5, so a 21px
+      line; the carriers render Tailwind's `text-sm`, a flat 20 with
+      no tracking. THE MOCK WINS, and it wins because the role
+      already exists and the radio already spends it: `small-400`
+      is 14 / 400 / tracking 0.5 in system/type-scale.js, and
+      .gb-radio__label has rendered exactly this since 03.09. A
+      checkbox whose word were set differently from the radio's word
+      two rows above it would be the drift the register exists to
+      prevent. The cost is one pixel of row height and half a pixel
+      of tracking per character on the two carriers that wear a
+      label, and it is measured in the report rather than discovered
+      later.
+
+   4. HOVER. The mock HAS a hovered variant, three of them, and
+      draws them IDENTICALLY to enabled: the layer the file calls
+      `state-layer` is Material's ripple and it is empty here. So
+      the file has an opinion and the opinion is «nothing». Ours is
+      the form family's own, live-measured hover, the one the radio
+      borrowed from the field: the frame steps to Blue 600 under the
+      pointer, and a box that is already ticked does not move
+      because the blue is already there. DECLARED, and the mock's
+      silence is the reason it is allowed to be.
+
+   NO TOKEN, four of them, each argued:
+     gap 12        half a step of the space scale, which starts at 8
+                   and jumps to 16. Two independent sources say 12.
+     row gap 4     LIVE `gap-y-1`, the drop between the sentence and
+                   its quiet half. Half of the scale's first step.
+     ring 2 / 2    a hairline is not a length off the space scale,
+                   and neither is a 2px corner on an 18px glyph.
+     mark paths    the two glyphs are copied character for character
+                   out of the exported SVG. They are the drawing,
+                   not a value.
+
+   WHY THE MARK IS A MASK AND NOT A CHARACTER. Ton-5's rule about
+   glyphs the CSS cannot reach — «статический SVG, который CSS не
+   красит, красится маской» — is the same mechanism: the ::before is
+   painted with --gbc-mark and a mask cut to the exported path, so
+   the tick takes the control's colour cell like everything else and
+   no font has to be present for a form to be readable. A Unicode
+   tick would be a different shape on every platform and a different
+   weight at every size, which is to say it would not be the mock.
+   ============================================================ */
+
+/* ============================================================
+   THE BOX
+   ------------------------------------------------------------
+   THE COLOUR CELL LIVES HERE AND NOT ON THE ROW, and that is the
+   one piece of architecture where this file parts from radio.css.
+   A radio circle never stands alone: there is always a word to
+   choose. A CHECKBOX DOES — the select-all in the head of a table
+   and the tick on each of its rows are boxes with no label at all,
+   three of the five carriers on the checkout — so the box has to
+   be a complete control by itself. Everything the box needs is
+   declared on the box; the row declares only what a row owns, and
+   custom properties inherit downward, so the label's line box
+   reaches the mark's arithmetic without anything being repeated.
+   ============================================================ */
+.gb-checkbox__input {
+  /* ---- the rung, and the two numbers that follow it ----
+     One threshold, the client's own 2xl, moves --gbc-size and the
+     ring and the corner follow by the mock's own proportion. See
+     the note above about why the bottom rung is derived. */
+  --gbc-size:   16px;                              /* LIVE checkout w-4 h-4, all five carriers */
+  --gbc-ring:   calc(var(--gbc-size) * 2 / 18);    /* FIGMA 1066:7748, 2 of the mock's 18 */
+  --gbc-radius: calc(var(--gbc-size) * 2 / 18);    /* FIGMA, the glyph's own corner, not --radius */
+
+  /* ---- the colour cell: the whole paint of the control ----
+     Six slots and not one colour named below this block. A family
+     that needs different ink repoints the slots; there is no second
+     family yet and one is not invented before a carrier asks. */
+  --gbc-line:       var(--zinc-900);            /* FIGMA tailwind/zinc/900 */
+  --gbc-line-hover: var(--blue-600);            /* DECLARED, the form family's live hover */
+  --gbc-on:         var(--blue-600);            /* FIGMA tailwind/blue/600 + LIVE accent-color */
+  --gbc-mark:       var(--white);               /* LIVE; the mock knocks the glyph out, see 2 */
+  --gbc-ring-focus:   var(--gb-btn-focus-ring); /* DECLARED, the organism's ring */
+  --gbc-focus-width:  var(--gb-btn-focus-ring-width);
+  --gbc-focus-offset: var(--gb-btn-focus-ring-offset);
+  /* ---- the two glyphs, copied character for character out of the
+     exported paths of 1066:7748. --gbc-glyph is the one slot that
+     is switched, and :indeterminate below is what switches it. ---- */
+  --gbc-glyph-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M7 14L2 9L3.41 7.59L7 11.17L14.59 3.58L16 5L7 14Z'/%3E%3C/svg%3E");
+  --gbc-glyph-mixed: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M14 10H4V8H14V10Z'/%3E%3C/svg%3E");
+  --gbc-glyph: var(--gbc-glyph-check);
+
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  /* inline-block and no vertical-align of our own, which is what a
+     native checkbox computes to: a box put in a table cell has to
+     sit on the line exactly where the browser's own box sat, or
+     three carriers move the day they are migrated. */
+  display: inline-block;
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--gbc-size);
+  height: var(--gbc-size);
+  margin: 0;
+  border: var(--gbc-ring) solid var(--gbc-line);
+  /* A 2px border inside a 2px radius leaves an inner radius of
+     nought, which is the sharp inner corner the exported path
+     draws. Nothing has to be said about the hole. */
+  border-radius: var(--gbc-radius);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color var(--mo-micro) var(--mo-move),
+              background-color var(--mo-micro) var(--mo-move);
+}
+
+/* THE MARK. It is always in the box and it is always the right
+   shape; what changes is whether it is drawn. Scaling from nothing
+   rather than fading keeps a tick reading as a tick at every frame,
+   which is the radio's dot argued once and spent twice.
+
+   The inset is negative by exactly the ring, because an absolutely
+   positioned pseudo element is laid out against the PADDING box and
+   the mock's glyph is drawn against the whole 18. So the mask runs
+   corner to corner of the border box and the paths land where they
+   were exported. */
+.gb-checkbox__input::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--gbc-ring));
+  background: var(--gbc-mark);
+  -webkit-mask-image: var(--gbc-glyph);
+          mask-image: var(--gbc-glyph);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+  transform: scale(0);
+  transition: transform var(--mo-micro) var(--mo-move);
+}
+
+/* THE THREE STATUSES OF THE MOCK. Ticked and mixed fill the box the
+   same way — the mock paints both Blue 600, frame and ground
+   together — and the only difference between them is which path the
+   mask is cut to. The mixed rule stands AFTER the ticked one on
+   purpose: a box that is both is a box whose children disagree, and
+   that is the bar, not the tick. */
+.gb-checkbox__input:checked,
+.gb-checkbox__input:indeterminate {
+  background: var(--gbc-on);
+  border-color: var(--gbc-on);
+}
+.gb-checkbox__input:checked::before,
+.gb-checkbox__input:indeterminate::before {
+  transform: scale(1);
+}
+.gb-checkbox__input:indeterminate {
+  --gbc-glyph: var(--gbc-glyph-mixed);
+}
+
+/* DECLARED. The frame is this control's underline, and the form
+   family takes its underline to Blue 600 under the pointer. A box
+   that is already filled does not move: the blue is already there.
+   The bare box answers on its own, because three of the five
+   carriers have no row to hover. */
+.gb-checkbox__input:hover:not(:checked):not(:indeterminate):not(:disabled),
+.gb-checkbox__input.is-hover:not(:checked):not(:indeterminate):not(:disabled),
+.gb-checkbox:hover .gb-checkbox__input:not(:checked):not(:indeterminate):not(:disabled),
+.gb-checkbox.is-hover .gb-checkbox__input:not(:checked):not(:indeterminate):not(:disabled) {
+  border-color: var(--gbc-line-hover);
+}
+
+/* DECLARED. Keyboard only, the button organism's ring. */
+.gb-checkbox__input:focus-visible,
+.gb-checkbox__input.is-focus {
+  outline: var(--gbc-focus-width) solid var(--gbc-ring-focus);
+  outline-offset: var(--gbc-focus-offset);
+}
+
+
+/* ============================================================
+   THE ROW
+   ------------------------------------------------------------
+   A <label> holding the box, the sentence and — where the carrier
+   has one — the quiet half that says what ticking it means. The
+   shape is the live checkout's to the number: a wrapping flex row,
+   12 across and 4 down, so the quiet half stands beside the
+   sentence while there is room and drops under it when there is
+   not. Both of this page's switch rows have done that since 07.09
+   and it is the reason the row is `flex` rather than the radio's
+   `inline-flex`.
+   ============================================================ */
+.gb-checkbox {
+  --gbc-gap:   12px;                 /* FIGMA 1066:7748 and LIVE checkout gap-x-3 */
+  --gbc-gap-y: 4px;                  /* NO TOKEN, LIVE checkout gap-y-1 */
+
+  /* The label, on a role the register already holds: `small-400`,
+     which is the mock's `Body/BP: XL/Small - 400` under our name,
+     and which .gb-radio__label already spends. One rung, flat at
+     every width. */
+  --gbc-label:          14px;
+  --gbc-label-weight:   400;
+  --gbc-label-tracking: 0.5px;
+  --gbc-label-line:     1.5;
+  /* The line box that arithmetic, not a nudge, puts the box on. */
+  --gbc-line-box: calc(var(--gbc-label) * var(--gbc-label-line));
+
+  --gbc-ink:      var(--zinc-900);   /* FIGMA tailwind/zinc/900 */
+  --gbc-note-ink: var(--zinc-500);   /* LIVE checkout, text-zinc-500 */
+
+  display: flex;
+  flex-wrap: wrap;
+  /* flex-start and not centre, so a sentence that wraps to two
+     lines leaves the box on the FIRST of them. The box is put level
+     with that line by the rule below. */
+  align-items: flex-start;
+  column-gap: var(--gbc-gap);
+  row-gap: var(--gbc-gap-y);
+  cursor: pointer;
+  /* A label is the control's hit area, and text selected by a
+     double click inside it is a drag that did not tick anything. */
+  -webkit-user-select: none;
+  user-select: none;
+  transition: opacity var(--mo-micro) var(--mo-move);
+}
+
+/* THE BOX SITS ON THE FIRST LINE, and the offset is arithmetic
+   rather than a nudge: half the difference between the label's line
+   box and the box. At the top rung that is (21 − 18) / 2 = 1.5,
+   which is where the mock's own state-layer stands inside its 21
+   tall symbol; at the bottom rung it is 2.5, and the live row
+   renders `mt-0.5` for the same reason. A change to the label's
+   line moves the box with it and no second number is kept in step.
+
+   It is scoped to the row on purpose: a box with no row — a table's
+   select column — takes no margin at all, which is exactly what the
+   browser's own box took there. */
+.gb-checkbox .gb-checkbox__input {
+  margin-block-start: calc((var(--gbc-line-box) - var(--gbc-size)) / 2);
+}
+
+/* The word, and the quiet half. Same metrics, two inks: the second
+   line is not smaller, it is quieter, which is the pair the two
+   switch rows of the checkout have rendered since 07.09. min-width
+   lets a long sentence shrink inside its track instead of pushing
+   the row wider than the card. */
+.gb-checkbox__label,
+.gb-checkbox__note {
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--gbc-label);
+  font-weight: var(--gbc-label-weight);
+  line-height: var(--gbc-label-line);
+  letter-spacing: var(--gbc-label-tracking);
+}
+.gb-checkbox__label { color: var(--gbc-ink); }
+.gb-checkbox__note  { color: var(--gbc-note-ink); }
+
+
+/* ============================================================
+   OFF
+   ------------------------------------------------------------
+   THE FADE HAPPENS ONCE, WHEREVER THE CONTROL ACTUALLY IS, and
+   that is the whole design of this block rather than a detail of
+   it. The toggle learned on its own showcase, and radio.css wrote
+   down, that two opacities multiply: 0.4 inside 0.4 is 0.16, a
+   control twice as gone as anything else the house switches off.
+
+   This control can be either of two things — a row with a word, or
+   a bare box in a cell — so both have to be able to fade, and the
+   pair must never both fire. The third rule is what guarantees it:
+   inside a row, the box does not fade a second time, at a
+   specificity the second rule cannot reach.
+   ============================================================ */
+/* THE ONE VALUE FOR OFF, AND IT IS DECLARED TWICE ON PURPOSE.
+   Custom properties inherit DOWNWARD and only downward, so a slot
+   declared on the box is not readable by the row above it. This
+   control has two possible roots — a row, or a box standing alone
+   — and the fade has to be spendable at whichever of them is
+   there, so the value stands on both. radio.css wrote the same
+   trap down after its own showcase read a switched off group back
+   as opacity 1; this file was caught by the same specimen within
+   the hour, which is what a showcase that draws states rather than
+   describing them is for.
+
+   FIGMA 0.4, with the checkout's own gate as a second witness. It
+   is NOT --gb-btn-disabled-opacity (0.6): see disagreement 1. */
+.gb-checkbox,
+.gb-checkbox__input { --gbc-off: 0.4; }
+
+.gb-checkbox__input:disabled {
+  opacity: var(--gbc-off);
+  cursor: default;
+}
+.gb-checkbox:has(.gb-checkbox__input:disabled),
+.gb-checkbox.is-disabled {
+  opacity: var(--gbc-off);
+  pointer-events: none;
+  cursor: default;
+}
+.gb-checkbox .gb-checkbox__input:disabled {
+  opacity: 1;
+}
+
+
+/* ============================================================
+   OFF NEVER RECOLOURS. THE LAW, WRITTEN OUT BECAUSE THE BROWSER
+   BREAKS IT AND BECAUSE THE MOCK ASKS FOR THE OPPOSITE
+   ------------------------------------------------------------
+   Ton, 03.09, on the live ?v=2 and about the radio: «Disabled
+   радиоселекты для UPS Ground и для No Personalization выглядят
+   по-разному. UPS Ground выбран, но почему-то чёрным цветом, а No
+   Personalization — синим, как положено. Может это баг?»
+
+   IT WAS A BUG AND IT WAS CHROME'S. `accent-color` has no effect on
+   a control the browser considers disabled: Chrome drops it and
+   paints its own grey. Every one of the five checkbox carriers on
+   this checkout is a native box on `accent-color` today, so every
+   one of them is one `disabled` away from the same bug.
+
+   THE LAW: **off is an opacity and nothing else.** A box that is
+   switched off keeps every colour its STATUS gives it — a ticked
+   box stays Blue 600 with a white mark, a mixed one stays Blue 600
+   with a white bar, an empty one stays a Zinc 900 frame — and the
+   whole thing is quieted by the one fade above.
+
+   The three rules below are already what the rules further up
+   compute; they are written again HERE, at higher specificity and
+   after everything, so that the law cannot be lost to a UA sheet
+   that targets :disabled, to a consumer's own reset, or to the next
+   person editing this file. A rule that only says what is already
+   true is documentation the browser cannot ignore.
+   ============================================================ */
+.gb-checkbox__input:checked:disabled,
+.gb-checkbox__input:indeterminate:disabled {
+  background: var(--gbc-on);
+  border-color: var(--gbc-on);
+}
+.gb-checkbox__input:checked:disabled::before,
+.gb-checkbox__input:indeterminate:disabled::before {
+  background: var(--gbc-mark);
+  transform: scale(1);
+}
+.gb-checkbox__input:not(:checked):not(:indeterminate):disabled {
+  background: transparent;
+  border-color: var(--gbc-line);
+}
+
+
+/* ============================================================
+   THE LADDER CLIMBS, ONCE
+   ------------------------------------------------------------
+   One threshold, the client's own 2xl, and it moves ONE number.
+   The ring, the corner and the place the box sits on the line all
+   follow by arithmetic. Nothing else on the control steps: the
+   label is a flat role and the gaps are the live row's.
+   ============================================================ */
+@media (min-width: 2000px) {
+  .gb-checkbox__input { --gbc-size: 18px; }   /* FIGMA checkbox/icon/size 18 */
+}

@@ -435,6 +435,10 @@
     /* gbppl-radio-1. One prefix, the whole family: the row, the
        circle, the label, both lines of the card and the group. */
     [/^gb-radio/, 'system/components/radio.css'],
+    /* gbppl-checkbox-1. One prefix, the whole family: the row, the
+       box, the sentence and its quiet half. It stands beside the
+       radio's deed because the two files are siblings. */
+    [/^gb-checkbox/, 'system/components/checkbox.css'],
     /* gbppl-inputnumber-1. The frame had no deed of its own and read
        its owner off an ancestor; the rename is the moment to write
        the купчая down, one prefix like every other row. */
@@ -626,6 +630,29 @@
         var word = lbl ? (lbl.querySelector('.gb-radio__title') || lbl.querySelector('.gb-radio__label')) : null;
         return list.length + ' values · ' + (word ? word.textContent.trim() : 'nothing chosen') +
                (/--cards/.test(String(el.className)) ? ' · cards' : '');
+      } },
+
+    /* gbppl-checkbox-1. The same order as the radio above, and one
+       row more: the BOX is named before the row because three of the
+       five carriers are a box with no row at all — a table's select
+       column — and pointing at one of those has to answer something
+       better than «Box». The detail says all three statuses, because
+       mixed is the one a reader cannot see in the markup. */
+    { sel: '.gb-checkbox__note', name: 'Checkbox description', oro: 'checkbox.html#anatomy' },
+    { sel: '.gb-checkbox__label', name: 'Checkbox label', oro: 'checkbox.html#anatomy' },
+    { sel: '.gb-checkbox__input', name: 'Checkbox box', oro: 'checkbox.html#statuses',
+      detail: function (el) {
+        return (el.indeterminate ? 'mixed' : (el.checked ? 'ticked' : 'not ticked')) +
+               (el.disabled ? ' · disabled' : '') +
+               (el.closest && el.closest('.gb-checkbox') ? '' : ' · no row');
+      } },
+    { sel: '.gb-checkbox', name: 'Checkbox', oro: 'checkbox.html#checkbox',
+      detail: function (el) {
+        var i = el.querySelector('.gb-checkbox__input');
+        if (!i) return '';
+        return (i.indeterminate ? 'mixed' : (i.checked ? 'ticked' : 'not ticked')) +
+               (i.disabled ? ' · disabled' : '') +
+               (el.querySelector('.gb-checkbox__note') ? ' · with a quiet half' : '');
       } },
 
     /* gbppl-oro-field-2. The four other looks of the field, above the
@@ -2733,7 +2760,11 @@
      radio card is pointing at one answer, the way they point at one
      half of a toggle. Alt still drills to the circle or to either
      line, and the group is reached by pointing between the cards. */
-  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
+  /* gbppl-checkbox-1. The ROW, for the radio's reason: a person
+     pointing at a switch row is pointing at one fact, not at a box
+     and a sentence. The bare box is not in this list and does not
+     need to be — it has no children to be pointed at instead. */
+  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gb-checkbox, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
               '.gbb-slot, .gbs-chip, .gb-eyebrow, .gbh-navitem, .gbh-link';
   function resolveTarget(el, drill) {
     if (drill || !el || !el.closest) return el;

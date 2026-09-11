@@ -100,6 +100,12 @@
 
     { group: 'Base', sub: true },
     { href: 'button.html', label: 'Button' },
+    /* gbppl-checkbox-1. Alphabetical, so it stands between the
+       button and the count badge, and the name needed no settling:
+       PrimeVue, the design file and everybody else call it a
+       Checkbox. The radio, its sibling out of the same file, keeps
+       its own entry further down the same list. */
+    { href: 'checkbox.html', label: 'Checkbox' },
     { href: 'badge.html', label: 'Count badge' },
     { href: 'eyebrow.html', label: 'Eyebrow' },
     { href: 'field.html', label: 'Field' },
