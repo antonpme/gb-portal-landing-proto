@@ -7,6 +7,61 @@
 <link rel="icon" href="data:,">
 
 <!-- ============================================================
+     gbppl-design-share-5 — CONCEPT A GETS TWO EQUAL BANDS, ONE
+                            AXIS EACH, AND ONE RUNG OF BUTTON
+     ------------------------------------------------------------
+     THIS WAVE TOUCHES CONCEPT A ONLY. b, c and d are left node for
+     node as build 4 shipped them (the gate diffs them against HEAD
+     and reports zero), because Ton judged a alone, with ?actions=on.
+     His three findings, his words:
+       1. «хедер больше, чем футер; логотип слишком маленький, и
+          текст налип прямо на него; кнопки вверху не отцентрованы
+          по вертикали»
+       2. «кнопки отцентрованы, а Powered by GildedBox нет: должна
+          быть на той же оси; футер меньше, отступы сверху/снизу 32
+          или как боковые»
+       3. «надпись подарка можно разместить по центру»
+     And the same day, on the buttons: every control of concept a
+     wears ONE RUNG and the groups share ONE GAP.
+
+     WHAT THAT BECAME, all of it inside the A block below:
+       THE BAND. The top row and the bottom row are the same height,
+       --gbds-band, and it is derived rather than invented: the
+       SMALL rung of the button ladder plus --space-32 above and
+       below, which is the inset Ton named. It steps with the ladder
+       (96 / 100 from 1280 / 104 from 2000), so the air over and
+       under a button is exactly 32 at every width.
+       THE AXIS. Every child of both bands is align-self:center in a
+       fixed-height row, so centerY of the mark, the name block, the
+       utilities, the signature and the decision pair are one number
+       per band. Nothing is nudged by padding any more.
+       THE MARK IS A RUNG LARGER, 168x56, the system's wide brand
+       box out of header.css, and it keeps header.css's own 126x42
+       at or below 900. It also stopped being eaten: the gutter used
+       to be PADDING inside a 126px border-box, so the glyph really
+       drew 102x34 — a third of the mark was the page gutter. The
+       gutter is a margin now and the box is the box.
+       THE NAME IS PAGE-CENTRED, not centred in the leftovers: the
+       head grid is 1fr auto 1fr, the two side tracks are equal by
+       construction, so the centre of the name is the centre of the
+       window (measured, in the report). A full column now stands
+       between the mark and the first letter of the name.
+       THE SIGNATURE AND THE ANSWER SHARE ONE LINE. The bottom band
+       is «foot foot decide»: Powered by GildedBox at the left
+       gutter, the pair at the right one, both on the band's middle
+       line. With ?actions=off the line stays and carries the
+       signature alone.
+       ONE RUNG, ONE GAP. The decision pair drops from --medium to
+       the small rung the utilities already wear — done by
+       re-pointing the ladder slots in CSS, never by editing markup
+       that b, c and d share — and both groups use --space-8.
+       Ranks are untouched: utilities outline secondary, Request
+       changes outline, Approve filled.
+     OPEN, and deliberately not decided here: whether all the
+     actions of the page should live as ONE module. Ton is deciding
+     that separately, so nothing moved between the bands beyond the
+     pair he himself placed on the signature's line.
+     ------------------------------------------------------------
      gbppl-design-share-4 — FOUR CONCEPTS ON ONE ENGINE, AND THE
                             HOUSE LIGHTS COME BACK UP
      ------------------------------------------------------------
@@ -357,50 +412,100 @@ body.gb-demo .gbds-poweredby a:hover { color: var(--zinc-900); }
 body[data-gbds-state="error"] .gbds-hint { display: none; }
 
 /* ============================================================
-   A — THE ONE LINE CABINET (the default)
+   A — THE ONE LINE CABINET (the default)      gbppl-design-share-5
    ------------------------------------------------------------
-   One line at the top, a big plate under it, one small centred
-   line at the foot. The head row is EXACTLY --space-64 where the
-   content is shorter than that, and grows to the content where it
-   is not: --space-8 of air above and below, equal (6a.3).
+   TWO EQUAL BANDS AROUND ONE PLATE. The top band carries the mark,
+   the name and the utilities; the bottom band carries the
+   signature and, when it is asked for, the answer. Both are
+   exactly --gbds-band tall and every child of both is centred in
+   it, which is the whole of Ton's first two findings: equal
+   stripes, one axis per stripe.
    ============================================================ */
-[data-gbds-c="a"] .gbds-page { --gbds-paper: var(--zinc-100); --gbds-ground: var(--zinc-50); }
+[data-gbds-c="a"] .gbds-page {
+  --gbds-paper: var(--zinc-100);
+  --gbds-ground: var(--zinc-50);
+  /* THE BAND, DERIVED FROM THE LADDER, NOT INVENTED: the small rung
+     every button on this concept now wears, plus the inset Ton
+     named (--space-32) above and below it. It steps where the
+     ladder steps, so the air around a button is 32 at every width:
+     32+64 = 96, then 36+64 = 100, then 40+64 = 104. */
+  --gbds-band: calc(var(--gb-btn-small-h) + var(--space-32) * 2);
+}
+@media (min-width: 1280px) { [data-gbds-c="a"] .gbds-page { --gbds-band: calc(var(--gb-btn-small-h-xl)  + var(--space-32) * 2); } }
+@media (min-width: 2000px) { [data-gbds-c="a"] .gbds-page { --gbds-band: calc(var(--gb-btn-small-h-2xl) + var(--space-32) * 2); } }
+/* THE HEAD GRID IS SYMMETRIC ON PURPOSE. 1fr auto 1fr: the side
+   tracks are equal by construction, so the middle track's centre is
+   the WINDOW's centre. With «auto 1fr auto» the name would have
+   been centred in whatever the mark and the utilities left over,
+   which is a different place and reads as an accident. */
 [data-gbds-c="a"] .gbds-stage {
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-rows: minmax(var(--space-64), auto) minmax(0, 1fr) auto auto;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: var(--gbds-band) minmax(0, 1fr) var(--gbds-band);
   grid-template-areas:
     "mark   id     utils"
     "scene  scene  scene"
-    "decide decide decide"
-    "foot   foot   foot";
-  column-gap: var(--space-24);
+    "foot   foot   decide";
+  column-gap: var(--space-32);
 }
+/* ONE AXIS PER BAND: the row has a fixed height and every child is
+   centred in it. No padding-block anywhere in the bands, so nothing
+   can drift off the axis again. */
 [data-gbds-c="a"] .gbds-mark,
 [data-gbds-c="a"] .gbds-id,
-[data-gbds-c="a"] .gbds-utils { align-self: center; padding-block: var(--space-8); }
+[data-gbds-c="a"] .gbds-utils,
+[data-gbds-c="a"] .gbds-foot,
+[data-gbds-c="a"] .gbds-decide { align-self: center; }
 /* THE NAME OF THE GIFT IS THE SUBJECT OF THE PAGE, and at the desk
    widths it takes the rung above: looked at on the screen, 24 beside
    a 1392px plate reads as a caption for the plate. */
 @media (min-width: 1280px) { [data-gbds-c="a"] .gbds-name { font-size: 28px; } }  /* TYPE-SCALE «H2 section» */
-[data-gbds-c="a"] .gbds-mark  { padding-inline-start: var(--gbds-gutter); }
-[data-gbds-c="a"] .gbds-utils { padding-inline-end: var(--gbds-gutter); }
+/* Both lines of the block read as one centred object. */
+[data-gbds-c="a"] .gbds-id { text-align: center; }
+/* THE MARK IS THE SYSTEM'S WIDE BRAND BOX, the same 168x56 that
+   header.css wears above 900 and the same 126x42 at or below it
+   (the base rule). And the gutter is a MARGIN: as padding it ate
+   the border-box and the glyph really drew 102x34. */
+@media (min-width: 901px) { [data-gbds-c="a"] .gbds-mark { width: 168px; height: 56px; } }
+[data-gbds-c="a"] .gbds-mark  { margin-inline-start: var(--gbds-gutter); }
+/* The side tracks are 1fr now, so the group no longer hugs its own
+   content: it is told which end of its track it stands at. */
+[data-gbds-c="a"] .gbds-utils { justify-content: flex-end; padding-inline-end: var(--gbds-gutter); }
 [data-gbds-c="a"] .gbds-scene { padding: var(--gbds-gutter); }
 [data-gbds-c="a"] .gbds-plate {
   border: 1px solid var(--zinc-200);
   border-radius: var(--radius);
 }
-/* THE PROVIDED PLACE FOR THE ANSWER: a quiet row between the plate
-   and the signature, at the right end, on the same gutter. With no
-   answer asked for there is no row at all (the item is hidden and
-   its grid row collapses), and the footer is the one small line
-   Ton drew. */
+/* THE BOTTOM BAND IS ONE LINE: the signature at the left gutter,
+   the answer at the right one, both on the band's middle. With no
+   answer asked for the line stays and carries the signature alone,
+   and the band does not change height (it is the band, not the
+   content, that sets it). */
+[data-gbds-c="a"] .gbds-foot {
+  padding-inline-start: var(--gbds-gutter);
+  text-align: start;
+}
 [data-gbds-c="a"] .gbds-decide {
   justify-content: flex-end;
-  padding: var(--space-16) var(--gbds-gutter) 0;
+  gap: var(--space-8);                 /* ONE GAP for both groups of this concept */
+  padding-inline-end: var(--gbds-gutter);
 }
-[data-gbds-c="a"] .gbds-foot {
-  padding: var(--space-16) var(--gbds-gutter);
-  text-align: center;
+/* ONE RUNG FOR EVERY BUTTON OF CONCEPT A (Ton, 11.09). The pair is
+   --medium in markup that b, c and d share, so the rung is changed
+   the only way that leaves them untouched: the ladder's slots are
+   re-pointed at the small rung, exactly the ten lines .gb-btn--small
+   itself declares. No number is invented and no rank moves — Request
+   changes stays outline, Approve stays filled. */
+[data-gbds-c="a"] .gbds-decide .gb-btn--medium {
+  --gbb-h:           var(--gbb-small-h);
+  --gbb-pad-y:       var(--gbb-small-pad-y);
+  --gbb-pad-x:       var(--gbb-small-pad-x);
+  --gbb-gap:         var(--gbb-small-gap);
+  --gbb-font-size:   var(--gbb-small-font-size);
+  --gbb-font-weight: var(--gbb-small-font-weight);
+  --gbb-line-height: var(--gbb-small-line-height);
+  --gbb-tracking:    var(--gbb-small-tracking);
+  --gbb-label:       var(--gbb-small-label);
+  --gbb-icon:        var(--gbb-small-icon);
 }
 
 /* ============================================================
@@ -559,12 +664,13 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
       "foot";
     column-gap: 0;
   }
-  [data-gbds-c="a"] .gbds-mark,
   [data-gbds-c="a"] .gbds-id,
   [data-gbds-c="b"] .gbds-id,
   [data-gbds-c="d"] .gbds-id { padding-inline: var(--gbds-gutter); }
-  [data-gbds-c="a"] .gbds-mark { padding-block: var(--space-16) 0; }
-  [data-gbds-c="a"] .gbds-id   { padding-block: var(--space-8) 0; }
+  /* gbppl-design-share-5: the gutter is a margin on this box too.
+     As padding on a 126x42 border-box it left the glyph 94x26. */
+  [data-gbds-c="a"] .gbds-mark { margin: var(--space-16) var(--gbds-gutter) 0; }
+  [data-gbds-c="a"] .gbds-id   { padding-block: var(--space-8) 0; text-align: start; }
   [data-gbds-c="b"] .gbds-id,
   [data-gbds-c="d"] .gbds-id   { padding-block: var(--space-16) 0; }
   [data-gbds-c="b"] .gbds-scene { border-right: 0; }
@@ -592,6 +698,9 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
   [data-gbds-c="b"] .gbds-decide .gb-btn,
   [data-gbds-c="c"] .gbds-decide .gb-btn,
   [data-gbds-c="d"] .gbds-decide .gb-btn { flex: 1 1 0; min-width: 0; }
+  /* One column below 768, so the bottom band is two stacked rows
+     here and the signature returns to the centre under them. */
+  [data-gbds-c="a"] .gbds-foot,
   [data-gbds-c="b"] .gbds-foot,
   [data-gbds-c="d"] .gbds-foot { padding: var(--space-16) var(--gbds-gutter); text-align: center; }
 
@@ -617,6 +726,40 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     right: var(--gbds-gutter);
     bottom: calc(var(--gbds-gutter) + var(--space-64));
   }
+}
+
+/* ============================================================
+   A ONLY — THE TABLET STEP                gbppl-design-share-5
+   ------------------------------------------------------------
+   MEASURED, NOT FELT. The one line cabinet needs the mark, the
+   name and two word-buttons on one row, and below 1024 they do not
+   fit: at 768 the name wrapped and the two side tracks stopped
+   being equal (the utilities alone want ~380 against the mark's
+   192), which puts the name off the page's centre — the exact
+   defect this build is fixing. So concept a keeps its one line
+   from 1024 up and stacks below it, in the same order as the
+   phone. b, c and d keep their own 768 step untouched: this block
+   names nobody but a.
+   ============================================================ */
+@media (max-width: 1023px) {
+  [data-gbds-c="a"] .gbds-stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "mark"
+      "id"
+      "utils"
+      "scene"
+      "decide"
+      "foot";
+    column-gap: 0;
+  }
+  [data-gbds-c="a"] .gbds-mark  { margin: var(--space-16) var(--gbds-gutter) 0; }
+  [data-gbds-c="a"] .gbds-id    { padding: var(--space-8) var(--gbds-gutter) 0; text-align: start; }
+  [data-gbds-c="a"] .gbds-utils { justify-content: flex-start; padding: var(--space-16) var(--gbds-gutter) 0; }
+  [data-gbds-c="a"] .gbds-scene { padding: var(--gbds-gutter); }
+  [data-gbds-c="a"] .gbds-decide { justify-content: flex-start; padding: 0 var(--gbds-gutter) var(--space-16); }
+  [data-gbds-c="a"] .gbds-foot  { padding: var(--space-16) var(--gbds-gutter); text-align: center; }
 }
 
 /* ============================================================
