@@ -225,6 +225,19 @@
    and no path is dropped: each entry is one whole source file. The
    sources' stroke 1, butt caps and mitre joins are left behind, as
    the record leaves them behind for everything.
+
+   ------------------------------------------------------------
+   AND A GIFT BOX FOR THE FOOTER OF THE SAME PAGE
+   (gbppl-design-share-7, 14.09)
+   ------------------------------------------------------------
+   Ton, 14.09, moving the three selling facts out of the head of
+   live\design-share.html and into its footer «аккуратными иконками
+   + текстом»: «no minimums = что-то про количество/штучность (box?
+   layers?)». Two of the three glyphs were already here — `calendar`
+   for the production time and `wand` for the personalization — and
+   the third is `gift-box`, the same Nucleo set and the same halving
+   arithmetic. Its own note, and the argument against lending
+   `layers` a second meaning, are at the entry.
    ============================================================ */
 (function () {
   'use strict';
@@ -453,6 +466,28 @@
             '<path d="M8.2 3.2h7.6"/><path d="M7.3 14.6h9.4"/>',
       from: 'DECLARED: the Sandbox section of the console navigation (panel 2.0 mockup, Ton 03.09)',
       stroke: 1.5
+    },
+    /* THE GIFT BOX (gbppl-design-share-7, 14.09). «No minimums» on the
+       shared design page needed a motif about QUANTITY, and Ton named
+       the candidates himself: a box, or layers. `layers` is already in
+       this record and already means a STACK OF THINGS TO ACT ON (bulk
+       actions on the checkout), so lending it a second meaning would
+       make one drawing say two things. A single gift box, on the other
+       hand, is the sentence «one is enough» drawn — and it is the
+       object this whole house sells.
+       assets\nucleo-full\48-box-ribbon.svg, halved off the 48 grid by
+       the arithmetic `service-bell` established and every Nucleo entry
+       since has used. Whole file, nothing dropped: the ribbon falling
+       over the lid and knotting at the body, the body under it, and
+       the lid band across the top. It is NOT 48-box.svg, the other
+       candidate: that one is an isometric carton of six strokes and
+       two crossing seams, and at 16px it is a grey smudge. */
+    'gift-box': {
+      body: '<path d="M8.5 2.5V7.5H9V15L12 13.5L15 15V7.5H15.5V2.5"/>' +
+            '<path d="M3.5 10V18C3.5 19.3807 4.6193 20.5 6 20.5H18C19.3807 20.5 20.5 19.3807 20.5 18L20.5 10"/>' +
+            '<path d="M21.5 7.5L21.5 2.5L2.5 2.5L2.5 7.5L21.5 7.5Z"/>',
+      from: 'assets/nucleo-full/48-box-ribbon.svg (Nucleo, the house set): «No minimums» in the footer of the shared design page',
+      stroke: 1
     },
     'globe': {
       body: '<circle cx="12" cy="12" r="8.8"/><path d="M3.2 12h17.6"/>' +
