@@ -374,6 +374,17 @@
 <link rel="stylesheet" href="../system/components/auth.css">
 <link rel="stylesheet" href="../system/components/comments.css">
 <link rel="stylesheet" href="../system/components/toggle.css">
+<!-- THE CONCIERGE BEHIND CONTACT US (Ton 15.09: «берём нашу форму —
+     тот же контент, что по клику на консьерж-иконку из хедера для
+     неавторизованных»). The guest switchboard is a module the site
+     already keeps (live/concierge/), and this page is its third
+     consumer: no bell in the head — the one door here is the
+     Contact us button in the footer — and the visitor is a guest by
+     construction, this is a presale page. Booking and tooltip ride
+     along because the switchboard's own doors need them. -->
+<link rel="stylesheet" href="../system/components/booking.css">
+<link rel="stylesheet" href="../system/components/tooltip.css">
+<link rel="stylesheet" href="concierge/concierge.css">
 
 <script src="../system/components/studio.js" data-home="../index.html"></script>
 
@@ -1953,6 +1964,27 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
 <script src="../system/components/inspect.js"></script>
 <script src="../system/components/toggle.js"></script>
 <script src="../system/components/comments.js"></script>
+<script src="../system/components/booking.js"></script>
+<script src="../system/components/tooltip.js"></script>
+<script src="concierge/concierge.js"></script>
+<script>
+  /* The head block explains the guests-only mount. bellSlot null =
+     the module grows no bell anywhere; the footer's Contact us is
+     the single door and calls GbConcierge.open() below. */
+  if (window.GbConcierge) {
+    window.GbConcierge.mount({
+      bellSlot:     null,
+      bellBefore:   null,
+      anchor:       'gb-studio-panel',
+      aiDoor:       false,          /* nothing is being chosen here: the design is already made */
+      auth:         'guest',
+      authSwitch:   false,          /* a presale page never signs anyone in */
+      siteHref:     'design-share.html',
+      panelRow:     false,
+      environments: null
+    });
+  }
+</script>
 
 <!-- VENDORED, NOT HOTLINKED. The harvest proved the GLB opens in
      @google/model-viewer@4.0.0; the file is that exact build,
@@ -2600,17 +2632,16 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     var what = t.getAttribute('data-gbds');
     if (what === 'personalize') { openPersonalize(); return; }
     if (what === 'download') { download(); return; }
-    /* CONTACT US IS AN HONEST STUB (gbppl-design-share-6, Julia:
-       «contact us option can be useful»). What belongs behind it is
-       the concierge's GUEST flow — the reader of this page has not
-       signed in and may never — and that is a slice of its own, with
-       its own drawer, its own transcript and its own word from Ton.
-       Building half of it here would be a second overlay pattern and
-       a form that takes text it cannot send (ловушка 22). So the
-       button is real, wears the rung of its neighbours, and says in
-       the console exactly what is not built yet. */
+    /* CONTACT US OPENS THE GUEST CONCIERGE (Ton 15.09, ending the
+       honest stub of design-share-6): the same switchboard the
+       site's bell opens for a visitor nobody knows — chat that asks
+       for a name first, the three step booking road, the advisor
+       card. One experience everywhere, and this page is simply its
+       third consumer. The console line stays only for a build where
+       the module failed to arrive. */
     if (what === 'contact') {
-      console.log('[design-share] Contact us: the guest concierge flow behind this button is a slice of its own and is not built in the prototype.');
+      if (window.GbConcierge && window.GbConcierge.open) window.GbConcierge.open();
+      else console.log('[design-share] Contact us: the concierge module did not arrive.');
       return;
     }
     if (what === 'retry') { setState('scene'); viewer.src = MODEL; return; }
