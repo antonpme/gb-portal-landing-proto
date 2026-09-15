@@ -665,6 +665,15 @@ body.gb-demo .gbds-poweredby a:hover { color: var(--zinc-900); }
    otherwise is a lie in small caps. */
 body[data-gbds-state="error"] .gbds-hint { display: none; }
 
+/* NO MOUSE WORDS ON A TOUCH SCREEN (Ton 15.09: «на мобильном оно не
+   нужно — тапаешь и крутишь, люди поймут»). All three gestures are
+   mouse gestures — scroll, right-drag — and on glass they are simply
+   false. Gated on the DEVICE, not on width: a tablet with a mouse
+   earns the hint, a phone never does. */
+@media (hover: none), (pointer: coarse) {
+  .gbds-hint { display: none; }
+}
+
 /* ============================================================
    A — THE ONE LINE CABINET (the default)      gbppl-design-share-5
    ------------------------------------------------------------
@@ -832,7 +841,12 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
    (the base rule). It carries no gutter of its own any more: since
    gbppl-design-share-6 it stands in the middle track, whose centre
    IS the window's centre, and a margin there would push it off. */
-@media (min-width: 901px) { [data-gbds-c="a"] .gbds-mark { width: 168px; height: 56px; } }
+/* THE CLIENT'S MARK FILLS THE BAND (Ton 15.09: «большой, по высоте
+   всё доступное место с учётом отступов — примерно как две строки»).
+   The name block is exactly 72 (48 + 24, the rungs above), the band
+   is 104 with 16 of air each side: 72 is both answers at once. The
+   width follows the box's own 3:1. */
+@media (min-width: 901px) { [data-gbds-c="a"] .gbds-mark { width: 216px; height: 72px; } }
 /* The side tracks are 1fr now, so the group no longer hugs its own
    content: it is told which end of its track it stands at. */
 [data-gbds-c="a"] .gbds-utils { justify-content: flex-end; padding-inline-end: var(--gbds-gutter); }
@@ -1175,28 +1189,42 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
    as the phone. b, c and d keep their own 768 step untouched: this
    block names nobody but a.
    ============================================================ */
+/* THE PHONE IS A POSTER, NOT A FORM (Ton 15.09, after the two-user
+   read he walked Ren through: the opener is a colleague of the
+   design's champion, on a phone, out of a chat, with thirty seconds
+   — his whole task is to SEE the gift). So the stacked map serves
+   that second: the client's mark opens the page, the gift takes the
+   tallest track right under it, and only then the label, the tools,
+   the pair and the footer. EVERYTHING ON THE WINDOW'S CENTRE LINE —
+   his call, verbatim: «всё должно быть отцентрировано по
+   горизонтальной оси... ничего с алайнментом влево» — a poster is
+   symmetric, a left edge is the language of working screens. */
 @media (max-width: 1279px) {
   [data-gbds-c="a"] .gbds-stage {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto auto;
     grid-template-areas:
       "mark"
+      "scene"
       "id"
       "utils"
-      "scene"
       "decide"
       "foot";
     column-gap: 0;
   }
-  [data-gbds-c="a"] .gbds-mark  { margin: var(--space-16) var(--gbds-gutter) 0; }
-  [data-gbds-c="a"] .gbds-id    { padding: var(--space-8) var(--gbds-gutter) 0; text-align: start; }
-  [data-gbds-c="a"] .gbds-utils { justify-content: flex-start; padding: var(--space-16) var(--gbds-gutter) 0; }
-  [data-gbds-c="a"] .gbds-scene { padding: 0 var(--gbds-gutter); }
+  /* The wide brand box, centred by margins: the track is the window. */
+  [data-gbds-c="a"] .gbds-mark  { width: 168px; height: 56px; margin: var(--space-16) auto var(--space-8); }
+  /* The label reads under the exhibit, like a gallery card. */
+  [data-gbds-c="a"] .gbds-id    { padding: var(--space-8) var(--gbds-gutter) 0; text-align: center; }
+  [data-gbds-c="a"] .gbds-utils { justify-content: center; flex-wrap: wrap; padding: var(--space-16) var(--gbds-gutter) 0; }
+  /* The gift is the first screen: the page gutter would be dead air
+     here, so the plate keeps only the 8 it needs to stay a plate. */
+  [data-gbds-c="a"] .gbds-scene { padding: 0 var(--space-8); }
   /* The one line is gone below this step, so the pair goes back to
      its own row of the stacked map and the footer stops being a
      three track band: one centred column, signature over benefits,
      and nothing overlaps anything (gbppl-design-share-7). */
-  [data-gbds-c="a"] .gbds-decide { grid-area: decide; justify-content: flex-start; padding: 0 var(--gbds-gutter) var(--space-16); }
+  [data-gbds-c="a"] .gbds-decide { grid-area: decide; justify-content: center; padding: 0 var(--gbds-gutter) var(--space-16); }
   /* THE SIGNATURE SIGNS LAST ON THE PHONE (Julia 15.09: «Powered by
      GildedBox line should be the last line on the page, all the way
      at the bottom»). The stacked footer flips to a column whose
@@ -1211,7 +1239,11 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     padding: var(--space-16) var(--gbds-gutter);
     text-align: center;
   }
-  [data-gbds-c="a"] .gbds-bene   { order: 1; }
+  /* A separator separates a ROW; stacked, the dots became orphans
+     hanging at line starts («· Average production...»). The stack
+     drops them and speaks in the column's own rhythm instead. */
+  [data-gbds-c="a"] .gbds-bene { order: 1; flex-direction: column; gap: var(--space-8); }
+  [data-gbds-c="a"] .gbds-bene__item + .gbds-bene__item::before { content: none; }
   [data-gbds-c="a"] .gbds-sigrow { order: 2; margin-top: var(--space-16); }
 }
 
