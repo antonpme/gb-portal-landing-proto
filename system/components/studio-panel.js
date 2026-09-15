@@ -741,6 +741,9 @@
        prints on its card. */
     'live/portal-dashboard.html': 'Portal dashboard',
     'live/book-a-meeting.html':   'Book a meeting form',
+    /* 15.09: the same word the registry gives the page
+       (PAGES.share.label) and the same word the shelf prints. */
+    'live/design-share.html':     'Share design page',
     /* gbppl-concierge-1, 09.09: one line, and it is the same word the
        registry gives the page (PAGES.concierge.label) and the same word
        the shelf prints on its card. */
