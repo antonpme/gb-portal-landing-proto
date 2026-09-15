@@ -119,6 +119,12 @@
        select», which is a look of it and a section of the page. */
     { href: 'radio.html', label: 'Radio button' },
     { href: 'select.html', label: 'Select' },
+    /* gbppl-switch-1. Alphabetical, between the select and the
+       toggle, and the name is the mock's own frame name: PrimeVue
+       says ToggleSwitch, but the house already spends «toggle» on
+       the segmented control two rows down, and one word cannot name
+       two controls. The page prints both words. */
+    { href: 'switch.html', label: 'Switch' },
     /* gbppl-toggle-family-1. Last of the Base list under its own
        name, and the name is the house's: PrimeVue would call this
        control a SelectButton and keep ToggleButton for the single

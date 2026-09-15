@@ -1,0 +1,268 @@
+/* ============================================================
+   gbppl-switch-1 — THE SWITCH, THE THIRD OF THE FIGMA TRIO
+   ------------------------------------------------------------
+   Ton, 15.09: «можно добавлять switch-компонент из Figma. У нас,
+   по-моему, его до сих пор в дизайн-системе нет.» He is right: the
+   house has a segmented control that CALLS itself a toggle
+   (.gb-toggle, a row of buttons holding one value) and it has
+   checkboxes doing switch-like work on the checkout, but the
+   sliding two-state switch — PrimeVue's ToggleSwitch, the mock's
+   `switch` — existed nowhere. This file is the radio's and the
+   checkbox's sibling and says so the same way they do: the same
+   native input with its paint taken off, the same 12 between the
+   mark and the word, the same label role, the same focus ring, the
+   same law about what «off» is allowed to change.
+
+   THE NAME. PrimeVue calls this control a ToggleSwitch, but the
+   house already spends the word «toggle» on the segmented control
+   (checked against primevue.org the day the toggle was built, and
+   the collision is exactly why the short word wins here): the
+   showcase is `system/oro/switch.html`, titled Switch, which is
+   also the mock's own frame name.
+
+   NO JAVASCRIPT, THE SIBLINGS' OWN DECISION. The control is a
+   native `<input type="checkbox" role="switch">` — the role is the
+   one word markup needs so a screen reader says «switch, on»
+   instead of «checkbox, checked» (it is how PrimeVue announces the
+   same control). Everything else — the tab stop, Space, a real
+   `disabled` the tab order respects, the label that answers a
+   click — is the browser's, written by nobody and breakable by
+   nobody. A `switch.js` would re-implement what is already there.
+
+   ------------------------------------------------------------
+   WHERE EVERY NUMBER COMES FROM
+   ------------------------------------------------------------
+   THE MOCK. Figma «Gifting Portal», fileKey jb9S38HV3lWnfqERtrV3Y0,
+   component set `switch` 1062:1998, read 15.09 through the MCP
+   connector (get_metadata, get_variable_defs, and the rendered
+   variants sampled pixel by pixel). FOUR variants and no more:
+   status selected / unselected crossed with state enabled /
+   disabled. No hover in the file, no focus; what this file draws
+   for those is DECLARED and marked as such at the rule.
+
+     track          40 by 24, the `switch/track` width and height
+                    variables, identical for both statuses. Pill radius
+                    (`border-radius` 1000, our --radius-pill),
+                    border 1 (`border-width`, both statuses).
+     resting track  transparent, and the LINE is ink: the rendered
+                    unselected variant reads rgb(24,24,27) on the
+                    border and lets the page ground through the
+                    middle. #18181B is `tailwind/zinc/900` — the
+                    same reading the radio's ring and the checkbox's
+                    frame gave, and Russell's rule again: the thing
+                    being chosen is as readable as the words beside
+                    it.
+     resting thumb  12 by 12, `switch/thumb-unselected`, Zinc 900,
+                    standing 6 in from the edge
+                    (`track-unselected/padding` 6, and the
+                    arithmetic agrees: (24 − 12) / 2).
+     chosen track   #2563EB, `tailwind/blue/600`, fill and line
+                    together. Ton-5, blue is state.
+     chosen thumb   20 by 20, white, 2 in from the edge
+                    (`track-selected/padding` 2 = (24 − 20) / 2).
+                    The thumb GROWS as it crosses: small and inky
+                    when the switch is off, large and bright when it
+                    is on, which is the mock's own way of making the
+                    two ends unmistakable at a glance.
+     gap            12 between the track and the label,
+                    `switch/gap` — the trio's third independent
+                    witness for the one number the space scale
+                    cannot say.
+     label          `Body/BP: XL/Small - 400`: Inter 400, 14, line
+                    1.5, tracking 0.5, Zinc 900. Already a role in
+                    our register (`small-400` in
+                    system/type-scale.js) and already what the radio
+                    and the checkbox spend; nothing is named here
+                    they did not name first.
+     disabled       opacity 0.4 on the whole control. The mock's own
+                    disabled renders read as the enabled colours at
+                    0.4 over the ground (the chosen track samples as
+                    the pale blue 0.4 of Blue 600 computes to), and
+                    0.4 is the trio's canon since the radio settled
+                    it against the checkout's own gate.
+
+   ONE RUNG, FLAT, AND WHY THAT IS NOT A GAP. The radio and the
+   checkbox each carry two rungs because their bottom rung was
+   MEASURED: live carriers render a 16 box today. A designed switch
+   exists on no live surface at all — the client's product draws
+   this control through PrimeVue, whose ToggleSwitch is 2.5rem by
+   1.5rem at the 16px root, which is 40 by 24: the very numbers the
+   mock draws at 2K, rendered by the client's own library at EVERY
+   width. Mock and carrier agree on a flat control, so a smaller
+   rung would be the first invented number of the trio. If a real
+   carrier ever wants one, it gets measured then, with Ton.
+
+   NO TOKEN, two, both the trio's own precedents:
+     gap 12         the mock says 12, the radio's mock said 12, the
+                    live checkout grid says 12 — three witnesses on
+                    a number the space scale cannot express.
+     line 1         a hairline is not a length off the space scale
+                    (radio.css, ring 1.5/1.8, same argument).
+   ============================================================ */
+
+.gb-switch {
+  /* ---- the track and the two thumbs, all six numbers ----
+     Slots on the element, nothing outside this file sets a --gbs-
+     slot. The paddings are written from the OUTER edge, the way the
+     mock's variables measure them; the rules below subtract the
+     hairline once so the arithmetic lives in one place. */
+  --gbs-track-w:   40px;   /* FIGMA switch/track width, = PrimeVue 2.5rem */
+  --gbs-track-h:   24px;   /* FIGMA switch/track height, = PrimeVue 1.5rem */
+  --gbs-line:      1px;    /* FIGMA border-width, NO TOKEN hairline */
+  --gbs-thumb:     12px;   /* FIGMA thumb-unselected */
+  --gbs-pad:       6px;    /* FIGMA track-unselected padding, (24-12)/2 */
+  --gbs-thumb-on:  20px;   /* FIGMA thumb-selected */
+  --gbs-pad-on:    2px;    /* FIGMA track-selected padding, (24-20)/2 */
+
+  /* ---- the gap, the trio's shared 12 ---- */
+  --gbs-gap: 12px;         /* FIGMA switch/gap */
+
+  /* ---- the colour cell: the whole paint of the control ----
+     Not one colour named below this block; a family that needs
+     different ink repoints the slots. */
+  --gbs-rail:        transparent;                /* FIGMA, the ground shows through */
+  --gbs-rail-line:   var(--zinc-900);            /* FIGMA tailwind/zinc/900, sampled */
+  --gbs-rail-hover:  var(--blue-600);            /* DECLARED, the form family's live hover */
+  --gbs-knob:        var(--zinc-900);            /* FIGMA, the resting thumb is ink */
+  --gbs-on:          var(--blue-600);            /* FIGMA tailwind/blue/600 */
+  --gbs-knob-on:     var(--white);               /* FIGMA, sampled off the chosen variant */
+  --gbs-ink:         var(--zinc-900);            /* FIGMA, the label */
+  --gbs-ring-focus:  var(--gb-btn-focus-ring);   /* DECLARED, the organism's ring */
+  --gbs-focus-width: var(--gb-btn-focus-ring-width);
+  --gbs-focus-offset: var(--gb-btn-focus-ring-offset);
+  --gbs-off: 0.4;          /* FIGMA disabled render + the trio's canon */
+
+  /* ---- the label: the role the register already holds ---- */
+  --gbs-label:          14px;
+  --gbs-label-weight:   400;
+  --gbs-label-tracking: 0.5px;
+  --gbs-label-line:     1.5;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gbs-gap);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  /* The fade lives on the row (see OFF below), same duration and
+     curve as every other colour change on this control. */
+  transition: opacity var(--mo-micro) var(--mo-move);
+}
+
+/* ============================================================
+   THE TRACK
+   ------------------------------------------------------------
+   The native input with its paint taken off and ours put back on.
+   border-box, so --gbs-track-w/h ARE the outer 40 by 24 the mock
+   names and the hairline eats into them.
+   ============================================================ */
+.gb-switch__input {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--gbs-track-w);
+  height: var(--gbs-track-h);
+  margin: 0;
+  border: var(--gbs-line) solid var(--gbs-rail-line);
+  border-radius: var(--radius-pill);
+  background: var(--gbs-rail);
+  cursor: inherit;
+  transition: border-color var(--mo-micro) var(--mo-move),
+              background-color var(--mo-micro) var(--mo-move);
+}
+
+/* The thumb. One element for both ends: it slides, grows and
+   changes ink in the same breath, on the same pair every colour
+   change of the trio spends. The paddings are measured from the
+   OUTER edge (the mock's own reading), so the hairline is
+   subtracted here, once, and nowhere else. */
+.gb-switch__input::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  inset-inline-start: calc(var(--gbs-pad) - var(--gbs-line));
+  width: var(--gbs-thumb);
+  height: var(--gbs-thumb);
+  border-radius: var(--radius-pill);
+  background: var(--gbs-knob);
+  transform: translateY(-50%);
+  transition: inset-inline-start var(--mo-micro) var(--mo-move),
+              width var(--mo-micro) var(--mo-move),
+              height var(--mo-micro) var(--mo-move),
+              background-color var(--mo-micro) var(--mo-move);
+}
+
+.gb-switch__input:checked {
+  border-color: var(--gbs-on);
+  background: var(--gbs-on);
+}
+.gb-switch__input:checked::before {
+  inset-inline-start: calc(100% - var(--gbs-thumb-on) - (var(--gbs-pad-on) - var(--gbs-line)));
+  width: var(--gbs-thumb-on);
+  height: var(--gbs-thumb-on);
+  background: var(--gbs-knob-on);
+}
+
+/* DECLARED. The track's line is this control's underline, and the
+   form family takes its underline to Blue 600 under the pointer.
+   The chosen switch does not move: it is already there. */
+.gb-switch:hover .gb-switch__input:not(:checked):not(:disabled),
+.gb-switch.is-hover .gb-switch__input:not(:checked):not(:disabled),
+.gb-switch__input.is-hover:not(:checked):not(:disabled) {
+  border-color: var(--gbs-rail-hover);
+}
+
+/* DECLARED. Keyboard only, the button organism's ring. */
+.gb-switch__input:focus-visible,
+.gb-switch__input.is-focus {
+  outline: var(--gbs-focus-width) solid var(--gbs-ring-focus);
+  outline-offset: var(--gbs-focus-offset);
+}
+
+/* ============================================================
+   THE LABEL — the word beside the track, on the role the register
+   already holds. No margin of its own: the gap belongs to the row.
+   ============================================================ */
+.gb-switch__label {
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--gbs-label);
+  font-weight: var(--gbs-label-weight);
+  line-height: var(--gbs-label-line);
+  letter-spacing: var(--gbs-label-tracking);
+  color: var(--gbs-ink);
+}
+
+/* ============================================================
+   OFF — the fade lives on the row, never on a group, and off is an
+   opacity and nothing else. Both laws are the radio's, argued in
+   full in radio.css (the double-fade trap, and Chrome dropping
+   accent-color on disabled controls); this file inherits them
+   rather than re-litigating.
+   ============================================================ */
+.gb-switch:has(.gb-switch__input:disabled),
+.gb-switch.is-disabled {
+  opacity: var(--gbs-off);
+  pointer-events: none;
+  cursor: default;
+}
+
+/* Off never recolours: a chosen switch stays Blue 600 with a white
+   thumb, an unchosen one stays an ink hairline. Written at higher
+   specificity, after everything, so no UA sheet targeting :disabled
+   can take the status's colour away (the radio's law, same reason). */
+.gb-switch__input:checked:disabled {
+  border-color: var(--gbs-on);
+  background: var(--gbs-on);
+}
+.gb-switch__input:checked:disabled::before {
+  background: var(--gbs-knob-on);
+}
+.gb-switch__input:not(:checked):disabled {
+  border-color: var(--gbs-rail-line);
+}
+.gb-switch__input:not(:checked):disabled::before {
+  background: var(--gbs-knob);
+}

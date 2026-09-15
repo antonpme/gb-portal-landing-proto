@@ -439,6 +439,9 @@
        box, the sentence and its quiet half. It stands beside the
        radio's deed because the two files are siblings. */
     [/^gb-checkbox/, 'system/components/checkbox.css'],
+    /* gbppl-switch-1. The third sibling of the trio, same shape of
+       deed: the row, the track and the word. */
+    [/^gb-switch/, 'system/components/switch.css'],
     /* gbppl-inputnumber-1. The frame had no deed of its own and read
        its owner off an ancestor; the rename is the moment to write
        the купчая down, one prefix like every other row. */
@@ -653,6 +656,22 @@
         return (i.indeterminate ? 'mixed' : (i.checked ? 'ticked' : 'not ticked')) +
                (i.disabled ? ' · disabled' : '') +
                (el.querySelector('.gb-checkbox__note') ? ' · with a quiet half' : '');
+      } },
+
+    /* gbppl-switch-1. The third sibling, the radio's order: the word,
+       the track, then the row. The track's detail says which end the
+       thumb is at, because that is the state and it is not in the
+       markup's class list. */
+    { sel: '.gb-switch__label', name: 'Switch label', oro: 'switch.html#anatomy' },
+    { sel: '.gb-switch__input', name: 'Switch track', oro: 'switch.html#states',
+      detail: function (el) {
+        return (el.checked ? 'on' : 'off') + (el.disabled ? ' · disabled' : '');
+      } },
+    { sel: '.gb-switch', name: 'Switch', oro: 'switch.html#switch',
+      detail: function (el) {
+        var i = el.querySelector('.gb-switch__input');
+        if (!i) return '';
+        return (i.checked ? 'on' : 'off') + (i.disabled ? ' · disabled' : '');
       } },
 
     /* gbppl-oro-field-2. The four other looks of the field, above the
@@ -2764,7 +2783,9 @@
      pointing at a switch row is pointing at one fact, not at a box
      and a sentence. The bare box is not in this list and does not
      need to be — it has no children to be pointed at instead. */
-  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gb-checkbox, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
+  /* gbppl-switch-1. The ROW, for the trio's reason: pointing at a
+     switch is pointing at one setting, not at a track and a word. */
+  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gb-checkbox, .gb-switch, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
               '.gbb-slot, .gbs-chip, .gb-eyebrow, .gbh-navitem, .gbh-link';
   function resolveTarget(el, drill) {
     if (drill || !el || !el.closest) return el;
