@@ -621,47 +621,19 @@
        days outside the registry, which is exactly the debt law 0a.1
        exists to forbid). One page, one name in three places: this
        label, PLACES in studio-panel.js, the shelf card. The default
-       the Live door opens is concept a (the page's own default);
-       the three sibling concepts and the sleeping decision pair are
-       the variants. DD-149; the client dev ticket rebuilding their
-       live page onto this design is CD-5611. */
+       the Live door opens is concept a (the page's own default).
+       The three sibling concepts (b/c/d) stood here for a few hours
+       and were swept the same day (Ton: «убери мусорные варианты»):
+       concept a won and became the page, so the losers are history,
+       not offers — ?c=b|c|d still render (law 0a.5, query keys are
+       read forever), they are just no longer sold on a shelf. The
+       sleeping decision pair stays: it is a real state of the page,
+       not a rejected fork. DD-149; the client dev ticket rebuilding
+       their live page onto this design is CD-5611. */
     share: {
       label: 'Share design page',
       live: 'live/design-share.html',
       variants: [
-        {
-          id: 'share-b',
-          label: 'Object and column',
-          desc: 'The viewer takes the full height, a quiet white column stands beside it behind one hairline. The grammar of a product page.',
-          status: 'suggested',
-          href: 'live/design-share.html?c=b',
-          ready: true,
-          tags: ['layout'],
-          created: '2026-09-11',
-          updated: '2026-09-15'
-        },
-        {
-          id: 'share-c',
-          label: 'Clean frame',
-          desc: 'The object edge to edge on warm light. No band and no plate: four corners of text and one caption.',
-          status: 'suggested',
-          href: 'live/design-share.html?c=c',
-          ready: true,
-          tags: ['layout'],
-          created: '2026-09-11',
-          updated: '2026-09-15'
-        },
-        {
-          id: 'share-d',
-          label: 'Their page, honestly',
-          desc: 'The live layout one to one, with every element ours: the serif name, our button ladder, our hint, our gutters.',
-          status: 'suggested',
-          href: 'live/design-share.html?c=d',
-          ready: true,
-          tags: ['layout'],
-          created: '2026-09-11',
-          updated: '2026-09-15'
-        },
         {
           id: 'share-actions',
           label: 'Decision pair on',
