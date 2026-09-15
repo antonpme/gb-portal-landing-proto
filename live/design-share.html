@@ -1216,7 +1216,28 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
   [data-gbds-c="a"] .gbds-mark  { width: 168px; height: 56px; margin: var(--space-16) auto var(--space-8); }
   /* The label reads under the exhibit, like a gallery card. */
   [data-gbds-c="a"] .gbds-id    { padding: var(--space-8) var(--gbds-gutter) 0; text-align: center; }
-  [data-gbds-c="a"] .gbds-utils { justify-content: center; flex-wrap: wrap; padding: var(--space-16) var(--gbds-gutter) 0; }
+  /* THE BUTTONS TAKE THE WHOLE WIDTH, ONE RUNG UP (Ton 15.09:
+     «тянуть на всю ширину и делать больше по высоте, либо стекать
+     горизонтально, если помещаются» — they do not: the pair wants
+     373 in a 358 track). Full width is the phone's own convention
+     for an act, and the rung is re-pointed exactly the way the
+     decide pair was on the desktop: small's slots aimed at
+     medium's, all ten, no number invented. The 24 above them is the
+     first rung of AIR the stack plays — the label group ends, the
+     act begins. */
+  [data-gbds-c="a"] .gbds-utils { flex-direction: column; align-items: stretch; padding: var(--space-24) var(--gbds-gutter) 0; }
+  [data-gbds-c="a"] .gbds-utils .gb-btn--small {
+    --gbb-h:           var(--gbb-medium-h);
+    --gbb-pad-y:       var(--gbb-medium-pad-y);
+    --gbb-pad-x:       var(--gbb-medium-pad-x);
+    --gbb-gap:         var(--gbb-medium-gap);
+    --gbb-font-size:   var(--gbb-medium-font-size);
+    --gbb-font-weight: var(--gbb-medium-font-weight);
+    --gbb-line-height: var(--gbb-medium-line-height);
+    --gbb-tracking:    var(--gbb-medium-tracking);
+    --gbb-label:       var(--gbb-medium-label);
+    --gbb-icon:        var(--gbb-medium-icon);
+  }
   /* The gift is the first screen: the page gutter would be dead air
      here, so the plate keeps only the 8 it needs to stay a plate. */
   [data-gbds-c="a"] .gbds-scene { padding: 0 var(--space-8); }
@@ -1239,10 +1260,31 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     padding: var(--space-16) var(--gbds-gutter);
     text-align: center;
   }
-  /* A separator separates a ROW; stacked, the dots became orphans
-     hanging at line starts («· Average production...»). The stack
-     drops them and speaks in the column's own rhythm instead. */
-  [data-gbds-c="a"] .gbds-bene { order: 1; flex-direction: column; gap: var(--space-8); }
+  /* THE STACK PLAYS WITH AIR (Ton 15.09: «весь контент идёт с
+     одинаковыми отступами, как одно полотно... визуальная иерархия
+     отсутствует»). The rungs, top to bottom: the exhibit group is
+     tight (mark 8 over the scene, label 16 under it), the act stands
+     24 off the label, and the SERVICE TAIL stands 48 off the act —
+     the one big breath on the page, saying «the gift is above this
+     line, the small print below». Inside the tail everything is 16.
+     The benefits stop being three loud lines (Ton: «слишком шумно
+     вертикально»): one quiet 12/400 row again, dots and all, wrapped
+     centred if it must — at 12 the row fits 358 in one line. */
+  [data-gbds-c="a"] .gbds-foot { padding-top: var(--space-48); }
+  [data-gbds-c="a"] .gbds-bene {
+    order: 1;
+    justify-content: center;
+    /* NO TOKEN 12: at 16 the dotless row misses one line by 2px
+       (328 of items in a 358 track, measured); the gap follows the
+       12px type it separates, and the row fits with 6 to spare. */
+    gap: var(--space-8) 12px;
+  }
+  /* Footnote regular 12/400 — the rung the benefits held at narrow
+     widths before 1280 stepped them up. The DOTS go entirely at this
+     width: with them the row is 383 wide in a 358 track (measured),
+     without them the 16 gap is the separator and the row is one
+     quiet line, which is the whole point of the tail. */
+  [data-gbds-c="a"] .gbds-bene__item { font-size: 12px; }
   [data-gbds-c="a"] .gbds-bene__item + .gbds-bene__item::before { content: none; }
   [data-gbds-c="a"] .gbds-sigrow { order: 2; margin-top: var(--space-16); }
 }
@@ -1824,7 +1866,11 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     </div>
     <ul class="gbds-bene">
       <li class="gbds-bene__item">No minimums</li>
-      <li class="gbds-bene__item">Average production 2-3 weeks</li>
+      <!-- «Average» left the line 15.09: at the phone's 12px the row
+           was 15px too wide for one line and the wrapped dot became
+           an orphan. «Production 2-3 weeks» keeps the promise; the
+           REAL numbers are still Julia's to give (FIXTURE). -->
+      <li class="gbds-bene__item">Production 2-3 weeks</li>
       <li class="gbds-bene__item">Free personalization</li>
     </ul>
   </footer>
