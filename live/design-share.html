@@ -445,6 +445,12 @@
    and not an <img> that cannot be recoloured. */
 .gbds-mark { display: block; width: 126px; height: 42px; color: var(--zinc-900); }
 .gbds-mark svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+/* The client's wordmark wears the client's own navy — the same
+   #152a46 the demo design paints on the box in the scene, so the
+   mark and the object are one brand to the eye. NO TOKEN: it is
+   Acme's fixture colour, not a rung of our palette, exactly like
+   the box texture it matches. */
+.gbds-mark--client { color: #152a46; }
 
 /* ---- the name of the object, and whose it is ---------------- */
 /* ONE OBJECT, NOT TWO LINES (Ton 11.09): no margin between them at
@@ -453,15 +459,21 @@
 .gbds-name {
   margin: 0;
   font-family: var(--font-serif);
-  /* TYPE-SCALE «H3 block» (type-scale.js, prov figma): serif 32/400,
-     ls 1px, one rung at every width. Ton 11.09: «чуть больше и чуть
-     жирнее, одним из наших системных шрифтов» — прежние 24/28 со
-     весом 300 были рунгами чужих ролей. */
-  font-size: 32px;
+  /* THE PRODUCT STEPS ASIDE FOR THE CLIENT (Russell 14.09: «the
+     product name is way too big, visual hierarchy should be
+     reversed here»; Ton 15.09: «уменьшить и сделать не таким
+     тёмным»). One rung down to the serif 24 the house's section
+     heads and drawer titles already hold, and one shade quieter:
+     the loudest name on this page is the client's mark in the
+     middle now, not the bottle. The 11.09 rung (32/400, H3 block)
+     was measured against a head where OUR mark held the centre —
+     that head is gone. Line-height stays on the band's own 48
+     (concept a below), so the frame does not move under the word. */
+  font-size: 24px;
   font-weight: 400;
   line-height: normal;
   letter-spacing: 1px;
-  color: var(--zinc-900);
+  color: var(--zinc-700);
 }
 .gbds-for {
   margin: 0;
@@ -1185,13 +1197,22 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
      three track band: one centred column, signature over benefits,
      and nothing overlaps anything (gbppl-design-share-7). */
   [data-gbds-c="a"] .gbds-decide { grid-area: decide; justify-content: flex-start; padding: 0 var(--gbds-gutter) var(--space-16); }
+  /* THE SIGNATURE SIGNS LAST ON THE PHONE (Julia 15.09: «Powered by
+     GildedBox line should be the last line on the page, all the way
+     at the bottom»). The stacked footer flips to a column whose
+     order puts the benefits first and the signature row at the very
+     foot — a signature belongs under the letter, not over it. Wide
+     screens keep the three-track band untouched. */
   [data-gbds-c="a"] .gbds-foot   {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     pointer-events: auto;
     padding: var(--space-16) var(--gbds-gutter);
     text-align: center;
   }
-  [data-gbds-c="a"] .gbds-bene   { margin-top: var(--space-16); }
+  [data-gbds-c="a"] .gbds-bene   { order: 1; }
+  [data-gbds-c="a"] .gbds-sigrow { order: 2; margin-top: var(--space-16); }
 }
 
 /* ============================================================
@@ -1633,7 +1654,20 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
      viewer, which is why the axis costs no reload. -->
 <div class="gbds-stage">
 
-  <div class="gbds-mark"><svg viewBox="0 0 168 56" role="img" aria-label="GildedBox"><use href="#gbdsMark"></use></svg></div>
+  <!-- THE CENTRE BELONGS TO THE CLIENT (Russell 14.09: «I want their
+       brand to be front and center. Our logo can be smaller and out
+       of the way»; Ton 15.09: «поменять лого на лого клиента, а
+       GildedBox оставить только внизу: Powered by»). The slot, the
+       box and the axis maths are untouched — only the owner of the
+       mark changed. Our handwritten mark keeps exactly one place on
+       the page now, the Powered by signature in the footer, and one
+       more OFF the page, the loader (Russell's own design). The Acme
+       wordmark is FIXTURE brand art, like the box texture: a real
+       client's page would carry their real asset here. -->
+  <div class="gbds-mark gbds-mark--client"><svg viewBox="0 0 168 56" role="img" aria-label="Acme Aviation">
+    <text x="84" y="30" text-anchor="middle" font-family="Inter, sans-serif" font-size="23" font-weight="600" letter-spacing="7">ACME</text>
+    <text x="84" y="46" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" font-weight="400" letter-spacing="7.8">AVIATION</text>
+  </svg></div>
 
   <!-- THE HEAD IS THE NAME OF THE OBJECT AND NOTHING ELSE AGAIN
        (gbppl-design-share-7, Ton 14.09: «бенефиты (no minimums и
@@ -1655,7 +1689,7 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
   <div class="gbds-utils">
     <button type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary" data-gbds="download">
       <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="download" data-gb-icon-size="16"></span></span>
-      <span class="gb-btn__label">Download mockup</span>
+      <span class="gb-btn__label">Download design</span>
     </button>
     <button type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary" data-gbds="personalize">
       <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="wand" data-gb-icon-size="16"></span></span>
@@ -1707,7 +1741,7 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
             <span class="gb-btn__label">Retry</span>
           </button>
           <button type="button" class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" data-gbds="download">
-            <span class="gb-btn__label">Download mockup</span>
+            <span class="gb-btn__label">Download design</span>
           </button>
         </div>
       </div>
@@ -2463,8 +2497,10 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
   /* ============================================================
      THE QUIET ROADS
      ------------------------------------------------------------
-     Download mockup keeps the promise the client's page breaks: an
-     honest extension. Theirs writes a WEBP and calls it
+     Download design («mockup» left the label on Russell's word,
+     15.09: «we don't use the word mockup, it has a promo feel»)
+     keeps the promise the client's page breaks: an honest
+     extension. Theirs writes a WEBP and calls it
      Stags-Leap-Cabernet.png (harvest §5), which some readers
      cannot open at all. Ours asks the canvas for a real PNG.
      ============================================================ */
