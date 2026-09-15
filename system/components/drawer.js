@@ -16,6 +16,7 @@
        foot:  'system/components/button.css'     // optional
      });
      d.setBack(fn);      // grow or drop the back arrow while open
+     d.setBack(fn, 'Addresses');  // optional: the arrow names where it returns
      d.setBack(null);
      d.setTitle('Gift personalization');
      d.close();
@@ -249,6 +250,32 @@
     };
   }
 
+  /* THE ARROW MAY NAME WHERE IT RETURNS (gbppl-v5-julia-1, 15.09).
+     Valerie did not read the bare arrow as «back to my list», so a
+     caller can hand the arrow a label. With one, the slot stops
+     wearing --icon and becomes the small ghost pair the house
+     already knows (glyph + label, the Contact us shape): the word
+     is part of the same click, not a caption beside it. Without
+     one, nothing changes — the bare circle stays the default. */
+  function dressBack(host) {
+    var b = host._back;
+    b.textContent = '';
+    var icon = el('span', 'gb-btn__icon');
+    icon.setAttribute('aria-hidden', 'true');
+    icon.innerHTML = GLYPH_BACK;
+    b.appendChild(icon);
+    if (host._backLabel) {
+      b.className = 'gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary gbd-slot gbd-back--labeled';
+      var lab = el('span', 'gb-btn__label');
+      lab.textContent = host._backLabel;   /* consumer text: textContent, never markup */
+      b.appendChild(lab);
+      b.setAttribute('aria-label', 'Back to ' + host._backLabel);
+    } else {
+      b.className = 'gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbd-slot';
+      b.setAttribute('aria-label', 'Back');
+    }
+  }
+
   /* Which of the three head slots are on screen. Called on open and
      on every setBack, and it is the whole of the rule: arrow OR
      cross on the left, cross on the right only behind an arrow. */
@@ -269,6 +296,8 @@
 
     host._title.textContent = opts.title || '';
     host._onBack = typeof opts.back === 'function' ? opts.back : null;
+    host._backLabel = (host._onBack && typeof opts.backLabel === 'string' && opts.backLabel) ? opts.backLabel : null;
+    dressBack(host);
     dressHead(host);
 
     host._body.innerHTML =
@@ -372,9 +401,11 @@
     /* A flow that grows a step behind it says so while the panel is
        already on screen (the sign in drawer does exactly that when
        the code step arrives). Pass null to take the arrow away. */
-    setBack(fn) {
+    setBack(fn, label) {
       build(this);
       this._onBack = typeof fn === 'function' ? fn : null;
+      this._backLabel = (this._onBack && typeof label === 'string' && label) ? label : null;
+      dressBack(this);
       dressHead(this);
     }
     setTitle(text) {

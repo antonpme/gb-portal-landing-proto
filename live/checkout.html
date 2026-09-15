@@ -697,14 +697,12 @@
          stops being one. A cell somebody typed into wears a quiet
          EDITED while the switch is on.
 
-     NOT DONE, AND IT IS ONE QUESTION FOR TON: the back arrow of the
-     address panel was asked to grow the word «Addresses» beside its
-     chevron. The head slot is an icon-only .gb-btn--icon built by
-     drawer.js, and setBack takes a function and nothing else — the
-     label is a change AT THE OWNER (drawer.js and drawer.css), which
-     this wave may not commit, and 13/500 beside a chevron is a rung
-     the house has not got. Reaching into the organism's head from
-     this page would be exactly the hardcode Ton-8 forbids. It waits.
+     The back arrow of the address panel now says «Addresses»: the
+     wave left it (the head belongs to drawer.js, which it could not
+     commit), and Ren grew the axis at the owner the same day —
+     setBack(fn, label) dresses the slot as the small ghost pair
+     instead of the bare circle. The label rides v5PkHead below;
+     V1-V4 never call it, their heads are untouched.
      ============================================================ -->
 <!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
@@ -4665,7 +4663,15 @@
                                        :value="opt.id" x-model="shipment.v5Shipping" :disabled="!shipment.v5AddrId">
                                 <span class="gb-radio__copy">
                                   <span class="gb-radio__title" x-text="opt.label"></span>
-                                  <span class="gb-radio__sub">$<span x-text="opt.cost"></span></span>
+                                  <!-- gbppl-v5-julia-1, by hand (15.09): Julia took
+                                       the price off the Multiple select because it
+                                       depends on quantity — the same money stood
+                                       here on the cards, so the same reason takes
+                                       it too. The second line now carries the one
+                                       fact a method card can promise regardless of
+                                       count: when it arrives. FIXTURE numbers, as
+                                       the prices were. V1-V4 keep their cards. -->
+                                  <span class="gb-radio__sub" x-text="v5ShipNote(opt.id)"></span>
                                 </span>
                               </label>
                             </template>
@@ -4996,11 +5002,15 @@
                       <!-- Julia, meeting 20.08: personalization is either absent
                            or per gift. «One for everyone» exists only as a
                            greeting card, and it is the checkbox below. -->
-                      <!-- gbppl-v5-ground-1: the eyebrow step 1 has always had
-                           over the same pair of cards. Two steps of one card
-                           speak in one voice or in none. -->
+                      <!-- gbppl-v5-ground-1 gave this pair the eyebrow step 1
+                           had, so the two steps spoke in one voice. Julia cut
+                           step 1's («this can be removed», 15.09): under the
+                           serif «2. Personalization» the line only restated
+                           the heading, and the house law on microcopy says a
+                           heading is never retold in a line below it. One
+                           voice or none — now it is none. The group keeps its
+                           name for the screen reader on aria-label. -->
                       <div>
-                      <p class="gb-eyebrow mb-2">How these gifts are personalized</p>
                       <div class="gb-radio-group gb-radio-group--cards" role="radiogroup" aria-label="Personalization">
                         <label class="gb-radio gb-radio--select">
                           <input class="gb-radio__input" type="radio" :name="'v5perso-' + shipment.id" value="none"
@@ -9039,6 +9049,14 @@ function checkoutApp() {
     // click. The second half of the test is what makes this safe, and it is
     // also why the gate is a function and not an expression in the markup.
     v5ManyOff(s) { return !!s && this.v5Total(s) === 1 && s.v5Mode !== 'many'; },
+    // WHAT A METHOD CARD CAN PROMISE (gbppl-v5-julia-1, by hand, 15.09). The
+    // price depends on how many boxes ride — Julia's reason for taking it off
+    // the Multiple select, and it holds on these cards too. The arrival window
+    // does not depend on count, so it is the second line now. FIXTURE numbers;
+    // shippingOptions itself keeps cost untouched because V1-V4 still print it.
+    v5ShipNote(id) {
+      return { ground: '3-5 business days', '2day': '2 business days', overnight: 'Next business day' }[id] || '';
+    },
     v5ChooseMode(s, mode) {
       if (!s) return;
       s.v5Mode = mode;
@@ -10125,7 +10143,11 @@ function checkoutApp() {
       if (!d || typeof d.setBack !== 'function') return;
       const pk = this.drawer.pk;
       const back = this.uiVersion === 'v5' && pk && pk.mode === 'form' && !pk.locked;
-      d.setBack(back ? () => this.v5PkBack() : null);
+      /* gbppl-v5-julia-1 (15.09): Valerie did not read the bare arrow as
+         «back to my list», so the arrow now names the floor it returns
+         to. The label is the organism's new second argument (drawer.js);
+         V1-V4 never reach this function, their heads are untouched. */
+      d.setBack(back ? () => this.v5PkBack() : null, back ? 'Addresses' : undefined);
       d.setTitle(this.drawerTitle());
     },
     v5PkEsc(e) {
