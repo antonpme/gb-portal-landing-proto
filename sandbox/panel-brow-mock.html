@@ -83,7 +83,7 @@
     color: var(--z400);
     font: 600 11px/1 Inter, sans-serif;
     letter-spacing: 2.5px;
-    width: 44px;
+    width: 48px;
     padding: 16px 0 14px;
     display: flex; align-items: center; justify-content: center; gap: 9px;
     border-radius: 8px 0 0 0;
@@ -99,10 +99,11 @@
     border-radius: 0;
   }
   /* V3: активный мод = синяя плашка целиком, белая иконка (Тон:
-     «выделять таб не черточкой сбоку, а заливать плашку целиком»). */
+     «выделять таб не черточкой сбоку, а заливать плашку целиком»);
+     правка следом: плашка КВАДРАТНАЯ, бровка стала чуть шире. */
   .brow button {
     all: unset; cursor: pointer;
-    width: 32px; height: 34px; margin: 1px 0;
+    width: 36px; height: 36px; margin: 1px 0;
     display: grid; place-items: center;
     color: var(--z500); position: relative;
     border-radius: 7px;
@@ -113,9 +114,11 @@
   .brow svg { width: 18px; height: 18px; }
   /* V3: бейдж непрочитанных нейтральный — синий принадлежит
      активному состоянию, счёт комментов им не красится (Тон:
-     «комментарии нужно отделять от акцентного цвета»). */
+     «комментарии нужно отделять от акцентного цвета»). Бейдж живёт
+     на углу плашки и НЕ пропадает на активном табе (правка Тона:
+     «странно: на неактивном есть, на активном пропадает»). */
   .brow .n {
-    position: absolute; top: 1px; right: 0;
+    position: absolute; top: -3px; right: -3px;
     background: var(--z100); color: var(--z950);
     font: 600 9px/1 Inter, sans-serif;
     min-width: 14px; height: 14px; border-radius: 999px;
@@ -239,7 +242,7 @@
     <ul class="legend">
       <li><span class="n">1</span><span><b>Общая часть фиксирована сверху.</b> Контекст страницы, Prototype и Device не прыгают при переключении View ↔ Inspect. В Comments их нет: комменты — чистый инбокс, контекст страницы остаётся в шапке (правка Тона по v3).</span></li>
       <li><span class="n">2</span><span><b>Активный мод — синяя плашка целиком,</b> белая иконка; боковая чёрточка умерла. Девайсы выделяются точно так же.</span></li>
-      <li><span class="n">3</span><span><b>Бейдж непрочитанных стал нейтральным</b> (Zinc 100 на чернильном): синий принадлежит активному состоянию, счёт комментов им больше не красится.</span></li>
+      <li><span class="n">3</span><span><b>Бейдж непрочитанных стал нейтральным</b> (Zinc 100 на чернильном) и не пропадает, когда таб активен: он сидит на углу плашки. Синий принадлежит активному состоянию, счёт комментов им больше не красится.</span></li>
       <li><span class="n">4</span><span><b>Зона мода отбита вертикально:</b> полоса Zinc 950 с тем же глифом и именем мода, что в язычке — иконка слева и контент справа теперь один и тот же предмет.</span></li>
       <li><span class="n">5</span><span><b>Язычок — дом модов, шапка — контекст, навигация — слова в подвале.</b> Решения v2 живы: домик умер, уход со страницы сознательный.</span></li>
       <li><span class="n">6</span><span><b>Для живой волны:</b> всё, что открывается из панели (форма, тред коммента), выглядит панелью и студией, не продуктовым дровером.</span></li>
@@ -390,7 +393,6 @@
     mbody.innerHTML = MODE === 'comment' ? COMMENT_BODY : (MODE === 'inspect' ? INSPECT_BODY : VIEW_BODY);
     state.innerHTML = '<b>' + MNAME[MODE] + '</b> · ' +
       (DEV === 'full' ? 'window 1280 × 800' : devName().replace(' ', ' ') + ' frame');
-    badge.style.display = MODE === 'comment' ? 'none' : '';
     document.querySelectorAll('.brow button').forEach(function (b) {
       b.classList.toggle('on', b.getAttribute('data-mode') === MODE);
     });
