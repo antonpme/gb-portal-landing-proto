@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Панель 3.0 — кликабельный макет</title>
+<!-- ============================================================
+     gbppl-panel-brow-1, ШАГ 0: КЛИКАБЕЛЬНЫЙ МАКЕТ (моя рука, 16.09)
+     Тон: «Сперва покажи мне макет, каким ты видишь эту панель.
+     Сделай просто в HTML-ке кликабельный макет».
+     Это НЕ studio-panel: ни одной строки организма сюда не приехало,
+     содержимое панели — узнаваемая бутафория. Живое здесь только то,
+     что решает Тон: составной язычок, переключение модов, контент
+     панели за модом, бейдж, цветовое разделение, подвал с дверью.
+     ============================================================ -->
+<script src="../system/components/studio.js" data-home="../index.html"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Inter, system-ui, sans-serif; background: #fff; min-height: 100vh; }
+  .fake { padding: 48px 64px; max-width: 900px; }
+  .fake h1 { font-family: Georgia, serif; font-weight: 500; font-size: 32px; color: #18181b; }
+  .fake p { color: #71717a; margin-top: 12px; max-width: 60ch; line-height: 1.6; }
+  .ph { height: 180px; background: #fafafa; border: 1px solid #f4f4f5; border-radius: 8px; margin-top: 24px; }
+
+  /* ================= ЯЗЫЧОК: ОДНО ТЕЛО, ДВА ЭТАЖА ================= */
+  .dock { position: fixed; top: 96px; right: 0; z-index: 60; display: flex; align-items: flex-start; }
+  .tabcol { display: flex; flex-direction: column; }
+  .tab {
+    all: unset; cursor: pointer;
+    writing-mode: vertical-rl;
+    background: #09090b;
+    color: #a1a1aa;
+    font: 600 11px/1 Inter, sans-serif;
+    letter-spacing: 2px;
+    padding: 14px 0;
+    width: 40px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    border-radius: 6px 0 0 0;
+  }
+  .tab:hover { color: #fff; }
+  .tab .chev { font-size: 10px; color: #71717a; transition: transform .18s ease; }
+  body.open .tab .chev { transform: rotate(180deg); }
+  .brow {
+    background: #09090b;
+    border-top: 1px solid #27272a;
+    border-radius: 0 0 0 6px;
+    display: flex; flex-direction: column;
+    padding: 4px 0 6px;
+  }
+  .brow button {
+    all: unset; cursor: pointer;
+    width: 40px; height: 36px;
+    display: grid; place-items: center;
+    color: #71717a; position: relative;
+  }
+  .brow button:hover { color: #d4d4d8; }
+  .brow button.on { color: #60a5fa; }
+  .brow button.on::before {
+    content: ''; position: absolute; right: 0; top: 7px; bottom: 7px;
+    width: 2px; background: #60a5fa; border-radius: 2px 0 0 2px;
+  }
+  .brow .n {
+    position: absolute; top: 3px; right: 4px;
+    background: #2563eb; color: #fff;
+    font: 600 9px/1 Inter, sans-serif;
+    min-width: 14px; height: 14px; border-radius: 999px;
+    display: grid; place-items: center; padding: 0 3px;
+    border: 1px solid #09090b;
+  }
+
+  /* ================= ПАНЕЛЬ: СВЕТЛЕЕ ЯЗЫЧКА ================= */
+  .panel {
+    width: 264px;
+    max-height: calc(100vh - 140px);
+    background: #18181b;                 /* тело светлее язычка */
+    border: 1px solid #27272a;
+    border-right: 0;
+    border-radius: 8px 0 0 8px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+  }
+  body.open .panel { display: flex; }
+
+  .head { display: flex; align-items: center; gap: 6px; padding: 10px 12px; }
+  .head .cell {
+    all: unset; cursor: pointer; width: 32px; height: 32px;
+    display: grid; place-items: center; color: #a1a1aa; border-radius: 6px;
+  }
+  .head .cell:hover { background: #27272a; color: #fff; }
+  .head .cell.on { background: #27272a; color: #60a5fa; }
+  .head .grow { flex: 1; }
+  .body { padding: 4px 16px 8px; overflow: auto; }
+
+  .eyebrow { font: 600 10.5px/1.3 Inter, sans-serif; letter-spacing: 1.5px; text-transform: uppercase; color: #71717a; margin: 14px 0 8px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; color: #e4e4e7; font-size: 13px; }
+  .row .v { color: #a1a1aa; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+  .hair { border: 0; border-top: 1px solid #27272a; margin: 10px -16px; }
+
+  .citem { padding: 8px 0; border-top: 1px solid #27272a; cursor: pointer; }
+  .citem:first-child { border-top: 0; }
+  .citem .by { font: 600 12px/1.4 Inter, sans-serif; color: #e4e4e7; display: flex; gap: 8px; align-items: baseline; }
+  .citem .by time { font-weight: 400; color: #71717a; font-size: 11px; }
+  .citem .ln { color: #a1a1aa; font-size: 12px; line-height: 1.5; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .filters { display: flex; gap: 12px; margin: 4px 0 6px; }
+  .filters span { font: 500 12px/1 Inter, sans-serif; color: #71717a; padding-bottom: 4px; cursor: pointer; }
+  .filters span.on { color: #60a5fa; border-bottom: 2px solid #60a5fa; }
+
+  .foot {
+    border-top: 1px solid #27272a;
+    padding: 9px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11.5px; color: #71717a;
+  }
+  .foot a { color: #a1a1aa; text-decoration: none; border-bottom: 1px solid #3f3f46; cursor: pointer; }
+  .foot a:hover { color: #fff; }
+
+  .mode-note { font-size: 12px; color: #71717a; line-height: 1.6; padding: 20px 0; text-align: center; }
+</style>
+</head>
+<body class="open">
+
+  <div class="fake">
+    <h1>Checkout page</h1>
+    <p>Это бутафорская страница-подложка. Живое в макете: язычок STUDIO открывает и закрывает панель; три иконки под ним переключают мод, и панель показывает контент мода; бейдж на Comment. Тело панели светлее язычка, дверь в хаб — словом в подвале.</p>
+    <div class="ph"></div>
+    <div class="ph"></div>
+  </div>
+
+  <div class="dock">
+    <div class="panel" id="panel">
+      <div class="head">
+        <button class="cell on" title="Live prototype">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3Z"/></svg>
+        </button>
+        <button class="cell" title="Sandboxes">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 3h4v5l4.5 8.5A2 2 0 0 1 16.7 20H7.3a2 2 0 0 1-1.8-3.5L10 8V3ZM8 3h8"/></svg>
+        </button>
+        <button class="cell" title="Design system">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </button>
+        <span class="grow"></span>
+        <button class="cell" title="Move the panel to the left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+        </button>
+      </div>
+
+      <div class="body" id="body"></div>
+
+      <div class="foot">
+        <span id="status">View · Checkout page · M 1280</span>
+        <a title="Открыть хаб студии. Хаб покажет дорогу назад к этому прототипу.">Studio hub</a>
+      </div>
+    </div>
+
+    <div class="tabcol">
+      <button class="tab" id="tabBtn"><span class="chev">‹</span>STUDIO</button>
+      <div class="brow" role="group" aria-label="Mode">
+        <button data-mode="view" class="on" title="View — страница как для гостя">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button data-mode="inspect" title="Inspect — замер любого элемента">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 21 6-6M14 4l6 6M4 14 14 4l6 6L10 20l-6-6ZM7.5 10.5l2 2M10.5 7.5l2 2"/></svg>
+        </button>
+        <button data-mode="comment" title="Comment — заметки на странице">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-8 8H4l2.2-2.6A8 8 0 1 1 21 12Z"/></svg>
+          <span class="n" id="badge">3</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+  var MODE = 'view';
+
+  var VIEW =
+    '<p class="eyebrow">Prototype</p>' +
+    '<div class="row"><span>Checkout page</span><span class="v">Sandbox</span></div>' +
+    '<div class="row"><span>Version</span><span class="v">V5 · Addresses first ▾</span></div>' +
+    '<div class="row"><span>Demo</span><span class="v">Acme, 12 gifts ▾</span></div>' +
+    '<hr class="hair">' +
+    '<p class="eyebrow">Device</p>' +
+    '<div class="row"><span class="v">▢ 2258 · ▢ 1920 · ▣ 1280 · ▢ 768 · ▢ 390</span></div>';
+
+  var INSPECT = VIEW +
+    '<hr class="hair">' +
+    '<p class="mode-note">Inspect включён: наведи на любой элемент страницы, клик открывает замер в дровере. Панель держит те же секции прототипа.</p>';
+
+  var COMMENT =
+    '<p class="eyebrow">Comments · 3 open</p>' +
+    '<div class="filters"><span class="on">Open</span><span>Resolved</span><span>Mine</span></div>' +
+    '<div class="citem"><p class="by">Julia <time>6h</time></p><p class="ln">For adding new address, should we have add new as a first…</p></div>' +
+    '<div class="citem"><p class="by">Julia <time>1d</time></p><p class="ln">For mobile view, I think Power by GildedBox line should…</p></div>' +
+    '<div class="citem"><p class="by">Russell <time>2d</time></p><p class="ln">ACME aviation should be the main focus of this page…</p></div>' +
+    '<hr class="hair">' +
+    '<p class="mode-note">Клик по строке (в настоящей панели): страница встаёт в версию и экран коммента и подсвечивает место по якорю.</p>';
+
+  var body = document.getElementById('body');
+  var status = document.getElementById('status');
+  var badge = document.getElementById('badge');
+
+  function paint() {
+    body.innerHTML = MODE === 'comment' ? COMMENT : (MODE === 'inspect' ? INSPECT : VIEW);
+    status.textContent = MODE[0].toUpperCase() + MODE.slice(1) + ' · Checkout page · M 1280';
+    badge.style.display = MODE === 'comment' ? 'none' : '';
+    document.querySelectorAll('.brow button').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-mode') === MODE);
+    });
+  }
+
+  document.querySelectorAll('.brow button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      MODE = b.getAttribute('data-mode');
+      if (!document.body.classList.contains('open')) document.body.classList.add('open');
+      paint();
+    });
+  });
+
+  document.getElementById('tabBtn').addEventListener('click', function () {
+    document.body.classList.toggle('open');
+  });
+
+  paint();
+})();
+</script>
+
+</body>
+</html>
