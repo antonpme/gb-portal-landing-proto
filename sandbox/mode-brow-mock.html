@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Бровка режимов — концепт</title>
+<!-- ============================================================
+     gbppl-mode-brow-0 — КОНЦЕПТ-КАРТИНКА, НЕ КОД ПАНЕЛИ (моя рука)
+     Тон, 16.09: «переключение режимов нужно вынести в плавающую
+     бровку около студии: сделать её чуть-чуть толще и туда вынести
+     переключение»; боль — выход из Comment через select панели.
+     Два варианта на суд, оба рисуют правый край страницы. Ничего
+     из studio-panel сюда не приезжает: макет врёт минимально, но
+     он макет.
+     ============================================================ -->
+<script src="../system/components/studio.js" data-home="../index.html"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #e4e4e7; font-family: Inter, system-ui, sans-serif; padding: 40px; display: flex; gap: 48px; justify-content: center; }
+  .demo { width: 460px; }
+  .cap { font: 600 12px/1.4 Inter, sans-serif; letter-spacing: 1.5px; text-transform: uppercase; color: #52525b; margin-bottom: 4px; }
+  .sub { font: 400 13px/1.5 Inter, sans-serif; color: #71717a; margin-bottom: 12px; min-height: 60px; }
+  .page {
+    position: relative;
+    height: 560px;
+    background: #fff;
+    border: 1px solid #d4d4d8;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 24px 64px auto 24px;
+    height: 120px;
+    background: #f4f4f5;
+    border-radius: 6px;
+  }
+  .page::after {
+    content: '';
+    position: absolute;
+    inset: 168px 64px auto 24px;
+    height: 260px;
+    background: #fafafa;
+    border: 1px solid #f4f4f5;
+    border-radius: 6px;
+  }
+
+  /* ---- общее: тёмный язык панели ---- */
+  .chrome { position: absolute; right: 0; top: 96px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 5; }
+  .tab {
+    writing-mode: vertical-rl;
+    background: #09090b;
+    color: #a1a1aa;
+    font: 600 11px/1 Inter, sans-serif;
+    letter-spacing: 2px;
+    padding: 14px 6px;
+    border-radius: 6px 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab .chev { color: #71717a; font-size: 10px; }
+  .brow {
+    background: #09090b;
+    border-radius: 6px 0 0 6px;
+    display: flex;
+    flex-direction: column;
+    padding: 6px 0;
+  }
+  .brow button {
+    all: unset;
+    width: 40px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    color: #71717a;
+    cursor: pointer;
+    position: relative;
+  }
+  .brow button.on { color: #60a5fa; }
+  .brow button.on::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 6px; bottom: 6px;
+    width: 2px;
+    background: #60a5fa;
+    border-radius: 2px;
+  }
+  .brow .n {
+    position: absolute;
+    top: 4px; right: 5px;
+    background: #2563eb;
+    color: #fff;
+    font: 600 9px/1 Inter, sans-serif;
+    min-width: 14px; height: 14px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    padding: 0 3px;
+    border: 1px solid #09090b;
+  }
+  svg { display: block; }
+
+  /* вариант B: бровка одним телом с язычком */
+  .stack { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+  .stack .brow { border-radius: 6px 0 0 0; border-bottom: 1px solid #27272a; }
+  .stack .tab { border-radius: 0 0 0 6px; }
+</style>
+</head>
+<body>
+
+  <div class="demo">
+    <div class="cap">Вариант A — отдельная бровка</div>
+    <div class="sub">Бровка режимов плавает НАД язычком, своим телом: три иконки вертикально (View / Inspect / Comment), активный синий с риской у кромки, счёт непрочитанных сидит на иконке Comment. Язычок STUDIO остаётся только дверью панели.</div>
+    <div class="page">
+      <div class="chrome">
+        <div class="brow" role="group" aria-label="Mode">
+          <button class="on" title="View">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button title="Inspect">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 21 6-6M14 4l6 6M4 14 14 4l6 6L10 20l-6-6ZM7.5 10.5l2 2M10.5 7.5l2 2"/></svg>
+          </button>
+          <button title="Comment">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-8 8H4l2.2-2.6A8 8 0 1 1 21 12Z"/></svg>
+            <span class="n">3</span>
+          </button>
+        </div>
+        <div class="tab"><span class="chev">‹</span>STUDIO</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="cap">Вариант B — язычок стал толще</div>
+    <div class="sub">Одно тело: сверху три иконки режимов, под ними тот же язычок STUDIO. Ближе к твоим словам «сделать её чуть толще и туда вынести переключение» — но режимы тогда видны и при закрытой панели всегда, даже когда человек просто смотрит прототип.</div>
+    <div class="page">
+      <div class="chrome">
+        <div class="stack">
+          <div class="brow" role="group" aria-label="Mode">
+            <button title="View">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <button title="Inspect">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 21 6-6M14 4l6 6M4 14 14 4l6 6L10 20l-6-6ZM7.5 10.5l2 2M10.5 7.5l2 2"/></svg>
+            </button>
+            <button class="on" title="Comment">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-8 8H4l2.2-2.6A8 8 0 1 1 21 12Z"/></svg>
+              <span class="n">3</span>
+            </button>
+          </div>
+          <div class="tab"><span class="chev">‹</span>STUDIO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
