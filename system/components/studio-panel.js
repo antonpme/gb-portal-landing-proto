@@ -665,6 +665,72 @@
      язычку, которого у плавающего нет вовсе (display:none), и
      клавиатура оказывалась в начале страницы. Фокус уходит на ту
      кнопку, которая видна (openerBtn).
+
+   ------------------------------------------------------------
+   ПАНЕЛЬ 3.0: ЯЗЫЧОК СТАЛ ДОМОМ МОДОВ (gbppl-panel-30-1, 2026-09-16)
+   ------------------------------------------------------------
+   Проект утверждён Тоном на кликабельном макете
+   sandbox\panel-brow-mock.html (gbppl-panel-brow-1..3, 16.09). Его
+   слова, тремя пакетами:
+
+   1. «Нет ментального коннекта иконки слева с тем, что справа».
+   2. «В футере должна быть только навигация»; «view не является
+      заголовком секции — переделать на заголовок секции»; «убери
+      Fills the window»; «маленькие нечитабельные тексты создают шум,
+      а не удобство».
+   3. ЗАКОН ЛИНИЙ, дословно и с припиской «запомни это»: ни одна
+      плашка — активная, hover, выделение строки — не вылезает за
+      вертикальные линии контента панели.
+
+   ЧТО ИЗ ЭТОГО СЛЕДУЕТ, ПО ПОРЯДКУ.
+
+   ЯЗЫЧОК-КОЛОННА. .gbsp-tabcol — одно тело у внешней кромки ящика:
+   вертикальная кнопка STUDIO (открыть и закрыть) и под волоском три
+   квадратные плашки модов. Плашки стоят ВСЕГДА: при закрытом ящике,
+   при открытом, у любого дока. Отсюда две смерти. Минимайзер
+   .gbsp-min (кнопка сворачивания, жившая только у плавающего ящика)
+   снят: контрол сворачивания теперь один на все три места, и это
+   язычок. И секция Mode внутри ящика снята: тумблер уехал на кромку,
+   а вопрос «в каком я режиме» отвечается раньше, чем откроют ящик.
+
+   ПЛАШКА ВМЕСТО ЧЁРТОЧКИ. Активный мод — синяя (Blue 600) квадратная
+   плашка целиком с белой иконкой; активный экран в ряду Device — так
+   же. Ни подчёркиваний, ни боковых линий: в пульте один способ
+   сказать «выбрано».
+
+   БЕЙДЖ НЕ ПРОПАДАЕТ. Счёт непрочитанного сидит на углу плашки
+   Comment и стоит в любом состоянии, включая активный таб: раньше он
+   уходил, как только ящик открывали (gbppl-panel-12), и человек,
+   работающий в режиме комментариев, переставал видеть, сколько их.
+   Цвет нейтральный — Zinc 100 с чернильной цифрой: синий на плашке,
+   которая сама синяя, не читается, а красный в системе значит ошибку.
+
+   ШАПКА = КОНТЕКСТ. Ряд иконок-дверей из шапки убран целиком (Тон:
+   «домик, который уводил людей на хаб, умер вместе со всем рядом»);
+   на его месте имя страницы и её статус — то, что до этой волны
+   стояло отдельной полкой .gbsp-sec--who. Кнопка перекладывания
+   ящика осталась в хвосте строки.
+
+   СЕКЦИИ ОТКРЫВАЮТСЯ АЙБРАУ. Prototype, Device, Inspect, Comments —
+   у каждой заголовок роли Eyebrow (12/600/.12em Zinc 500), у секций
+   мода рядом с ним маленький глиф ровно того мода, на который
+   нажали. View своей секции не имеет вовсе: он виден плашкой, и
+   говорить о нём второй раз незачем. В Comment ящик показывает
+   ТОЛЬКО инбокс: Prototype и Device уходят (data-when).
+
+   ПОДВАЛ = НАВИГАЦИЯ СЛОВАМИ. Live · Sandboxes · Design System ·
+   Hub. Строка состояния («View · Full window») и подпись экрана под
+   рядом иконок сняты обе: это был мелкий текст, повторявший то, что
+   видно плашками. Вместе с ними ушла и подсказка наведения на экран
+   (spec.caption): имя и размер по-прежнему живут в title кнопки и в
+   полосе над кадром.
+
+   COPY LINK ПЕРЕЕХАЛ В ШАПКУ, и это осознанное отклонение от макета
+   (вопрос Тону в отчёте). Подвал по его слову несёт только
+   навигацию, а копия ссылки — не навигация и не строка состояния:
+   это команда пульта, и место команд — строка управления в шапке,
+   рядом с кнопкой дока. Убить её волна права не имела: её никто не
+   просил убирать.
    ============================================================ */
 (function () {
   'use strict';
@@ -792,6 +858,37 @@
     return '<span class="gb-icon gb-icon--' + (size || 16) + '" aria-hidden="true">' +
            '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" ' +
            'stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"/></svg></span>';
+  }
+
+  /* ============================================================
+     ГЛИФЫ МОДОВ (gbppl-panel-30-1)
+     ------------------------------------------------------------
+     Два из трёх уже лежат в записи набора и берутся по имени: `eye`
+     (auth.js, «показать пароль») и `chat` (портал, дверь Live chat).
+     Третьего — перекрестья прицела — в наборе нет, и icon.js не
+     владение этой волны: она правит ровно два файла консоли. Рисунок
+     стоит здесь по правилам записи (сетка 24, без своего
+     stroke-width — вес придёт от .gb-icon), провенанс Nucleo
+     48-crosshairs, как в утверждённом макете. ДОЛГ НАЗВАН ВСЛУХ: при
+     первом же касании icon.js `crosshairs` уезжает туда, и консоль
+     станет спрашивать его по имени, как спрашивает шесть экранов.
+
+     Один и тот же глиф носит и плашка язычка, и заголовок секции
+     мода: связь «на что нажал — что открылось» держится рисунком, а
+     не цветной полосой (Тон 16.09). */
+  var CROSSHAIRS =
+    '<circle cx="12" cy="12" r="8.8"/><circle cx="12" cy="12" r="2.6"/>' +
+    '<path d="M12 1.4v3.4M12 22.6v-3.4M1.4 12h3.4M22.6 12h-3.4"/>';
+
+  var MODE_ICONS = { view: 'eye', comment: 'chat' };
+
+  function modeGlyph(value, size) {
+    if (value === 'inspect') {
+      return '<span class="gb-icon gb-icon--' + (size || 20) + '" aria-hidden="true">' +
+             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+             'stroke-linecap="round" stroke-linejoin="round">' + CROSSHAIRS + '</svg></span>';
+    }
+    return glyph(MODE_ICONS[value] || 'grid', size || 20);
   }
 
   /* ============================================================
@@ -1057,8 +1154,10 @@
            же кнопку, что стоит в полосе. */
         if (shell.classList.contains('is-collapsed') &&
             host.getAttribute('data-dock') === 'float') {
-          var min = shell.querySelector('.gbsp-min');
-          if (min) min.click();
+          /* gbppl-panel-30-1: кнопка теперь одна на все места — та,
+             что стоит в язычке-колонне. */
+          var opener = shell.querySelector('.gbsp-tab');
+          if (opener) opener.click();
         }
         return;
       }
@@ -1168,15 +1267,38 @@
      владелец, переписав innerHTML, не должен уметь стереть саму
      полку вместе с её местом в порядке рангов.
      ============================================================ */
-  function plainSec(id, title, body, cls, rank) {
+  /* gbppl-panel-30-1: у полки снова есть ЗАГОЛОВОК, и это айбрау.
+     panel2-build-1 снял его отовсюду («в мокапе полок с заголовками
+     не осталось ни одной»), а Тон 16.09 вернул словами «view не
+     является заголовком секции — переделать на заголовок секции»:
+     Prototype, Device, Inspect и Comments открываются подписью роли
+     Eyebrow, как PROTOTYPE и DEVICE в макете. Айбрау приходит готовой
+     разметкой шестым аргументом — полка не решает, что в нём стоит,
+     потому что у секции мода в нём ещё и глиф со счётом. */
+  function plainSec(id, title, body, cls, rank, brow, when) {
     return (
       '<div class="gbsp-sec ' + cls + '"' +
         ' data-sec-id="' + esc(id) + '"' +
         (title ? ' aria-label="' + esc(title) + '"' : '') +
+        (when ? ' data-when="' + esc(when) + '"' : '') +
         (rank ? ' data-rank="' + rank + '"' : '') + '>' +
+        (brow || '') +
         '<div class="gbsp-secbody" id="gbsp-body-' + esc(id) + '">' + body + '</div>' +
       '</div>'
     );
+  }
+
+  /* АЙБРАУ ПОЛКИ. Слово всегда, глиф — только у секций мода (там он
+     и есть тот самый «ментальный коннект» плашки с её секцией, о
+     котором Тон говорил 16.09), счёт — только там, где владелец полки
+     его печатает. Регистр делает CSS: в разметке слово стоит так, как
+     его произносят (правила копии, sentence case). */
+  function browHtml(word, icon, slot) {
+    return '<p class="gbsp-brow-t' + (icon ? ' gbsp-brow-t--mode' : '') + '">' +
+      (icon ? '<span class="gbsp-brow-t__glyph">' + icon + '</span>' : '') +
+      '<span class="gbsp-brow-t__word">' + esc(word) + '</span>' +
+      (slot ? '<span class="gbsp-brow-t__cnt" hidden></span>' : '') +
+    '</p>';
   }
 
 
@@ -1329,12 +1451,9 @@
      ГЛИФЫ ПРИХОДЯТ ИЗ ЗАПИСИ НАБОРА по именам (icon.js: home, globe,
      flask, grid). Своих рисунков консоль больше не носит.
      ============================================================ */
-  var NAV_ICONS = {
-    'index.html':             'home',
-    'live/index.html':        'globe',
-    'sandboxes.html':         'flask',
-    'system/oro/index.html':  'grid'
-  };
+  /* ГЛИФОВ У РАЗДЕЛОВ БОЛЬШЕ НЕТ (gbppl-panel-30-1): подвал называет
+     их словами, и таблица имя→рисунок вместе с navCell снята. Порядок
+     и адреса остались там же, где были, — в NAV_ROOT и NAV_KIDS. */
 
   /* Раздел, в котором стоишь: из реестра, если выбран вариант, иначе
      из адреса (variantHere / sectionHere выше, gbppl-panel-sandbox-1). */
@@ -1342,37 +1461,29 @@
     return variantHere(pageId, root) ? 'sandboxes.html' : sectionHere(root);
   }
 
-  function navCell(root, path, label, section, here) {
-    var on = here === section;
-    return '<a class="gbsp-cell' + (on ? ' is-on' : '') + '"' +
-      ' href="' + root + path + '"' +
-      ' title="' + esc(label) + '" aria-label="' + esc(label) + '"' +
-      (on ? ' aria-current="page"' : '') + '>' +
-      glyph(NAV_ICONS[section] || 'grid', 20) +
-    '</a>';
-  }
-
-  /* ШАПКА ЯЩИКА: четыре раздела и две тихие кнопки пульта.
+  /* ШАПКА ЯЩИКА: КОНТЕКСТ И ДВЕ ТИХИЕ КОМАНДЫ (gbppl-panel-30-1).
+     Ряд иконок-дверей (panel2-build-1) снят целиком — Тон 16.09:
+     навигация прочь со страницы «никогда не стоит иконкой первой в
+     ряду инструментов», она ушла словами в подвал. На его месте стоит
+     то, что раньше было отдельной полкой .gbsp-sec--who: имя страницы
+     и её статус.
      Класс .gbsp-head не переименован намеренно — за него ящик таскают,
      на него садится счёт у оторванной фигуры, и он остаётся один,
      когда ящик сложен в полосу (комментарий в studio-panel.css). */
   function headHtml(root, pageId) {
-    var here = sectionNow(root, pageId);
-    var three = NAV_KIDS.map(function (k) {
-      return navCell(root, k[0], k[1], k[2], here);
-    }).join('');
     return (
       '<div class="gbsp-head">' +
-        '<div class="gbsp-trough gbsp-trough--nav gbsp-nav__hub">' +
-          navCell(root, NAV_ROOT[0], NAV_ROOT[1], 'index.html', here) +
-        '</div>' +
-        '<div class="gbsp-trough gbsp-trough--nav gbsp-nav__three"' +
-             ' role="group" aria-label="Studio sections">' + three + '</div>' +
+        '<div class="gbsp-who">' + whoHtml(root, pageId) + '</div>' +
         '<div class="gbsp-tools">' +
-          '<button class="gbsp-dock" type="button"></button>' +
-          '<button class="gbsp-min" type="button" aria-controls="gbsp-panel">' +
-            glyph('chevron-down', 16) +
+          /* Copy link потерял слово и стал глифом: подвал по слову
+             Тона держит только навигацию, а команде пульта место в
+             строке управления. Отклик — подмена глифа на галочку, та
+             же 1500ms, что была у слова (wireFoot). */
+          '<button class="gbsp-copy" type="button"' +
+            ' aria-label="Copy link to this view" title="Copy link to this view">' +
+            '<span class="gbsp-copy__glyph">' + glyph('link', 16) + '</span>' +
           '</button>' +
+          '<button class="gbsp-dock" type="button"></button>' +
         '</div>' +
       '</div>'
     );
@@ -1422,7 +1533,12 @@
      печатается один раз. Голоса прежние: имя 16/600 белым, подпись
      12/400 Zinc 500 (панель 2.0), поэтому строка Тона читается одной
      фразой, но не ложится одним кеглем на три этажа. */
-  function whoSection(root, pageId) {
+  /* gbppl-panel-30-1: та же строка, но она больше не полка. Тон 16.09
+     о макете: «шапка панели = КОНТЕКСТ, не навигация: имя страницы и
+     её статус». Возвращается ТЕЛО для шапки, а не секция: у ящика
+     стало на один разделитель меньше, а ответ «что открыто» встал
+     первым, ещё до всякой линии. */
+  function whoHtml(root, pageId) {
     var rel     = relHere(root);
     var variant = variantHere(pageId, root);
     var here    = sectionNow(root, pageId);
@@ -1453,15 +1569,15 @@
           glyph('info', 16) +
         '</button>'
       : '';
-    return plainSec('who', '',
+    return (
       '<span class="gbsp-name">' + esc(name) + '</span>' +
       (sub || door
         ? '<span class="gbsp-name__line">' +
             (sub ? '<span class="gbsp-name__sub">' + esc(sub) + '</span>' : '') +
             door +
           '</span>'
-        : ''),
-      'gbsp-sec--who');
+        : '')
+    );
   }
 
   /* ============================================================
@@ -1655,7 +1771,12 @@
        инструментов (страница без реестра, но с демо-данными). Пять,
        потому что инструменты 10: «что собрано» стоит выше «чем
        смотрю» (gbppl-panel-8). */
-    return plainSec('proto', NAME_PROTOTYPE, html, 'gbsp-sec--proto', 5);
+    /* gbppl-panel-30-1: в Comment ящик показывает ТОЛЬКО инбокс (Тон
+       16.09 на макете: «комменты чистый инбокс», Prototype там
+       лишний). Полка объявляет свои режимы тем же data-when, каким их
+       объявляют полка комментариев и ряд экранов. */
+    return plainSec('proto', NAME_PROTOTYPE, html, 'gbsp-sec--proto', 5,
+                    browHtml(NAME_PROTOTYPE), 'view inspect');
   }
 
   /* Полка Prototype, живая. В шаблоне её может не быть вовсе (нечего
@@ -1665,7 +1786,8 @@
     var sec = host.querySelector('.gbsp-sec--proto');
     if (sec) return sec;
     var box = document.createElement('div');
-    box.innerHTML = plainSec('proto', NAME_PROTOTYPE, '', 'gbsp-sec--proto');
+    box.innerHTML = plainSec('proto', NAME_PROTOTYPE, '', 'gbsp-sec--proto', 0,
+                             browHtml(NAME_PROTOTYPE), 'view inspect');
     sec = box.firstChild;
     placeSection(host, sec, 5);
     return sec;
@@ -1857,7 +1979,9 @@
     /* ДВЕРЬ В ДЕТАЛИ ЖИВЁТ В СТРОКЕ ИМЕНИ, А НЕ В СЕКЦИИ ВЫБОРА
        (gbppl-panel-version-1): слой с записками остался ровно тем же,
        сменилась только ручка, которая его открывает. */
-    var door = host.querySelector('.gbsp-sec--who .gbsp-info[data-slot="version-details"]');
+    /* gbppl-panel-30-1: строка имени переехала в шапку целиком, дверь
+       в детали версии поехала вместе с ней. */
+    var door = host.querySelector('.gbsp-head .gbsp-info[data-slot="version-details"]');
     if (door) {
       door.addEventListener('click', function () {
         openLayer(host, {
@@ -2119,44 +2243,74 @@
      одним узлом, потому что все секции, которые страница дописывает
      позже (Mode, Device, Demo), встают ПЕРЕД ним. Сегмент Layout
      стоял здесь же и ушёл с Classic (gbppl-panel-10). */
-  function footHtml() {
+  /* ПОДВАЛ = ТОЛЬКО НАВИГАЦИЯ (gbppl-panel-30-1, Тон 16.09 дословно:
+     «в футере должна быть только навигация»).
+     Разведка того же дня: «навигация прочь со страницы никогда не
+     стоит иконкой первой в ряду инструментов — она спрятана за
+     словом». Слово не кликают по ошибке, и уход со страницы
+     становится сознательным; ряд иконок-дверей из шапки за этим и
+     снят.
+     Адреса те же, что носили иконки: NAV_KIDS и NAV_ROOT, одна
+     таблица на консоль. Hub уходит к правому краю со стрелкой ↗ — он
+     ВЫХОД ИЗ КОНТЕЙНЕРА прототипа (Тон-12), а не соседний раздел, и
+     стоит отдельно от тройки. Раздел, в котором стоишь, говорит синим
+     (Тон-5: активный пункт навигации — состояние). */
+  function footHtml(root, pageId) {
+    var here = sectionNow(root, pageId);
+    var cell = function (path, label, section, out) {
+      var on = here === section;
+      return '<a class="gbsp-go' + (out ? ' gbsp-go--out' : '') + (on ? ' is-on' : '') + '"' +
+        ' href="' + root + path + '"' + (on ? ' aria-current="page"' : '') + '>' +
+        esc(label) + (out ? ' <span class="gbsp-go__arrow" aria-hidden="true">↗</span>' : '') +
+      '</a>';
+    };
     return (
       '<div class="gbsp-foot">' +
-        '<p class="gbsp-status"></p>' +
-        /* Copy link стал тихой командой с глифом-цепочкой (мокап
-           03.09) и потерял хвост «to this view»: строка состояния
-           слева от неё и есть тот самый вид, и называть его дважды в
-           одной строке незачем. Слово лежит в своём слоте — иначе
-           «Copied» затирало бы глиф вместе с текстом. */
-        '<button class="gbsp-copy" type="button">' +
-          glyph('link', 16) +
-          '<span class="gbsp-copy__word">Copy link</span>' +
-        '</button>' +
+        '<nav class="gbsp-nav" aria-label="Studio sections">' +
+          cell(NAV_KIDS[0][0], 'Live',          NAV_KIDS[0][2]) +
+          cell(NAV_KIDS[1][0], 'Sandboxes',     NAV_KIDS[1][2]) +
+          /* «Design System» с большой, хотя в макете было «Design
+             system»: это ИМЯ СОБСТВЕННОЕ раздела студии (правила
+             копии, раздел 3), и той же строкой его называет подпись
+             под именем страницы этажом выше (SECTION_WORD). Два
+             написания одного имени на одной поверхности — ровно тот
+             дефект, от которого Тон-9. */
+          cell(NAV_KIDS[2][0], 'Design System', NAV_KIDS[2][2]) +
+          cell(NAV_ROOT[0],    'Hub',           'index.html', true) +
+        '</nav>' +
       '</div>'
     );
   }
 
   var TEMPLATE = function (root, pageId) {
-    var body = whoSection(root, pageId) +
-               protoSection(pageId, root) +
-               footHtml();
+    var body = protoSection(pageId, root) +
+               footHtml(root, pageId);
     return (
       '<div class="gbsp gbsp--v2 is-collapsed">' +
+        /* ЯЗЫЧОК-КОЛОННА (gbppl-panel-30-1): дверь панели и дом модов
+           одним телом у внешней кромки. Жёлоб плашек стоит ПУСТЫМ,
+           пока владелец режима не объявится (addSegments): страница
+           без инспектора не получает переключателя, за которым ничего
+           не стоит, и пустая коробка на кромке не рисуется вовсе
+           (:empty в studio-panel.css). */
+        '<div class="gbsp-tabcol">' +
         '<button class="gbsp-tab" type="button" aria-expanded="false" aria-controls="gbsp-panel"' +
                 ' aria-label="Open the Design Studio panel">' +
           CHEVRON +
           '<span class="gbsp-tab__word">Studio</span>' +
         '</button>' +
+          '<div class="gbsp-brow" role="group" aria-label="Mode"></div>' +
+        '</div>' +
         '<nav class="gbsp-panel" id="gbsp-panel" aria-label="Design Studio">' +
-          /* ШАПКА ЯЩИКА — ряд навигации и две тихие кнопки пульта
-             (gbppl-panel2-build-1). До этой волны здесь стояла строка
-             титула «DESIGN STUDIO» с кнопкой дока в хвосте; титул снят
-             (развилка волны, разбор в шапке studio-panel.css), а его
-             место занял ряд разделов. Глиф и метку кнопке дока ставит
-             paintDock: они зависят от стороны, а сторона читается из
-             памяти уже на живом элементе.
-             Шапка с gbppl-panel-float-2 ещё и ручка: за неё ящик
-             таскают. */
+          /* ШАПКА ЯЩИКА — КОНТЕКСТ И ДВЕ ТИХИЕ КОМАНДЫ
+             (gbppl-panel-30-1). Строка титула «DESIGN STUDIO» ушла
+             ещё в panel2-build-1, ряд иконок-дверей, занявший её
+             место, уходит здесь. Осталось то, ради чего в панель
+             смотрят первым делом: имя страницы и её статус. Глиф и
+             метку кнопке дока ставит paintDock — они зависят от
+             стороны, а сторона читается из памяти уже на живом
+             элементе. Шапка с gbppl-panel-float-2 ещё и ручка: за неё
+             ящик таскают. */
           headHtml(root, pageId) +
           body +
         '</nav>' +
@@ -2405,25 +2559,166 @@
   }
 
   /* ============================================================
-     СЕКЦИЯ MODE (gbppl-panel-6)
+     ПОЛКА ЭКРАНОВ (gbppl-panel-6 → gbppl-panel-30-1)
      ------------------------------------------------------------
-     Единственное место панели, где выбор стоит СЕГМЕНТАМИ, а не
-     строками списка. Причина простая и геометрическая: у режима
-     ровно два значения, они взаимоисключающие и читаются как один
-     переключатель; двумя строками списка это была бы навигация из
-     двух пунктов, а не тумблер. Голос тот же, что у контролов
-     витрины (.gbdoc-seg, docs.css: «контролы не кнопки»), только
-     на тёмном: 14/500, выбранный Blue 400 с подчёркиванием.
+     Полка называлась секцией Mode и держала две группы: режим и
+     экран. Режим уехал на язычок (makeModeBrow ниже), и в полке
+     остался один жилец — ряд экранов. Класс .gbsp-sec--mode не
+     переименован: за него держится каскад, а имя вещи в разметке
+     говорит aria-label и айбрау «Device».
      ============================================================ */
-  function modeSection(host) {
+  function toolsSection(host) {
     var sec = host.querySelector('.gbsp-sec--mode');
     if (sec) return sec;
-    sec = document.createElement('div');
-    sec.className = 'gbsp-sec gbsp-sec--mode';
-    /* Инструменты стоят ПОСЛЕ навигации и версии страницы
-       (gbppl-panel-8): сначала «где я и что смотрю», потом «чем
-       смотрю». */
+    var box = document.createElement('div');
+    box.innerHTML = plainSec('device', 'Device', '', 'gbsp-sec--mode', 0,
+                             browHtml('Device'), 'view inspect');
+    sec = box.firstChild;
+    /* Инструменты стоят ПОСЛЕ версии страницы (gbppl-panel-8):
+       сначала «что смотрю», потом «чем смотрю». */
     return placeSection(host, sec, 10);
+  }
+
+  /* ============================================================
+     ЯЗЫЧОК-КОЛОННА: ДОМ МОДОВ (gbppl-panel-30-1, Тон 16.09)
+     ------------------------------------------------------------
+     Тумблер режима был полосой в ящике и отвечал только тому, кто
+     ящик открыл. Три квадратные плашки стоят на внешней стороне
+     кромки, под кнопкой STUDIO, и видны ВСЕГДА — при любой фигуре и
+     любом доке. Панель по-прежнему владеет ВИДОМ и МЕСТОМ
+     (gbppl-panel-6): подписи addSegments / setActive / setBadge /
+     addOption не изменились ни одной буквой, inspect.js и comments.js
+     про переезд не знают.
+
+     ГЛИФ ВМЕСТО СЛОВА. Плашка 36×36 несёт рисунок мода, слово живёт в
+     title и aria-label — то же правило, по которому давно живёт ряд
+     экранов («у кнопки без слова обязано быть слово где-то ещё»).
+     Тот же рисунок открывает секцию мода в ящике: это и есть тот
+     «ментальный коннект», которого Тон не нашёл в первом заходе.
+
+     ЗАПИСКА МОДА СТАЛА СЕКЦИЕЙ. Строку note владельцы режимов
+     присылали и раньше; она стояла абзацем под тумблером и говорила
+     даже про View («The page behaves as it does for a visitor») —
+     ровно тот мелкий текст, который Тон 16.09 велел убить. Теперь её
+     печатает ТОЛЬКО секция Inspect, и печатает словами владельца, а
+     не своими. У View секции нет вовсе: активность видна плашкой.
+     ============================================================ */
+  function browBox(host) {
+    return host.querySelector('.gbsp-brow');
+  }
+
+  function hintSection(host, text) {
+    var sec = host.querySelector('.gbsp-sec--hint');
+    if (!text) {
+      if (sec) sec.remove();
+      return null;
+    }
+    if (!sec) {
+      var box = document.createElement('div');
+      box.innerHTML = plainSec('inspect', 'Inspect', '<p class="gbsp-hint"></p>',
+                               'gbsp-sec--hint', 0,
+                               browHtml('Inspect', modeGlyph('inspect', 16)), 'inspect');
+      sec = box.firstChild;
+      /* Двенадцать: сразу за полкой экранов (10) и выше полки
+         комментариев (20) — порядок чтения «что собрано → чем смотрю
+         → что здесь сказано» не меняется. */
+      placeSection(host, sec, 12);
+    }
+    var p = sec.querySelector('.gbsp-hint');
+    if (p) p.textContent = text;
+    return sec;
+  }
+
+  function makeModeBrow(host, spec) {
+    var options = spec.options || [];
+    var brow = browBox(host);
+    var current = spec.value;
+    if (!brow) return { element: null, setActive: function () {}, setBadge: function () {}, addOption: function () {} };
+
+    function cellHtml(o, i) {
+      var word = o.label || o.value;
+      return '<button class="gbsp-plaque" type="button" data-seg="' + i + '"' +
+             ' data-mode="' + esc(o.value) + '"' +
+             ' title="' + esc(word) + '" aria-label="' + esc(word) + '"' +
+             ' aria-pressed="false">' + modeGlyph(o.value, 20) + '</button>';
+    }
+
+    function paint() {
+      var cells = brow.querySelectorAll('[data-seg]');
+      for (var i = 0; i < cells.length; i++) {
+        var on = options[i] && options[i].value === current;
+        cells[i].classList.toggle('is-on', !!on);
+        cells[i].setAttribute('aria-pressed', String(!!on));
+      }
+      /* Хинт принадлежит Inspect и только ему: слова приносит владелец
+         режима своей опцией, панель их не сочиняет. */
+      var hint = '';
+      for (var k = 0; k < options.length; k++) {
+        if (options[k].value === 'inspect') hint = options[k].note || '';
+      }
+      hintSection(host, hint);
+      dress();
+    }
+
+    brow.innerHTML = options.map(cellHtml).join('');
+
+    brow.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-seg]') : null;
+      if (!btn || !brow.contains(btn)) return;
+      var o = options[+btn.getAttribute('data-seg')];
+      if (!o || o.value === current) return;
+      current = o.value;
+      paint();
+      if (typeof o.onChange === 'function') o.onChange(o.value, o);
+      else if (typeof spec.onChange === 'function') spec.onChange(o.value, o);
+    });
+
+    paint();
+
+    function indexOf(value) {
+      for (var k = 0; k < options.length; k++) if (options[k].value === value) return k;
+      return -1;
+    }
+
+    var handle = {
+      element: brow,
+      setActive: function (value) { current = value; paint(); return handle; },
+      /* СЧЁТ НЕ ПРОПАДАЕТ НА АКТИВНОЙ ПЛАШКЕ (Тон 16.09): он сидит на
+         углу и живёт в любом состоянии. Бейдж тот же системный Count
+         badge (--count-badge-*), только нейтральной ячейкой: синий на
+         синей плашке не читается, а красный в системе значит ошибку. */
+      setBadge: function (value, n) {
+        var i = indexOf(value);
+        if (i < 0) return handle;
+        var btn = brow.querySelector('[data-seg="' + i + '"]');
+        if (!btn) return handle;
+        var b = btn.querySelector('.gbsp-badge');
+        n = Math.max(0, parseInt(n, 10) || 0);
+        var word = options[i].label || value;
+        if (!n) {
+          if (b) b.remove();
+          btn.setAttribute('aria-label', word);
+          return handle;
+        }
+        if (!b) {
+          b = document.createElement('span');
+          b.className = 'gbsp-badge gbsp-badge--plaque';
+          b.setAttribute('aria-hidden', 'true');
+          btn.appendChild(b);
+        }
+        b.textContent = n > 99 ? '99+' : String(n);
+        btn.setAttribute('aria-label', word + ', ' + n + ' unread');
+        return handle;
+      },
+      addOption: function (o) {
+        if (!o) return handle;
+        options.push(o);
+        brow.insertAdjacentHTML('beforeend', cellHtml(o, options.length - 1));
+        paint();
+        return handle;
+      }
+    };
+    return handle;
   }
 
   /* ТУМБЛЕРА ЗДЕСЬ БОЛЬШЕ НЕТ (gbppl-panel2-build-1), и вместе с ним
@@ -2450,7 +2745,13 @@
   function makeSegments(host, spec) {
     spec = spec || {};
     var options = spec.options || [];
-    var sec = modeSection(host);
+    /* ДВЕ ДОРОГИ ОТ ОДНОЙ ПОДПИСИ (gbppl-panel-30-1). Группа режима
+       уходит на язычок, всё остальное остаётся полкой ящика. Признак —
+       ранг 1 (его ставит inspect.js с gbppl-panel-7) или имя группы;
+       владельцы режимов ни строки про это не знают. */
+    if (spec.rank === 1 || spec.title === 'Mode') return makeModeBrow(host, spec);
+    var sec = toolsSection(host);
+    var secBody = sec.querySelector('.gbsp-secbody') || sec;
 
     /* ОБЛИК ОДИН НА ВСЕХ (gbppl-panel2-build-1). Здесь было два: ряд
        глифов с именем слева у Device и системный <gb-toggle> у Mode.
@@ -2497,8 +2798,15 @@
        остаются на месте, поэтому paint, setBadge и addOption ниже
        работают одним кодом. Счёт непрочитанного встаёт слову соседом
        по флексу и берёт зазор самой ячейки, а не свой. */
+    /* gbppl-panel-30-1: у ряда ГЛИФОВ ячейка — та же плашка, что стоит
+       на язычке (Тон 16.09 связал их прямо: «активный девайс в ряду
+       Device — так же»), и жёлоба под ней нет: коробка вокруг глифов
+       сделала бы их другим предметом, чем плашки на кромке. Ряд СЛОВ
+       остаётся жёлобом с оградой — слова без неё слипаются в фразу
+       (Тон 03.09). */
     function segHtml(o, i) {
-      return '<button class="gbsp-cell" type="button" data-seg="' + i + '"' +
+      return '<button class="' + (asIcons ? 'gbsp-plaque gbsp-plaque--wide' : 'gbsp-cell') +
+             '" type="button" data-seg="' + i + '"' +
              (o.title ? ' title="' + esc(o.title) + '"' : '') +
              (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
              ' aria-pressed="false">' +
@@ -2515,8 +2823,8 @@
        правка, ломаются на первой же группе. Имя группы уходит в
        aria-label жёлоба, вслух его говорит строка состояния внизу
        ящика, а коробка сама говорит, что она переключатель. */
-    var html = '<div class="gbsp-trough gbsp-trough--fenced' +
-               (asIcons ? ' gbsp-trough--icons' : '') + '"' +
+    var html = '<div class="' +
+               (asIcons ? 'gbsp-plaquerow' : 'gbsp-trough gbsp-trough--fenced') + '"' +
                ' role="group" aria-label="' + esc(title) + '">';
     options.forEach(function (o, i) { html += segHtml(o, i); });
     /* ТРЕТЬЯ ПОЗИЦИЯ MODE ОЖИЛА (gbppl-comments-b, 28.08). С panel-8
@@ -2534,7 +2842,7 @@
     html += '</div>';
     wrap.innerHTML = html;
 
-    var row    = wrap.querySelector('.gbsp-trough');
+    var row    = wrap.querySelector('.gbsp-plaquerow, .gbsp-trough');
     var segEls = wrap.querySelectorAll('[data-seg]');
     /* ПРИМЕЧАНИЕ ПРИНАДЛЕЖИТ ПОЛКЕ, А НЕ ГРУППЕ (gbppl-panel2-build-1,
        мокап 03.09: один абзац под обоими жёлобами, не между ними).
@@ -2547,27 +2855,17 @@
        берёт на себя строка состояния внизу ящика, и берёт на
        НАВЕДЕНИЕ, где абзацу пришлось бы расти и двигать всё под собой
        (пункт 4 Тона 01.09, «контент ниже танцует»). */
-    var noteEl = asIcons ? null : sectionNote(sec);
+    var noteEl = asIcons ? null : sectionNote(secBody);
     var current = spec.value;
 
-    /* ИМЯ ТОГО, НА ЧТО СМОТРИТ КУРСОР, ГОВОРИТ СТРОКА СОСТОЯНИЯ
-       (gbppl-panel-layers-1). Прежде под рядом иконок стоял свой
-       абзац .gbsp-cap с придержанной высотой 17px, а строка 12/1.45
-       занимает 17.4 — наведение растило ящик на 0.4px, и на экране с
-       масштабом всё, что ниже, дёргалось на пиксель. Тон 01.09: «при
-       наведении на девайсы контент ниже начинает танцевать».
-
-       Слот снят целиком, а не подпёрт точным числом: у ящика уже есть
-       место, которое отвечает «что у меня сейчас», и оно ростом ровно
-       в одну строку при любом ответе. Наведение подменяет её на время
-       наведения, уход возвращает. Ни одного нового пикселя высоты, и
-       танцевать больше нечему. */
-    function paintCap(o) {
-      if (!spec.caption) return;
-      STATE.hover = o ? (o.title || o.label) : '';
-      paintStatus();
-    }
-
+    /* ПОДПИСЬ ПОД РЯДОМ ЭКРАНОВ НЕ ВЕРНУЛАСЬ И НЕ ВЕРНЁТСЯ
+       (gbppl-panel-layers-1, ещё раз gbppl-panel-30-1). Слот .gbsp-cap
+       двигал всё, что ниже, на пиксель при наведении (Тон 01.09:
+       «контент ниже начинает танцевать»), потом его подхватывала
+       строка состояния внизу ящика — а её Тон 16.09 снял вместе со
+       всеми «маленькими нечитабельными текстами». Имя и размер экрана
+       по-прежнему есть: в title кнопки и в полосе над кадром, где для
+       них место. Ни одного пикселя высоты на них не тратится. */
     function paint() {
       var line = spec.note || '';
       for (var i = 0; i < segEls.length; i++) {
@@ -2580,21 +2878,6 @@
         noteEl.textContent = line;
         noteEl.hidden = !line;
       }
-      paintCap(null);
-    }
-
-    if (spec.caption) {
-      /* Мышь и клавиатура спрашивают одно и то же, поэтому отвечает
-         одна функция: наведение и фокус называют цель, уход и потеря
-         фокуса возвращают подпись к включённому. */
-      var over = function (e) {
-        var b = e.target.closest ? e.target.closest('[data-seg]') : null;
-        if (b) paintCap(options[+b.getAttribute('data-seg')]);
-      };
-      wrap.addEventListener('mouseover', over);
-      wrap.addEventListener('focusin', over);
-      wrap.addEventListener('mouseleave', function () { paintCap(null); });
-      wrap.addEventListener('focusout', function () { paintCap(null); });
     }
 
     wrap.addEventListener('click', function (e) {
@@ -2612,15 +2895,13 @@
       else if (typeof spec.onChange === 'function') spec.onChange(o.value, o);
     });
 
-    var before = null, kin = sec.querySelectorAll('.gbsp-seggroup');
+    var before = null, kin = secBody.querySelectorAll('.gbsp-seggroup');
     for (var q = 0; q < kin.length; q++) {
       if ((+kin[q].getAttribute('data-rank') || 50) > rank) { before = kin[q]; break; }
     }
-    sec.insertBefore(wrap, before);
-    /* Записка полки остаётся ПОСЛЕДНЕЙ, кто бы ни объявился позже:
-       группы приходят из двух файлов и в непредсказуемом порядке
-       (Device из connectedCallback, Mode через whenDefined). */
-    if (sec.__note) sec.appendChild(sec.__note);
+    secBody.insertBefore(wrap, before);
+    /* Записка полки остаётся ПОСЛЕДНЕЙ, кто бы ни объявился позже. */
+    if (secBody.__note) secBody.appendChild(secBody.__note);
     paint();
     dress();
 
@@ -2876,10 +3157,9 @@
     }
     return 'full';
   }
-  function deviceLabel(v) {
-    for (var i = 0; i < DEVICES.length; i++) if (DEVICES[i].value === v) return DEVICES[i].label;
-    return v === 'full' ? 'Full' : 'Custom';
-  }
+  /* deviceLabel снят вместе со строкой состояния (gbppl-panel-30-1):
+     он существовал ради неё одной. Имя пресета для человека живёт в
+     title кнопки и в полосе над кадром, и оба берут его из DEVICES. */
 
   /* ============================================================
      СТРОКА СОСТОЯНИЯ (gbppl-panel-8)
@@ -2895,38 +3175,20 @@
      страницы, чего строка состояния сказать не может.
      ============================================================ */
   var STATE = { mode: 'view', device: 'full', comment: false, commentsDown: '',
-                commentsOpen: 0, hover: '' };
+                commentsOpen: 0 };
 
-  function statusLine() {
-    /* gbppl-panel-layers-1. Наведение на экран перебивает всё
-       остальное ровно на время наведения: вопрос «что это за иконка»
-       задан только что и вслух, а «что включено» никуда не денется. */
-    if (STATE.hover) return STATE.hover;
-    /* gbppl-comments-b. Comment перебивает пару View / Inspect,
-       потому что это тот же тумблер: одно положение зараз. А отказ
-       сервиса перебивает всё — режим, в котором нечего сохранить, —
-       не то состояние, о котором стоит рапортовать первым. */
-    if (STATE.comment && STATE.commentsDown) return STATE.commentsDown;
-    /* gbppl-panel-11. В Comment строка говорит про КОММЕНТАРИИ, а не
-       про экран: экран из этого режима не переключается, и повторять
-       его нечем. Число открытых приносит владелец режима тем же
-       событием, каким объявляет сам режим. */
-    if (STATE.comment) return 'Comment · ' + STATE.commentsOpen + ' open';
-    var mode = STATE.mode === 'inspect' ? 'Inspect' : 'View';
-    var d = STATE.device;
-    if (d === 'full') return mode + ' · Full window';
-    /* КОРОТКО НАРОЧНО (gbppl-panel-layers-1). Хвост «page runs inside
-       the frame» уводил строку на второй ряд на узком ящике, а строка
-       теперь ещё и отвечает на наведение: две длины в одном месте
-       двигали бы подвал. Что страница работает внутри кадра, видно по
-       самому кадру и сказано в подсказке группы. */
-    return mode + ' · ' + deviceLabel(d) + ' ' + d + ' in a frame';
-  }
+  /* СТРОКА СОСТОЯНИЯ СНЯТА (gbppl-panel-30-1, Тон 16.09: «в футере
+     должна быть только навигация», «маленькие нечитабельные тексты
+     создают шум, а не удобство»). Ответ «что у меня включено» остался
+     на экране целиком, только не текстом: режим — синей плашкой на
+     язычке, экран — синей плашкой в ряду Device, отказ сервиса
+     комментариев — строкой счёта в самой полке комментариев
+     (comments.js пишет её и без нас). Кисть оставлена ПУСТОЙ, а не
+     удалена: её зовут четыре места, и ставить в каждом проверку
+     «а есть ли ещё подвал» значит развезти одно решение по файлу.
 
-  function paintStatus() {
-    var el = document.querySelector('.gbsp-status');
-    if (el) el.textContent = statusLine();
-  }
+     STATE живёт по-прежнему: по нему одевается ящик (dress). */
+  function paintStatus() {}
 
   /* ============================================================
      ГАРДЕРОБ ЯЩИКА (gbppl-panel-11)
@@ -2966,6 +3228,38 @@
         void kin[i].offsetWidth;
         kin[i].classList.add('is-arriving');
       }
+    }
+  }
+
+  /* ============================================================
+     СЧЁТ ПОЛКИ ПЕРЕЕЗЖАЕТ В ЕЁ АЙБРАУ (gbppl-panel-30-1)
+     ------------------------------------------------------------
+     В макете строка «3 open · 2 resolved» стоит В ЗАГОЛОВКЕ секции
+     Comments, справа. Считает её владелец режима (comments.js,
+     paintShelf) и печатает в свою строку .gbc-count первой строкой
+     тела; панель этих чисел не знает и знать не должна — второй счёт
+     в консоли значил бы вторую копию списка.
+
+     Поэтому панель не СЧИТАЕТ, а ПЕРЕВЕШИВАЕТ: берёт готовую строку
+     владельца и ставит её в слот своего айбрау, а оригинал гасит
+     каскадом (.gbsp-sec--comments .gbc-count в studio-panel.css).
+     Узел при этом остаётся на месте — paintShelf ищет его внутри
+     своего тела и на перенос ответил бы падением.
+
+     МОМЕНТ СНЯТИЯ ЧЕСТНЫЙ: счёт меняется только на перезагрузке
+     списка, а load() красит полку и СРАЗУ ЖЕ объявляет режим
+     (gbc:mode), значит слушатель этого события застаёт строку уже
+     новой. Смена фильтра счёта не трогает.
+     ============================================================ */
+  function mirrorCount() {
+    var kin = document.querySelectorAll('gb-studio-panel .gbsp-sec');
+    for (var i = 0; i < kin.length; i++) {
+      var slot = kin[i].querySelector('.gbsp-brow-t__cnt');
+      var src  = kin[i].querySelector('.gbc-count');
+      if (!slot || !src) continue;
+      var text = src.hidden ? '' : (src.textContent || '');
+      slot.textContent = text;
+      slot.hidden = !text;
     }
   }
 
@@ -3110,17 +3404,18 @@
          под строкой (gbppl-panel-9) — ряд читается как одна шкала от
          окна до телефона, а не как таблица чисел. */
       row: true,
-      caption: true,
       value: current,
+      /* ЗАПИСОК У ЭКРАНОВ БОЛЬШЕ НЕТ (gbppl-panel-30-1, Тон 16.09:
+         «убери Fills the window»). Их некуда было печатать и до этой
+         волны (ряд глифов молчит), а строка состояния, которая
+         подхватывала их на наведение, снята вместе с подвалом-статусом.
+         Имя и размер живут в title кнопки и в полосе над кадром. */
       options: DEVICES.map(function (d) {
         return {
           label: d.value === 'full' ? 'Full' : d.sub,
           icon: deviceIcon(d.value),
           value: d.value,
-          title: d.value === 'full' ? 'Full window' : d.label + ' ' + d.sub,
-          note: d.value === 'full'
-            ? 'The page fills the window, as a visitor sees it.'
-            : d.label + ' frame: the page runs at ' + d.sub + 'px inside it. Inspect works in the frame.'
+          title: d.value === 'full' ? 'Full window' : d.label + ' ' + d.sub
         };
       }),
       onChange: function (v) { apply(v, true); }
@@ -3481,7 +3776,18 @@
          компоновке 2.0 айбрау нет ни у одной полки. Слово владельца не
          пропадает — оно уходит в aria-label самой полки, и читалка
          по-прежнему объявляет «Comments on this page». */
-      box.innerHTML = plainSec(id, spec.title || '', '', spec.className || '');
+      /* АЙБРАУ ПОЛКИ ВЕРНУЛСЯ, И У ПОЛКИ МОДА ОН СО СВОИМ ГЛИФОМ
+         (gbppl-panel-30-1, Тон 16.09: «переделать на заголовок
+         секции»). Слово берётся не из заголовка владельца, а из
+         РЕЖИМА, который полка объявила: «Comments on this page» в
+         айбрау 12-го кегля заняло бы всю полосу вместе со счётом, а
+         полка, живущая ровно в одном режиме, и есть его секция.
+         Заголовок владельца никуда не делся — он в aria-label. */
+      var mode = String(spec.when || '').trim();
+      var brow = '';
+      if (mode === 'comment') brow = browHtml('Comments', modeGlyph('comment', 16), true);
+      else if (mode === 'inspect') brow = browHtml('Inspect', modeGlyph('inspect', 16), true);
+      box.innerHTML = plainSec(id, spec.title || '', '', spec.className || '', 0, brow, spec.when);
       var sec = box.firstChild;
       /* gbppl-panel-11: полка может жить не во всех режимах. Спросили
          — панель гасит её сама, по событиям режима; не спросили —
@@ -3562,19 +3868,13 @@
         if (!open) { closeMenu(host, false); while (closeLayer(host, false)) {} }
         shell.classList.toggle('is-collapsed', !open);
         tab.setAttribute('aria-expanded', String(open));
-        tab.setAttribute('aria-label', openerWord(false, open));
-        /* gbppl-panel-float-2. У оторванного ящика тот же жест делает
-           другая кнопка, и говорит она о другой фигуре: не «закрыть
-           панель», а «сложить в полосу». Метка ставится всегда, даже
-           когда кнопки не видно: сторона может смениться, пока ящик
-           открыт, и переписывать метки во второй раз незачем. */
-        var min = host.querySelector('.gbsp-min');
-        if (min) {
-          var word = openerWord(true, open);
-          min.setAttribute('aria-expanded', String(open));
-          min.setAttribute('aria-label', word);
-          min.setAttribute('title', word);
-        }
+        /* gbppl-panel-30-1. Контрол сворачивания теперь ОДИН на все
+           три места (кнопка .gbsp-min снята вместе с правилом «полоса
+           только у плавающего»), но говорит он о двух фигурах: у
+           кромки ящик закрывается, в воздухе складывается в полосу.
+           Слова по-прежнему живут в одной записи openerWord. */
+        tab.setAttribute('aria-label',
+          openerWord(host.getAttribute('data-dock') === 'float', open));
         /* Высота изменилась, значит плавающий ящик мог оказаться ниже
            кромки: разворот на низком окне ловится тем же клампом, что
            таскание. */
@@ -3595,16 +3895,11 @@
         setOpen(shell.classList.contains('is-collapsed'));
       });
 
-      /* gbppl-panel-float-2: тот же самый setOpen, второй контрол.
-         Состояние одно на обе фигуры (ключ OKEY), поэтому свёрнутый у
-         края ящик приезжает свёрнутым и в воздух. */
-      var min = this.querySelector('.gbsp-min');
-      if (min) {
-        min.addEventListener('click', function () {
-          setOpen(shell.classList.contains('is-collapsed'));
-          min.focus();
-        });
-      }
+      /* gbppl-panel-30-1: второго контрола сворачивания больше нет.
+         Язычок стоит у любой фигуры и любого дока, и он же
+         единственная кнопка, за которую ящик открывают и закрывают.
+         Состояние по-прежнему одно (ключ OKEY): свёрнутый у края ящик
+         приезжает свёрнутым и в воздух. */
 
       var saved = null;
       try { saved = sessionStorage.getItem(OKEY); } catch (e) {}
@@ -3717,66 +4012,59 @@
     return open ? 'Close the Design Studio panel' : 'Open the Design Studio panel';
   }
 
-  /* И ТОТ ЖЕ ВЫБОР ФИГУРОЙ, НО ДЛЯ РУК (gbppl-panel-float-2): какая из
-     двух кнопок сейчас на экране. Спрашивают трое — Esc, кисть счёта и
-     метки, — и спрашивать порознь значило бы завести три разных ответа
-     на один вопрос. */
+  /* КНОПКА ОДНА (gbppl-panel-30-1). Пара «язычок или полоса» умерла
+     вместе с .gbsp-min: язычок-колонна стоит у любого дока, значит и
+     спрашивать больше нечего. Функция оставлена именем: её зовут Esc и
+     кисть счёта, и одно место ответа дешевле двух querySelector. */
   function openerBtn(host) {
     var shell = host.querySelector('.gbsp');
-    var min   = shell && shell.querySelector('.gbsp-min');
-    if (host.getAttribute('data-dock') === 'float' && min) return min;
     return shell && shell.querySelector('.gbsp-tab');
   }
 
+  /* СЧЁТ УШЁЛ НА ПЛАШКУ COMMENT (gbppl-panel-30-1, Тон 16.09: бейдж
+     «сидит на углу плашки и не пропадает, когда таб активен»).
+     Плашка видна ВСЕГДА — при закрытом ящике тоже, — и правило
+     panel-12 «счёт на ярлыке, пока ящик закрыт» вместе с правилом
+     panel-11 «счёт на сегменте, пока ящик открыт» схлопнулись в одно
+     место: счёт стоит там, где живёт режим, и в любом состоянии.
+
+     ЯРЛЫК ОСТАЁТСЯ ЗАПАСНЫМ СИДЕНЬЕМ, и это не перестраховка: плашку
+     Comment ставит comments.js через addOption, а тот ждёт inspect.js
+     (onModeSwitch). Страница с комментариями и без прибора плашки не
+     получит вовсе, и счёту надо куда-то сесть — тогда он садится на
+     язычок ровно так, как садился до этой волны. Есть плашка — ярлык
+     молчит: два одинаковых числа в двух сантиметрах друг от друга это
+     не забота, а шум. */
   function paintTabBadge(host) {
     var shell = host.querySelector('.gbsp');
     var tab   = shell && shell.querySelector('.gbsp-tab');
     if (!shell || !tab || shell.classList.contains('is-embedded')) return;
 
-    /* ЧЕТВЁРТОЕ ПРАВИЛО, ОТ ТОГО ЖЕ МЕСТА (gbppl-panel-float-2): у
-       оторванного ящика ярлыка нет, значит счёт садится на ту фигуру,
-       которая у него вместо ярлыка, — на плоскую полосу, и говорит
-       вслух меткой её кнопки. Правило «один счёт за раз» от этого не
-       меняется: старая посадка снимается перед новой. */
-    var floating = host.getAttribute('data-dock') === 'float';
-    var head   = shell.querySelector('.gbsp-head');
-    var seat   = floating ? head : tab;
-    var voice  = openerBtn(host);
-    if (!seat || !voice) return;
+    var n     = host.__tabCount || 0;
+    var open  = !shell.classList.contains('is-collapsed');
+    var seat  = shell.querySelector('.gbsp-brow [data-mode="comment"]');
+    var show  = n > 0 && !seat;
 
-    var n    = host.__tabCount || 0;
-    var open = !shell.classList.contains('is-collapsed');
-    var show = n > 0 && !open;
-
-    /* Обе метки возвращаются к базовым словам ПЕРЕД тем, как счёт
-       допишет свою: иначе на контроле, с которого счёт только что
-       уехал, оставался бы вчерашний хвост «, 3 unread comments». */
-    tab.setAttribute('aria-label', openerWord(false, open));
-    var minBtn = shell.querySelector('.gbsp-min');
-    if (minBtn) minBtn.setAttribute('aria-label', openerWord(true, open));
+    tab.setAttribute('aria-label',
+      openerWord(host.getAttribute('data-dock') === 'float', open));
 
     shell.classList.toggle('has-tab-badge', show);
 
     var was = shell.querySelectorAll('.gbsp-badge--tab');
-    for (var i = 0; i < was.length; i++) {
-      if (!show || was[i].parentNode !== seat) was[i].remove();
-    }
+    for (var i = 0; i < was.length; i++) was[i].remove();
     if (!show) return;
 
-    var b = seat.querySelector('.gbsp-badge--tab');
-    if (!b) {
-      b = document.createElement('span');
-      b.className = 'gbsp-badge gbsp-badge--tab';
-      /* Число читается вслух меткой кнопки, а не отдельной цифрой
-         ниоткуда — то же правило, что у бейджа сегмента и у
-         .gbh-count корзины. */
-      b.setAttribute('aria-hidden', 'true');
-      seat.insertBefore(b, seat.firstChild);
-    }
+    var b = document.createElement('span');
+    b.className = 'gbsp-badge gbsp-badge--tab';
+    /* Число читается вслух меткой кнопки, а не отдельной цифрой
+       ниоткуда — то же правило, что у бейджа плашки и у .gbh-count
+       корзины. */
+    b.setAttribute('aria-hidden', 'true');
     b.textContent = n > 99 ? '99+' : String(n);
-    voice.setAttribute('aria-label',
-      openerWord(floating, open) + ', ' + n + ' unread ' +
-      (n === 1 ? 'comment' : 'comments'));
+    tab.insertBefore(b, tab.firstChild);
+    tab.setAttribute('aria-label',
+      openerWord(host.getAttribute('data-dock') === 'float', open) +
+      ', ' + n + ' unread ' + (n === 1 ? 'comment' : 'comments'));
   }
 
   function coveredBy(shell) {
@@ -3833,20 +4121,28 @@
      ============================================================ */
   function wireFoot(host) {
     var copy = host.querySelector('.gbsp-copy');
-    /* Слово переписывается в своём слоте, а не в самой кнопке
-       (gbppl-panel2-build-1): рядом со словом теперь стоит глиф
-       цепочки, и textContent на кнопке стёр бы его вместе с текстом. */
-    var say = copy && copy.querySelector('.gbsp-copy__word');
-    if (copy && say) {
-      var word = say.textContent, timer = null;
+    /* ОТКЛИК СТАЛ ГЛИФОМ (gbppl-panel-30-1). Слово «Copied» жило
+       рядом с цепочкой, пока команда стояла в подвале; в шапке места
+       под слово нет, и отклик говорит тем же языком, что и сама
+       кнопка: цепочка на полторы секунды становится галочкой, метка
+       произносит то же вслух. Ни одной новой длительности: те же
+       1500ms, что были у слова. */
+    var slot = copy && copy.querySelector('.gbsp-copy__glyph');
+    if (copy && slot) {
+      var word = copy.getAttribute('aria-label'), timer = null;
       copy.addEventListener('click', function () {
         copyText(viewUrl(), function (ok) {
-          say.textContent = ok ? 'Copied' : 'Could not copy';
+          var said = ok ? 'Copied' : 'Could not copy';
+          slot.innerHTML = glyph(ok ? 'check' : 'link', 16);
           copy.classList.add('is-said');
+          copy.setAttribute('aria-label', said);
+          copy.setAttribute('title', said);
           clearTimeout(timer);
           timer = setTimeout(function () {
-            say.textContent = word;
+            slot.innerHTML = glyph('link', 16);
             copy.classList.remove('is-said');
+            copy.setAttribute('aria-label', word);
+            copy.setAttribute('title', word);
           }, 1500);
         });
       });
@@ -3875,6 +4171,7 @@
       STATE.commentsOpen = Math.max(0, parseInt(d.open, 10) || 0);
       paintStatus();
       dress();
+      mirrorCount();
     });
   }
   if (!customElements.get('gb-studio-panel')) {
