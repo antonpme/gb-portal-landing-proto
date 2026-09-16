@@ -752,6 +752,49 @@
      the right half now carries.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-checkout-import-1 (2026-09-16) — THE IMPORTED ADDRESSES
+     CAN STAY, AND THE PANEL ASKS BEFORE THEY DO. Inside ?v=5 only;
+     V1 to V4 were shot before and after at 360 / 1280 and come out
+     of this wave bit for bit.
+
+     Ton, verbatim: «Когда мы загружаем файл с адресами и
+     персонализацией, нам нужно добавить внизу чекбокс, который
+     позволит сохранить эти адреса в адресной книге. По дефолту он
+     должен быть не выбран, так как люди обычно не хотят сохранять в
+     адресной книге то, что загружают массово. Но некоторые
+     пользователи всё-таки это делают: даём возможность
+     опционально.»
+
+     WHERE IT STANDS: last thing inside the preview screen, one rung
+     of the panel's rhythm under the table it qualifies, and above
+     the bar where Cancel and Confirm live. It is a condition on the
+     move, not a move, so it does not join them in the foot.
+
+     WHY V5 ONLY, SAID OUT LOUD. The panel's SHELL is shared by
+     every version, but the preview screen is not: `csv.step === 2`
+     has been two separate blocks since gbppl-checkout-v5-1, one for
+     ?v=5 and one for the rest, with different markup, different
+     columns and a different verdict strip. The sentence Ton wrote
+     names the V5 file — addresses AND personalization in one upload
+     — and the address book it would file into is V5's own furniture
+     (the picker, the book door, v5SaveDeliver). Putting the box in
+     the older preview would have meant writing a second, different
+     one into markup the team signed those versions off on. So: one
+     box, in the screen the request describes.
+
+     IT IS NOT DECORATIVE. confirmCSVImport files every clean
+     imported place into `addressBook` with the house's own
+     v5SameSpot de-duplication — the same test the typed-address
+     door runs — so the book the picker draws on the very next
+     screen really does hold them. A line with a bad ZIP is left
+     out: it is not an address yet.
+
+     THE ORGANISM IS system/components/checkbox.css, plain row, no
+     `--card` (that variant belongs beside radio cards) and no quiet
+     half. Nothing was added to the owner and nothing was drawn by
+     hand.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -7328,6 +7371,50 @@
           </table>
         </div>
       </div>
+
+      <!-- ============================================================
+           THE FILE CAN STAY IN THE BOOK, AND IT ASKS
+                                   gbppl-checkout-import-1 (16.09)
+           ------------------------------------------------------------
+           Ton, verbatim: «Когда мы загружаем файл с адресами и
+           персонализацией, нам нужно добавить внизу чекбокс, который
+           позволит сохранить эти адреса в адресной книге. По дефолту
+           он должен быть не выбран, так как люди обычно не хотят
+           сохранять в адресной книге то, что загружают массово. Но
+           некоторые пользователи всё-таки это делают: даём
+           возможность опционально.»
+
+           OFF BY DEFAULT, AND OFF AGAIN ON EVERY OPEN. `saveToBook`
+           is born false in the page's own `csv` bag and written false
+           again by openCSVModal, which replaces the bag wholesale —
+           the same arrangement `file`, `imported` and `personalized`
+           already have, and for the same reason: the screen reads it
+           before anything has been decided.
+
+           IT STANDS AT THE FOOT OF THE TABLE AND NOT IN THE BAR. The
+           bar is where the moves live (Cancel on the left, Submit and
+           Confirm on the right, gbppl-v5-import-steps-1); this is not
+           a move, it is a condition on the one below it, so it stands
+           last inside the zone it qualifies, one rung of the panel's
+           own rhythm under the table it is about.
+
+           THE ORGANISM, PLAIN. system/components/checkbox.css, the
+           bare row: no `--card`, because that variant exists for a
+           row standing beside `.gb-radio--select` cards on a white
+           card (gbppl-v5-julia-2) and this one stands alone. No quiet
+           half either: the sentence says the whole thing, and a
+           bracket repeating «only if you want to» is the microcopy
+           the house threw out on 07.09.
+
+           WHAT IT DOES IS REAL, not a flag: confirmCSVImport files
+           every clean imported address into the book, with the same
+           de-duplication the typed-address door already uses. The
+           argument is at the code.
+           ============================================================ -->
+      <label class="gb-checkbox mt-6">
+        <input type="checkbox" x-model="csv.saveToBook" class="gb-checkbox__input">
+        <span class="gb-checkbox__label">Save these addresses to my address book</span>
+      </label>
     </div>
 
     <div x-show="csv.step === 2 && uiVersion !== 'v5'" class="p-6">
@@ -8233,7 +8320,12 @@ function checkoutApp() {
     bulkMenuOpen: null,   // Edit Selected
     tplMenuOpen: null,    // Bulk Personalize in V1..V4, Bulk actions in V5
     drawer: { open: false, type: null, productId: null, shipmentId: null, recipientId: null, master: false, data: { greeting: { to: '', message: '', from: '' } } },
-    csv: { open: false, step: 1, productId: null, shipmentId: null, file: null, preview: { total: 0, valid: 0, errors: 0, rows: [] } },
+    /* gbppl-checkout-import-1 (16.09): `saveToBook` is born false here and
+       written false again by openCSVModal, because Ton's default is off and
+       a reader who ticked it on one file must not find it ticked on the
+       next. It rides the bag rather than a field of its own for the same
+       reason `file` does: one panel, one bag. */
+    csv: { open: false, step: 1, productId: null, shipmentId: null, file: null, saveToBook: false, preview: { total: 0, valid: 0, errors: 0, rows: [] } },
 
     // ===== HELPERS =====
     findProduct(productId) { return this.products.find(p => p.id === productId); },
@@ -11495,7 +11587,10 @@ function checkoutApp() {
       // it is declared here for the same reason — V5's step 3 reads it before
       // anything has been attached, and the gate on Submit reads it too. Null
       // is «nothing attached yet», which is where the panel always opens.
-      this.csv = { open: true, step: 1, productId, shipmentId, imported: 0, personalized: 0, file: null, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
+      // gbppl-checkout-import-1: and `saveToBook` is declared here for the
+      // third time the same rule is applied — off is Ton's default, and
+      // replacing the bag on every open is what makes it off AGAIN.
+      this.csv = { open: true, step: 1, productId, shipmentId, imported: 0, personalized: 0, file: null, saveToBook: false, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
     },
     // ============================================================
     // gbppl-v5-import-steps-1 (07.09) — ATTACHING A FILE AND SENDING IT ARE
@@ -11790,6 +11885,34 @@ function checkoutApp() {
         // never overwritten (the sweep only fills EMPTY cells); a line that
         // brought an address and no printed name gets one if the switch is on.
         this.v5Prefill(s);
+        // ============================================================
+        // AND THE FILE CAN STAY IN THE BOOK (gbppl-checkout-import-1,
+        // 16.09). Ton: «некоторые пользователи всё-таки это делают, даём
+        // возможность опционально». Only when the box at the foot of the
+        // preview was ticked, and only for the places that arrived clean:
+        // a line with a bad ZIP is not an address yet, and filing it would
+        // put the reader's own mistake into the book they keep.
+        //
+        // NOTHING IS INVENTED HERE. The de-duplication is the house's own
+        // v5SameSpot test against v5ParseAddress, character for character
+        // the one v5PkTakeOne and v5SaveDeliver run before they file a
+        // typed address, so the same office arriving twice — in the file,
+        // or in the file and already in the book — is one entry. It
+        // APPENDS rather than unshifts: a place typed by hand goes to the
+        // top because the reader is about to look for it (Ton, 08.09), and
+        // twenty places from a file are not being looked for at all.
+        // ============================================================
+        if (this.csv.saveToBook) {
+          list.forEach(a => {
+            if (a.hasError) return;
+            const d = a.deliver || {};
+            const label = a.address || this.v3AddressLabel(d);
+            if (!label) return;
+            const found = (this.addressBook || []).find(b => this.v5SameSpot(this.v5ParseAddress(b.label), d));
+            if (found) return;
+            this.addressBook.push({ id: 'a' + Date.now() + '-' + a.id, name: d.name || 'Unnamed', company: d.company || '', label: label });
+          });
+        }
         this.csv.imported = list.length;
         this.csv.personalized = rows.filter(r => r.mark || r.msg).length;
         this.csv.step = 3;
