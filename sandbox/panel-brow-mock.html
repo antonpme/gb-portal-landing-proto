@@ -28,6 +28,22 @@
      4. Разделение цветом: язычок Zinc 950, тело панели Zinc 900,
         волоски Zinc 800 — левая кромка темнее тела, как просил Тон.
 
+     gbppl-panel-brow-2, ШАГ 0в: V3 ПО ЧЕТЫРЁМ ПРАВКАМ ТОНА 16.09
+     («нет ментального коннекта иконки слева с тем, что справа»):
+     1. ОБЩАЯ ЧАСТЬ ФИКСИРОВАНА СВЕРХУ: контекст + Prototype +
+        Device одинаковы для всех модов и не прыгают; ниже живёт
+        только контент мода, и его ни с чем не выравнивают.
+     2. БЕЙДЖ КОММЕНТОВ УШЁЛ С СИНЕГО на нейтральный (Zinc 100 на
+        чернильном): синий = активное состояние, счёт — не оно.
+     3. АКТИВНЫЙ ТАБ = СИНЯЯ ПЛАШКА ЦЕЛИКОМ с белой иконкой,
+        боковая чёрточка умерла; девайсы выделяются так же.
+     4. ЗОНА МОДА ОТБИТА ВЕРТИКАЛЬНО: шапка-полоса Zinc 950 с
+        иконкой и именем мода (тот же глиф, что в язычке — вот и
+        ментальный коннект), под ней контент мода.
+     Плюс закон Тона той же датой: всё, что открывается из панели
+     (формы, тред коммента), выглядит панелью/студией, не
+     продуктовым дровером — в живой волне, тут отмечено легендой.
+
      Глифы — настоящие, из icon.js (eye, chat, globe, flask, grid,
      panel-left, chevron-down); Inspect — Nucleo 48-crosshairs,
      пересаженный на сетку 24. Контент панели — узнаваемая
@@ -82,6 +98,8 @@
     margin: 0 6px; padding: 8px 0;
     border-radius: 0;
   }
+  /* V3: активный мод = синяя плашка целиком, белая иконка (Тон:
+     «выделять таб не черточкой сбоку, а заливать плашку целиком»). */
   .brow button {
     all: unset; cursor: pointer;
     width: 32px; height: 34px; margin: 1px 0;
@@ -90,15 +108,15 @@
     border-radius: 7px;
   }
   .brow button:hover { color: var(--z300); background: var(--z800); }
-  .brow button.on { color: var(--blue4); }
-  .brow button.on::after {
-    content: ''; position: absolute; right: -7px; top: 8px; bottom: 8px;
-    width: 2px; border-radius: 2px 0 0 2px; background: var(--blue4);
-  }
+  .brow button.on { color: #fff; background: var(--blue); }
+  .brow button.on:hover { color: #fff; background: var(--blue); }
   .brow svg { width: 18px; height: 18px; }
+  /* V3: бейдж непрочитанных нейтральный — синий принадлежит
+     активному состоянию, счёт комментов им не красится (Тон:
+     «комментарии нужно отделять от акцентного цвета»). */
   .brow .n {
     position: absolute; top: 1px; right: 0;
-    background: var(--blue); color: #fff;
+    background: var(--z100); color: var(--z950);
     font: 600 9px/1 Inter, sans-serif;
     min-width: 14px; height: 14px; border-radius: 999px;
     display: grid; place-items: center; padding: 0 3px;
@@ -119,7 +137,7 @@
   body.open .panel { display: flex; }
 
   /* ---- шапка: контекст, не навигация ---- */
-  .head { display: flex; align-items: flex-start; gap: 12px; padding: 16px 16px 14px; border-bottom: 1px solid var(--z800); }
+  .head { display: flex; align-items: flex-start; gap: 12px; padding: 16px 16px 14px; border-bottom: 1px solid var(--z800); flex: 0 0 auto; }
   .head .who { flex: 1; min-width: 0; }
   .head .page { color: #fff; font: 600 14px/1.35 Inter, sans-serif; }
   .head .where { color: var(--z500); font: 400 11.5px/1.5 Inter, sans-serif; margin-top: 2px; }
@@ -133,8 +151,8 @@
   .qbtn:hover { background: var(--z800); color: #fff; }
   .qbtn svg { width: 16px; height: 16px; }
 
-  /* ---- тело ---- */
-  .body { padding: 6px 16px 14px; overflow: auto; flex: 1; }
+  /* ---- V3: ОБЩАЯ ЧАСТЬ — одна на все моды, не скроллится ---- */
+  .shared { padding: 0 16px 14px; flex: 0 0 auto; }
   .eyebrow { font: 600 10.5px/1.3 Inter, sans-serif; letter-spacing: 1.6px; text-transform: uppercase; color: var(--z500); margin: 16px 0 6px; }
   .row {
     display: flex; justify-content: space-between; align-items: center; gap: 12px;
@@ -147,9 +165,8 @@
   .row .v .txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
   .row .v svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--z500); }
   .row .more { color: var(--z500); font-size: 11px; }
-  .hair { border: 0; border-top: 1px solid var(--z800); margin: 14px -16px 0; }
 
-  /* девайс-ряд */
+  /* девайс-ряд: V3 — активный так же плашкой, как мод в язычке */
   .devs { display: flex; gap: 2px; margin: 2px -8px 0; }
   .devs button {
     all: unset; cursor: pointer; flex: 1; height: 34px;
@@ -157,25 +174,38 @@
     color: var(--z500); border-radius: 7px; position: relative;
   }
   .devs button:hover { background: var(--z800); color: var(--z300); }
-  .devs button.on { color: var(--blue4); }
-  .devs button.on::after { content: ''; position: absolute; left: 9px; right: 9px; bottom: 1px; height: 2px; border-radius: 2px; background: var(--blue4); }
+  .devs button.on { color: #fff; background: var(--blue); }
+  .devs button.on:hover { color: #fff; background: var(--blue); }
   .devs svg { width: 17px; height: 17px; }
   .devcap { margin-top: 6px; font: 400 11px/1.4 Inter, sans-serif; color: var(--z500); }
   .devcap b { color: var(--z400); font-weight: 500; }
 
+  /* ---- V3: ЗОНА МОДА — отбита шапкой-полосой с глифом мода ---- */
+  .mz { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  .mhead {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 16px;
+    background: var(--z950);
+    border-top: 1px solid var(--z800); border-bottom: 1px solid var(--z800);
+    color: #fff; font: 600 12px/1 Inter, sans-serif; letter-spacing: 0.4px;
+    flex: 0 0 auto;
+  }
+  .mhead svg { width: 15px; height: 15px; color: var(--blue4); flex: 0 0 auto; }
+  .mhead .msub { margin-left: auto; color: var(--z500); font: 400 11px/1 Inter, sans-serif; letter-spacing: 0; }
+  .mhead .msub b { color: var(--z300); font-weight: 600; }
+  .mbody { padding: 4px 16px 14px; overflow: auto; flex: 1; min-height: 0; }
+  .quiet { margin-top: 10px; color: var(--z500); font-size: 12px; line-height: 1.55; }
+
   /* inspect-хинт */
   .hint {
-    margin: 14px 0 2px; padding: 11px 12px;
+    margin: 12px 0 2px; padding: 11px 12px;
     background: var(--z950); border: 1px solid var(--z800); border-radius: 8px;
     color: var(--z400); font-size: 12px; line-height: 1.55;
   }
   .hint b { color: var(--z300); font-weight: 500; }
 
   /* комменты */
-  .cstat { display: flex; align-items: baseline; justify-content: space-between; margin: 16px 0 2px; }
-  .cstat .sum { color: var(--z400); font-size: 12px; }
-  .cstat .sum b { color: #fff; font-weight: 600; }
-  .filters { display: flex; gap: 14px; margin: 8px 0 4px; }
+  .filters { display: flex; gap: 14px; margin: 10px 0 4px; }
   .filters button { all: unset; cursor: pointer; font: 500 12px/1 Inter, sans-serif; color: var(--z500); padding: 4px 0 6px; }
   .filters button:hover { color: var(--z300); }
   .filters button.on { color: var(--blue4); box-shadow: 0 2px 0 var(--blue4); }
@@ -191,7 +221,7 @@
   .citem .at svg { width: 11px; height: 11px; }
 
   /* ---- подвал: статус + навигация словами ---- */
-  .foot { border-top: 1px solid var(--z800); background: var(--z950); padding: 10px 16px 11px; }
+  .foot { border-top: 1px solid var(--z800); background: var(--z950); padding: 10px 16px 11px; flex: 0 0 auto; }
   .foot .state { font: 400 11px/1.4 Inter, sans-serif; color: var(--z500); }
   .foot .state b { color: var(--z400); font-weight: 500; }
   .foot nav { display: flex; gap: 14px; margin-top: 7px; }
@@ -205,14 +235,14 @@
 
   <div class="fake">
     <h1>Checkout page</h1>
-    <p class="lede">Подложка бутафорская, панель справа — проект. Кликается: язычок STUDIO, три мода, фильтры комментов, девайсы, строки.</p>
+    <p class="lede">Подложка бутафорская, панель справа — проект, версия 3 по правкам Тона. Кликается: язычок STUDIO, три мода, фильтры комментов, девайсы, строки.</p>
     <ul class="legend">
-      <li><span class="n">1</span><span><b>Язычок — дом модов.</b> STUDIO открывает и закрывает панель; View / Inspect / Comment живут под ним всегда, любой фигурой панели. Счёт непрочитанных — на иконке Comment, виден и при закрытой панели.</span></li>
-      <li><span class="n">2</span><span><b>Шапка — контекст, не навигация.</b> Имя страницы и статус. Домик и ряд иконок-дверей умерли: из пульта прототипа больше некуда «случайно уйти».</span></li>
-      <li><span class="n">3</span><span><b>Навигация — слова в подвале.</b> Live · Sandboxes · Design system и дверь Hub — словами; слово не кликают по ошибке, уход становится сознательным. Хаб, открытый отсюда, покажет дорогу назад к прототипу.</span></li>
-      <li><span class="n">4</span><span><b>Тело следует моду.</b> Табов в панели нет. View = версия, сценарий, экран; Inspect = то же плюс прибор; Comment = лента новыми сверху с фильтрами.</span></li>
-      <li><span class="n">5</span><span><b>Демо-строка починена:</b> при нескольких осях печатает первую и «+N».</span></li>
-      <li><span class="n">6</span><span><b>Цвет:</b> язычок и подвал Zinc 950, тело Zinc 900, волоски Zinc 800 — кромка темнее тела.</span></li>
+      <li><span class="n">1</span><span><b>Общая часть фиксирована сверху.</b> Контекст страницы, Prototype и Device одинаковы для всех модов и не прыгают при переключении. Ниже живёт только контент мода.</span></li>
+      <li><span class="n">2</span><span><b>Активный мод — синяя плашка целиком,</b> белая иконка; боковая чёрточка умерла. Девайсы выделяются точно так же.</span></li>
+      <li><span class="n">3</span><span><b>Бейдж непрочитанных стал нейтральным</b> (Zinc 100 на чернильном): синий принадлежит активному состоянию, счёт комментов им больше не красится.</span></li>
+      <li><span class="n">4</span><span><b>Зона мода отбита вертикально:</b> полоса Zinc 950 с тем же глифом и именем мода, что в язычке — иконка слева и контент справа теперь один и тот же предмет.</span></li>
+      <li><span class="n">5</span><span><b>Язычок — дом модов, шапка — контекст, навигация — слова в подвале.</b> Решения v2 живы: домик умер, уход со страницы сознательный.</span></li>
+      <li><span class="n">6</span><span><b>Для живой волны:</b> всё, что открывается из панели (форма, тред коммента), выглядит панелью и студией, не продуктовым дровером.</span></li>
     </ul>
     <div class="ph"></div>
     <div class="ph"></div>
@@ -253,7 +283,12 @@
         </button>
       </div>
 
-      <div class="body" id="body"></div>
+      <div class="shared" id="shared"></div>
+
+      <div class="mz">
+        <div class="mhead" id="mhead"></div>
+        <div class="mbody" id="mbody"></div>
+      </div>
 
       <div class="foot">
         <p class="state" id="state"><b>View</b> · window 1280 × 800</p>
@@ -282,6 +317,15 @@
     tablet: '<rect x="6" y="3.5" width="12" height="17" rx="1.8"/><path d="M11 17.8h2"/>',
     phone: '<rect x="7.5" y="3.5" width="9" height="17" rx="1.8"/><path d="M10.8 17.8h2.4"/>'
   };
+  /* Глифы модов — те же пути, что в язычке: шапка зоны мода обязана
+     показывать РОВНО тот значок, на который нажали (ментальный коннект). */
+  var MG = {
+    view: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/>',
+    inspect: '<circle cx="12" cy="12" r="8.8"/><circle cx="12" cy="12" r="2.6"/><path d="M12 1.4v3.4M12 22.6v-3.4M1.4 12h3.4M22.6 12h-3.4"/>',
+    comment: '<path d="M5.5 18.5 3.8 21l.5-4A8.5 8.5 0 1 1 7 19.5"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01"/>'
+  };
+  var MNAME = { view: 'View', inspect: 'Inspect', comment: 'Comments' };
+
   var DEVS = [
     ['full', 'browser', 'Full window'], ['2258', 'xl', 'XL 2258'], ['1920', 'l', 'L 1920'],
     ['1280', 'laptop', 'M 1280'], ['768', 'tablet', 'Tablet 768'], ['390', 'phone', 'Mobile 390']
@@ -297,20 +341,20 @@
 
   var chev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6l6 6-6 6"/></svg>';
 
+  /* V3: Prototype и Device — ОБЩАЯ часть, одна на все моды. */
   var PROTO =
     '<p class="eyebrow">Prototype</p>' +
     '<div class="row" title="Сменить версию"><span class="k">Version</span><span class="v"><span class="txt">V5 · Addresses first</span>' + chev + '</span></div>' +
-    '<div class="row" title="Сценарий демо-данных"><span class="k">Scenario</span><span class="v"><span class="txt">Acme Aviation, 12 gifts</span><span class="more">+2</span>' + chev + '</span></div>' +
-    '<hr class="hair">';
+    '<div class="row" title="Сценарий демо-данных"><span class="k">Scenario</span><span class="v"><span class="txt">Acme Aviation, 12 gifts</span><span class="more">+2</span>' + chev + '</span></div>';
 
-  var VIEW = PROTO + devRow();
+  var VIEW_BODY =
+    '<p class="quiet">Страница показана так, как её видит гость: без рамок, приборов и булавок. Версия, сценарий и экран — выше, они общие для всех модов.</p>';
 
-  var INSPECT = PROTO + devRow() +
+  var INSPECT_BODY =
     '<div class="hint"><b>Inspect включён.</b> Наведи на любой элемент страницы — рамка и имя; клик открывает замер в дровере. Esc возвращает в View.</div>';
 
   var pin = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>';
-  var COMMENT =
-    '<div class="cstat"><span class="sum"><b>3 open</b> · 2 resolved</span></div>' +
+  var COMMENT_BODY =
     '<div class="filters">' +
       '<button class="on">Open</button><button>Resolved</button><button>Mine</button>' +
     '</div>' +
@@ -327,24 +371,31 @@
     '</div>' +
     '<div class="hint">Клик по строке — страница сама встаёт в версию и экран коммента и подсвечивает место. Новую заметку ставит клик по любому месту страницы.</div>';
 
-  var body = document.getElementById('body');
+  var shared = document.getElementById('shared');
+  var mhead = document.getElementById('mhead');
+  var mbody = document.getElementById('mbody');
   var state = document.getElementById('state');
   var badge = document.getElementById('badge');
 
   function paint() {
-    body.innerHTML = MODE === 'comment' ? COMMENT : (MODE === 'inspect' ? INSPECT : VIEW);
-    state.innerHTML = '<b>' + MODE[0].toUpperCase() + MODE.slice(1) + '</b> · ' +
+    shared.innerHTML = PROTO + devRow();
+    mhead.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + MG[MODE] + '</svg>' +
+      MNAME[MODE] +
+      (MODE === 'comment' ? '<span class="msub"><b>3 open</b> · 2 resolved</span>' : '');
+    mbody.innerHTML = MODE === 'comment' ? COMMENT_BODY : (MODE === 'inspect' ? INSPECT_BODY : VIEW_BODY);
+    state.innerHTML = '<b>' + MNAME[MODE] + '</b> · ' +
       (DEV === 'full' ? 'window 1280 × 800' : devName().replace(' ', ' ') + ' frame');
     badge.style.display = MODE === 'comment' ? 'none' : '';
     document.querySelectorAll('.brow button').forEach(function (b) {
       b.classList.toggle('on', b.getAttribute('data-mode') === MODE);
     });
-    body.querySelectorAll('[data-dev]').forEach(function (b) {
+    shared.querySelectorAll('[data-dev]').forEach(function (b) {
       b.addEventListener('click', function () { DEV = b.getAttribute('data-dev'); paint(); });
     });
-    body.querySelectorAll('.filters button').forEach(function (f) {
+    mbody.querySelectorAll('.filters button').forEach(function (f) {
       f.addEventListener('click', function () {
-        body.querySelectorAll('.filters button').forEach(function (x) { x.classList.remove('on'); });
+        mbody.querySelectorAll('.filters button').forEach(function (x) { x.classList.remove('on'); });
         f.classList.add('on');
       });
     });
