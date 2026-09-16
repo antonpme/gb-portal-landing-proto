@@ -10,7 +10,8 @@
    gbppl-panel-dock-1 01.09, складные полки и Demo внутри прототипа
    gbppl-panel-sections-1 01.09, отрыв от края и плоская полоса
    gbppl-panel-float-2 01.09, лист дропдауна и дверь в детали версии
-   gbppl-panel-version-1 04.09, ПАНЕЛЬ 3.0 gbppl-panel-30-1 16.09)
+   gbppl-panel-version-1 04.09, ПАНЕЛЬ 3.0 gbppl-panel-30-1 16.09,
+   правки Тона по живой панели gbppl-panel-30-2 16.09)
    ------------------------------------------------------------
    ПАНЕЛЬ 3.0 (gbppl-panel-30-1, 16.09). Проект утверждён Тоном на
    кликабельном макете sandbox\panel-brow-mock.html; полная история
@@ -52,6 +53,33 @@
       ступени (земля и рамка). Логика взята у .gba-select (auth.css):
       инсет шеврона равен pad-x поля, глиф 16. Подчёркнутого облика
       продуктового поля студия не носит — у неё своя микросистема.
+
+   ------------------------------------------------------------
+   ПАКЕТ ПРАВОК ПО ЖИВОЙ ПАНЕЛИ (gbppl-panel-30-2, Тон 16.09)
+   ------------------------------------------------------------
+   Четыре его замечания, увиденные уже на собранной панели:
+
+   а. «Нижний левый угол должен быть скруглён, такой же, как бровка».
+      Радиус вернулся на СВОБОДНЫЕ кромки ящика — там, где ему ничто
+      не мешает; шов с колонной остался прямым (довод gbppl-panel-10
+      цел, он был про верхний угол). Зеркало для левого дока и три
+      угла у плавающего.
+   б. «Правую часть чуть-чуть светлее, и разделительные линии
+      чуть-чуть светлее, и иконки, весь muted-текст чуть-чуть
+      светлее». Всё — ступенями одной шкалы Zinc, ни одного нового
+      цвета: тело 900 → 800, волоски и рамки внутри тела 800 → 700,
+      земля наведения на теле 800 → 700, примечание 500 → 400,
+      подпись 400 → 300, неактивный глиф 500 → 400. Иерархия сдвинута
+      ЦЕЛИКОМ: подпись громче примечания ровно на ступень, как и была.
+      Колонна и подвал остались на 950 — рама темнее содержимого.
+   в. «Сделать его подчёркнутым внизу, иначе не читается как
+      выбранный элемент» — про активный раздел в подвале. Правило и
+      довод у .gbsp-go ниже.
+   г. Скроллбар светлых страниц «нетипичный для браузера». ВИНОВНИК НЕ
+      ЗДЕСЬ: неохваченные `::-webkit-scrollbar` живут в live\checkout.html
+      (строки 1948-1951), красят полосу ВСЕГО документа и в этой волне
+      не правятся — чужой файл. Тёмная тонкая полоса ВНУТРИ ящика
+      объявлена на .gbsp-panel и .gbsp-menu, документу не достаётся.
    ------------------------------------------------------------
    Тон, 24.08: «когда мы заходим с хаба, пропадает надпись Design
    Studio и мы не можем вернуться на хаб. Нужна точка возвращения:
@@ -427,7 +455,10 @@ gb-studio-panel {
   background: none;
   border: 0;
   border-radius: var(--radius);
-  color: var(--zinc-500);
+  /* Неактивный глиф 400, не 500 (gbppl-panel-30-2, «иконки чуть-чуть
+     светлее»). Колонна осталась на грунте 950, поэтому земля
+     наведения у плашки прежняя — двигались ЧЕРНИЛА, а не рельеф. */
+  color: var(--zinc-400);
   font-family: inherit;
   cursor: pointer;
   transition: background var(--mo-micro) var(--mo-move),
@@ -506,17 +537,35 @@ gb-studio-panel {
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: var(--zinc-700) transparent;   /* полоса прокрутки не светит белым по тёмному */
+  scrollbar-color: var(--zinc-600) transparent;   /* полоса прокрутки не светит белым по тёмному; ступенью выше вместе с телом (gbppl-panel-30-2), иначе ползунок 700 тонет в грунте 800 */
   /* ТЕЛО СВЕТЛЕЕ КРОМКИ (gbppl-panel-30-1, решение 4 макета: «язычок
      Zinc 950, тело панели Zinc 900, волоски Zinc 800 — левая кромка
      темнее тела, как просил Тон»). Ящик перестал быть одной плитой:
-     колонна и подвал держат грунт 950, тело поднимается на ступень, и
-     контролы внутри садятся обратно на 950 — рельеф читается тремя
-     ступенями одной шкалы, без единого нового цвета. */
-  background: var(--zinc-900);
-  border: 1px solid var(--zinc-800);
+     колонна и подвал держат грунт 950, тело поднимается, и контролы
+     внутри садятся обратно на 950 — рельеф читается ступенями одной
+     шкалы, без единого нового цвета.
+     ЕЩЁ ОДНА СТУПЕНЬ ВВЕРХ (gbppl-panel-30-2, Тон на живой панели:
+     «правую часть чуть-чуть светлее, и разделительные линии чуть-чуть
+     светлее, и иконки, весь muted-текст чуть-чуть светлее»). Тело
+     900 → 800, и ВМЕСТЕ С НИМ едет всё, что на нём лежит: волоски
+     полок и рамки контролов 800 → 700, земля наведения 800 → 700,
+     приглушённые чернила на ступень вверх с сохранением иерархии
+     (примечание 500 → 400, подпись 400 → 300). Колонна и подвал
+     остаются на 950: рама темнее содержимого — это и есть тот
+     рельеф, который Тон просил в первом пакете. */
+  background: var(--zinc-800);
+  border: 1px solid var(--zinc-700);
   border-right: none;
-  border-radius: 0;   /* gbppl-panel-10 (Ton 27.08): the tab is shorter than the drawer, so the drawer's rounded top-left showed as a notch at the seam. The drawer is a docked plane, flush with the window edge and the tab; only the tab, the one free-standing shape, keeps its radius. */
+  /* УГОЛ ТАМ, ГДЕ КРОМКА СВОБОДНА (gbppl-panel-30-2, Тон 16.09: нижний
+     левый «должен быть скруглён, такой же, как бровка»).
+     gbppl-panel-10 снял радиус ЦЕЛИКОМ из-за шва: язычок короче ящика,
+     и скруглённый ВЕРХНИЙ левый читался зарубкой в месте стыка. Довод
+     был про верхний угол и остаётся в силе — он и сейчас нулевой.
+     Нижний левый лежит НИЖЕ колонны, ни к чему не прижат, и прямой
+     угол там был не решением, а побочным следствием. Правый край
+     ящика вровень с кромкой окна, значит оба правых угла тоже нули.
+     Порядок значений: верх-лево, верх-право, низ-право, низ-лево. */
+  border-radius: 0 0 0 var(--radius);
   box-shadow: var(--shadow-panel);
 }
 .gbsp.is-collapsed .gbsp-panel { display: none; }
@@ -559,8 +608,11 @@ gb-studio-panel[data-dock="left"] .gbsp {
   flex-direction: row-reverse;
 }
 gb-studio-panel[data-dock="left"] .gbsp-panel {
-  border-right: 1px solid var(--zinc-800);
+  border-right: 1px solid var(--zinc-700);
   border-left: none;
+  /* Зеркало правила выше: свободен нижний ПРАВЫЙ угол, шов с колонной
+     наверху справа остаётся прямым. */
+  border-radius: 0 0 var(--radius) 0;
 }
 gb-studio-panel[data-dock="left"] .gbsp-tabcol {
   border-left: none;
@@ -641,8 +693,14 @@ gb-studio-panel[data-dock="float"] .gbsp {
    борт пульта. Кнопка .gbsp-min поэтому снята, и сворачивает ящик
    всюду одна и та же кнопка STUDIO. */
 gb-studio-panel[data-dock="float"] .gbsp-panel {
-  border: 1px solid var(--zinc-800);
-  border-radius: var(--radius);
+  border: 1px solid var(--zinc-700);
+  /* В ВОЗДУХЕ СВОБОДНЫ ТРИ СТОРОНЫ (gbppl-panel-30-2). Полный радиус
+     стоял здесь с float-2, когда у плавающего ящика не было язычка
+     вовсе; с панелью 3.0 колонна приехала и сюда, и верхний левый
+     угол снова стал ШВОМ — скруглять его значит рисовать зарубку у
+     стыка, ровно ту, из-за которой gbppl-panel-10 снял радиус у
+     пристыкованного. Остальные три угла ни к чему не прижаты. */
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
   /* ТЕНЬ НА СТУПЕНЬ ТЯЖЕЛЕЕ — ЭТО ТА ЖЕ СТУПЕНЬ ДВАЖДЫ. В tokens.css
      четыре тени, и --shadow-panel из них самая тяжёлая: «сильнее» в
      шкале просто нет, а выдумывать пятую волна не имеет права
@@ -696,6 +754,12 @@ gb-studio-panel[data-dock="float"] .gbsp-stage {
    у шапки больше нет вовсе, а срезанное нижнее поле делало полосу
    кривой — 16 сверху и 0 снизу (поймано скрином, не числом). */
 gb-studio-panel[data-dock="float"] .gbsp.is-collapsed .gbsp-panel { display: block; }
+/* Свёрнутая полоса НИЖЕ колонны ростом, и её левая грань прижата к
+   колонне целиком: нижний левый угол здесь такой же шов, как верхний
+   (gbppl-panel-30-2). */
+gb-studio-panel[data-dock="float"] .gbsp.is-collapsed .gbsp-panel {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
 gb-studio-panel[data-dock="float"] .gbsp.is-collapsed .gbsp-panel > :not(.gbsp-head) { display: none; }
 
 /* ---- РУЧКА ----
@@ -781,7 +845,11 @@ gb-studio-panel[data-dock="float"] .gbsp.is-snapping .gbsp-panel { border-color:
 .gbsp-sec,
 .gbsp-foot {
   padding: var(--space-16);
-  border-top: 1px solid var(--zinc-800);
+  /* Волосок между полками — 700 с gbppl-panel-30-2: на теле 800 линия
+     800 не существует вовсе. Волоски КОЛОННЫ остались на 800: они
+     лежат на грунте 950, где 800 читается ровно так же, как 700 на
+     800, и трогать их значило бы менять то, что и так верно. */
+  border-top: 1px solid var(--zinc-700);
 }
 /* Две группы жёлобов в одной полке разделяет ступень, а не линия
    (пункт 4 шапки файла). */
@@ -854,7 +922,14 @@ body.gb-demo a.gbsp-link {   /* тот же антидот, что в header.css
   padding: 7px 0;
   margin: 0;
   border-radius: var(--radius);
-  color: var(--zinc-300);
+  /* ЛЕСТНИЦА ЧЕРНИЛ ЕДЕТ ЦЕЛИКОМ (gbppl-panel-30-2). Подпись ушла с
+     400 на 300, и строка списка, оставшись на 300, села бы на ту же
+     ступень, что подпись, — а до этого была на ступень громче. Плюс
+     контраст: 300 на теле 800 отдаёт 10.08 против прежних 11.99 на
+     900, и это единственное место, где осветление грунта РОНЯЛО
+     читаемость. Обе беды лечит один шаг вверх. Четыре рунга после
+     правки: значение white, строка 200, подпись 300, примечание 400. */
+  color: var(--zinc-200);
   font-size: 16px;
   font-weight: 400;
   line-height: 1.35;
@@ -863,7 +938,7 @@ body.gb-demo a.gbsp-link {   /* тот же антидот, что в header.css
               background var(--mo-micro) var(--mo-move);
 }
 .gbsp-link:hover,
-body.gb-demo a.gbsp-link:hover { color: var(--white); background: var(--zinc-800); }
+body.gb-demo a.gbsp-link:hover { color: var(--white); background: var(--zinc-700); }
 
 /* Страница, на которой стоишь, — СОСТОЯНИЕ, значит синее (Тон-5). */
 .gbsp-link.is-active,
@@ -936,7 +1011,7 @@ body.gb-demo a.gbsp-link.is-active { color: var(--blue-400); font-weight: 500; }
   gap: var(--gbsp-inset);
   padding: var(--gbsp-inset);
   background: var(--zinc-950);
-  border: 1px solid var(--zinc-800);
+  border: 1px solid var(--zinc-700);
   border-radius: var(--radius);
 }
 
@@ -1059,12 +1134,16 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--blue-600); color: var(--white
    полки, а её цифры. Кегль тот же 12, вес 400 — регистр примечания
    (панель 2.0), трекинга нет.
    ============================================================ */
+/* ЧЕРНИЛА НА СТУПЕНЬ ВВЕРХ (gbppl-panel-30-2): грунт под айбрау стал
+   Zinc 800, и Zinc 500 на нём уходит в шум. Иерархия сдвинута ЦЕЛИКОМ,
+   а не схлопнута: примечание 500 → 400, подпись 400 → 300, и подпись
+   по-прежнему громче примечания ровно на ступень. */
 .gbsp-brow-t {
   display: flex;
   align-items: center;
   gap: calc(var(--space-8) * .75);
   margin: 0 0 var(--space-8);
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.35;
@@ -1085,7 +1164,7 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--blue-600); color: var(--white
 .gbsp-brow-t__cnt {
   margin-left: auto;
   padding-left: var(--space-8);
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 0;
@@ -1110,9 +1189,9 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--blue-600); color: var(--white
   margin: 0;
   padding: var(--space-8);
   background: var(--zinc-950);
-  border: 1px solid var(--zinc-800);
+  border: 1px solid var(--zinc-700);
   border-radius: var(--radius);
-  color: var(--zinc-400);
+  color: var(--zinc-300);
   font-size: 12px;
   font-weight: 400;
   line-height: 1.55;
@@ -1157,7 +1236,7 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--blue-600); color: var(--white
 .gbsp-name__sub {
   display: block;
   min-width: 0;
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   font-size: 12px;
   font-weight: 400;
   line-height: 1.35;
@@ -1179,12 +1258,12 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--blue-600); color: var(--white
   background: none;
   border: 0;
   border-radius: calc(var(--radius) - var(--gbsp-inset));
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   cursor: pointer;
   transition: background var(--mo-micro) var(--mo-move),
               color var(--mo-micro) var(--mo-move);
 }
-.gbsp-info:hover { background: var(--zinc-800); color: var(--white); }
+.gbsp-info:hover { background: var(--zinc-700); color: var(--white); }
 .gbsp-info:focus-visible { outline: 2px solid var(--blue-400); outline-offset: 2px; }
 
 /* ============================================================
@@ -1242,7 +1321,7 @@ body.gb-demo a.gbsp-cell.is-on { background: var(--blue-600); color: var(--white
 .gbsp-row__label,
 .gbsp-group__title {
   display: block;
-  color: var(--zinc-400);
+  color: var(--zinc-300);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.35;
@@ -1328,7 +1407,7 @@ button.gbsp-link {
    переносится по словам. */
 .gbsp-note {
   margin: var(--space-8) 0 0;
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   font-size: 12px;
   font-weight: 400;
   line-height: 1.45;
@@ -1396,7 +1475,9 @@ button.gbsp-link {
   min-height: var(--gb-btn-small-h);
   padding: 0 var(--space-8);
   background: var(--zinc-950);
-  border: 1px solid var(--zinc-800);
+  /* Рамка поля 700, не 800: на теле 800 рамка того же цвета исчезает,
+     и поле перестаёт быть полем (gbppl-panel-30-2). */
+  border: 1px solid var(--zinc-700);
   border-radius: var(--radius);
   color: inherit;
   font-family: inherit;
@@ -1439,7 +1520,7 @@ button.gbsp-link {
      пока она была. После: 6.87 / 6.87, ноль. */
   display: flex;
   align-self: center;
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   /* Поворот приехал с дропдауном (gbppl-panel-version-1): раскрытая
      строка переворачивает шеврон, и ход у него та же ступень, что у
      цвета. */
@@ -1494,7 +1575,7 @@ button.gbsp-link {
   scrollbar-color: var(--zinc-700) transparent;
   padding: var(--space-8);
   background: var(--zinc-950);
-  border: 1px solid var(--zinc-800);
+  border: 1px solid var(--zinc-700);
   border-radius: var(--radius);
   box-shadow: var(--shadow-panel);
   animation: gbsp-menu-in var(--mo-micro) var(--mo-enter) both;
@@ -1642,7 +1723,7 @@ body.gb-demo a.gbsp-mopt.is-on { color: var(--blue-400); font-weight: 500; }
      всего. Земля, радиус и кривая — те же, что у ячейки, чтобы у
      пульта был ОДИН отклик на наведение, а не два. */
   border-radius: calc(var(--radius) - var(--gbsp-inset));
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   cursor: pointer;
   transition: background var(--mo-micro) var(--mo-move),
               color var(--mo-micro) var(--mo-move);
@@ -1652,7 +1733,7 @@ body.gb-demo a.gbsp-mopt.is-on { color: var(--blue-400); font-weight: 500; }
    всё остальное. */
 .gbsp-back:hover,
 .gbsp-dock:hover,
-.gbsp-copy:hover { background: var(--zinc-800); color: var(--white); }
+.gbsp-copy:hover { background: var(--zinc-700); color: var(--white); }
 .gbsp-back:focus-visible,
 .gbsp-dock:focus-visible,
 .gbsp-copy:focus-visible { outline: 2px solid var(--blue-400); outline-offset: 2px; }
@@ -1685,7 +1766,7 @@ body.gb-demo a.gbsp-mopt.is-on { color: var(--blue-400); font-weight: 500; }
   background: none;
   border: 0;
   border-radius: var(--radius);
-  color: var(--zinc-300);
+  color: var(--zinc-200);   /* та же лестница, что у .gbsp-link: строка списка на теле 800 */
   font-family: inherit;
   text-align: left;
   text-decoration: none;
@@ -1694,9 +1775,9 @@ body.gb-demo a.gbsp-mopt.is-on { color: var(--blue-400); font-weight: 500; }
 }
 button.gbsp-opt:hover,
 a.gbsp-opt:hover,
-body.gb-demo a.gbsp-opt:hover { background: var(--zinc-800); }
+body.gb-demo a.gbsp-opt:hover { background: var(--zinc-700); }
 a.gbsp-opt,
-body.gb-demo a.gbsp-opt { color: var(--zinc-300); text-decoration: none; }
+body.gb-demo a.gbsp-opt { color: var(--zinc-200); text-decoration: none; }
 .gbsp-opt:focus-visible { outline: 2px solid var(--blue-400); outline-offset: -2px; }
 .gbsp-opt__name {
   display: block;
@@ -1729,7 +1810,7 @@ body.gb-demo a.gbsp-opt.is-on .gbsp-opt__name { color: var(--blue-400); font-wei
   line-clamp: 2;
   overflow: hidden;
   margin-top: 4px;   /* NO TOKEN: пол ступени --space-8, описание прижато к своему имени (то же число и та же причина, что было у подписи группы) */
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   font-size: 14px;
   line-height: 1.45;
 }
@@ -1751,7 +1832,7 @@ body.gb-demo a.gbsp-opt.is-on .gbsp-opt__name { color: var(--blue-400); font-wei
   padding: 0;
   background: none;
   border: 0;
-  color: var(--zinc-400);
+  color: var(--zinc-300);
   font-family: inherit;
   font-size: 12px;
   line-height: 1.35;
@@ -1763,8 +1844,12 @@ body.gb-demo a.gbsp-opt.is-on .gbsp-opt__name { color: var(--blue-400); font-wei
 .gbsp-more:focus-visible { outline: 2px solid var(--blue-400); outline-offset: 2px; }
 /* Вариант, до которого страница не доросла: видно, что он есть, и
    видно, что его нельзя выбрать. Курсор ничего не обещает. */
-.gbsp-opt.is-off { color: var(--zinc-600); cursor: default; }
-.gbsp-opt.is-off .gbsp-opt__desc { color: var(--zinc-600); }
+/* Недоступный вариант поднят на ступень вместе со всем остальным
+   (gbppl-panel-30-2): Zinc 600 на прежнем теле 900 давал 3.4:1, на
+   теле 800 дал бы 2.3:1 — это уже не «тише», это невидимо. 500 на 800
+   возвращает ровно ту читаемость, что была. */
+.gbsp-opt.is-off { color: var(--zinc-500); cursor: default; }
+.gbsp-opt.is-off .gbsp-opt__desc { color: var(--zinc-500); }
 /* ---- ПОДВАЛ ВАРИАНТА: СТАТУС И ПРОВЕНАНС (gbppl-proto-model-1) ----
    Тон 01.09: «У Suggested-варианта где-то на втором уровне заметки:
    что поменялось, чем отличается от Live», и там же: «всё должно
@@ -1783,7 +1868,7 @@ body.gb-demo a.gbsp-opt.is-on .gbsp-opt__name { color: var(--blue-400); font-wei
   margin-top: 4px;   /* NO TOKEN: пол ступени --space-8, то же прижатие к своему имени, что у описания */
 }
 .gbsp-opt__flag {
-  color: var(--zinc-500);
+  color: var(--zinc-400);
   font-size: 12px;
   line-height: 1.35;
 }
@@ -2192,6 +2277,19 @@ html.gbsp-devicing { overflow: hidden; }
   gap: calc(var(--space-8) / 2) var(--space-16);
   width: 100%;
 }
+/* ПОДЧЁРКИВАНИЕ ЗДЕСЬ ЛЕГАЛЬНО (gbppl-panel-30-2, Тон на живой
+   панели: «сделать его подчёркнутым внизу, иначе не читается как
+   выбранный элемент»). Закон CONTROLS-RECON, из-за которого
+   подчёркивание снято с КОНТРОЛОВ пульта, говорит ровно обратное про
+   этот случай: подчёркивание значит НАВИГАЦИЮ, а подвал и есть
+   единственная навигация консоли. Цвет остаётся первым ответом
+   (Blue 400, состояние по Тон-5), линия — вторым: цветом одним
+   активный пункт в ряду из четырёх слов не опознаётся.
+
+   ФОРМА ВЗЯТА У docs.css (.gbdoc-seg): прозрачный border-bottom 2px
+   на всех и цвет линии на выбранном — ряд от этого не дёргается на
+   пиксель, когда выбор меняется, и второго рецепта подчёркивания в
+   доме не заводится. */
 .gbsp-go,
 body.gb-demo a.gbsp-go {
   color: var(--zinc-300);
@@ -2199,7 +2297,10 @@ body.gb-demo a.gbsp-go {
   font-weight: 500;
   line-height: 1.35;
   text-decoration: none;
-  transition: color var(--mo-micro) var(--mo-move);
+  padding-bottom: 2px;   /* NO TOKEN: четверть ступени --space-8, зазор между словом и его линией; та же прижимка, что у .gbdoc-seg */
+  border-bottom: 2px solid transparent;
+  transition: color var(--mo-micro) var(--mo-move),
+              border-color var(--mo-micro) var(--mo-move);
 }
 .gbsp-go:hover,
 body.gb-demo a.gbsp-go:hover { color: var(--white); }
@@ -2208,7 +2309,10 @@ body.gb-demo a.gbsp-go:hover { color: var(--white); }
    правило, по которому синел глиф активного раздела, пока разделы
    стояли иконками. */
 .gbsp-go.is-on,
-body.gb-demo a.gbsp-go.is-on { color: var(--blue-400); }
+body.gb-demo a.gbsp-go.is-on {
+  color: var(--blue-400);
+  border-bottom-color: var(--blue-400);
+}
 .gbsp-go--out { margin-left: auto; }
 .gbsp-go__arrow { font-weight: 400; }
 
