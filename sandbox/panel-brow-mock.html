@@ -237,7 +237,7 @@
     <h1>Checkout page</h1>
     <p class="lede">Подложка бутафорская, панель справа — проект, версия 3 по правкам Тона. Кликается: язычок STUDIO, три мода, фильтры комментов, девайсы, строки.</p>
     <ul class="legend">
-      <li><span class="n">1</span><span><b>Общая часть фиксирована сверху.</b> Контекст страницы, Prototype и Device одинаковы для всех модов и не прыгают при переключении. Ниже живёт только контент мода.</span></li>
+      <li><span class="n">1</span><span><b>Общая часть фиксирована сверху.</b> Контекст страницы, Prototype и Device не прыгают при переключении View ↔ Inspect. В Comments их нет: комменты — чистый инбокс, контекст страницы остаётся в шапке (правка Тона по v3).</span></li>
       <li><span class="n">2</span><span><b>Активный мод — синяя плашка целиком,</b> белая иконка; боковая чёрточка умерла. Девайсы выделяются точно так же.</span></li>
       <li><span class="n">3</span><span><b>Бейдж непрочитанных стал нейтральным</b> (Zinc 100 на чернильном): синий принадлежит активному состоянию, счёт комментов им больше не красится.</span></li>
       <li><span class="n">4</span><span><b>Зона мода отбита вертикально:</b> полоса Zinc 950 с тем же глифом и именем мода, что в язычке — иконка слева и контент справа теперь один и тот же предмет.</span></li>
@@ -378,7 +378,11 @@
   var badge = document.getElementById('badge');
 
   function paint() {
-    shared.innerHTML = PROTO + devRow();
+    /* Тон, 16.09, по v3: «вот это в табе комментариев лишнее» —
+       Prototype и Device живут в View и Inspect; Comments — чистый
+       инбокс, контекст страницы остаётся в шапке. */
+    shared.innerHTML = MODE === 'comment' ? '' : PROTO + devRow();
+    shared.style.display = MODE === 'comment' ? 'none' : '';
     mhead.innerHTML =
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + MG[MODE] + '</svg>' +
       MNAME[MODE] +
