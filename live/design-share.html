@@ -2062,6 +2062,9 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     decide.hidden = (actions !== 'on');
     document.body.setAttribute('data-gbds-actions', actions);
     writeKey('actions', actions, 'mode');
+    /* The row and the key are ONE state: a direct ?actions=on prints
+       On in the console, and the console writes the address back. */
+    if (actionsRow && typeof actionsRow.setActive === 'function') actionsRow.setActive(actions);
   }
 
   /* Changing the skin REPLAYS THE FILM. A loader you cannot see is
@@ -2664,6 +2667,7 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
      ONE ROW PER AXIS IN THE ONE CONSOLE
      ============================================================ */
   var panel = document.querySelector('gb-studio-panel');
+  var actionsRow = null;
   function wirePanel() {
     if (!panel || typeof panel.addGroup !== 'function') return;
     panel.addGroup({
@@ -2678,7 +2682,29 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
       ],
       onChange: setConcept
     });
-    /* NO ACTIONS ROW IN THE CONSOLE (gbppl-design-share-6). Julia,
+    /* THE PAIR IS A SETTING OF THE PROTOTYPE, NOT A PROTOTYPE
+       (gbppl-design-share-actions-1, Ton 17.09: «эти кнопки должны
+       включаться опционально через настройки прототипа, а не быть
+       частью дефолтного прототипа, на который попадаешь через
+       навигацию»). Build 6 took the row out of the console and left
+       the pair reachable only by typing ?actions=on, which turned a
+       SETTING into a SHELF CARD: the one door the shelf offered for
+       this page carried the key, so navigation landed on the answer
+       state and never on the approved page. The row comes back here,
+       Off first and Off by default, and the key keeps working for
+       ever (law of links): the axis and ?actions= are one state, read
+       out of the address at load and written back by setActions. */
+    actionsRow = panel.addGroup({
+      type: 'choice',
+      title: 'Approval actions',
+      value: actions,
+      options: [
+        { label: 'Off', value: 'off', note: 'View only, and this is the page as it stands: no answer is asked for anywhere. What a reader opens.' },
+        { label: 'On',  value: 'on',  note: 'Request changes and Approve design join the foot of the page, for the day a client is asked for an answer.' }
+      ],
+      onChange: setActions
+    });
+    /* THE OLD NOTE, kept for its provenance (gbppl-design-share-6). Julia,
        14.09, on what this page is: «view only», opened by the person
        who ordered the design BEFORE any purchase and forwarded to
        colleagues and into presentations. There is no approver in that
