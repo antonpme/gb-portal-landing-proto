@@ -255,10 +255,45 @@
    about the element — the group, the keyboard, the disabled, the
    announced role — is untouched.
 
-   border-box, so --gbr-size IS the outer diameter the mock names
-   and the ring eats into it. At the bottom rung that leaves 13 of
-   content for an 8 dot, at the top 14.4 for a 9.
+   --gbr-size IS the outer diameter the mock names; the ring is
+   drawn INSIDE it by the gradient below, so the content box stays
+   the full 16 (or 18) and the dot centres on whole pixels.
    ============================================================ */
+/* THE RING IS A GRADIENT, NOT A BORDER (gbppl-radio-2, Ton 16.09:
+   «кольцо вытянуто вертикально, эллиптичное, точка иногда смещена
+   вверх, иногда вниз... ни в Фигме, ни на лайве такого нет»).
+
+   HE WAS RIGHT AND THE GEOMETRY WAS INNOCENT: every box measured a
+   flat 16 by 16. The disease was rasterization of FRACTIONAL
+   values, reproduced in a lab at display scale 1 (scratchpad
+   ring-lab): a 1.5px border on an element whose page position is a
+   fractional y (line boxes put these circles at .6 of a pixel)
+   paints its top and bottom arcs on different pixel phases — one
+   arc lands two rows, the other one — and the ring reads as an
+   ellipse whose fat side FLIPS with the row's y, which is exactly
+   the «иногда вверх, иногда вниз» of the report. The dot had its
+   own half pixel: 8 inside a content box of 13 (16 minus two 1.5
+   rings) centres at 2.5, so it snapped up or down with the same
+   phase. A 1px border fades instead of evening out (tested), and
+   rounding the measured 1.5/1.8 away would trade truth for pixels.
+
+   A radial gradient pays neither cost: it is painted as one
+   antialiased geometric circle around the box's exact centre, both
+   arcs on the same phase at any y and any display scale, and the
+   measured ring widths stay measured. With the border gone the
+   content box is the full 16 and the 8 dot centres at a flat 4.
+
+   THE INK MOVES INTO ONE SLOT. Every state used to write
+   border-color; they now write --gbr-ink-now, the one colour the
+   gradient spends. It is registered below so the hover still fades
+   on the house's micro pair instead of jumping: a transition on a
+   custom property needs @property to know it is a colour. */
+@property --gbr-ink-now {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: transparent;
+}
+
 .gb-radio__input {
   -webkit-appearance: none;
   appearance: none;
@@ -269,11 +304,20 @@
   margin: 0;
   display: grid;
   place-content: center;
-  border: var(--gbr-ring) solid var(--gbr-line);
+  --gbr-ink-now: var(--gbr-line);
+  border: 0;
   border-radius: var(--radius-pill);
-  background: transparent;
+  /* The half pixel on each stop is the antialiasing seam: the ink
+     is solid across the ring's true width and eases over one
+     half-pixel at each edge, which is what a browser draws for any
+     geometric circle. */
+  background: radial-gradient(circle closest-side,
+    transparent calc(100% - var(--gbr-ring) - 0.5px),
+    var(--gbr-ink-now) calc(100% - var(--gbr-ring) + 0.5px),
+    var(--gbr-ink-now) calc(100% - 0.5px),
+    transparent 100%);
   cursor: inherit;
-  transition: border-color var(--mo-micro) var(--mo-move);
+  transition: --gbr-ink-now var(--mo-micro) var(--mo-move);
 }
 
 /* The dot. It is always in the box and it is always the right size;
@@ -290,7 +334,7 @@
 }
 
 .gb-radio__input:checked {
-  border-color: var(--gbr-on);
+  --gbr-ink-now: var(--gbr-on);
 }
 .gb-radio__input:checked::before {
   transform: scale(1);
@@ -302,7 +346,7 @@
 .gb-radio:hover .gb-radio__input:not(:checked):not(:disabled),
 .gb-radio.is-hover .gb-radio__input:not(:checked):not(:disabled),
 .gb-radio__input.is-hover:not(:checked):not(:disabled) {
-  border-color: var(--gbr-line-hover);
+  --gbr-ink-now: var(--gbr-line-hover);
 }
 
 /* DECLARED. Keyboard only, the button organism's ring. */
@@ -411,14 +455,14 @@
    true is documentation the browser cannot ignore.
    ============================================================ */
 .gb-radio__input:checked:disabled {
-  border-color: var(--gbr-on);
+  --gbr-ink-now: var(--gbr-on);
 }
 .gb-radio__input:checked:disabled::before {
   background: var(--gbr-on);
   transform: scale(1);
 }
 .gb-radio__input:not(:checked):disabled {
-  border-color: var(--gbr-line);
+  --gbr-ink-now: var(--gbr-line);
 }
 
 /* ============================================================
@@ -558,7 +602,7 @@
 }
 .gb-radio--select:hover .gb-radio__input:not(:checked):not(:disabled),
 .gb-radio--select.is-hover .gb-radio__input:not(:checked):not(:disabled) {
-  border-color: var(--gbr-line);
+  --gbr-ink-now: var(--gbr-line);
 }
 
 /* LIVE checkout. The chosen card takes the ground and the line; the

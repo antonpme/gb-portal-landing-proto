@@ -163,7 +163,7 @@ GbOro.page({
             rows: '<tr><td>Base</td><td class="gbdoc-num">16</td><td class="gbdoc-num">1.5</td><td class="gbdoc-num">8</td><td><span class="gbdoc-flag">Live</span> the sign in choice card, 18.08, and the checkout\'s own circles</td></tr>\n'
                   + '<tr><td>2000</td><td class="gbdoc-num">18</td><td class="gbdoc-num">1.8</td><td class="gbdoc-num">9</td><td><span class="gbdoc-flag gbdoc-flag--soft">Figma</span> <code>radio/icon/size</code> 18; the ring and the dot measured off the exported paths</td></tr>\n'
                   + '<tr><td>Right now</td><td class="gbdoc-num" id="szBox"></td><td class="gbdoc-num" id="szRing"></td><td class="gbdoc-num" id="szDot"></td><td>read off the Rest specimen above</td></tr>' } },
-        { note: 'THE RING IN THE «RIGHT NOW» ROW READS 1 ON A 1&times; SCREEN AT BOTH RUNGS, and that is the browser being honest rather than the table being wrong. Chrome floors a border to whole device pixels, so 1.5 and 1.8 both draw one pixel where there is only one pixel to draw with, and both draw their true width on a 2&times; screen. The declared values are the measured ones and are left as measured; whether the ladder should be rounded to a flat 1 and 2 so the step shows on every screen is a question standing with Ton.' },
+        { note: 'THE RING STOPPED BEING A BORDER ON 16 SEPTEMBER, and the question that used to stand here — round the measured 1.5/1.8 to a flat 1 and 2 so the border rasterizes evenly? — died with it. Ton caught the symptom on the checkout: the ring read as a vertical ellipse and the dot drifted up or down row by row. The geometry was innocent (every box measures 16 by 16); a fractional border on a fractionally positioned element paints its two arcs on different pixel phases. The ring is now a radial gradient, one antialiased geometric circle around the box\'s exact centre, so the measured widths stay measured AND draw evenly at any position and any display scale.' },
         { note: 'The label does not climb with the circle. It stands on <code>small-400</code>, a role of the type register that has one rung at every width, and the mock says the same thing: <code>Body/BP: XL/Small - 400</code>, Inter 14 / 400, tracking 0.5, line 1.5.' }
       ] },
 
@@ -363,10 +363,16 @@ GbOro.page({
     var on = d.transform && d.transform !== 'none' && d.transform.indexOf('matrix(0') !== 0;
     return px(d.width) + (on ? '' : ' hidden');
   }
+  /* gbppl-radio-2: the ring stopped being a border (it is a radial
+     gradient now, so its arcs sit on one pixel phase at any y). The
+     width is read off the slot the gradient spends and the ink off
+     the registered --gbr-ink-now, which getComputedStyle returns
+     resolved to a real colour — both are what the paint actually
+     uses, not what somebody typed here. */
   function ringOf(input) {
     if (!input) return '';
     var cs = getComputedStyle(input);
-    return px(cs.borderTopWidth) + ' ' + cs.borderTopColor;
+    return px(cs.getPropertyValue('--gbr-ring')) + ' ' + cs.getPropertyValue('--gbr-ink-now');
   }
 
   /* ---------- the playground ----------
@@ -462,7 +468,7 @@ GbOro.page({
     var r = el.getBoundingClientRect();
     var cs = getComputedStyle(el);
     txt('szBox', Math.round(r.width));
-    txt('szRing', px(cs.borderTopWidth));
+    txt('szRing', px(cs.getPropertyValue('--gbr-ring')));
     txt('szDot', dotOf(el).replace(' hidden', ''));
   }
 
@@ -491,7 +497,7 @@ GbOro.page({
       var rr = row.getBoundingClientRect();
       txt('anRow', Math.round(rr.width) + ' by ' + Math.round(rr.height));
       txt('anCircle', Math.round(plain.getBoundingClientRect().width) + ' box, ring ' +
-          px(getComputedStyle(plain).borderTopWidth));
+          px(getComputedStyle(plain).getPropertyValue('--gbr-ring')));
       txt('anDot', dotOf(plain).replace(' hidden', ' when chosen'));
       txt('anGap', px(getComputedStyle(row).columnGap));
     }
