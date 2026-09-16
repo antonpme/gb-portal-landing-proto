@@ -840,6 +840,58 @@
      of the table mean two things. The argument is at v5SelectAll.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-checkout-addnew-1 (2026-09-16) — ADDING AN ADDRESS IS
+     THE FIRST LINE OF THE LIST. Inside ?v=5 only; V1 to V4 come out
+     bit for bit, the deliver panel of V4 included.
+
+     Julia, reading V5 the same day: «For adding new address, should
+     we have add new as a first option in the list, instead of
+     button all the way down». Ton took it.
+
+     WHAT MOVED IS THE ENTRY AND NOTHING ELSE. The floor it opens,
+     what that floor saves, the search, the pagination and every
+     rule around them are the ones this panel has had since 07.09.
+     The panel's own name for that floor was already «Add a new
+     address» (drawerTitle), so the line says the words the screen
+     behind it was already saying.
+
+     THE LINE IS NOT A ROW OF THE CANVAS. It stands outside the
+     x-for, which buys three things and costs none: it never
+     paginates away, it survives a search that matches nothing —
+     Ton's own point, the road that says «there is no such place, I
+     will make one» — and v5PkRows, v5PkView, v5PkCount and the
+     keyboard walk are untouched. The count still says places.
+
+     NO CHECKBOX, BLUE INK, THE RECORD'S PLUS. In the door that
+     ticks, every line carries a box and «Add selected (N)» is the
+     committing hand; a line with no box and blue ink cannot be read
+     as one more address waiting to be chosen. Blue is what an
+     action wears here (Ton-5). It is a `.ck-pk__row` and nothing
+     else, so it sits inside the list's own lines, on the list's own
+     rung, and its glyph stands on the column the tick of a place
+     row stands on.
+
+     THE BAR LOSES «TYPE A NEW ADDRESS» AND KEEPS «ADD SELECTED
+     (N)». What is left in that bar for the group door is «Edit this
+     address», which gbppl-checkout-groups-1 made a different errand
+     with a different name the day before.
+
+     THE ONE DOOR THAT DRAWS NO SUCH LINE is the group band's Edit.
+     There the panel was opened ON a line (`drawer.addrId`), so the
+     form floor is a rewrite of that line and not an addition: a
+     second entry promising a new address over it would create
+     nothing and rewrite everything. That door keeps its bar button,
+     and the report says so.
+
+     AND A FOOT WITH NOTHING IN IT GOES AWAY. Two doors — One
+     address and the row pin — commit on the click and now have no
+     button left to draw, and what stood was a grey strip with a
+     hairline and no words. drawer.css already says an empty foot
+     disappears; the page says the same about a foot whose only
+     child is hidden, because no selector the owner can write sees
+     that. Candidate to lift into the organism, in the report.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -1872,6 +1924,35 @@
      colour the reader has met one screen up, and no colour is invented. */
   .ck-pk__row.is-fresh,
   .ck-pk__row.is-fresh:hover { background: var(--blue-50); }
+  /* THE LINE THAT ADDS (gbppl-checkout-addnew-1, 16.09). It is a
+     `.ck-pk__row` and nothing else, so the ground, the height, the
+     hairline, the hover and — the point — the INSET are the list's
+     own: a plate that reached past the lines of the rows under it
+     would be a second list of one. All that is added is the ink,
+     Blue 600, which is what an action wears on this page (Ton-5),
+     and the glyph's box. The bold half of a place row is 14/500
+     Zinc 900; this is the same rung in the action's colour, so the
+     line reads as a sibling of the rows and not as a heading over
+     them. */
+  .ck-pk__row--new { color: var(--blue-600); }
+  .ck-pk__row--new .ck-pk__hit { color: inherit; }
+  .ck-pk__plus {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    /* The tick of a place row is a 16 box in a 16 gap; the glyph
+       takes the same width, so the words of every line of this list
+       begin on one column whether the line ticks or acts. The two
+       numbers are the checkbox's own two rungs (checkbox.css: 16,
+       and 18 from the client's 2xl), quoted rather than invented —
+       measured without the second one the words sat 2px apart at
+       2258, which is the whole reason it is written. */
+    width: 16px;
+    justify-content: center;
+  }
+  @media (min-width: 2000px) {
+    .ck-pk__plus { width: 18px; }
+  }
   .ck-pk__hit {
     display: flex;
     align-items: center;
@@ -1976,6 +2057,15 @@
   @media (min-width: 640px) {
     .ck-drawer-actions--pick > .gb-btn--filled { flex: 1 1 auto; }
   }
+  /* AND A FOOT WITH NOTHING IN IT GOES AWAY (gbppl-checkout-addnew-1,
+     16.09). The owner's own rule, `.gbd-foot:empty { display: none }`,
+     read one step further: the foot is not empty, it holds this page's
+     actions bar with every button inside it hidden, and that is a thing
+     only the page can know. See v5PkFootBare for which doors and why.
+     The rule is written on the OWNER'S element from the page because
+     there is nothing else to hang it on; the report carries the question
+     of lifting it into drawer.css as an axis of its own. */
+  .gbd-panel .gbd-foot:has(> .ck-drawer-actions--bare) { display: none; }
 
   /* The tab strip rides at the top of the scrolling body and stays there while
      the panel below it scrolls. It reaches back out to the drawer's own gutter
@@ -6693,7 +6783,44 @@
             </div>
           </div>
 
-          <div class="ck-pk__list" data-pk-list x-show="v5PkView().rows.length > 0">
+          <div class="ck-pk__list" data-pk-list>
+            <!-- ============================================================
+                 ADDING IS THE FIRST LINE OF THE LIST
+                                 gbppl-checkout-addnew-1 (16.09)
+                 ------------------------------------------------------------
+                 Julia, reading V5: «For adding new address, should we have
+                 add new as a first option in the list, instead of button all
+                 the way down». Ton took it, and the whole of the change is
+                 the entry moving: the floor it opens, what that floor saves
+                 and every rule around it are the ones this panel has had
+                 since 07.09.
+
+                 IT IS NOT A ROW OF THE CANVAS. It stands OUTSIDE the x-for
+                 on purpose, which buys three things at once and costs
+                 nothing: it never paginates away (an action that lives on
+                 page one is an action a reader on page four cannot find), it
+                 survives a search that matches nothing — Ton's fourth point,
+                 «дорога нет такого, создам» — and v5PkRows, v5PkView,
+                 v5PkCount and the keyboard walk stay exactly what they were.
+                 The count still says places, because this is not one.
+
+                 NO CHECKBOX, AND THAT IS THE WHOLE SIGNAL. In the door that
+                 ticks, every line of the list carries a box and the
+                 committing hand is «Add selected (N)»; a line with no box
+                 and blue ink cannot be read as one more address waiting to
+                 be chosen. Blue because it is an action, which is what blue
+                 means on this page (Ton-5), and the plus is the record's own
+                 `plus` — the glyph the quantity controls of this very page
+                 already spend.
+                 ============================================================ -->
+            <div class="ck-pk__row ck-pk__row--new" x-show="!drawer.v5Group">
+              <button type="button" class="ck-pk__hit" @click="v5PkAddNew()">
+                <span class="ck-pk__plus" aria-hidden="true"><span data-gb-icon="plus" data-gb-icon-size="20"></span></span>
+                <span class="min-w-0 flex-1">
+                  <span class="block text-sm font-medium truncate">Add a new address</span>
+                </span>
+              </button>
+            </div>
             <template x-for="r in v5PkView().rows" :key="'v5pk-' + r.key">
               <div class="ck-pk__row"
                    :class="(drawer.pk.i === r.k ? 'is-lit ' : '') + (drawer.pk.fresh === r.key ? 'is-fresh' : '')">
@@ -6731,10 +6858,18 @@
             </template>
             <!-- The same door as the one in the foot, so the same word and
                  the same bare label (gbppl-v5-pk-foot-1): one action cannot
-                 have two names and two faces inside one panel. -->
-            <template x-if="v5PkEmptyBook()">
+                 have two names and two faces inside one panel.
+                 gbppl-checkout-addnew-1 (16.09): WHICH IS WHY IT NOW ANSWERS
+                 ONLY THE GROUP DOOR. Everywhere else the first line of the
+                 list is that door and is drawn even here, over an empty book
+                 and over a search that found nothing, so a second button
+                 under it saying the same word would be the very thing the
+                 line above forbids. The group door draws no such line (its
+                 form is a rewrite of one line, not an addition), so this is
+                 where that door keeps its way to the fields. -->
+            <template x-if="v5PkEmptyBook() && drawer.v5Group">
               <button type="button" @click="v5PkOpenForm()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary">
-                <span class="gb-btn__label">Type a new address</span>
+                <span class="gb-btn__label">Edit this address</span>
               </button>
             </template>
           </div>
@@ -6917,7 +7052,8 @@
 <template id="ck-drawer-foot-deliver">
   <!-- The modifier is bound and not written into the class, so the foot of
        V1 to V4 carries the same one class it always carried. -->
-  <div class="ck-drawer-actions" :class="(uiVersion === 'v5' && v5PkMode() === 'pick') ? 'ck-drawer-actions--pick' : ''">
+  <div class="ck-drawer-actions"
+       :class="((uiVersion === 'v5' && v5PkMode() === 'pick') ? 'ck-drawer-actions--pick ' : '') + (v5PkFootBare() ? 'ck-drawer-actions--bare' : '')">
     <template x-if="uiVersion !== 'v5'">
       <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
     </template>
@@ -6937,16 +7073,21 @@
     <button x-show="uiVersion === 'v5' && v5PkMode() === 'form'" x-cloak
             @click="v5ClearForm()" :disabled="!v5FormDirty()" :aria-disabled="!v5FormDirty()"
             class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Clear</span></button>
-    <button x-show="uiVersion === 'v5' && v5PkMode() === 'pick' && !v5PkEmptyBook()" x-cloak
+    <!-- gbppl-checkout-groups-1 (16.09): ONE DOOR, TWO ERRANDS, AND IT
+         SAYS WHICH. Opened from a group band the form floor is not empty
+         and must not be — the reader came to fix THAT address, so the
+         panel carries it in and v5SaveDeliver rewrites the same line.
+         gbppl-checkout-addnew-1 (16.09): AND NOW IT IS ONLY THAT ERRAND.
+         Julia asked for adding to be the first line of the list rather
+         than a button at the bottom, so «Type a new address» has left this
+         bar for the top of the panel and what stays here is the other
+         half, which never was the same thing: a rewrite of the line the
+         group stands on. The bar of every other door keeps only «Add
+         selected (N)», which is what it was always for — the one
+         committing hand. -->
+    <button x-show="uiVersion === 'v5' && v5PkMode() === 'pick' && !v5PkEmptyBook() && drawer.v5Group" x-cloak
             @click="v5PkOpenForm()" class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button">
-      <!-- gbppl-checkout-groups-1 (16.09): ONE DOOR, TWO ERRANDS, AND IT
-           SAYS WHICH. Opened from a group band the form floor is not empty
-           and must not be — the reader came to fix THAT address, so the
-           panel carries it in and v5SaveDeliver rewrites the same line. A
-           button promising a new address over a form holding the old one is
-           a lie the size of the whole errand, so the label reads what the
-           floor under it will do. Every other caller is untouched. -->
-      <span class="gb-btn__label" x-text="drawer.v5Group ? 'Edit this address' : 'Type a new address'"></span>
+      <span class="gb-btn__label">Edit this address</span>
     </button>
     <button x-show="uiVersion === 'v5' && v5PkMode() === 'pick' && v5PkTicks() && !v5PkEmptyBook()" x-cloak
             @click="v5PkAddSelected()" :disabled="v5PkSel() === 0" :aria-disabled="v5PkSel() === 0"
@@ -10612,7 +10753,15 @@ function checkoutApp() {
       const head = island.querySelector('[data-pk-head]');
       const foot = island.querySelector('[data-pk-foot]');
       const rowH = parseFloat(getComputedStyle(island).getPropertyValue('--ck-pk-row')) || 64;
-      const chrome = (head ? head.offsetHeight : 0) + (foot ? foot.offsetHeight : 0) + 2;
+      /* gbppl-checkout-addnew-1 (16.09): AND THE FIRST LINE IS PART OF THE
+         CHROME. «Add a new address» stands inside the list and outside the
+         page of places, so the room it takes is room the places do not
+         have: left out of this sum the island asks for one row more than
+         it can hold and grows a scrollbar, which is the one thing this
+         arithmetic exists to prevent. It is counted only in the doors that
+         draw it — the group door has no such line. */
+      const addRow = this.drawer.v5Group ? 0 : rowH;
+      const chrome = (head ? head.offsetHeight : 0) + (foot ? foot.offsetHeight : 0) + addRow + 2;
       const rows = Math.max(3, Math.floor((avail - chrome - 1) / rowH));
       const span = window.innerWidth < 640 ? 3 : 5;
       if (pk.h !== avail) pk.h = avail;
@@ -10638,6 +10787,45 @@ function checkoutApp() {
         const el = document.querySelector('.gbd-panel [x-model="drawer.data.name"]');
         if (el) el.focus({ preventScroll: true });
       }, 0);
+    },
+    /* THE FIRST LINE OF THE LIST (gbppl-checkout-addnew-1, 16.09). One
+       line of new behaviour, and it exists to keep an old rule true.
+       v5PkOpenForm empties whatever the door prefilled ON ITS FIRST PRESS
+       and then leaves the form alone, which is right for a button that
+       says «type a new address» — but the group door sets `typed` at the
+       door precisely so its prefill survives, and this line must mean the
+       same thing in every door it is drawn in. So it says out loud that
+       what comes next is NEW, and hands over to the one function that
+       opens the floor. (The group door draws no such line at all; see the
+       markup.) */
+    v5PkAddNew() {
+      const pk = this.drawer.pk; if (!pk) return;
+      pk.typed = false;
+      this.v5PkOpenForm();
+    },
+    /* ============================================================
+       A FOOT WITH NOTHING IN IT IS NOT A FOOT
+                             gbppl-checkout-addnew-1 (16.09)
+       ------------------------------------------------------------
+       With «Type a new address» gone from the bar, two of the four
+       doors have nothing left to put there: One address and the row
+       pin commit on the click, so there is no committing hand to
+       draw. What stood was a grey strip with a hairline over it and
+       no words in it, which is worse than the button it replaced.
+       drawer.css already says what to do with that — `.gbd-foot
+       :empty { display: none }` — but the foot is NOT empty: it
+       holds this page's actions div with every button inside it
+       hidden, and no selector the owner can write from where it
+       stands sees the difference. So the page says it here, about
+       its own content, and the report carries the question of
+       lifting it to the owner.
+       ============================================================ */
+    v5PkFootBare() {
+      if (this.uiVersion !== 'v5') return false;
+      if (!this.drawer || !this.drawer.pk) return false;
+      if (this.v5PkMode() !== 'pick') return false;
+      if (this.v5PkEmptyBook()) return true;
+      return !(this.drawer.v5Group || this.v5PkTicks());
     },
     v5PkBack() {
       const pk = this.drawer.pk; if (!pk) return;
