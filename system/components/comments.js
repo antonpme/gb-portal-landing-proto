@@ -936,7 +936,25 @@
       if (filter === 'open') return c.status === 'open';
       if (filter === 'resolved') return c.status !== 'open';
       return me && c.author === me;
+    }).sort(function (a, b) {
+      /* НОВЫЕ СВЕРХУ (Тон, 16.09: «старые идут первыми, а новые в
+         самом низу — это неправильно»). Список читают как ленту
+         новостей, и свежая запись — первое, зачем его открывают.
+         Сортируется только ВИД: items хранит порядок сервера, и
+         номер на булавке (items.indexOf) не пересаживается — коммент
+         №3 остаётся №3, где бы он ни стоял в ленте. Тред считает
+         свежим и поздний ОТВЕТ, той же логикой, что счёт unread. */
+      return lastTouch(b) - lastTouch(a);
     });
+  }
+
+  function lastTouch(c) {
+    var t = Date.parse(c.created) || 0;
+    (c.replies || []).forEach(function (r) {
+      var rt = Date.parse(r.created) || 0;
+      if (rt > t) t = rt;
+    });
+    return t;
   }
 
   function paintShelf() {
