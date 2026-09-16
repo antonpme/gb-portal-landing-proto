@@ -2064,6 +2064,31 @@
      state of a tick. */
   .ck-pk__row--door { color: var(--zinc-600); }
   .ck-pk__row--door .ck-pk__hit { color: inherit; }
+  /* ============================================================
+     A ROW THAT IS A FACT (gbppl-checkout-order-section-1, 17.09)
+     ------------------------------------------------------------
+     «In this order» in the door that adds. It keeps the list's
+     ground, inset, height and both voices -- it is the same row,
+     saying the same thing -- and loses only what OFFERS: the
+     pointer and the hover. It is not dimmed: the places this order
+     ships to are not disabled options, they are the answer the
+     reader already gave, and fading them would say they failed.
+     The button under it carries a real `disabled`, so the keyboard
+     walks past it exactly as the hand does.
+     ============================================================ */
+  .ck-pk__hit--ref { cursor: default; }
+  .ck-pk__row--ref:hover { background: var(--white); }
+  /* THE MATCHED RUN. The badge's own plate, one voice down: a mark
+     on letters, not a state, so no blue and no second weight. */
+  .ck-pk__mark {
+    border-radius: 2px;              /* NO TOKEN: --radius 5 on a run of
+                                        two letters reads as a pill; 2 is
+                                        the checkbox glyph's own corner
+                                        (checkbox.css), the only corner
+                                        this house draws under 5. */
+    background: var(--zinc-100);
+    color: var(--zinc-900);
+  }
 
   .ck-pk__list { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
   .ck-pk__row {
@@ -7100,6 +7125,16 @@
                 </button>
               </template>
             </div>
+            <!-- THE SECOND RUN TO THE SAME OFFICE, SAID BEFORE THE PRESS
+                 (gbppl-checkout-order-section-1, 17.09). On the browse floor
+                 a place already in this order is tickable on purpose: Ton's
+                 rule of 04.09 is that the method belongs to the LINE, so
+                 twenty ground and five overnight to one office are two
+                 lines. That is a thing to mean, not a thing to stumble into,
+                 so the head says what the press will do while the tick is
+                 still on the screen. It speaks only when it is true. -->
+            <p x-show="v5PkTicks() && v5PkSelDup() > 0" x-cloak
+               class="text-sm text-zinc-600 mt-2" x-text="v5PkDupLine()"></p>
           </div>
 
           <div class="ck-pk__list" data-pk-list x-show="v5PkView().rows.length > 0">
@@ -7145,19 +7180,27 @@
                   <span class="gb-eyebrow" x-text="r.head"></span>
                 </div>
                 <div class="ck-pk__row"
-                     :class="(drawer.pk.i === r.k ? 'is-lit ' : '') + (drawer.pk.fresh === r.key ? 'is-fresh' : '')">
+                     :class="(drawer.pk.i === r.k ? 'is-lit ' : '') + (drawer.pk.fresh === r.key ? 'is-fresh ' : '') + (r.ref ? 'ck-pk__row--ref' : '')">
                   <!-- The tick is a real input beside the row and not inside
                        it: a checkbox in a button is neither, and this way the
                        row keeps one hit area and the box keeps its own. -->
-                  <span class="ck-pk__tick" x-show="v5PkTicks() && r.kind !== 'none'">
+                  <span class="ck-pk__tick" x-show="v5PkTicks() && r.kind !== 'none' && !r.ref">
                     <input type="checkbox" class="gb-checkbox__input"
                            :checked="v5PkTicked(r)" @change="v5PkTick(r, $event.target.checked)"
                            :aria-label="'Select ' + r.name">
                   </span>
-                  <button type="button" class="ck-pk__hit" @click="v5PkPick(r)">
+                  <!-- gbppl-checkout-order-section-1 (17.09): a row of «In
+                       this order» in the door that adds is a FACT. It keeps
+                       the list's own inset and voices and loses everything
+                       that offers: the box, the pointer, the hover and the
+                       press. `disabled` and not a div, so the keyboard walks
+                       past it the way the eye does, and one markup still
+                       draws every row of this list. -->
+                  <button type="button" class="ck-pk__hit" :class="r.ref ? 'ck-pk__hit--ref' : ''"
+                          :disabled="!!r.ref" @click="v5PkPick(r)">
                     <span class="min-w-0 flex-1">
-                      <span class="block text-sm font-medium text-zinc-900 truncate" x-text="r.name"></span>
-                      <span class="block text-sm text-zinc-500 truncate" x-text="r.sub"></span>
+                      <span class="block text-sm font-medium text-zinc-900 truncate" x-html="v5PkMark(r.name)"></span>
+                      <span class="block text-sm text-zinc-500 truncate" x-html="v5PkMark(r.sub)"></span>
                     </span>
                     <!-- The Eyebrow role stays the element's own class; the
                          plate is the house's chip recipe, see .ck-pk__badge.
@@ -11121,7 +11164,70 @@ function checkoutApp() {
       none.forEach(r => { r.head = ''; });
       order.forEach((r, i) => { r.head = i === 0 ? 'In this order' : ''; });
       match.forEach((r, i) => { r.head = i === 0 ? 'Search results' : ''; });
+      /* ============================================================
+         IN THIS ORDER IS A FACT, NOT AN OFFER
+                          gbppl-checkout-order-section-1 (17.09)
+         ------------------------------------------------------------
+         Ton, over the section: «он же уже добавлен, почему не
+         выбран?» An empty box in front of a place that is already in
+         the order reads as an invitation to choose it again, and the
+         reader who ticks it gets a SECOND line -- right by the rule of
+         04.09 and wrong by everything the screen just said. So in the
+         door that ADDS, this section stops being a list of candidates
+         and becomes what its shelf says it is: the places this order
+         already ships to, printed as a fact. No box, no pointer,
+         nothing to take and nothing to remove -- taking a line away
+         belongs to the page, at the cross of Delivery addresses, and a
+         picker that only adds cannot also take away.
+
+         ONLY IN THAT DOOR. One address and the row pin take exactly
+         ONE place, and taking a place the order already uses is their
+         whole job: hanging these gifts on a line that already exists.
+         There the rows stay live. The difference belongs to the DOOR,
+         not to the row, and v5PkTicks is the test either way.
+
+         AND THE SECOND RUN TO THE SAME OFFICE IS STILL POSSIBLE, where
+         it can be meant rather than stumbled into: on the browse floor
+         the book's own row for that place is tickable, wears the plate
+         that says it is already here, and the head says out loud what
+         ticking it will do.
+         ============================================================ */
+      if (this.v5PkTicks()) order.forEach(r => { r.ref = true; });
       return none.concat(order, match);
+    },
+    /* THE MATCHED RUN, MARKED (gbppl-checkout-order-section-1, 17.09).
+       Ton: «Anton Parkhomenko по запросу ac» answered on «Wacker Dr»
+       and read as a glitch, because nothing on the row said which
+       letters answered. The text is escaped here and only the mark is
+       markup, so a place name may hold any character a person types.
+       The plate is the badge's own recipe, Zinc 100, and not a colour:
+       blue on this surface means state, and a letter is not a state. */
+    v5PkMark(text) {
+      const s = String(text == null ? '' : text);
+      const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const q = String((this.drawer.pk && this.drawer.pk.q) || '').trim();
+      if (!q) return esc(s);
+      const lower = s.toLowerCase();
+      const needle = q.toLowerCase();
+      let out = '', i = 0;
+      for (;;) {
+        const at = lower.indexOf(needle, i);
+        if (at === -1) { out += esc(s.slice(i)); break; }
+        out += esc(s.slice(i, at)) + '<span class="ck-pk__mark">' + esc(s.slice(at, at + needle.length)) + '</span>';
+        i = at + needle.length;
+      }
+      return out;
+    },
+    /* How many of the ticked places already stand in this order: the
+       head says what that will mean BEFORE the press, not after it. */
+    v5PkSelDup() { return this.v5PkChips().filter(r => r.orderId).length; },
+    /* Sentence case, the house's own «·» nowhere needed, and the fact
+       named in the words Ton used for it on 04.09: the method belongs to
+       the line, so the same place twice is two lines. */
+    v5PkDupLine() {
+      const n = this.v5PkSelDup();
+      return (n === 1 ? 'One of these is already in this order' : n + ' of these are already in this order') +
+             ': adding again makes a second line, with its own shipping method.';
     },
     v5PkBrowsing() { return !!(this.drawer && this.drawer.pk && this.drawer.pk.browse); },
     /* The one quiet line, and which of the three it is. Sentence case,
