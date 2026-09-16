@@ -731,6 +731,48 @@
    это команда пульта, и место команд — строка управления в шапке,
    рядом с кнопкой дока. Убить её волна права не имела: её никто не
    просил убирать.
+
+   ------------------------------------------------------------
+   ПОДСКАЗКИ ПУЛЬТА (gbppl-panel-30-3, Тон 16.09)
+   ------------------------------------------------------------
+   Его слова о плашках модов: «лезут дефолтные системные виндовские
+   квадратики», нужен красивый тултип с именем мода — View / Inspect
+   / Comment.
+
+   ВТОРОГО ТУЛТИПА НЕ ЗАВОДИТСЯ. В доме есть организм
+   (system\components\tooltip.css + tooltip.js, gbppl-tooltip-1
+   10.09), и он весь — один атрибут: `data-gb-tip` со словом,
+   `data-gb-tip-place` со стороной, слушатели делегированы документу,
+   плита одна на документ. Консоль не рисует ни плиты, ни своей
+   геометрии: она СТАВИТ АТРИБУТЫ, и на этом её участие кончается.
+   Правило дома «icon-only контрол обязан нести тултип» закрывается
+   разом на всех: три плашки модов, шесть экранов, Copy link, кнопка
+   дока, дверь в детали версии и сам язычок.
+
+   СТОРОНА СМОТРИТ НА СТРАНИЦУ. У плашек колонны место запрошено
+   `left` при правом доке и `right` при левом: плита уходит от кромки
+   в сторону страницы и не накрывает саму плашку. Сторона
+   переписывается там же, где меняется док (paintDock), потому что
+   это одно свойство ящика, а не два. Контролы ВНУТРИ ящика оставлены
+   на умолчании организма (bottom): плита под кнопкой никого не
+   закрывает, а флип у организма свой.
+
+   ДВОЙНОЙ ПОДСКАЗКИ НЕТ: как только организм отвечает, нативный
+   `title` снимается со всех носителей консоли. До этого момента он
+   ОСТАЁТСЯ — на странице без тултипа лучше системный квадратик, чем
+   немой глиф. `aria-label` не трогается никогда: плита для глаза,
+   метка для читалки, и организм это правило объявляет сам.
+
+   ОРГАНИЗМ ПОДГРУЖАЕТСЯ САМОЙ КОНСОЛЬЮ, И ЭТО РАЗВИЛКА НА СУД ТОНА.
+   Дом линкует компоненты СТРАНИЦЕЙ (консоль так же просит у страницы
+   icon.css и icon.js). Но консоль стоит на 23 страницах, а
+   tooltip.css лежит на 7 и tooltip.js на 6: «сделать красиво»
+   означало бы правку шестнадцати чужих файлов, а волна правит ровно
+   два своих. Поэтому консоль спрашивает организм у себя под ногами и,
+   не найдя, дописывает пару тегов от своего data-root — один раз,
+   с защитой от повторной загрузки, и только снаружи кадра. Откат
+   стоит одной функции (ensureTip): вписать линки в 16 страниц и
+   удалить её.
    ============================================================ */
 (function () {
   'use strict';
@@ -858,6 +900,75 @@
     return '<span class="gb-icon gb-icon--' + (size || 16) + '" aria-hidden="true">' +
            '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" ' +
            'stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"/></svg></span>';
+  }
+
+  /* ============================================================
+     ПОДСКАЗКА = АТРИБУТ ОРГАНИЗМА (gbppl-panel-30-3)
+     ------------------------------------------------------------
+     Весь код консоли про тултипы — ниже, и в нём нет ни плиты, ни
+     позиционирования: и то и другое принадлежит tooltip.css /
+     tooltip.js. Здесь ставится слово, сторона и снимается нативный
+     title, когда организм отвечает.
+     ============================================================ */
+  var TIP = 'data-gb-tip';
+  var TIP_PLACE = 'data-gb-tip-place';
+
+  /* Плита уходит ОТ КРОМКИ В СТОРОНУ СТРАНИЦЫ: у правого дока влево,
+     у левого вправо, у плавающего — влево, потому что колонна и там
+     стоит слева от ящика. */
+  function tipSide(host) {
+    return host.getAttribute('data-dock') === 'left' ? 'right' : 'left';
+  }
+
+  /* Слово в атрибут. Метка читалки НЕ переписывается, если она уже
+     есть: у неё своя копия (правило организма, «the twin»). */
+  function tipWord(el, word, place) {
+    if (!el || !word) return;
+    el.setAttribute(TIP, word);
+    if (place) el.setAttribute(TIP_PLACE, place);
+    if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', word);
+    if (window.GbTip) el.removeAttribute('title');
+  }
+
+  /* Нативная подсказка снимается СО ВСЕХ разом, когда организм уже на
+     странице: до этого она единственная, что у глифа есть. Метка,
+     которой у носителя не было, забирает себе слово title перед тем,
+     как оно исчезнет, — иначе кнопка осталась бы без имени вовсе. */
+  function stripTitles(host) {
+    var kin = host.querySelectorAll('[' + TIP + '][title]');
+    for (var i = 0; i < kin.length; i++) {
+      if (!kin[i].getAttribute('aria-label')) {
+        kin[i].setAttribute('aria-label', kin[i].getAttribute('title') || '');
+      }
+      kin[i].removeAttribute('title');
+    }
+  }
+
+  /* ОРГАНИЗМ ПОД НОГАМИ ИЛИ ПРИВЕЗЁННЫЙ (разбор в шапке файла).
+     Оба тега помечены data-gbsp-tip, чтобы вторая консоль на той же
+     странице (её не бывает, но правило дешевле веры) не привезла их
+     второй раз, и чтобы человек в инспекторе видел, кто их поставил. */
+  function ensureTip(host, root) {
+    if (window.GbTip) { stripTitles(host); return; }
+    try {
+      if (!document.querySelector('link[href*="tooltip.css"]')) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = root + 'system/components/tooltip.css';
+        link.setAttribute('data-gbsp-tip', '');
+        document.head.appendChild(link);
+      }
+      if (!document.querySelector('script[data-gbsp-tip]')) {
+        var js = document.createElement('script');
+        js.src = root + 'system/components/tooltip.js';
+        js.setAttribute('data-gbsp-tip', '');
+        /* Плита показывается только на наведение, поэтому поздний
+           приезд ничего не ломает: до него у глифов стоит title, после
+           него он снимается одним движением. */
+        js.onload = function () { stripTitles(host); };
+        document.head.appendChild(js);
+      }
+    } catch (e) { /* страница без head: подсказка остаётся нативной */ }
   }
 
   /* ============================================================
@@ -1029,6 +1140,15 @@
     btn.innerHTML = dockIcon(to);
     btn.setAttribute('aria-label', word);
     btn.setAttribute('title', word);
+    /* gbppl-panel-30-3. Плита говорит ИМЕНЕМ («Move left»), метка
+       читалки — действием («Move the panel to the left»): правило
+       двойника из tooltip.js, где плита короче метки нарочно. */
+    btn.setAttribute(TIP, (fl ? 'Dock ' : 'Move ') + to);
+    if (window.GbTip) btn.removeAttribute('title');
+    /* СТОРОНА ПЛИТЫ ЕДЕТ ЗА ДОКОМ, и переписывается она здесь же:
+       место ящика и место его подсказок — одно свойство, а не два. */
+    var edge = host.querySelectorAll('.gbsp-tabcol [' + TIP + ']');
+    for (var t = 0; t < edge.length; t++) edge[t].setAttribute(TIP_PLACE, tipSide(host));
     /* СМЕНА МЕСТА ПЕРЕСАЖИВАЕТ СЧЁТ. У пристыкованного он живёт на
        язычке, у оторванного — на полосе, и решает это ровно тот
        атрибут, который здесь и ставится. Без этой строки бейдж
@@ -1479,7 +1599,7 @@
              Тона держит только навигацию, а команде пульта место в
              строке управления. Отклик — подмена глифа на галочку, та
              же 1500ms, что была у слова (wireFoot). */
-          '<button class="gbsp-copy" type="button"' +
+          '<button class="gbsp-copy" type="button" data-gb-tip="Copy link"' +
             ' aria-label="Copy link to this view" title="Copy link to this view">' +
             '<span class="gbsp-copy__glyph">' + glyph('link', 16) + '</span>' +
           '</button>' +
@@ -1565,6 +1685,7 @@
        содержимого обещал бы уровень, которого не существует. */
     var door = opts
       ? '<button class="gbsp-info" type="button" data-slot="version-details"' +
+          ' data-gb-tip="Version details"' +
           ' aria-label="Version details" title="Version details">' +
           glyph('info', 16) +
         '</button>'
@@ -2635,10 +2756,16 @@
     var current = spec.value;
     if (!brow) return { element: null, setActive: function () {}, setBadge: function () {}, addOption: function () {} };
 
+    /* Слово плиты = имя мода словами его владельца (View / Inspect /
+       Comment): консоль подписей не сочиняет. Сторона — от кромки в
+       сторону страницы (tipSide). Нативный title стоит рядом до тех
+       пор, пока организм не отозвался (stripTitles). */
     function cellHtml(o, i) {
       var word = o.label || o.value;
       return '<button class="gbsp-plaque" type="button" data-seg="' + i + '"' +
              ' data-mode="' + esc(o.value) + '"' +
+             ' ' + TIP + '="' + esc(word) + '"' +
+             ' ' + TIP_PLACE + '="' + tipSide(host) + '"' +
              ' title="' + esc(word) + '" aria-label="' + esc(word) + '"' +
              ' aria-pressed="false">' + modeGlyph(o.value, 20) + '</button>';
     }
@@ -2658,6 +2785,11 @@
       }
       hintSection(host, hint);
       dress();
+      /* Плашки рождаются позже, чем консоль спросила организм
+         (inspect.js ждёт whenDefined), поэтому нативную подсказку с
+         них снимает их же кисть — но только если организм уже
+         отвечает (gbppl-panel-30-3). */
+      if (window.GbTip) stripTitles(host);
     }
 
     brow.innerHTML = options.map(cellHtml).join('');
@@ -2804,9 +2936,14 @@
        сделала бы их другим предметом, чем плашки на кромке. Ряд СЛОВ
        остаётся жёлобом с оградой — слова без неё слипаются в фразу
        (Тон 03.09). */
+    /* gbppl-panel-30-3: у ряда экранов подсказка та же, что стояла
+       нативной («Tablet 768»), и ставит её организм. Сторона не
+       запрашивается: ячейка стоит ВНУТРИ ящика, и умолчание
+       организма (bottom, с его же флипом) никого не закрывает. */
     function segHtml(o, i) {
       return '<button class="' + (asIcons ? 'gbsp-plaque gbsp-plaque--wide' : 'gbsp-cell') +
              '" type="button" data-seg="' + i + '"' +
+             (o.title ? ' ' + TIP + '="' + esc(o.title) + '"' : '') +
              (o.title ? ' title="' + esc(o.title) + '"' : '') +
              (o.icon && o.title ? ' aria-label="' + esc(o.title) + '"' : '') +
              ' aria-pressed="false">' +
@@ -2902,6 +3039,9 @@
     secBody.insertBefore(wrap, before);
     /* Записка полки остаётся ПОСЛЕДНЕЙ, кто бы ни объявился позже. */
     if (secBody.__note) secBody.appendChild(secBody.__note);
+    /* Та же страховка, что у плашек модов: ряд экранов рождается в
+       connectedCallback, но группа может прийти и позже. */
+    if (window.GbTip) stripTitles(host);
     paint();
     dress();
 
@@ -3875,6 +4015,10 @@
            Слова по-прежнему живут в одной записи openerWord. */
         tab.setAttribute('aria-label',
           openerWord(host.getAttribute('data-dock') === 'float', open));
+        /* gbppl-panel-30-3. Плита у язычка говорит ИМЕНЕМ действия в
+           два слова, метка читалки — полной фразой: правило двойника
+           организма. Сторона — от кромки в сторону страницы. */
+        tipWord(tab, open ? 'Close panel' : 'Open panel', tipSide(host));
         /* Высота изменилась, значит плавающий ящик мог оказаться ниже
            кромки: разворот на низком окне ловится тем же клампом, что
            таскание. */
@@ -3941,6 +4085,11 @@
       });
 
       wireFoot(this);
+
+      /* gbppl-panel-30-3: подсказки. В кадре консоль погашена целиком,
+         и везти туда организм незачем — наружный пульт спрашивает его
+         за обоих. Разбор решения в шапке файла. */
+      if (!embedded()) ensureTip(this, root);
     }
   }
 
@@ -4136,13 +4285,15 @@
           slot.innerHTML = glyph(ok ? 'check' : 'link', 16);
           copy.classList.add('is-said');
           copy.setAttribute('aria-label', said);
-          copy.setAttribute('title', said);
+          copy.setAttribute(TIP, said);
+          if (!window.GbTip) copy.setAttribute('title', said);
           clearTimeout(timer);
           timer = setTimeout(function () {
             slot.innerHTML = glyph('link', 16);
             copy.classList.remove('is-said');
             copy.setAttribute('aria-label', word);
-            copy.setAttribute('title', word);
+            copy.setAttribute(TIP, 'Copy link');
+            if (!window.GbTip) copy.setAttribute('title', word);
           }, 1500);
         });
       });
