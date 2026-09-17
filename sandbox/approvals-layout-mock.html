@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approvals — мокап лейаута v2</title>
+<!-- ============================================================
+     gbppl-approvals-mock-1 (моя рука, 17.09, после критики Тона):
+     «мне нужен мокап лейаутов и дизайна: что конкретно ты будешь
+     делать и твоё понимание системности».
+     Пять его пунктов: (1) табы системные (канон: подчёркнутые
+     14/500 sentence case), (2) 3D один в один со страницы Showcase,
+     (3) кнопки не огромные и не в боксе, (4) лейаут компактнее по
+     вертикали, (5) History = наш вертикальный таймлайн с цветными
+     точками (язык ленты дашборда). Плюс: последний коммент у
+     превью, Copy link кнопкой, оверлей = catalog-overlay, таблица
+     списка с сортируемой шапкой (ховер) и футером со счётом.
+     ============================================================ -->
+<script src="../system/components/studio.js" data-home="../index.html"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  :root { --z900:#18181b; --z700:#3f3f46; --z500:#71717a; --z400:#a1a1aa; --z200:#e4e4e7; --z100:#f4f4f5; --z50:#fafafa;
+          --blue:#2563eb; --b50:#eff6ff; --green:#16a34a; --amber:#d97706; --red:#ef4444; --cyan:#06b6d4; }
+  body { font-family: Inter, system-ui, sans-serif; background: #fff; color: var(--z900); padding: 40px 64px 80px; }
+  .lede { color: var(--z500); font-size: 13.5px; line-height: 1.6; max-width: 72ch; margin-bottom: 8px; }
+  .switch { margin: 20px 0 28px; display: flex; gap: 20px; }
+  .switch button { all: unset; cursor: pointer; font: 500 14px/1 Inter; color: var(--z500); padding-bottom: 6px; border-bottom: 2px solid transparent; }
+  .switch button.on { color: var(--blue); border-color: var(--blue); }
+
+  .frame { max-width: 980px; border: 1px solid var(--z200); border-radius: 8px; padding: 32px; }
+
+  /* СПИСОК */
+  .search { font: 600 10.5px/1 Inter; letter-spacing: 1.4px; color: var(--z500); margin-bottom: 6px; }
+  .searchline { border-bottom: 1px solid var(--z400); padding: 6px 0; color: var(--z400); font-size: 14px; max-width: 380px; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  thead th { font: 600 11px/1 Inter; letter-spacing: 1.2px; text-transform: uppercase; color: var(--z500);
+             text-align: left; padding: 10px 12px; background: var(--z50); border-bottom: 1px solid var(--z200); }
+  thead th.sort { cursor: pointer; }
+  thead th.sort:hover { background: var(--z100); color: var(--z700); }
+  thead th .arr { font-size: 10px; color: var(--z400); margin-left: 4px; }
+  thead th.sorted { color: var(--z900); }
+  thead th.sorted .arr { color: var(--blue); }
+  tbody td { padding: 14px 12px; border-bottom: 1px solid var(--z100); vertical-align: middle; }
+  tbody tr:hover { background: var(--z50); cursor: pointer; }
+  .thumb { width: 56px; height: 42px; background: var(--z100); border: 1px solid var(--z200); border-radius: 4px; display: inline-block; vertical-align: middle; margin-right: 12px; }
+  .glink { color: var(--blue); text-decoration: none; }
+  tbody tr:hover .glink { text-decoration: underline; text-underline-offset: 2px; }
+  .badge { font: 400 12px/1 Inter; padding: 3px 8px; border-radius: 5px; }
+  .badge--wait { background: #ecfeff; color: #0e7490; }
+  .badge--chg { background: #fffbeb; color: #b45309; }
+  .badge--ok { background: #f7fee7; color: #4d7c0f; }
+  tfoot td { padding: 12px; color: var(--z500); font-size: 13px; background: var(--z50); border-top: 1px solid var(--z200); }
+  .pg { display: inline-flex; align-items: center; gap: 6px; }
+  .pg b { width: 26px; height: 26px; border-radius: 999px; background: var(--blue); color: #fff; font: 500 12px/26px Inter; text-align: center; }
+  .pg span { color: var(--z400); }
+
+  /* АПРУВАЛ */
+  .crumb { font: 600 11px/1 Inter; letter-spacing: 1px; color: var(--z500); margin-bottom: 14px; }
+  .crumb b { color: var(--z400); font-weight: 600; }
+  h1.gift { font-family: Georgia, serif; font-weight: 400; font-size: 28px; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--z200); margin-bottom: 24px; }
+  .tabs button { all: unset; cursor: pointer; font: 500 14px/1 Inter; color: var(--z500); padding: 0 2px 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tabs button:hover { color: var(--z900); }
+  .tabs button.on { color: var(--z900); border-color: var(--z900); }
+
+  .grid { display: grid; grid-template-columns: 1fr 300px; gap: 32px; align-items: start; }
+  .viewer { border: 1px solid var(--z200); border-radius: 8px; background: #fff; }
+  .stage { height: 320px; display: grid; place-items: center; color: var(--z400); font-size: 13px;
+           background: radial-gradient(ellipse at 50% 60%, var(--z50), #fff 70%); border-radius: 8px 8px 0 0; }
+  .hints { display: flex; gap: 28px; justify-content: center; padding: 12px 0 14px; font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); }
+  .viewrow { display: flex; gap: 16px; align-items: center; margin-top: 12px; }
+  .qbtn { font: 600 11px/1 Inter; letter-spacing: 1px; color: var(--z900); border: 1px solid var(--z200); border-radius: 5px; padding: 9px 14px; background: #fff; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+  .qbtn:hover { background: var(--z50); }
+  .qbtn svg { width: 13px; height: 13px; }
+
+  .side .last { border: 1px solid var(--z200); border-left: 3px solid var(--amber); border-radius: 6px; padding: 14px 16px; margin-bottom: 20px; background: #fff; }
+  .side .last .who { font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); margin-bottom: 8px; }
+  .side .last p { font-size: 14px; line-height: 1.55; color: var(--z700); }
+  .side .last a { font-size: 13px; color: var(--blue); text-decoration: none; }
+  .act { display: flex; flex-direction: column; gap: 16px; }
+  .btn { font: 600 12px/1 Inter; letter-spacing: 1px; border-radius: 5px; padding: 13px 18px; text-align: center; cursor: pointer; }
+  .btn--fill { background: var(--blue); color: #fff; border: 1px solid var(--blue); }
+  .btn--line { background: #fff; color: var(--z900); border: 1px solid var(--z900); }
+
+  /* ТАЙМЛАЙН */
+  .tl { list-style: none; position: relative; padding-left: 22px; max-width: 560px; }
+  .tl::before { content: ''; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 1px; background: var(--z200); }
+  .tl li { position: relative; padding: 0 0 22px; }
+  .tl li:last-child { padding-bottom: 0; }
+  .tl .dot { position: absolute; left: -22px; top: 5px; width: 11px; height: 11px; border-radius: 999px; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--z200); }
+  .dot--blue { background: var(--blue); } .dot--green { background: var(--green); }
+  .dot--amber { background: var(--amber); } .dot--zinc { background: var(--z400); }
+  .tl .when { font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); margin-bottom: 4px; }
+  .tl .what { font-size: 14.5px; color: var(--z900); line-height: 1.5; }
+  .tl .what i { color: var(--z500); font-style: normal; }
+  .note { margin-top: 26px; padding: 12px 14px; background: var(--z50); border-radius: 6px; color: var(--z500); font-size: 12.5px; line-height: 1.6; max-width: 720px; }
+</style>
+</head>
+<body>
+  <p class="lede">Мокап v2 по критике Тона: системные табы (канон 14/500, подчёркивание), 3D-блок один в один со страницы Showcase, действия нормальной ступенью без бокса сбоку, последний коммент у превью, History нашим таймлайном, таблица списка с сортируемой шапкой и футером. Оверлей шоукейса = catalog-overlay портала. Кликаются: переключатель экранов, табы.</p>
+  <div class="switch">
+    <button class="on" data-v="list">Экран списка</button>
+    <button data-v="one">Экран апрувала</button>
+  </div>
+
+  <div class="frame" id="list">
+    <p class="search">SEARCH</p>
+    <p class="searchline">Start typing a gift name</p>
+    <table>
+      <thead><tr>
+        <th class="sort sorted">Gift <span class="arr">▲</span></th>
+        <th class="sort">Status <span class="arr">▲▼</span></th>
+        <th class="sort">Updated <span class="arr">▲▼</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td><span class="thumb"></span><a class="glink">Stags' Leap Wine Night and Day Collection</a></td><td><span class="badge badge--wait">Waiting for approval</span></td><td>17 Sep 2026</td></tr>
+        <tr><td><span class="thumb"></span><a class="glink">Macallan Prestige Collection</a></td><td><span class="badge badge--chg">Changes requested</span></td><td>15 Sep 2026</td></tr>
+        <tr><td><span class="thumb"></span><a class="glink">Venchi Chocoviar Collection</a></td><td><span class="badge badge--ok">Approved</span></td><td>11 Sep 2026</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Showing 1 to 3 of 3 approvals</td><td style="text-align:right"><span class="pg"><span>‹</span><b>1</b><span>›</span></span></td></tr></tfoot>
+    </table>
+    <p class="note">Шапка: сортируемые колонки со стрелками, ховер только на сортируемых (как в оригинале). Футер: счёт строк слева, пагинация справа — язык пагинации чекаута. Имя = синяя дверь по Тон-22, подчёркивание на ховере строки.</p>
+  </div>
+
+  <div class="frame" id="one" style="display:none">
+    <p class="crumb">‹ <b>ALL APPROVALS</b></p>
+    <h1 class="gift">Stags' Leap Wine Night and Day Collection <span class="badge badge--wait">Waiting for approval</span></h1>
+    <div class="tabs">
+      <button class="on" data-t="p">Preview</button>
+      <button data-t="m">Messages (1)</button>
+      <button data-t="h">History</button>
+    </div>
+
+    <div id="tab-p" class="grid">
+      <div>
+        <div class="viewer">
+          <div class="stage">живой 3D — блок один в один со страницы Showcase</div>
+          <div class="hints"><span>⟳ DRAG TO TURN</span><span>⊕ SCROLL TO ZOOM</span><span>✥ RIGHT-DRAG TO MOVE</span></div>
+        </div>
+        <div class="viewrow">
+          <button class="qbtn">👁 OPEN THE SHOWCASE</button>
+          <button class="qbtn">🔗 COPY LINK</button>
+        </div>
+      </div>
+      <div class="side">
+        <div class="last">
+          <p class="who">GILDEDBOX · 16 SEP, 5:40 AM</p>
+          <p>We refreshed the ribbon tone and the card stock as requested. Take a look and tell us if this is the direction.</p>
+          <a>Reply in messages</a>
+        </div>
+        <div class="act">
+          <div class="btn btn--fill">APPROVE &amp; START PRODUCTION</div>
+          <div class="btn btn--line">REQUEST CHANGES</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-m" style="display:none; max-width:560px">
+      <p class="tl when" style="margin-bottom:10px">Тред сообщений — как сейчас, айбрау «автор · время», текст рабочим 16, поле ответа внизу.</p>
+    </div>
+
+    <ul id="tab-h" class="tl" style="display:none">
+      <li><span class="dot dot--amber"></span><p class="when">16 SEP, 5:40 AM · GILDEDBOX</p><p class="what">Design updated <i>— new revision uploaded after your request</i></p></li>
+      <li><span class="dot dot--blue"></span><p class="when">15 SEP, 2:12 PM · YOU</p><p class="what">Changes requested <i>— «The ribbon reads too bright against the navy»</i></p></li>
+      <li><span class="dot dot--zinc"></span><p class="when">14 SEP, 9:03 AM · GILDEDBOX</p><p class="what">Design submitted for approval</p></li>
+      <li><span class="dot dot--green"></span><p class="when">11 SEP, 4:47 PM</p><p class="what">Approval created</p></li>
+    </ul>
+
+    <p class="note">Табы — системный канон (14/500, sentence case, подчёркивание, никакой полосы под рядом). Превью главный: две трети ширины, высота под него. Действия — колонкой справа, ступень medium, без бокса. Последний коммент дизайнера виден сразу, отвечать — в Messages. Copy link решает «не все догадаются скопировать из адресной строки» (та же кнопка появится и на самой share-странице). Шоукейс открывается catalog-overlay — тем же, что каталог на портале. History — вертикальный таймлайн с цветными точками (язык ленты дашборда: синее = твои действия, янтарное = ревизии, зелёное = вехи).</p>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+  document.querySelectorAll('.switch button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.switch button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      document.getElementById('list').style.display = b.dataset.v === 'list' ? '' : 'none';
+      document.getElementById('one').style.display = b.dataset.v === 'one' ? '' : 'none';
+    });
+  });
+  document.querySelectorAll('.tabs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.tabs button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      ['p', 'm', 'h'].forEach(function (k) {
+        document.getElementById('tab-' + k).style.display = b.dataset.t === k ? '' : 'none';
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
