@@ -702,6 +702,42 @@
       ]
     },
 
+    approvals: {
+      /* gbppl-approvals-1, 17.09. Ton, handing over the top item of
+         the client's own list (Julia's ticket DD-146): «сделай пока
+         концептуально, как есть... чтобы показать, что там и как надо
+         переделать», and about the frame: «Левое меню используй наше,
+         а не их. Хедер используй наш, новый. Я хочу их потихоньку
+         приучать».
+
+         ONE PROTOTYPE, TWO SCREENS, ONE FILE. The list is the page and
+         ?gift=<id> is the approval, the way ?v= holds the checkout's
+         versions. One row here, one name in the console, one link to
+         hand over.
+
+         WHAT `live` POINTS AT, and why it is not a lie. The real Gift
+         Design Approvals screens live on the client's staging portal,
+         which we do not replicate and are not going to: the whole
+         order is to show what has to be REDONE there. The closest
+         thing this house carries is the portal itself, so that is
+         where the Live door goes, exactly as the dashboard's does. */
+      label: 'Gift design approvals',
+      live: 'live/portal.html',
+      variants: [
+        {
+          id: 'concept',
+          label: 'The approval, rebuilt',
+          desc: 'The two screens a person uses to sign off a gift design, rebuilt on our own furniture: the portal bar and the portal rail instead of the ones on staging, with Design Approvals as the chosen row. The list is three columns and a picture: what the gift is, where it stands, when it last moved. The database id, the Details button and the status dropdown that sat inside the table head are gone, because the whole row is the door and the name in it is an ordinary underlined link. The search stays, filters do not. The approval itself decides with two honest buttons instead of a radio pair and a submit: approve and start production, which asks once and cannot be taken back, or request changes, which opens the one field it needs and will not send empty. Both print into the thread and move the status, so a decision reads back tomorrow as a message with a name and a time on it. Messages is a real thread with a reply field rather than one grey bubble in a corner, History is the trail of dates, and Design Layout does not exist. The preview is the live 3D viewer for designs that were built in 3D, with a quiet door that lays the whole share page over this one.',
+          status: 'in-progress',
+          href: 'live/gift-approvals.html',
+          ready: true,
+          tags: ['portal', 'flow', 'copy'],
+          created: '2026-09-17',
+          updated: '2026-09-17'
+        }
+      ]
+    },
+
     booking: {
       label: 'Book a meeting form',
       live: 'live/book-a-meeting.html',

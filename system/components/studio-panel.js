@@ -848,6 +848,12 @@
        the page (PAGES.dashboard.label) and the same word the shelf
        prints on its card. */
     'live/portal-dashboard.html': 'Portal dashboard',
+    /* gbppl-approvals-1, 17.09: the same word the registry gives the
+       page (PAGES.approvals.label) and the same word the shelf prints.
+       Without the line the console calls the page «Sandbox», which is
+       its container and not its name (measured before the line was
+       added), and that is the very thing this table exists to stop. */
+    'live/gift-approvals.html':   'Gift design approvals',
     'live/book-a-meeting.html':   'Book a meeting form',
     /* 15.09: the same word the registry gives the page
        (PAGES.share.label) and the same word the shelf prints. */
