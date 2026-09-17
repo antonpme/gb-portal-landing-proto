@@ -637,19 +637,16 @@
     share: {
       label: 'Share design page',
       live: 'live/design-share.html',
-      variants: [
-        {
-          id: 'share-actions',
-          label: 'Decision pair on',
-          desc: 'The sleeping Approve design / Request changes pair, woken by hand. Julia called the page view only (14.09), so no reader meets it by default; the day a client asks for an answer on this page, this is what it looks like.',
-          status: 'suggested',
-          href: 'live/design-share.html?actions=on',
-          ready: true,
-          tags: ['flow', 'client feedback'],
-          created: '2026-09-11',
-          updated: '2026-09-16'
-        }
-      ]
+      /* gbppl-design-share-actions-1 (Тон 17.09, ночь): «кнопки должны
+         включаться опционально через настройки прототипа, а не быть
+         частью дефолтного прототипа, на который попадаешь через
+         навигацию». Карточка «Decision pair on» (share-actions,
+         created 11.09) снята с полки: пара живёт осью Approval
+         actions в панели самой страницы (0f1ba37), прямой адрес
+         ?actions=on читается вечно по закону ссылок. Группа без
+         вариантов полкой не рисуется (buildPages: slice.variants
+         .length) — у страницы больше нет песочниц, и это правда. */
+      variants: []
     },
 
     portal: {
