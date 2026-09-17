@@ -442,6 +442,13 @@
     /* gbppl-switch-1. The third sibling of the trio, same shape of
        deed: the row, the track and the word. */
     [/^gb-switch/, 'system/components/switch.css'],
+    /* gbppl-tabs-1. ONE prefix covers the strip and every part of a
+       tab: `gb-tabs`, `gb-tab`, `gb-tab__label` and the modifiers all
+       start the same six letters, and the deed is the same file for
+       every one of them. Written `gb-tab` and not `gb-tabs?\b`,
+       because an underscore is a word character and `\b` would never
+       fire between `gb-tab` and `__label`. */
+    [/^gb-tab/, 'system/components/tabs.css'],
     /* gbppl-inputnumber-1. The frame had no deed of its own and read
        its owner off an ancestor; the rename is the moment to write
        the купчая down, one prefix like every other row. */
@@ -672,6 +679,29 @@
         var i = el.querySelector('.gb-switch__input');
         if (!i) return '';
         return (i.checked ? 'on' : 'off') + (i.disabled ? ' · disabled' : '');
+      } },
+
+    /* gbppl-tabs-1. The parts before the tab and the tab before the
+       strip, the rule of this table. The tab's detail says CHOSEN or
+       not, because that is the state and it lives in an aria
+       attribute rather than in a class: an inspector that read the
+       class list alone would say the same thing about every tab in
+       the row. */
+    { sel: '.gb-tab__count', name: 'Tab count', oro: 'tabs.html#anatomy' },
+    { sel: '.gb-tab__icon', name: 'Tab glyph', oro: 'tabs.html#options' },
+    { sel: '.gb-tab__label', name: 'Tab label', oro: 'tabs.html#anatomy' },
+    { sel: '.gb-tab', name: 'Tab', oro: 'tabs.html#states',
+      detail: function (el) {
+        return (el.getAttribute('aria-selected') === 'true' ? 'chosen' : 'not chosen') +
+               (el.disabled || el.getAttribute('aria-disabled') === 'true' ? ' · disabled' : '');
+      } },
+    { sel: '.gb-tabs', name: 'Tabs', oro: 'tabs.html#tabs',
+      detail: function (el) {
+        var all = el.querySelectorAll('.gb-tab').length;
+        return (/gb-tabs--small\b/.test(el.className) ? 'small' : 'default') +
+               ' · ' + all + (all === 1 ? ' tab' : ' tabs') +
+               (/gb-tabs--fill\b/.test(el.className) ? ' · sharing the row' : '') +
+               (/gb-tabs--ruled\b/.test(el.className) ? ' · ruled' : '');
       } },
 
     /* gbppl-oro-field-2. The four other looks of the field, above the
@@ -2785,7 +2815,10 @@
      need to be — it has no children to be pointed at instead. */
   /* gbppl-switch-1. The ROW, for the trio's reason: pointing at a
      switch is pointing at one setting, not at a track and a word. */
-  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gb-checkbox, .gb-switch, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
+  /* gbppl-tabs-1. The TAB, for the same reason: pointing at a tab is
+     pointing at one side of a thing, not at a word and a glyph. Alt
+     still drills to the label, the glyph or the count. */
+  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gb-checkbox, .gb-switch, .gb-tab, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
               '.gbb-slot, .gbs-chip, .gb-eyebrow, .gbh-navitem, .gbh-link';
   function resolveTarget(el, drill) {
     if (drill || !el || !el.closest) return el;

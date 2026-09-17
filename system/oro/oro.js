@@ -125,6 +125,11 @@
        the segmented control two rows down, and one word cannot name
        two controls. The page prints both words. */
     { href: 'switch.html', label: 'Switch' },
+    /* gbppl-tabs-1. Alphabetical, between the switch and the toggle,
+       and the name is everybody's: PrimeVue says Tabs, the design
+       file says tabs, and the house has been drawing them by hand on
+       four surfaces under no name at all. */
+    { href: 'tabs.html', label: 'Tabs' },
     /* gbppl-toggle-family-1. Last of the Base list under its own
        name, and the name is the house's: PrimeVue would call this
        control a SelectButton and keep ToggleButton for the single
