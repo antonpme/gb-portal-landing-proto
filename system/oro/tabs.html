@@ -401,20 +401,90 @@ GbOro.page({
     return out + (forCode ? '\n' : ' ') + '</div>';
   }
 
+  /* ---------- THE SPECIMENS REALLY SWITCH ----------
+     gbppl-tabs-3. Ton, on the showcase: the tabs in the Playground do
+     not answer a click. They do now, and they answer with the ELEVEN
+     LINES THIS PAGE PRINTS IN ITS OWN CODE SECTION, not with anything
+     cleverer — which is the demonstration, not a shortcut: the
+     component owns the look and the page owns the switching, so the
+     page that documents it has to do the switching itself.
+
+     Two honest differences from the snippet, both because a specimen
+     is not a product page: a strip here may have no panels at all, so
+     the panel half is skipped when `aria-controls` is missing, and
+     the readouts are repainted after every switch because the tables
+     under the stage describe the tab that is chosen RIGHT NOW.
+
+     The States shelf is deliberately NOT wired: it exists to hold six
+     states still side by side, and a frozen state that moves when you
+     poke it is not a specimen of anything. */
+  function wireTabs(strip, after) {
+    if (!strip || strip.__gbWired) return;
+    strip.__gbWired = true;
+    var tabs = [].slice.call(strip.querySelectorAll('.gb-tab'));
+    function choose(tab) {
+      if (!tab || tab.disabled) return;
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        var id = t.getAttribute('aria-controls');
+        var panel = id && document.getElementById(id);
+        if (panel) panel.hidden = !on;
+      });
+      /* TRAP 11 OF THE SKILL, ON A CLICK THIS TIME. The ink and the
+         underline cross over the micro clock, and a table painted in
+         the same breath as the switch reads the colour halfway
+         through the crossing: the first run of this reported the
+         chosen tab in Zinc 500 and called the underline transparent.
+         So the readouts are painted twice, and the wait is READ off
+         the tab rather than typed. */
+      if (after) {
+        after();
+        var ms = 0;
+        String(getComputedStyle(tab).transitionDuration).split(',').forEach(function (one) {
+          var n = parseFloat(one);
+          if (!isNaN(n)) ms = Math.max(ms, /ms$/.test(one.trim()) ? n : n * 1000);
+        });
+        setTimeout(after, ms + 40);
+      }
+    }
+    strip.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('.gb-tab') : null;
+      if (t) choose(t);
+    });
+    strip.addEventListener('keydown', function (e) {
+      var i = tabs.indexOf(document.activeElement), n = tabs.length;
+      if (i < 0) return;
+      if (e.key === 'ArrowRight') tabs[(i + 1) % n].focus();
+      else if (e.key === 'ArrowLeft') tabs[(i - 1 + n) % n].focus();
+      else if (e.key === 'Home') tabs[0].focus();
+      else if (e.key === 'End') tabs[n - 1].focus();
+      else return;
+      e.preventDefault();
+      choose(document.activeElement);
+    });
+  }
+
   function pgAfter(S, hold) {
     var on = hold.querySelector('#pgTab');
     if (!on) return;
     if (S.state === 'hover') on.classList.add('is-hover');
     if (S.state === 'focus') on.classList.add('is-focus');
     if (window.GbIcons && window.GbIcons.mount) window.GbIcons.mount(hold);
+    /* The stage is rebuilt from scratch on every axis change, so the
+       wiring is put back on the new strip every time. */
+    wireTabs(hold.querySelector('.gb-tabs'), paintPlayground);
     paintPlayground();
   }
 
   function paintPlayground() {
-    var on = document.getElementById('pgTab');
-    if (!on) return;
-    var row = on.closest('.gb-tabs');
-    var rest = row.querySelectorAll('.gb-tab')[1];
+    var row = document.querySelector('[data-pg="tabs"] .gb-tabs');
+    if (!row) return;
+    /* THE TABLE DESCRIBES THE TAB THAT IS CHOSEN RIGHT NOW, not the
+       one that happened to be chosen when the stage was built: after
+       gbppl-tabs-3 the reader can change that with a click. */
+    var on = row.querySelector('.gb-tab[aria-selected="true"]') || row.querySelector('.gb-tab');
+    var rest = row.querySelector('.gb-tab[aria-selected="false"]');
     var glyph = on.querySelector('.gb-tab__icon');
     txt('pgBox', boxOf(on));
     txt('pgLine', lineOf(on));
@@ -456,13 +526,17 @@ GbOro.page({
   /* ---------- anatomy ---------- */
   function paintAnatomy() {
     var strip = document.querySelector('#sizeShelf .gb-tabs');
-    var tab = document.getElementById('sz-md');
+    /* CHOSEN AND RESTING ARE FOUND BY THE ATTRIBUTE, NOT BY AN ID.
+       Since gbppl-tabs-3 the reader can move the choice in this very
+       shelf with a click, and a table that kept measuring the first
+       tab would start calling a transparent line «the underline». */
+    var tab = strip && (strip.querySelector('.gb-tab[aria-selected="true"]') || strip.querySelector('.gb-tab'));
     var iconTab = document.getElementById('op-icon');
     var count = document.querySelector('#sizeShelf .gb-tab__count');
     if (strip) txt('anRow', boxOf(strip) + ', gap ' + px(getComputedStyle(strip).columnGap) + ', overflow-x ' + getComputedStyle(strip).overflowX);
     if (tab) txt('anTab', boxOf(tab) + ', padding ' + padOf(tab));
     if (tab) {
-      var rest = document.querySelector('#sizeShelf .gb-tab[aria-selected="false"]');
+      var rest = strip.querySelector('.gb-tab[aria-selected="false"]');
       txt('anLine', lineOf(tab) + (rest ? ', not chosen: ' + lineOf(rest) : ''));
     }
     if (iconTab) {
@@ -487,6 +561,13 @@ GbOro.page({
         after: pgAfter
       });
     }
+    /* THE SHELVES WITH SEVERAL TABS ANSWER A CLICK TOO. Sizes and
+       Options each show a real strip of three, and a strip of three
+       that cannot be switched teaches the opposite of what the page
+       says. The States shelf is left alone on purpose: its six
+       specimens are frozen states. */
+    [].forEach.call(document.querySelectorAll('#sizeShelf .gb-tabs, #optShelf .gb-tabs'),
+      function (strip) { wireTabs(strip, paintAll); });
     paintAll();
     /* TRAP 11 OF THE SKILL. A specimen wearing a demo state class at
        load is still inside its own colour transition on the first
