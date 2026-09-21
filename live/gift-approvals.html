@@ -276,6 +276,101 @@
      .gbppa-thumb), the narrow search field, and the two lines that
      say which of this page's own columns goes where once the row
      stops being a row.
+
+     ============================================================
+     gbppl-approvals-pv-1 — THE PREVIEW GETS AN AXIS OF ITS OWN
+                                                        21.09.2026
+     ------------------------------------------------------------
+     The client looked at the quick mock of three preview layouts
+     (sandbox\approvals-layout-mock.html, blocks lay-k1 / k2 / k3)
+     and said: «им не хватает полировки, не пойму, как они будут
+     выглядеть в реале. Сделай их в нашем основном прототипе, все
+     три». So the three are built here, on the real furniture, and
+     they are an AXIS rather than three pages: ?pv=cinema | desk |
+     signature, a row in the console beside Frame, cinema by
+     default, and the value rides every link the page builds for
+     exactly the reason ?frame= does — hrefFor keeps the whole
+     query, so no key has to be taught to header.js.
+
+     ONE DOM, THREE SKINS, AND ONE model-viewer. Three copies of the
+     stage would be three WebGL contexts and three copies of the
+     GLB; there is one stage, one viewer, one hint, and what changes
+     is where the three small things around it stand.
+
+       cinema      The stage takes the whole working block and grows
+                   a third taller (700 against 520). UNDER it ONE
+                   line: the gesture hint on the left, and on the
+                   right the two quiet doors as TEXT, Blue 600 with
+                   an underline on hover (Ton-22), not boxes. There
+                   is no separate row of utilities. The two acts
+                   move UP INTO THE HEAD of the page, at the right
+                   edge of the title line; when the content column
+                   gets narrow they fall under the title. The last
+                   word from the design team becomes a THIN LINE
+                   over the stage: an eyebrow, one truncated
+                   sentence and a door into Messages.
+       desk        The 2/3 + 300 grid this page already had, with
+                   the stage stretched to the FULL HEIGHT of the row
+                   (the object column is a flex column and the plate
+                   is flex:1 over a 520 floor). The side column is
+                   ordered by importance: the two acts, then the
+                   last word, then the two doors as a quiet column
+                   at the foot. Nothing floats inside the stage but
+                   the hint.
+       signature   The stage takes the whole block and the same 700,
+                   and the two utilities become TWO QUIET GLYPHS in
+                   its top right corner: the system icon button at
+                   the --small rung, dressed through its own slots
+                   (white ground, Zinc 200 hairline, --radius
+                   corners) rather than repainted, with the tooltip
+                   organism saying what each one is. Under the stage
+                   a signature strip: the last word on the left at a
+                   520 measure, the two acts on the right in a row,
+                   Request changes and then Approve.
+
+     TWO CARRIERS OF MARKUP, ONE SET OF HANDLERS. The two acts exist
+     twice (in the head for cinema, in the side for desk and
+     signature) and the two doors three times (a text pair under the
+     stage, a text column in the side, a glyph pair in the corner),
+     because CSS cannot move a node between parents. Not one handler
+     is written twice: every carrier is addressed by data attribute
+     (data-gbppa-approve / -ask / -copy / -showcase / -messages) and
+     the listeners are delegated on the document. The showcase door
+     needed nothing at all: catalog-overlay.js already delegates on
+     its own selector, so a second and a third door wearing
+     data-gbppa-showcase are doors the moment they exist.
+
+     WHAT MOVED IN THE MARKUP AND WHY. The gesture hint used to be
+     written into the stage by drawStage and positioned absolutely
+     against it. It is static markup now, inside .gbppa-utils, and
+     the CONTAINER is what moves: absolute at the foot of the stage
+     for desk and signature, a static line under the stage for
+     cinema. One hint, one set of words, two positions. The old
+     .gbppa-viewrow with its two labelled --small buttons is gone
+     entirely: no layout asks for a boxed row of utilities any more.
+
+     THE SLOT KEEPS ITS PROMISE, AND IT COSTS ONE SCROLL. The
+     confirmation, the changes form and the outcome strip still open
+     in the slot under the two columns, so nothing above them moves
+     (Ton-19). In cinema the acts are in the head and the slot is
+     below a 700 stage, which can be off screen, so opening one of
+     them brings the slot into view when it is not already there.
+
+     THE AMBER EDGE. The last word from the design team carries a
+     3px amber left edge in every layout now, the way the approved
+     mock draws it, so it is the same object whether it is a card or
+     a line. The hue is #f59e0b, and it is not invented here: it is
+     the warning fill of badge.css (amber 500). It goes in the
+     report as a finding, because a warning hue lives inside two
+     components and has no name on :root.
+
+     NEW NO TOKEN on this page:
+       700   the cinema and signature stage, a third above the 520
+             of the desk. A viewer height is not on the space scale,
+             and 520 was NO TOKEN before it.
+       480   the same stage below 768.
+       3     the amber edge of the last word. A rule weight, not a
+             rung; the mock's own.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -574,6 +669,23 @@ a.gbppa-crumb:hover, body.gb-demo a.gbppa-crumb:hover {
   align-items: center;
   gap: var(--space-16);
 }
+/* THE ACTS IN THE HEAD, AND ONLY IN CINEMA (gbppl-approvals-pv-1).
+   The title line is already a wrapping flex row, so the pair takes
+   the right edge with an auto margin and falls under the title on
+   its own when the two no longer fit. Below 720 OF COLUMN it stops
+   hugging the right edge and stands under the title at the left,
+   where the eye is already reading. */
+.gbppa-headacts { display: none; }
+body[data-pv="cinema"] .gbppa-headacts:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-16);         /* Ton 14.09: the one gap between buttons in a row */
+  margin-left: auto;
+}
+@container approval (max-width: 719px) {
+  body[data-pv="cinema"] .gbppa-headacts:not([hidden]) { margin-left: 0; width: 100%; }
+}
 .gbppa-title {
   margin: 0;
   font-family: var(--font-serif);
@@ -726,6 +838,10 @@ body[data-frame="portal"] .gbppa-headbox {
   grid-template-columns: minmax(0, 1fr) 300px;   /* NO TOKEN 300: the mock's side column */
   gap: var(--space-32);
   align-items: start;
+  /* THE HEIGHT OF THE STAGE IS A PROPERTY OF THE LAYOUT, so it is
+     declared once here and read once by the plate. NO TOKEN, and the
+     whole list is in the file head. */
+  --gbppa-stage-h: 520px;
 }
 /* The columns stack when the CONTENT COLUMN is too narrow for them,
    not when the window is: below 720 of column the viewer would be
@@ -734,17 +850,38 @@ body[data-frame="portal"] .gbppa-headbox {
   .gbppa-two { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* ============================================================
+   THE PREVIEW LAYOUT AXIS, ?pv=            gbppl-approvals-pv-1
+   ------------------------------------------------------------
+   «Сделай их в нашем основном прототипе, все три» (the client,
+   21.09, on the three layouts of the mock). ONE DOM, ONE viewer,
+   three skins. Everything below is written as «what this layout
+   does differently», and the shared shape stays above it.
+   ============================================================ */
+
 /* ---- THE STAGE, live\design-share.html's own plate and viewer,
-        value for value ---- */
+        value for value. Only its height belongs to the layout. ---- */
+.gbppa-stagewrap { position: relative; }
 .gbppa-plate {
   position: relative;
   width: 100%;
-  height: 520px;                /* NO TOKEN: see the file head */
+  height: var(--gbppa-stage-h);
   overflow: hidden;
   background: var(--zinc-50);   /* the share page's --gbds-ground on its default concept */
   border-radius: var(--radius);
 }
-@media (max-width: 767px) { .gbppa-plate { height: 360px; } }
+/* CINEMA AND SIGNATURE GIVE THE OBJECT THE WHOLE BLOCK, and a third
+   more height with it: 700 against 520. */
+body[data-pv="cinema"] .gbppa-two,
+body[data-pv="signature"] .gbppa-two {
+  grid-template-columns: minmax(0, 1fr);
+  --gbppa-stage-h: 700px;       /* NO TOKEN: see the file head */
+}
+@media (max-width: 767px) {
+  .gbppa-two { --gbppa-stage-h: 360px; }
+  body[data-pv="cinema"] .gbppa-two,
+  body[data-pv="signature"] .gbppa-two { --gbppa-stage-h: 480px; }   /* NO TOKEN */
+}
 .gbppa-viewer {
   display: block;
   width: 100%;
@@ -756,6 +893,18 @@ body[data-frame="portal"] .gbppa-headbox {
 }
 .gbppa-flat { width: 100%; height: 100%; object-fit: contain; display: block; }
 
+/* ---- THE UTILITY LINE. It holds the gesture hint and, in cinema,
+        the two quiet doors. THE LINE is what moves between layouts;
+        the hint itself is one node with one set of words, written
+        once in the markup (it used to be written into the stage by
+        the script and positioned against it, which made it
+        impossible to stand anywhere else). ---- */
+.gbppa-utils {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
 /* ---- THE GESTURE HINT, PERMANENT, AT THE FOOT OF THE OBJECT.
         live\design-share.html's .gbds-hint, carried whole: the same
         tongue in the ground's own colour, the same three gestures
@@ -765,13 +914,8 @@ body[data-frame="portal"] .gbppa-headbox {
 .gbppa-hint {
   font-weight: 400;
   font-size: 11px;              /* NO TOKEN: the share page's own, Ton 14.09 */
-  position: absolute;
-  z-index: 2;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: var(--space-16);
   width: fit-content;
-  max-width: calc(100% - var(--space-32));
+  max-width: 100%;
   padding: var(--space-16);
   background: var(--zinc-50);
   border-radius: var(--radius);
@@ -794,47 +938,204 @@ body[data-frame="portal"] .gbppa-headbox {
    between the two rules. Looked at on the instrument at 360: the tab
    wraps into three lines and covers a third of a 360 stage. So the
    caption also goes where the stage is too small to carry it, and
-   that is a decision about THIS stage, not about the share page's. */
+   that is a decision about THIS stage, not about the share page's.
+   THE SAME TRAP, THE OTHER HALF: the doors share the line with the
+   hint, so they carry an auto margin rather than lean on
+   space-between, and a hidden hint leaves them exactly where they
+   were instead of sliding to the left edge. */
 @media (max-width: 767px) {
   .gbppa-hint { display: none; }
 }
+/* A design drawn flat has nothing to turn, so it has no gestures to
+   hint at and no showcase to open, and the line they share goes with
+   them rather than leaving a band of air under the picture. */
+#gbppaPanePreview[data-has3d="0"] .gbppa-utils { display: none; }
 
-/* ---- The quiet doors of the VIEWER live with the viewer and are
-        one rung below the page's acts (Ton-18: the utilities of a
-        viewer belong to the viewer; the decisions belong to the
-        page). ---- */
-.gbppa-viewrow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-16);         /* Ton 14.09: the one gap between buttons in a row */
-  margin-top: var(--space-16);
+/* DESK AND SIGNATURE: the line floats at the foot of the stage, the
+   way the share page draws it, and only the hint is in it. */
+body[data-pv="desk"] .gbppa-utils,
+body[data-pv="signature"] .gbppa-utils {
+  position: absolute;
+  z-index: 2;
+  left: var(--space-16);
+  right: var(--space-16);
+  bottom: var(--space-16);
+  justify-content: center;
+  pointer-events: none;
 }
-.gbppa-note { font-size: 16px; line-height: 1.6; color: var(--zinc-500); margin: var(--space-16) 0 0; }
+/* CINEMA: ONE LINE UNDER THE STAGE, and there is no other row of
+   utilities on the surface. The hint loses its plate here (it is
+   standing on the block's own white, not over the object) and the
+   doors take the right edge. */
+body[data-pv="cinema"] .gbppa-utils { padding-top: var(--space-16); }
+body[data-pv="cinema"] .gbppa-hint { background: transparent; padding: 0; }
 
-/* ---- The side column: the last word, then the two acts ---- */
-.gbppa-side { display: flex; flex-direction: column; gap: var(--space-24); }
-.gbppa-last {
-  background: var(--zinc-50);
-  border-radius: var(--radius);
-  padding: var(--space-16);
-}
-.gbppa-last__meta { margin: 0 0 var(--space-8); }
-.gbppa-last__text { margin: 0 0 var(--space-8); font-size: 16px; line-height: 1.6; color: var(--zinc-900); }
-a.gbppa-door, body.gb-demo a.gbppa-door {
+/* ---- THE TWO QUIET DOORS. Text, Blue 600, an underline at offset 2
+        on hover (Ton-22), never a box. One recipe, worn by an <a> in
+        the last word and by a <button> in both door carriers: a
+        control that changes nothing about the address is a button,
+        and a button that reads as prose has to be undressed first. ---- */
+a.gbppa-door, body.gb-demo a.gbppa-door, button.gbppa-door {
   font-size: 14px;
   color: var(--blue-600);
   text-decoration: none;
   cursor: pointer;
 }
-a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline; text-underline-offset: 2px; }
+button.gbppa-door {
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+}
+a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover,
+button.gbppa-door:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+/* WHICH CARRIER OF THE DOORS IS ON, and it is exactly one per
+   layout. All three are off by default, and a design with no 3D
+   turns all three off whatever the layout says. */
+.gbppa-doors, .gbppa-glyphs { display: none; }
+.gbppa-doors { align-items: center; gap: var(--space-24); }
+body[data-pv="cinema"] #gbppaPanePreview[data-has3d="1"] .gbppa-doors--line {
+  display: inline-flex;
+  margin-left: auto;            /* see trap 30 above: the hint may not be there */
+  flex: none;
+}
+body[data-pv="desk"] #gbppaPanePreview[data-has3d="1"] .gbppa-doors--col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+}
+
+/* ---- SIGNATURE: the two utilities as glyphs in the corner of the
+        stage. The system icon button at the --small rung (40, and
+        the ladder has no 36), DRESSED THROUGH ITS OWN SLOTS rather
+        than repainted: a white ground, a Zinc 200 hairline and
+        --radius corners instead of the round ones, so the organism
+        keeps its geometry, its states and its focus ring. The word
+        each one carries comes from the tooltip organism. ---- */
+body[data-pv="signature"] #gbppaPanePreview[data-has3d="1"] .gbppa-glyphs {
+  display: flex;
+  position: absolute;
+  z-index: 3;
+  top: var(--space-16);
+  right: var(--space-16);
+  gap: var(--space-8);
+}
+.gbppa-glyph.gb-btn {
+  --gbb-bg:          var(--white);
+  --gbb-bg-hover:    var(--zinc-50);
+  --gbb-bg-active:   var(--zinc-100);
+  --gbb-line-w:      var(--gb-btn-border-width);
+  --gbb-line-style:  solid;
+  --gbb-line:        var(--zinc-200);
+  --gbb-line-hover:  var(--zinc-300);
+  --gbb-line-active: var(--zinc-300);
+  border-radius: var(--radius);
+}
+
+.gbppa-note { font-size: 16px; line-height: 1.6; color: var(--zinc-500); margin: var(--space-16) 0 0; }
+
+/* ---- The side column: the two acts, the last word, the doors ---- */
+.gbppa-side { display: flex; flex-direction: column; gap: var(--space-24); }
+.gbppa-last {
+  background: var(--zinc-50);
+  border-left: 3px solid #f59e0b;   /* NO TOKEN 3; amber 500, badge.css's own warning fill */
+  border-radius: var(--radius);
+  padding: var(--space-16);
+}
+.gbppa-last__meta { margin: 0 0 var(--space-8); }
+.gbppa-last__text { margin: 0 0 var(--space-8); font-size: 16px; line-height: 1.6; color: var(--zinc-900); }
+
+/* CINEMA: the last word is a THIN LINE over the stage. Same object,
+   same amber edge, one sentence of it, and the door out of it. */
+.gbppa-lastline { display: none; }
+body[data-pv="cinema"] .gbppa-lastline:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8) var(--space-16);
+  background: var(--zinc-50);
+  border-left: 3px solid #f59e0b;   /* NO TOKEN 3, the card's own edge */
+  border-radius: var(--radius);
+  padding: var(--space-8) var(--space-16);
+  margin-bottom: var(--space-16);
+}
+.gbppa-lastline__meta { flex: none; margin: 0; }
+.gbppa-lastline__text {
+  flex: 1 1 12ch;
+  min-width: 0;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--zinc-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gbppa-lastline__door { flex: none; }
+/* AND THE LINE STACKS BEFORE IT BLEEDS. The eyebrow does not
+   truncate (a date cut in half says nothing), so below 720 of column
+   the three parts each take a row of their own rather than push the
+   plaque past the vertical lines of the block it stands in (Ton
+   16.09). Only the sentence keeps its ellipsis. */
+@container approval (max-width: 719px) {
+  .gbppa-lastline__meta,
+  .gbppa-lastline__text { flex: 1 1 100%; }
+}
 
 /* TWO ACTS, ONE RUNG, ONE GAP, AND THEY STACK BECAUSE THE COLUMN IS
    300 WIDE (Ton-19: two buttons of one rung at two lengths under
    each other is the unsystematic look; here they are one length,
    the column's). Medium, not large: this is a working surface, and
-   large is the conversion rung. */
+   large is the conversion rung. The head carrier of the same two
+   acts is medium as well, so the pair reads at ONE rung whichever
+   layout is on. */
 .gbppa-acts { display: flex; flex-direction: column; gap: var(--space-16); }
+
+/* ---- DESK: the stage takes the whole height of the row, which is
+        the side column's height whenever that column is the taller
+        of the two, and never less than the 520 floor. ---- */
+body[data-pv="desk"] .gbppa-two { align-items: stretch; }
+body[data-pv="desk"] .gbppa-objcol { display: flex; flex-direction: column; }
+body[data-pv="desk"] .gbppa-stagewrap { flex: 1; display: flex; flex-direction: column; }
+body[data-pv="desk"] .gbppa-plate { flex: 1; height: auto; min-height: var(--gbppa-stage-h); }
+
+/* ---- CINEMA: the side column has nothing left to hold. Its two
+        acts are in the head and its last word is the line over the
+        stage. ---- */
+body[data-pv="cinema"] .gbppa-side { display: none; }
+
+/* ---- SIGNATURE: the side column becomes the strip under the
+        stage. The last word on the left at a reading measure, the
+        two acts on the right in a row, and the row is reversed so
+        Request changes stands before Approve: the quieter act is
+        read first and the irreversible one sits at the end of the
+        line. ---- */
+body[data-pv="signature"] .gbppa-side {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-32);
+}
+body[data-pv="signature"] .gbppa-last { order: 1; flex: 1 1 320px; max-width: 520px; }  /* NO TOKEN 520: a reading measure */
+body[data-pv="signature"] .gbppa-acts {
+  order: 2;
+  flex: none;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+}
+@container approval (max-width: 719px) {
+  body[data-pv="signature"] .gbppa-last { max-width: none; }
+  body[data-pv="signature"] .gbppa-acts { width: 100%; flex-direction: column-reverse; }
+}
 
 /* THE SLOT. The confirmation, the changes form and the outcome strip
    open UNDER the two columns, in a place kept for them, so nothing
@@ -936,7 +1237,7 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
      paint, and data-home goes one level up to the hub that holds it. -->
 <script src="../system/components/studio.js" data-home="../index.html"></script>
 </head>
-<body class="gb-demo" data-frame="clean">
+<body class="gb-demo" data-frame="clean" data-pv="cinema">
 
   <!-- ============ THE PORTAL BAR ============
        The classes of .gbh-pbar, worn exactly as live\portal.html and
@@ -1114,6 +1415,22 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
             <div class="gbppa-head">
               <h1 class="gbppa-title gbppa-title--object" id="gbppaOneTitle"></h1>
               <span class="gb-badge gb-badge--quiet" id="gbppaOneBadge"></span>
+
+              <!-- THE SECOND CARRIER OF THE TWO ACTS, and it stands
+                   only in cinema (gbppl-approvals-pv-1). Not one
+                   handler is written twice: both carriers are
+                   addressed by data attribute and the listeners are
+                   delegated. Medium, the same rung the side column
+                   wears, so the pair never changes size with the
+                   layout (Ton-19). -->
+              <div class="gbppa-headacts" id="gbppaHeadActs" hidden>
+                <button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button" data-gbppa-approve>
+                  <span class="gb-btn__label">Approve &amp; start production</span>
+                </button>
+                <button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" data-gbppa-ask aria-expanded="false" aria-controls="gbppaChanges">
+                  <span class="gb-btn__label">Request changes</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1130,38 +1447,76 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
 
             <div class="gbppa-body gbppa-body--pad">
 
-              <div id="gbppaPanePreview" role="tabpanel" aria-labelledby="gbppaTabPreview">
+              <div id="gbppaPanePreview" role="tabpanel" aria-labelledby="gbppaTabPreview" data-has3d="0">
+
+                <!-- CINEMA: the last word from the design team as a thin
+                     line over the stage. One sentence, truncated, and a
+                     door into Messages. The card below says the same thing
+                     at length for the other two layouts; only one of the
+                     two ever stands. -->
+                <div class="gbppa-lastline" id="gbppaLastLine" hidden>
+                  <span class="gb-eyebrow gbppa-lastline__meta" id="gbppaLastLineMeta"></span>
+                  <span class="gbppa-lastline__text" id="gbppaLastLineText"></span>
+                  <a class="gbppa-door gbppa-lastline__door" href="#" data-gbppa-messages>Reply in messages</a>
+                </div>
+
                 <div class="gbppa-two">
-                  <div>
-                    <div class="gbppa-plate" id="gbppaStage"></div>
-                    <div class="gbppa-viewrow" id="gbppaViewRow">
-                      <button class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary" type="button" id="gbppaShowcase" data-gbppa-showcase>
-                        <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="eye" data-gb-icon-size="16"></span></span>
-                        <span class="gb-btn__label">Open the showcase</span>
-                      </button>
-                      <button class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary" type="button" id="gbppaCopy">
-                        <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="link" data-gb-icon-size="16"></span></span>
-                        <span class="gb-btn__label">Copy link</span>
-                      </button>
+                  <div class="gbppa-objcol">
+                    <div class="gbppa-stagewrap">
+                      <div class="gbppa-plate" id="gbppaStage"></div>
+
+                      <!-- SIGNATURE: the two utilities as quiet glyphs in
+                           the corner of the stage, the system icon button
+                           dressed through its own slots. -->
+                      <div class="gbppa-glyphs" id="gbppaGlyphs">
+                        <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbppa-glyph" type="button"
+                                data-gbppa-showcase data-gb-tip="Open the showcase" data-gb-tip-place="bottom" aria-label="Open the showcase">
+                          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="eye" data-gb-icon-size="20"></span></span>
+                        </button>
+                        <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbppa-glyph" type="button"
+                                data-gbppa-copy data-gb-tip="Copy link" data-gb-tip-place="bottom" aria-label="Copy link">
+                          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="link" data-gb-icon-size="20"></span></span>
+                        </button>
+                      </div>
+
+                      <!-- THE UTILITY LINE. The gesture hint lives here in
+                           every layout; in cinema the two quiet doors join
+                           it and the line steps out from under the stage. -->
+                      <div class="gbppa-utils">
+                        <p class="gb-eyebrow gbppa-hint" id="gbppaHint">
+                          <span class="gbppa-hint__bit"><span data-gb-icon="rotate" data-gb-icon-size="12"></span>Drag to turn</span>
+                          <span class="gbppa-hint__bit"><span data-gb-icon="mouse" data-gb-icon-size="12"></span>Scroll to zoom</span>
+                          <span class="gbppa-hint__bit"><span data-gb-icon="move" data-gb-icon-size="12"></span>Right-drag to move</span>
+                        </p>
+                        <span class="gbppa-doors gbppa-doors--line">
+                          <button class="gbppa-door" type="button" data-gbppa-showcase>Open the showcase</button>
+                          <button class="gbppa-door" type="button" data-gbppa-copy>Copy link</button>
+                        </span>
+                      </div>
                     </div>
                     <p class="gbppa-note" id="gbppaPreviewNote" hidden></p>
                   </div>
 
                   <aside class="gbppa-side">
-                    <div class="gbppa-last" id="gbppaLast" hidden>
-                      <p class="gb-eyebrow gbppa-last__meta" id="gbppaLastMeta"></p>
-                      <p class="gbppa-last__text" id="gbppaLastText"></p>
-                      <a class="gbppa-door" id="gbppaLastDoor" href="#">Reply in messages</a>
-                    </div>
-
                     <div class="gbppa-acts" id="gbppaActs">
-                      <button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button" id="gbppaApprove">
+                      <button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button" data-gbppa-approve>
                         <span class="gb-btn__label">Approve &amp; start production</span>
                       </button>
-                      <button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" id="gbppaAskBtn" aria-expanded="false" aria-controls="gbppaChanges">
+                      <button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" data-gbppa-ask aria-expanded="false" aria-controls="gbppaChanges">
                         <span class="gb-btn__label">Request changes</span>
                       </button>
                     </div>
+
+                    <div class="gbppa-last" id="gbppaLast" hidden>
+                      <p class="gb-eyebrow gbppa-last__meta" id="gbppaLastMeta"></p>
+                      <p class="gbppa-last__text" id="gbppaLastText"></p>
+                      <a class="gbppa-door" href="#" data-gbppa-messages>Reply in messages</a>
+                    </div>
+
+                    <span class="gbppa-doors gbppa-doors--col">
+                      <button class="gbppa-door" type="button" data-gbppa-showcase>Open the showcase</button>
+                      <button class="gbppa-door" type="button" data-gbppa-copy>Copy link</button>
+                    </span>
                   </aside>
                 </div>
 
@@ -1455,6 +1810,25 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
   setFrame(frame);
 
   /* ============================================================
+     THE PREVIEW LAYOUT AXIS            gbppl-approvals-pv-1
+     ------------------------------------------------------------
+     The client, 21.09, on the three layouts of the mock: «сделай их
+     в нашем основном прототипе, все три». Same machinery as the
+     frame, to the letter: one attribute on <body>, one key in the
+     address, one row in the console, and the value rides every link
+     this page builds because hrefFor keeps the whole query. Cinema
+     is the default, and it is the one this house recommends.
+     ============================================================ */
+  var PVS = { cinema: 1, desk: 1, signature: 1 };
+  var pv = PVS[params.get('pv')] ? params.get('pv') : 'cinema';
+  function setPv(v) {
+    pv = PVS[v] ? v : 'cinema';
+    document.body.setAttribute('data-pv', pv);
+    writeKey('pv', pv);
+  }
+  setPv(pv);
+
+  /* ============================================================
      THE LIST
      ============================================================ */
   var listEl   = document.getElementById('gbppaList');
@@ -1607,24 +1981,31 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
   var badgeEl  = document.getElementById('gbppaOneBadge');
   var crumbHere = document.getElementById('gbppaCrumbHere');
   var crumbList = document.getElementById('gbppaCrumbList');
+  /* THE TWO CARRIERS OF THE ACTS. Which one stands is the layout's
+     business and it is settled in CSS; the script only ever says
+     whether the pair is there AT ALL. */
   var actsEl   = document.getElementById('gbppaActs');
+  var headActs = document.getElementById('gbppaHeadActs');
+  var askBtns  = [].slice.call(document.querySelectorAll('[data-gbppa-ask]'));
   var doneStrip = document.getElementById('gbppaDoneStrip');
   var doneText = document.getElementById('gbppaDoneText');
   var confirmEl = document.getElementById('gbppaConfirm');
   var changesEl = document.getElementById('gbppaChanges');
   var askEl    = document.getElementById('gbppaAsk');
   var askErrorEl = document.getElementById('gbppaAskError');
-  var askBtn   = document.getElementById('gbppaAskBtn');
   function clearAskError() { askEl.classList.remove('invalid'); askErrorEl.hidden = true; }
+  function expandAsk(open) {
+    askBtns.forEach(function (b) { b.setAttribute('aria-expanded', open ? 'true' : 'false'); });
+  }
+  var paneEl   = document.getElementById('gbppaPanePreview');
   var stageEl  = document.getElementById('gbppaStage');
   var noteEl   = document.getElementById('gbppaPreviewNote');
-  var viewRow  = document.getElementById('gbppaViewRow');
-  var showBtn  = document.getElementById('gbppaShowcase');
-  var copyBtn  = document.getElementById('gbppaCopy');
   var lastEl   = document.getElementById('gbppaLast');
   var lastMeta = document.getElementById('gbppaLastMeta');
   var lastText = document.getElementById('gbppaLastText');
-  var lastDoor = document.getElementById('gbppaLastDoor');
+  var lastLine = document.getElementById('gbppaLastLine');
+  var lastLineMeta = document.getElementById('gbppaLastLineMeta');
+  var lastLineText = document.getElementById('gbppaLastLineText');
   var threadEl = document.getElementById('gbppaThread');
   var eventsEl = document.getElementById('gbppaEvents');
   var replyEl  = document.getElementById('gbppaReply');
@@ -1637,10 +2018,11 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
   function drawDecision() {
     var open = gift.state === 'waiting';
     actsEl.hidden = !open;
+    headActs.hidden = !open;
     doneStrip.hidden = open;
     confirmEl.hidden = true;
     changesEl.hidden = true;
-    askBtn.setAttribute('aria-expanded', 'false');
+    expandAsk(false);
     if (!open) {
       doneStrip.className = 'gb-alert gb-alert--' + (gift.state === 'approved' ? 'success' : 'warning');
       doneText.textContent = gift.state === 'approved'
@@ -1666,13 +2048,22 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
     }).join('');
     msgCount.textContent = '(' + gift.messages.length + ')';
 
-    /* The last word from the design team, beside the preview. */
+    /* The last word from the design team. TWO CARRIERS, one fact: the
+       card the desk and the signature stand on, and the thin line
+       cinema lays over the stage. Both are filled every time and the
+       layout decides which one is on screen. */
     var last = null;
     gift.messages.forEach(function (m) { if (m.side !== 'you') last = m; });
     lastEl.hidden = !last;
+    lastLine.hidden = !last;
     if (last) {
       lastMeta.textContent = last.who + ' · ' + last.when;
       lastText.textContent = last.text;
+      lastLineMeta.textContent = last.who + ' · ' + last.when;
+      lastLineText.textContent = last.text;
+      /* The line truncates, so the whole sentence has to be reachable
+         by a pointer that rests on it. */
+      lastLineText.title = last.text;
     }
   }
 
@@ -1692,14 +2083,15 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
 
   /* ---- THE STAGE, live\design-share.html's own scene. A design
           built in 3D gets the viewer, the hint and the two doors; a
-          flat mock-up gets the picture and says so in one line. ---- */
-  var HINT =
-    '<p class="gb-eyebrow gbppa-hint">' +
-      '<span class="gbppa-hint__bit"><span data-gb-icon="rotate" data-gb-icon-size="12"></span>Drag to turn</span>' +
-      '<span class="gbppa-hint__bit"><span data-gb-icon="mouse" data-gb-icon-size="12"></span>Scroll to zoom</span>' +
-      '<span class="gbppa-hint__bit"><span data-gb-icon="move" data-gb-icon-size="12"></span>Right-drag to move</span>' +
-    '</p>';
+          flat mock-up gets the picture and says so in one line.
 
+          THE HINT AND THE DOORS ARE MARKUP NOW (gbppl-approvals-pv-1),
+          not a string written into the stage: cinema stands them in a
+          line UNDER the object and the other two float them over it,
+          and a node the script keeps re-creating inside the plate can
+          only ever be in one of those places. One attribute here says
+          whether there is an object to turn at all, and the whole
+          question of which utility carrier is on is CSS. ---- */
   var viewer = null;
   function drawStage() {
     stageEl.innerHTML = '';
@@ -1721,8 +2113,6 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
       mv.setAttribute('max-field-of-view', '45deg');
       mv.setAttribute('field-of-view', '30deg');
       stageEl.appendChild(mv);
-      stageEl.insertAdjacentHTML('beforeend', HINT);
-      if (window.GbIcons && window.GbIcons.mount) window.GbIcons.mount(stageEl);
       viewer = mv;
       frameCamera();
       mv.addEventListener('load', function () {
@@ -1741,7 +2131,7 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
       }
       noteEl.hidden = true;
       noteEl.textContent = '';
-      viewRow.hidden = false;
+      paneEl.setAttribute('data-has3d', '1');
     } else {
       var img = document.createElement('img');
       img.className = 'gbppa-flat';
@@ -1750,7 +2140,7 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
       stageEl.appendChild(img);
       noteEl.hidden = false;
       noteEl.textContent = 'This design was drawn flat. A turnable version comes with the first sample.';
-      viewRow.hidden = true;
+      paneEl.setAttribute('data-has3d', '0');
     }
   }
 
@@ -1861,7 +2251,11 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
   });
   function selectTab(id) { choose(document.getElementById(id)); }
 
-  lastDoor.addEventListener('click', function (e) {
+  /* THE DOOR INTO MESSAGES exists on both carriers of the last word,
+     so it is addressed by attribute and answered once. */
+  document.addEventListener('click', function (e) {
+    var d = e.target.closest ? e.target.closest('[data-gbppa-messages]') : null;
+    if (!d) return;
     e.preventDefault();
     selectTab('gbppaTabMessages');
     document.getElementById('gbppaTabMessages').focus();
@@ -1893,11 +2287,39 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
     drawList(searchEl ? searchEl.value : '');
   }
 
-  document.getElementById('gbppaApprove').addEventListener('click', function () {
-    changesEl.hidden = true;
-    askBtn.setAttribute('aria-expanded', 'false');
-    confirmEl.hidden = false;
-    document.getElementById('gbppaConfirmYes').focus();
+  /* THE SLOT IS WHERE EVERYTHING A DECISION OPENS LANDS (Ton-19), and
+     in cinema the acts are up in the head while the slot is under a
+     700 stage. So the slot is brought into view when it is not
+     already there, and left alone when it is: the page never jumps
+     under a person who can already see the answer. */
+  function reveal(el) {
+    if (!el || el.hidden) return;
+    var r = el.getBoundingClientRect();
+    var h = window.innerHeight || document.documentElement.clientHeight;
+    if (r.top >= 0 && r.bottom <= h) return;
+    try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    catch (e) { el.scrollIntoView(); }
+  }
+
+  /* BOTH CARRIERS OF THE TWO ACTS, ONE PAIR OF HANDLERS. */
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    if (e.target.closest('[data-gbppa-approve]')) {
+      changesEl.hidden = true;
+      expandAsk(false);
+      confirmEl.hidden = false;
+      reveal(confirmEl);
+      document.getElementById('gbppaConfirmYes').focus({ preventScroll: true });
+      return;
+    }
+    var ask = e.target.closest('[data-gbppa-ask]');
+    if (ask) {
+      confirmEl.hidden = true;
+      var open = changesEl.hidden;
+      changesEl.hidden = !open;
+      expandAsk(open);
+      if (open) { reveal(changesEl); askEl.focus({ preventScroll: true }); }
+    }
   });
   document.getElementById('gbppaConfirmNo').addEventListener('click', function () {
     confirmEl.hidden = true;
@@ -1908,16 +2330,9 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
       { kind: 'milestone', when: stamp() + ' · You', what: 'Approved, and production started' });
   });
 
-  askBtn.addEventListener('click', function () {
-    confirmEl.hidden = true;
-    var open = changesEl.hidden;
-    changesEl.hidden = !open;
-    askBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) askEl.focus();
-  });
   document.getElementById('gbppaAskCancel').addEventListener('click', function () {
     changesEl.hidden = true;
-    askBtn.setAttribute('aria-expanded', 'false');
+    expandAsk(false);
     askEl.value = '';
     clearAskError();
   });
@@ -1959,7 +2374,7 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
      click and held while the shorter word stands.
      ============================================================ */
   function shareUrl() {
-    try { return new URL(gift.share, location.href).href; }
+    try { return new URL((gift && gift.share) || location.pathname, location.href).href; }
     catch (e) { return location.href; }
   }
   function copyText(text, done) {
@@ -1983,24 +2398,41 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
       } catch (e) { no(); }
     }
   }
-  var copySaid = null;
+  /* THE ANSWER SPEAKS IN WHATEVER SHAPE THE DOOR IS WEARING. There
+     are two of them now: a line of text (cinema, desk) that swaps its
+     own words, and a glyph (signature) that swaps its drawing and the
+     word on its tooltip plate. The 1500ms and the frozen resting
+     width are the console's own and do not change, because a door
+     that grows while it answers moves everything beside it (Ton-19). */
   function sayCopied(btn, ok) {
+    var word  = ok ? 'Copied' : 'Could not copy';
+    var glyph = ok ? 'check' : 'link';
     var slot  = btn.querySelector('.gb-btn__icon');
     var label = btn.querySelector('.gb-btn__label');
-    if (!slot || !label) return;
-    if (copySaid) { clearTimeout(copySaid); copySaid = null; }
-    else btn.style.minWidth = btn.getBoundingClientRect().width + 'px';
-    if (window.GbIcons) slot.innerHTML = window.GbIcons.html(ok ? 'check' : 'link', 16);
-    label.textContent = ok ? 'Copied' : 'Could not copy';
-    copySaid = setTimeout(function () {
-      if (window.GbIcons) slot.innerHTML = window.GbIcons.html('link', 16);
-      label.textContent = 'Copy link';
+    var text  = !slot && !label;
+    if (btn.gbppaSaid) clearTimeout(btn.gbppaSaid);
+    else if (!slot || label) btn.style.minWidth = btn.getBoundingClientRect().width + 'px';
+    function say(w, g) {
+      if (slot && window.GbIcons) slot.innerHTML = window.GbIcons.html(g, slot.closest('.gb-btn--icon') ? 20 : 16);
+      if (label) label.textContent = w;
+      else if (text) btn.textContent = w;
+      if (btn.hasAttribute('data-gb-tip')) {
+        btn.setAttribute('data-gb-tip', w);
+        btn.setAttribute('aria-label', w);
+      }
+    }
+    say(word, glyph);
+    btn.gbppaSaid = setTimeout(function () {
+      say('Copy link', 'link');
       btn.style.minWidth = '';
-      copySaid = null;
+      btn.gbppaSaid = null;
     }, 1500);
   }
-  copyBtn.addEventListener('click', function () {
-    copyText(shareUrl(), function (ok) { sayCopied(copyBtn, ok); });
+  /* ONE HANDLER FOR ALL THREE CARRIERS OF THE DOOR. */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-gbppa-copy]') : null;
+    if (!b) return;
+    copyText(shareUrl(), function (ok) { sayCopied(b, ok); });
   });
 
   /* ============================================================
@@ -2025,8 +2457,15 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
       '<span class="gb-btn__icon" aria-hidden="true">' + (window.GbIcons ? window.GbIcons.html('close', 22) : '') + '</span></button>';
     panel.insertBefore(bar, panel.firstChild);
   }
+  /* THE DOOR IS WORN BY THREE NODES NOW, one per layout, so the strip
+     is hung off the attribute rather than off one button.
+     catalog-overlay.js needed nothing at all: it delegates on the
+     same selector, so a second and a third door are doors the moment
+     they exist. */
   ['click', 'pointerenter', 'focus'].forEach(function (ev) {
-    showBtn.addEventListener(ev, function () { setTimeout(dressOverlay, 0); });
+    document.addEventListener(ev, function (e) {
+      if (e.target.closest && e.target.closest('[data-gbppa-showcase]')) setTimeout(dressOverlay, 0);
+    }, true);
   });
 
   /* ============================================================
@@ -2073,6 +2512,21 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
         { label: 'Portal', value: 'portal', note: 'The head takes a card of its own, which is how the live portal stands today.' }
       ],
       onChange: setFrame
+    });
+    panel.addGroup({
+      type: 'choice',
+      /* «Preview», not «Preview layout»: the console's label column
+         truncates at about ten characters and «Preview la...» beside
+         «Frame» is a row that says nothing. Measured on the layer, not
+         guessed. */
+      title: 'Preview',
+      value: pv,
+      options: [
+        { label: 'Cinema',    value: 'cinema',    note: 'The stage takes the whole block and a third more height, one line under it carries the gestures and the two quiet doors, and the two acts move up into the head of the page.' },
+        { label: 'Desk',      value: 'desk',      note: 'The grid stays, the stage stretches to the full height of the row, and the column beside it reads by importance: the acts, the last word, the two doors.' },
+        { label: 'Signature', value: 'signature', note: 'The stage takes the whole block, the two utilities become quiet glyphs in its corner, and under it a strip signs the design off: the last word on the left, the two acts on the right.' }
+      ],
+      onChange: setPv
     });
   }
   if (panel && typeof panel.addGroup === 'function') wirePanel();
