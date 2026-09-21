@@ -884,8 +884,11 @@ body[data-frame="portal"] .gbppa-headbox {
   width: 100%;
   height: var(--gbppa-stage-h);
   overflow: hidden;
-  background: var(--zinc-50);   /* the share page's --gbds-ground on its default concept */
-  border-radius: var(--radius);
+  /* No ground and no frame (Ton, 21.09, night: «пусть превью будет
+     полностью на белом, как в оригинале») — the object stands on the
+     block's own white, seamless. The hint keeps its Zinc 50 tongue,
+     which is the share page's own shape for it. */
+  background: transparent;
 }
 /* BOTH LAYOUTS GIVE THE OBJECT THE WHOLE BLOCK (gbppl-approvals-pv-2,
    21.09: the desk column died with the third variant, and the client's
@@ -1008,14 +1011,33 @@ button.gbppa-door {
 a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover,
 button.gbppa-door:hover { text-decoration: underline; text-underline-offset: 2px; }
 
-/* ONE CARRIER OF THE DOORS NOW (gbppl-approvals-pv-2): a quiet text
-   row UNDER the stage, outside the plate, in both layouts. The corner
-   glyphs and the side column went with the third variant. A design
-   with no 3D has no showcase and no gestures, so the row goes too. */
-.gbppa-doors { display: none; align-items: center; gap: var(--space-24); }
-.gbppa-below { padding-top: var(--space-16); }
-#gbppaPanePreview[data-has3d="1"] .gbppa-doors--line { display: inline-flex; }
-#gbppaPanePreview[data-has3d="0"] .gbppa-below { display: none; }
+/* THE TWO DOORS LEFT THE PREVIEW ALTOGETHER (Ton, 21.09, night:
+   «убери вообще из превью... перенеси вниз под превью и сделай
+   красивыми ссылочками»). They stand UNDER the white block now, on
+   the page's own ground: two quiet Blue 600 links with their glyphs.
+   They show only while the Preview side is the open one and the
+   design has a 3D to show. */
+.gbppa-below { display: none; }
+#gbppaOne:has(#gbppaPanePreview[data-has3d="1"]:not([hidden])) .gbppa-below {
+  display: flex;
+  align-items: center;
+  gap: var(--space-24);
+  margin-top: var(--space-16);
+}
+.gbppa-below .gbppa-door {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+.gbppa-below .gb-btn__icon { display: inline-flex; color: var(--zinc-400); }
+/* The slot/label pair is borrowed for sayCopied's contract, not for
+   the button's voice: a quiet link speaks in sentence case (Ton-22),
+   not in the organism's caps. */
+.gbppa-below .gb-btn__label {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+}
 
 .gbppa-note { font-size: 16px; line-height: 1.6; color: var(--zinc-500); margin: var(--space-16) 0 0; }
 
@@ -1426,14 +1448,6 @@ body[data-pv="a"] .gbppa-slot > :not([hidden]) { margin-bottom: var(--space-24);
                       </div>
                     </div>
 
-                    <!-- THE TWO QUIET DOORS, under the stage and outside
-                         the plate, in both layouts. -->
-                    <div class="gbppa-below">
-                      <span class="gbppa-doors gbppa-doors--line">
-                        <button class="gbppa-door" type="button" data-gbppa-showcase>Open the showcase</button>
-                        <button class="gbppa-door" type="button" data-gbppa-copy>Copy link</button>
-                      </span>
-                    </div>
                     <p class="gbppa-note" id="gbppaPreviewNote" hidden></p>
                   </div>
 
@@ -1530,6 +1544,23 @@ body[data-pv="a"] .gbppa-slot > :not([hidden]) { margin-bottom: var(--space-24);
               </div>
 
             </div>
+          </div>
+
+          <!-- THE TWO DOORS, under the block on the page's own ground
+               (Ton, 21.09, night: out of the preview, «вниз под превью,
+               красивыми ссылочками»). -->
+          <div class="gbppa-below">
+            <!-- The slot/label pair inside each door is what lets
+                 sayCopied swap the glyph and the word and put both
+                 back, the same contract the buttons wear. -->
+            <button class="gbppa-door" type="button" data-gbppa-showcase>
+              <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="eye" data-gb-icon-size="16"></span></span>
+              <span class="gb-btn__label">Open the showcase</span>
+            </button>
+            <button class="gbppa-door" type="button" data-gbppa-copy>
+              <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="link" data-gb-icon-size="16"></span></span>
+              <span class="gb-btn__label">Copy link</span>
+            </button>
           </div>
 
         </section>
