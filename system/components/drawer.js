@@ -202,6 +202,17 @@
     document.body.appendChild(host._scrim);
     document.body.appendChild(host._panel);
 
+    /* gbppl-inspect-3: the panel and the scrim live on the body, so a
+       selector aimed at the host tag can never reach them. A host that
+       needs its detached furniture recognisable (Inspect must know its
+       own props drawer from a page's drawer) writes data-gbd-tag, and
+       the furniture carries the same mark. */
+    var tag = host.getAttribute('data-gbd-tag');
+    if (tag) {
+      host._scrim.setAttribute('data-gbd-tag', tag);
+      host._panel.setAttribute('data-gbd-tag', tag);
+    }
+
     host._scrim.addEventListener('click', function () { host.close(); });
     host._closeLeft.addEventListener('click', function () { host.close(); });
     host._closeRight.addEventListener('click', function () { host.close(); });

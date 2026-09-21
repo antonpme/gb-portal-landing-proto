@@ -1239,9 +1239,20 @@
      One per page, created on first use where the page has none, so
      connecting Inspect is a script tag and not a markup edit. */
   function drawerHost() {
-    var d = document.querySelector('gb-drawer');
+    /* gbppl-inspect-3 (21.09). The host is the instrument's OWN and is
+       marked so: live pages now carry gb-drawer of their own (checkout,
+       approvals), and reusing «the first drawer on the page» would both
+       hijack the page's drawer and make isChrome unable to tell the
+       props drawer from the page's furniture. Valerie, 21.09: «the
+       inspect tool doesn't work when the drawer is open». */
+    var d = document.querySelector('gb-drawer[data-gbi-host]');
     if (!d) {
       d = document.createElement('gb-drawer');
+      d.setAttribute('data-gbi-host', '');
+      /* The panel and the scrim are appended to the body, out of this
+         tag's reach, so the mark rides drawer.js's data-gbd-tag and
+         lands on the furniture itself. */
+      d.setAttribute('data-gbd-tag', 'gbi');
       document.body.appendChild(d);
     }
     return (d && typeof d.open === 'function') ? d : null;
@@ -2309,7 +2320,11 @@
        gbppl-oro-drawer-1 carved out the one exception: the drawer
        card draws a panel IN the page (`.gbdoc-panel`, docs.css) as
        its own specimen, and that one is exactly what a click means. */
-    if (target.closest('.gbd-panel:not(.gbdoc-panel)')) return false;
+    /* gbppl-inspect-3: the guard names the instrument's own host now.
+       A page drawer's contents ARE specimens; only the props table is
+       reading, not pointing. The .gbdoc-panel exception rides along
+       automatically — that specimen lives in the page, not the host. */
+    if (target.closest('.gbd-panel[data-gbd-tag="gbi"]')) return false;
     if (target.closest('[data-axis]')) return false;  /* a control chip, not a specimen */
     var slot = slotOf(target);
     if (!slot) return false;
@@ -2870,7 +2885,14 @@
      at it must not measure it. */
   function isChrome(el) {
     if (!el || !el.closest) return true;
-    return !!el.closest('gb-studio-panel, .gbsp, .gbsp-stage, .gbd-panel, .gbd-scrim, .gbi-layer');
+    /* gbppl-inspect-3: `.gbd-panel` used to stand in this list whole,
+       from the days when the only drawer anywhere was the props drawer
+       this instrument opens. Live pages now open drawers of their own,
+       and everything inside them was silently uninspectable (Valerie's
+       report). Chrome is now only the instrument's own host drawer; a
+       page's drawer is a resident like any other. The scrim stays
+       chrome: pointing at the dimmed void is pointing at nothing. */
+    return !!el.closest('gb-studio-panel, .gbsp, .gbsp-stage, .gbd-panel[data-gbd-tag="gbi"], .gbd-scrim, .gbi-layer');
   }
 
   /* ---------- what the pointer means ----------
@@ -2972,23 +2994,25 @@
   window.addEventListener('scroll', function () { if (MODE === 'inspect') schedule(); }, { passive: true });
   window.addEventListener('resize', function () { if (MODE === 'inspect') schedule(); });
 
-  /* A click while inspecting is a question about the element, not
-     a command to the page. Capture and stop, so nothing behind
-     the pointer ever hears it: a link is something to look at. */
+  /* gbppl-inspect-3 (Ton, 21.09): «чтобы инспект и динамические
+     элементы не конфликтовали в обе стороны». The old contract took
+     EVERY click as a question, so a drawer could not be opened or
+     closed while inspecting, and the page's dynamics were dead. The
+     contract now: hovering reads, a PLAIN click belongs to the page
+     (buttons press, drawers open, tabs switch), and Alt+click is the
+     question — the same Alt that already means «the exact element».
+     mousedown is stopped only under Alt, so an asking click does not
+     start a text selection; everything else reaches the page,
+     including submits, because a living prototype owns its forms. */
   document.addEventListener('click', function (e) {
-    if (MODE !== 'inspect' || isChrome(e.target)) return;
+    if (MODE !== 'inspect' || !e.altKey || isChrome(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
-    if (!openShowcase(e.target)) openFor(resolveTarget(e.target, e.altKey));
+    if (!openShowcase(e.target)) openFor(resolveTarget(e.target, true));
   }, true);
 
   document.addEventListener('mousedown', function (e) {
-    if (MODE !== 'inspect' || isChrome(e.target)) return;
-    e.preventDefault();
-  }, true);
-
-  document.addEventListener('submit', function (e) {
-    if (MODE !== 'inspect') return;
+    if (MODE !== 'inspect' || !e.altKey || isChrome(e.target)) return;
     e.preventDefault();
   }, true);
 
