@@ -1,0 +1,460 @@
+/* ============================================================
+   gbppl-table-1 — THE DATA TABLE
+   ------------------------------------------------------------
+   The client, 21.09, on the sort arrows of the list: «стрелки
+   берём у живого портала, но адаптируем полностью под нашу
+   систему... брать то, что у них, улучшать», and, in the same
+   breath, «делай это через компоненты». The second half of that
+   sentence is the law of 0a.2 said by the client himself: the
+   control is born first and the screen is rebuilt out of it. So
+   this file is the component, and live/gift-approvals.html is its
+   first carrier rather than its author.
+
+   ------------------------------------------------------------
+   WHERE EVERY NUMBER COMES FROM, AND NOTHING IS INVENTED
+
+   THREE SOURCES, and they do three different jobs.
+
+   1. THE HOUSE'S OWN TABLE IDIOM, measured on two carriers that
+      had arrived at the same shape independently: the gift table
+      of live/checkout.html («thead.bg-zinc-50», a Zinc 200
+      hairline under it, `.gb-eyebrow` in the cell) and the list of
+      live/gift-approvals.html (the same, over a white body, with a
+      Zinc 50 shelf at the foot). That is the GROUND and the
+      HAIRLINE, and the checkout's own file says it out loud: «a
+      Zinc 50 head over a white list is what every table on this
+      page wears».
+
+      WHERE THE TWO MEASUREMENTS DISAGREED, THE APPROVALS ONE WON,
+      and for a reason that is not taste: the checkout pads its
+      head with `py-3.5`, which is 14px and no rung of anything,
+      while the approvals page pads 16 / 24 — two rungs of the
+      space scale, and the same 24 the block around it already
+      spends. A component does not carry a Tailwind utility's
+      arithmetic into the system.
+
+   2. THE LIVE PORTAL, for the SORT LANGUAGE, and this is the half
+      the client asked to take and improve. What the portal says:
+      a sortable column carries a PAIRED glyph beside its label at
+      rest, and the column being sorted turns its label and its
+      glyph blue while the glyph collapses to ONE arrow pointing
+      the way. What the portal also does and this file does NOT:
+      lay a pale blue slab under the whole active cell. Our head
+      already stands on Zinc 50, a second tint on top of it is a
+      third grey nobody can name, and a blue label beside a blue
+      arrow is not ambiguous. That omission is agreed, not
+      overlooked.
+
+   3. icon.css, FOR THE GLYPH'S MANNER. The three drawings below
+      are new — the house owns chevrons and a plain arrow and has
+      never owned a sort pair — and they are drawn the way every
+      glyph here is drawn: on a 24 grid, stroke 1.5, round caps and
+      joins, rendered into a box that decides the size. The box is
+      the 16 rung, borrowed through the same single indirection
+      icon.css itself uses.
+
+   THE PORTAL SAID / THIS FILE SAYS, in full:
+     rest glyph   two arrows, grey      the same pair, at Zinc 400
+                                        (the resting grey of a glyph
+                                        in this house, one step
+                                        louder than the Zinc 300 the
+                                        approvals page had guessed)
+     active label blue                   --blue-600, Ton-5: blue is
+                                        state, and «this column is
+                                        the one you sorted by» is a
+                                        state if anything is
+     active glyph one blue arrow         the same, and it is the
+                                        SAME blue as the label,
+                                        because the glyph of an
+                                        active thing is the colour
+                                        of its label, always
+                                        (Ton 10.09)
+     active cell  pale blue slab         NOT TAKEN, see above
+     hover        pale wash              Zinc 100, and it stops at
+                                        the cell's own lines
+                                        (Ton 16.09)
+
+   ------------------------------------------------------------
+   WHY THE GLYPH IS A MASK AND NOT AN <svg>
+
+   Because the component then owns the picture, and the page owns
+   only the fact. The page writes `aria-sort` on the `th` — which
+   it has to write anyway, for the screen reader — and the head
+   cell dresses itself: pair, up arrow or down arrow, grey or blue,
+   with no markup swapped and no script told about it. The
+   alternative, which the approvals page was doing, is a script
+   that reaches into a span and replaces one glyph with another on
+   every redraw: the same state written down twice, in two
+   languages, by two owners.
+
+   The technique is the house's own and already carried: checkbox.css
+   paints its tick with `-webkit-mask` over `background: currentColor`
+   for exactly this reason, and the skill records the rule (Ton-5,
+   10.09): a static SVG that CSS cannot paint is painted with a mask.
+
+   ------------------------------------------------------------
+   NO SCRIPT, AND IT IS THE TABS' REASON
+
+   `table.js` does not exist. Sorting is not a look, it is an
+   ordering of the carrier's own data, and the carrier is the only
+   thing that knows what its rows mean: whether a status sorts by
+   rank or by alphabet, whether a date is a string or a number.
+   What the component owes the page is a contract of three lines —
+   set `aria-sort` on one `th`, remove it from the others, redraw
+   the rows — and the showcase prints that contract in full under
+   Code. Tabs made the same call four days earlier and for the same
+   reason.
+
+   NO --compact RUNG. The carrier does not need one, and law 0a.4
+   is plain: a variant without a carrier is not born. The day a
+   drawer needs a denser table it is two custom properties, and
+   they are already named.
+
+   NO TOKEN on this file, the whole list:
+     1px    every hairline, which is what a hairline is in this house
+     32px   the page circle of the pager, measured on the checkout's
+            `w-8 h-8` and carried unchanged
+     4px    the gap inside the pager, the checkout's own `gap-1`
+     2px    the underline offset of a door in a cell, the same 2 the
+            checkout's link and the timeline's link already spend
+   Everything else is a rung of --space-*, a role of the type
+   register, a colour of the ramp, or a slot of the button organism.
+   ============================================================ */
+
+.gb-table {
+  /* ---- the ground and the lines ---- */
+  --gb-table-head-ground: var(--zinc-50);   /* LIVE: the checkout's own thead */
+  --gb-table-rule:        var(--zinc-200);  /* the hairline of every divider in the house */
+  --gb-table-foot-ground: var(--zinc-50);   /* the same shelf on the other side */
+
+  /* ---- the head's inks ---- */
+  --gb-table-head-ink:       var(--eyebrow-color);  /* Zinc 500, the Eyebrow role's own */
+  --gb-table-head-ink-hover: var(--zinc-700);
+  --gb-table-head-on:        var(--blue-600);       /* Ton-5: the sorted column is a state */
+  --gb-table-head-wash:      var(--zinc-100);       /* the plaque under the pointer */
+
+  /* ---- the body ---- */
+  --gb-table-ink:       var(--zinc-900);
+  --gb-table-ink-quiet: var(--zinc-500);
+  --gb-table-row-wash:  var(--zinc-50);     /* only a row that is a door gets it */
+  --gb-table-size:      16px;               /* Russell: the working voice is 16 */
+  --gb-table-leading:   1.6;
+
+  /* ---- the cell's air, and both halves are rungs ---- */
+  --gb-table-pad-y: var(--space-16);
+  --gb-table-pad-x: var(--space-24);
+
+  /* ---- the sort glyph ----
+     The 16 rung of the icon organism, reached the way icon.css
+     reaches it: one indirection into the button's slot, so the day
+     a real --gb-icon-16 is promoted this moves with it. */
+  --gb-table-glyph-size: var(--gb-btn-large-icon);
+  --gb-table-glyph-ink:  var(--zinc-400);   /* quiet, one step louder than a hairline */
+
+  /* THE THREE DRAWINGS. A 24 grid, stroke 1.5, round caps and
+     joins: the manner of icon.css, values written into the data URI
+     because a mask has no inside for CSS to reach.
+
+     The pair is two arrows standing side by side rather than one
+     above the other: stacked, at 16px, the two heads collide and
+     read as a diamond. Side by side each arrow keeps its shaft, and
+     the shaft is the whole reason this is an arrow and not a
+     chevron — an arrow points, a chevron only leans. */
+  --gb-table-glyph-both: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.5 20V4.5'/%3E%3Cpath d='M4.5 8L7.5 4.5L10.5 8'/%3E%3Cpath d='M16.5 4V19.5'/%3E%3Cpath d='M13.5 16L16.5 19.5L19.5 16'/%3E%3C/svg%3E");
+  --gb-table-glyph-asc:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19.5V4.5'/%3E%3Cpath d='M7.5 9L12 4.5L16.5 9'/%3E%3C/svg%3E");
+  --gb-table-glyph-desc: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4.5V19.5'/%3E%3Cpath d='M16.5 15L12 19.5L7.5 15'/%3E%3C/svg%3E");
+
+  /* THE DEFAULT IS DECLARED HERE, ON THE ROOT, AND NOWHERE ELSE, so
+     that a `th` carrying aria-sort can overrule it by inheritance.
+     Declared on the glyph itself it would be the glyph's own value
+     and nothing above could reach it. */
+  --gb-table-glyph: var(--gb-table-glyph-both);
+
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* ============================================================
+   THE HEAD
+   ------------------------------------------------------------
+   The cell carries no padding: its child does. A head cell in this
+   house always holds exactly one thing, either the sort button or a
+   plain label, and both of them wear the air — which is what lets
+   the hover plaque of a sortable column fill the cell corner to
+   corner instead of floating inside it with a margin (Ton 16.09:
+   nothing inside a card stops short of the card's own lines).
+   ============================================================ */
+.gb-table th {
+  padding: 0;
+  text-align: left;
+  vertical-align: middle;
+  background: var(--gb-table-head-ground);
+  border-bottom: 1px solid var(--gb-table-rule);
+  white-space: nowrap;
+}
+
+/* THE QUIET HALF OF THE HEAD: a column that does not sort. It is
+   the Eyebrow role and it is not a target, so it gets no cursor, no
+   wash and no glyph. */
+.gb-table__label {
+  display: block;
+  padding: var(--gb-table-pad-y) var(--gb-table-pad-x);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--gb-table-head-ink);
+}
+
+/* ------------------------------------------------------------
+   THE SORTABLE COLUMN. The WHOLE CELL is the button, not a word
+   inside it: a target the size of its own label is a target people
+   miss, and a head that looks clickable over half its width is the
+   worse of the two mistakes.
+   ------------------------------------------------------------ */
+.gb-table__sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--gb-table-pad-y) var(--gb-table-pad-x);
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--gb-table-head-ink);
+  cursor: pointer;
+  transition: background-color var(--mo-micro) var(--mo-move),
+              color var(--mo-micro) var(--mo-move);
+}
+
+/* THE PLAQUE STOPS AT THE CELL'S LINES, which is the whole of
+   Ton 16.09, and it costs nothing to keep: the button IS the cell.
+   The rounded corners of the block the table stands in are handled
+   by that block's own overflow, the same way the row wash is. */
+.gb-table__sort:hover {
+  background: var(--gb-table-head-wash);
+  color: var(--gb-table-head-ink-hover);
+}
+/* The glyph darkens with the label, and only where the column is
+   not already the sorted one: an active column that went grey under
+   the pointer would be answering the wrong question. */
+.gb-table th:not([aria-sort]) .gb-table__sort:hover {
+  --gb-table-glyph-ink: var(--zinc-500);
+}
+
+/* DEMO ONLY, and named out loud so nobody reads it as a state the
+   component has. A printed hover is a snapshot of a hover and the
+   showcase says so on the label; the live specimen beside it is the
+   one a pointer can actually reach (showcase rule, section 7a:
+   «a row of drawn hovers is allowed only as a snapshot and must be
+   named aloud by its demo classes»). */
+.gb-table__sort.is-hover {
+  background: var(--gb-table-head-wash);
+  color: var(--gb-table-head-ink-hover);
+}
+.gb-table th:not([aria-sort]) .gb-table__sort.is-hover {
+  --gb-table-glyph-ink: var(--zinc-500);
+}
+.gb-table__row.is-hover { background: var(--gb-table-row-wash); }
+
+.gb-table__sort:focus-visible {
+  outline: var(--gb-btn-focus-ring-width) solid var(--gb-btn-focus-ring);
+  outline-offset: calc(-1 * var(--gb-btn-focus-ring-width));   /* inside the cell: a ring outside it would be clipped by the block */
+}
+
+/* ------------------------------------------------------------
+   THE SORTED COLUMN. One attribute, written on the `th` where ARIA
+   puts it, and everything else follows from it: the label goes
+   blue, the glyph goes the same blue, and the drawing collapses to
+   one arrow pointing the way.
+
+   The specificity is deliberate. This rule is (0,3,1) and the hover
+   above is (0,2,0), so the blue of an active column survives the
+   pointer instead of blinking grey under it.
+   ------------------------------------------------------------ */
+.gb-table th[aria-sort] .gb-table__sort { color: var(--gb-table-head-on); }
+.gb-table th[aria-sort] { --gb-table-glyph-ink: var(--gb-table-head-on); }
+
+.gb-table th[aria-sort="ascending"]  { --gb-table-glyph: var(--gb-table-glyph-asc); }
+.gb-table th[aria-sort="descending"] { --gb-table-glyph: var(--gb-table-glyph-desc); }
+
+/* THE GLYPH. A box of the 16 rung, painted with the ink and cut to
+   the drawing: the picture is the component's, the state is the
+   page's, and neither has to know about the other. */
+.gb-table__glyph {
+  flex: 0 0 auto;
+  width: var(--gb-table-glyph-size);
+  height: var(--gb-table-glyph-size);
+  background: var(--gb-table-glyph-ink);
+  transition: background-color var(--mo-micro) var(--mo-move);
+  -webkit-mask-image: var(--gb-table-glyph);
+          mask-image: var(--gb-table-glyph);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+}
+
+/* ============================================================
+   THE ROWS
+   ============================================================ */
+.gb-table td {
+  padding: var(--gb-table-pad-y) var(--gb-table-pad-x);
+  border-top: 1px solid var(--gb-table-rule);
+  font-size: var(--gb-table-size);
+  line-height: var(--gb-table-leading);
+  color: var(--gb-table-ink);
+  vertical-align: middle;
+}
+/* The head already drew the line above the first row, and two
+   hairlines a pixel apart are a two pixel line. */
+.gb-table tbody tr:first-child td { border-top: 0; }
+
+/* A ROW THAT IS A DOOR, AND ONLY THAT ROW. A table whose rows lead
+   nowhere gets no hover at all: a wash under the pointer is a
+   promise, and a promise a row cannot keep teaches people to stop
+   pointing. `focus-within` is the same wash for the keyboard, which
+   arrives at the door inside the row rather than at the row. */
+.gb-table__row {
+  cursor: pointer;
+  transition: background var(--mo-micro) var(--mo-move);
+}
+.gb-table__row:hover,
+.gb-table__row:focus-within { background: var(--gb-table-row-wash); }
+
+/* THE NAME IS THE DOOR SAYING SO (Ton-22, gbppl-blue-links-1):
+   clickable text wears Blue 600 and rests without an underline,
+   which arrives on hover. Trap 1: `body.gb-demo a { color: inherit }`
+   weighs 0-1-2, so the pair is not optional. */
+.gb-table__link,
+a.gb-table__link,
+body.gb-demo a.gb-table__link {
+  color: var(--blue-600);
+  text-decoration: none;
+}
+.gb-table__link:hover,
+a.gb-table__link:hover,
+body.gb-demo a.gb-table__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;                 /* NO TOKEN 2: the underline's own geometry */
+}
+
+/* The second voice of a cell: a date, a count, anything the eye
+   should find after it has found the subject. */
+.gb-table__quiet { color: var(--gb-table-ink-quiet); white-space: nowrap; }
+
+/* A COLUMN THAT TAKES NO MORE ROOM THAN ITS CONTENT. Left to itself
+   a table splits the free width evenly between its columns, and a
+   status badge then floats alone in the middle of nothing at 2258.
+   The subject column takes the slack because it is the one that has
+   words in it. */
+.gb-table__tight { width: 1%; white-space: nowrap; }
+
+/* THE TABLE WITH NOTHING IN IT. One human line, and it stands where
+   the rows would have been rather than under them. */
+.gb-table__empty {
+  padding: var(--space-32) var(--gb-table-pad-x);
+  font-size: var(--gb-table-size);
+  line-height: var(--gb-table-leading);
+  color: var(--gb-table-ink-quiet);
+}
+
+/* ============================================================
+   THE FOOT
+   ------------------------------------------------------------
+   The count on the left, the pager on the right, on the same Zinc 50
+   shelf the head stands on. Both halves say the truth about what is
+   on the screen right now, and the pager is the checkout's own
+   pagination language carried value for value.
+   ============================================================ */
+.gb-table__foot td {
+  padding: var(--gb-table-pad-y) var(--gb-table-pad-x);
+  background: var(--gb-table-foot-ground);
+  border-top: 1px solid var(--gb-table-rule);
+}
+/* Trap 29: `[hidden]` loses to any author `display` of equal
+   specificity, and a foot is exactly the thing a carrier hides when
+   the list is empty. Said once, here, so no carrier has to. */
+.gb-table__foot[hidden] { display: none; }
+
+.gb-table__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+}
+.gb-table__count { font-size: 14px; color: var(--gb-table-ink-quiet); }
+
+.gb-table__pages { display: flex; align-items: center; gap: 4px; }  /* NO TOKEN 4: the checkout's gap-1 */
+.gb-table__page {
+  width: 32px;                                /* NO TOKEN 32: the checkout's w-8 h-8 */
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-circle);
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--zinc-600);
+  cursor: pointer;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+.gb-table__page:hover { background: var(--zinc-100); }
+.gb-table__page:focus-visible {
+  outline: var(--gb-btn-focus-ring-width) solid var(--gb-btn-focus-ring);
+  outline-offset: var(--gb-btn-focus-ring-offset);
+}
+/* The page you are on, filled: the one place in the foot where blue
+   is a state rather than a door (Ton-5). */
+.gb-table__page[aria-current="page"] {
+  background: var(--blue-600);
+  color: var(--white);
+}
+/* The two arrows of the pager are NOT drawn here. They are
+   `.gb-btn--icon --small --ghost --secondary --plain` out of
+   button.css, because a control with a glyph and no label is a
+   button and the organism already owns its type, colour and state. */
+
+/* ============================================================
+   THE STACK
+   ------------------------------------------------------------
+   Under 768 a table stops being a table: three columns of 16px text
+   in 360 is a grid nobody reads. The COMPONENT owns the change of
+   state — the head goes, the row becomes a grid, the cells become
+   blocks, the foot re-pads — and the CARRIER owns which of its own
+   columns goes where, because only the carrier knows what its
+   columns mean. A default of `1fr auto` places every child, so a
+   carrier that says nothing still gets a row and not a pile
+   (trap 30: a layout decides the fate of every child).
+
+   It is a modifier and not the default because a two column table
+   of short words does not need it, and a table that stacked when
+   nobody asked would lose its head on a phone for no reason.
+   ============================================================ */
+@media (max-width: 767px) {
+  .gb-table--stack thead { display: none; }
+  .gb-table--stack tbody tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-8) var(--space-16);
+    align-items: center;
+    padding: var(--space-16);
+  }
+  /* `width: auto` undoes the shrink to fit of the wide table: a grid
+     item asked for 1% really is 1% wide, and a tight column would
+     vanish. */
+  .gb-table--stack tbody td {
+    display: block;
+    padding: 0;
+    border: 0;
+    width: auto;
+  }
+  .gb-table--stack tbody tr + tr { border-top: 1px solid var(--gb-table-rule); }
+  .gb-table--stack .gb-table__foot td { padding: var(--space-16); }
+}

@@ -107,6 +107,13 @@
        its own entry further down the same list. */
     { href: 'checkbox.html', label: 'Checkbox' },
     { href: 'badge.html', label: 'Count badge' },
+    /* gbppl-table-1. Alphabetical, so it stands between the count
+       badge and the eyebrow, and the name is the client's own stack:
+       PrimeVue calls this control a DataTable, the brief called it
+       «Data table», and the house had been drawing tables by hand on
+       two surfaces under no name at all. «Table» on its own would
+       name the element the markup already has. */
+    { href: 'table.html', label: 'Data table' },
     { href: 'eyebrow.html', label: 'Eyebrow' },
     { href: 'field.html', label: 'Field' },
     { href: 'icons.html#iconbutton', label: 'Icon button' },

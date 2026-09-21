@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- ============================================================
+     gbppl-table-1 — THE DATA TABLE PAGE
+     ------------------------------------------------------------
+     The client, 21.09: «стрелки берём у живого портала, но
+     адаптируем полностью под нашу систему... брать то, что у них,
+     улучшать», and «делай это через компоненты». The second half
+     orders the two: the control first, the screen after it. This
+     page exists before the approvals list is re-dressed, and that
+     list is assembled out of this rather than around it.
+
+     Ton-10: this page is a CONSUMER. Its card, tables, shelves and
+     code blocks are the atoms of ..\components\docs.css; its
+     specimens are the component itself.
+
+     NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
+     measurement in every table is read back off a rendered specimen
+     with getComputedStyle. Where a number is quoted from a source
+     rather than measured here, it stands in a provenance column and
+     says which source.
+     ============================================================ -->
+
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<script src="oro-page.js"></script>
+<script>
+GbOro.head({
+  name: 'Data table',
+  css: [['table', 'the subject of the page'],
+        ['badge', 'the status a specimen row carries, so the examples are real rows and not lorem']],
+  /* THE SPECIMENS STAND IN A BLOCK, because that is how every
+     carrier stands: the radius and the clipping of the hover plaque
+     belong to the block, not to the table (see Usage). Two rules,
+     both furniture of this page. */
+  style: '.tblock { background: var(--white); border: 1px solid var(--zinc-200); border-radius: var(--radius); overflow: hidden; }\n'
+       + '.tbare { background: var(--white); }'
+});
+</script>
+</head>
+<body>
+
+<script src="oro.js"></script>
+<script>
+GbOro.page({
+  eyebrow: 'Base component',
+  name: 'Data table',
+  status: { label: 'Declared', kind: 'declared' },
+  lede: 'A list of many things with a head that sorts it, a body of rows and a foot that says how much of it you are looking at. The ground, the hairline and the shelf at the foot are the idiom two tables in this house had already arrived at separately; the sort language is the live portal\'s, taken and improved; the glyphs are new and drawn the way every glyph here is drawn.',
+  readout: 'Window width right now: <b id="wnow">measuring</b>. Every number in the tables below is read off a specimen at that width.',
+  card: { id: 'table', toc: 'Data table' },
+  sections: [
+    { toc: 'Overview', eyebrow: 'Where the table lives, and what it defaults to',
+      name: 'Overview',
+      blocks: [
+        { table: {
+            rows: '<tr><td>Owner</td><td><code>system/components/table.css</code>. There is no <code>table.js</code>: sorting is an ordering of the carrier\'s own data, and only the carrier knows whether a status sorts by rank or by alphabet</td></tr>\n'
+                  + '<tr><td>Class</td><td><code>.gb-table</code> on the <code>&lt;table&gt;</code>, and <code>__sort</code> / <code>__glyph</code> / <code>__label</code> in the head, <code>__row</code> / <code>__link</code> / <code>__quiet</code> / <code>__tight</code> in the body, <code>__foot</code> / <code>__bar</code> / <code>__count</code> / <code>__pages</code> / <code>__page</code> under it</td></tr>\n'
+                  + '<tr><td>State</td><td>One attribute, and it is the one ARIA asks for anyway: <code>aria-sort</code> on the <code>&lt;th&gt;</code>. The head dresses itself from it. Nothing else is written, and no class is toggled</td></tr>\n'
+                  + '<tr><td>Worn by</td><td>The gift approvals list, which is the first carrier and the reason the component exists. The checkout\'s gift tables are the obvious next ones and are not migrated by this wave</td></tr>\n'
+                  + '<tr><td>Defaults</td><td>A Zinc 50 head under a Zinc 200 hairline, cells of 16 by 24, a 16px body at 1.6 in Zinc 900, no hover on a row that is not a door, and a foot on the same Zinc 50 shelf</td></tr>\n'
+                  + '<tr><td>Status</td><td>Declared 21 September, out of three measured sources: this house\'s own two tables, the live portal\'s sort language, and icon.css for the manner of the glyph</td></tr>' } },
+        { note: 'THE THREE SOURCES DO THREE JOBS. The HOUSE is the ground and the hairline: a Zinc 50 head over a white list is what the checkout\'s gift table and the approvals list both wear, and the checkout\'s own file writes the sentence down. Where the two disagreed the approvals measurement won, and not on taste: the checkout pads its head with <code>py-3.5</code>, which is 14 and a rung of nothing, while the approvals page pads 16 by 24, two rungs of the space scale and the same 24 the block around it spends. The PORTAL is the sort language, and it is taken with one omission said out loud in Sorting. icon.css is the MANNER of the glyph: a 24 grid, stroke 1.5, round caps, rendered into a box that decides the size.' }
+      ] },
+
+    { id: 'playground', toc: 'Playground', eyebrow: 'Set the head, the foot and the ground, and read the table back',
+      name: 'Playground',
+      blocks: [
+        { p: 'Set the axes on the rail at the right and the table on the stage rebuilds itself; the markup behind the Code row and the measurements below follow it. The sort state dresses the SECOND column, which is the one the table measures.' },
+        { pg: { name: 'table', inspect: 'table', hold: 'gbdoc-hold--block' } },
+        { table: {
+            head: ['Measured on the sample', 'Value', 'Measured on the sample', 'Value'],
+            rows: '<tr><td>Head ground</td><td class="gbdoc-num" id="pgHead"></td><td>Head hairline</td><td class="gbdoc-num" id="pgRule"></td></tr>\n'
+                  + '<tr><td>Head cell</td><td class="gbdoc-num" id="pgHeadPad"></td><td>Head label</td><td class="gbdoc-num" id="pgHeadType"></td></tr>\n'
+                  + '<tr><td>Sort glyph</td><td class="gbdoc-num" id="pgGlyph"></td><td>Which drawing</td><td class="gbdoc-num" id="pgDraw"></td></tr>\n'
+                  + '<tr><td>Body cell</td><td class="gbdoc-num" id="pgCell"></td><td>Body text</td><td class="gbdoc-num" id="pgCellType"></td></tr>\n'
+                  + '<tr><td>Foot shelf</td><td class="gbdoc-num" id="pgFoot"></td><td>Page circle</td><td class="gbdoc-num" id="pgPage"></td></tr>' } }
+      ] },
+
+    { id: 'sorting', toc: 'Sorting', eyebrow: 'The three drawings, and the one thing the portal does that we do not',
+      name: 'Sorting',
+      blocks: [
+        { p: 'A sortable column says three things at once and has one cell to say them in: that it CAN be sorted, that it IS the one being sorted, and which way. The live portal answers all three and this component takes the answer: a paired glyph at rest means «this one sorts», blue means «this one is the one», and the pair collapsing to a single arrow means «and this way». The reader never has to point at anything to find out.' },
+        { html: '<div class="gbdoc-shelf" data-inspect="table" id="sortShelf">\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Rest</b> it sorts, and it is not the one being sorted</span>\n'
+                  + '            <div class="tblock"><table class="gb-table"><thead><tr id="srRest">\n'
+                  + '              <th scope="col"><button class="gb-table__sort" type="button">Gift <span class="gb-table__glyph" aria-hidden="true"></span></button></th>\n'
+                  + '            </tr></thead></table></div>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Hover</b> drawn, not pointed at: <code>.is-hover</code></span>\n'
+                  + '            <div class="tblock"><table class="gb-table"><thead><tr id="srHover">\n'
+                  + '              <th scope="col"><button class="gb-table__sort is-hover" type="button">Gift <span class="gb-table__glyph" aria-hidden="true"></span></button></th>\n'
+                  + '            </tr></thead></table></div>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Ascending</b> <code>aria-sort="ascending"</code> on the cell</span>\n'
+                  + '            <div class="tblock"><table class="gb-table"><thead><tr id="srAsc">\n'
+                  + '              <th scope="col" aria-sort="ascending"><button class="gb-table__sort" type="button">Gift <span class="gb-table__glyph" aria-hidden="true"></span></button></th>\n'
+                  + '            </tr></thead></table></div>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Descending</b> <code>aria-sort="descending"</code> on the cell</span>\n'
+                  + '            <div class="tblock"><table class="gb-table"><thead><tr id="srDesc">\n'
+                  + '              <th scope="col" aria-sort="descending"><button class="gb-table__sort" type="button">Gift <span class="gb-table__glyph" aria-hidden="true"></span></button></th>\n'
+                  + '            </tr></thead></table></div>\n'
+                  + '          </div>\n'
+                  + '        </div>' },
+        { table: {
+            head: ['State', 'Label', 'Glyph', 'Plaque'],
+            rows: '<tr><td>Rest</td><td class="gbdoc-num" id="srRestInk"></td><td class="gbdoc-num" id="srRestGl"></td><td class="gbdoc-num" id="srRestBg"></td></tr>\n'
+                  + '<tr><td>Hover</td><td class="gbdoc-num" id="srHoverInk"></td><td class="gbdoc-num" id="srHoverGl"></td><td class="gbdoc-num" id="srHoverBg"></td></tr>\n'
+                  + '<tr><td>Ascending</td><td class="gbdoc-num" id="srAscInk"></td><td class="gbdoc-num" id="srAscGl"></td><td class="gbdoc-num" id="srAscBg"></td></tr>\n'
+                  + '<tr><td>Descending</td><td class="gbdoc-num" id="srDescInk"></td><td class="gbdoc-num" id="srDescGl"></td><td class="gbdoc-num" id="srDescBg"></td></tr>' } },
+        { note: 'WHAT THE PORTAL DOES AND THIS DOES NOT: lay a pale blue slab under the whole active cell. Our head already stands on Zinc 50, a second tint on top of it is a third grey nobody can name, and a blue label beside a blue arrow is not ambiguous without it. That omission is agreed rather than overlooked, and it is the only line of the portal\'s sort language that was not taken.' },
+        { note: 'THE GLYPH IS A MASK, NOT AN <code>&lt;svg&gt;</code>, so that the component owns the picture and the page owns only the fact. The page writes <code>aria-sort</code>, which it has to write anyway for the screen reader, and the cell dresses itself: pair, up arrow or down arrow, quiet or blue, with no markup swapped and no script told about it. The technique is checkbox.css\'s, which paints its tick the same way for the same reason. The pair stands SIDE BY SIDE rather than stacked because two arrowheads above one another at 16px collide and read as a diamond; and all three drawings are arrows rather than chevrons because an arrow points and a chevron only leans.' }
+      ] },
+
+    { id: 'foot', toc: 'Foot', eyebrow: 'How much of it you are looking at, and how to get to the rest',
+      name: 'Foot',
+      blocks: [
+        { p: 'Two halves on one shelf, and each answers a different question: the count on the left says how much of the whole you can see right now, the pager on the right is how you see the rest. The shelf is the head\'s own Zinc 50, on the other side of the rows, so a table reads as one object closed at both ends rather than as a list with something bolted under it.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--stack" data-inspect="table" id="footShelf">\n'
+                  + '          <div class="gbdoc-slot gbdoc-slot--wide">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>The foot</b> the count, and the pager where there is something to walk</span>\n'
+                  + '            <div class="tblock"><table class="gb-table"><tfoot class="gb-table__foot" id="ftSpec"><tr><td>\n'
+                  + '              <div class="gb-table__bar">\n'
+                  + '                <span class="gb-table__count">Showing 1 to 3 of 7 approvals</span>\n'
+                  + '                <nav class="gb-table__pages" aria-label="Pagination">\n'
+                  + '                  <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" aria-label="Previous page" disabled><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="chevron-left" data-gb-icon-size="16"></span></span></button>\n'
+                  + '                  <button class="gb-table__page" type="button" aria-current="page">1</button>\n'
+                  + '                  <button class="gb-table__page" type="button">2</button>\n'
+                  + '                  <button class="gb-table__page" type="button">3</button>\n'
+                  + '                  <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" aria-label="Next page"><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span></button>\n'
+                  + '                </nav>\n'
+                  + '              </div>\n'
+                  + '            </td></tr></tfoot></table></div>\n'
+                  + '          </div>\n'
+                  + '        </div>' },
+        { table: {
+            head: ['Part', 'What it is', 'Measured', 'Provenance'],
+            rows: '<tr><td>Shelf</td><td><code>.gb-table__foot</code> on the <code>&lt;tfoot&gt;</code>, one cell spanning every column</td><td class="gbdoc-num" id="ftShelf"></td><td><span class="gbdoc-flag gbdoc-flag--soft">recorded live</span> the head\'s own Zinc 50 over the house hairline</td></tr>\n'
+                  + '<tr><td>Count</td><td><code>.gb-table__count</code>: the second voice, and it counts what is on the screen against the whole</td><td class="gbdoc-num" id="ftCount"></td><td><span class="gbdoc-flag gbdoc-flag--soft">recorded live</span> 14, the secondary voice of the house</td></tr>\n'
+                  + '<tr><td>Page</td><td><code>.gb-table__page</code>: a circle with a number in it, filled where you are</td><td class="gbdoc-num" id="ftPage"></td><td><span class="gbdoc-flag gbdoc-flag--soft">recorded live</span> the checkout\'s pager, <code>w-8 h-8</code> at <code>gap-1</code>. NO TOKEN 32 and NO TOKEN 4</td></tr>\n'
+                  + '<tr><td>Current</td><td>the page you are on, filled rather than outlined</td><td class="gbdoc-num" id="ftCur"></td><td><span class="gbdoc-flag gbdoc-flag--soft">token</span> <code>--blue-600</code>, Ton-5: the one place in the foot where blue is a state and not a door</td></tr>\n'
+                  + '<tr><td>Arrows</td><td>NOT drawn by this file: <code>.gb-btn--icon --small --ghost --secondary --plain</code></td><td class="gbdoc-num" id="ftArrow"></td><td><span class="gbdoc-flag gbdoc-flag--soft">token</span> button.css. A control with a glyph and no label is a button, and the organism already owns its type, colour and state</td></tr>' } },
+        { note: 'THE PAGER STANDS ONLY WHERE THERE IS SOMETHING TO WALK, which is the checkout\'s own law for this control and the carrier\'s job to obey: one page of results draws a count and no pager at all. A row of arrows that can never be pressed is a control teaching people that controls here do nothing.' }
+      ] },
+
+    { id: 'anatomy', toc: 'Anatomy', eyebrow: 'Four floors, measured at this width',
+      name: 'Anatomy',
+      blocks: [
+        { p: 'A whole table with everything on it, and the tables under it are read off this one.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--stack" data-inspect="table" id="anShelf">\n'
+                  + '          <div class="gbdoc-slot gbdoc-slot--wide">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Whole</b> a sorted head, three rows that are doors, and a foot</span>\n'
+                  + '            <div class="tblock"><table class="gb-table gb-table--stack" id="anTable">\n'
+                  + '              <thead><tr>\n'
+                  + '                <th scope="col"><button class="gb-table__sort" type="button" data-sort="name">Gift <span class="gb-table__glyph" aria-hidden="true"></span></button></th>\n'
+                  + '                <th scope="col" class="gb-table__tight"><button class="gb-table__sort" type="button" data-sort="state">Status <span class="gb-table__glyph" aria-hidden="true"></span></button></th>\n'
+                  + '                <th scope="col" class="gb-table__tight" aria-sort="descending"><button class="gb-table__sort" type="button" data-sort="updated">Updated <span class="gb-table__glyph" aria-hidden="true"></span></button></th>\n'
+                  + '              </tr></thead>\n'
+                  + '              <tbody>\n'
+                  + '                <tr class="gb-table__row"><td><a class="gb-table__link" href="#anatomy">Stags\' Leap Wine Night and Day Collection</a></td><td class="gb-table__tight"><span class="gb-badge gb-badge--quiet gb-badge--info">Waiting for approval</span></td><td class="gb-table__tight"><span class="gb-table__quiet">17 Sep 2026</span></td></tr>\n'
+                  + '                <tr class="gb-table__row"><td><a class="gb-table__link" href="#anatomy">Macallan Prestige Collection</a></td><td class="gb-table__tight"><span class="gb-badge gb-badge--quiet gb-badge--warning">Changes requested</span></td><td class="gb-table__tight"><span class="gb-table__quiet">15 Sep 2026</span></td></tr>\n'
+                  + '                <tr class="gb-table__row"><td><a class="gb-table__link" href="#anatomy">Aviation Welcome Kit</a></td><td class="gb-table__tight"><span class="gb-badge gb-badge--quiet gb-badge--success">Approved</span></td><td class="gb-table__tight"><span class="gb-table__quiet">11 Sep 2026</span></td></tr>\n'
+                  + '              </tbody>\n'
+                  + '              <tfoot class="gb-table__foot"><tr><td colspan="3">\n'
+                  + '                <div class="gb-table__bar">\n'
+                  + '                  <span class="gb-table__count">Showing 1 to 3 of 7 approvals</span>\n'
+                  + '                  <nav class="gb-table__pages" aria-label="Pagination">\n'
+                  + '                    <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" aria-label="Previous page" disabled><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="chevron-left" data-gb-icon-size="16"></span></span></button>\n'
+                  + '                    <button class="gb-table__page" type="button" aria-current="page">1</button>\n'
+                  + '                    <button class="gb-table__page" type="button">2</button>\n'
+                  + '                    <button class="gb-table__page" type="button">3</button>\n'
+                  + '                    <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" aria-label="Next page"><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span></button>\n'
+                  + '                  </nav>\n'
+                  + '                </div>\n'
+                  + '              </td></tr></tfoot>\n'
+                  + '            </table></div>\n'
+                  + '          </div>\n'
+                  + '        </div>' },
+        { table: {
+            head: ['Part', 'What it is', 'Measured'],
+            rows: '<tr><td>Head</td><td>The Zinc 50 floor. The cell carries no padding of its own: its child does, which is what lets the hover plaque fill the cell corner to corner instead of floating inside it</td><td class="gbdoc-num" id="anHead"></td></tr>\n'
+                  + '<tr><td>Sort cell</td><td><code>.gb-table__sort</code>: the WHOLE cell is the button. A target the size of its own label is a target people miss</td><td class="gbdoc-num" id="anSort"></td></tr>\n'
+                  + '<tr><td>Row</td><td>Cells at the same 16 by 24, separated by the house hairline. The first row carries none: the head already drew that line</td><td class="gbdoc-num" id="anRow"></td></tr>\n'
+                  + '<tr><td>Door</td><td><code>.gb-table__row</code> and the <code>.gb-table__link</code> inside it. A row that leads nowhere gets neither</td><td class="gbdoc-num" id="anDoor"></td></tr>\n'
+                  + '<tr><td>Foot</td><td>The same shelf on the other side, closing the object</td><td class="gbdoc-num" id="anFoot"></td></tr>' } },
+        { note: 'UNDER 768 THE TABLE STOPS BEING A TABLE, and it is a modifier rather than the default: <code>.gb-table--stack</code>. Three columns of 16px text in 360 is a grid nobody reads, so the head goes, the row becomes a grid and the cells become blocks. The COMPONENT owns that change of state; the CARRIER owns which of its own columns goes where, because only the carrier knows what its columns mean. The specimen above carries the modifier, so a narrow window shows it.' }
+      ] },
+
+    { id: 'properties', toc: 'Properties', eyebrow: 'The names, and the drawer that reads a specimen',
+      name: 'Properties',
+      blocks: [
+        { table: {
+            head: ['Name', 'Where it goes', 'What it does'],
+            rows: '<tr><td><code>.gb-table</code></td><td>a <code>&lt;table&gt;</code></td><td>The dictionary, the width and the collapsed borders. Everything under it reads from here</td></tr>\n'
+                  + '<tr><td><code>.gb-table--stack</code></td><td>the same table</td><td>Under 768 the head goes and each row becomes a two column grid. The carrier places its own columns inside it</td></tr>\n'
+                  + '<tr><td><code>.gb-table__sort</code></td><td>a <code>&lt;button type="button"&gt;</code>, the only child of a <code>&lt;th&gt;</code></td><td>The sortable column. The whole cell is the control, and the hover plaque is the cell</td></tr>\n'
+                  + '<tr><td><code>.gb-table__glyph</code></td><td>an empty span at the end of that button, <code>aria-hidden</code></td><td>The 16 box the drawing is masked into. Which drawing and which ink both follow <code>aria-sort</code> on the cell above it</td></tr>\n'
+                  + '<tr><td><code>.gb-table__label</code></td><td>a span, the only child of a <code>&lt;th&gt;</code> that does not sort</td><td>The quiet half of the head: the Eyebrow role, the same air, no cursor and no glyph</td></tr>\n'
+                  + '<tr><td><code>aria-sort</code></td><td>the <code>&lt;th&gt;</code>, never the button inside it</td><td>The only state this component has. <code>ascending</code> or <code>descending</code> on exactly one cell, absent on the others</td></tr>\n'
+                  + '<tr><td><code>.gb-table__row</code></td><td>a <code>&lt;tr&gt;</code> in the body</td><td>This row is a door: a cursor, and the Zinc 50 wash under the pointer or around a focus inside it. A row without it gets no hover at all</td></tr>\n'
+                  + '<tr><td><code>.gb-table__link</code></td><td>an <code>&lt;a&gt;</code> in a cell</td><td>The door saying so: Blue 600, bare at rest, underlined on hover (Ton-22)</td></tr>\n'
+                  + '<tr><td><code>.gb-table__quiet</code></td><td>a span in a cell</td><td>The second voice: a date, a count, anything found after the subject</td></tr>\n'
+                  + '<tr><td><code>.gb-table__tight</code></td><td>a <code>&lt;th&gt;</code> and its <code>&lt;td&gt;</code>s</td><td>This column takes no more room than its content, so the column with the words takes the slack</td></tr>\n'
+                  + '<tr><td><code>.gb-table__empty</code></td><td>a <code>&lt;p&gt;</code> where the rows would have been</td><td>One human line for a table with nothing in it</td></tr>\n'
+                  + '<tr><td><code>.gb-table__foot</code></td><td>a <code>&lt;tfoot&gt;</code></td><td>The shelf, and the one rule that lets a carrier hide it with <code>hidden</code> (trap 29)</td></tr>\n'
+                  + '<tr><td><code>__bar</code> / <code>__count</code> / <code>__pages</code> / <code>__page</code></td><td>inside the foot\'s single cell</td><td>The row, the count on the left, the pager on the right, and the circle with a number in it</td></tr>\n'
+                  + '<tr><td><code>--gb-table-pad-y</code> / <code>--gb-table-pad-x</code></td><td>the table</td><td>The air in every cell, head and body and foot together, so a denser table is two lines and not a rung</td></tr>\n'
+                  + '<tr><td><code>--gb-table-head-ground</code> / <code>--gb-table-foot-ground</code></td><td>the table</td><td>The two shelves, separately, for a carrier whose ground is already Zinc 50</td></tr>' } },
+        { note: 'The Properties button in the corner of a specimen reads it into the drawer. The table is for reading the whole thing at once; the drawer answers about one cell.' }
+      ] },
+
+    { id: 'usage', toc: 'Usage', eyebrow: 'Which columns sort, and which rows are doors',
+      name: 'Usage',
+      blocks: [
+        { p: 'TWO DECISIONS CARRY THIS COMPONENT and both are about promises. A head that looks pressable must sort, and a row that washes under the pointer must lead somewhere. Everything else here follows from those two: the hover belongs to the sortable column and to nothing else in the head, and it belongs to the door row and to nothing else in the body. A wash is a promise, and a promise a cell cannot keep teaches people to stop pointing.' },
+        { table: {
+            head: ['Do', 'Do not'],
+            rows: '<tr><td>Make a column sortable when a reader would plausibly reorder the list by it: a name, a date, a status with a rank</td><td>Make every column sortable because it is easy. A column of pictures and a column of actions sort by nothing, and a head that moves them is answering a question nobody asked</td></tr>\n'
+                  + '<tr><td>Give a column that does not sort the quiet label. It is the same air and the same voice, and it is visibly not a control</td><td>Leave a plain word in a head cell. Without the label it loses the air the cells around it have, and the head stops standing on one line</td></tr>\n'
+                  + '<tr><td>Let the whole cell be the button, so the target is the column and not the word</td><td>Put the hover on the head row, or on a column that does not sort. That is the promise nothing keeps</td></tr>\n'
+                  + '<tr><td>Sort exactly one column at a time, and say so with one <code>aria-sort</code></td><td>Leave two columns blue. Two answers to «which one am I sorted by» is no answer, and the screen reader reads both</td></tr>\n'
+                  + '<tr><td>Open a column in the direction its reader wants first: newest first for a date, A to Z for a name</td><td>Always open ascending because it is the first case in the code. A list of dates opened oldest first is a list opened at the part nobody came for</td></tr>\n'
+                  + '<tr><td>Stand the table inside a block with the radius and the clipping. The hover plaque of the first and last column is squared off by that block, not by this file</td><td>Round the table itself. A table cannot clip its own corners without breaking the collapsed borders, and the carrier has a block around it in every frame anyway</td></tr>\n'
+                  + '<tr><td>Make the row a door when the whole row is about one thing, and name the door inside it in blue</td><td>Put a button in the last column to do what the row already does. A row that is a door and also carries a Details button offers one act twice</td></tr>\n'
+                  + '<tr><td>Draw the pager only where there is a second page, and keep the count truthful about what is on the screen</td><td>Draw a pager that can never be pressed. A control that does nothing teaches that controls here do nothing</td></tr>\n'
+                  + '<tr><td>Say what an empty table is empty OF: nothing yet, or nothing matching what was typed</td><td>Leave the head and the foot over an empty body. A head that sorts nothing and a count that counts nothing are two lies on one shelf</td></tr>' } }
+      ] },
+
+    { id: 'a11y', toc: 'Accessibility', eyebrow: 'A table that says what it is, and a head that is a real button',
+      name: 'Accessibility',
+      blocks: [
+        { p: 'The whole of it rests on using the elements for what they are. A table is a <code>&lt;table&gt;</code>, a head cell is a <code>&lt;th scope="col"&gt;</code>, a control is a <code>&lt;button&gt;</code>, and the state of the sort is the attribute ARIA already defines for it. Nothing here is announced by a live region, because nothing here needed a role bolted onto a div.' },
+        { table: {
+            rows: '<tr><td>The head</td><td><code>&lt;th scope="col"&gt;</code>, so every cell under it is read with the name of its column. A screen reader moving across a row says «Status, waiting for approval» rather than «waiting for approval»</td></tr>\n'
+                  + '<tr><td>The control</td><td>A real <code>&lt;button type="button"&gt;</code> inside the cell, so it is in the tab order, answers Enter and Space, and gets the house focus ring. The ring is drawn INSIDE the cell: outside it the block\'s own clipping would cut it in half</td></tr>\n'
+                  + '<tr><td>The state</td><td><code>aria-sort</code> on the <code>&lt;th&gt;</code> and never on the button, which is where the specification puts it: the sort belongs to the column, not to the control that changed it. Exactly one cell carries it</td></tr>\n'
+                  + '<tr><td>The glyph</td><td><code>aria-hidden="true"</code>, and it costs nothing: the direction it draws is the direction <code>aria-sort</code> already says in words</td></tr>\n'
+                  + '<tr><td>The row</td><td>A row that is a door carries a real link inside it, and the link is what the keyboard reaches. The row\'s own click is a convenience for the pointer; the wash follows the focus inside it with <code>:focus-within</code>, so the keyboard sees what the mouse sees</td></tr>\n'
+                  + '<tr><td>The pager</td><td>A <code>&lt;nav aria-label="Pagination"&gt;</code>, the page you are on marked <code>aria-current="page"</code>, and the two arrows carrying a real label each because a glyph is not a name</td></tr>\n'
+                  + '<tr><td>Contrast</td><td>The head label is the Eyebrow role at Zinc 500 on Zinc 50, 4.6:1 at 12 / 600; the sorted label is Blue 600 on the same ground, 5.0:1; the body is Zinc 900 on white, 16.1:1; the count is Zinc 500 at 14, 4.8:1 on Zinc 50</td></tr>\n'
+                  + '<tr><td>Greyscale</td><td>The sorted column survives it: the glyph changes SHAPE and not only colour, from a pair to a single arrow, so the one fact colour carries is carried twice</td></tr>' } }
+      ] },
+
+    { id: 'code', toc: 'Code', eyebrow: 'The markup, and the ten lines of sorting that stay with the page',
+      name: 'Code',
+      blocks: [
+        { p: 'The markup first. A head cell holds one thing, the button or the quiet label, and the state is one attribute on the cell above it.' },
+        { code: { id: 'codeMarkup',
+            text: '&lt;table class="gb-table gb-table--stack"&gt;\n'
+                  + '\n'
+                  + '  &lt;thead&gt;\n'
+                  + '    &lt;tr&gt;\n'
+                  + '      &lt;th scope="col"&gt;\n'
+                  + '        &lt;button class="gb-table__sort" type="button" data-sort="name"&gt;Gift\n'
+                  + '          &lt;span class="gb-table__glyph" aria-hidden="true"&gt;&lt;/span&gt;&lt;/button&gt;\n'
+                  + '      &lt;/th&gt;\n'
+                  + '      &lt;th scope="col" class="gb-table__tight" aria-sort="descending"&gt;\n'
+                  + '        &lt;button class="gb-table__sort" type="button" data-sort="updated"&gt;Updated\n'
+                  + '          &lt;span class="gb-table__glyph" aria-hidden="true"&gt;&lt;/span&gt;&lt;/button&gt;\n'
+                  + '      &lt;/th&gt;\n'
+                  + '      &lt;th scope="col" class="gb-table__tight"&gt;&lt;span class="gb-table__label"&gt;Owner&lt;/span&gt;&lt;/th&gt;\n'
+                  + '    &lt;/tr&gt;\n'
+                  + '  &lt;/thead&gt;\n'
+                  + '\n'
+                  + '  &lt;tbody&gt;\n'
+                  + '    &lt;tr class="gb-table__row"&gt;\n'
+                  + '      &lt;td&gt;&lt;a class="gb-table__link" href="..."&gt;Macallan Prestige Collection&lt;/a&gt;&lt;/td&gt;\n'
+                  + '      &lt;td class="gb-table__tight"&gt;&lt;span class="gb-table__quiet"&gt;15 Sep 2026&lt;/span&gt;&lt;/td&gt;\n'
+                  + '      &lt;td class="gb-table__tight"&gt;Shannon&lt;/td&gt;\n'
+                  + '    &lt;/tr&gt;\n'
+                  + '  &lt;/tbody&gt;\n'
+                  + '\n'
+                  + '  &lt;tfoot class="gb-table__foot"&gt;\n'
+                  + '    &lt;tr&gt;&lt;td colspan="3"&gt;\n'
+                  + '      &lt;div class="gb-table__bar"&gt;\n'
+                  + '        &lt;span class="gb-table__count"&gt;Showing 1 to 3 of 7 approvals&lt;/span&gt;\n'
+                  + '        &lt;nav class="gb-table__pages" aria-label="Pagination"&gt;...&lt;/nav&gt;\n'
+                  + '      &lt;/div&gt;\n'
+                  + '    &lt;/td&gt;&lt;/tr&gt;\n'
+                  + '  &lt;/tfoot&gt;\n'
+                  + '\n'
+                  + '&lt;/table&gt;' } },
+        { note: 'AND THE SORTING, WHICH BELONGS TO THE PAGE. The whole contract is below and it is the whole of it: read the key off the pressed cell, flip the direction if it is the same key, write <code>aria-sort</code> on exactly one <code>&lt;th&gt;</code>, redraw the rows. The component is not told, and there is no glyph to swap: the head reads the attribute and dresses itself. Tabs made the same call four days earlier and for the same reason.' },
+        { code: { id: 'codeSort',
+            text: 'var key = \'updated\', dir = -1;            // newest first: what a reader came for\n'
+                  + '\n'
+                  + 'table.addEventListener(\'click\', function (e) {\n'
+                  + '  var b = e.target.closest(\'.gb-table__sort\');\n'
+                  + '  if (!b) return;\n'
+                  + '  var k = b.getAttribute(\'data-sort\');\n'
+                  + '  dir = (k === key) ? -dir : (k === \'name\' ? 1 : -1);\n'
+                  + '  key = k;\n'
+                  + '  markSorted();\n'
+                  + '  drawRows();                            // your data, your order\n'
+                  + '});\n'
+                  + '\n'
+                  + 'function markSorted() {\n'
+                  + '  table.querySelectorAll(\'thead th\').forEach(function (th) {\n'
+                  + '    var b = th.querySelector(\'.gb-table__sort\');\n'
+                  + '    if (b &amp;&amp; b.getAttribute(\'data-sort\') === key) {\n'
+                  + '      th.setAttribute(\'aria-sort\', dir === 1 ? \'ascending\' : \'descending\');\n'
+                  + '    } else {\n'
+                  + '      th.removeAttribute(\'aria-sort\');   // exactly one column, always\n'
+                  + '    }\n'
+                  + '  });\n'
+                  + '}' } }
+      ] },
+
+    { id: 'changelog', toc: 'Changelog', eyebrow: 'What the table used to be',
+      name: 'Changelog',
+      blocks: [
+        { table: {
+            head: ['When', 'What'],
+            rows: '<tr><td>Before</td><td>Two tables, written twice. The checkout\'s gift table in Tailwind utilities, the approvals list in a page local <code>.gbppa-table</code>, both arriving at the same Zinc 50 head over a white body without either one knowing about the other. Neither could be worn by anything else</td></tr>\n'
+                  + '<tr><td>21 September</td><td>The component, out of both of them plus the live portal\'s sort language. The head, the sortable column, the rows, the foot and the stack; three new drawings for the glyph and no script at all. The approvals list is re-dressed in the same wave and is the first carrier; the checkout is not migrated</td></tr>' } }
+      ] },
+
+    { toc: 'Related', eyebrow: 'Where to go next',
+      name: 'Related',
+      blocks: [
+        { p: '<a href="tabs.html">Tabs</a>, which made the same call about where a behaviour lives and which the approvals list stands behind. <a href="timeline.html">Timeline</a>, the other list in this house and the one that is deliberately not this one: a timeline is the history of ONE thing, a table is many things and the difference decides which you reach for. <a href="badge.html">Badge</a>, which a status column wears. <a href="icons.html">Icon</a>, whose grid, stroke and 16 rung the sort glyph is drawn on.' }
+      ] }
+  ],
+  sources: 'Sources: <a href="../components/table.css">table.css</a>, <a href="../components/button.css">button.css</a> (the pager\'s two arrows and the focus ring), <a href="../components/badge.css">badge.css</a> (the status a specimen row carries), <a href="../components/icon.css">icon.css</a> (the grid and the rung the glyph is drawn on), <a href="../components/shell.css">shell.css</a> (the Eyebrow role), <a href="../components/docs.css">docs.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page\'s own furniture, is rendered by those files.'
+});
+</script>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/auth.js"></script>
+<script src="../components/toggle.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+
+<script>
+/* ============================================================
+   gbppl-table-1 — THE DATA TABLE READOUT
+   ------------------------------------------------------------
+   The template's small scripts come from oro.js (window.GbOro).
+   What is here is the playground and the tables filled by measuring
+   specimens on this page.
+
+   NOTHING HERE PRINTS A NUMBER THAT WAS TYPED. The glyph in
+   particular is named by reading the mask actually applied to the
+   box and matching it against the three the component declares,
+   rather than by repeating whatever the axis was set to.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
+
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function boxOf(el) {
+    if (!el) return '';
+    var r = el.getBoundingClientRect();
+    return Math.round(r.width) + ' by ' + Math.round(r.height);
+  }
+  function typeOf(el) {
+    if (!el) return '';
+    var cs = getComputedStyle(el);
+    return px(cs.fontSize) + ' / ' + cs.fontWeight + ' / ' + px(cs.lineHeight) + ', ' + cs.color;
+  }
+  function padOf(el) {
+    if (!el) return '';
+    var cs = getComputedStyle(el);
+    return px(cs.paddingTop) + ' by ' + px(cs.paddingLeft);
+  }
+  function inkOf(el) { return el ? getComputedStyle(el).color : ''; }
+  function bgOf(el) {
+    if (!el) return '';
+    var bg = getComputedStyle(el).backgroundColor;
+    return (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') ? 'none' : bg;
+  }
+  /* The glyph's ink is a background, because the drawing is a mask
+     over a painted box rather than an <svg> with a stroke. */
+  function glyphOf(el) {
+    if (!el) return '';
+    return boxOf(el) + ', ' + getComputedStyle(el).backgroundColor;
+  }
+
+  /* WHICH OF THE THREE DRAWINGS IS ON THE BOX, named by comparing
+     the mask the browser reports against the three the component
+     declares on the table. The instrument does not repeat the axis
+     back to itself: if the cascade ever stopped reaching the glyph,
+     this cell would say so. */
+  var DRAWINGS = null;
+  function drawings(table) {
+    if (DRAWINGS) return DRAWINGS;
+    var cs = getComputedStyle(table);
+    DRAWINGS = [
+      ['a pair of arrows', cs.getPropertyValue('--gb-table-glyph-both').trim()],
+      ['one arrow, up',    cs.getPropertyValue('--gb-table-glyph-asc').trim()],
+      ['one arrow, down',  cs.getPropertyValue('--gb-table-glyph-desc').trim()]
+    ];
+    return DRAWINGS;
+  }
+  function drawingOf(el, table) {
+    if (!el || !table) return '';
+    var cs = getComputedStyle(el);
+    var now = (cs.maskImage || cs.webkitMaskImage || '').trim();
+    if (!now || now === 'none') return 'no mask reached the box';
+    var all = drawings(table);
+    for (var i = 0; i < all.length; i++) {
+      /* Chrome re-serialises a data URI it parsed, so the two strings
+         are compared by their path data rather than character for
+         character. */
+      if (keyOf(now) && keyOf(now) === keyOf(all[i][1])) return all[i][0];
+    }
+    return 'a drawing this file does not declare';
+  }
+  function keyOf(url) {
+    var m = String(url).match(/path[^']*'([^']*)'/g);
+    return m ? m.join('|') : '';
+  }
+
+  /* ---------- the playground ---------- */
+  var PG_AXES = [
+    /* THE ONLY STATE THE COMPONENT HAS, and the hover is in it
+       rather than beside it: from the reader's seat «what is this
+       head doing right now» is one question with four answers, and
+       splitting it into a state and a boolean would make it two. */
+    { id: 'sort', label: 'Sort state', group: 'state', def: 'rest',
+      values: [['rest', 'Rest'], ['hover', 'Hover'], ['asc', 'Up'], ['desc', 'Down']] },
+    { id: 'foot', label: 'Foot', group: 'content', kind: 'bool', on: 'yes', off: 'no', def: 'yes' },
+    { id: 'door', label: 'Rows are doors', group: 'content', kind: 'bool', on: 'yes', off: 'no', def: 'yes' }
+  ];
+
+  /* THE STAGE AXIS IS NOT LIGHT | DARK, and the reason is the
+     timeline's: this component has no inverse family and a family
+     without a carrier is not born (law 0a.4). A white body, a Zinc
+     50 head and Zinc 900 ink have no answer to a dark stage, and
+     drawing one would be inventing a component in a playground.
+     What the stage DOES decide here is real and the carrier
+     exercises it three ways: whether the table stands inside a block
+     with a radius that clips its corners, or bare on the page. */
+  var PG_GROUND = { id: 'stands', label: 'Stands on', group: 'ground', def: 'block',
+                    values: [['block', 'In a block'], ['bare', 'Bare']] };
+
+  /* THE SPECIMEN ON THE STAGE CARRIES NO STATUS BADGE, and the
+     reason is a finding rather than a preference. The stage is about
+     520 wide once the rail has taken its 320, and a table with two
+     nowrap columns in it has a minimum width it cannot go under: a
+     badge reading «Waiting for approval» plus a date plus a gift name
+     came to more than the stage had, the table overflowed its block
+     and the block clipped the badge in half. The stack modifier could
+     not save it either, because the stack is gated on the WINDOW and
+     the window here is 1280 (see the report: this is the one question
+     the wave leaves open). So the third column of the playground is
+     the QUIET HEAD LABEL instead, which the playground had no
+     specimen for anyway, and the badge keeps its place on the full
+     width specimen in Anatomy where it fits honestly. */
+  var ROWS = [
+    ['Aviation Welcome Kit', 'Shannon', '17 Sep 2026'],
+    ['Macallan Prestige', 'Julia', '15 Sep 2026'],
+    ['Taste of Amalfi', 'Shannon', '11 Sep 2026']
+  ];
+
+  function headCell(label, key, S, second) {
+    var aria = '', cls = 'gb-table__sort';
+    if (second) {
+      if (S.sort === 'asc')  aria = ' aria-sort="ascending"';
+      if (S.sort === 'desc') aria = ' aria-sort="descending"';
+      if (S.sort === 'hover') cls += ' is-hover';
+    }
+    return '<th scope="col"' + (key === 'name' ? '' : ' class="gb-table__tight"') + aria + '>' +
+           '<button class="' + cls + '" type="button" data-sort="' + key + '">' + esc(label) +
+           ' <span class="gb-table__glyph" aria-hidden="true"></span></button></th>';
+  }
+
+  function pgSample(S, forCode) {
+    var nl = forCode ? '\n  ' : ' ';
+    var rowCls = S.door === 'yes' ? ' class="gb-table__row"' : '';
+    var out = '<div class="' + (S.stands === 'bare' ? 'tbare' : 'tblock') + '">' +
+              nl + '<table class="gb-table gb-table--stack">' +
+              nl + '  <thead>' +
+              nl + '    <tr>' +
+              nl + '      ' + headCell('Gift', 'name', S, false) +
+              nl + '      ' + headCell('Updated', 'updated', S, true) +
+              nl + '      <th scope="col" class="gb-table__tight"><span class="gb-table__label">Owner</span></th>' +
+              nl + '    </tr>' +
+              nl + '  </thead>' +
+              nl + '  <tbody>';
+    ROWS.forEach(function (r) {
+      out += nl + '    <tr' + rowCls + '>' +
+             nl + '      <td>' + (S.door === 'yes'
+                    ? '<a class="gb-table__link" href="#playground">' + esc(r[0]) + '</a>'
+                    : esc(r[0])) + '</td>' +
+             nl + '      <td class="gb-table__tight"><span class="gb-table__quiet">' + esc(r[2]) + '</span></td>' +
+             nl + '      <td class="gb-table__tight">' + esc(r[1]) + '</td>' +
+             nl + '    </tr>';
+    });
+    out += nl + '  </tbody>';
+    if (S.foot === 'yes') {
+      out += nl + '  <tfoot class="gb-table__foot">' +
+             nl + '    <tr><td colspan="3">' +
+             nl + '      <div class="gb-table__bar">' +
+             nl + '        <span class="gb-table__count">Showing 1 to 3 of 7 approvals</span>' +
+             nl + '        <nav class="gb-table__pages" aria-label="Pagination">' +
+             nl + '          <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" aria-label="Previous page" disabled><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="chevron-left" data-gb-icon-size="16"></span></span></button>' +
+             nl + '          <button class="gb-table__page" type="button" aria-current="page">1</button>' +
+             nl + '          <button class="gb-table__page" type="button">2</button>' +
+             nl + '          <button class="gb-table__page" type="button">3</button>' +
+             nl + '          <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" aria-label="Next page"><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="chevron-right" data-gb-icon-size="16"></span></span></button>' +
+             nl + '        </nav>' +
+             nl + '      </div>' +
+             nl + '    </td></tr>' +
+             nl + '  </tfoot>';
+    }
+    return out + nl + '</table>' + (forCode ? '\n' : ' ') + '</div>';
+  }
+
+  function pgAfter(S, hold) {
+    void S; void hold;
+    /* The pager's two arrows are glyphs of the icon register, and a
+       specimen rebuilt by the rail arrives after the register has
+       already swept the page. */
+    if (window.GbIcons && window.GbIcons.mount) window.GbIcons.mount(document);
+    paintPlayground();
+  }
+
+  function paintPlayground() {
+    var stage = document.querySelector('[data-pg="table"]');
+    var table = stage && stage.querySelector('.gb-table');
+    if (!table) return;
+    var ths = table.querySelectorAll('thead th');
+    var sortTh = ths[1];
+    var btn = sortTh && sortTh.querySelector('.gb-table__sort');
+    var glyph = sortTh && sortTh.querySelector('.gb-table__glyph');
+    var td = table.querySelector('tbody td');
+    var foot = table.querySelector('.gb-table__foot td');
+    var page = table.querySelector('.gb-table__page[aria-current="page"]');
+
+    txt('pgHead', sortTh ? bgOf(sortTh) : '');
+    txt('pgRule', sortTh ? px(getComputedStyle(sortTh).borderBottomWidth) + ' ' + getComputedStyle(sortTh).borderBottomColor : '');
+    txt('pgHeadPad', padOf(btn));
+    txt('pgHeadType', typeOf(btn));
+    txt('pgGlyph', glyphOf(glyph));
+    txt('pgDraw', drawingOf(glyph, table));
+    txt('pgCell', padOf(td));
+    txt('pgCellType', typeOf(td));
+    txt('pgFoot', foot ? bgOf(foot) : 'no foot on this sample');
+    txt('pgPage', page ? boxOf(page) + ', ' + bgOf(page) : 'no foot on this sample');
+  }
+
+  /* ---------- the four sort states ---------- */
+  function paintSort() {
+    var host = document.getElementById('anTable');
+    [['srRest', 'srRest'], ['srHover', 'srHover'], ['srAsc', 'srAsc'], ['srDesc', 'srDesc']].forEach(function (pair) {
+      var row = document.getElementById(pair[0]);
+      if (!row) return;
+      var th = row.querySelector('th');
+      var btn = row.querySelector('.gb-table__sort');
+      var glyph = row.querySelector('.gb-table__glyph');
+      txt(pair[1] + 'Ink', inkOf(btn));
+      txt(pair[1] + 'Gl', glyphOf(glyph) + ' · ' + drawingOf(glyph, host || th.closest('.gb-table')));
+      txt(pair[1] + 'Bg', bgOf(btn));
+    });
+  }
+
+  /* ---------- the foot ---------- */
+  function paintFoot() {
+    var spec = document.getElementById('ftSpec');
+    if (!spec) return;
+    var cell = spec.querySelector('td');
+    var count = spec.querySelector('.gb-table__count');
+    var page = spec.querySelector('.gb-table__page');
+    var cur = spec.querySelector('.gb-table__page[aria-current="page"]');
+    var arrow = spec.querySelector('.gb-btn--icon');
+    txt('ftShelf', bgOf(cell) + ', pad ' + padOf(cell) + ', line ' +
+                   px(getComputedStyle(cell).borderTopWidth) + ' ' + getComputedStyle(cell).borderTopColor);
+    txt('ftCount', typeOf(count));
+    txt('ftPage', boxOf(page) + ', ' + px(getComputedStyle(page).borderRadius) + ' radius, ' + inkOf(page));
+    txt('ftCur', boxOf(cur) + ', ' + bgOf(cur) + ', ' + inkOf(cur));
+    txt('ftArrow', boxOf(arrow));
+  }
+
+  /* ---------- anatomy ---------- */
+  function paintAnatomy() {
+    var table = document.getElementById('anTable');
+    if (!table) return;
+    var th = table.querySelector('thead th');
+    var btn = table.querySelector('.gb-table__sort');
+    /* THE SECOND ROW, not the first: the first one carries no top line
+       on purpose (the head already drew it), and a table that printed
+       «line 0px» there would be describing the exception. */
+    var row = table.querySelector('tbody tr:nth-child(2)');
+    var td = row && row.querySelector('td');
+    var link = table.querySelector('.gb-table__link');
+    var foot = table.querySelector('.gb-table__foot td');
+
+    txt('anHead', boxOf(th) + ', ' + bgOf(th) + ', pad ' + padOf(th) +
+                  ', line ' + px(getComputedStyle(th).borderBottomWidth) + ' ' + getComputedStyle(th).borderBottomColor);
+    txt('anSort', boxOf(btn) + ', pad ' + padOf(btn) + ', ' + typeOf(btn));
+    txt('anRow', boxOf(row) + ', cell pad ' + padOf(td) +
+                 ', line ' + px(getComputedStyle(td).borderTopWidth) + ' ' + getComputedStyle(td).borderTopColor);
+    txt('anDoor', 'cursor ' + getComputedStyle(row).cursor + ', link ' + typeOf(link));
+    txt('anFoot', boxOf(foot) + ', ' + bgOf(foot) + ', pad ' + padOf(foot));
+    ORO.widthNow('wnow');
+  }
+
+  function paintAll() { paintSort(); paintFoot(); paintAnatomy(); }
+
+  function start() {
+    if (window.GbOro && window.GbOro.controls) {
+      window.GbOro.controls({
+        root: document.querySelector('[data-pg="table"]'),
+        axes: PG_AXES,
+        sample: pgSample,
+        after: pgAfter,
+        ground: PG_GROUND
+      });
+    }
+    if (window.GbIcons && window.GbIcons.mount) window.GbIcons.mount(document);
+    paintAll();
+    /* TRAP 11 OF THE SKILL. A specimen is still inside whatever
+       transition its furniture carries on the first frame, and a
+       colour read there describes a colour nobody sees. The wait is
+       read off the specimens rather than typed. */
+    var ms = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-shelf *'), function (el) {
+      var d = getComputedStyle(el).transitionDuration.split(',');
+      d.forEach(function (one) {
+        var n = parseFloat(one);
+        if (!isNaN(n)) ms = Math.max(ms, /ms$/.test(one.trim()) ? n : n * 1000);
+      });
+    });
+    if (ms) setTimeout(paintAll, ms + 40);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { paintAll(); paintPlayground(); }, 120);
+  });
+})();
+</script>
+
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>

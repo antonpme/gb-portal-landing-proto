@@ -448,6 +448,13 @@
        every one of them. Written `gb-tab` and not `gb-tabs?\b`,
        because an underscore is a word character and `\b` would never
        fire between `gb-tab` and `__label`. */
+    /* gbppl-table-1. IT STANDS ABOVE THE TABS ON PURPOSE AND THE
+       ORDER IS LOAD BEARING: `gb-table` begins with `gb-tab`, this
+       list is read top to bottom and the first match wins, so a row
+       written under the tabs would hand every cell of every table to
+       tabs.css and nobody would notice until a drawer said so. One
+       prefix covers the table and every part of it. */
+    [/^gb-table/, 'system/components/table.css'],
     [/^gb-tab/, 'system/components/tabs.css'],
     /* gbppl-timeline-1. One prefix, the list and every part of an
        event: `gb-tl`, `gb-tl__dot`, `gb-tl__what` and the four
@@ -708,6 +715,49 @@
                ' · ' + all + (all === 1 ? ' tab' : ' tabs') +
                (/gb-tabs--fill\b/.test(el.className) ? ' · sharing the row' : '') +
                (/gb-tabs--ruled\b/.test(el.className) ? ' · ruled' : '');
+      } },
+
+    /* gbppl-table-1. The same rule, parts before the whole. The SORT
+       CELL's detail is read off the `th` above it rather than off the
+       button, because that is where the state is written and an
+       inspector that read the button would be reading a thing that
+       carries no state at all. The glyph gets a name even though it
+       is aria-hidden: it is a thing a pointer lands on, and the
+       question it invites («why is this grey») is answered by the
+       cell, not by the box. */
+    { sel: '.gb-table__glyph', name: 'Table sort glyph', oro: 'table.html#sorting',
+      detail: function (el) {
+        var th = el.closest ? el.closest('th') : null;
+        var now = th && th.getAttribute('aria-sort');
+        return now === 'ascending' ? 'one arrow, up'
+             : now === 'descending' ? 'one arrow, down'
+             : 'a pair of arrows, at rest';
+      } },
+    { sel: '.gb-table__sort', name: 'Table sort cell', oro: 'table.html#sorting',
+      detail: function (el) {
+        var th = el.closest ? el.closest('th') : null;
+        return (th && th.getAttribute('aria-sort')) || 'not the sorted column';
+      } },
+    { sel: '.gb-table__label', name: 'Table head label', oro: 'table.html#anatomy' },
+    { sel: '.gb-table__link', name: 'Table link', oro: 'table.html#properties' },
+    { sel: '.gb-table__count', name: 'Table count', oro: 'table.html#foot' },
+    { sel: '.gb-table__page', name: 'Table page number', oro: 'table.html#foot',
+      detail: function (el) {
+        return el.getAttribute('aria-current') === 'page' ? 'the page you are on' : 'another page';
+      } },
+    { sel: '.gb-table__pages', name: 'Table pager', oro: 'table.html#foot' },
+    { sel: '.gb-table__foot', name: 'Table foot', oro: 'table.html#foot' },
+    { sel: '.gb-table__row', name: 'Table row', oro: 'table.html#anatomy',
+      detail: function (el) {
+        return el.querySelector('.gb-table__link') ? 'a door, and it says so' : 'a door with no word for it';
+      } },
+    { sel: '.gb-table', name: 'Data table', oro: 'table.html#table',
+      detail: function (el) {
+        var rows = el.querySelectorAll('tbody tr').length;
+        var sortable = el.querySelectorAll('.gb-table__sort').length;
+        return (/gb-table--stack\b/.test(el.className) ? 'stacking' : 'default') +
+               ' · ' + rows + (rows === 1 ? ' row' : ' rows') +
+               ' · ' + sortable + (sortable === 1 ? ' sortable column' : ' sortable columns');
       } },
 
     /* gbppl-timeline-1. The same rule, parts before the whole. The
@@ -2847,7 +2897,10 @@
   /* gbppl-tabs-1. The TAB, for the same reason: pointing at a tab is
      pointing at one side of a thing, not at a word and a glyph. Alt
      still drills to the label, the glyph or the count. */
-  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gb-checkbox, .gb-switch, .gb-tab, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
+  /* gbppl-table-1: the sort cell and the page circle are read whole,
+     because the whole cell IS the control and pointing at its label
+     is pointing at it. Alt still drills to the glyph. */
+  var SOLID = '.gb-btn, .gb-icon, .gb-toggle, .gb-radio, .gb-checkbox, .gb-switch, .gb-tab, .gb-table__sort, .gb-table__page, .gbh-count, .gbh-beta, .gbh-icon-button, .gbb-day, ' +
               '.gbb-slot, .gbs-chip, .gb-eyebrow, .gbh-navitem, .gbh-link';
   function resolveTarget(el, drill) {
     if (drill || !el || !el.closest) return el;

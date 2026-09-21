@@ -237,6 +237,45 @@
              same.
      Every other gap, pad and radius is a rung of --space-* or
      --radius, and every size is a role of the type scale.
+
+     ------------------------------------------------------------
+     gbppl-table-1 — THE LIST STOPS OWNING ITS TABLE     21.09.2026
+
+     The client, on the sort arrows: «берём у живого портала, но
+     адаптируем полностью под нашу систему... брать то, что у них,
+     улучшать», and, in the same breath, «делай это через
+     компоненты». So the table this page had written for itself is
+     now `.gb-table` in system/components/table.css, and this page
+     is its first carrier.
+
+     WHAT MOVED OUT: the Zinc 50 head and its hairline, the sortable
+     column and its hover plaque, the row and its wash, the blue
+     name, the quiet date, the foot with its count and its pager,
+     and the stacking under 768. Every one of those numbers went
+     over unchanged — this page's own measurements are what the
+     component was built out of, because they were the two rungs and
+     the checkout's were fourteen pixels of nothing.
+
+     WHAT CHANGED, AND IT IS THE ONE THING: the sort glyph. This
+     page drew a chevron, pointing down on every resting column and
+     up on a column sorted ascending, so «I can be sorted» and «I am
+     sorted, ascending» were one drawing saying two things. The
+     component draws the live portal's language instead: a PAIR of
+     arrows at rest, and one arrow in Blue 600 beside a Blue 600
+     label on the single column that is sorted. The portal's pale
+     blue slab under the active cell is NOT taken, by agreement: our
+     head already stands on Zinc 50.
+
+     WHAT THE SCRIPT LOST: `drawArrows`, which used to set aria-sort
+     in two places and swap a glyph on every redraw. It is
+     `markSorted` now, it writes one attribute on one `th`, and the
+     head dresses itself from it.
+
+     WHAT STAYED HERE, and it is all of it about THIS list rather
+     than about tables: the thumbnail and the name row (.gbppa-what,
+     .gbppa-thumb), the narrow search field, and the two lines that
+     say which of this page's own columns goes where once the row
+     stops being a row.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -253,6 +292,9 @@
 <link rel="stylesheet" href="../system/components/auth.css">
 <link rel="stylesheet" href="../system/components/tabs.css">
 <link rel="stylesheet" href="../system/components/timeline.css">
+<!-- gbppl-table-1: the list is the first carrier of the data table, and
+     the styles it used to write for itself now live at the owner. -->
+<link rel="stylesheet" href="../system/components/table.css">
 <link rel="stylesheet" href="../system/components/tooltip.css">
 <link rel="stylesheet" href="../system/components/studio-panel.css">
 <link rel="stylesheet" href="../system/components/drawer.css">
@@ -631,56 +673,26 @@ body[data-frame="portal"] .gbppa-headbox {
    what is narrow (Ton 16.09: nothing inside a card stops short of
    the card's own vertical lines). */
 .gbppa-search .gba-field { max-width: 480px; }
-.gbppa-table { width: 100%; border-collapse: collapse; }
-.gbppa-table th {
-  text-align: left;
-  padding: 0;
-  background: var(--zinc-50);
-  border-bottom: 1px solid var(--zinc-200);
-  white-space: nowrap;
-}
-/* THE COLUMN HEAD IS THE CONTROL, so the whole cell answers the
-   pointer and the plaque of that hover stops at the cell's own lines.
-   Every column here sorts; there is no other kind on this table, and
-   a head that looked clickable and was not would be the worse of the
-   two mistakes. */
-.gbppa-sort {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  width: 100%;
-  padding: var(--space-16) var(--space-24);
-  border: 0;
-  background: none;
-  font-family: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color var(--mo-micro) var(--mo-move), color var(--mo-micro) var(--mo-move);
-}
-.gbppa-sort:hover { background: var(--zinc-100); color: var(--zinc-700); }
-.gbppa-sort__arrow { display: inline-flex; color: var(--zinc-300); }
-.gbppa-sort[aria-sort] { color: var(--zinc-900); }
-.gbppa-sort[aria-sort] .gbppa-sort__arrow { color: var(--blue-600); }
-.gbppa-table td {
-  padding: var(--space-16) var(--space-24);
-  border-top: 1px solid var(--zinc-200);
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--zinc-900);
-  vertical-align: middle;
-}
-.gbppa-table tbody tr:first-child td { border-top: 0; }
-/* THE GIFT TAKES THE SLACK AND THE TWO FACTS SIT TOGETHER. Left to
-   itself the table splits the free width three ways, and at 2258 the
-   status floats alone in the middle of nothing. */
-.gbppa-table td[data-col="state"], .gbppa-table th:nth-child(2),
-.gbppa-table td[data-col="when"],  .gbppa-table th:nth-child(3) { width: 1%; white-space: nowrap; }
-/* THE WHOLE ROW IS THE DOOR (the Details button is gone), so the
-   whole row answers the pointer. The wash stays inside the block's
-   own lines, which is what overflow:hidden is there for. */
-.gbppa-row { cursor: pointer; transition: background var(--mo-micro) var(--mo-move); }
-.gbppa-row:hover { background: var(--zinc-50); }
-.gbppa-row:focus-within { background: var(--zinc-50); }
+/* gbppl-table-1: EVERYTHING THAT USED TO BE HERE IS NOW AT THE OWNER.
+   The head, the sortable column and its glyph, the rows, the door, the
+   foot with its count and its pager, and the stack under 768 are
+   `.gb-table` in system/components/table.css, and the client asked for
+   exactly that: «делай это через компоненты». What is left below is the
+   page's own, and every line of it is about THIS list rather than about
+   tables: what a gift row is made of, and which of its cells goes where
+   once the row stops being a row.
+
+   ONE THING CHANGED SHAPE IN THE MOVE and it is worth saying out loud,
+   because the screenshots differ: the sort glyph. This page drew a
+   chevron, down at rest on every column and up on the sorted one, so a
+   resting column and a column sorted ascending were telling two
+   different stories with one drawing. The component draws the live
+   portal's own language instead: a PAIR of arrows at rest, meaning «this
+   one sorts», and a single arrow in Blue 600 beside a Blue 600 label on
+   the one column that is sorted. */
+
+/* THE SUBJECT OF A ROW: the picture and the name, which belong to a
+   gift and not to a table. */
 .gbppa-what { display: flex; align-items: center; gap: var(--space-16); }
 .gbppa-thumb {
   width: 72px;                  /* NO TOKEN: a picture size, see the file head */
@@ -692,71 +704,15 @@ body[data-frame="portal"] .gbppa-headbox {
   border-radius: var(--radius);
   display: block;
 }
-/* THE NAME IS AN EXPLICIT LINK AND SAYS SO IN BLUE (Ton-22,
-   gbppl-blue-links-1): clickable TEXT wears Blue 600 and rests
-   WITHOUT an underline, which arrives on hover. */
-a.gbppa-name, body.gb-demo a.gbppa-name {
-  color: var(--blue-600);
-  text-decoration: none;
-}
-a.gbppa-name:hover, body.gb-demo a.gbppa-name:hover {
-  text-decoration: underline;
-  text-underline-offset: 2px;   /* NO TOKEN 2 */
-}
-.gbppa-when { color: var(--zinc-500); white-space: nowrap; }
-.gbppa-empty {
-  padding: var(--space-32) var(--space-24);
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--zinc-500);
-}
 
-/* ---- THE FOOT OF THE TABLE: the count on the left, the pager on
-        the right, in the checkout's own pagination language
-        (live\checkout.html, the v5 gift table). ---- */
-.gbppa-tfoot td {
-  padding: var(--space-16) var(--space-24);
-  background: var(--zinc-50);
-  border-top: 1px solid var(--zinc-200);
-}
-.gbppa-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-16);
-}
-.gbppa-count { font-size: 14px; color: var(--zinc-500); }
-.gbppa-pg { display: flex; align-items: center; gap: 4px; }   /* NO TOKEN 4: the checkout's gap-1 */
-.gbppa-pg__no {
-  width: 32px;                  /* NO TOKEN 32: the checkout's w-8 h-8 */
-  height: 32px;
-  border: 0;
-  border-radius: var(--radius-circle);
-  background: none;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--zinc-600);
-  cursor: pointer;
-  transition: background-color var(--mo-micro) var(--mo-move);
-}
-.gbppa-pg__no:hover { background: var(--zinc-100); }
-.gbppa-pg__no[aria-current="page"] { background: var(--blue-600); color: var(--white); }
-
-/* Under 768 the table stops being a table: the date joins the name
-   and the head row goes, because three columns of 16px text in 360
-   is a grid nobody reads. */
+/* WHERE THIS LIST'S OWN COLUMNS GO once `.gb-table--stack` has turned
+   the row into a grid. The component owns the change of state; only
+   this page knows that the gift takes the whole first line and the date
+   sits at the end of the second (trap 30: the layout decides the fate
+   of every child, and here every child is named). */
 @media (max-width: 767px) {
-  .gbppa-table thead { display: none; }
-  .gbppa-table tbody tr { display: grid; grid-template-columns: 1fr auto; gap: var(--space-8) var(--space-16); align-items: center; padding: var(--space-16); }
-  /* width auto undoes the shrink-to-fit of the wide table: a grid
-     item asked for 1% really is 1% wide, and the date would vanish. */
-  .gbppa-table tbody td { display: block; padding: 0; border: 0; width: auto; }
-  .gbppa-table tbody tr + tr { border-top: 1px solid var(--zinc-200); }
   .gbppa-table td[data-col="what"] { grid-column: 1 / -1; }
   .gbppa-table td[data-col="when"] { text-align: right; }
-  .gbppa-tfoot td { padding: var(--space-16); }
 }
 
 /* ============================================================
@@ -1103,34 +1059,41 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
             </div>
 
             <div class="gbppa-body">
-              <table class="gbppa-table">
+              <!-- gbppl-table-1: the list wears the system's data table.
+                   `.gbppa-table` stays on it as this page's own handle for
+                   its two stacked columns and for nothing else; every line
+                   of the dressing comes from table.css. The state is one
+                   attribute per head cell, `aria-sort`, and the head draws
+                   itself from it: there is no glyph for the script to
+                   swap. -->
+              <table class="gbppa-table gb-table gb-table--stack">
                 <thead>
                   <tr>
                     <th scope="col">
-                      <button class="gb-eyebrow gbppa-sort" type="button" data-sort="name">Gift <span class="gbppa-sort__arrow" aria-hidden="true"></span></button>
+                      <button class="gb-table__sort" type="button" data-sort="name">Gift <span class="gb-table__glyph" aria-hidden="true"></span></button>
                     </th>
-                    <th scope="col">
-                      <button class="gb-eyebrow gbppa-sort" type="button" data-sort="state">Status <span class="gbppa-sort__arrow" aria-hidden="true"></span></button>
+                    <th scope="col" class="gb-table__tight">
+                      <button class="gb-table__sort" type="button" data-sort="state">Status <span class="gb-table__glyph" aria-hidden="true"></span></button>
                     </th>
-                    <th scope="col">
-                      <button class="gb-eyebrow gbppa-sort" type="button" data-sort="updated">Updated <span class="gbppa-sort__arrow" aria-hidden="true"></span></button>
+                    <th scope="col" class="gb-table__tight">
+                      <button class="gb-table__sort" type="button" data-sort="updated">Updated <span class="gb-table__glyph" aria-hidden="true"></span></button>
                     </th>
                   </tr>
                 </thead>
                 <tbody id="gbppaRows"></tbody>
-                <tfoot class="gbppa-tfoot" id="gbppaTfoot">
+                <tfoot class="gb-table__foot" id="gbppaTfoot">
                   <tr>
                     <td colspan="3">
-                      <div class="gbppa-foot">
-                        <span class="gbppa-count" id="gbppaCount"></span>
-                        <div class="gbppa-pg" id="gbppaPager"></div>
+                      <div class="gb-table__bar">
+                        <span class="gb-table__count" id="gbppaCount"></span>
+                        <nav class="gb-table__pages" id="gbppaPager" aria-label="Pagination"></nav>
                       </div>
                     </td>
                   </tr>
                 </tfoot>
               </table>
 
-              <p class="gbppa-empty" id="gbppaEmpty" hidden></p>
+              <p class="gb-table__empty" id="gbppaEmpty" hidden></p>
             </div>
           </div>
         </section>
@@ -1529,21 +1492,28 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
     });
   }
 
-  function drawArrows() {
-    [].forEach.call(document.querySelectorAll('.gbppa-sort'), function (b) {
-      var on = b.getAttribute('data-sort') === sortKey;
-      var slot = b.querySelector('.gbppa-sort__arrow');
-      var glyph = (on && sortDir === 1) ? 'chevron-up' : 'chevron-down';
-      if (on) {
-        b.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
-        b.closest('th').setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+  /* gbppl-table-1: THE WHOLE OF WHAT THIS PAGE SAYS ABOUT SORTING, and
+     it is one attribute on one cell. `aria-sort` is what the screen
+     reader needs anyway, so the component reads the same thing the
+     assistive tech reads: the label goes blue, the resting pair of
+     arrows becomes a single arrow, and it points the way. Nothing is
+     drawn here, and the two glyphs this function used to swap by hand
+     went with it.
+
+     EXACTLY ONE COLUMN CARRIES IT. Two blue columns would be two
+     answers to the question «which one am I sorted by», and the screen
+     reader would read both. The attribute is written on the `th` and
+     never on the button inside it, which is where the specification
+     puts it: the sort belongs to the column, not to the control that
+     changed it. */
+  function markSorted() {
+    [].forEach.call(document.querySelectorAll('.gbppa-table thead th'), function (th) {
+      var b = th.querySelector('.gb-table__sort');
+      if (b && b.getAttribute('data-sort') === sortKey) {
+        th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
       } else {
-        b.removeAttribute('aria-sort');
-        b.closest('th').removeAttribute('aria-sort');
+        th.removeAttribute('aria-sort');
       }
-      /* 16 is the lowest rung the icon organism has, and a rung is what
-         a glyph of ours stands on (icon.css: 16 / 20 / 22 / 24). */
-      if (slot && window.GbIcons) slot.innerHTML = window.GbIcons.html(glyph, 16);
     });
   }
 
@@ -1556,7 +1526,7 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
     var out = '<button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-page="' + (pageNo - 1) + '" aria-label="Previous page"' + (pageNo === 1 ? ' disabled' : '') + '>' +
               '<span class="gb-btn__icon" aria-hidden="true">' + (window.GbIcons ? window.GbIcons.html('chevron-left', 16) : '') + '</span></button>';
     for (var i = 1; i <= pages; i++) {
-      out += '<button class="gbppa-pg__no" type="button" data-page="' + i + '"' + (i === pageNo ? ' aria-current="page"' : '') + '>' + i + '</button>';
+      out += '<button class="gb-table__page" type="button" data-page="' + i + '"' + (i === pageNo ? ' aria-current="page"' : '') + '>' + i + '</button>';
     }
     out += '<button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-page="' + (pageNo + 1) + '" aria-label="Next page"' + (pageNo === pages ? ' disabled' : '') + '>' +
            '<span class="gb-btn__icon" aria-hidden="true">' + (window.GbIcons ? window.GbIcons.html('chevron-right', 16) : '') + '</span></button>';
@@ -1574,13 +1544,13 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
     var shown = found.slice(from, from + PAGE_SIZE);
 
     rowsEl.innerHTML = shown.map(function (g) {
-      return '<tr class="gbppa-row" data-gift="' + esc(g.id) + '">' +
+      return '<tr class="gb-table__row" data-gift="' + esc(g.id) + '">' +
         '<td data-col="what"><span class="gbppa-what">' +
           '<img class="gbppa-thumb" src="' + esc(g.thumb) + '" alt="' + esc(g.alt) + '">' +
-          '<a class="gbppa-name" href="' + esc(hrefFor(g.id)) + '">' + esc(g.name) + '</a>' +
+          '<a class="gb-table__link" href="' + esc(hrefFor(g.id)) + '">' + esc(g.name) + '</a>' +
         '</span></td>' +
-        '<td data-col="state">' + badgeHtml(g.state) + '</td>' +
-        '<td data-col="when"><span class="gbppa-when">' + esc(human(g.updated)) + '</span></td>' +
+        '<td class="gb-table__tight" data-col="state">' + badgeHtml(g.state) + '</td>' +
+        '<td class="gb-table__tight" data-col="when"><span class="gb-table__quiet">' + esc(human(g.updated)) + '</span></td>' +
       '</tr>';
     }).join('');
 
@@ -1596,15 +1566,15 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
       'Showing ' + (from + 1) + ' to ' + (from + shown.length) + ' of ' + found.length +
       (found.length === 1 ? ' approval' : ' approvals');
     drawPager(found.length);
-    drawArrows();
+    markSorted();
   }
 
   /* The whole row is the door, and the name inside it is the door
      saying so. */
   rowsEl.addEventListener('click', function (e) {
-    var a = e.target.closest ? e.target.closest('a.gbppa-name') : null;
+    var a = e.target.closest ? e.target.closest('a.gb-table__link') : null;
     if (a) { e.preventDefault(); }
-    var tr = e.target.closest ? e.target.closest('.gbppa-row') : null;
+    var tr = e.target.closest ? e.target.closest('.gb-table__row') : null;
     if (!tr) return;
     go(tr.getAttribute('data-gift'));
   });
@@ -1614,7 +1584,7 @@ a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover { text-decoration: underline
   }
 
   document.addEventListener('click', function (e) {
-    var s = e.target.closest ? e.target.closest('.gbppa-sort') : null;
+    var s = e.target.closest ? e.target.closest('.gb-table__sort') : null;
     if (s) {
       var key = s.getAttribute('data-sort');
       if (key === sortKey) sortDir = -sortDir;
