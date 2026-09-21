@@ -754,7 +754,10 @@ body[data-frame="clean"] .gbppa-body { background: var(--white); border: 1px sol
 body[data-frame="clean"] .gbppa-nav--tabs {
   position: relative;
   z-index: 1;
-  margin-bottom: -1px;          /* the chosen tab's 2px underline sits ON the block's top line */
+  /* Was -1px, the chosen tab's underline lying ON the block's top
+     line. Ton, 21.09: «табы всё ещё лежат прямо на блоке превью, без
+     отступа... абсолютно неаккуратно» — the row breathes now. */
+  margin-bottom: var(--space-16);
 }
 body[data-frame="clean"] .gbppa-nav--search { margin-bottom: var(--space-24); }
 
@@ -1019,25 +1022,20 @@ button.gbppa-door:hover { text-decoration: underline; text-underline-offset: 2px
 /* ---- The side column: the two acts, the last word, the doors ---- */
 .gbppa-side { display: flex; flex-direction: column; gap: var(--space-24); }
 .gbppa-last {
+  /* The amber left cant is gone (Ton, 21.09: a rounded block with a
+     coloured line on its left is not this house's language — «типичный
+     колхоз»). A quiet ground and the eyebrow carry the attribution. */
   background: var(--zinc-50);
-  border-left: 3px solid #f59e0b;   /* NO TOKEN 3; amber 500, badge.css's own warning fill */
   border-radius: var(--radius);
   padding: var(--space-16);
 }
 .gbppa-last__meta { margin: 0 0 var(--space-8); }
 .gbppa-last__text { margin: 0 0 var(--space-8); font-size: 16px; line-height: 1.6; color: var(--zinc-900); }
 
-/* LAYOUT A: the last word is the SAME CARD, standing on its own
-   ABOVE the stage with clear air on both sides — never touching the
-   plate (the thin nowrap strip of pv-1 died with the client's
-   verdict: glued to the stage it read as part of the preview). At a
-   reading measure, full sentences, no truncation. */
-.gbppa-last--top { display: none; }
-body[data-pv="a"] .gbppa-last--top:not([hidden]) {
-  display: block;
-  max-width: 72ch;
-  margin: 0 0 var(--space-24);
-}
+/* LAYOUT A carries NO note in the pane (Ton, 21.09 evening: «мы
+   внутрь превью ничего не кладём» — the card above the stage read as
+   part of the preview whatever air it stood in). The conversation is
+   the Messages tab's; the pane is the stage and its doors. */
 
 /* TWO ACTS, ONE RUNG, ONE GAP, AND THEY STACK BECAUSE THE COLUMN IS
    300 WIDE (Ton-19: two buttons of one rung at two lengths under
@@ -1085,7 +1083,13 @@ body[data-pv="b"] .gbppa-acts {
    open UNDER the two columns, in a place kept for them, so nothing
    above ever moves (Ton-19). The alert is a wide bar by its own law
    and a 300 column is not where a wide bar lives. */
-.gbppa-slot:not(:empty) { margin-top: var(--space-32); }
+/* display: contents — the slot is a HOME, not a box: with every child
+   hidden it must cost zero height in either of its two homes, and a
+   margin on the wrapper would keep charging. The air is the visible
+   child's own. */
+.gbppa-slot { display: contents; }
+body[data-pv="b"] .gbppa-slot > :not([hidden]) { margin-top: var(--space-32); }
+body[data-pv="a"] .gbppa-slot > :not([hidden]) { margin-bottom: var(--space-24); }
 .gbppa-changes { max-width: 640px; }              /* NO TOKEN 640: a reading measure */
 .gbppa-changes .gba-field { margin-bottom: var(--space-24); }
 .gbppa-rowacts { display: flex; flex-wrap: wrap; gap: var(--space-16); }
@@ -1399,16 +1403,11 @@ body[data-pv="b"] .gbppa-acts {
 
               <div id="gbppaPanePreview" role="tabpanel" aria-labelledby="gbppaTabPreview" data-has3d="0">
 
-                <!-- LAYOUT A: the last word from the design team, the same
-                     card the signature zone carries, standing on its own
-                     above the stage with air on both sides. Never touching
-                     the plate (the client, 21.09). -->
-                <div class="gbppa-last gbppa-last--top" id="gbppaLastLine" hidden>
-                  <p class="gb-eyebrow gbppa-last__meta" id="gbppaLastLineMeta"></p>
-                  <p class="gbppa-last__text" id="gbppaLastLineText"></p>
-                  <a class="gbppa-door" href="#" data-gbppa-messages>Reply in messages</a>
-                </div>
-
+                <!-- NOTHING STANDS BEFORE THE STAGE (Ton, 21.09, the
+                     evening pass: «мы внутрь превью ничего не кладём» —
+                     the designer's note card left this pane entirely; the
+                     conversation lives in Messages, and layout A's pane
+                     is the stage and its two quiet doors, full stop. -->
                 <div class="gbppa-two">
                   <div class="gbppa-objcol">
                     <div class="gbppa-stagewrap">
@@ -1457,8 +1456,12 @@ body[data-pv="b"] .gbppa-acts {
                 </div>
 
                 <!-- THE SLOT. Everything a decision opens lands here, and
-                     nothing above it moves (Ton-19). -->
-                <div class="gbppa-slot">
+                     nothing above it moves (Ton-19). In layout A the slot
+                     LIVES UNDER THE HEAD, next to the buttons that open
+                     it (Ton, 21.09: the click was yanking the page down
+                     to a form below a 700 stage); the script moves this
+                     one node between the two homes on setPv. -->
+                <div class="gbppa-slot" id="gbppaSlot">
 
                   <!-- ONE CONFIRMATION, and it is the house's alert with
                        its own xsmall rung inside it. -->
@@ -1770,10 +1773,27 @@ body[data-pv="b"] .gbppa-acts {
   var PV_LEGACY = { cinema: 'a', desk: 'a', signature: 'b' };
   function pvName(v) { return PVS[v] ? v : (PV_LEGACY[v] || 'a'); }
   var pv = pvName(params.get('pv'));
+  /* THE SLOT FOLLOWS THE BUTTONS (Ton, 21.09: clicking Request changes
+     was yanking the page down to a form under a 700 stage). In A the
+     acts are in the head, so the slot moves up under the head box; in
+     B they sign under the stage, so the slot stays in the pane. One
+     node, two homes, moved rather than doubled. */
+  function homeSlot() {
+    var slot = document.getElementById('gbppaSlot');
+    if (!slot) return;
+    if (pv === 'a') {
+      var headbox = document.querySelector('#gbppaOne .gbppa-headbox');
+      if (headbox && slot.previousElementSibling !== headbox) headbox.after(slot);
+    } else {
+      var pane = document.getElementById('gbppaPanePreview');
+      if (pane && slot.parentElement !== pane) pane.appendChild(slot);
+    }
+  }
   function setPv(v) {
     pv = pvName(v);
     document.body.setAttribute('data-pv', pv);
     writeKey('pv', pv);
+    homeSlot();
   }
   setPv(pv);
 
@@ -1952,9 +1972,6 @@ body[data-pv="b"] .gbppa-acts {
   var lastEl   = document.getElementById('gbppaLast');
   var lastMeta = document.getElementById('gbppaLastMeta');
   var lastText = document.getElementById('gbppaLastText');
-  var lastLine = document.getElementById('gbppaLastLine');
-  var lastLineMeta = document.getElementById('gbppaLastLineMeta');
-  var lastLineText = document.getElementById('gbppaLastLineText');
   var threadEl = document.getElementById('gbppaThread');
   var eventsEl = document.getElementById('gbppaEvents');
   var replyEl  = document.getElementById('gbppaReply');
@@ -1997,22 +2014,16 @@ body[data-pv="b"] .gbppa-acts {
     }).join('');
     msgCount.textContent = '(' + gift.messages.length + ')';
 
-    /* The last word from the design team. TWO CARRIERS, one fact: the
-       card the desk and the signature stand on, and the thin line
-       cinema lays over the stage. Both are filled every time and the
-       layout decides which one is on screen. */
+    /* The last word from the design team — ONE carrier now, the card
+       in B's signature zone. Layout A shows no note at all (Ton,
+       21.09: nothing enters the preview; the conversation is the
+       Messages tab's). */
     var last = null;
     gift.messages.forEach(function (m) { if (m.side !== 'you') last = m; });
     lastEl.hidden = !last;
-    lastLine.hidden = !last;
     if (last) {
       lastMeta.textContent = last.who + ' · ' + last.when;
       lastText.textContent = last.text;
-      lastLineMeta.textContent = last.who + ' · ' + last.when;
-      lastLineText.textContent = last.text;
-      /* The line truncates, so the whole sentence has to be reachable
-         by a pointer that rests on it. */
-      lastLineText.title = last.text;
     }
   }
 
@@ -2236,28 +2247,17 @@ body[data-pv="b"] .gbppa-acts {
     drawList(searchEl ? searchEl.value : '');
   }
 
-  /* THE SLOT IS WHERE EVERYTHING A DECISION OPENS LANDS (Ton-19), and
-     in cinema the acts are up in the head while the slot is under a
-     700 stage. So the slot is brought into view when it is not
-     already there, and left alone when it is: the page never jumps
-     under a person who can already see the answer. */
-  function reveal(el) {
-    if (!el || el.hidden) return;
-    var r = el.getBoundingClientRect();
-    var h = window.innerHeight || document.documentElement.clientHeight;
-    if (r.top >= 0 && r.bottom <= h) return;
-    try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-    catch (e) { el.scrollIntoView(); }
-  }
-
-  /* BOTH CARRIERS OF THE TWO ACTS, ONE PAIR OF HANDLERS. */
+  /* NO reveal() AND NO SCROLL (Ton, 21.09: «когда нажимаешь на кнопку,
+     тебя рывком кидает вниз... Это плохо»). The slot lives NEXT TO the
+     buttons now — under the head in A, in the signature zone in B — so
+     what a decision opens appears where the hand already is, and the
+     page never moves. */
   document.addEventListener('click', function (e) {
     if (!e.target.closest) return;
     if (e.target.closest('[data-gbppa-approve]')) {
       changesEl.hidden = true;
       expandAsk(false);
       confirmEl.hidden = false;
-      reveal(confirmEl);
       document.getElementById('gbppaConfirmYes').focus({ preventScroll: true });
       return;
     }
@@ -2267,7 +2267,7 @@ body[data-pv="b"] .gbppa-acts {
       var open = changesEl.hidden;
       changesEl.hidden = !open;
       expandAsk(open);
-      if (open) { reveal(changesEl); askEl.focus({ preventScroll: true }); }
+      if (open) askEl.focus({ preventScroll: true });
     }
   });
   document.getElementById('gbppaConfirmNo').addEventListener('click', function () {
