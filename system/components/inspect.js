@@ -449,6 +449,12 @@
        because an underscore is a word character and `\b` would never
        fire between `gb-tab` and `__label`. */
     [/^gb-tab/, 'system/components/tabs.css'],
+    /* gbppl-timeline-1. One prefix, the list and every part of an
+       event: `gb-tl`, `gb-tl__dot`, `gb-tl__what` and the four
+       meanings all start the same five letters. Written `gb-tl` for
+       the tabs' reason: an underscore is a word character, so `\b`
+       would never fire between `gb-tl` and `__dot`. */
+    [/^gb-tl/, 'system/components/timeline.css'],
     /* gbppl-inputnumber-1. The frame had no deed of its own and read
        its owner off an ancestor; the rename is the moment to write
        the купчая down, one prefix like every other row. */
@@ -702,6 +708,29 @@
                ' · ' + all + (all === 1 ? ' tab' : ' tabs') +
                (/gb-tabs--fill\b/.test(el.className) ? ' · sharing the row' : '') +
                (/gb-tabs--ruled\b/.test(el.className) ? ' · ruled' : '');
+      } },
+
+    /* gbppl-timeline-1. The same rule, parts before the whole. The
+       EVENT's detail says which of the four meanings it carries,
+       because the meaning lives in a modifier on the event and the
+       dot only shows it: an inspector that named the dot's colour
+       would be reading the symptom. The dot is aria-hidden and still
+       gets a name, since it is a thing a pointer lands on. */
+    { sel: '.gb-tl__note', name: 'Timeline aside', oro: 'timeline.html#anatomy' },
+    { sel: '.gb-tl__link', name: 'Timeline link', oro: 'timeline.html#properties' },
+    { sel: '.gb-tl__when', name: 'Timeline time', oro: 'timeline.html#anatomy' },
+    { sel: '.gb-tl__what', name: 'Timeline event text', oro: 'timeline.html#anatomy' },
+    { sel: '.gb-tl__dot', name: 'Timeline dot', oro: 'timeline.html#meanings' },
+    { sel: '.gb-tl__item', name: 'Timeline event', oro: 'timeline.html#meanings',
+      detail: function (el) {
+        var m = /gb-tl__item--(you|revision|milestone|system)\b/.exec(el.className);
+        return m ? m[1] : 'system';
+      } },
+    { sel: '.gb-tl', name: 'Timeline', oro: 'timeline.html#timeline',
+      detail: function (el) {
+        var all = el.querySelectorAll('.gb-tl__item').length;
+        return (/gb-tl--small\b/.test(el.className) ? 'small' : 'default') +
+               ' · ' + all + (all === 1 ? ' event' : ' events');
       } },
 
     /* gbppl-oro-field-2. The four other looks of the field, above the

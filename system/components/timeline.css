@@ -1,0 +1,274 @@
+/* ============================================================
+   gbppl-timeline-1 — THE TIMELINE
+   ------------------------------------------------------------
+   The client, 21.09, about the History side of a gift approval:
+   «History должна выглядеть как вертикальный таймлайн, и для этого
+   нам нужно создать соответствующий компонент». The law of 0a.2
+   answers the second half of that sentence: the control is born
+   first, the screen is built out of it afterwards. So this file is
+   the component, and the approvals page is its first carrier rather
+   than its author.
+
+   THIS WAVE DRESSES NOBODY. The dashboard feed stays exactly as it
+   is (it is a different thing, see USAGE below); the approvals page
+   takes this class in its own wave, with its own screenshots.
+
+   ------------------------------------------------------------
+   WHERE EVERY NUMBER COMES FROM, AND NOTHING IS INVENTED
+
+   TWO SOURCES, named in the brief, and they do different jobs.
+
+   1. THE HOUSE'S OWN EVENT FEED, `.gbppd-event` of
+      live/portal-dashboard.html (gbppl-portal-dashboard-2, 10.09).
+      It is the TONE and the SCALE: a dot column of --space-8, a
+      column gap of --space-16, one sentence at 15 / 1.6, and a
+      quiet second line for the time. Every one of those numbers is
+      taken here unchanged, which is the whole of Ton-6: a house
+      that already writes events does not learn a second way to
+      write them.
+
+   2. THE SKETCH, `.tl` of sandbox/approvals-layout-mock.html, the
+      layout Ton was shown on 21.09. It is the DIRECTION: a hairline
+      down the left, a coloured dot with a white ring riding it, an
+      eyebrow «when · who» over the sentence, and a quiet aside
+      after it. Its own numbers are a sketch's numbers (11px dots,
+      14.5px text, 22px of air, 10.5/1.2px caps) and NOT ONE OF THEM
+      IS COPIED: every one lands on the nearest thing the system
+      already owns, and the two places where that changed the look
+      are written out below.
+
+   THE SKETCH SAID / THIS FILE SAYS, in full:
+     dot        11            --space-8 (8), the feed's own dot
+     ring       2 white + 1 zinc hairline   2 white, and no hairline:
+                              a second ring around an 8px dot is a
+                              smudge at the size the dot actually is
+     text       14.5          15 / 1.6, the feed's own sentence
+     eyebrow    10.5 / 1.2px  the Eyebrow ROLE, 12 / 600 / 0.12em,
+                              by its four tokens rather than by its
+                              numbers (copy law, section 3: one caps
+                              voice in the house, and it is this one)
+     air        22            --space-24 between events, and 0 after
+                              the last one
+     indent     22            8 + 16: the dot column and the feed's
+                              own column gap, so the text of a
+                              timeline and the text of a feed stand
+                              on one line when both are on a page
+
+   THE COLOUR DICTIONARY IS SEMANTIC, AND EVERY RUNG OF IT WAS
+   ALREADY IN THE HOUSE. The brief names four meanings; the file
+   spends no new ink on them:
+     you        --blue-600            Ton-5, blue is state and the
+                                      reader's own hand is the state
+                                      a history is read for
+     revision   #f59e0b   amber 500   badge.css `--warning` fill,
+                                      Figma «Gifting Portal»
+                                      3761-6514
+     milestone  #65a30d   lime 600    badge.css `--success` fill,
+                                      the same node
+     system     --zinc-400            the feed's own resting dot
+   AND ONE THING IS SAID OUT LOUD RATHER THAN SETTLED HERE: the
+   sketch draws the milestone in GREEN 600 (#16a34a) and this house
+   has no green fill. Its success fill is LIME 600, drawn in Figma
+   and already carried by the badge, so that is what the dot wears;
+   alert.css does carry a green, but only as a 50/200/900 ground and
+   ink, which is not a fill and cannot become one by being asked.
+   The wave report carries the question for Ton: lime, as the badge
+   says, or a green fill token the system does not own yet.
+
+   NO ALARM TONE, on purpose (law 0a.4). The dashboard feed has a
+   red dot for a problem still standing; a history has no problems
+   standing, only things that happened. The day a carrier needs one
+   it is one line, and it is red 500 like the feed's.
+
+   NO SCRIPT, for the tabs' reason: there is nothing to switch. A
+   timeline is a list that was written by the events themselves.
+
+   NO TOKEN on this file, the whole list:
+     1px   the rule down the left, which is the hairline every
+           divider in this house is
+     2px   the ring around the dot, the sketch's own, and the width
+           the checkout's link and the console's segment already use
+           for a line that has to read at a glance
+     4px   the gap between the eyebrow and the sentence: half of
+           --space-8, and the same fraction the feed writes (2, a
+           quarter) for the same job, two lines of one thought
+     0.5px half of the rule, so the hairline is centred on the dot
+           column rather than a pixel to the right of it
+   Everything else is a rung of --space-*, a role of the type
+   register, or a colour of the ramp.
+   ============================================================ */
+
+.gb-tl {
+  /* --- the dictionary, declared on the list so one line of markup
+         dresses every event in it --- */
+  --gb-tl-dot:        var(--zinc-400);      /* system / neutral, the feed's resting dot */
+  --gb-tl-dot-size:   var(--space-8);       /* the feed's own dot */
+  --gb-tl-ring:       var(--white);         /* the ground the dot sits on; a page on a tinted ground passes its own */
+  --gb-tl-ring-width: 2px;                  /* NO TOKEN: the sketch's ring */
+  --gb-tl-rule:       var(--zinc-200);      /* the hairline of every divider in the house */
+  --gb-tl-col-gap:    var(--space-16);      /* the feed's own dot to word gap */
+  --gb-tl-row-gap:    var(--space-24);      /* the air between two events */
+  --gb-tl-size:       15px;                 /* the feed's own sentence */
+  --gb-tl-leading:    1.6;                  /* the feed's own */
+  --gb-tl-ink:        var(--zinc-900);
+  --gb-tl-ink-quiet:  var(--zinc-500);
+  /* THE CAP LINE, and it is the spine of the whole component: the
+     eyebrow's line box is --space-16, so the dot rides its middle at
+     8 and the rule runs through the same 8. One rung holds the dot,
+     the rule and the caps in one line, at every rung and every
+     width, without a single measured offset. */
+  --gb-tl-cap:        var(--space-16);
+
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- THE SMALL RUNG, for a narrow column or a panel. It changes
+       the VERTICAL rhythm and the size of the sentence and NOTHING
+       ELSE: the dot column and its gap are the spine, and a spine
+       that moved between rungs would put the timeline of a drawer
+       and the timeline of a page on two different lines. --- */
+.gb-tl--small {
+  --gb-tl-row-gap: var(--space-16);
+  --gb-tl-size:    14px;                    /* the house's secondary voice */
+  --gb-tl-leading: 1.5;
+}
+
+/* ============================================================
+   THE EVENT
+   ============================================================ */
+.gb-tl__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--gb-tl-dot-size) minmax(0, 1fr);
+  column-gap: var(--gb-tl-col-gap);
+  padding-bottom: var(--gb-tl-row-gap);
+}
+
+/* THE LAST EVENT CARRIES NO AIR UNDER IT. A list that ends with a
+   gap pushes whatever is under it down by one event's worth of
+   nothing, and the block stops being symmetrical (the rhythm rule
+   of 6a.3: top gap == bottom gap). */
+.gb-tl__item:last-child { padding-bottom: 0; }
+
+/* THE RULE IS DRAWN PER EVENT, NOT ONCE DOWN THE LIST, and that is
+   the difference between a line that ends where it should and a
+   line that ends where the content happened to stop: the first
+   event starts it at its own dot, the last one ends it at its own
+   dot, and nothing has to know how tall the last event is. */
+.gb-tl__item::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(var(--gb-tl-dot-size) / 2);
+  margin-inline-start: -0.5px;              /* NO TOKEN: half the rule, so it is centred on the dot column */
+  width: 1px;                               /* NO TOKEN: the house hairline */
+  background: var(--gb-tl-rule);
+}
+.gb-tl__item:first-child::before { top: calc(var(--gb-tl-cap) / 2); }
+.gb-tl__item:last-child::before  { bottom: auto; height: calc(var(--gb-tl-cap) / 2); }
+/* One event on its own has nothing to connect to, and a stub of
+   rule hanging off a single dot reads as a rendering fault. */
+.gb-tl__item:first-child:last-child::before { display: none; }
+
+/* ------------------------------------------------------------
+   THE DOT. It stands ON the rule and cuts it with its own ring, so
+   the line reads as one line broken by events rather than as a line
+   with beads glued beside it.
+   ------------------------------------------------------------ */
+.gb-tl__dot {
+  position: relative;                       /* over the rule: same z, later in the paint order */
+  grid-column: 1;
+  grid-row: 1;
+  width: var(--gb-tl-dot-size);
+  height: var(--gb-tl-dot-size);
+  /* (16 - 8) / 2 = 4: the dot's middle on the eyebrow's cap line. */
+  margin-top: calc((var(--gb-tl-cap) - var(--gb-tl-dot-size)) / 2);
+  border-radius: var(--radius-circle);
+  background: var(--gb-tl-dot);
+  box-shadow: 0 0 0 var(--gb-tl-ring-width) var(--gb-tl-ring);
+}
+
+/* ------------------------------------------------------------
+   THE FOUR MEANINGS. A tone is set on the EVENT, not on the dot:
+   the meaning belongs to what happened, and the dot is only where
+   it shows.
+   ------------------------------------------------------------ */
+.gb-tl__item--you       { --gb-tl-dot: var(--blue-600); }   /* what the reader did */
+.gb-tl__item--revision  { --gb-tl-dot: #f59e0b; }           /* amber 500, badge.css --warning fill, Figma 3761-6514 */
+.gb-tl__item--milestone { --gb-tl-dot: #65a30d; }           /* lime 600, badge.css --success fill, Figma 3761-6514 */
+.gb-tl__item--system    { --gb-tl-dot: var(--zinc-400); }   /* the default, written out so a page can say it */
+
+/* ============================================================
+   THE WORDS
+   ============================================================ */
+
+/* WHEN AND WHO, and it is the Eyebrow ROLE rather than a copy of
+   its numbers: the four tokens are read, so the day the role moves
+   the timeline moves with it. Section 3 of the skill: the house has
+   exactly one caps voice, and a component does not get a second. */
+.gb-tl__when {
+  grid-column: 2;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  line-height: var(--gb-tl-cap);
+  text-transform: uppercase;
+  color: var(--eyebrow-color);
+}
+
+/* WHAT HAPPENED, in the working voice: the feed's own sentence, at
+   the page's ink rather than the feed's Zinc 700. The feed writes a
+   sentence with a bold subject inside it and needs the quieter grey
+   around that subject; a timeline row IS the subject, and a line of
+   history in Zinc 700 beside a Zinc 900 page reads as already read. */
+.gb-tl__what {
+  grid-column: 2;
+  margin: 4px 0 0;                          /* NO TOKEN 4: half of --space-8, two lines of one thought */
+  font-family: var(--font-sans);
+  font-size: var(--gb-tl-size);
+  line-height: var(--gb-tl-leading);
+  color: var(--gb-tl-ink);
+}
+.gb-tl__what b { font-weight: 600; }
+
+/* THE QUIET HALF: a detail or a short quotation, second voice of
+   the same sentence. THE SEPARATOR IS THE COMPONENT'S, and that is
+   deliberate: the sketch wrote an em dash, the copy law of section
+   3 forbids em dashes everywhere, and a separator drawn by the
+   owner is a separator nobody can type wrong. */
+.gb-tl__note { color: var(--gb-tl-ink-quiet); }
+/* A plain space before the separator and a hard one after it: the
+   sentence may break before the aside, and it may never break
+   between the «·» and the word it introduces. A second space in the
+   markup collapses into this one, so the pattern survives being
+   written either way. */
+.gb-tl__note::before { content: ' \00B7\00A0'; }
+
+/* AN EVENT MAY CARRY A DOOR (Ton-22, 17.09): clickable text is Blue
+   600, bare at rest, underlined on hover at an offset of 2. It takes
+   the sentence's own size and weight rather than the checkout's
+   14 / 500, because here the link is a word INSIDE the sentence and
+   a word that changes size mid line is not a link, it is a mistake.
+   Trap 1 of the skill: `body.gb-demo a { color: inherit }` weighs
+   0-1-2, so the pair is not optional. */
+.gb-tl__link,
+a.gb-tl__link,
+body.gb-demo a.gb-tl__link {
+  color: var(--blue-600);
+  text-decoration: none;
+}
+.gb-tl__link:hover,
+a.gb-tl__link:hover,
+body.gb-demo a.gb-tl__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;               /* NO TOKEN: the underline's own geometry, the same 2 the checkout link uses */
+}
+.gb-tl__link:focus-visible {
+  outline: var(--gb-btn-focus-ring-width) solid var(--gb-btn-focus-ring);
+  outline-offset: var(--gb-btn-focus-ring-offset);
+  border-radius: 2px;                       /* NO TOKEN: the ring hugs a flat word, as it does on a tab */
+}

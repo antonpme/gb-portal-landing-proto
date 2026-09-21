@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- ============================================================
+     gbppl-timeline-1 — THE TIMELINE PAGE
+     ------------------------------------------------------------
+     The client, 21.09: «History должна выглядеть как вертикальный
+     таймлайн, и для этого нам нужно создать соответствующий
+     компонент». The law of 0a.2 orders the two halves of that
+     sentence: the component first, the screen after it. So this
+     page exists before the approvals History it was asked for, and
+     that page will be assembled out of it rather than around it.
+
+     Ton-10: this page is a CONSUMER. Its card, tables, shelves and
+     code blocks are the atoms of ..\components\docs.css; its
+     specimens are the component itself.
+
+     NOTHING ON THIS PAGE PRINTS A NUMBER THAT WAS TYPED. Every
+     measurement in every table is read back off a rendered specimen
+     with getComputedStyle. Where a number is quoted from a source
+     rather than measured here, it stands in a provenance column and
+     says which source.
+     ============================================================ -->
+
+<script src="../components/studio.js" data-home="../../index.html"></script>
+
+<script src="oro-page.js"></script>
+<script>
+GbOro.head({
+  name: 'Timeline',
+  css: [['timeline', 'the subject of the page']]
+});
+</script>
+</head>
+<body>
+
+<script src="oro.js"></script>
+<script>
+GbOro.page({
+  eyebrow: 'Base component',
+  name: 'Timeline',
+  status: { label: 'Declared', kind: 'declared' },
+  lede: 'What happened to one thing, newest first, down a hairline. The scale, the dot and the sentence come from the event feed this house already writes; the rule down the left, the coloured dot and the quiet aside come from the layout sketch of 21 September. The four colours are meanings, and every one of them was already in the system.',
+  readout: 'Window width right now: <b id="wnow">measuring</b>. Every number in the tables below is read off a specimen at that width.',
+  card: { id: 'timeline', toc: 'Timeline' },
+  sections: [
+    { toc: 'Overview', eyebrow: 'Where the timeline lives, and what it defaults to',
+      name: 'Overview',
+      blocks: [
+        { table: {
+            rows: '<tr><td>Owner</td><td><code>system/components/timeline.css</code>. There is no <code>timeline.js</code>, and there is nothing for one to do: a timeline is a list that was written by the events themselves</td></tr>\n'
+                  + '<tr><td>Class</td><td><code>.gb-tl</code> on the list, <code>.gb-tl__item</code> on each event, and <code>.gb-tl__dot</code> / <code>.gb-tl__when</code> / <code>.gb-tl__what</code> / <code>.gb-tl__note</code> / <code>.gb-tl__link</code> on its parts</td></tr>\n'
+                  + '<tr><td>Meaning</td><td>The tone goes on the EVENT, not on the dot: <code>--you</code>, <code>--revision</code>, <code>--milestone</code>, <code>--system</code>. What happened owns the meaning; the dot is only where it shows</td></tr>\n'
+                  + '<tr><td>Worn by</td><td>No carrier yet, and that is deliberate. The History of a gift approval is the first one, and it takes this class in its own wave. The dashboard feed is NOT migrated and is not going to be: it is a different thing, see Usage</td></tr>\n'
+                  + '<tr><td>Defaults</td><td>An 8 dot in a white ring riding a Zinc 200 hairline, 16 from the words, an eyebrow of 12 caps over a sentence of 15 / 1.6 in Zinc 900, 24 between events and nothing under the last one</td></tr>\n'
+                  + '<tr><td>Status</td><td>Declared 21 September, out of two measured sources: the portal dashboard\'s own event feed and the approvals layout sketch</td></tr>' } },
+        { note: 'THE TWO SOURCES DO DIFFERENT JOBS, and the file says which is which line by line. The FEED is the tone and the scale: the dot, the gap, the sentence and the quiet second line are its numbers unchanged, because a house that already writes events does not learn a second way to write them. The SKETCH is the direction: the hairline, the ring, the caps over the sentence and the aside after it. Not one of the sketch\'s own numbers is copied. Its 11px dot is the feed\'s 8, its 14.5 sentence is the feed\'s 15, its 22 of air is <code>--space-24</code>, and its 10.5 / 1.2px caps are the Eyebrow role read through the role\'s four tokens.' }
+      ] },
+
+    { id: 'playground', toc: 'Playground', eyebrow: 'Build a history and read it back',
+      name: 'Playground',
+      blocks: [
+        { p: 'Set the axes on the rail at the right and the list on the stage rebuilds itself; the markup behind the Code row and the measurements below follow it. Tone dresses the TOP event, which is the one the table measures.' },
+        { pg: { name: 'timeline', inspect: 'timeline', hold: 'gbdoc-hold--block' } },
+        { table: {
+            head: ['Measured on the sample', 'Value', 'Measured on the sample', 'Value'],
+            rows: '<tr><td>Dot</td><td class="gbdoc-num" id="pgDot"></td><td>Ring</td><td class="gbdoc-num" id="pgRing"></td></tr>\n'
+                  + '<tr><td>Rule</td><td class="gbdoc-num" id="pgRule"></td><td>Indent</td><td class="gbdoc-num" id="pgIndent"></td></tr>\n'
+                  + '<tr><td>Eyebrow</td><td class="gbdoc-num" id="pgWhen"></td><td>Sentence</td><td class="gbdoc-num" id="pgWhat"></td></tr>\n'
+                  + '<tr><td>Air between events</td><td class="gbdoc-num" id="pgGap"></td><td>Air under the last one</td><td class="gbdoc-num" id="pgLast"></td></tr>' } }
+      ] },
+
+    { id: 'meanings', toc: 'Meanings', eyebrow: 'Four colours, and each one is a sentence you do not have to write',
+      name: 'Meanings',
+      blocks: [
+        { p: 'A history is read at a glance before it is read at all: the eye counts the blue dots to see how often it was asked to look, and the amber ones to see how often something changed. So the dot is not decoration and there are exactly four of them. Every colour below was already carried by this system, and the file says which component it was borrowed from.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--stack" data-inspect="timeline" id="toneShelf">\n'
+                  + '          <div class="gbdoc-slot gbdoc-slot--wide">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>The dictionary</b> newest first, the way a history is read</span>\n'
+                  + '            <ol class="gb-tl" id="toneList">\n'
+                  + '              <li class="gb-tl__item gb-tl__item--revision" id="tn-revision">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-16T05:40">16 Sep, 5:40 am</time> · GildedBox</p>\n'
+                  + '                <p class="gb-tl__what">Design updated<span class="gb-tl__note">new revision uploaded after your request</span></p>\n'
+                  + '              </li>\n'
+                  + '              <li class="gb-tl__item gb-tl__item--you" id="tn-you">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-15T14:12">15 Sep, 2:12 pm</time> · You</p>\n'
+                  + '                <p class="gb-tl__what">Changes requested<span class="gb-tl__note">«The ribbon reads too bright against the navy»</span></p>\n'
+                  + '              </li>\n'
+                  + '              <li class="gb-tl__item gb-tl__item--system" id="tn-system">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-14T09:03">14 Sep, 9:03 am</time> · GildedBox</p>\n'
+                  + '                <p class="gb-tl__what">Design submitted for approval</p>\n'
+                  + '              </li>\n'
+                  + '              <li class="gb-tl__item gb-tl__item--milestone" id="tn-milestone">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-11T16:47">11 Sep, 4:47 pm</time></p>\n'
+                  + '                <p class="gb-tl__what">Approval created</p>\n'
+                  + '              </li>\n'
+                  + '            </ol>\n'
+                  + '          </div>\n'
+                  + '        </div>' },
+        { table: {
+            head: ['Meaning', 'Modifier', 'Dot', 'Where the colour comes from'],
+            rows: '<tr><td>Something you did</td><td><code>--you</code></td><td class="gbdoc-num" id="tnYou"></td><td><span class="gbdoc-flag gbdoc-flag--soft">token</span> <code>--blue-600</code>. Ton-5: blue is state, and your own hand is the state a history gets opened for</td></tr>\n'
+                  + '<tr><td>A revision from the other side</td><td><code>--revision</code></td><td class="gbdoc-num" id="tnRevision"></td><td><span class="gbdoc-flag gbdoc-flag--soft">Figma</span> amber 500, the <code>--warning</code> fill of the status badge, node 3761-6514. Not a warning here: the loudest quiet colour the house owns, for the thing a reader is looking for</td></tr>\n'
+                  + '<tr><td>A milestone</td><td><code>--milestone</code></td><td class="gbdoc-num" id="tnMilestone"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> lime 600, the <code>--success</code> fill of the same badge. THE SKETCH DREW GREEN 600 and this system owns no green fill: its only green is a 50 / 200 / 900 ground and ink in the alert, which is not a fill. On the table for Ton</td></tr>\n'
+                  + '<tr><td>Anything else that happened</td><td><code>--system</code>, and it is the default</td><td class="gbdoc-num" id="tnSystem"></td><td><span class="gbdoc-flag gbdoc-flag--soft">recorded live</span> <code>--zinc-400</code>, the resting dot of the dashboard feed</td></tr>' } },
+        { note: 'THERE IS NO RED. The feed has one, for a problem still standing at the top of it; a history has no problems standing, only things that already happened. A fifth tone is one line the day a carrier needs it, and until then it is not born (law 0a.4).' }
+      ] },
+
+    { id: 'rungs', toc: 'Rungs', eyebrow: 'Two rungs, and only one of them moves',
+      name: 'Rungs',
+      blocks: [
+        { p: 'The small rung is for a narrow column or a panel, and it changes the vertical rhythm and the size of the sentence and nothing else. The dot column and its gap are the spine of the component: a spine that moved between rungs would put the timeline in a drawer and the timeline on a page on two different lines, and a reader who saw both would learn that the house has two timelines.' },
+        { html: '<div class="gbdoc-shelf gbdoc-shelf--stack" data-inspect="timeline" id="rungShelf">\n'
+                  + '          <div class="gbdoc-slot gbdoc-slot--wide">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Default</b> a page, a wide column</span>\n'
+                  + '            <ol class="gb-tl" id="rgMd">\n'
+                  + '              <li class="gb-tl__item gb-tl__item--revision">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-16T05:40">16 Sep, 5:40 am</time> · GildedBox</p>\n'
+                  + '                <p class="gb-tl__what">Design updated<span class="gb-tl__note">new revision uploaded after your request</span></p>\n'
+                  + '              </li>\n'
+                  + '              <li class="gb-tl__item gb-tl__item--you">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-15T14:12">15 Sep, 2:12 pm</time> · You</p>\n'
+                  + '                <p class="gb-tl__what">Changes requested</p>\n'
+                  + '              </li>\n'
+                  + '              <li class="gb-tl__item gb-tl__item--milestone">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-11T16:47">11 Sep, 4:47 pm</time></p>\n'
+                  + '                <p class="gb-tl__what">Approval created</p>\n'
+                  + '              </li>\n'
+                  + '            </ol>\n'
+                  + '          </div>\n'
+                  + '          <div class="gbdoc-slot gbdoc-slot--wide">\n'
+                  + '            <span class="gbdoc-slot__cap"><b>Small</b> a panel, a narrow column</span>\n'
+                  + '            <ol class="gb-tl gb-tl--small" id="rgSm">\n'
+                  + '              <li class="gb-tl__item gb-tl__item--revision">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-16T05:40">16 Sep, 5:40 am</time> · GildedBox</p>\n'
+                  + '                <p class="gb-tl__what">Design updated<span class="gb-tl__note">new revision uploaded after your request</span></p>\n'
+                  + '              </li>\n'
+                  + '              <li class="gb-tl__item gb-tl__item--you">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-15T14:12">15 Sep, 2:12 pm</time> · You</p>\n'
+                  + '                <p class="gb-tl__what">Changes requested</p>\n'
+                  + '              </li>\n'
+                  + '              <li class="gb-tl__item gb-tl__item--milestone">\n'
+                  + '                <span class="gb-tl__dot" aria-hidden="true"></span>\n'
+                  + '                <p class="gb-tl__when"><time datetime="2026-09-11T16:47">11 Sep, 4:47 pm</time></p>\n'
+                  + '                <p class="gb-tl__what">Approval created</p>\n'
+                  + '              </li>\n'
+                  + '            </ol>\n'
+                  + '          </div>\n'
+                  + '        </div>' },
+        { table: {
+            head: ['Rung', 'Sentence', 'Air between events', 'Dot', 'Indent', 'Provenance'],
+            rows: '<tr><td>Default</td><td class="gbdoc-num" id="rgMdType"></td><td class="gbdoc-num" id="rgMdGap"></td><td class="gbdoc-num" id="rgMdDot"></td><td class="gbdoc-num" id="rgMdIndent"></td><td><span class="gbdoc-flag gbdoc-flag--soft">recorded live</span> the dashboard feed: 15 / 1.6, a dot of <code>--space-8</code>, a gap of <code>--space-16</code>. The air is <code>--space-24</code>, the sketch\'s 22 on the scale</td></tr>\n'
+                  + '<tr><td>Small</td><td class="gbdoc-num" id="rgSmType"></td><td class="gbdoc-num" id="rgSmGap"></td><td class="gbdoc-num" id="rgSmDot"></td><td class="gbdoc-num" id="rgSmIndent"></td><td><span class="gbdoc-flag gbdoc-flag--declared">Declared</span> the house\'s secondary voice, 14 / 1.5, over <code>--space-16</code> of air. The spine is unchanged on purpose</td></tr>' } },
+        { note: 'NEITHER RUNG CLIMBS WITH THE WINDOW, and the reason is the spine again: the eyebrow\'s line box is <code>--space-16</code>, the dot rides its middle, and the rule runs through the same 8. One rung holds the dot, the hairline and the caps on one line at every width without a single measured offset, and a ladder that moved with the viewport would have to re-earn that three times.' }
+      ] },
+
+    { id: 'anatomy', toc: 'Anatomy', eyebrow: 'Five parts, measured at this width',
+      name: 'Anatomy',
+      blocks: [
+        { table: {
+            head: ['Part', 'What it is', 'Measured'],
+            rows: '<tr><td>List</td><td><code>.gb-tl</code> on an <code>&lt;ol&gt;</code>: the dictionary, the rung and nothing else. It has no padding of its own, so a timeline stands on the line of the text around it</td><td class="gbdoc-num" id="anList"></td></tr>\n'
+                  + '<tr><td>Event</td><td><code>.gb-tl__item</code> on an <code>&lt;li&gt;</code>: two columns, the dot and the words, and the air under it</td><td class="gbdoc-num" id="anItem"></td></tr>\n'
+                  + '<tr><td>Rule</td><td>Drawn per event rather than once down the list: the first event starts it at its own dot, the last one ends it at its own dot, and nothing has to know how tall the last event is</td><td class="gbdoc-num" id="anRule"></td></tr>\n'
+                  + '<tr><td>Dot</td><td><code>.gb-tl__dot</code>: it stands ON the rule and cuts it with its ring, so the line reads as one line broken by events and not as a line with beads glued beside it</td><td class="gbdoc-num" id="anDot"></td></tr>\n'
+                  + '<tr><td>Words</td><td><code>.gb-tl__when</code> over <code>.gb-tl__what</code>, and the quiet <code>.gb-tl__note</code> after the sentence with the separator the component draws itself</td><td class="gbdoc-num" id="anWords"></td></tr>' } }
+      ] },
+
+    { id: 'properties', toc: 'Properties', eyebrow: 'The names, and the drawer that reads a specimen',
+      name: 'Properties',
+      blocks: [
+        { table: {
+            head: ['Name', 'Where it goes', 'What it does'],
+            rows: '<tr><td><code>.gb-tl</code></td><td>an <code>&lt;ol&gt;</code></td><td>The list: the dictionary, the rung, and the spine every event in it reads</td></tr>\n'
+                  + '<tr><td><code>.gb-tl--small</code></td><td>the same list</td><td>The second rung: a 14 / 1.5 sentence over <code>--space-16</code> of air. The dot column does not move</td></tr>\n'
+                  + '<tr><td><code>.gb-tl__item</code></td><td>an <code>&lt;li&gt;</code></td><td>One event: the two columns, the rule behind it, and the air under it. The last one carries none</td></tr>\n'
+                  + '<tr><td><code>--you</code> / <code>--revision</code> / <code>--milestone</code> / <code>--system</code></td><td>the event</td><td>The meaning, which is where the dot gets its colour. See Meanings</td></tr>\n'
+                  + '<tr><td><code>.gb-tl__dot</code></td><td>an empty span, first child of the event, <code>aria-hidden</code></td><td>The dot and its ring. It carries no information a screen reader needs: the words say the same thing</td></tr>\n'
+                  + '<tr><td><code>.gb-tl__when</code></td><td>a <code>&lt;p&gt;</code> holding a <code>&lt;time datetime&gt;</code>, and the who after a «·»</td><td>When and who, in the Eyebrow role read through the role\'s own tokens</td></tr>\n'
+                  + '<tr><td><code>.gb-tl__what</code></td><td>a <code>&lt;p&gt;</code> under it</td><td>What happened, in the working voice. <code>&lt;b&gt;</code> inside it is the subject at 600</td></tr>\n'
+                  + '<tr><td><code>.gb-tl__note</code></td><td>a span at the end of the sentence</td><td>The quiet half: a detail or a short quotation, with the separator drawn by the component</td></tr>\n'
+                  + '<tr><td><code>.gb-tl__link</code></td><td>an <code>&lt;a&gt;</code> inside the sentence</td><td>A door out of an event: Blue 600, bare at rest, underlined on hover at an offset of 2 (Ton-22)</td></tr>\n'
+                  + '<tr><td><code>--gb-tl-ring</code></td><td>the list, on a tinted surface</td><td>The ring is the ground it sits on, and it defaults to white. A timeline on Zinc 50 passes Zinc 50</td></tr>' } },
+        { note: 'The Properties button in the corner of a specimen reads it into the drawer. The table is for reading the whole thing at once; the drawer answers about one event.' }
+      ] },
+
+    { id: 'usage', toc: 'Usage', eyebrow: 'When a timeline, and when the feed it is not',
+      name: 'Usage',
+      blocks: [
+        { p: 'THE ONE DISTINCTION THAT MATTERS, because this house owns both and they look alike from across the room. A TIMELINE is the history of ONE thing, read by somebody who already has that thing open, and the question it answers is «how did this get here». A FEED is the latest of MANY things, read by somebody deciding where to go next, and the question it answers is «does anything need me». So the feed\'s rows are doors and every one of them leads somewhere else; a timeline\'s rows are not, because the place they would lead to is the page you are already on.' },
+        { table: {
+            head: ['Do', 'Do not'],
+            rows: '<tr><td>Use a timeline for the history of ONE subject: one approval, one campaign, one order</td><td>Use it for the latest across many subjects. That is the feed, it is a different component, and it stays where it is</td></tr>\n'
+                  + '<tr><td>Newest first. A history is opened for what just happened, not for what happened first</td><td>Number the events or draw them as steps. A timeline records; a wizard instructs, and it is the one with the numbers</td></tr>\n'
+                  + '<tr><td>Give the dot its meaning: the reader counts blue dots to see how often they were asked to look</td><td>Spend a colour on emphasis. Four meanings, and a fifth colour would mean the dots mean nothing</td></tr>\n'
+                  + '<tr><td>Write the event as a short sentence in the working voice, and put the detail or the quotation in the quiet half</td><td>Write a paragraph. An event that needs a paragraph needs a door to the thing that holds the paragraph</td></tr>\n'
+                  + '<tr><td>Write the eyebrow as a sentence in the markup: the component draws the caps, and a date lifted out of it has to read as a date</td><td>Type the date in capitals, or write the month as a number. «16 Sep» is read by everybody; «09/16» is read by half of them backwards</td></tr>\n'
+                  + '<tr><td>Take the small rung into a panel or a narrow column, where the sentence is the thing that has to give</td><td>Shrink the dot or close the gap to fit. The spine is the same at both rungs so two timelines on one screen read as one system</td></tr>\n'
+                  + '<tr><td>Put a link INSIDE the sentence when one word of it leads somewhere: the revision, the file, the person</td><td>Make the whole event clickable. A row that is entirely a door is a feed row, and this is not a feed</td></tr>' } }
+      ] },
+
+    { id: 'a11y', toc: 'Accessibility', eyebrow: 'A list, some times, and no interaction at all',
+      name: 'Accessibility',
+      blocks: [
+        { p: 'The fourth component in the house with no JavaScript, and the calmest of the four: there is no state to announce, nothing to focus and nothing to switch. What it owes is the two facts it draws in colour and position, said in words as well.' },
+        { table: {
+            rows: '<tr><td>The list</td><td>An <code>&lt;ol&gt;</code>, because the order is the meaning. A screen reader says how many events there are before it reads the first one, which is the same thing the eye gets from the length of the rule</td></tr>\n'
+                  + '<tr><td>The time</td><td><code>&lt;time datetime&gt;</code> on the date, in machine form. The visible text stays the human form, and the two never disagree because one is inside the other</td></tr>\n'
+                  + '<tr><td>The dot</td><td><code>aria-hidden="true"</code>, and it costs nothing: every dot means something the sentence beside it already says. A colour that carries information nothing else carries would be a defect</td></tr>\n'
+                  + '<tr><td>Interaction</td><td>None, unless an event carries a link, and then the link is an ordinary link with the house\'s focus ring. The row itself is not a target and does not pretend to be one</td></tr>\n'
+                  + '<tr><td>Contrast</td><td>The sentence is Zinc 900 on white, 16.1:1; the eyebrow is the Eyebrow role at Zinc 500, 4.8:1 at 12 / 600; the link is Blue 600 at 5.2:1 and it is never colour alone, because it underlines the moment it is pointed at or focused</td></tr>\n'
+                  + '<tr><td>Greyscale</td><td>The four meanings survive it as three lightnesses and a position, and no meaning is lost: the words carry all four</td></tr>' } }
+      ] },
+
+    { id: 'code', toc: 'Code', eyebrow: 'The whole pattern, and there is no second half',
+      name: 'Code',
+      blocks: [
+        { code: { id: 'codeBasics',
+            text: '&lt;ol class="gb-tl"&gt;\n'
+                  + '\n'
+                  + '  &lt;li class="gb-tl__item gb-tl__item--revision"&gt;\n'
+                  + '    &lt;span class="gb-tl__dot" aria-hidden="true"&gt;&lt;/span&gt;\n'
+                  + '    &lt;p class="gb-tl__when"&gt;&lt;time datetime="2026-09-16T05:40"&gt;16 Sep, 5:40 am&lt;/time&gt; · GildedBox&lt;/p&gt;\n'
+                  + '    &lt;p class="gb-tl__what"&gt;Design updated&lt;span class="gb-tl__note"&gt;new revision uploaded after your request&lt;/span&gt;&lt;/p&gt;\n'
+                  + '  &lt;/li&gt;\n'
+                  + '\n'
+                  + '  &lt;li class="gb-tl__item gb-tl__item--you"&gt;\n'
+                  + '    &lt;span class="gb-tl__dot" aria-hidden="true"&gt;&lt;/span&gt;\n'
+                  + '    &lt;p class="gb-tl__when"&gt;&lt;time datetime="2026-09-15T14:12"&gt;15 Sep, 2:12 pm&lt;/time&gt; · You&lt;/p&gt;\n'
+                  + '    &lt;p class="gb-tl__what"&gt;Changes requested on &lt;a class="gb-tl__link" href="#rev-3"&gt;revision 3&lt;/a&gt;&lt;/p&gt;\n'
+                  + '  &lt;/li&gt;\n'
+                  + '\n'
+                  + '  &lt;li class="gb-tl__item gb-tl__item--milestone"&gt;\n'
+                  + '    &lt;span class="gb-tl__dot" aria-hidden="true"&gt;&lt;/span&gt;\n'
+                  + '    &lt;p class="gb-tl__when"&gt;&lt;time datetime="2026-09-11T16:47"&gt;11 Sep, 4:47 pm&lt;/time&gt;&lt;/p&gt;\n'
+                  + '    &lt;p class="gb-tl__what"&gt;Approval created&lt;/p&gt;\n'
+                  + '  &lt;/li&gt;\n'
+                  + '\n'
+                  + '&lt;/ol&gt;' } },
+        { note: 'A timeline in a panel adds one word: <code>&lt;ol class="gb-tl gb-tl--small"&gt;</code>. A timeline on a tinted surface adds one more, and it is the ring: <code>style="--gb-tl-ring: var(--zinc-50)"</code>, because the ring is the ground the dot sits on rather than a colour of its own.' }
+      ] },
+
+    { id: 'changelog', toc: 'Changelog', eyebrow: 'What the timeline used to be',
+      name: 'Changelog',
+      blocks: [
+        { table: {
+            head: ['When', 'What'],
+            rows: '<tr><td>10 September</td><td>The house learned to write events, in one place: the dashboard feed, with a dot, a sentence and a quiet time under it. It was never a component, and nothing else could wear it</td></tr>\n'
+                  + '<tr><td>21 September</td><td>A layout sketch drew a vertical history for a gift approval, and the client asked for the control before the screen. The component, out of the feed\'s scale and the sketch\'s direction: four meanings, two rungs, no script. No carrier is dressed by this wave, and the feed is not migrated</td></tr>' } }
+      ] },
+
+    { toc: 'Related', eyebrow: 'Where to go next',
+      name: 'Related',
+      blocks: [
+        { p: '<a href="tabs.html">Tabs</a>, which the History of an approval stands behind, and which was born the same way four days earlier. <a href="badge.html">Badge</a>, whose <code>--warning</code> and <code>--success</code> fills this component borrows for two of its four dots. <a href="colors.html">Colors</a>, which records that the system owns no amber and no green of its own, and why.' }
+      ] }
+  ],
+  sources: 'Sources: <a href="../components/timeline.css">timeline.css</a>, <a href="../components/badge.css">badge.css</a> (two of the four dots), <a href="../components/shell.css">shell.css</a> (the Eyebrow role), <a href="../components/button.css">button.css</a> (the focus ring), <a href="../components/docs.css">docs.css</a> and the token blocks of <a href="../assets/tokens.css">tokens.css</a> · every component on this page, including the page\'s own furniture, is rendered by those files.'
+});
+</script>
+
+<script src="../type-scale.js"></script>
+<script src="../components/icon.js"></script>
+<script src="../components/auth.js"></script>
+<script src="../components/toggle.js"></script>
+<script src="../components/drawer.js"></script>
+<script src="../components/inspect.js"></script>
+<script src="../components/comments.js"></script>
+
+<script>
+/* ============================================================
+   gbppl-timeline-1 — THE TIMELINE READOUT
+   ------------------------------------------------------------
+   The template's small scripts come from oro.js (window.GbOro).
+   What is here is the playground and the tables filled by measuring
+   specimens on this page.
+
+   NOTHING HERE PRINTS A NUMBER THAT WAS TYPED. The rule in
+   particular is read off the pseudo-element that draws it rather
+   than off the custom property that sets it, because a property is
+   exactly the place a value can be declared and never rendered.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var ORO = window.GbOro;
+  var px = ORO.px;
+  var txt = ORO.txt;
+
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function boxOf(el) {
+    if (!el) return '';
+    var r = el.getBoundingClientRect();
+    return Math.round(r.width) + ' by ' + Math.round(r.height);
+  }
+  function typeOf(el) {
+    if (!el) return '';
+    var cs = getComputedStyle(el);
+    return px(cs.fontSize) + ' / ' + cs.fontWeight + ' / ' + px(cs.lineHeight) + ', ' + cs.color;
+  }
+  function dotOf(el) {
+    if (!el) return '';
+    var cs = getComputedStyle(el);
+    return boxOf(el) + ', ' + cs.backgroundColor;
+  }
+  /* The ring is a box shadow and the rule is a pseudo-element: both
+     are read where they are actually drawn. */
+  function ringOf(el) {
+    if (!el) return '';
+    return getComputedStyle(el).boxShadow;
+  }
+  function ruleOf(item) {
+    if (!item) return '';
+    var cs = getComputedStyle(item, '::before');
+    return px(cs.width) + ' ' + cs.backgroundColor;
+  }
+  /* WHERE THE WORDS START, measured rather than added up: the left
+     edge of the sentence against the left edge of the event. */
+  function indentOf(item) {
+    if (!item) return '';
+    var what = item.querySelector('.gb-tl__what') || item.querySelector('.gb-tl__when');
+    if (!what) return '';
+    return Math.round(what.getBoundingClientRect().left - item.getBoundingClientRect().left) + 'px';
+  }
+
+  /* ---------- the playground ----------
+     Rung is two values and wears the chips; Tone is the dictionary,
+     four short words, so a toggle by the canon; the two halves of a
+     sentence are each a yes and a no. */
+  var PG_AXES = [
+    /* THE GROUP IS `shape`, AND IT IS WRITTEN DOWN RATHER THAN
+       COPIED: the canon of window.ORO_AXES orders exactly four
+       groups (shape, state, content, ground) and the renderer drops
+       an axis whose group is not one of them. A rung IS the shape of
+       the thing, so it stands there. */
+    { id: 'rung', label: 'Rung', group: 'shape', def: 'default',
+      values: [['default', 'Default'], ['small', 'Small']] },
+    { id: 'tone', label: 'Tone', group: 'shape', def: 'revision',
+      values: [['milestone', 'Milestone'], ['you', 'You'], ['revision', 'Revision'], ['system', 'System']] },
+    { id: 'note', label: 'Quiet half', group: 'content', kind: 'bool', on: 'yes', off: 'no', def: 'yes' },
+    { id: 'link', label: 'A door in the sentence', group: 'content', kind: 'bool', on: 'yes', off: 'no', def: 'no' }
+  ];
+
+  /* The words of the specimen. The top one takes the Tone axis; the
+     two under it stand still, because a dictionary read against a
+     moving list is not read at all. */
+  var REST = [
+    { tone: 'you',       when: '<time datetime="2026-09-15T14:12">15 Sep, 2:12 pm</time> · You',
+      what: 'Changes requested', note: '«The ribbon reads too bright against the navy»' },
+    { tone: 'milestone', when: '<time datetime="2026-09-11T16:47">11 Sep, 4:47 pm</time>',
+      what: 'Approval created' }
+  ];
+
+  function eventHTML(e, S, nl, first) {
+    var out = nl + '<li class="gb-tl__item gb-tl__item--' + e.tone + '"' + (first ? ' id="pgItem"' : '') + '>' +
+              nl + '  <span class="gb-tl__dot" aria-hidden="true"></span>' +
+              nl + '  <p class="gb-tl__when">' + e.when + '</p>' +
+              nl + '  <p class="gb-tl__what">' + e.what;
+    if (S.link === 'yes' && first) {
+      out += ' on <a class="gb-tl__link" href="#rev-3">revision 3</a>';
+    }
+    if (S.note === 'yes' && e.note) {
+      out += '<span class="gb-tl__note">' + e.note + '</span>';
+    }
+    out += '</p>' + nl + '</li>';
+    return out;
+  }
+
+  function pgSample(S, forCode) {
+    var nl = forCode ? '\n  ' : ' ';
+    var cls = 'gb-tl' + (S.rung === 'small' ? ' gb-tl--small' : '');
+    var top = { tone: esc(S.tone),
+                when: '<time datetime="2026-09-16T05:40">16 Sep, 5:40 am</time> · GildedBox',
+                what: 'Design updated', note: 'new revision uploaded after your request' };
+    var out = '<ol class="' + cls + '">';
+    out += eventHTML(top, S, nl, true);
+    REST.forEach(function (e) { out += eventHTML(e, S, nl, false); });
+    return out + (forCode ? '\n' : ' ') + '</ol>';
+  }
+
+  function pgAfter(S, hold) {
+    void S; void hold;
+    paintPlayground();
+  }
+
+  function paintPlayground() {
+    var list = document.querySelector('[data-pg="timeline"] .gb-tl');
+    if (!list) return;
+    var item = list.querySelector('.gb-tl__item');
+    var last = list.querySelector('.gb-tl__item:last-child');
+    var dot = item && item.querySelector('.gb-tl__dot');
+    txt('pgDot', dotOf(dot));
+    txt('pgRing', ringOf(dot));
+    txt('pgRule', ruleOf(item));
+    txt('pgIndent', indentOf(item));
+    txt('pgWhen', typeOf(item && item.querySelector('.gb-tl__when')));
+    txt('pgWhat', typeOf(item && item.querySelector('.gb-tl__what')));
+    txt('pgGap', item ? px(getComputedStyle(item).paddingBottom) : '');
+    txt('pgLast', last ? px(getComputedStyle(last).paddingBottom) : '');
+  }
+
+  /* ---------- the dictionary ---------- */
+  function paintTones() {
+    [['tn-you', 'tnYou'], ['tn-revision', 'tnRevision'],
+     ['tn-milestone', 'tnMilestone'], ['tn-system', 'tnSystem']].forEach(function (pair) {
+      var el = document.getElementById(pair[0]);
+      txt(pair[1], el ? dotOf(el.querySelector('.gb-tl__dot')) : '');
+    });
+  }
+
+  /* ---------- the two rungs ---------- */
+  function paintRungs() {
+    [['rgMd', 'rgMd'], ['rgSm', 'rgSm']].forEach(function (pair) {
+      var list = document.getElementById(pair[0]);
+      if (!list) return;
+      var item = list.querySelector('.gb-tl__item');
+      txt(pair[1] + 'Type', typeOf(item.querySelector('.gb-tl__what')));
+      txt(pair[1] + 'Gap', px(getComputedStyle(item).paddingBottom));
+      txt(pair[1] + 'Dot', dotOf(item.querySelector('.gb-tl__dot')));
+      txt(pair[1] + 'Indent', indentOf(item));
+    });
+  }
+
+  /* ---------- anatomy ---------- */
+  function paintAnatomy() {
+    var list = document.getElementById('rgMd');
+    if (!list) return;
+    var item = list.querySelector('.gb-tl__item');
+    var last = list.querySelector('.gb-tl__item:last-child');
+    txt('anList', boxOf(list) + ', padding ' + px(getComputedStyle(list).paddingLeft));
+    txt('anItem', boxOf(item) + ', air under it ' + px(getComputedStyle(item).paddingBottom) +
+                  ', under the last one ' + px(getComputedStyle(last).paddingBottom));
+    txt('anRule', ruleOf(item) + ', from the first dot ' + px(getComputedStyle(item, '::before').top));
+    txt('anDot', dotOf(item.querySelector('.gb-tl__dot')) + ', ring ' + ringOf(item.querySelector('.gb-tl__dot')));
+    var note = list.querySelector('.gb-tl__note');
+    txt('anWords', 'eyebrow ' + typeOf(item.querySelector('.gb-tl__when')) +
+                   ' · quiet half ' + (note ? getComputedStyle(note).color : 'none on this specimen'));
+    ORO.widthNow('wnow');
+  }
+
+  function paintAll() { paintTones(); paintRungs(); paintAnatomy(); }
+
+  function start() {
+    if (window.GbOro && window.GbOro.controls) {
+      window.GbOro.controls({
+        root: document.querySelector('[data-pg="timeline"]'),
+        axes: PG_AXES,
+        sample: pgSample,
+        after: pgAfter,
+        /* NO GROUND ROW, the drawer's own reason on a different
+           component: Light | Dark is a real question wherever a
+           control can stand on both, and this one cannot. It has no
+           inverse family, and a family without a carrier is not born
+           (law 0a.4). Dark was tried before it was removed and it is
+           worth writing down what it looked like: Zinc 900 sentences
+           vanished into the ground and the white rings became the
+           loudest thing on the stage, which is a picture of a
+           question the component has no answer to. The day a dark
+           surface needs a history, the inverse is drawn with it. */
+        ground: false
+      });
+    }
+    paintAll();
+    /* TRAP 11 OF THE SKILL. A specimen is still inside whatever
+       transition its furniture carries on the first frame, and a
+       colour read there describes a colour nobody sees. The wait is
+       read off the specimens rather than typed. */
+    var ms = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('.gbdoc-shelf *'), function (el) {
+      var d = getComputedStyle(el).transitionDuration.split(',');
+      d.forEach(function (one) {
+        var n = parseFloat(one);
+        if (!isNaN(n)) ms = Math.max(ms, /ms$/.test(one.trim()) ? n : n * 1000);
+      });
+    });
+    if (ms) setTimeout(paintAll, ms + 40);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { paintAll(); paintPlayground(); }, 120);
+  });
+})();
+</script>
+
+<script src="../../system/sandbox-registry.js"></script>
+<script src="../../system/components/studio-panel.js"></script>
+
+</body>
+</html>

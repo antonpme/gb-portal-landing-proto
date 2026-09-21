@@ -130,6 +130,12 @@
        file says tabs, and the house has been drawing them by hand on
        four surfaces under no name at all. */
     { href: 'tabs.html', label: 'Tabs' },
+    /* gbppl-timeline-1. Alphabetical, between the tabs and the
+       toggle, and the name is the client's own word: «History должна
+       выглядеть как вертикальный таймлайн». It stands in Base and
+       not in Composite because it holds nothing but its own parts:
+       a rule, a dot and two lines of words. */
+    { href: 'timeline.html', label: 'Timeline' },
     /* gbppl-toggle-family-1. Last of the Base list under its own
        name, and the name is the house's: PrimeVue would call this
        control a SelectButton and keep ToggleButton for the single
