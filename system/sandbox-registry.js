@@ -727,13 +727,13 @@
         {
           id: 'concept',
           label: 'The approval, rebuilt',
-          desc: 'The two screens a person uses to sign off a gift design, rebuilt on our own furniture: the portal bar and the portal rail instead of the ones on staging, with Design Approvals as the chosen row. The list is three columns and a picture: what the gift is, where it stands, when it last moved. The database id, the Details button and the status dropdown that sat inside the table head are gone, because the whole row is the door and the name in it is a plain blue link that underlines when you reach for it. The search stays, filters do not. The approval itself decides with two honest buttons instead of a radio pair and a submit: approve and start production, which asks once and cannot be taken back, or request changes, which opens the one field it needs and will not send empty. Both print into the thread and move the status, so a decision reads back tomorrow as a message with a name and a time on it. Messages is a real thread with a reply field rather than one grey bubble in a corner, History is the trail of dates, and Design Layout does not exist. The preview is the live 3D viewer for designs that were built in 3D, with a quiet door that lays the whole share page over this one.',
+          desc: 'The two screens a person uses to sign off a gift design, rebuilt on our own furniture and then rebuilt again to Ton’s Monday list (gbppl-approvals-2, 21.09). The rail is the boxless one the dashboard wears, standing 48 from the board; the back-link gave way to portal breadcrumbs; the header is crumbs, a serif title and a status badge, nothing else. The tabs are the gb-tabs component in caps, and behind them: a preview two thirds wide carrying the share page’s own 3D scene with the designer’s last word and two medium actions beside it, Messages as a two-sided chat with the design team, History as the gb-timeline with its four meanings. Open the showcase lays the share page over this one in the catalogue’s overlay, Copy link hands over the canonical address. The list keeps its blue-named rows and gains a sortable head and a counting foot. A Frame axis holds three framings of the same page, clean, hybrid and portal, so the choice of structure is made by looking, not by arguing.',
           status: 'in-progress',
           href: 'live/gift-approvals.html',
           ready: true,
           tags: ['portal', 'flow', 'copy'],
           created: '2026-09-17',
-          updated: '2026-09-17'
+          updated: '2026-09-21'
         }
       ]
     },
