@@ -91,14 +91,41 @@
   .qbtn:hover { background: var(--z50); }
   .qbtn svg { width: 13px; height: 13px; }
 
-  .side .last { border: 1px solid var(--z200); border-left: 3px solid var(--amber); border-radius: 6px; padding: 14px 16px; margin-bottom: 20px; background: #fff; }
-  .side .last .who { font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); margin-bottom: 8px; }
-  .side .last p { font-size: 14px; line-height: 1.55; color: var(--z700); }
-  .side .last a { font-size: 13px; color: var(--blue); text-decoration: none; }
+  .last { border: 1px solid var(--z200); border-left: 3px solid var(--amber); border-radius: 6px; padding: 14px 16px; margin-bottom: 20px; background: #fff; }
+  .last .who { font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); margin-bottom: 8px; }
+  .last p { font-size: 14px; line-height: 1.55; color: var(--z700); }
+  .last a { font-size: 13px; color: var(--blue); text-decoration: none; }
   .act { display: flex; flex-direction: column; gap: 12px; align-items: stretch; }
   .btn { font: 600 12px/1 Inter; letter-spacing: 1px; border-radius: 5px; padding: 11px 18px; text-align: center; cursor: pointer; }
   .btn--fill { background: var(--blue); color: #fff; border: 1px solid var(--blue); }
   .btn--line { background: #fff; color: var(--z900); border: 1px solid var(--z900); }
+
+  /* ВАРИАНТЫ ЛЕЙАУТА ПРЕВЬЮ (21.09, «мне не нравится этот layout») */
+  .lswitch { display: flex; gap: 14px; align-items: center; margin-bottom: 18px; font-size: 13px; color: var(--z500); }
+  .lswitch button { all: unset; cursor: pointer; font: 500 13px/1 Inter; color: var(--z500); padding: 5px 10px; border: 1px solid var(--z200); border-radius: 999px; }
+  .lswitch button.on { color: #fff; background: var(--blue); border-color: var(--blue); }
+  .stage--tall { height: 430px; }
+  .stage--fill { height: 100%; min-height: 380px; border-radius: 8px 8px 0 0; }
+  .viewer--fill { display: flex; flex-direction: column; }
+  .viewer--fill .stage--fill { flex: 1; }
+  .utilline { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 14px; }
+  .hints2 { display: flex; gap: 28px; font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); }
+  .doors { display: flex; gap: 20px; }
+  .doors a { font: 500 13px/1 Inter; color: var(--blue); cursor: pointer; }
+  .doors a:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .doors--col { flex-direction: column; gap: 12px; margin-top: 20px; }
+  .lastline { display: flex; align-items: center; gap: 12px; border: 1px solid var(--z200); border-left: 3px solid var(--amber); border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 13.5px; }
+  .lastline .who { font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); flex: none; }
+  .lastline .cut { color: var(--z700); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .lastline a { color: var(--blue); flex: none; font-size: 13px; cursor: pointer; }
+  .hdract { display: none; margin-left: auto; gap: 10px; align-items: center; }
+  .hdract .btn--sm { padding: 9px 14px; font-size: 11px; }
+  .stagewrap { position: relative; }
+  .stagectl { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 2; }
+  .stagectl .ctl { all: unset; cursor: pointer; width: 36px; height: 36px; text-align: center; line-height: 36px; background: #fff; border: 1px solid var(--z200); border-radius: 6px; }
+  .stagectl .ctl:hover { background: var(--z50); }
+  .sig { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-top: 16px; }
+  .sigact { display: flex; gap: 12px; align-items: center; }
 
   /* ЧАТ (Messages) */
   .chat { max-width: 640px; display: flex; flex-direction: column; gap: 18px; }
@@ -155,33 +182,85 @@
 
   <div class="frame" id="one" style="display:none">
     <p class="crumb"><a>Home</a><span class="sep">›</span><a>Approvals</a><span class="sep">›</span><span class="here">Stags' Leap Wine Night and Day Collection</span></p>
-    <h1 class="gift">Stags' Leap Wine Night and Day Collection <span class="badge badge--wait">Waiting for approval</span></h1>
+    <h1 class="gift">Stags' Leap Wine Night and Day Collection <span class="badge badge--wait">Waiting for approval</span>
+      <span id="hdract" class="hdract"><button class="btn btn--line btn--sm">REQUEST CHANGES</button><button class="btn btn--fill btn--sm">APPROVE &amp; START PRODUCTION</button></span>
+    </h1>
     <div class="tabs">
       <button class="on" data-t="p">Preview</button>
       <button data-t="m">Messages (1)</button>
       <button data-t="h">History</button>
     </div>
 
-    <div id="tab-p" class="grid">
-      <div>
-        <div class="viewer">
-          <div class="stage">живой 3D — блок один в один со страницы Showcase</div>
-          <div class="hints"><span>⟳ DRAG TO TURN</span><span>⊕ SCROLL TO ZOOM</span><span>✥ RIGHT-DRAG TO MOVE</span></div>
-        </div>
-        <div class="viewrow">
-          <button class="qbtn">👁 OPEN THE SHOWCASE</button>
-          <button class="qbtn">🔗 COPY LINK</button>
-        </div>
+    <div id="tab-p">
+      <div class="lswitch">
+        <span>Лейаут превью:</span>
+        <button class="on" data-l="k1">1 · Кино</button>
+        <button data-l="k2">2 · Рабочий стол</button>
+        <button data-l="k3">3 · Подпись</button>
       </div>
-      <div class="side">
-        <div class="last">
-          <p class="who">GILDEDBOX · 16 SEP, 5:40 AM</p>
-          <p>We refreshed the ribbon tone and the card stock as requested. Take a look and tell us if this is the direction.</p>
+
+      <!-- К1 «Кино»: сцена во всю ширину и выше; одна линия под ней несёт
+           и подсказки жестов, и тихие двери; действия живут в шапке страницы
+           (см. кнопки у заголовка при включённом К1); последний коммент =
+           тонкая плашка-строка над сценой, дверь в Messages. -->
+      <div id="lay-k1">
+        <div class="lastline">
+          <span class="who">GILDEDBOX · 16 SEP</span>
+          <span class="cut">We refreshed the ribbon tone and the card stock as requested. Take a look and tell us…</span>
           <a>Reply in messages</a>
         </div>
-        <div class="act">
-          <div class="btn btn--fill">APPROVE &amp; START PRODUCTION</div>
-          <div class="btn btn--line">REQUEST CHANGES</div>
+        <div class="viewer">
+          <div class="stage stage--tall">живой 3D во всю ширину, выше на треть</div>
+          <div class="utilline">
+            <span class="hints2"><span>⟳ DRAG TO TURN</span><span>⊕ SCROLL TO ZOOM</span><span>✥ RIGHT-DRAG TO MOVE</span></span>
+            <span class="doors"><a>👁 Open the showcase</a><a>🔗 Copy link</a></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- К2 «Рабочий стол»: сетка остаётся, но сцена тянется на всю высоту
+           колонки, а колонка выстроена по важности: действия, коммент, двери. -->
+      <div id="lay-k2" class="grid" style="display:none">
+        <div class="viewer viewer--fill">
+          <div class="stage stage--fill">живой 3D на всю высоту колонки</div>
+          <div class="hints"><span>⟳ DRAG TO TURN</span><span>⊕ SCROLL TO ZOOM</span><span>✥ RIGHT-DRAG TO MOVE</span></div>
+        </div>
+        <div class="side">
+          <div class="act">
+            <div class="btn btn--fill">APPROVE &amp; START PRODUCTION</div>
+            <div class="btn btn--line">REQUEST CHANGES</div>
+          </div>
+          <div class="last" style="margin:20px 0 0">
+            <p class="who">GILDEDBOX · 16 SEP, 5:40 AM</p>
+            <p>We refreshed the ribbon tone and the card stock as requested. Take a look and tell us if this is the direction.</p>
+            <a>Reply in messages</a>
+          </div>
+          <div class="doors doors--col">
+            <a>👁 Open the showcase</a>
+            <a>🔗 Copy link</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- К3 «Подпись»: сцена во всю ширину, утилиты тихими глифами в её
+           верхнем углу (как контролы карты); под сценой полоса-подпись:
+           последний коммент слева, решение справа. -->
+      <div id="lay-k3" style="display:none">
+        <div class="viewer stagewrap">
+          <span class="stagectl"><button class="ctl" title="Open the showcase">👁</button><button class="ctl" title="Copy link">🔗</button></span>
+          <div class="stage stage--tall">живой 3D во всю ширину, выше на треть</div>
+          <div class="hints"><span>⟳ DRAG TO TURN</span><span>⊕ SCROLL TO ZOOM</span><span>✥ RIGHT-DRAG TO MOVE</span></div>
+        </div>
+        <div class="sig">
+          <div class="last" style="margin:0; max-width:520px">
+            <p class="who">GILDEDBOX · 16 SEP, 5:40 AM</p>
+            <p>We refreshed the ribbon tone and the card stock as requested…</p>
+            <a>Reply in messages</a>
+          </div>
+          <div class="sigact">
+            <div class="btn btn--line">REQUEST CHANGES</div>
+            <div class="btn btn--fill">APPROVE &amp; START PRODUCTION</div>
+          </div>
         </div>
       </div>
     </div>
@@ -210,7 +289,7 @@
       <li><span class="dot dot--green"></span><p class="when">11 SEP, 4:47 PM</p><p class="what">Approval created</p></li>
     </ul>
 
-    <p class="note">Шапка разгружена: портальные breadcrumbs (Home › Approvals › гифт), заголовок 24, бейдж статуса рядом, и всё — никакого бокса с гигантскими кнопками. Табы = компонент gb-tabs --small (КАПС, выбранный Blue 600 + полоса 2px), обхватывающие. Превью главный: две трети ширины, 3D-блок один в один со страницы Showcase (те же подсказки drag/scroll, та же сцена). Действия — колонкой справа, ступень medium. Последний коммент дизайнера виден сразу, отвечать — в Messages (чат). Copy link решает «не все догадаются скопировать из адресной строки». Шоукейс открывается catalog-overlay — тем же, что каталог на портале. History — вертикальный таймлайн с цветными точками (синее = твои действия, янтарное = ревизии, зелёное = вехи); СНАЧАЛА рождается компонентом gb-timeline с витриной, потом ложится сюда.</p>
+    <p class="note">Три варианта превью (21.09, «убрать утилиты из превью, дай другие идеи»). 1 · КИНО: сцена во всю ширину и выше, под ней одна линия (подсказки жестов слева + тихие двери showcase/copy link справа, отдельного ряда нет), действия в шапке страницы у заголовка, последний коммент тонкой плашкой над сценой. 2 · РАБОЧИЙ СТОЛ: сетка 2/3 + колонка, сцена на всю высоту колонки, в колонке по важности: действия, коммент, двери. 3 · ПОДПИСЬ: сцена во всю ширину, утилиты глифами в её углу (как контролы карты), под сценой полоса-подпись: коммент слева, решение справа. Общее для всех: крошки, заголовок 24 + бейдж, капс-табы gb-tabs, чат в Messages, gb-timeline в History, оверлей каталога для шоукейса. Рекомендация Рена: 1.</p>
   </div>
 
 <script>
@@ -224,6 +303,21 @@
       document.getElementById('one').style.display = b.dataset.v === 'one' ? '' : 'none';
     });
   });
+  var LAY = ['k1', 'k2', 'k3'];
+  function showLay(k) {
+    LAY.forEach(function (x) {
+      document.getElementById('lay-' + x).style.display = (x === k) ? '' : 'none';
+    });
+    document.getElementById('hdract').style.display = (k === 'k1') ? 'inline-flex' : 'none';
+  }
+  document.querySelectorAll('.lswitch button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.lswitch button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      showLay(b.dataset.l);
+    });
+  });
+  showLay('k1');
   document.querySelectorAll('.tabs button').forEach(function (b) {
     b.addEventListener('click', function () {
       document.querySelectorAll('.tabs button').forEach(function (x) { x.classList.remove('on'); });
