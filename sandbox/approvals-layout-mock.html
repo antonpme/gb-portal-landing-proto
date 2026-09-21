@@ -15,6 +15,19 @@
      точками (язык ленты дашборда). Плюс: последний коммент у
      превью, Copy link кнопкой, оверлей = catalog-overlay, таблица
      списка с сортируемой шапкой (ховер) и футером со счётом.
+     ------------------------------------------------------------
+     Дополнение 21.09 (фидбек Тона утром, срочно к вечеру):
+     (1) вместо «‹ ALL APPROVALS» — портальные breadcrumbs
+     Home › Approvals › имя гифта; (2) шапка страницы разгружена:
+     крамбы + заголовок 24 + бейдж, действия в правой колонке
+     ступенью medium, никаких гигантских кнопок; (3) табы по
+     НОВОМУ канону gb-tabs (КАПС, выбранный Blue 600 + полоса
+     2px) — мокап писался до исправления канона; (4) Messages =
+     ЧАТ покупателя с sales rep: реплики двумя сторонами, поле
+     ответа внизу; (5) History = вертикальный таймлайн, который
+     СНАЧАЛА рождается компонентом системы (gb-timeline, витрина
+     oro), потом ложится сюда; (6) 3D-вьюер один в один со
+     страницы Showcase, с её подсказками и манерами.
      ============================================================ -->
 <script src="../system/components/studio.js" data-home="../index.html"></script>
 <style>
@@ -55,13 +68,18 @@
   .pg span { color: var(--z400); }
 
   /* АПРУВАЛ */
-  .crumb { font: 600 11px/1 Inter; letter-spacing: 1px; color: var(--z500); margin-bottom: 14px; }
-  .crumb b { color: var(--z400); font-weight: 600; }
-  h1.gift { font-family: Georgia, serif; font-weight: 400; font-size: 28px; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .crumb { font: 400 13px/1 Inter; color: var(--z500); margin-bottom: 16px; }
+  .crumb a { color: var(--z500); text-decoration: none; cursor: pointer; }
+  .crumb a:hover { color: var(--z900); text-decoration: underline; text-underline-offset: 2px; }
+  .crumb .sep { color: var(--z400); margin: 0 6px; }
+  .crumb .here { color: var(--z900); }
+  h1.gift { font-family: Georgia, serif; font-weight: 400; font-size: 24px; display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  /* Табы = gb-tabs --small: КАПС, 14/500, ls .2, выбранный Blue 600 + полоса 2px */
   .tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--z200); margin-bottom: 24px; }
-  .tabs button { all: unset; cursor: pointer; font: 500 14px/1 Inter; color: var(--z500); padding: 0 2px 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tabs button { all: unset; cursor: pointer; font: 500 14px/1 Inter; letter-spacing: 0.2px; text-transform: uppercase;
+                 color: var(--z500); padding: 0 2px 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
   .tabs button:hover { color: var(--z900); }
-  .tabs button.on { color: var(--z900); border-color: var(--z900); }
+  .tabs button.on { color: var(--blue); border-color: var(--blue); }
 
   .grid { display: grid; grid-template-columns: 1fr 300px; gap: 32px; align-items: start; }
   .viewer { border: 1px solid var(--z200); border-radius: 8px; background: #fff; }
@@ -77,10 +95,23 @@
   .side .last .who { font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); margin-bottom: 8px; }
   .side .last p { font-size: 14px; line-height: 1.55; color: var(--z700); }
   .side .last a { font-size: 13px; color: var(--blue); text-decoration: none; }
-  .act { display: flex; flex-direction: column; gap: 16px; }
-  .btn { font: 600 12px/1 Inter; letter-spacing: 1px; border-radius: 5px; padding: 13px 18px; text-align: center; cursor: pointer; }
+  .act { display: flex; flex-direction: column; gap: 12px; align-items: stretch; }
+  .btn { font: 600 12px/1 Inter; letter-spacing: 1px; border-radius: 5px; padding: 11px 18px; text-align: center; cursor: pointer; }
   .btn--fill { background: var(--blue); color: #fff; border: 1px solid var(--blue); }
   .btn--line { background: #fff; color: var(--z900); border: 1px solid var(--z900); }
+
+  /* ЧАТ (Messages) */
+  .chat { max-width: 640px; display: flex; flex-direction: column; gap: 18px; }
+  .msg { max-width: 78%; }
+  .msg .who { font: 600 10.5px/1 Inter; letter-spacing: 1.2px; color: var(--z500); margin-bottom: 6px; }
+  .msg .bub { border-radius: 10px; padding: 12px 16px; font-size: 14.5px; line-height: 1.55; }
+  .msg--them { align-self: flex-start; }
+  .msg--them .bub { background: var(--z100); color: var(--z900); border-radius: 2px 10px 10px 10px; }
+  .msg--me { align-self: flex-end; text-align: right; }
+  .msg--me .bub { background: var(--b50); color: var(--z900); text-align: left; border-radius: 10px 2px 10px 10px; }
+  .chatfoot { max-width: 640px; margin-top: 22px; border-top: 1px solid var(--z200); padding-top: 16px; }
+  .chatfoot .line { border-bottom: 1px solid var(--z400); padding: 8px 0; color: var(--z400); font-size: 14px; display: flex; justify-content: space-between; }
+  .chatfoot .send { font: 600 11px/1 Inter; letter-spacing: 1px; color: var(--blue); }
 
   /* ТАЙМЛАЙН */
   .tl { list-style: none; position: relative; padding-left: 22px; max-width: 560px; }
@@ -97,7 +128,7 @@
 </style>
 </head>
 <body>
-  <p class="lede">Мокап v2 по критике Тона: системные табы (канон 14/500, подчёркивание), 3D-блок один в один со страницы Showcase, действия нормальной ступенью без бокса сбоку, последний коммент у превью, History нашим таймлайном, таблица списка с сортируемой шапкой и футером. Оверлей шоукейса = catalog-overlay портала. Кликаются: переключатель экранов, табы.</p>
+  <p class="lede">Мокап v3 (21.09): портальные breadcrumbs вместо «назад», шапка разгружена, табы по канону gb-tabs (капс, синий), 3D один в один со Showcase, действия medium без бокса, Messages = чат с sales rep, History = таймлайн, который сначала родится компонентом gb-timeline. Таблица списка с сортируемой шапкой и футером. Кликаются: переключатель экранов, табы.</p>
   <div class="switch">
     <button class="on" data-v="list">Экран списка</button>
     <button data-v="one">Экран апрувала</button>
@@ -123,7 +154,7 @@
   </div>
 
   <div class="frame" id="one" style="display:none">
-    <p class="crumb">‹ <b>ALL APPROVALS</b></p>
+    <p class="crumb"><a>Home</a><span class="sep">›</span><a>Approvals</a><span class="sep">›</span><span class="here">Stags' Leap Wine Night and Day Collection</span></p>
     <h1 class="gift">Stags' Leap Wine Night and Day Collection <span class="badge badge--wait">Waiting for approval</span></h1>
     <div class="tabs">
       <button class="on" data-t="p">Preview</button>
@@ -155,8 +186,21 @@
       </div>
     </div>
 
-    <div id="tab-m" style="display:none; max-width:560px">
-      <p class="tl when" style="margin-bottom:10px">Тред сообщений — как сейчас, айбрау «автор · время», текст рабочим 16, поле ответа внизу.</p>
+    <div id="tab-m" style="display:none">
+      <div class="chat">
+        <div class="msg msg--me">
+          <p class="who">YOU · 15 SEP, 2:12 PM</p>
+          <div class="bub">The ribbon reads too bright against the navy. Could we try a quieter tone, closer to the box itself?</div>
+        </div>
+        <div class="msg msg--them">
+          <p class="who">DANIELLE · GILDEDBOX · 16 SEP, 5:40 AM</p>
+          <div class="bub">Absolutely. We refreshed the ribbon tone and the card stock as requested. A new revision is up in the preview. Take a look and tell us if this is the direction.</div>
+        </div>
+      </div>
+      <div class="chatfoot">
+        <div class="line"><span>Write a message</span><span class="send">SEND</span></div>
+      </div>
+      <p class="note">Messages = чат покупателя с sales rep. Их реплики слева серым, твои справа голубым, айбрау «кто · когда» над каждой. Поле ответа всегда внизу. Системные ревизии сюда не мешаются: события живут в History.</p>
     </div>
 
     <ul id="tab-h" class="tl" style="display:none">
@@ -166,7 +210,7 @@
       <li><span class="dot dot--green"></span><p class="when">11 SEP, 4:47 PM</p><p class="what">Approval created</p></li>
     </ul>
 
-    <p class="note">Табы — системный канон (14/500, sentence case, подчёркивание, никакой полосы под рядом). Превью главный: две трети ширины, высота под него. Действия — колонкой справа, ступень medium, без бокса. Последний коммент дизайнера виден сразу, отвечать — в Messages. Copy link решает «не все догадаются скопировать из адресной строки» (та же кнопка появится и на самой share-странице). Шоукейс открывается catalog-overlay — тем же, что каталог на портале. History — вертикальный таймлайн с цветными точками (язык ленты дашборда: синее = твои действия, янтарное = ревизии, зелёное = вехи).</p>
+    <p class="note">Шапка разгружена: портальные breadcrumbs (Home › Approvals › гифт), заголовок 24, бейдж статуса рядом, и всё — никакого бокса с гигантскими кнопками. Табы = компонент gb-tabs --small (КАПС, выбранный Blue 600 + полоса 2px), обхватывающие. Превью главный: две трети ширины, 3D-блок один в один со страницы Showcase (те же подсказки drag/scroll, та же сцена). Действия — колонкой справа, ступень medium. Последний коммент дизайнера виден сразу, отвечать — в Messages (чат). Copy link решает «не все догадаются скопировать из адресной строки». Шоукейс открывается catalog-overlay — тем же, что каталог на портале. History — вертикальный таймлайн с цветными точками (синее = твои действия, янтарное = ревизии, зелёное = вехи); СНАЧАЛА рождается компонентом gb-timeline с витриной, потом ложится сюда.</p>
   </div>
 
 <script>
