@@ -1854,6 +1854,15 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
        --small --outline --secondary, the 16px glyph slot, the same
        16 of gap. The row is three and stays at Ton-18's ceiling. -->
   <div class="gbds-utils">
+    <!-- ANIMATE STANDS FIRST (Ton 21.09, after Dima built the same on
+         the live page: «первой кнопкой он добавил Animate... работает
+         как toggle button, анимируется предмет в коробке»). A toggle:
+         pressed it turns the scene, released it stands still. The
+         pressed coat is the filled secondary — the same button, lit. -->
+    <button type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary" data-gbds="animate" aria-pressed="false">
+      <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="rotate" data-gb-icon-size="16"></span></span>
+      <span class="gb-btn__label">Animate</span>
+    </button>
     <button type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary" data-gbds="download">
       <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="download" data-gb-icon-size="16"></span></span>
       <span class="gb-btn__label">Download design</span>
@@ -1862,17 +1871,11 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
       <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="wand" data-gb-icon-size="16"></span></span>
       <span class="gb-btn__label">See it personalized</span>
     </button>
-    <!-- THE ADDRESS BAR IS NOT A CONTROL (Ton 17.09). It stands last
-         because the two before it act on the design itself and this
-         one acts on the page; the glyph is the record's own `link`,
-         the one the console's Copy link wears. -->
-    <button type="button" class="gb-btn gb-btn--small gb-btn--outline gb-btn--secondary" data-gbds="copy">
-      <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="link" data-gb-icon-size="16"></span></span>
-      <span class="gb-btn__label">Copy link</span>
-    </button>
-    <!-- Contact us left this row for the footer (Ton 14.09): the door
-         to the maker stands beside the maker's signature, and the head
-         keeps the tools of the page, not the door to its maker. -->
+    <!-- Copy link left this row for the footer (Ton 21.09, matching
+         Dima's live rebuild): the address of the page is signature
+         business, and it stands with the signature now. The row keeps
+         Ton-18's ceiling of three. Contact us left earlier (14.09)
+         for the same footer. -->
   </div>
 
   <main class="gbds-scene" id="gbdsScene">
@@ -1961,6 +1964,14 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
       <button type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary" data-gbds="contact">
         <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="chat" data-gb-icon-size="16"></span></span>
         <span class="gb-btn__label">Contact us</span>
+      </button>
+      <!-- COPY LINK MOVED DOWN FROM THE UTILITIES (Ton 21.09, after
+           Dima's live rebuild): same ghost as its neighbour, behind
+           the same rule. The handler is the one it always had. -->
+      <span class="gbds-sigrow__rule" aria-hidden="true"></span>
+      <button type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary" data-gbds="copy">
+        <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="link" data-gb-icon-size="16"></span></span>
+        <span class="gb-btn__label">Copy link</span>
       </button>
     </div>
   </footer>
@@ -2817,6 +2828,26 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     var what = t.getAttribute('data-gbds');
     if (what === 'personalize') { openPersonalize(); return; }
     if (what === 'download') { download(); return; }
+    /* ANIMATE (Ton 21.09, Dima's live pattern). A toggle: on, the
+       scene turns so the far side of the box can be read without a
+       hand on it; if the model ever ships its own animation, that
+       plays too. Off, everything stands still again. The pressed
+       coat swaps outline for filled — one button, two truths. */
+    if (what === 'animate') {
+      var on = t.getAttribute('aria-pressed') !== 'true';
+      t.setAttribute('aria-pressed', on ? 'true' : 'false');
+      t.classList.toggle('gb-btn--outline', !on);
+      t.classList.toggle('gb-btn--filled', on);
+      if (on) {
+        viewer.setAttribute('auto-rotate', '');
+        viewer.setAttribute('rotation-per-second', '30deg');
+        if (viewer.availableAnimations && viewer.availableAnimations.length) viewer.play();
+      } else {
+        viewer.removeAttribute('auto-rotate');
+        if (viewer.pause) viewer.pause();
+      }
+      return;
+    }
     if (what === 'copy') {
       copyText(shareUrl(), function (ok) { sayCopied(t, ok); });
       return;
