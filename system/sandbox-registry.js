@@ -645,8 +645,25 @@
          actions в панели самой страницы (0f1ba37), прямой адрес
          ?actions=on читается вечно по закону ссылок. Группа без
          вариантов полкой не рисуется (buildPages: slice.variants
-         .length) — у страницы больше нет песочниц, и это правда. */
-      variants: []
+         .length) — у страницы больше нет песочниц, и это правда.
+         НО (Тон 21.09, после вопроса Валери): «я вообще не вижу её
+         у нас в прототипах. Где она в прототипе?» — страница без
+         единой карточки пропала с полки целиком, и дверь к ней
+         потерялась. Карточка ниже — сама страница, не песочница:
+         полка обязана вести к каждой живой странице прототипа. */
+      variants: [
+        {
+          id: 'page',
+          label: 'The page itself',
+          desc: 'The share page as it stands: the 3D showcase a designer sends to the client, with the loader, the quiet utilities and the approval actions living behind the panel’s Approval actions axis (?actions=on). Not a sandbox: this card is the door to the live page, put back after it fell off the shelf with its last variant.',
+          status: 'approved',
+          href: 'live/design-share.html',
+          ready: true,
+          tags: ['portal', 'share'],
+          created: '2026-09-11',
+          updated: '2026-09-21'
+        }
+      ]
     },
 
     portal: {
