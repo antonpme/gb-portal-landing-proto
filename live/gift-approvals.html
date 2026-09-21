@@ -286,8 +286,22 @@
      and said: «им не хватает полировки, не пойму, как они будут
      выглядеть в реале. Сделай их в нашем основном прототипе, все
      три». So the three are built here, on the real furniture, and
-     they are an AXIS rather than three pages: ?pv=cinema | desk |
-     signature, a row in the console beside Frame, cinema by
+     they are an AXIS rather than three pages. gbppl-approvals-pv-2,
+     the same day: the client looked at the built three and called
+     the composition out — the strip, the tabs and the stage had
+     fused into one grey mass, and the utilities read as part of the
+     preview. His law, verbatim: «3D-превью не трогается, оно должно
+     быть один в один, как на той странице... не суй в 3D-превью
+     ничего», and the ask: «Покажи мне два варианта лейаута —
+     готовых, отполированных, Pixel Perfect». The axis is TWO now,
+     ?pv=a | b (a = decision up top, b = signature strip), a by
+     default; the legacy values read forever (cinema, desk → a;
+     signature → b). In both, the stage is the share plate one to
+     one with only the hint inside, the doors are a quiet text row
+     UNDER the plate, and the note is a card that never touches it.
+     The desk grid and the corner glyphs died with pv-1; the notes
+     below about them are history, kept for provenance. It was:
+     ?pv=cinema | desk | signature, a row in the console, cinema by
      default, and the value rides every link the page builds for
      exactly the reason ?frame= does — hrefFor keeps the whole
      query, so no key has to be taught to header.js.
@@ -669,14 +683,14 @@ a.gbppa-crumb:hover, body.gb-demo a.gbppa-crumb:hover {
   align-items: center;
   gap: var(--space-16);
 }
-/* THE ACTS IN THE HEAD, AND ONLY IN CINEMA (gbppl-approvals-pv-1).
+/* THE ACTS IN THE HEAD, AND ONLY IN LAYOUT A (gbppl-approvals-pv-2).
    The title line is already a wrapping flex row, so the pair takes
    the right edge with an auto margin and falls under the title on
    its own when the two no longer fit. Below 720 OF COLUMN it stops
    hugging the right edge and stands under the title at the left,
    where the eye is already reading. */
 .gbppa-headacts { display: none; }
-body[data-pv="cinema"] .gbppa-headacts:not([hidden]) {
+body[data-pv="a"] .gbppa-headacts:not([hidden]) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -684,7 +698,7 @@ body[data-pv="cinema"] .gbppa-headacts:not([hidden]) {
   margin-left: auto;
 }
 @container approval (max-width: 719px) {
-  body[data-pv="cinema"] .gbppa-headacts:not([hidden]) { margin-left: 0; width: 100%; }
+  body[data-pv="a"] .gbppa-headacts:not([hidden]) { margin-left: 0; width: 100%; }
 }
 .gbppa-title {
   margin: 0;
@@ -870,17 +884,17 @@ body[data-frame="portal"] .gbppa-headbox {
   background: var(--zinc-50);   /* the share page's --gbds-ground on its default concept */
   border-radius: var(--radius);
 }
-/* CINEMA AND SIGNATURE GIVE THE OBJECT THE WHOLE BLOCK, and a third
-   more height with it: 700 against 520. */
-body[data-pv="cinema"] .gbppa-two,
-body[data-pv="signature"] .gbppa-two {
+/* BOTH LAYOUTS GIVE THE OBJECT THE WHOLE BLOCK (gbppl-approvals-pv-2,
+   21.09: the desk column died with the third variant, and the client's
+   law came with it — «3D-превью не трогается, оно должно быть один в
+   один, как на той странице... не суй в 3D-превью ничего»). One
+   column always, a third more height than the old grid gave. */
+.gbppa-two {
   grid-template-columns: minmax(0, 1fr);
   --gbppa-stage-h: 700px;       /* NO TOKEN: see the file head */
 }
 @media (max-width: 767px) {
-  .gbppa-two { --gbppa-stage-h: 360px; }
-  body[data-pv="cinema"] .gbppa-two,
-  body[data-pv="signature"] .gbppa-two { --gbppa-stage-h: 480px; }   /* NO TOKEN */
+  .gbppa-two { --gbppa-stage-h: 480px; }   /* NO TOKEN */
 }
 .gbppa-viewer {
   display: block;
@@ -951,10 +965,11 @@ body[data-pv="signature"] .gbppa-two {
    them rather than leaving a band of air under the picture. */
 #gbppaPanePreview[data-has3d="0"] .gbppa-utils { display: none; }
 
-/* DESK AND SIGNATURE: the line floats at the foot of the stage, the
-   way the share page draws it, and only the hint is in it. */
-body[data-pv="desk"] .gbppa-utils,
-body[data-pv="signature"] .gbppa-utils {
+/* THE LINE FLOATS AT THE FOOT OF THE STAGE in every layout, the way
+   the share page draws it, and ONLY the hint is in it: the stage is
+   untouchable (the client, 21.09), so nothing else ever stands on
+   the plate. */
+.gbppa-utils {
   position: absolute;
   z-index: 2;
   left: var(--space-16);
@@ -963,12 +978,6 @@ body[data-pv="signature"] .gbppa-utils {
   justify-content: center;
   pointer-events: none;
 }
-/* CINEMA: ONE LINE UNDER THE STAGE, and there is no other row of
-   utilities on the surface. The hint loses its plate here (it is
-   standing on the block's own white, not over the object) and the
-   doors take the right edge. */
-body[data-pv="cinema"] .gbppa-utils { padding-top: var(--space-16); }
-body[data-pv="cinema"] .gbppa-hint { background: transparent; padding: 0; }
 
 /* ---- THE TWO QUIET DOORS. Text, Blue 600, an underline at offset 2
         on hover (Ton-22), never a box. One recipe, worn by an <a> in
@@ -996,49 +1005,14 @@ button.gbppa-door {
 a.gbppa-door:hover, body.gb-demo a.gbppa-door:hover,
 button.gbppa-door:hover { text-decoration: underline; text-underline-offset: 2px; }
 
-/* WHICH CARRIER OF THE DOORS IS ON, and it is exactly one per
-   layout. All three are off by default, and a design with no 3D
-   turns all three off whatever the layout says. */
-.gbppa-doors, .gbppa-glyphs { display: none; }
-.gbppa-doors { align-items: center; gap: var(--space-24); }
-body[data-pv="cinema"] #gbppaPanePreview[data-has3d="1"] .gbppa-doors--line {
-  display: inline-flex;
-  margin-left: auto;            /* see trap 30 above: the hint may not be there */
-  flex: none;
-}
-body[data-pv="desk"] #gbppaPanePreview[data-has3d="1"] .gbppa-doors--col {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-16);
-}
-
-/* ---- SIGNATURE: the two utilities as glyphs in the corner of the
-        stage. The system icon button at the --small rung (40, and
-        the ladder has no 36), DRESSED THROUGH ITS OWN SLOTS rather
-        than repainted: a white ground, a Zinc 200 hairline and
-        --radius corners instead of the round ones, so the organism
-        keeps its geometry, its states and its focus ring. The word
-        each one carries comes from the tooltip organism. ---- */
-body[data-pv="signature"] #gbppaPanePreview[data-has3d="1"] .gbppa-glyphs {
-  display: flex;
-  position: absolute;
-  z-index: 3;
-  top: var(--space-16);
-  right: var(--space-16);
-  gap: var(--space-8);
-}
-.gbppa-glyph.gb-btn {
-  --gbb-bg:          var(--white);
-  --gbb-bg-hover:    var(--zinc-50);
-  --gbb-bg-active:   var(--zinc-100);
-  --gbb-line-w:      var(--gb-btn-border-width);
-  --gbb-line-style:  solid;
-  --gbb-line:        var(--zinc-200);
-  --gbb-line-hover:  var(--zinc-300);
-  --gbb-line-active: var(--zinc-300);
-  border-radius: var(--radius);
-}
+/* ONE CARRIER OF THE DOORS NOW (gbppl-approvals-pv-2): a quiet text
+   row UNDER the stage, outside the plate, in both layouts. The corner
+   glyphs and the side column went with the third variant. A design
+   with no 3D has no showcase and no gestures, so the row goes too. */
+.gbppa-doors { display: none; align-items: center; gap: var(--space-24); }
+.gbppa-below { padding-top: var(--space-16); }
+#gbppaPanePreview[data-has3d="1"] .gbppa-doors--line { display: inline-flex; }
+#gbppaPanePreview[data-has3d="0"] .gbppa-below { display: none; }
 
 .gbppa-note { font-size: 16px; line-height: 1.6; color: var(--zinc-500); margin: var(--space-16) 0 0; }
 
@@ -1053,41 +1027,16 @@ body[data-pv="signature"] #gbppaPanePreview[data-has3d="1"] .gbppa-glyphs {
 .gbppa-last__meta { margin: 0 0 var(--space-8); }
 .gbppa-last__text { margin: 0 0 var(--space-8); font-size: 16px; line-height: 1.6; color: var(--zinc-900); }
 
-/* CINEMA: the last word is a THIN LINE over the stage. Same object,
-   same amber edge, one sentence of it, and the door out of it. */
-.gbppa-lastline { display: none; }
-body[data-pv="cinema"] .gbppa-lastline:not([hidden]) {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-8) var(--space-16);
-  background: var(--zinc-50);
-  border-left: 3px solid #f59e0b;   /* NO TOKEN 3, the card's own edge */
-  border-radius: var(--radius);
-  padding: var(--space-8) var(--space-16);
-  margin-bottom: var(--space-16);
-}
-.gbppa-lastline__meta { flex: none; margin: 0; }
-.gbppa-lastline__text {
-  flex: 1 1 12ch;
-  min-width: 0;
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--zinc-700);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.gbppa-lastline__door { flex: none; }
-/* AND THE LINE STACKS BEFORE IT BLEEDS. The eyebrow does not
-   truncate (a date cut in half says nothing), so below 720 of column
-   the three parts each take a row of their own rather than push the
-   plaque past the vertical lines of the block it stands in (Ton
-   16.09). Only the sentence keeps its ellipsis. */
-@container approval (max-width: 719px) {
-  .gbppa-lastline__meta,
-  .gbppa-lastline__text { flex: 1 1 100%; }
+/* LAYOUT A: the last word is the SAME CARD, standing on its own
+   ABOVE the stage with clear air on both sides — never touching the
+   plate (the thin nowrap strip of pv-1 died with the client's
+   verdict: glued to the stage it read as part of the preview). At a
+   reading measure, full sentences, no truncation. */
+.gbppa-last--top { display: none; }
+body[data-pv="a"] .gbppa-last--top:not([hidden]) {
+  display: block;
+  max-width: 72ch;
+  margin: 0 0 var(--space-24);
 }
 
 /* TWO ACTS, ONE RUNG, ONE GAP, AND THEY STACK BECAUSE THE COLUMN IS
@@ -1099,42 +1048,37 @@ body[data-pv="cinema"] .gbppa-lastline:not([hidden]) {
    layout is on. */
 .gbppa-acts { display: flex; flex-direction: column; gap: var(--space-16); }
 
-/* ---- DESK: the stage takes the whole height of the row, which is
-        the side column's height whenever that column is the taller
-        of the two, and never less than the 520 floor. ---- */
-body[data-pv="desk"] .gbppa-two { align-items: stretch; }
-body[data-pv="desk"] .gbppa-objcol { display: flex; flex-direction: column; }
-body[data-pv="desk"] .gbppa-stagewrap { flex: 1; display: flex; flex-direction: column; }
-body[data-pv="desk"] .gbppa-plate { flex: 1; height: auto; min-height: var(--gbppa-stage-h); }
+/* ---- LAYOUT A: the signature zone has nothing left to hold. The
+        two acts are in the head and the last word is the card above
+        the stage. ---- */
+body[data-pv="a"] .gbppa-side { display: none; }
 
-/* ---- CINEMA: the side column has nothing left to hold. Its two
-        acts are in the head and its last word is the line over the
-        stage. ---- */
-body[data-pv="cinema"] .gbppa-side { display: none; }
-
-/* ---- SIGNATURE: the side column becomes the strip under the
-        stage. The last word on the left at a reading measure, the
-        two acts on the right in a row, and the row is reversed so
-        Request changes stands before Approve: the quieter act is
-        read first and the irreversible one sits at the end of the
-        line. ---- */
-body[data-pv="signature"] .gbppa-side {
+/* ---- LAYOUT B: the strip under the stage, behind a hairline. The
+        last word on the left at a reading measure, the two acts on
+        the right in a row, reversed so Request changes stands before
+        Approve: the quieter act is read first and the irreversible
+        one sits at the end of the line. ---- */
+body[data-pv="b"] .gbppa-side {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-32);
+  border-top: 1px solid var(--zinc-200);
+  /* No own margin: the grid's row gap already spends the air above
+     the hairline, and 32+32 read as a hole. */
+  padding-top: var(--space-24);
 }
-body[data-pv="signature"] .gbppa-last { order: 1; flex: 1 1 320px; max-width: 520px; }  /* NO TOKEN 520: a reading measure */
-body[data-pv="signature"] .gbppa-acts {
+body[data-pv="b"] .gbppa-last { order: 1; flex: 1 1 320px; max-width: 520px; }  /* NO TOKEN 520: a reading measure */
+body[data-pv="b"] .gbppa-acts {
   order: 2;
   flex: none;
   flex-direction: row-reverse;
   flex-wrap: wrap;
 }
 @container approval (max-width: 719px) {
-  body[data-pv="signature"] .gbppa-last { max-width: none; }
-  body[data-pv="signature"] .gbppa-acts { width: 100%; flex-direction: column-reverse; }
+  body[data-pv="b"] .gbppa-last { max-width: none; }
+  body[data-pv="b"] .gbppa-acts { width: 100%; flex-direction: column-reverse; }
 }
 
 /* THE SLOT. The confirmation, the changes form and the outcome strip
@@ -1237,7 +1181,7 @@ body[data-pv="signature"] .gbppa-acts {
      paint, and data-home goes one level up to the hub that holds it. -->
 <script src="../system/components/studio.js" data-home="../index.html"></script>
 </head>
-<body class="gb-demo" data-frame="clean" data-pv="cinema">
+<body class="gb-demo" data-frame="clean" data-pv="a">
 
   <!-- ============ THE PORTAL BAR ============
        The classes of .gbh-pbar, worn exactly as live\portal.html and
@@ -1449,15 +1393,14 @@ body[data-pv="signature"] .gbppa-acts {
 
               <div id="gbppaPanePreview" role="tabpanel" aria-labelledby="gbppaTabPreview" data-has3d="0">
 
-                <!-- CINEMA: the last word from the design team as a thin
-                     line over the stage. One sentence, truncated, and a
-                     door into Messages. The card below says the same thing
-                     at length for the other two layouts; only one of the
-                     two ever stands. -->
-                <div class="gbppa-lastline" id="gbppaLastLine" hidden>
-                  <span class="gb-eyebrow gbppa-lastline__meta" id="gbppaLastLineMeta"></span>
-                  <span class="gbppa-lastline__text" id="gbppaLastLineText"></span>
-                  <a class="gbppa-door gbppa-lastline__door" href="#" data-gbppa-messages>Reply in messages</a>
+                <!-- LAYOUT A: the last word from the design team, the same
+                     card the signature zone carries, standing on its own
+                     above the stage with air on both sides. Never touching
+                     the plate (the client, 21.09). -->
+                <div class="gbppa-last gbppa-last--top" id="gbppaLastLine" hidden>
+                  <p class="gb-eyebrow gbppa-last__meta" id="gbppaLastLineMeta"></p>
+                  <p class="gbppa-last__text" id="gbppaLastLineText"></p>
+                  <a class="gbppa-door" href="#" data-gbppa-messages>Reply in messages</a>
                 </div>
 
                 <div class="gbppa-two">
@@ -1465,34 +1408,26 @@ body[data-pv="signature"] .gbppa-acts {
                     <div class="gbppa-stagewrap">
                       <div class="gbppa-plate" id="gbppaStage"></div>
 
-                      <!-- SIGNATURE: the two utilities as quiet glyphs in
-                           the corner of the stage, the system icon button
-                           dressed through its own slots. -->
-                      <div class="gbppa-glyphs" id="gbppaGlyphs">
-                        <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbppa-glyph" type="button"
-                                data-gbppa-showcase data-gb-tip="Open the showcase" data-gb-tip-place="bottom" aria-label="Open the showcase">
-                          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="eye" data-gb-icon-size="20"></span></span>
-                        </button>
-                        <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbppa-glyph" type="button"
-                                data-gbppa-copy data-gb-tip="Copy link" data-gb-tip-place="bottom" aria-label="Copy link">
-                          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="link" data-gb-icon-size="20"></span></span>
-                        </button>
-                      </div>
-
-                      <!-- THE UTILITY LINE. The gesture hint lives here in
-                           every layout; in cinema the two quiet doors join
-                           it and the line steps out from under the stage. -->
+                      <!-- THE UTILITY LINE holds the gesture hint and
+                           NOTHING else: the stage is one to one with the
+                           share page's, and nothing extra stands on it
+                           (the client, 21.09). -->
                       <div class="gbppa-utils">
                         <p class="gb-eyebrow gbppa-hint" id="gbppaHint">
                           <span class="gbppa-hint__bit"><span data-gb-icon="rotate" data-gb-icon-size="12"></span>Drag to turn</span>
                           <span class="gbppa-hint__bit"><span data-gb-icon="mouse" data-gb-icon-size="12"></span>Scroll to zoom</span>
                           <span class="gbppa-hint__bit"><span data-gb-icon="move" data-gb-icon-size="12"></span>Right-drag to move</span>
                         </p>
-                        <span class="gbppa-doors gbppa-doors--line">
-                          <button class="gbppa-door" type="button" data-gbppa-showcase>Open the showcase</button>
-                          <button class="gbppa-door" type="button" data-gbppa-copy>Copy link</button>
-                        </span>
                       </div>
+                    </div>
+
+                    <!-- THE TWO QUIET DOORS, under the stage and outside
+                         the plate, in both layouts. -->
+                    <div class="gbppa-below">
+                      <span class="gbppa-doors gbppa-doors--line">
+                        <button class="gbppa-door" type="button" data-gbppa-showcase>Open the showcase</button>
+                        <button class="gbppa-door" type="button" data-gbppa-copy>Copy link</button>
+                      </span>
                     </div>
                     <p class="gbppa-note" id="gbppaPreviewNote" hidden></p>
                   </div>
@@ -1512,11 +1447,6 @@ body[data-pv="signature"] .gbppa-acts {
                       <p class="gbppa-last__text" id="gbppaLastText"></p>
                       <a class="gbppa-door" href="#" data-gbppa-messages>Reply in messages</a>
                     </div>
-
-                    <span class="gbppa-doors gbppa-doors--col">
-                      <button class="gbppa-door" type="button" data-gbppa-showcase>Open the showcase</button>
-                      <button class="gbppa-door" type="button" data-gbppa-copy>Copy link</button>
-                    </span>
                   </aside>
                 </div>
 
@@ -1819,10 +1749,16 @@ body[data-pv="signature"] .gbppa-acts {
      this page builds because hrefFor keeps the whole query. Cinema
      is the default, and it is the one this house recommends.
      ============================================================ */
-  var PVS = { cinema: 1, desk: 1, signature: 1 };
-  var pv = PVS[params.get('pv')] ? params.get('pv') : 'cinema';
+  /* gbppl-approvals-pv-2 (21.09): two layouts instead of three, both
+     rebuilt after the client's verdict on pv-1. The old values keep
+     reading forever (the law of links): cinema and desk land on A,
+     signature lands on B. */
+  var PVS = { a: 1, b: 1 };
+  var PV_LEGACY = { cinema: 'a', desk: 'a', signature: 'b' };
+  function pvName(v) { return PVS[v] ? v : (PV_LEGACY[v] || 'a'); }
+  var pv = pvName(params.get('pv'));
   function setPv(v) {
-    pv = PVS[v] ? v : 'cinema';
+    pv = pvName(v);
     document.body.setAttribute('data-pv', pv);
     writeKey('pv', pv);
   }
@@ -2502,6 +2438,23 @@ body[data-pv="signature"] .gbppa-acts {
   var panel = document.querySelector('gb-studio-panel');
   function wirePanel() {
     if (!panel || typeof panel.addGroup !== 'function') return;
+    /* PREVIEW STANDS FIRST (Ton, 21.09: the console «переключает всё
+       что угодно, кроме того, что мне нужно») — the choice he is here
+       to make leads the section and the collapsed Demo line prints it. */
+    panel.addGroup({
+      type: 'choice',
+      /* «Preview», not «Preview layout»: the console's label column
+         truncates at about ten characters and «Preview la...» beside
+         «Frame» is a row that says nothing. Measured on the layer, not
+         guessed. */
+      title: 'Preview',
+      value: pv,
+      options: [
+        { label: 'A · Decision up top', value: 'a', note: 'The two acts stand in the head of the page beside the title, the designer\'s note is a card above the stage, and the two quiet doors sit under it.' },
+        { label: 'B · Signature',       value: 'b', note: 'The stage comes first; under it the doors, then a hairline, and the sign-off strip: the designer\'s note on the left, the two acts on the right.' }
+      ],
+      onChange: setPv
+    });
     panel.addGroup({
       type: 'choice',
       title: 'Frame',
@@ -2512,21 +2465,6 @@ body[data-pv="signature"] .gbppa-acts {
         { label: 'Portal', value: 'portal', note: 'The head takes a card of its own, which is how the live portal stands today.' }
       ],
       onChange: setFrame
-    });
-    panel.addGroup({
-      type: 'choice',
-      /* «Preview», not «Preview layout»: the console's label column
-         truncates at about ten characters and «Preview la...» beside
-         «Frame» is a row that says nothing. Measured on the layer, not
-         guessed. */
-      title: 'Preview',
-      value: pv,
-      options: [
-        { label: 'Cinema',    value: 'cinema',    note: 'The stage takes the whole block and a third more height, one line under it carries the gestures and the two quiet doors, and the two acts move up into the head of the page.' },
-        { label: 'Desk',      value: 'desk',      note: 'The grid stays, the stage stretches to the full height of the row, and the column beside it reads by importance: the acts, the last word, the two doors.' },
-        { label: 'Signature', value: 'signature', note: 'The stage takes the whole block, the two utilities become quiet glyphs in its corner, and under it a strip signs the design off: the last word on the left, the two acts on the right.' }
-      ],
-      onChange: setPv
     });
   }
   if (panel && typeof panel.addGroup === 'function') wirePanel();
