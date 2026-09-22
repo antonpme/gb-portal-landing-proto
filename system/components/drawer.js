@@ -166,11 +166,12 @@
     host._panel.setAttribute('tabindex', '-1');
 
     /* THREE SLOTS, ALWAYS IN THE DOM, AND THE HEAD DECIDES WHICH
-       TWO ARE SHOWN. The left one is the back arrow or the cross,
-       never both; the right one is the cross and appears only when
-       the arrow has taken the left. Building all three once means
-       setBack() is a `hidden` flag rather than a rebuild, so the
-       arrow can grow mid-flow without the head flickering. */
+       ONE IS SHOWN. The left one is the back arrow or the cross,
+       never both; the right one is retired by the 22.09 canon
+       (dressHead below has the words) and never shows. Building all
+       three once means setBack() is a `hidden` flag rather than a
+       rebuild, so the arrow can grow mid-flow without the head
+       flickering. */
     var head = el('div', 'gbd-head');
     host._back = iconButton(GLYPH_BACK, 'Back');
     host._closeLeft = iconButton(GLYPH_CLOSE, 'Close');
@@ -288,13 +289,20 @@
   }
 
   /* Which of the three head slots are on screen. Called on open and
-     on every setBack, and it is the whole of the rule: arrow OR
-     cross on the left, cross on the right only behind an arrow. */
+     on every setBack, and it is the whole of the rule: arrow OR cross
+     on the left, NOTHING on the right. The owner's canon of 22.09
+     (skill\decisions.md, his words the night before: «только крестик
+     → шеврон... это единственное отличие») replaced the 28.08
+     denominator that kept a second cross on the right behind the
+     arrow: a deeper level differs from the first by ONE glyph, not by
+     growing a second way out. Escape and the scrim still close from
+     any level. The right cross stays built so a consumer's CSS finds
+     its node, but it never shows. */
   function dressHead(host) {
     var hasBack = typeof host._onBack === 'function';
     host._back.hidden = !hasBack;
     host._closeLeft.hidden = hasBack;
-    host._closeRight.hidden = !hasBack;
+    host._closeRight.hidden = true;
   }
 
   function openDrawer(opts) {

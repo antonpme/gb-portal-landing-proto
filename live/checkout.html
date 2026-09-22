@@ -1078,6 +1078,66 @@
      group door draws no New address zone (gbppl-checkout-addnew-1).
      ============================================================ -->
 <!-- ============================================================
+     gbppl-checkout-picker-1 (2026-09-22) — THE TICK BECOMES THE
+     ORDER, AND THE SECOND FLOOR LOSES ITS CAPTION.
+
+     Nine things, and every one of them is somebody's sentence: six
+     of Ton's, written over four screens of the panel at midnight on
+     22.09, two of Valerie's from the meeting of 21.09, and one of
+     Vlad's about the model the back end will group shipments by.
+
+     1. THE PERSON IS THE LOUD LINE. «Когда добавляем адрес: не вижу
+        имени человека.» It was the DATA, not the markup: `name` is
+        the recipient field of the form, the one with the asterisk,
+        and the books had «Acme NYC Office» sitting in it. Every row
+        of every book now carries a person there and the office label
+        in `company`, and both lists print them the same way — name
+        loud, company and street quiet under it (v5PkSubLine,
+        v5AddrLine).
+     2. THE SECOND LEVEL IS THE FIRST LEVEL WITH A CHEVRON. Ton, made
+        a law of the house the same night (skill\decisions.md): «ровно
+        один знак: вместо крестика шеврон назад, никаких добавочных
+        надписей». «‹ ADDRESSES» is gone; the arrow is bare
+        (v5PkHead), and gbppl-v5-julia-1's label argument goes unused
+        by every drawer in the house.
+     3. ONE LOGIC FOR THE LIST. «Адрес книги, уже добавленный в заказ
+        = активный чекбокс у строки; не бейдж. Одна логика на список.»
+        So the box is the MEMBERSHIP of this order, on every row: it
+        comes up ticked for the places the order already ships to, and
+        taking it off is how a place leaves (v5PkSeedTicks, v5PkApply).
+        The read-only «in this order» row of 17.09 is retired.
+     4. THE SMALL PRINT UNDER THE SEARCH IS GONE. «Две строки мелкого
+        пояснительного текста — убрать.» They explained a rule that
+        went with them (see 5).
+     5. NO DOUBLES. «Один и тот же адрес нельзя добавить в заказ
+        дважды.» A tick is one boolean per place, so a second press is
+        the first one undone; typing a place that already stands
+        somewhere returns to its row rather than making a twin
+        (v5PkFileForm).
+     6. A QUIET PLATE OF PROVENANCE. «У каждого адреса тихий бейдж:
+        добавлен рукой в этом заказе / из адресной книги.» The plate
+        stopped saying «in this order» — the tick says that now — and
+        says «Added here» or «Address book» instead, on the lines of
+        the order only. It is recorded when a line is born (`from`).
+     7. THE ROWS OF THIS ORDER OPEN (Valerie, 21.09). Saved or not, a
+        place that stands in this order answers a click by opening on
+        the form to be corrected, which is the second floor and
+        nothing new. The rows of the book still tick, so the rule of
+        08.09 is untouched where it applies.
+     8. AN ADDRESS MAY BE A ONE-OFF (Valerie, 21.09). «Save this
+        address to my address book», off by default: without it the
+        place belongs to this order and to nothing else.
+     9. RECIPIENT AND ADDRESS, TOGETHER, MAKE A DELIVERY (Vlad,
+        22.09). The same-place key carries the person now (v5SpotKey).
+        Two people at one office stopped being one place, which had
+        been lighting the wrong row as «in this order» on two pairs of
+        the demo book.
+
+     V1 TO V4 ARE FENCED OUT OF ALL NINE: every new binding is either
+     inside the ?v=5 picker or gated on uiVersion, and the form's new
+     box answers v5PkSaveBoxOn, which is false for every other version.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -2196,20 +2256,13 @@
      state of a tick. */
   .ck-pk__row--door { color: var(--zinc-600); }
   .ck-pk__row--door .ck-pk__hit { color: inherit; }
-  /* ============================================================
-     A ROW THAT IS A FACT (gbppl-checkout-order-section-1, 17.09)
-     ------------------------------------------------------------
-     «In this order» in the door that adds. It keeps the list's
-     ground, inset, height and both voices -- it is the same row,
-     saying the same thing -- and loses only what OFFERS: the
-     pointer and the hover. It is not dimmed: the places this order
-     ships to are not disabled options, they are the answer the
-     reader already gave, and fading them would say they failed.
-     The button under it carries a real `disabled`, so the keyboard
-     walks past it exactly as the hand does.
-     ============================================================ */
-  .ck-pk__hit--ref { cursor: default; }
-  .ck-pk__row--ref:hover { background: var(--white); }
+  /* HERE STOOD THE ROW THAT WAS A FACT (gbppl-checkout-order-section-1,
+     17.09): a place already in this order, drawn without a box, without a
+     pointer and without a hover, because ticking it would have made a
+     second line. gbppl-checkout-picker-1 (22.09) gave every row of the
+     list the same active box (Ton: «одна логика на список»), so the two
+     rules that took the offer away have nothing left to stand on and the
+     canvas is one row again, drawn one way. */
   /* THE MATCHED RUN. The badge's own plate, one voice down: a mark
      on letters, not a state, so no blue and no second weight. */
   .ck-pk__mark {
@@ -2315,6 +2368,18 @@
     background: var(--zinc-100);
     color: var(--zinc-600);
     line-height: 1.6;
+  }
+  /* THE NAME COMES FIRST, INCLUDING WHEN THERE IS NO ROOM FOR BOTH
+     (gbppl-checkout-picker-1, 22.09). The plate does not shrink, so on a
+     360 drawer «ADDRESS BOOK» took 110 of the 328 there are and the thing
+     Ton asked to be able to see — the person's name — truncated to «Anton
+     Parkhom…». Provenance is a second-order fact and the row it sits on is
+     one press away from saying it in full, so under 640 the plate stands
+     down and the name gets the width. Open to Ton: the other answer is a
+     shorter pair of words, and shorter honest words for these two are hard
+     to find. */
+  @media (max-width: 639px) {
+    .ck-pk__badge { display: none; }
   }
   .ck-pk__foot {
     flex: 0 0 auto;
@@ -5533,8 +5598,19 @@
                           <article class="border-b border-zinc-200 last:border-b-0">
                             <div class="px-4 py-4 flex flex-wrap items-center gap-x-4 gap-y-3">
                               <div class="min-w-0 flex-1 basis-[200px]">
+                                <!-- gbppl-checkout-picker-1 (22.09): THE PERSON
+                                     IS THE LOUD LINE AND THE PLACE IS UNDER IT.
+                                     Ton: «когда добавляем адрес: не вижу имени
+                                     человека». The loud line always was
+                                     `deliver.name` — what it held was a place
+                                     label, because the book kept «Acme NYC
+                                     Office» in the recipient field. The data
+                                     says a person now, and the office label it
+                                     is known by joins the street on the quiet
+                                     line, one recipe with the picker's rows
+                                     (v5PkSubLine). -->
                                 <p class="text-sm font-medium text-zinc-900 truncate" x-text="(a.deliver && a.deliver.name) || 'No name yet'"></p>
-                                <p class="text-sm text-zinc-500 truncate" :title="a.address" x-text="a.address || 'No address yet'"></p>
+                                <p class="text-sm text-zinc-500 truncate" :title="a.address" x-text="v5AddrLine(a)"></p>
                                 <p x-show="a.hasError" class="text-sm text-red-600 mt-1" x-text="a.errorMsg"></p>
                               </div>
                               <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -7516,33 +7592,32 @@
                      autocomplete="off" class="gba-input">
               <span data-gb-icon="search" data-gb-icon-size="16" aria-hidden="true"></span>
             </div>
-            <!-- WHAT IS PICKED SO FAR, AND IT SURVIVES EVERYTHING. The ticks
-                 have always been matched against the WHOLE canvas rather
-                 than the drawn page (v5PkAddSelected, 08.09), so a place
-                 ticked under «boston» was already still ticked under
-                 «seattle» — there was simply nothing on the screen saying
-                 so, and «Add selected (3)» over a list of one was a number
-                 the reader had to take on trust. These are that number, said
-                 by name. The whole chip is the remove: one control, one
-                 meaning, and no button inside a button. -->
-            <div class="ck-pk__chips" x-show="v5PkTicks() && v5PkChips().length > 0" x-cloak>
-              <template x-for="c in v5PkChips()" :key="'v5chip-' + c.key">
-                <button type="button" class="ck-pk__chip" @click="v5PkTick(c, false)" :aria-label="'Remove ' + c.name">
-                  <span class="truncate" x-text="c.name"></span>
-                  <span class="ck-pk__chipx" aria-hidden="true"><span data-gb-icon="close" data-gb-icon-size="16"></span></span>
-                </button>
-              </template>
-            </div>
-            <!-- THE SECOND RUN TO THE SAME OFFICE, SAID BEFORE THE PRESS
-                 (gbppl-checkout-order-section-1, 17.09). On the browse floor
-                 a place already in this order is tickable on purpose: Ton's
-                 rule of 04.09 is that the method belongs to the LINE, so
-                 twenty ground and five overnight to one office are two
-                 lines. That is a thing to mean, not a thing to stumble into,
-                 so the head says what the press will do while the tick is
-                 still on the screen. It speaks only when it is true. -->
-            <p x-show="v5PkTicks() && v5PkSelDup() > 0" x-cloak
-               class="text-sm text-zinc-600 mt-2" x-text="v5PkDupLine()"></p>
+            <!-- AND HERE STOOD THE CHIPS OF WHAT WAS PICKED SO FAR
+                 (gbppl-checkout-pick-zones-1, 16.09). They were built because
+                 a tick was matched against the whole canvas while the screen
+                 showed one page of it: «Add selected (3)» over a list of one
+                 was a number the reader had to take on trust, and the chips
+                 were that number said by name.
+                 gbppl-checkout-picker-1 (22.09): THE LIST SAYS IT ITSELF NOW.
+                 Every place this order ships to stands under «In this order»
+                 at the top of the canvas, ticked, on every floor and under
+                 every query, so a row of chips over it was the section
+                 repeated — five names said twice, three rows of them at 360,
+                 in the very place Ton had just cleared of small print. The
+                 chip was also a second way to untick, and one control with one
+                 meaning is the rule this panel is being brought to.
+                 REVERTIBLE IN ONE BLOCK: nothing else changed, .ck-pk__chip*
+                 and v5PkChips are untouched (v5PkApply and v5PkDirty read the
+                 latter), and it is in the wave report as a decision.
+
+                 HERE STOOD THE TWO LINES ABOUT A SECOND RUN TO THE SAME
+                 OFFICE (gbppl-checkout-order-section-1, 17.09), and Ton struck
+                 them out on 22.09 with the rest of the small print under the
+                 search: «две строки мелкого пояснительного текста — убрать».
+                 They were the price of a rule that has gone with them — a
+                 place could be added twice, and the panel had to warn about it
+                 before the press. It cannot be added twice now (the tick IS
+                 the membership), so there is nothing left to explain. -->
           </div>
 
           <div class="ck-pk__list" data-pk-list x-show="v5PkView().rows.length > 0">
@@ -7568,7 +7643,8 @@
 
                  NO CHECKBOX, AND THAT IS THE WHOLE SIGNAL. In the door that
                  ticks, every line of the list carries a box and the
-                 committing hand is «Add selected (N)»; a line with no box
+                 committing hand is the foot («Save addresses» since
+                 gbppl-checkout-picker-1, 22.09); a line with no box
                  and blue ink cannot be read as one more address waiting to
                  be chosen. Blue because it is an action, which is what blue
                  means on this page (Ton-5), and the plus is the record's own
@@ -7588,39 +7664,44 @@
                   <span class="gb-eyebrow" x-text="r.head"></span>
                 </div>
                 <div class="ck-pk__row"
-                     :class="(drawer.pk.i === r.k ? 'is-lit ' : '') + (drawer.pk.fresh === r.key ? 'is-fresh ' : '') + (r.ref ? 'ck-pk__row--ref' : '')">
+                     :class="(drawer.pk.i === r.k ? 'is-lit ' : '') + (drawer.pk.fresh === r.key ? 'is-fresh' : '')">
                   <!-- The tick is a real input beside the row and not inside
                        it: a checkbox in a button is neither, and this way the
-                       row keeps one hit area and the box keeps its own. -->
-                  <span class="ck-pk__tick" x-show="v5PkTicks() && r.kind !== 'none' && !r.ref">
+                       row keeps one hit area and the box keeps its own.
+                       ONE LOGIC FOR THE WHOLE LIST (gbppl-checkout-picker-1,
+                       22.09). Ton: «адрес книги, уже добавленный в заказ =
+                       активный чекбокс у строки (снял галочку — адрес ушёл из
+                       заказа), не бейдж; одна логика на список: не "у одних
+                       бейдж, у других чекбокс"». So the box is the MEMBERSHIP
+                       of this order and it says so on every row of the canvas:
+                       ticked means this order ships there, and taking the tick
+                       off is how a place leaves. That is also the whole of the
+                       answer to «добавить дважды нельзя» — a box has two
+                       states and a second press of it is the first one undone.
+                       The seventeenth of September's read-only row (`r.ref`,
+                       no box, no pointer, `disabled`) is retired with it: the
+                       thing it was protecting against — a second line to the
+                       same office — cannot happen any more. -->
+                  <span class="ck-pk__tick" x-show="v5PkTicks() && r.kind !== 'none'">
                     <input type="checkbox" class="gb-checkbox__input"
                            :checked="v5PkTicked(r)" @change="v5PkTick(r, $event.target.checked)"
-                           :aria-label="'Select ' + r.name">
+                           :aria-label="(v5PkTicked(r) ? 'Take ' : 'Send to ') + r.name">
                   </span>
-                  <!-- gbppl-checkout-order-section-1 (17.09): a row of «In
-                       this order» in the door that adds is a FACT. It keeps
-                       the list's own inset and voices and loses everything
-                       that offers: the box, the pointer, the hover and the
-                       press. `disabled` and not a div, so the keyboard walks
-                       past it the way the eye does, and one markup still
-                       draws every row of this list. -->
-                  <button type="button" class="ck-pk__hit" :class="r.ref ? 'ck-pk__hit--ref' : ''"
-                          :disabled="!!r.ref" @click="v5PkPick(r)">
+                  <button type="button" class="ck-pk__hit" @click="v5PkPick(r)">
                     <span class="min-w-0 flex-1">
                       <span class="block text-sm font-medium text-zinc-900 truncate" x-html="v5PkMark(r.name)"></span>
                       <span class="block text-sm text-zinc-500 truncate" x-html="v5PkMark(r.sub)"></span>
                     </span>
                     <!-- The Eyebrow role stays the element's own class; the
                          plate is the house's chip recipe, see .ck-pk__badge.
-                         gbppl-checkout-pick-zones-1 (16.09): IT SPEAKS ONLY
-                         IN «BROWSE ALL» NOW. In the short list the places of
-                         this order stand under a shelf that says it once for
-                         all of them, and a plate on every row under that
-                         shelf would be the heading said twice. On the browse
-                         floor there is no shelf, so the plate is the only
-                         thing that can stop a reader adding an office they
-                         already have. -->
-                    <span x-show="r.badge && v5PkBrowsing()" class="gb-eyebrow ck-pk__badge flex-shrink-0" x-text="r.badge"></span>
+                         gbppl-checkout-picker-1 (22.09): AND IT SPEAKS ON
+                         BOTH FLOORS AGAIN, because it no longer says what the
+                         shelf says. «In this order» is the tick's job now; the
+                         plate carries the one fact neither the tick nor the
+                         shelf can — whether this line was typed here or taken
+                         out of the saved book. It appears only on rows that
+                         are in the order, so it is never a label on an offer. -->
+                    <span x-show="!!r.badge" class="gb-eyebrow ck-pk__badge flex-shrink-0" x-text="r.badge"></span>
                   </button>
                 </div>
               </div>
@@ -7845,6 +7926,38 @@
         </div>
       </div>
     </div>
+
+    <!-- ============================================================
+         AN ADDRESS DOES NOT HAVE TO BE KEPT
+                              gbppl-checkout-picker-1 (2026-09-22)
+         ------------------------------------------------------------
+         Valerie, at the meeting of 21.09: an address typed on this form
+         should be able to stay a ONE-OFF. Until now every one of them
+         was filed — the panel put it in the address book whether or not
+         anybody would ever ship there again, and a book of hundreds is
+         the thing this very picker was built to survive.
+
+         SO THE READER SAYS. Off by default, which is the honest default
+         for a thing that keeps data: the gift goes where it is told
+         either way, and only a tick adds a permanent record.
+
+         NOTHING WAS DRAWN. It is `.gb-checkbox` from the system, the
+         same row the greeting card switch and the CSV import already
+         wear, and the sentence is the import modal's own word for the
+         same act («Save these addresses to my address book») in the
+         singular. One house, one phrasing.
+
+         IT IS NOT SHOWN WHILE A SAVED PLACE IS BEING EDITED: that row
+         is already in the book, and a box that could only be ticked
+         would be a control with one state. See v5PkSaveBoxOn.
+         ============================================================ -->
+    <label class="gb-checkbox" x-show="v5PkFormOn() && v5PkSaveBoxOn()" x-cloak>
+      <input type="checkbox" x-model="drawer.saveToBook" class="gb-checkbox__input">
+      <span class="gb-checkbox__copy">
+        <span class="gb-checkbox__label">Save this address to my address book</span>
+        <span class="gb-checkbox__note">(otherwise it is used for this order only)</span>
+      </span>
+    </label>
   </div>
 </template>
 <!-- ============================================================
@@ -7877,11 +7990,14 @@
      reason. Choosing: the door to the second floor on the left and
      the only way to it (Ton: «по кнопке "Добавить новый адрес"
      открывается форма в этом же дровере вторым уровнем»), and, in
-     the one door that takes more than one address, «Add selected
-     (N)» on the right — the committing action of the panel, so the
-     filled primary. It is honestly shut at nought ticked, like the
-     Clear beside it. Typing: Clear and Save, the pair this foot has
-     always carried.
+     the one door that takes more than one address, the committing
+     action of the panel on the right, so the filled primary. It is
+     honestly shut while it would change nothing, like the Clear
+     beside it. Typing: Clear and Save, the pair this foot has always
+     carried. (gbppl-checkout-picker-1, 22.09: that committing action
+     was «Add selected (N)» and is «Save addresses» now — the list
+     stopped being a set of candidates and became the order's own set
+     of places, so the press writes the difference both ways.)
 
      ONLY ONE OF THE PAIR SAYS «ADD», AND IT IS THE ONE THAT ADDS
      (gbppl-v5-pk-foot-1, 08.09). Ton: «Мне вообще не нравится, что
@@ -7939,9 +8055,21 @@
             @click="v5PkOpenForm()" class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button">
       <span class="gb-btn__label">Edit this address</span>
     </button>
+    <!-- gbppl-checkout-picker-1 (22.09): «ADD SELECTED (N)» BECAME «SAVE
+         ADDRESSES», because the list stopped being a set of candidates and
+         became the order's own set of places: every row that is in this
+         order comes up ticked, and the press writes the DIFFERENCE both
+         ways (v5PkApply). A label that says «add» over a press that can
+         also take away is the kind of lie this foot already fixed once, on
+         08.09, when Ton struck «Add a new address» off the button that
+         added nothing. The number went with the word: it counted what would
+         be added, and what would be added is no longer what is ticked. The
+         chips over the list say the names, which is the honest form of it.
+         It is shut while nothing would change, the same honesty the Clear
+         beside it keeps. -->
     <button x-show="uiVersion === 'v5' && v5PkMode() === 'pick' && v5PkTicks() && !v5PkEmptyBook()" x-cloak
-            @click="v5PkAddSelected()" :disabled="v5PkSel() === 0" :aria-disabled="v5PkSel() === 0"
-            class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="'Add selected (' + v5PkSel() + ')'"></span></button>
+            @click="v5PkApply()" :disabled="!v5PkDirty()" :aria-disabled="!v5PkDirty()"
+            class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Save addresses</span></button>
     <template x-if="uiVersion !== 'v5'">
       <button @click="v3SaveDeliver()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Save delivery</span></button>
     </template>
@@ -8793,16 +8921,30 @@ function checkoutApp() {
     // puts them back. The two must agree, and they are kept next to each
     // other for the reader who changes one — the same arrangement, and the
     // same reason, as `scenario` and the setScenario call in init().
+    /* ============================================================
+       A PLACE LABEL IS NOT A PERSON  (gbppl-checkout-picker-1, 22.09)
+       ------------------------------------------------------------
+       Ton, over the address list: «когда добавляем адрес: не вижу
+       имени человека». He was right, and it was the DATA saying it,
+       not the markup: `name` is the recipient field of the form — the
+       one with the asterisk, the person a courier hands the parcel to
+       — and these three rows had «Acme NYC Office» sitting in it. So
+       every row of every book in this file now carries a PERSON in
+       `name` and the place label in `company`, which is the field the
+       form already has and the only other thing a row prints.
+       One recipe for both lists after it: the name first, always, and
+       the place under it with the street (v5AddrLine, v5PkRows).
+       ============================================================ */
     addressBook: [
-      { id: 'a1', name: 'Anton Parkhomenko', label: '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US' },
-      { id: 'a2', name: 'Acme NYC Office',   label: '500 5th Ave, New York, NY 10110, US' },
-      { id: 'a3', name: 'Acme LA Studio',    label: '1234 Sunset Blvd, Los Angeles, CA 90028, US' },
+      { id: 'a1', name: 'Anton Parkhomenko', company: '',                 label: '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US' },
+      { id: 'a2', name: 'Diane Novak',       company: 'Acme NYC Office',  label: '500 5th Ave, New York, NY 10110, US' },
+      { id: 'a3', name: 'Peter Halloran',    company: 'Acme LA Studio',   label: '1234 Sunset Blvd, Los Angeles, CA 90028, US' },
     ],
     defaultAddressBook() {
       return [
-        { id: 'a1', name: 'Anton Parkhomenko', label: '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US' },
-        { id: 'a2', name: 'Acme NYC Office',   label: '500 5th Ave, New York, NY 10110, US' },
-        { id: 'a3', name: 'Acme LA Studio',    label: '1234 Sunset Blvd, Los Angeles, CA 90028, US' },
+        { id: 'a1', name: 'Anton Parkhomenko', company: '',                label: '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US' },
+        { id: 'a2', name: 'Diane Novak',       company: 'Acme NYC Office', label: '500 5th Ave, New York, NY 10110, US' },
+        { id: 'a3', name: 'Peter Halloran',    company: 'Acme LA Studio',  label: '1234 Sunset Blvd, Los Angeles, CA 90028, US' },
       ];
     },
 
@@ -8816,7 +8958,13 @@ function checkoutApp() {
        make one part of the picker visible:
 
          · FOURTEEN OFFICES OF SIX COMPANIES, four of them Acme's,
-           so a search for «acme» has something to narrow to.
+           so a search for «acme» has something to narrow to. Since
+           gbppl-checkout-picker-1 (22.09) the office is the row's
+           COMPANY and the row's `name` is the person who signs for
+           the parcel there: the label of a place was standing in the
+           recipient field, which is what Ton read as «не вижу имени
+           человека». The search still answers «acme», because the
+           office label is where the word now lives.
          · TWO PAIRS OF NAMESAKES in two towns each — Michael Reyes
            in Portland OR and Portland ME, Sarah Chen in Boston and
            Austin. The meeting of 04.09 called this the hard case;
@@ -8844,24 +8992,26 @@ function checkoutApp() {
         };
       };
       return [
-        b('Acme NYC Office',      'Acme Corp',          '500 5th Ave',          'Floor 12',    'New York',      'NY', '10110'),
-        b('Acme LA Studio',       'Acme Corp',          '1234 Sunset Blvd',     '',            'Los Angeles',   'CA', '90028'),
-        /* NOT 233 S Wacker: that is the buyer's own line two rows down, and
-           two book entries at one street and one ZIP are ONE PLACE by the
-           test the whole page uses (v5SameSpot), so the office kept
-           inheriting «in this order» from the home. Caught on the screen. */
-        b('Acme Chicago Loop',    'Acme Corp',          '155 N Wacker Dr',      'Suite 4100',  'Chicago',       'IL', '60606'),
-        b('Acme Austin Lab',      'Acme Corp',          '98 Congress Ave',      '',            'Austin',        'TX', '78701'),
-        b('Northwind Seattle',    'Northwind Traders',  '42 Pine St',           'Suite 300',   'Seattle',       'WA', '98101'),
-        b('Northwind Portland',   'Northwind Traders',  '710 SW Alder St',      '',            'Portland',      'OR', '97205'),
-        b('Northwind Denver',     'Northwind Traders',  '1600 Wynkoop St',      '',            'Denver',        'CO', '80202'),
-        b('Contoso Boston',       'Contoso Health',     '80 Beacon St',         '',            'Boston',        'MA', '02108'),
-        b('Contoso Providence',   'Contoso Health',     '5 Empire Plz',         '',            'Providence',    'RI', '02903'),
-        b('Globex Miami',         'Globex Media',       '1200 Brickell Ave',    'Suite 40',    'Miami',         'FL', '33131'),
-        b('Globex Atlanta',       'Globex Media',       '191 Peachtree St NE',  '',            'Atlanta',       'GA', '30303'),
-        b('Vertex Chicago',       'Vertex Analytics',   '120 N Racine Ave',     '',            'Chicago',       'IL', '60607'),
-        b('Vertex Minneapolis',   'Vertex Analytics',   '90 S 7th St',          '',            'Minneapolis',   'MN', '55402'),
-        b('Initech San Jose',     'Initech Labs',       '2100 N 1st St',        '',            'San Jose',      'CA', '95131'),
+        b('Diane Novak',          'Acme NYC Office',    '500 5th Ave',          'Floor 12',    'New York',      'NY', '10110'),
+        b('Peter Halloran',       'Acme LA Studio',     '1234 Sunset Blvd',     '',            'Los Angeles',   'CA', '90028'),
+        /* NOT 233 S Wacker: that is the buyer's own line two rows down. Since
+           gbppl-checkout-picker-1 (22.09) the same-place test carries the
+           recipient too (v5SpotKey, Vlad's model of 22.09), so one street and
+           one ZIP with two different people are honestly two places — but the
+           two Wacker rows stay apart anyway, because a demo that leans on a
+           key to tell two offices apart teaches nothing. */
+        b('Ruth Delgado',         'Acme Chicago Loop',  '155 N Wacker Dr',      'Suite 4100',  'Chicago',       'IL', '60606'),
+        b('Owen Pritchard',       'Acme Austin Lab',    '98 Congress Ave',      '',            'Austin',        'TX', '78701'),
+        b('Claire Bennett',       'Northwind Seattle',  '42 Pine St',           'Suite 300',   'Seattle',       'WA', '98101'),
+        b('Devon Marsh',          'Northwind Portland', '710 SW Alder St',      '',            'Portland',      'OR', '97205'),
+        b('Gail Sorensen',        'Northwind Denver',   '1600 Wynkoop St',      '',            'Denver',        'CO', '80202'),
+        b('Hugh Merrick',         'Contoso Boston',     '80 Beacon St',         '',            'Boston',        'MA', '02108'),
+        b('Ivy Tran',             'Contoso Providence', '5 Empire Plz',         '',            'Providence',    'RI', '02903'),
+        b('Julian Costa',         'Globex Miami',       '1200 Brickell Ave',    'Suite 40',    'Miami',         'FL', '33131'),
+        b('Kendra Boyle',         'Globex Atlanta',     '191 Peachtree St NE',  '',            'Atlanta',       'GA', '30303'),
+        b('Logan Pierce',         'Vertex Chicago',     '120 N Racine Ave',     '',            'Chicago',       'IL', '60607'),
+        b('Mara Lindqvist',       'Vertex Minneapolis', '90 S 7th St',          '',            'Minneapolis',   'MN', '55402'),
+        b('Noel Vasquez',         'Initech San Jose',   '2100 N 1st St',        '',            'San Jose',      'CA', '95131'),
         b('Anton Parkhomenko',    '',                   '233 S Wacker Dr',      'Suite 8200',  'Chicago',       'IL', '60606'),
         b('Aisha Patel',          'Acme Corp',          '12 Park Ave',          'Apt 9C',      'New York',      'NY', '10016'),
         b('Brianna Cole',         '',                   '88 Elm Rd',            '',            'Brooklyn',      'NY', '11201'),
@@ -9168,13 +9318,16 @@ function checkoutApp() {
        is edited in.
        ============================================================ */
     scenarioBigBook() {
+      /* gbppl-checkout-picker-1 (22.09): the person signs, the office is the
+         company, and `from` says where the line came from — all three of
+         these stand in the big book, so all three wear «Address book». */
       const addr = (name, bits, shipping, qty) => {
         const d = Object.assign(this.v3BlankDeliver(), bits, { name: name });
-        return this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), shipping: shipping, qty: qty });
+        return this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), shipping: shipping, qty: qty, from: 'book' });
       };
       const v5Addrs = [
-        addr('Acme NYC Office',   { street: '500 5th Ave', apt: 'Floor 12', city: 'New York', state: 'NY', zip: '10110' }, 'ground', 8),
-        addr('Northwind Seattle', { street: '42 Pine St', apt: 'Suite 300', city: 'Seattle', state: 'WA', zip: '98101' }, '2day', 6),
+        addr('Diane Novak',       { company: 'Acme NYC Office',   street: '500 5th Ave', apt: 'Floor 12', city: 'New York', state: 'NY', zip: '10110' }, 'ground', 8),
+        addr('Claire Bennett',    { company: 'Northwind Seattle', street: '42 Pine St', apt: 'Suite 300', city: 'Seattle', state: 'WA', zip: '98101' }, '2day', 6),
         addr('Anton Parkhomenko', { street: '233 S Wacker Dr', apt: 'Suite 8200', city: 'Chicago', state: 'IL', zip: '60606' }, 'ground', 4)
       ];
       return {
@@ -9319,14 +9472,18 @@ function checkoutApp() {
       // country» wrong at five parts, and a demo is not the place to show a
       // parser bug that belongs to another version.
       // ============================================================
-      const v5Addr = (name, bits, shipping) => {
+      /* gbppl-checkout-picker-1 (22.09): `from` is the line's own provenance,
+         and the loaded cart opens with both of the two answers on the screen
+         — three places that came out of the saved book, two typed straight
+         into this order. See the badge in the picker (v5PkFromLabel). */
+      const v5Addr = (name, bits, shipping, from) => {
         const d = Object.assign(this.v3BlankDeliver(), bits, { name: name });
-        return this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), shipping: shipping, qty: 0 });
+        return this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), shipping: shipping, qty: 0, from: from || 'hand' });
       };
       const v5Travel = (() => {
-        const nyc  = v5Addr('Acme NYC Office',   { street: '500 5th Ave', city: 'New York', state: 'NY', zip: '10110' }, 'ground');
-        const home = v5Addr('Anton Parkhomenko', { street: '233 S Wacker Dr', apt: 'Suite 8200', city: 'Chicago', state: 'IL', zip: '60606' }, '2day');
-        const la   = v5Addr('Acme LA Studio',    { street: '1234 Sunset Blvd', city: 'Los Angeles', state: 'CA', zip: '90028' }, 'ground');
+        const nyc  = v5Addr('Diane Novak',       { company: 'Acme NYC Office', street: '500 5th Ave', city: 'New York', state: 'NY', zip: '10110' }, 'ground', 'book');
+        const home = v5Addr('Anton Parkhomenko', { street: '233 S Wacker Dr', apt: 'Suite 8200', city: 'Chicago', state: 'IL', zip: '60606' }, '2day', 'book');
+        const la   = v5Addr('Peter Halloran',    { company: 'Acme LA Studio', street: '1234 Sunset Blvd', city: 'Los Angeles', state: 'CA', zip: '90028' }, 'ground', 'book');
         const bos  = v5Addr('Emma Schultz',      { street: '15 Oak Ave', city: 'Boston', state: 'MA', zip: '02115' }, 'ground');
         const sea  = v5Addr('Marcus Lee',        { street: '42 Pine St', city: 'Seattle', state: 'WA', zip: '98101' }, 'ground');
         // gbppl-checkout-ref-box-1 (18.09): five of the eight carry a line on
@@ -9545,7 +9702,7 @@ function checkoutApp() {
     // Two menus in the step-2 band, one open at a time; each button clears the other.
     bulkMenuOpen: null,   // Edit Selected
     tplMenuOpen: null,    // Bulk Personalize in V1..V4, Bulk actions in V5
-    drawer: { open: false, type: null, productId: null, shipmentId: null, recipientId: null, master: false, data: { greeting: { to: '', message: '', from: '' } } },
+    drawer: { open: false, type: null, productId: null, shipmentId: null, recipientId: null, master: false, saveToBook: false, data: { greeting: { to: '', message: '', from: '' } } },
     /* gbppl-checkout-import-1 (16.09): `saveToBook` is born false here and
        written false again by openCSVModal, because Ton's default is off and
        a reader who ticked it on one file must not find it ticked on the
@@ -10417,7 +10574,16 @@ function checkoutApp() {
         // will not price a destination outside a zone (CHECKOUT-RECON.md §5).
         shipping: '',
         hasError: false,
-        errorMsg: ''
+        errorMsg: '',
+        /* WHERE THIS LINE CAME FROM (gbppl-checkout-picker-1, 22.09). Ton:
+           «у каждого адреса тихий бейдж происхождения: добавлен рукой в
+           этом заказе / из адресной книги». It is a fact about the LINE and
+           not about the place, so it is recorded when the line is born and
+           never recomputed: an address typed by hand and filed in the book
+           afterwards was still typed by hand here. Two values, 'hand' and
+           'book'; 'hand' is the default because typing is the only way a
+           line can be born without somebody saying otherwise. */
+        from: 'hand'
       }, o || {});
     },
     // The same keys a V1/V2 row carries, so the two shared personalization
@@ -10537,10 +10703,10 @@ function checkoutApp() {
           // gbppl-v5-fix-1: the inverse of v3AddressLabel, not the old
           // five-part guess — this is the same book entry the picker reads,
           // and it used to walk into the list with Suite 8200 as its city.
-          const d = Object.assign(this.v3BlankDeliver(), this.v5ParseAddress(b.label), { name: b.name });
+          const d = Object.assign(this.v3BlankDeliver(), this.v5ParseAddress(b.label), { name: b.name, company: b.company || '' });
           s.v5Addrs = [this.v5BlankAddr({
             deliver: d, address: this.v3AddressLabel(d),
-            qty: this.v5Total(s), shipping: s.v5Shipping || ''
+            qty: this.v5Total(s), shipping: s.v5Shipping || '', from: 'book'
           })];
         }
       }
@@ -10632,7 +10798,7 @@ function checkoutApp() {
     v5UseBookAddress(id) {
       const addr = this.addressBook.find(a => a.id === id);
       if (!addr) return;
-      Object.assign(this.drawer.data, this.v5ParseAddress(addr.label), { name: addr.name || '' });
+      Object.assign(this.drawer.data, this.v5ParseAddress(addr.label), { name: addr.name || '', company: addr.company || '' });
     },
 
     // ===== The second question, and the hand that changes with it =====
@@ -11013,10 +11179,14 @@ function checkoutApp() {
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: null,
         addrId: addrId || null, v5Target: 'list', v5Assign: false, master: false,
-        nameErr: false,
+        nameErr: false, saveToBook: false,
         pk: pk,
         data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), (a && a.deliver) || {})
       };
+      /* gbppl-checkout-picker-1 (22.09): the panel opens on the order it is
+         editing, not on an empty basket. Seeded AFTER the bag is in place,
+         because the canvas is built from it. */
+      this.v5PkSeedTicks();
       this.showDrawer();
       this.v5PkFocus();
     },
@@ -11068,7 +11238,7 @@ function checkoutApp() {
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: null,
         addrId: null, v5Target: 'one', v5Assign: false, master: false,
-        nameErr: false,
+        nameErr: false, saveToBook: false,
         pk: pk,
         data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), held)
       };
@@ -11082,6 +11252,87 @@ function checkoutApp() {
       const d = this.drawer;
       if (!s || !d || !d.open || d.type !== 'deliver' || d.v5Target !== 'one') return false;
       return this.findShipment(d.productId, d.shipmentId) === s;
+    },
+    /* ============================================================
+       WHERE A TYPED ADDRESS GOES  (gbppl-checkout-picker-1, 22.09)
+       ------------------------------------------------------------
+       Four cases and one answer: the key of the canvas row the panel
+       should come back to, ticked and lit.
+         correcting a book row    the book row is rewritten in place,
+                                  and the line standing on it follows
+         correcting a line        the line is rewritten where it lives
+         correcting a one-off     the one-off is rewritten on the shelf
+         a new address, filed     the book, at the top (Ton, 08.09)
+         a new address, one-off   pk.made — this panel's own shelf for
+                                  places that belong to this order and
+                                  to nothing else (Valerie, 21.09)
+       NOTHING IS EVER FILED TWICE: the same-place test is asked before
+       every push, and a match is used rather than copied. A one-off
+       that the box later files is NOT spliced off the shelf — the book
+       row carries the same key and v5PkRows draws the book first, so
+       the shelf entry is shadowed and no index behind it moves.
+       ============================================================ */
+    v5PkFileForm(deliver, label, pk) {
+      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
+      const edit = String(pk.edit || '');
+      const file = () => {
+        const found = (this.addressBook || []).find(b => this.v5SameSpot(this.v5BookSpot(b), deliver));
+        if (found) {
+          found.name = deliver.name || found.name;
+          found.company = deliver.company || '';
+          found.label = label;
+          return found.id;
+        }
+        const id = 'a' + Date.now();
+        this.addressBook.unshift({ id: id, name: deliver.name || 'Unnamed', company: deliver.company || '', label: label });
+        return id;
+      };
+      const lineAt = spot => ((s && s.v5Addrs) || []).find(a => a.address && this.v5SameSpot(a.deliver, spot));
+
+      if (edit.indexOf('b:') === 0) {
+        const b = (this.addressBook || []).find(x => 'b:' + x.id === edit);
+        if (!b) return 'b:' + file();
+        const line = lineAt(this.v5BookSpot(b));   /* read the OLD spot before the row moves */
+        b.name = deliver.name || 'Unnamed';
+        b.company = deliver.company || '';
+        b.label = label;
+        if (line) this.v5PutLine(line, deliver, label);
+        return 'b:' + b.id;
+      }
+      if (edit.indexOf('o:') === 0) {
+        const line = ((s && s.v5Addrs) || []).find(a => 'o:' + a.id === edit);
+        if (line) this.v5PutLine(line, deliver, label);
+        if (this.drawer.saveToBook) return 'b:' + file();
+        return line ? 'o:' + line.id : '';
+      }
+      if (edit.indexOf('m:') === 0) {
+        const i = Number(edit.slice(2));
+        if (pk.made[i]) pk.made[i] = deliver;
+        return this.drawer.saveToBook ? ('b:' + file()) : ('m:' + i);
+      }
+
+      if (this.drawer.saveToBook) return 'b:' + file();
+      /* A one-off that is already somewhere is not made a second time —
+         this is the other half of «дубли запретить», the half the tick
+         cannot reach because the row does not exist yet. */
+      const twin = (this.addressBook || []).find(b => this.v5SameSpot(this.v5BookSpot(b), deliver));
+      if (twin) return 'b:' + twin.id;
+      const held = lineAt(deliver);
+      if (held) return 'o:' + held.id;
+      const at = (pk.made || []).findIndex(d => this.v5SameSpot(d, deliver));
+      if (at !== -1) { pk.made[at] = deliver; return 'm:' + at; }
+      pk.made.push(deliver);
+      return 'm:' + (pk.made.length - 1);
+    },
+    /* One line of the order, rewritten: the same three facts the tail of
+       v5SaveDeliver writes, so a correction made from the picker and a
+       correction made with the pencil cannot come out different. */
+    v5PutLine(a, deliver, label) {
+      a.deliver = deliver;
+      a.address = label;
+      a.hasError = !!(label && !deliver.zip);
+      a.errorMsg = a.hasError ? 'ZIP code required' : '';
+      if (!a.address || a.hasError) a.shipping = '';
     },
     v5SaveDeliver() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
@@ -11118,9 +11369,9 @@ function checkoutApp() {
            id. Nobody saw it at three saved places; at fifty the picker's own
            RECENT list fills up with the same office. Matched on street and
            ZIP, the key v5BookList already uses for «in this order». */
-        const found = this.addressBook.find(b => this.v5SameSpot(this.v5ParseAddress(b.label), deliver));
+        const found = this.addressBook.find(b => this.v5SameSpot(this.v5BookSpot(b), deliver));
         const id = found ? found.id : ('a' + Date.now());
-        if (!found) this.addressBook.push({ id: id, name: deliver.name || 'Unnamed', label: label });
+        if (!found) this.addressBook.push({ id: id, name: deliver.name || 'Unnamed', company: deliver.company || '', label: label });
         s.v5AddrId = id;
         s.v5AddrLabel = (deliver.name ? deliver.name + ', ' : '') + label;
         // gbppl-v5-prefill-1: in «one address» this is the destination of every
@@ -11149,48 +11400,56 @@ function checkoutApp() {
          The pencil of a line already in the order falls through too
          (v5PkTicks is false while `addrId` is set): it is an edit of
          that line and nothing else.
+
+         gbppl-checkout-picker-1 (22.09): AND «FILES IT IN THE BOOK» IS
+         NOW A QUESTION THE READER ANSWERS. Valerie, 21.09: an address
+         may be a one-off. Off by default, so a place that was typed
+         once and will never be shipped to again does not grow the book
+         this very panel exists to survive. Where it goes instead, and
+         what happens when the form was opened to CORRECT a row rather
+         than to make one, is v5PkFileForm.
          ============================================================ */
       const pk = this.drawer.pk;
       if (this.v5PkTicks() && pk && pk.mode === 'form') {
         if (!label) { this.v5PkBack(); return; }
-        let found = (this.addressBook || []).find(b => this.v5SameSpot(this.v5ParseAddress(b.label), deliver));
-        let id;
-        if (found) {
-          id = found.id;
-          if (deliver.name) found.name = deliver.name;
-          if (deliver.company) found.company = deliver.company;
-        } else {
-          id = 'a' + Date.now();
-          this.addressBook.unshift({ id: id, name: deliver.name || 'Unnamed', company: deliver.company || '', label: label });
-        }
-        const key = 'b:' + id;
+        const key = this.v5PkFileForm(deliver, label, pk);
+        if (!key) { this.v5PkBack(); return; }
         pk.fresh = key;
         if (pk.sel.indexOf(key) === -1) pk.sel.push(key);
         pk.q = '';
         pk.page = 1;
         pk.typed = false;
         Object.assign(this.drawer.data, this.v3BlankDeliver());
+        this.drawer.saveToBook = false;
         this.v5PkBack();
         return;
       }
       let a = this.drawer.addrId ? (s.v5Addrs || []).find(x => x.id === this.drawer.addrId) : null;
       const born = !a;
       if (!a) { a = this.v5BlankAddr(); if (!s.v5Addrs) s.v5Addrs = []; s.v5Addrs.push(a); }
-      a.deliver = deliver;
-      a.address = label;
       // The one validation the prototype has ever done, kept: an address
-      // without a ZIP is an address that will not be delivered.
-      a.hasError = !!(label && !deliver.zip);
-      a.errorMsg = a.hasError ? 'ZIP code required' : '';
-      // The method depends on the address, so an address taken away or left
+      // without a ZIP is an address that will not be delivered. And the
+      // method depends on the address, so an address taken away or left
       // unfinished takes the method with it rather than leaving a choice made
       // against nothing (Multiship says this out loud: «Please select a new
-      // delivery rate», CHECKOUT-RECON.md §5.1).
-      if (!a.address || a.hasError) a.shipping = '';
+      // delivery rate», CHECKOUT-RECON.md §5.1). Both live in v5PutLine
+      // since gbppl-checkout-picker-1, so the picker's own correction of a
+      // line writes exactly what this door writes.
+      this.v5PutLine(a, deliver, label);
       if (born) {
         s.v5Hand = (s.v5Hand || 0) + 1;
         if (this.drawer.v5Assign) this.v5PutAddr(s, a.id);
         else this.v5SeedNewAddr(s, a);
+      }
+      /* gbppl-checkout-picker-1 (22.09): AND THE PENCIL CAN FILE IT TOO.
+         The box on the form is the reader's answer to «keep this address»,
+         and it is the same answer wherever the form was opened from. Never
+         a second copy: the same-place test is asked first. */
+      if (this.uiVersion === 'v5' && this.drawer.saveToBook && label) {
+        const twin = (this.addressBook || []).find(b => this.v5SameSpot(this.v5BookSpot(b), deliver));
+        if (!twin) {
+          this.addressBook.unshift({ id: 'a' + Date.now(), name: deliver.name || 'Unnamed', company: deliver.company || '', label: label });
+        }
       }
       // NOTHING IS COPIED INTO ANY ROW'S NAME BY THIS PANEL. The person who
       // signs for the parcel and the name printed on the box are two facts,
@@ -11382,7 +11641,7 @@ function checkoutApp() {
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: rowId || null,
         addrId: null, v5Target: 'list', v5Assign: true, master: false,
-        nameErr: false,
+        nameErr: false, saveToBook: false,
         pk: this.v5BlankPk(),
         data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver())
       };
@@ -11434,8 +11693,8 @@ function checkoutApp() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
       const b = this.addressBook.find(x => x.id === id);
       if (!s || !b) { this.closeDrawer(); return; }
-      const deliver = Object.assign(this.v3BlankDeliver(), this.v5ParseAddress(b.label), { name: b.name || '' });
-      const a = this.v5BlankAddr({ deliver: deliver, address: b.label, shipping: '', qty: 0 });
+      const deliver = Object.assign(this.v3BlankDeliver(), this.v5ParseAddress(b.label), { name: b.name || '', company: b.company || '' });
+      const a = this.v5BlankAddr({ deliver: deliver, address: b.label, shipping: '', qty: 0, from: 'book' });
       a.hasError = !deliver.zip;
       a.errorMsg = a.hasError ? 'ZIP code required' : '';
       if (!s.v5Addrs) s.v5Addrs = [];
@@ -11495,15 +11754,44 @@ function checkoutApp() {
     /* gbppl-checkout-pick-zones-1 (16.09): `browse` is the only key this
        wave adds, and it is false at every door — the book does not list
        itself until it is asked to. */
-    v5BlankPk() { return { q: '', mode: 'pick', locked: false, typed: false, page: 1, rows: 6, span: 5, h: 0, sel: [], i: -1, fresh: '', browse: false }; },
-    // Two places are one place when the street and the ZIP agree. Not the
-    // printed line: the order writes «United States» where the book says
-    // «US», and a string compare would call one office two.
+    /* gbppl-checkout-picker-1 (22.09) adds two keys and no more:
+         made  the places typed on the form with «Save to my address book»
+               left off — one-offs, which have nowhere else to live until
+               the foot is pressed (Valerie, 21.09)
+         edit  the key of the row the form floor is correcting, empty when
+               the form is making a new address (Valerie, 21.09: a line of
+               this order, saved or not, opens on the form when clicked) */
+    v5BlankPk() { return { q: '', mode: 'pick', locked: false, typed: false, page: 1, rows: 6, span: 5, h: 0, sel: [], made: [], edit: '', i: -1, fresh: '', browse: false }; },
+    /* ============================================================
+       WHAT MAKES TWO DELIVERIES ONE DELIVERY
+                             gbppl-checkout-picker-1 (22.09)
+       ------------------------------------------------------------
+       Vlad, 22.09, on the model the back end will group shipments by:
+       a FULL match of RECIPIENT AND ADDRESS, not the address alone.
+       Two people at one office are two deliveries and always were —
+       the screen simply could not say so, because this key held the
+       street and the ZIP and nothing else. Two consequences, both
+       measured on the demo book: «Marcus Lee, 42 Pine St» and
+       «Claire Bennett, Northwind Seattle, 42 Pine St» stopped being
+       one place, and so did «Logan Pierce, 120 N Racine» and «Liam
+       O'Donnell» at the same door — the picker used to light the
+       wrong row as «in this order» for both pairs.
+       Still NOT the printed line: the order writes «United States»
+       where the book writes «US», and a string compare would call one
+       office two. Street, ZIP, and now the person.
+       ============================================================ */
     v5SpotKey(d) {
-      return String((d && d.street) || '').toLowerCase().replace(/\s+/g, ' ').trim() +
-             '|' + String((d && d.zip) || '').trim();
+      const flat = v => String(v || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      return flat(d && d.name) + '|' + flat(d && d.street) + '|' + String((d && d.zip) || '').trim();
     },
     v5SameSpot(a, b) { return this.v5SpotKey(a) === this.v5SpotKey(b); },
+    /* A book row is a name, a company and a printed line; the key wants a
+       delivery. One place that makes the three into one, so no caller has to
+       remember that the name lives outside the label (trap 25). */
+    v5BookSpot(b) {
+      return Object.assign(this.v5ParseAddress((b && b.label) || ''),
+                           { name: (b && b.name) || '', company: (b && b.company) || '' });
+    },
 
     v5PkMode() { return (this.drawer && this.drawer.pk && this.drawer.pk.mode) || 'pick'; },
     // The condition the manual form is drawn under. For V1 to V4 it is a
@@ -11518,7 +11806,8 @@ function checkoutApp() {
       return this.uiVersion === 'v5' && !!d && d.type === 'deliver' &&
              d.v5Target === 'list' && !d.v5Assign && !d.addrId;
     },
-    v5PkSel() { return ((this.drawer.pk && this.drawer.pk.sel) || []).length; },
+    /* gbppl-checkout-picker-1 (22.09): v5PkSel counted the ticks for the
+       label «Add selected (N)». The label is gone and so is its reader. */
     v5PkTicked(r) { return ((this.drawer.pk && this.drawer.pk.sel) || []).indexOf(r.key) !== -1; },
     v5PkTick(r, on) {
       const pk = this.drawer.pk; if (!pk) return;
@@ -11529,7 +11818,57 @@ function checkoutApp() {
     v5PkEmptyBook() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
       const lines = ((s && s.v5Addrs) || []).filter(a => a.address && a.id !== this.drawer.addrId);
-      return (this.addressBook || []).length === 0 && lines.length === 0;
+      const made = ((this.drawer.pk && this.drawer.pk.made) || []).length;
+      return (this.addressBook || []).length === 0 && lines.length === 0 && made === 0;
+    },
+    /* ============================================================
+       THE TICKS ARE THE ORDER, NOT A SHOPPING LIST
+                             gbppl-checkout-picker-1 (22.09)
+       ------------------------------------------------------------
+       Ton: «снял галочку — адрес ушёл из заказа». So the set the
+       panel opens with is not empty any more: it is what this order
+       already ships to, and every row of the canvas standing in the
+       order comes up ticked. From there the box means one thing in
+       both directions — tick to send there, untick to stop — and the
+       foot writes the difference into the order in one press.
+       WHY IT IS STILL ONE PRESS AND NOT LIVE. The panel is a form
+       like every other drawer on this page, «Add selected (N)» was
+       Ton's own answer of 08.09 to ten addresses by hand («десять
+       галочек и одно нажатие»), and a list that edited the order
+       under the reader's fingers would have no way back from a
+       mis-click. What changed is the sentence the foot commits: it
+       used to be «add these», it is «make the order say this».
+       ============================================================ */
+    v5PkSeedTicks() {
+      if (!this.v5PkTicks()) return;
+      const pk = this.drawer.pk; if (!pk) return;
+      pk.sel = this.v5PkRows('').filter(r => r.orderId).map(r => r.key);
+    },
+    /* What the foot would change. A button that can do nothing is shut
+       (button.css keeps its colour, fades and says so), and here it also
+       stops «Save addresses» from reading as the thing that made the order. */
+    v5PkDirty() {
+      const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
+      const now = ((s && s.v5Addrs) || []).filter(a => a.address).map(a => this.v5SpotKey(a.deliver));
+      const want = this.v5PkChips().map(r => this.v5SpotKey(r.deliver));
+      if (now.length !== want.length) return true;
+      return want.some(k => now.indexOf(k) === -1);
+    },
+    /* The box on the form floor. Not while a SAVED place is being corrected:
+       that row is in the book already, so the only move the box could offer
+       is one it cannot take back from here. */
+    v5PkSaveBoxOn() {
+      if (this.uiVersion !== 'v5') return false;
+      const pk = this.drawer && this.drawer.pk;
+      if (!pk || pk.mode !== 'form') return false;
+      /* NOT IN THE «ONE ADDRESS» DOOR, and it is a limit of the model
+         rather than a taste: there the order holds a book id
+         (`s.v5AddrId`) and nothing else, so an address that is not in the
+         book has nowhere to be held. Carried to Ton in the wave report;
+         making it possible is a change to what a shipment stores. */
+      if (this.drawer.v5Target === 'one') return false;
+      if (this.drawer.addrId) return true;              /* the pencil of a line: a one-off until filed */
+      return String(pk.edit || '').indexOf('b:') !== 0; /* correcting a book row: already filed */
     },
 
     /* ONE CANVAS, BUILT ONCE. Every row of the book, plus the places that
@@ -11546,6 +11885,45 @@ function checkoutApp() {
        — because the doors need different ones: the assign door sends gifts
        to an EXISTING LINE where there is one, and only opens a new line
        where there is not. */
+    /* ============================================================
+       ONE RECIPE FOR THE QUIET LINE, AND ONE FOR THE PLATE
+                             gbppl-checkout-picker-1 (22.09)
+       ------------------------------------------------------------
+       Ton: «не вижу имени человека... recipient name первым». The
+       loud line of a row is the PERSON and nothing else, in the two
+       lists this page has; everything else about the place — the
+       office label it is known by, and the street — is the quiet line
+       under it, in that order. Written once here so the address list
+       of step 1 and the picker cannot drift apart.
+
+       THE PLATE says where a line came from, in words rather than in
+       the trade's own («added here», not «manual»). Two answers and
+       no third: a line is either one a reader typed into this order or
+       one they took out of their saved book.
+       ============================================================ */
+    v5PkSubLine(company, line) {
+      return [company, line].filter(Boolean).join(' · ');
+    },
+    v5PkFromLabel(from) {
+      return from === 'book' ? 'Address book' : 'Added here';
+    },
+    /* WHICH FACT THE PLATE CARRIES DEPENDS ON THE DOOR, and it is the same
+       split the read-only row of 17.09 made for the same reason. In the door
+       that TICKS, the box already says «in this order» on every row, so the
+       plate is free to carry the one thing nothing else can — where the line
+       came from. In the two doors that take exactly one place there are no
+       boxes at all, and «in this order» is the difference between hanging
+       these gifts on a line that exists and opening a new one, so the plate
+       goes on saying it. */
+    v5PkLineBadge(line) {
+      return this.v5PkTicks() ? this.v5PkFromLabel(line && line.from) : 'in this order';
+    },
+    /* The same quiet line, for the list of step 1. It is a function and not
+       an expression in the markup because both lists spend it. */
+    v5AddrLine(a) {
+      if (!a || !a.address) return 'No address yet';
+      return this.v5PkSubLine((a.deliver && a.deliver.company) || '', a.address);
+    },
     v5PkRows(q) {
       const query = String(q || '').trim().toLowerCase();
       const hit = hay => !query || String(hay).toLowerCase().indexOf(query) !== -1;
@@ -11566,8 +11944,8 @@ function checkoutApp() {
 
       const seen = new Set();
       (this.addressBook || []).forEach(b => {
-        const parsed = this.v5ParseAddress(b.label);
-        const k = this.v5SpotKey(parsed);
+        const spot = this.v5BookSpot(b);
+        const k = this.v5SpotKey(spot);
         seen.add(k);
         if (!hit([b.name, b.company, b.label].join(' '))) return;
         const line = lineBy.get(k);
@@ -11576,9 +11954,16 @@ function checkoutApp() {
           key: key, kind: 'book', bookId: b.id, orderId: line ? line.id : '',
           rank: (pk.fresh === key) ? 0 : (line ? 1 : 2),
           name: b.name || 'No name yet',
-          sub: (b.company ? b.company + ' · ' : '') + b.label,
-          badge: line ? 'in this order' : '',
-          deliver: Object.assign(this.v3BlankDeliver(), parsed, { name: b.name || '', company: b.company || '' })
+          sub: this.v5PkSubLine(b.company, b.label),
+          /* gbppl-checkout-picker-1 (22.09): THE PLATE STOPPED SAYING «in
+             this order». The tick says that now, in every row of the list
+             and with one meaning (Ton: «одна логика на список»), so the
+             plate was the heading said twice. What a reader cannot see
+             anywhere else is where the line CAME from, and that is what it
+             says instead — only on the places that are in the order,
+             because a place that is not in it has no provenance yet. */
+          badge: line ? this.v5PkLineBadge(line) : '',
+          deliver: Object.assign(this.v3BlankDeliver(), spot)
         });
       });
 
@@ -11594,8 +11979,31 @@ function checkoutApp() {
         rows.push({
           key: 'o:' + a.id, kind: 'order', bookId: '', orderId: a.id, rank: 1,
           name: d.name || 'No name yet',
-          sub: (d.company ? d.company + ' · ' : '') + a.address,
-          badge: 'in this order',
+          sub: this.v5PkSubLine(d.company, a.address),
+          badge: this.v5PkLineBadge(a),
+          deliver: d
+        });
+      });
+
+      /* A PLACE TYPED IN THIS PANEL AND NOT FILED (gbppl-checkout-picker-1,
+         22.09, Valerie's point of 21.09). With «Save to my address book»
+         left off, a new address is a one-off: it belongs to this order and
+         to nothing else, so it cannot be a row of the book and it is not a
+         line of the order either until the foot is pressed. It lives on the
+         bag until then, ticked and lit like any address just typed. */
+      ((pk.made) || []).forEach((d, i) => {
+        const k = this.v5SpotKey(d);
+        if (seen.has(k)) return;
+        seen.add(k);
+        const label = this.v3AddressLabel(d);
+        if (!hit([d.name, d.company, label].join(' '))) return;
+        const key = 'm:' + i;
+        rows.push({
+          key: key, kind: 'made', bookId: '', orderId: '',
+          rank: (pk.fresh === key) ? 0 : 1,
+          name: d.name || 'No name yet',
+          sub: this.v5PkSubLine(d.company, label),
+          badge: this.v5PkFromLabel('hand'),   /* a one-off exists only in the door that ticks */
           deliver: d
         });
       });
@@ -11640,42 +12048,36 @@ function checkoutApp() {
     v5PkShort(q) {
       const all = this.v5PkRows(q);
       const none = all.filter(r => r.kind === 'none');
-      const order = all.filter(r => r.kind !== 'none' && r.orderId);
+      /* gbppl-checkout-picker-1 (22.09): a one-off typed on the form belongs
+         to this order and to nothing else, so it stands with the order's own
+         places and not among the matches of a search it never asked for. */
+      const mine = r => r.kind !== 'none' && (!!r.orderId || r.kind === 'made');
+      const order = all.filter(mine);
       const match = String(q || '').trim()
-        ? all.filter(r => r.kind !== 'none' && !r.orderId)
+        ? all.filter(r => r.kind !== 'none' && !mine(r))
         : [];
       none.forEach(r => { r.head = ''; });
       order.forEach((r, i) => { r.head = i === 0 ? 'In this order' : ''; });
       match.forEach((r, i) => { r.head = i === 0 ? 'Search results' : ''; });
       /* ============================================================
-         IN THIS ORDER IS A FACT, NOT AN OFFER
-                          gbppl-checkout-order-section-1 (17.09)
+         AND THE ROWS OF THIS ORDER ARE LIVE AGAIN
+                              gbppl-checkout-picker-1 (22.09)
          ------------------------------------------------------------
-         Ton, over the section: «он же уже добавлен, почему не
-         выбран?» An empty box in front of a place that is already in
-         the order reads as an invitation to choose it again, and the
-         reader who ticks it gets a SECOND line -- right by the rule of
-         04.09 and wrong by everything the screen just said. So in the
-         door that ADDS, this section stops being a list of candidates
-         and becomes what its shelf says it is: the places this order
-         already ships to, printed as a fact. No box, no pointer,
-         nothing to take and nothing to remove -- taking a line away
-         belongs to the page, at the cross of Delivery addresses, and a
-         picker that only adds cannot also take away.
+         Here stood `r.ref = true`, the whole of gbppl-checkout-order-
+         section-1 (17.09): in the door that adds, a place already in
+         the order lost its box, its pointer and its press, because
+         ticking it would have made a SECOND line and Ton had asked
+         «он же уже добавлен, почему не выбран?»
 
-         ONLY IN THAT DOOR. One address and the row pin take exactly
-         ONE place, and taking a place the order already uses is their
-         whole job: hanging these gifts on a line that already exists.
-         There the rows stay live. The difference belongs to the DOOR,
-         not to the row, and v5PkTicks is the test either way.
-
-         AND THE SECOND RUN TO THE SAME OFFICE IS STILL POSSIBLE, where
-         it can be meant rather than stumbled into: on the browse floor
-         the book's own row for that place is tickable, wears the plate
-         that says it is already here, and the head says out loud what
-         ticking it will do.
+         His answer of 22.09 is the other one, and it is the better
+         one: the box comes back, ticked, and it MEANS the membership
+         — «снял галочку — адрес ушёл из заказа». A place cannot be
+         added twice because a boolean has no second true, so the rule
+         the read-only row was protecting has nothing left to protect.
+         What the row gains instead is Valerie's click (v5PkPick): it
+         opens on the form, which is the one thing a reader wants from
+         a line they have already put there.
          ============================================================ */
-      if (this.v5PkTicks()) order.forEach(r => { r.ref = true; });
       return none.concat(order, match);
     },
     /* THE MATCHED RUN, MARKED (gbppl-checkout-order-section-1, 17.09).
@@ -11701,17 +12103,11 @@ function checkoutApp() {
       }
       return out;
     },
-    /* How many of the ticked places already stand in this order: the
-       head says what that will mean BEFORE the press, not after it. */
-    v5PkSelDup() { return this.v5PkChips().filter(r => r.orderId).length; },
-    /* Sentence case, the house's own «·» nowhere needed, and the fact
-       named in the words Ton used for it on 04.09: the method belongs to
-       the line, so the same place twice is two lines. */
-    v5PkDupLine() {
-      const n = this.v5PkSelDup();
-      return (n === 1 ? 'One of these is already in this order' : n + ' of these are already in this order') +
-             ': adding again makes a second line, with its own shipping method.';
-    },
+    /* gbppl-checkout-picker-1 (22.09): v5PkSelDup and v5PkDupLine stood here
+       and counted the ticked places that were already in the order, so the
+       head could warn that pressing would make a second line. Both are gone
+       with the two lines they wrote and with the rule behind them: a place
+       cannot be in this order twice, because the tick is the membership. */
     v5PkBrowsing() { return !!(this.drawer && this.drawer.pk && this.drawer.pk.browse); },
     /* The one quiet line, and which of the three it is. Sentence case,
        no road named that the panel does not draw. */
@@ -11884,10 +12280,47 @@ function checkoutApp() {
       pk.mode = 'form';
       pk.i = -1;
       this.v5PkHead();
+      this.v5PkFormFocus();
+    },
+    v5PkFormFocus() {
       setTimeout(function () {
         const el = document.querySelector('.gbd-panel [x-model="drawer.data.name"]');
         if (el) el.focus({ preventScroll: true });
       }, 0);
+    },
+    /* ============================================================
+       A ROW OF THIS ORDER OPENS ON THE FORM
+                             gbppl-checkout-picker-1 (22.09)
+       ------------------------------------------------------------
+       Valerie, at the meeting of 21.09: the addresses of this order,
+       the saved ones AND the ones typed straight into it, have to be
+       clickable — a click reopens the address on the form to be
+       corrected. So the row's own hit area is that click, and the box
+       beside it keeps the membership: one row, two hands, and neither
+       does the other's job.
+       IT IS THE SECOND FLOOR AND NOTHING NEW. The same form, the same
+       chevron back, the same Save — the canon of 22.09 (skill\
+       decisions.md) is that a second level is the first level with the
+       cross swapped for a chevron, so a third panel was never an
+       option. `edit` remembers which row is being corrected, and
+       v5SaveDeliver writes it back to that row rather than filing a
+       copy beside it.
+       ============================================================ */
+    v5PkEditRow(r) {
+      const pk = this.drawer.pk; if (!pk || !r) return;
+      Object.assign(this.drawer.data, this.v3BlankDeliver(), r.deliver || {});
+      pk.edit = r.key;
+      /* The form is not blank and nobody asked for a blank one, so the door
+         that empties it on first press must not fire behind this one. */
+      pk.typed = true;
+      pk.mode = 'form';
+      pk.i = -1;
+      this.drawer.nameErr = false;
+      /* A place already in the book stays in it; a one-off stays a one-off
+         unless the reader says otherwise on this very form. */
+      this.drawer.saveToBook = r.kind === 'book';
+      this.v5PkHead();
+      this.v5PkFormFocus();
     },
     /* THE FIRST LINE OF THE LIST (gbppl-checkout-addnew-1, 16.09). One
        line of new behaviour, and it exists to keep an old rule true.
@@ -11902,6 +12335,11 @@ function checkoutApp() {
     v5PkAddNew() {
       const pk = this.drawer.pk; if (!pk) return;
       pk.typed = false;
+      /* gbppl-checkout-picker-1: a NEW address is nobody's correction and
+         nobody's saved row, so both answers the form carries are reset. */
+      pk.edit = '';
+      this.drawer.saveToBook = false;
+      this.drawer.nameErr = false;
       this.v5PkOpenForm();
     },
     /* ============================================================
@@ -11932,6 +12370,10 @@ function checkoutApp() {
       const pk = this.drawer.pk; if (!pk) return;
       pk.mode = 'pick';
       pk.i = -1;
+      /* gbppl-checkout-picker-1: walking back from a correction abandons it.
+         The row it was opened on is untouched until Save says otherwise. */
+      pk.edit = '';
+      this.drawer.nameErr = false;
       this.v5PkHead();
       setTimeout(() => { this.v5PkFit(); this.v5PkFocus(); }, 0);
     },
@@ -11944,11 +12386,24 @@ function checkoutApp() {
       if (!d || typeof d.setBack !== 'function') return;
       const pk = this.drawer.pk;
       const back = this.uiVersion === 'v5' && pk && pk.mode === 'form' && !pk.locked;
-      /* gbppl-v5-julia-1 (15.09): Valerie did not read the bare arrow as
-         «back to my list», so the arrow now names the floor it returns
-         to. The label is the organism's new second argument (drawer.js);
-         V1-V4 never reach this function, their heads are untouched. */
-      d.setBack(back ? () => this.v5PkBack() : null, back ? 'Addresses' : undefined);
+      /* ============================================================
+         THE CHEVRON IS THE WHOLE SIGN (gbppl-checkout-picker-1, 22.09)
+         ------------------------------------------------------------
+         Ton, 22.09 ~00:09, making it a law of the house rather than a
+         fix on one panel (skill\decisions.md): «переход на второй
+         уровень обозначается ровно одним знаком: вместо крестика
+         появляется шеврон назад. Второй уровень выглядит ТОЧНО как
+         первый, никаких добавочных надписей слева у шеврона», and the
+         offending screen he pointed at was this one — «‹ ADDRESSES».
+         So the label goes back off. gbppl-v5-julia-1 (15.09) had put
+         it there because Valerie did not read a bare arrow as «back to
+         my list»; the canon answers that a second level which is
+         otherwise identical to the first cannot be read any other way,
+         and a caps word beside a glyph was a third voice on the head.
+         The organism still takes a label (drawer.js setBack) — no
+         other drawer in the house passes one either, and none should.
+         ============================================================ */
+      d.setBack(back ? () => this.v5PkBack() : null);
       d.setTitle(this.drawerTitle());
     },
     v5PkEsc(e) {
@@ -11973,9 +12428,19 @@ function checkoutApp() {
       // gbppl-pk-click-ticks (Ton, 08.09): in the door that carries the
       // ticks, a row click TICKS — it must not commit. Two ways to add
       // from one list («кликнул — думал заселектит, а оно сразу добавило
-      // и закрыло») is chaos; the one committing hand is Add selected (N).
+      // и закрыло») is chaos; the one committing hand is the foot.
       // Enter through the keyboard walker lands here too, so it ticks the
       // same way. The one-pick doors above keep click = take.
+      //
+      // gbppl-checkout-picker-1 (22.09): WITH ONE EXCEPTION, AND IT IS
+      // VALERIE'S. A row that is already IN this order is not a candidate —
+      // ticking it would only take it out, which is what its box is for —
+      // so its click is the other thing a reader wants from a line they
+      // already put there: to open it and fix it. «Сохранённые и
+      // несохранённые адреса в списке заказа кликабельны: клик
+      // переоткрывает форму адреса на правку.» Everywhere else the row
+      // still ticks, and the 08.09 rule is untouched where it applies.
+      if (r.orderId || r.kind === 'made') return this.v5PkEditRow(r);
       return this.v5PkTick(r, !this.v5PkTicked(r));
     },
     /* One address: the row IS the answer of the whole step, so it is taken
@@ -11990,7 +12455,7 @@ function checkoutApp() {
       if (!label) { this.closeDrawer(); return; }
       let id = r.bookId;
       if (!id) {
-        const found = (this.addressBook || []).find(b => this.v5SameSpot(this.v5ParseAddress(b.label), d));
+        const found = (this.addressBook || []).find(b => this.v5SameSpot(this.v5BookSpot(b), d));
         id = found ? found.id : ('a' + Date.now());
         if (!found) this.addressBook.push({ id: id, name: d.name || 'Unnamed', company: d.company || '', label: label });
       }
@@ -12002,9 +12467,9 @@ function checkoutApp() {
     // A place joins the order as a LINE, always a new one: the method is the
     // line's, so the second run to the same office is a second line and not
     // an edit of the first (Ton, 04.09).
-    v5NewLine(s, deliver) {
+    v5NewLine(s, deliver, from) {
       const d = Object.assign(this.v3BlankDeliver(), deliver || {});
-      const a = this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), shipping: '', qty: 0 });
+      const a = this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), shipping: '', qty: 0, from: from || 'hand' });
       a.hasError = !!(a.address && !d.zip);
       a.errorMsg = a.hasError ? 'ZIP code required' : '';
       if (!s.v5Addrs) s.v5Addrs = [];
@@ -12020,18 +12485,49 @@ function checkoutApp() {
       this.v5NewLine(s, r.deliver);
       this.closeDrawer();
     },
-    /* «Add selected (N)» — the second point of the report «10 руками»: ten
-       addresses out of the book should be ten ticks and one press, not ten
-       trips through a panel. The keys are matched against the WHOLE canvas
-       and not the page, because a tick survives paging and searching. */
-    v5PkAddSelected() {
+    /* ============================================================
+       THE FOOT WRITES THE TICKS INTO THE ORDER
+                             gbppl-checkout-picker-1 (22.09)
+       ------------------------------------------------------------
+       Here stood v5PkAddSelected, which only ever ADDED: the second
+       point of the report «10 руками» — ten addresses out of the book
+       should be ten ticks and one press — and that half is untouched.
+       What it could not do was the other direction, and Ton asked for
+       it in the same breath as the box: «снял галочку — адрес ушёл из
+       заказа». So the press reconciles rather than appends.
+
+         a place ticked with no line yet   joins the order
+         a line whose place is not ticked  leaves it
+         everything else                   is not touched, which is
+                                           the point: a line keeps its
+                                           count, its method and the
+                                           gifts hanging on it.
+
+       IT CANNOT MAKE A DOUBLE. A tick is one boolean per place, and
+       the test for «already there» is the same key the whole page uses
+       (v5SpotKey — recipient AND address since Vlad's model of 22.09).
+       The keys are matched against the WHOLE canvas and not the drawn
+       page, because a tick survives paging and searching.
+       ============================================================ */
+    v5PkApply() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
-      const pk = this.drawer.pk || {};
-      if (!s || !(pk.sel || []).length) { this.closeDrawer(); return; }
-      const all = this.v5PkRows('');
-      pk.sel.forEach(k => {
-        const r = all.find(x => x.key === k);
-        if (r) this.v5NewLine(s, r.deliver);
+      if (!s) { this.closeDrawer(); return; }
+      const want = new Map();
+      this.v5PkChips().forEach(r => {
+        const k = this.v5SpotKey(r.deliver);
+        if (!want.has(k)) want.set(k, r);
+      });
+      /* Taken away first, so the counts the new lines are seeded against are
+         the ones the order actually ends with (v5SeedNewAddr reads v5Left). */
+      ((s.v5Addrs) || []).slice().forEach(a => {
+        if (!a.address) return;
+        if (!want.has(this.v5SpotKey(a.deliver))) {
+          this.v5RemoveAddr(this.drawer.productId, this.drawer.shipmentId, a.id);
+        }
+      });
+      want.forEach((r, k) => {
+        const stands = ((s.v5Addrs) || []).some(a => a.address && this.v5SpotKey(a.deliver) === k);
+        if (!stands) this.v5NewLine(s, r.deliver, r.kind === 'book' ? 'book' : 'hand');
       });
       this.closeDrawer();
     },
@@ -12900,8 +13396,13 @@ function checkoutApp() {
              address» over the address you are correcting is the wrong
              sentence, and the button that opens a blank one says the right
              one two lines down. */
+          /* gbppl-checkout-picker-1 (22.09): and a row opened from the list
+             is the third way to arrive on a full form nobody typed, so the
+             key that remembers WHICH row is being corrected answers here
+             too (pk.edit). */
           const pk = this.drawer.pk;
-          const editing = !!this.drawer.addrId || (pk && !pk.typed && this.v5FormDirty());
+          const editing = !!this.drawer.addrId || !!(pk && pk.edit) ||
+                          (pk && !pk.typed && this.v5FormDirty());
           return editing ? 'Edit address' : 'Add a new address';
         }
         return (this.uiVersion === 'v5' && this.drawer.v5Assign) ? 'Set delivery address' : 'Delivery';
@@ -13671,7 +14172,7 @@ function checkoutApp() {
             const d = a.deliver || {};
             const label = a.address || this.v3AddressLabel(d);
             if (!label) return;
-            const found = (this.addressBook || []).find(b => this.v5SameSpot(this.v5ParseAddress(b.label), d));
+            const found = (this.addressBook || []).find(b => this.v5SameSpot(this.v5BookSpot(b), d));
             if (found) return;
             this.addressBook.push({ id: 'a' + Date.now() + '-' + a.id, name: d.name || 'Unnamed', company: d.company || '', label: label });
             filed += 1;
