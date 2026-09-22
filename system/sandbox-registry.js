@@ -761,11 +761,44 @@
           label: '',                   /* «The approval, rebuilt» — история, не имя; селект говорит «V1» */
           desc: 'The approval, rebuilt: the two screens a person uses to sign off a gift design, rebuilt on our own furniture and then rebuilt again to Ton’s Monday list (gbppl-approvals-2, 21.09). The rail is the boxless one the dashboard wears, standing 48 from the board; the back-link gave way to portal breadcrumbs; the header is crumbs, a serif title and a status badge, nothing else. The tabs are the gb-tabs component in caps, and behind them: a preview two thirds wide carrying the share page’s own 3D scene with the designer’s last word and two medium actions beside it, Messages as a two-sided chat with the design team, History as the gb-timeline with its four meanings. Open the showcase lays the share page over this one in the catalogue’s overlay, Copy link hands over the canonical address. The list keeps its blue-named rows and gains a sortable head and a counting foot. A Frame axis holds three framings of the same page, clean, hybrid and portal, so the choice of structure is made by looking, not by arguing.',
           status: 'in-progress',
-          href: 'live/gift-approvals.html',
+          /* ?pv=a появился в href в тот день, когда рядом встали V2 и
+             V3: без параметра V1 совпадал бы с любым pv и селект
+             подсвечивал бы две версии разом. Голый адрес без ?pv
+             по-прежнему открывает ровно эту же раскладку. */
+          href: 'live/gift-approvals.html?pv=a',
           ready: true,
           tags: ['portal', 'flow', 'copy'],
           created: '2026-09-17',
-          updated: '2026-09-21'
+          updated: '2026-09-22'
+        },
+        {
+          /* gbppl-approvals-4, 22.09. Ton, over the page with the tabs:
+             «у нас по большому счету здесь должно быть только 3D preview
+             и основные действия... Messages должно быть действием,
+             фактически открывающим drawer». */
+          id: 'v2',
+          label: '',
+          desc: 'Only the preview and the decision stay on the page: no tabs. The conversation and the history live in one Activity drawer with two tabs, opened from the corner of the preview with an unread count on it; Request changes opens a drawer of its own with the field and the send in its foot; the team’s latest revision speaks as an annotation card under the scene.',
+          status: 'in-progress',
+          href: 'live/gift-approvals.html?pv=c',
+          ready: true,
+          tags: ['portal', 'flow'],
+          created: '2026-09-22',
+          updated: '2026-09-22'
+        },
+        {
+          /* The same day, the ideal he asked to visualise: «объединил
+             History вместе с чатом в один единый фид, где видны
+             абсолютно все события». */
+          id: 'v3',
+          label: '',
+          desc: 'One feed instead of tabs and drawers: every message, every revision and every decision stand in a single stream under the preview, in the timeline’s own order. A revision is a widget in the feed, and its Open this version puts that revision’s label and annotation on the preview above.',
+          status: 'in-progress',
+          href: 'live/gift-approvals.html?pv=d',
+          ready: true,
+          tags: ['portal', 'flow'],
+          created: '2026-09-22',
+          updated: '2026-09-22'
         }
       ]
     },
