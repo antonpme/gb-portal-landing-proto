@@ -79,6 +79,21 @@
       код ЦЕЛИКОМ, вместе с номером, и команда осталась без общего
       слова: сам Тон 03.09 говорит «Версия V2 — часть песочницы», и
       ни полка, ни консоль ответить ему тем же словом не могли.
+
+   3. НОМЕР ЕСТЬ У КАЖДОЙ ВЕРСИИ, ПОЭТИЧЕСКИХ ИМЁН НЕТ (Тон
+      2026-09-22, по скрину селекта Version с «The approval,
+      rebuilt»: «приведи названия версий в единый, понятный порядок...
+      у нас есть понятные форматы: version, live, sandbox v1, v2, v3.
+      Не надо использовать вот эти "the approval", "rebuild" и тому
+      подобные вещи. Что там внутри — должно быть написано уже в
+      аннотациях к конкретной версии»). Каждый вариант страницы носит
+      id вида v<n> (номера по порядку рождения), и селект читает
+      «V1», «V2». label остаётся только там, где он ПРОСТОЕ описание
+      содержания в двух-трёх словах («Addresses first», «Concierge
+      on») — тогда селект говорит «V5 · Addresses first», ровно как
+      просил пункт 2. Название-образ («The approval, rebuilt», «Led
+      by the proposition») — не имя, а первая строка истории, и его
+      место в desc.
       Теперь печатается «V2 · Shared quantity pool»: номер вперёд,
       полное имя следом, и претензия 31.08 («Что такое V2 Shared
       Pool?» — код БЕЗ имени) остаётся закрытой.
@@ -259,7 +274,7 @@
              is; the answer is a LAYER ON THE REAL PAGES under one
              key, not a room with a copy of a page inside it. So the
              concierge is a variant of the pages it lands on. */
-          id: 'concierge',
+          id: 'v1',                    /* был 'concierge' — номер по правилу 3 (22.09), ключ внутренний */
           label: 'Concierge on',
           desc: 'The real home page with the concierge layer on it. A bell in the right cluster of the bar opens one drawer for every way of talking to us; Book a meeting stands on its second floor; chat leaves the drawer for a window in the corner and minimises into a session plate. The page under it is the home page, whole and untouched: the layer goes on the prototype rather than into a copy of it. Off the portal the drawer has one floor, because the named Gift Advisor belongs to somebody signed in. Carries the three hover candidates for the top navigation on the same key.',
           status: 'in-progress',
@@ -287,7 +302,7 @@
              светлыми)... сделать варианты с инверсией, чтобы они были
              светлые». The two modifiers live in home.css; the page reads
              ?prefooter= and names them. */
-          id: 'prefooter-light',
+          id: 'v1',                    /* был 'prefooter-light' — номер по правилу 3 (22.09), ключ внутренний */
           /* Было «Light pre-footer». Тон 31.08: «Что такое Light
              Pre-Footer?» — pre-footer это имя МЕСТА в вёрстке, а не
              того, что человек увидит; увидит он закрывающий баннер и
@@ -653,9 +668,9 @@
          полка обязана вести к каждой живой странице прототипа. */
       variants: [
         {
-          id: 'page',
-          label: 'The page itself',
-          desc: 'The share page as it stands: the 3D showcase a designer sends to the client, with the loader, the quiet utilities and the approval actions living behind the panel’s Approval actions axis (?actions=on). Not a sandbox: this card is the door to the live page, put back after it fell off the shelf with its last variant.',
+          id: 'v1',                    /* был 'page' — номер по правилу 3 (22.09), ключ внутренний */
+          label: '',                   /* «The page itself» — не имя, а история; она ушла первой строкой в desc */
+          desc: 'The page itself, as it stands: the 3D showcase a designer sends to the client, with the loader, the quiet utilities and the approval actions living behind the panel’s Approval actions axis (?actions=on). Not a sandbox: this card is the door to the live page, put back after it fell off the shelf with its last variant.',
           status: 'approved',
           href: 'live/design-share.html',
           ready: true,
@@ -706,9 +721,9 @@
       live: 'live/portal.html',
       variants: [
         {
-          id: 'sketch',
-          label: 'The dashboard, second pass',
-          desc: 'The screen the portal opens on after signing in, rebuilt to the layout Ton dictated on 10.09: four numbers across the top, the shortcuts he liked right under them and above the fold, then the board in three equal columns, gifts on their way beside the campaigns beside one activity feed with the problems pinned at its top. Every event in the feed is a door to the thing it is about. The account it shows is the shape of a real one: one fulfillment campaign on hold because a payment failed (Julia\'s case), one quiet email campaign, and two single gifts in the air. The bell carries the same two problems out of the room. Each column is a named block with tabs of states inside it (My Gifts, Campaigns, Activity), a gift row and a campaign row are one card with two skins, and an order is one gift sent to many people, the way the checkout sends it. A campaign with several gifts shows the leading one with a plus chip. Statuses are the new system badge off the Figma the client gave us. Two axes in the console let you assemble the setup: the bar (portal bar or the live site header, ?pth=) and the rail (live, Russell, boxless, ?nav=), both on the keys the portal prototype already uses. A new account gets one heading, one line and three real first moves (explore gifts, book a meeting, talk to us): a campaign is a gift plus a distribution, so it is not offered to someone who has no gift yet. Fixed assembly: an account assistant, choosing your own widgets, filter tabs and notification settings are one quiet line in the foot and are not drawn.',
+          id: 'v1',                    /* был 'sketch' — номер по правилу 3 (22.09), ключ внутренний */
+          label: '',                   /* «The dashboard, second pass» — история, не имя; селект говорит «V1» */
+          desc: 'The dashboard, second pass: the screen the portal opens on after signing in, rebuilt to the layout Ton dictated on 10.09: four numbers across the top, the shortcuts he liked right under them and above the fold, then the board in three equal columns, gifts on their way beside the campaigns beside one activity feed with the problems pinned at its top. Every event in the feed is a door to the thing it is about. The account it shows is the shape of a real one: one fulfillment campaign on hold because a payment failed (Julia\'s case), one quiet email campaign, and two single gifts in the air. The bell carries the same two problems out of the room. Each column is a named block with tabs of states inside it (My Gifts, Campaigns, Activity), a gift row and a campaign row are one card with two skins, and an order is one gift sent to many people, the way the checkout sends it. A campaign with several gifts shows the leading one with a plus chip. Statuses are the new system badge off the Figma the client gave us. Two axes in the console let you assemble the setup: the bar (portal bar or the live site header, ?pth=) and the rail (live, Russell, boxless, ?nav=), both on the keys the portal prototype already uses. A new account gets one heading, one line and three real first moves (explore gifts, book a meeting, talk to us): a campaign is a gift plus a distribution, so it is not offered to someone who has no gift yet. Fixed assembly: an account assistant, choosing your own widgets, filter tabs and notification settings are one quiet line in the foot and are not drawn.',
           status: 'in-progress',
           href: 'live/portal-dashboard.html',
           ready: true,
@@ -742,9 +757,9 @@
       live: 'live/portal.html',
       variants: [
         {
-          id: 'concept',
-          label: 'The approval, rebuilt',
-          desc: 'The two screens a person uses to sign off a gift design, rebuilt on our own furniture and then rebuilt again to Ton’s Monday list (gbppl-approvals-2, 21.09). The rail is the boxless one the dashboard wears, standing 48 from the board; the back-link gave way to portal breadcrumbs; the header is crumbs, a serif title and a status badge, nothing else. The tabs are the gb-tabs component in caps, and behind them: a preview two thirds wide carrying the share page’s own 3D scene with the designer’s last word and two medium actions beside it, Messages as a two-sided chat with the design team, History as the gb-timeline with its four meanings. Open the showcase lays the share page over this one in the catalogue’s overlay, Copy link hands over the canonical address. The list keeps its blue-named rows and gains a sortable head and a counting foot. A Frame axis holds three framings of the same page, clean, hybrid and portal, so the choice of structure is made by looking, not by arguing.',
+          id: 'v1',                    /* был 'concept' — номер по правилу 3 (22.09, скрин этого самого селекта), ключ внутренний */
+          label: '',                   /* «The approval, rebuilt» — история, не имя; селект говорит «V1» */
+          desc: 'The approval, rebuilt: the two screens a person uses to sign off a gift design, rebuilt on our own furniture and then rebuilt again to Ton’s Monday list (gbppl-approvals-2, 21.09). The rail is the boxless one the dashboard wears, standing 48 from the board; the back-link gave way to portal breadcrumbs; the header is crumbs, a serif title and a status badge, nothing else. The tabs are the gb-tabs component in caps, and behind them: a preview two thirds wide carrying the share page’s own 3D scene with the designer’s last word and two medium actions beside it, Messages as a two-sided chat with the design team, History as the gb-timeline with its four meanings. Open the showcase lays the share page over this one in the catalogue’s overlay, Copy link hands over the canonical address. The list keeps its blue-named rows and gains a sortable head and a counting foot. A Frame axis holds three framings of the same page, clean, hybrid and portal, so the choice of structure is made by looking, not by arguing.',
           status: 'in-progress',
           href: 'live/gift-approvals.html',
           ready: true,
@@ -765,11 +780,11 @@
              кликается. Так реестр говорит «в разработке» вместо
              того, чтобы вести в ссылку, которая молча откроет
              сегодняшнюю страницу. */
-          id: 'proposition',
-          label: 'Led by the proposition',
-          desc: 'The meeting page led by the proposition: what the call is for, said before the calendar asks for a day.',
+          id: 'v1',                    /* был 'proposition' — номер по правилу 3 (22.09); страница ?v= ещё не читает (ready:false), поэтому и ключ в href меняется без сломанных ссылок */
+          label: '',                   /* «Led by the proposition» — история, не имя; селект говорит «V1» */
+          desc: 'Led by the proposition: what the call is for, said before the calendar asks for a day.',
           status: 'in-progress',
-          href: 'live/book-a-meeting.html?v=proposition',
+          href: 'live/book-a-meeting.html?v=1',
           ready: false,
           tags: ['copy', 'flow'],
           created: '2026-08-25',
@@ -795,9 +810,9 @@
       live: 'live/index.html',
       variants: [
         {
-          id: 'concierge',
-          label: 'One way in, from the bar',
-          desc: 'Help stops being three different things. A concierge bell in the right cluster of the bar opens one drawer: the ways to talk to us upstairs, your Gift Advisor at the foot with a message that grows out of his card. Book a meeting opens on the second floor of the same drawer, with the times standing under the calendar. Chat leaves the drawer for a window at the bottom right, the same window for the AI concierge and for a person, and minimised it is a pill with the name and the state on it. Nothing floats at rest: the pill exists only while a conversation does, and its cross ends the session.',
+          id: 'v1',                    /* был 'concierge' — номер по правилу 3 (22.09), ключ внутренний */
+          label: 'From the bar',       /* короткое описание вместо образа «One way in, from the bar» */
+          desc: 'One way in, from the bar. Help stops being three different things. A concierge bell in the right cluster of the bar opens one drawer: the ways to talk to us upstairs, your Gift Advisor at the foot with a message that grows out of his card. Book a meeting opens on the second floor of the same drawer, with the times standing under the calendar. Chat leaves the drawer for a window at the bottom right, the same window for the AI concierge and for a person, and minimised it is a pill with the name and the state on it. Nothing floats at rest: the pill exists only while a conversation does, and its cross ends the session.',
           status: 'in-progress',
           /* The room's own address is a stub redirect since
              gbppl-concierge-unify-1b (law 0a.5, the link was shared);
@@ -812,9 +827,9 @@
           /* gbppl-concierge-unify-1. Ton, 09.09, before showing Valerie:
              the experience has to be ONE experience, the same on the site
              and inside the portal. The variant is the portal wearing it. */
-          id: 'concierge-portal',
-          label: 'The same concierge, inside the portal',
-          desc: 'The portal signed in, with the concierge it shares with the website: the bell in its own bar, and the blue Start button in the middle of the band hero opening that drawer instead of the centre popup. Everything under it comes from one module, so the two environments cannot drift. One thing differs, and it differs on purpose: the personal Gift Advisor stands under the options here and nowhere else, because a named human belongs to somebody who is signed in.',
+          id: 'v2',                    /* был 'concierge-portal' — номер по правилу 3 (22.09), ключ внутренний */
+          label: 'Inside the portal',  /* короткое описание вместо образа */
+          desc: 'The same concierge, inside the portal. The portal signed in, with the concierge it shares with the website: the bell in its own bar, and the blue Start button in the middle of the band hero opening that drawer instead of the centre popup. Everything under it comes from one module, so the two environments cannot drift. One thing differs, and it differs on purpose: the personal Gift Advisor stands under the options here and nowhere else, because a named human belongs to somebody who is signed in.',
           status: 'in-progress',
           href: 'live/portal.html?layout=band&hero=start&concierge=1',
           ready: true,
@@ -837,9 +852,9 @@
       live: 'live/index.html',
       variants: [
         {
-          id: 'lab',
-          label: 'Seven candidates on one composition',
-          desc: 'The bar and the strip of logos in one frame, with three ways for a logo tab to say which brand is chosen and four ways for the top navigation to answer the pointer, all of them out of the live luxury recon. The strip keeps the live geometry cell for cell and opens on the live rule under the cell; the console switches the two axes, carries the pairs in one click and takes the movement away on request.',
+          id: 'v1',                    /* был 'lab' — номер по правилу 3 (22.09), ключ внутренний */
+          label: '',                   /* «Seven candidates on one composition» — история, не имя; селект говорит «V1» */
+          desc: 'Seven candidates on one composition: the bar and the strip of logos in one frame, with three ways for a logo tab to say which brand is chosen and four ways for the top navigation to answer the pointer, all of them out of the live luxury recon. The strip keeps the live geometry cell for cell and opens on the live rule under the cell; the console switches the two axes, carries the pairs in one click and takes the movement away on request.',
           status: 'in-progress',
           href: 'live/tabs-menu-lab.html',
           ready: true,
@@ -1221,7 +1236,11 @@
      читают срез, а не поле, и расходиться им негде. */
   function verName(v) {
     var n = /^v(\d+)$/.exec(String(v.id || ''));
-    return n ? 'V' + n[1] + ' · ' + v.label : v.label;
+    /* Вариант без собственного имени зовётся одним номером: «V1».
+       Это не запасной случай, это ЖЕЛАЕМЫЙ облик по правилу 22.09
+       (шапка, блок ИМЕНА): имя = номер версии, содержание = аннотация. */
+    if (!n) return v.label;
+    return v.label ? 'V' + n[1] + ' · ' + v.label : 'V' + n[1];
   }
 
   /* Срез для одной страницы: первая строка всегда Live, дальше
