@@ -5760,12 +5760,12 @@
                              INFO; everything placed is SUCCESS, which is the
                              tone the mock draws for a finished thing, and it
                              is the only green on this page. -->
-                        <div class="gb-alert" :class="v5Left(shipment) > 0 ? 'gb-alert--info' : 'gb-alert--success'">
+                        <div class="gb-alert" :class="v5StripDone(shipment) ? 'gb-alert--success' : 'gb-alert--info'">
                           <span class="gb-alert__body">
-                            <template x-if="v5Left(shipment) > 0">
+                            <template x-if="!v5StripDone(shipment)">
                               <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/></svg></span>
                             </template>
-                            <template x-if="v5Left(shipment) === 0">
+                            <template x-if="v5StripDone(shipment)">
                               <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M8.4 12.2l2.5 2.5 4.7-5.4"/></svg></span>
                             </template>
                             <span class="gb-alert__text" x-text="v5LeftLine(shipment)"></span>
@@ -6232,12 +6232,12 @@
                              It is also the sentence behind
                              the shut Place Order: this is where the reader is
                              sent to make it say all assigned. -->
-                        <div x-show="shipment.v5Mode === 'many'" class="gb-alert" :class="v5Left(shipment) > 0 ? 'gb-alert--info' : 'gb-alert--success'">
+                        <div x-show="shipment.v5Mode === 'many'" class="gb-alert" :class="v5StripDone(shipment) ? 'gb-alert--success' : 'gb-alert--info'">
                           <span class="gb-alert__body">
-                            <template x-if="v5Left(shipment) > 0">
+                            <template x-if="!v5StripDone(shipment)">
                               <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 17v-6.8"/><path d="M12 7.5h.01"/></svg></span>
                             </template>
-                            <template x-if="v5Left(shipment) === 0">
+                            <template x-if="v5StripDone(shipment)">
                               <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M8.4 12.2l2.5 2.5 4.7-5.4"/></svg></span>
                             </template>
                             <span class="gb-alert__text" x-text="v5LeftLine(shipment)"></span>
@@ -11492,12 +11492,27 @@ function checkoutApp() {
     },
     v5Assigned(s) { return (s.v5Addrs || []).reduce((n, a) => n + this.v5AddrCount(s, a), 0); },
     v5Left(s) { return Math.max(0, this.v5Total(s) - this.v5Assigned(s)); },
+    /* The strip's second fact (the client, 22.09: gifts were assigned,
+       methods were empty, and Continue stood open — «как пользователь
+       поймёт, что метод ещё не выбран?» He chose the counter over a
+       red mark and over pointing with focus). An address without a
+       method is counted the same way an unassigned gift is, in the
+       same strip, with the same arithmetic sentence. */
+    v5MethodsLeft(s) { return (s.v5Addrs || []).filter(a => !a.shipping).length; },
+    v5StripDone(s) { return this.v5Left(s) === 0 && this.v5MethodsLeft(s) === 0; },
     v5LeftLine(s) {
       const total = this.v5Total(s);
       const left = this.v5Left(s);
       const gifts = n => n + ' gift' + (n === 1 ? '' : 's');
       if (!(s.v5Addrs || []).length) return 'No addresses yet. All ' + gifts(total) + ' still need one.';
       if (left > 0) return left + ' of ' + gifts(total) + ' not assigned';
+      const missing = this.v5MethodsLeft(s);
+      if (missing > 0) {
+        const rows = (s.v5Addrs || []).length;
+        return rows === 1
+          ? 'The shipping method is not chosen'
+          : missing + ' of ' + rows + ' shipping methods not chosen';
+      }
       // THE STRIP SAYS WHERE, NOT ONLY THAT (gbppl-v5-julia-1, 15.09). Julia,
       // verbatim: «I added more addresses, but all gifts are assigned to the
       // first one, and that one address appeared by default.» The strip said
@@ -13431,6 +13446,14 @@ function checkoutApp() {
       if (!s) return false;
       if (s.v5Mode === 'one') return !!s.v5AddrId && !!s.v5Shipping;
       if (!(s.v5Addrs || []).length) return false;
+      /* THE GATE ASKS BOTH QUESTIONS IN BOTH MODES (the client, 22.09:
+         gifts assigned, methods empty, Continue open — «это правильная
+         логика или ошибка?» An error: the one-address branch above has
+         always required its method, and the many-address branch forgot
+         to. Choosing a method is spending the client's money, so it is
+         never defaulted for him — the row is born empty and the strip
+         counts it until a hand picks it. */
+      if (this.v5MethodsLeft(s) > 0) return false;
       if (s.v5Perso === 'each') return true;
       return this.v5Left(s) === 0;
     },
@@ -13452,8 +13475,13 @@ function checkoutApp() {
       }
       const n = (s.v5Addrs || []).length;
       const left = this.v5Left(s);
-      return n + ' address' + (n === 1 ? '' : 'es') + ' · ' +
-        (left > 0 ? left + ' gift' + (left === 1 ? '' : 's') + ' still to assign' : 'every gift assigned');
+      if (left > 0) return n + ' address' + (n === 1 ? '' : 'es') + ' · ' + left + ' gift' + (left === 1 ? '' : 's') + ' still to assign';
+      /* The band tells the same second fact the strip does (22.09):
+         a folded step 1 must not say «every gift assigned» while two
+         of its rows still wait for a method. */
+      const miss = this.v5MethodsLeft(s);
+      if (miss > 0) return n + ' address' + (n === 1 ? '' : 'es') + ' · ' + miss + ' shipping method' + (miss === 1 ? '' : 's') + ' to choose';
+      return n + ' address' + (n === 1 ? '' : 'es') + ' · every gift assigned';
     },
     v5Sum2(s) {
       if (s.v5Perso === 'each') {
