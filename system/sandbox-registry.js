@@ -799,6 +799,21 @@
           tags: ['portal', 'flow'],
           created: '2026-09-22',
           updated: '2026-09-22'
+        },
+        {
+          /* gbppl-approvals-5, the same day, the client thinking out
+             loud and then «да, давай»: «слева идет вертикальная
+             панель, которая выглядит как наш чат, только вверху будут
+             табы... а справа останется вся эта 3D-панель». */
+          id: 'v4',
+          label: '',
+          desc: 'The conversation and the preview side by side: a fixed 360 panel on the chat’s own paper to the left — tabs for Messages and History, the thread with its revision cards, the composer at its foot — and the 3D scene to the right, directly under the decision buttons. Below 1024 the two stack, preview first.',
+          status: 'in-progress',
+          href: 'live/gift-approvals.html?pv=e',
+          ready: true,
+          tags: ['portal', 'flow'],
+          created: '2026-09-22',
+          updated: '2026-09-22'
         }
       ]
     },
