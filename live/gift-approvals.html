@@ -4082,14 +4082,29 @@ body[data-pv="e"] .gbppa-convo .gbppa-msg__stack {
      framed page starts under it: not one pixel of ours lies over
      theirs.
      ============================================================ */
+  /* THE PANEL IS FOUND BY WHAT IT FRAMES, NOT BY BEING FIRST. Two
+     copies of the overlay live on this page (the catalogue and the
+     showcase) and each appends its panel to body on its FIRST open —
+     so «the first .gbppd-cat__panel in the document» is whichever the
+     visitor happened to open first. The client opened Explore Gifts
+     before the showcase and the cross went to the wrong panel
+     (22.09, his screenshot: a showcase with no way out). The strip
+     belongs to the panel whose frame carries the share page, and a
+     strip found anywhere else is taken back down. */
   function dressOverlay() {
-    var panel = document.querySelector('.gbppd-cat__panel');
-    if (!panel || panel.querySelector('.gbppa-showbar')) return;
-    var bar = document.createElement('div');
-    bar.className = 'gbppa-showbar';
-    bar.innerHTML = '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" data-gbppd-cat-close aria-label="Close the showcase">' +
-      '<span class="gb-btn__icon" aria-hidden="true">' + (window.GbIcons ? window.GbIcons.html('close', 22) : '') + '</span></button>';
-    panel.insertBefore(bar, panel.firstChild);
+    document.querySelectorAll('.gbppd-cat__panel').forEach(function (panel) {
+      var frame = panel.querySelector('iframe');
+      var src = frame ? (frame.getAttribute('src') || frame.getAttribute('data-src') || '') : '';
+      var isShowcase = src.indexOf('design-share') !== -1;
+      var bar = panel.querySelector('.gbppa-showbar');
+      if (!isShowcase) { if (bar) bar.remove(); return; }
+      if (bar) return;
+      bar = document.createElement('div');
+      bar.className = 'gbppa-showbar';
+      bar.innerHTML = '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" data-gbppd-cat-close aria-label="Close the showcase">' +
+        '<span class="gb-btn__icon" aria-hidden="true">' + (window.GbIcons ? window.GbIcons.html('close', 22) : '') + '</span></button>';
+      panel.insertBefore(bar, panel.firstChild);
+    });
   }
   /* THE DOOR IS WORN BY THREE NODES NOW, one per layout, so the strip
      is hung off the attribute rather than off one button.
