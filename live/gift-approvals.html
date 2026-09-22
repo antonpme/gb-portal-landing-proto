@@ -2150,29 +2150,18 @@ body[data-pv="e"] .gbppa-convo .gbppa-msg__stack {
    rather than a second implementation of one idea and rather than a
    new tab.
 
-   THE CROSS STEPS INTO A MARGIN OF OUR OWN, NOT ONTO THEIR PAGE
-   (the lesson of 0392551: floating it over the frame put it exactly
-   on top of the share page's own «See it personalized»). The
-   overlay's panel is a column flex, so a strip of ours inserted
-   before the frame takes its own height and the framed page starts
-   under it. The strip carries no words: the page inside it already
-   says its own name.
+   THE CROSS LIVES IN THE FRAMED PAGE'S OWN HEAD, ON THE LEFT (the
+   client, 22.09, burying this page's second answer, a strip of our
+   own above the frame: «ты добавил ещё один уровень. Нужно было
+   просто в том же хедере сделать. И высота хедера у нас должна быть
+   одинаковая у всех этих дроверов»). One head per layer, the page's
+   own, and the way out is at its left end — the same place the
+   catalogue keeps it. The 0392551 lesson still binds: nothing floats
+   over the object or the actions; the name steps aside by exactly
+   the cross's own width. The dressing is done from here, in
+   dressOverlay below, because the share page standing on its own
+   address has no overlay to close.
    ============================================================ */
-/* AND THE CROSS STANDS ON THE LEFT (the client, 22.09). The
-   overlay's other carrier, Explore gifts, closes from the left, and
-   a layer that closes from the right here and from the left there is
-   two behaviours for one gesture. One place for the way out, in
-   every room the layer opens. */
-.gbppa-showbar {
-  flex: 0 0 auto;
-  height: var(--space-64);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 var(--space-16);
-  background: var(--zinc-50);
-  border-bottom: 1px solid var(--zinc-200);
-}
 </style>
 
 <!-- The gate. A room of the studio checks the 30 day stamp before the
@@ -4075,35 +4064,70 @@ body[data-pv="e"] .gbppa-convo .gbppa-msg__stack {
      live\catalog-overlay.js opens and closes on its own (the door,
      the scrim, Escape). What it cannot know is that the page it
      frames here has no close control of its own, the way the
-     embedded catalogue does, so this page hands it one: a strip at
-     the head of its panel, inserted before the frame, carrying a
-     cross with the snippet's own [data-gbppd-cat-close] hook. The
-     panel is a column flex, so the strip takes its height and the
-     framed page starts under it: not one pixel of ours lies over
-     theirs.
-     ============================================================ */
-  /* THE PANEL IS FOUND BY WHAT IT FRAMES, NOT BY BEING FIRST. Two
-     copies of the overlay live on this page (the catalogue and the
-     showcase) and each appends its panel to body on its FIRST open —
-     so «the first .gbppd-cat__panel in the document» is whichever the
-     visitor happened to open first. The client opened Explore Gifts
-     before the showcase and the cross went to the wrong panel
-     (22.09, his screenshot: a showcase with no way out). The strip
-     belongs to the panel whose frame carries the share page, and a
-     strip found anywhere else is taken back down. */
+     embedded catalogue does. The first answer was a strip of our own
+     ABOVE the frame, and the client killed it the day he saw it
+     (22.09: «ты добавил ещё один уровень. Нужно было просто в том же
+     хедере сделать» — ONE head, the page's own, with the cross in it
+     at the left, the way the catalogue carries its own). So the
+     cross goes INTO the framed page: the frame is same-origin — the
+     overlay already writes a style into the catalogue's document by
+     the same right — and the button stands at the left end of the
+     share page's own head band, first in its reading order, adding
+     no height to anything. Clicking it says {gb-close-catalog} to
+     the window, which is the one sentence both overlay copies
+     already listen for, and only the open one answers.
+     THE PANEL IS FOUND BY WHAT IT FRAMES, NOT BY BEING FIRST: two
+     copies of the overlay stand on this page and each appends its
+     panel to body on its FIRST open, so «the first panel in the
+     document» is whichever the visitor opened first — the day-one
+     strip landed on the catalogue for exactly that reason. */
   function dressOverlay() {
-    document.querySelectorAll('.gbppd-cat__panel').forEach(function (panel) {
-      var frame = panel.querySelector('iframe');
-      var src = frame ? (frame.getAttribute('src') || frame.getAttribute('data-src') || '') : '';
-      var isShowcase = src.indexOf('design-share') !== -1;
-      var bar = panel.querySelector('.gbppa-showbar');
-      if (!isShowcase) { if (bar) bar.remove(); return; }
-      if (bar) return;
-      bar = document.createElement('div');
-      bar.className = 'gbppa-showbar';
-      bar.innerHTML = '<button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary" type="button" data-gbppd-cat-close aria-label="Close the showcase">' +
-        '<span class="gb-btn__icon" aria-hidden="true">' + (window.GbIcons ? window.GbIcons.html('close', 22) : '') + '</span></button>';
-      panel.insertBefore(bar, panel.firstChild);
+    document.querySelectorAll('.gbppd-cat__panel iframe').forEach(function (frame) {
+      var src = frame.getAttribute('src') || frame.getAttribute('data-src') || '';
+      if (src.indexOf('design-share') === -1) return;
+      if (!frame.gbppaHooked) {
+        frame.gbppaHooked = true;
+        frame.addEventListener('load', function () { setTimeout(dressOverlay, 0); });
+      }
+      try {
+        var d = frame.contentDocument;
+        if (!d || !d.body || d.getElementById('gbppaShowClose')) return;
+        /* The head band of the share page: the cross joins IT, it
+           does not get a floor of its own. If the page is still
+           building, the load hook above comes back for us. */
+        var id = d.querySelector('.gbds-id');
+        if (!id) return;
+        var st = d.createElement('style');
+        st.id = 'gbppaShowCloseStyle';
+        st.textContent =
+          '#gbppaShowClose{position:absolute;z-index:6;left:var(--space-16)}' +
+          /* the name steps aside a whole 64: the cross spans 16..56
+             of the band (its 16 inset plus the 40 control), and 48
+             left the name kissing its right edge — measured on the
+             instrument, not assumed. The selector carries the page's
+             own scope so it outweighs the band's rules. */
+          'body .gbds-stage .gbds-id{padding-left:var(--space-64)}';
+        d.head.appendChild(st);
+        var btn = d.createElement('button');
+        btn.id = 'gbppaShowClose';
+        btn.type = 'button';
+        btn.className = 'gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary';
+        btn.setAttribute('aria-label', 'Close the showcase');
+        btn.innerHTML = '<span class="gb-btn__icon" aria-hidden="true">' +
+          (window.GbIcons ? window.GbIcons.html('close', 22) : '') + '</span>';
+        d.body.appendChild(btn);
+        /* On the head band's own line: centred against the name's box,
+           re-measured when the frame changes size. */
+        function seat() {
+          var r = id.getBoundingClientRect();
+          btn.style.top = Math.max(r.top + (r.height - btn.offsetHeight) / 2, 8) + 'px';
+        }
+        seat();
+        frame.contentWindow.addEventListener('resize', seat);
+        btn.addEventListener('click', function () {
+          window.postMessage({ type: 'gb-close-catalog' }, '*');
+        });
+      } catch (e) {}   /* a cross-origin frame keeps its own chrome, and that is honest */
     });
   }
   /* THE DOOR IS WORN BY THREE NODES NOW, one per layout, so the strip
