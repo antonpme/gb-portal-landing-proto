@@ -9,6 +9,31 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-counts-1 (2026-09-23) — V5 ONLY: THE COUNTERS AND
+     THE MODES STOP LOSING WHAT WAS TYPED
+     ------------------------------------------------------------
+     Package 3 of the checkout audit (studio\docs\CHECKOUT-AUDIT-
+     2026-09-23.md, #1, #2, #3 and Elian's E6):
+       · #1 Split the rest evenly in «each» hands out ONLY the
+         unassigned rows; a row with an address keeps it (v5Split).
+       · #2 Lowering Total takes the rows the reader sees last
+         (v5CutPick: v5Ordered in Multiple), and v5SyncRows cuts
+         through the same hand. The warning is asked on EVERY cut
+         that reaches a filled row and names whose rows they are;
+         the once-per-page v5Warned is gone. Empty rows go quietly.
+       · #3 The same question in «No personalization»: the counter
+         cuts the held rows there too (empty ones first), so the
+         next «each» has nothing left to cut in silence.
+       · E6 Back to «each», the rows are laid out under the numbers
+         set in «none» (v5Realign), filled rows first at their own
+         address; a number that takes a filled row off its address
+         asks first, in a strip under the two radios (Cancel / Move).
+     A row is FILLED when a person typed in it (v5RowFilled): name,
+     parts, box, card; cells the name switch wrote do not count. The
+     import keeps its own door ('import'), unchanged. V1 to V4 do not
+     reach any of it.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-addrgate-1 (2026-09-23) — V5 ONLY: EVERY ASTERISK
      OF THE ADDRESS FORM IS TRUE, AT EVERY DOOR
      ------------------------------------------------------------
@@ -5804,8 +5829,11 @@
               </div>
 
               <!-- The one warning, the strip V2 built: it stands under the
-                   control the hand is on, it is asked once per page load, and
-                   empty rows are always taken away in silence.
+                   control the hand is on, and empty rows are always taken
+                   away in silence. gbppl-checkout-counts-1: it is asked on
+                   EVERY cut that reaches a filled row, in either mode, and it
+                   names whose rows go (it used to be asked once per page load
+                   and then cut in silence).
                    gbppl-v5-fix-1: and it is now an ALERT of the house, in the
                    WARNING tone — it asks before something is thrown away, and
                    that is the one thing on this page orange is for. -->
@@ -6478,7 +6506,7 @@
                         </label>
                         <label class="gb-radio gb-radio--select">
                           <input class="gb-radio__input" type="radio" :name="'v5perso-' + shipment.id" value="each"
-                                 :checked="shipment.v5Perso === 'each'" @change="v5ChoosePerso(shipment, 'each')">
+                                 :checked="shipment.v5Perso === 'each'" @change="v5ChoosePerso(shipment, 'each', $event.target)">
                           <span class="gb-radio__copy">
                             <span class="gb-radio__title">Personalize each gift</span>
                             <!-- gbppl-v5-julia-1 (15.09): «details» named
@@ -6489,6 +6517,25 @@
                           </span>
                         </label>
                       </div>
+                      </div>
+
+                      <!-- gbppl-checkout-counts-1 (23.09, audit E6): the same
+                           warning strip as the counter's, asked on the way
+                           back to «each» when the numbers set in «none» take
+                           a filled row off its address. Cancel leaves the
+                           mode where it is; Move lays the rows out under the
+                           new numbers. -->
+                      <div x-show="v5Ask.pending && v5Ask.kind === 'perso' && v5Ask.shipmentId === shipment.id" x-cloak
+                           x-transition.opacity.duration.280ms
+                           class="gb-alert gb-alert--warning">
+                        <span class="gb-alert__body">
+                          <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
+                          <span class="gb-alert__text" x-text="v5AskLine()"></span>
+                        </span>
+                        <span class="gb-alert__actions">
+                          <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+                          <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Move</span></button>
+                        </span>
                       </div>
 
                       <div x-show="shipment.v5Perso === 'none'" x-transition.opacity.duration.280ms
@@ -11529,23 +11576,99 @@ function checkoutApp() {
 
     // ===== The counter =====
     // THE ONE GATE for the number of gifts: both buttons and the typed value.
-    v5SetQty(p, n) {
+    /* gbppl-checkout-counts-1 (23.09, audit #2 and #3): THE ROW THAT GOES
+       IS THE ROW THE READER SEES LAST, AND A FILLED ONE IS ASKED FOR EVERY
+       TIME, IN EITHER MODE.
+       · Which rows: v5CutPick, the one hand that picks them (the counter
+         here and v5SyncRows below both ask it). It used to be the tail of
+         the ARRAY while the table draws v5Ordered, so the strip warned
+         about one row and the cut took another.
+       · When to ask: whenever the cut takes a row with something typed in
+         it (v5RowFilled), on every press. The once-per-page v5Warned is
+         retired: the first answer said nothing about the next row, and
+         everything after it was erased in silence. Empty rows still go
+         without a word.
+       · In «No personalization» too. The rows are off the screen there but
+         still held for the way back, and the old test looked at them only
+         in «each»: lowered under the filled rows in «none», the next «each»
+         cut them without a word. Now the cut happens here, at the counter,
+         in both modes, so the question is asked where the hand is. */
+    v5SetQty(p, n, confirmed) {
       const s = this.v5Sh(p);
       if (!s) return;
       const want = Math.max(1, isNaN(n) ? 1 : n);
       const rows = s.v5Rows || [];
-      const losing = (s.v5Perso === 'each' && want < rows.length)
-        ? rows.slice(want).filter(r => this.rowFilled(r)).length
-        : 0;
-      // Empty rows always go quietly; filled ones cost one warning, once
-      // (Ton 03.09: «предупредить ОДИН раз... после первого молча»).
-      if (losing > 0 && !this.v5Warned) {
-        this.v5Ask = { pending: true, kind: 'qty', productId: p.id, shipmentId: s.id, addrId: null, target: want, rows: rows.length - want };
+      const cut = rows.length > want ? this.v5CutPick(s, rows.length - want) : [];
+      // Named in the order the table draws them, whichever end they came from.
+      const order = new Map((s.v5Mode === 'many' ? this.v5Ordered(s) : rows).map((r, i) => [r.id, i]));
+      const filled = cut.filter(r => this.v5RowFilled(r)).sort((x, y) => order.get(x.id) - order.get(y.id));
+      if (filled.length && !confirmed) {
+        this.v5Ask = { pending: true, kind: 'qty', productId: p.id, shipmentId: s.id, addrId: null, target: want, rows: cut.length,
+                       filled: filled.length, names: filled.map(r => this.v5RowTag(s, r)), one: this.v5RowOne(s, filled[0]) };
         return;
       }
+      if (this.v5Ask.pending && this.v5Ask.kind === 'qty' && this.v5Ask.productId === p.id) this.v5CancelAsk();
       s.v5Qty = want;
+      if (cut.length) {
+        const drop = new Set(cut.map(r => r.id));
+        s.v5Rows = rows.filter(r => !drop.has(r.id));
+        s.v5Page = this.v5PageNo(s);
+      }
       if (s.v5Perso === 'each') this.v5SyncRows(s);
       this.v5ClampNumbers(s);
+    },
+    // A row is FILLED when a person put something in it. Cells the name
+    // switch wrote (`pf[field] === 'auto'`) do not count: the switch writes
+    // them back the moment the row has an address again, so nothing typed is
+    // lost with them. rowFilled (V1-V4) is left as it is.
+    v5RowFilled(r) {
+      if (!r) return false;
+      const pf = r.pf || {};
+      const own = f => !!r[f] && pf[f] !== 'auto';
+      const g = r.greeting;
+      return own('name') || own('item1') || own('item2') || own('item3') || own('box') ||
+             !!(g && (g.message || g.to || g.from));
+    },
+    // How a row is called out loud: its name, else the first thing written
+    // in it, else the address it goes to.
+    v5RowText(r) {
+      const t = [r.item1, r.item2, r.item3, r.box, r.greeting && r.greeting.message].find(Boolean) || '';
+      const cut = String(t).trim();
+      return cut.length > 24 ? cut.slice(0, 24).trim() + '…' : cut;
+    },
+    v5RowTag(s, r) {
+      if (r.name) return r.name;
+      const t = this.v5RowText(r);
+      if (t) return '“' + t + '”';
+      return r.addrId ? 'a row for ' + this.v5GroupName(s, r.addrId) : 'a card message';
+    },
+    v5RowOne(s, r) {
+      if (!r) return '';
+      if (r.name) return 'the row for ' + r.name;
+      const t = this.v5RowText(r);
+      if (t) return 'the row with “' + t + '”';
+      return r.addrId ? 'a filled row for ' + this.v5GroupName(s, r.addrId) : 'a filled row';
+    },
+    v5NameList(names) {
+      const n = names || [];
+      if (n.length <= 1) return n.join('');
+      if (n.length === 2) return n[0] + ' and ' + n[1];
+      return n[0] + ', ' + n[1] + ' and ' + (n.length - 2) + ' more';
+    },
+    // THE ONE HAND THAT PICKS WHICH ROWS A LOWER COUNT TAKES.
+    // In «each» the table is on the screen, so it is the last k rows in the
+    // order the table draws them (v5Ordered in Multiple, the list itself in
+    // One): «lowering removes the last row» is then literally true.
+    // In «none» nothing is on the screen to be last, so the empty rows go
+    // first, from the bottom, and a filled row is taken only when there are
+    // not enough empty ones; that is the only case the counter asks about.
+    v5CutPick(s, k) {
+      if (!s || k <= 0) return [];
+      const vis = s.v5Mode === 'many' ? this.v5Ordered(s) : (s.v5Rows || []).slice();
+      if (s.v5Perso === 'each') return vis.slice(Math.max(0, vis.length - k));
+      const empty = vis.filter(r => !this.v5RowFilled(r)).reverse();
+      const full = vis.filter(r => this.v5RowFilled(r)).reverse();
+      return empty.concat(full).slice(0, k);
     },
     // Lowering the counter under what the addresses hold would leave the list
     // claiming gifts the order no longer has. The last addresses give them up.
@@ -11568,19 +11691,28 @@ function checkoutApp() {
     v5QtyFloor(p) { const s = this.v5Sh(p); return (s && this.v5Total(s) > 1) ? '' : 'An order needs at least one gift'; },
 
     // ===== The one warning strip, two kinds =====
-    v5Ask: { pending: false, kind: null, productId: null, shipmentId: null, addrId: null, target: 0, rows: 0 },
-    v5Warned: false,
+    // gbppl-checkout-counts-1: three kinds now. 'qty' and 'addr' as before,
+    // and 'perso', the way back to «each» when the new numbers take a filled
+    // row off its address. `filled`, `names` and `one` say whose rows go.
+    v5Ask: { pending: false, kind: null, productId: null, shipmentId: null, addrId: null, target: 0, rows: 0, filled: 0, names: [], one: '' },
     v5CancelAsk() {
-      this.v5Ask = { pending: false, kind: null, productId: null, shipmentId: null, addrId: null, target: 0, rows: 0 };
+      this.v5Ask = { pending: false, kind: null, productId: null, shipmentId: null, addrId: null, target: 0, rows: 0, filled: 0, names: [], one: '' };
     },
     v5ConfirmAsk() {
       const a = this.v5Ask;
       if (a.kind === 'addr') { this.v5CancelAsk(); this.v5RemoveAddr(a.productId, a.shipmentId, a.addrId); return; }
+      if (a.kind === 'perso') {
+        const s = this.findShipment(a.productId, a.shipmentId);
+        this.v5CancelAsk();
+        if (s) this.v5ChoosePerso(s, 'each', null, 'asked');
+        return;
+      }
       const p = this.findProduct(a.productId);
       const want = a.target;
-      this.v5Warned = true;
       this.v5CancelAsk();
-      if (p) this.v5SetQty(p, want);
+      // Confirmed for THIS cut only: the next press that reaches a filled
+      // row asks again.
+      if (p) this.v5SetQty(p, want, true);
     },
     v5AskLine() {
       const a = this.v5Ask;
@@ -11589,9 +11721,15 @@ function checkoutApp() {
           ? 'Removing this address sends its gift back to the unassigned count.'
           : 'Removing this address sends its ' + a.rows + ' gifts back to the unassigned count.';
       }
-      return a.rows === 1
-        ? 'Lowering the count removes the last row, and what is written in it.'
-        : 'Lowering the count removes the last ' + a.rows + ' rows, and what is written in them.';
+      const list = this.v5NameList(a.names);
+      if (a.kind === 'perso') {
+        return a.filled === 1
+          ? 'The new numbers move ' + a.one + '.'
+          : 'The new numbers move ' + a.filled + ' filled rows off their addresses: ' + list + '.';
+      }
+      if (a.rows === 1) return 'Lowering the count removes ' + a.one + ', and what is written in it.';
+      if (a.filled === a.rows) return 'Lowering the count removes ' + a.rows + ' filled rows: ' + list + '.';
+      return 'Lowering the count removes ' + a.rows + ' rows, ' + (a.filled === 1 ? 'one' : a.filled) + ' of them filled: ' + list + '.';
     },
 
     // ===== The first question =====
@@ -11735,11 +11873,85 @@ function checkoutApp() {
     // it starts prefilled from the numbers. Coming back: the numbers take it
     // back, reading what the table ended up saying. Nothing is lost either
     // way, and at no moment are both of them the hand.
-    v5ChoosePerso(s, mode) {
+    // gbppl-checkout-counts-1 (23.09, audit E6 and #3): that sentence is
+    // true now. In «none» the NUMBERS are the fact; going back to «each» the
+    // rows are laid out under them again (v5Realign), not under the old
+    // layout they still carried. A filled row keeps its address wherever the
+    // new number leaves room for it; when the new number takes a filled row
+    // off its address, the reader is asked first, with the names, in the
+    // same strip as the counter. `el` is the radio that was pressed, so a
+    // question left unanswered puts the dot back where the mode still is.
+    // `how` is who is asking: 'asked' is the strip's Move (lay out, do not
+    // ask again), 'import' is the import's own door (switches without asking
+    // and keeps the seeding it had, as before).
+    v5ChoosePerso(s, mode, el, how) {
       if (!s) return;
+      // One address has no numbers to lay out under: the old seeding stands.
+      const lay = mode === 'each' && s.v5Perso !== 'each' && s.v5Mode === 'many';
+      if (lay && !how) {
+        const moved = this.v5Realign(s, true).filter(r => this.v5RowFilled(r));
+        if (moved.length) {
+          const p = this.v5ProductOf(s);
+          const r0 = moved[0];
+          this.v5Ask = { pending: true, kind: 'perso', productId: p ? p.id : null, shipmentId: s.id, addrId: null, target: 0, rows: moved.length,
+                         filled: moved.length, names: moved.map(r => this.v5RowTag(s, r)),
+                         one: this.v5RowOne(s, r0) + ' off ' + this.v5GroupName(s, r0.addrId) };
+          if (el) {
+            const g = el.closest('[role="radiogroup"]');
+            (g ? g.querySelectorAll('input[type="radio"]') : []).forEach(i => { i.checked = i.value === s.v5Perso; });
+          }
+          return;
+        }
+      }
+      if (this.v5Ask.pending && this.v5Ask.kind === 'perso' && this.v5Ask.shipmentId === s.id) this.v5CancelAsk();
+      // «none» pressed while already in «none» (the dot put back above) must
+      // not harvest: the numbers are the fact there, not the old rows.
+      if (mode === 'none' && s.v5Perso === 'none') return;
       s.v5Perso = mode;
-      if (mode === 'each') { this.v5SyncRows(s); this.v5SeedRows(s); }
+      if (mode === 'each') {
+        if (lay && how !== 'import') this.v5Realign(s, false);
+        else { this.v5SyncRows(s); this.v5SeedRows(s); }
+      }
       else this.v5Harvest(s);
+    },
+    // ROWS UNDER THE NUMBERS. Each address keeps as many of its own rows as
+    // its number says, the filled ones before the empty ones, in the order
+    // the table draws them; the rest are let go from the bottom, empty ones
+    // first. An address short of its number takes free rows, empty ones
+    // first, so a filled row lands on another address only when there is no
+    // empty row left to send. `dry` answers «which rows would leave their
+    // address» without writing anything; the caller asks about the filled
+    // ones among them.
+    v5Realign(s, dry) {
+      if (!s) return [];
+      if (!dry) this.v5SyncRows(s);
+      const rows = s.v5Rows || [];
+      const addrs = s.v5Addrs || [];
+      const live = new Set(addrs.map(a => a.id));
+      const at = new Map(rows.map(r => [r.id, (r.addrId && live.has(r.addrId)) ? r.addrId : null]));
+      const released = [];
+      const vis = s.v5Mode === 'many' ? this.v5Ordered(s) : rows.slice();
+      addrs.forEach(a => {
+        const want = Math.max(0, a.qty || 0);
+        const mine = vis.filter(r => at.get(r.id) === a.id);
+        if (mine.length <= want) return;
+        const keep = mine.filter(r => this.v5RowFilled(r)).concat(mine.filter(r => !this.v5RowFilled(r))).slice(0, want);
+        const stay = new Set(keep.map(r => r.id));
+        mine.forEach(r => { if (!stay.has(r.id)) { released.push(r); at.set(r.id, null); } });
+      });
+      if (dry) return released;
+      const free = () => {
+        const f = rows.filter(r => !at.get(r.id));
+        return f.filter(r => !this.v5RowFilled(r)).concat(f.filter(r => this.v5RowFilled(r)));
+      };
+      addrs.forEach(a => {
+        let need = Math.max(0, a.qty || 0) - rows.filter(r => at.get(r.id) === a.id).length;
+        const pool = need > 0 ? free() : [];
+        for (let i = 0; i < pool.length && need > 0; i++) { at.set(pool[i].id, a.id); need -= 1; }
+      });
+      rows.forEach(r => { r.addrId = at.get(r.id); });
+      this.v5Prefill(s);
+      return released;
     },
     v5Harvest(s) {
       (s.v5Addrs || []).forEach(a => {
@@ -11753,7 +11965,13 @@ function checkoutApp() {
       if (!s.v5Rows) s.v5Rows = [];
       const want = this.v5Total(s);
       while (s.v5Rows.length < want) s.v5Rows.push(this.v5Row());
-      if (s.v5Rows.length > want) s.v5Rows = s.v5Rows.slice(0, want);
+      // gbppl-checkout-counts-1: the rows that go are the ones v5CutPick
+      // names (the last the reader SEES), not the tail of the array. The
+      // counter has already asked about any filled one among them.
+      if (s.v5Rows.length > want) {
+        const drop = new Set(this.v5CutPick(s, s.v5Rows.length - want).map(r => r.id));
+        s.v5Rows = s.v5Rows.filter(r => !drop.has(r.id));
+      }
       s.v5Page = this.v5PageNo(s);
       // gbppl-v5-prefill-1: a row born in «one address» already knows where it
       // is going, so it arrives with the name if the switch is on.
@@ -12098,10 +12316,13 @@ function checkoutApp() {
         const extra = left % take.length;
         take.forEach((a, i) => { a.qty = (a.qty || 0) + base + (i < extra ? 1 : 0); });
       }
-      if (s.v5Perso === 'each') {
-        (s.v5Rows || []).forEach(r => { r.addrId = null; });
-        this.v5SeedRows(s);
-      }
+      // gbppl-checkout-counts-1 (23.09, audit #1): «the rest» is the rest.
+      // A row that already has an address keeps it, with everything written
+      // in it; only the unassigned rows are handed out, up to the numbers
+      // just computed. It used to clear every addrId and deal the whole table
+      // again, so a gift moved by hand came back on somebody else's address
+      // carrying its own name. v5SeedRows never takes a row that has one.
+      if (s.v5Perso === 'each') this.v5SeedRows(s);
     },
 
     // ===== The address list =====
@@ -15316,7 +15537,9 @@ function checkoutApp() {
           s.v5Mode = 'many';
         }
         const printed = rows.some(r => r.mark || r.msg);
-        if (printed && s.v5Perso !== 'each') this.v5ChoosePerso(s, 'each');
+        // gbppl-checkout-counts-1: 'import', the import's own door; it keeps
+        // the seeding it had and never stops on the mode question.
+        if (printed && s.v5Perso !== 'each') this.v5ChoosePerso(s, 'each', null, 'import');
         const each = s.v5Perso === 'each';
         if (each) this.v5SyncRows(s);
         const before = this.v5Total(s);
