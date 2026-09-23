@@ -9,6 +9,20 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-template-1 (2026-09-23) — V5 ONLY: THE TEMPLATE
+     COMES IN TWO FORMATS, AND ONE OF THEM IS RECOMMENDED
+     ------------------------------------------------------------
+     Client order 22-23.09: the Download template button offers Excel
+     and CSV. Step 1 of the V5 import panel (the spine of
+     gbppl-checkout-import-2, anatomy untouched) now holds the same
+     Download template button, which hands out the branded two-sheet
+     assets/gildedbox-gifts-template.xlsx, and beside it a quiet door
+     «or plain CSV» that gives the CSV this button always gave.
+     downloadTemplate(format): 'xlsx' serves the file, no argument is
+     the old CSV path for every other caller. Parsing and Confirm
+     untouched; V1 to V4 untouched (their callers pass nothing).
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-truth-1 (2026-09-23) — V5 ONLY: WHAT THE PAGE
      SAYS ABOUT THE ORDER IS TRUE AT EVERY MOMENT
      ------------------------------------------------------------
@@ -6499,7 +6513,11 @@
                              addresses in the list» case can never come first
                              now, because ten addresses hold at least ten
                              gifts and the rank above crosses on the tenth. -->
-                        <p x-show="v5SoftAddr(shipment)" x-cloak class="text-sm text-zinc-600">A long list is faster in a file. <button type="button" @click="downloadTemplate()" class="underline underline-offset-2 hover:text-zinc-900">Download the template</button>, or <button type="button" @click="openCSVModal(product.id, shipment.id)" class="underline underline-offset-2 hover:text-zinc-900">upload one you already have</button>.</p>
+                        <!-- gbppl-checkout-template-1 follow-up: the hint hands
+                             over the recommended template, which is the Excel
+                             one now; the plain CSV stays a step away in the
+                             import modal. -->
+                        <p x-show="v5SoftAddr(shipment)" x-cloak class="text-sm text-zinc-600">A long list is faster in a file. <button type="button" @click="downloadTemplate('xlsx')" class="underline underline-offset-2 hover:text-zinc-900">Download the template</button>, or <button type="button" @click="openCSVModal(product.id, shipment.id)" class="underline underline-offset-2 hover:text-zinc-900">upload one you already have</button>.</p>
                       </div>
 
                       <!-- 24 of the ladder + 24 of its own = --space-48, and
@@ -9562,10 +9580,29 @@
           <div class="pb-6 min-w-0">
             <p class="text-sm font-medium text-zinc-900">Get the template</p>
             <p class="text-sm text-zinc-500">One file holds both the addresses and the personalization.</p>
-            <button @click="downloadTemplate()" type="button" class="mt-4 gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary">
-              <span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg></span>
-              <span class="gb-btn__label">Download template</span>
-            </button>
+            <!-- gbppl-checkout-template-1 (23.09): TWO FORMATS, ONE
+                 RECOMMENDED. Client order 22-23.09: the Download template
+                 button offers Excel and CSV. The button keeps its rank and
+                 its label and now hands out the branded Excel file
+                 (../assets/gildedbox-gifts-template.xlsx: formatted, ZIP
+                 kept as text, a How to fill sheet). CSV is the quiet door
+                 beside it, in the underlined-button voice the Multiple
+                 addresses hint already speaks (text-sm, underline-offset-2,
+                 hover Zinc 900), so the hierarchy says «this one, or if
+                 you must, that one» without a second button of the same
+                 rank. Not a menu: a menu hides the recommended path behind
+                 a click and gives both formats the same weight. Gap 16
+                 (--space-16, the gap between actions, ORO-SKILL 3); when
+                 the pair wraps at 360 the door drops under at --space-8.
+                 CSV is the file this button always gave (downloadTemplate()
+                 with no argument), untouched. -->
+            <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <button @click="downloadTemplate('xlsx')" type="button" class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary">
+                <span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg></span>
+                <span class="gb-btn__label">Download template</span>
+              </button>
+              <span class="text-sm text-zinc-500">or <button @click="downloadTemplate()" type="button" class="underline underline-offset-2 hover:text-zinc-900">plain CSV</button></span>
+            </div>
           </div>
         </li>
         <li class="grid grid-cols-[22px_minmax(0,1fr)] gap-x-4">
@@ -9597,7 +9634,11 @@
             <button x-show="!csv.file" @click="v5AttachFile()" type="button" class="mt-4 w-full flex items-center gap-4 text-left px-4 py-4 bg-white border border-dashed border-zinc-400 rounded-[var(--radius)] hover:border-zinc-900">
               <span class="flex flex-shrink-0 text-zinc-400" aria-hidden="true"><span data-gb-icon="upload" data-gb-icon-size="24"></span></span>
               <span class="min-w-0 flex-1">
-                <span class="block text-sm font-medium text-zinc-900">Drop CSV here or click to select</span>
+                <!-- The backend takes Excel as well as CSV (Vlad, 22.09), and
+                     the recommended template IS an Excel file now — a zone
+                     that names one format would refuse the file we just
+                     handed out. -->
+                <span class="block text-sm font-medium text-zinc-900">Drop your file here or click to select</span>
                 <span class="block text-sm text-zinc-500">Clicking attaches a sample list of twenty gifts.</span>
               </span>
             </button>
@@ -15541,9 +15582,20 @@ function checkoutApp() {
     },
 
     // ===== CSV =====
-    downloadTemplate() {
+    downloadTemplate(format) {
       this.bulkMenuOpen = null;
       this.tplMenuOpen = null;
+      // gbppl-checkout-template-1 (23.09): the Excel door. Step 1 of the V5
+      // import panel asks for 'xlsx' and gets the branded two-sheet file as
+      // it lies in the repo (path relative to live/). Every other caller
+      // passes nothing and gets the CSV it always got, built below.
+      if (format === 'xlsx') {
+        const ax = document.createElement('a');
+        ax.href = '../assets/gildedbox-gifts-template.xlsx';
+        ax.download = 'gildedbox-gifts-template.xlsx';
+        ax.click();
+        return;
+      }
       // gbppl-checkout-v3-1: THE TEMPLATE IS THE TABLE. In V3 the columns of
       // step 3 are assembled by the two axes, so a fixed thirteen-column file
       // would ask for addresses in an order that has one and for engravings
