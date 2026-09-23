@@ -9,6 +9,34 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-perso-form-1 (2026-09-23) — V5 ONLY: THE PERSONALIZATION
+     FIELDS SAY WHAT GOES IN THEM, ONCE, AND BREATHE
+     ------------------------------------------------------------
+     The client's dev (Dima) reworked the personalize form on their
+     share page — a placeholder in every empty field, the product name
+     not repeated at the field, air between the rows — and the client
+     asked for the same sense on both of our pages.
+     The table of step 2 opens no field in place: every «+ Add» cell
+     opens the part drawer (ck-drawer-item) or the card drawer
+     (ck-drawer-greeting), so the fix lives in those two bodies, and in
+     V5 only (both templates are shared with V1 to V4, which keep their
+     markup to the letter through uiVersion bindings):
+       · the initials slots, which had no placeholder, show A B C;
+       · a printed part asks for «Name or short phrase», the box for
+         «Name or company» (was «Name or phrase...» on both);
+       · the counter under a part stops saying «Name (0 / 24 chars)»:
+         «Name» was a second label repeating the placeholder, so it
+         reads «0 / 24 chars», eyebrow, 8 under the field (the helper's
+         rung; it stood at 6, off the scale);
+       · the card message counter speaks the same eyebrow («0 / 400
+         chars») in the drawer and in the card panel of step 2, where
+         it stood in two further voices (12/400 and 14/400);
+       · below 768, where one part folds into three stacked lines of
+         24, the parts stand 48 apart instead of 32, so a part reads as
+         one block and not as the next line of the one above.
+     No data, limit or behaviour changed.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v5-1 (2026-09-04) — ?v=5, ADDRESSES FIRST.
 
      THE SPEC IS studio\docs\CHECKOUT-CONCEPT.md, written on 04.09
@@ -1277,6 +1305,31 @@
      helper is only called from it.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-checkout-import-3 (2026-09-23) — THE IMPORT ADDS, AND
+     NOTHING ELSE. Package 1 of the audit of 23.09
+     (docs/CHECKOUT-AUDIT-2026-09-23.md, bugs 4, 5, 14 and Elian's E2
+     to E5), so that «THE IMPORT NEVER TOUCHES WORK» at
+     confirmCSVImport stops being a sentence and becomes the code.
+     1. The order is taken as it stands: One address walks into the
+        list through v5OneLine (the mode card's own maker, lifted out
+        of v5ChooseMode) with its gifts and method; «No
+        personalization» turns into the table through v5ChoosePerso,
+        so placed gifts become rows on their own lines.
+     2. The line is recipient + address (v5SpotKey, Vlad 22.09): a
+        row whose key the order holds joins that line, two people at
+        one office are two lines, the same file twice adds no line.
+     3. A new line has no method (the client, 22.09).
+     4. Total = what was there + what came; in the table total ==
+        rows, each file row carrying its printed name and card.
+     5. Check and edit says it first (v5CsvPlan): new recipients,
+        recipients already in the order, rows to fix; a row without
+        an address is an error now too. Confirm is shut while any row
+        is wrong (argument at the button). The last screen counts
+        what the call did (csv.added / imported / joined).
+     V1 to V4: every change is inside the V5 branch or behind
+     uiVersion === 'v5'; v5ChooseMode behaves byte for byte as before.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -2194,6 +2247,15 @@
      wearing a 32 nobody could see the top of. The top gap in both modes is
      now the body's own gutter and nothing else. */
   .ck-drawer-stack--form > :nth-child(2) { margin-top: 0; }
+  /* gbppl-perso-form-1 (23.09), V5 part drawer only. Below 768 a part
+     folds into three stacked lines 24 apart (tile, name, field), and 32
+     between two parts read as one more line of the same block. 48 is the
+     next rung, so the break between parts is the larger one. From 768
+     the part is one row and 32 stays. The first part keeps its 32 under
+     the drawer's sub line: it follows the x-for <template>, which is a
+     child of the stack too, and the air above the list is not a break
+     between two parts. */
+  @media (max-width: 767px) { .ck-drawer-stack--parts > * + *:not(template + *) { margin-top: var(--space-48); } }
   .ck-drawer-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-16); }
 
   /* ============================================================
@@ -6460,7 +6522,9 @@
                           <div>
                             <div class="flex justify-between items-baseline mb-1">
                               <label class="gb-eyebrow">Message</label>
-                              <span class="text-sm text-zinc-500"><span x-text="(shipment.v5Card.message || '').length"></span> / <span x-text="ckCardMax()"></span></span>
+                              <!-- gbppl-perso-form-1: the counter in the eyebrow the
+                                   labels wear, as in the card drawer (was 14/400). -->
+                              <span class="gb-eyebrow"><span x-text="(shipment.v5Card.message || '').length"></span> / <span x-text="ckCardMax()"></span> chars</span>
                             </div>
                             <!-- gbppl-alert-height-1 (04.09). Ton, live:
                                  «Мы всё ещё используем старый free text
@@ -7756,7 +7820,11 @@
     <div>
       <div class="flex justify-between items-baseline mb-1">
         <label class="gb-eyebrow">Message</label>
-        <span class="text-xs text-zinc-500"><span x-text="(drawer.data.message || '').length"></span> / <span x-text="ckCardMax()"></span></span>
+        <!-- gbppl-perso-form-1: in V5 the counter speaks the surface's one
+             caps voice, the eyebrow the labels wear, and says what it
+             counts; 12/400 beside it was a third voice. V2 keeps its line. -->
+        <span x-show="uiVersion !== 'v5'" class="text-xs text-zinc-500"><span x-text="(drawer.data.message || '').length"></span> / <span x-text="ckCardMax()"></span></span>
+        <span x-show="uiVersion === 'v5'" class="gb-eyebrow"><span x-text="(drawer.data.message || '').length"></span> / <span x-text="ckCardMax()"></span> chars</span>
       </div>
       <!-- gbppl-alert-height-1: the same field as the card panel of V5, and
            the same floor. This template is the drawer V5's table opens for
@@ -7815,7 +7883,7 @@
 
 <!-- ===== ITEM PERSONALIZATION DRAWER ==== -->
 <template id="ck-drawer-item">
-  <div class="ck-drawer-stack" :class="uiVersion === 'v5' ? 'gba-scale-portal' : ''">
+  <div class="ck-drawer-stack" :class="uiVersion === 'v5' ? 'gba-scale-portal ck-drawer-stack--parts' : ''">
 
     <!-- One row per part this gift can carry — the list comes from the product,
          so the drawer never asks for an engraving the gift does not have. -->
@@ -7831,23 +7899,32 @@
           <template x-if="it.kind === 'initials'">
             <div>
               <div class="flex flex-wrap gap-2.5">
+                <!-- gbppl-perso-form-1: in V5 the empty slots show A B C in
+                     the field's placeholder ink (Zinc 400), so an empty
+                     monogram says what it takes before a letter is typed. -->
                 <template x-for="i in 3" :key="'mslot-'+idx+'-'+i">
                   <input
                     type="text"
                     maxlength="1"
+                    :placeholder="uiVersion === 'v5' ? 'ABC'[i-1] : ''"
                     :value="itemSlotValue('item' + (idx+1), i-1)"
                     @input="updateItemSlot('item' + (idx+1), i-1, $event.target.value, $event)"
                     @keydown="itemSlotKeydown('item' + (idx+1), i-1, $event)"
-                    class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
+                    class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
                 </template>
               </div>
               <p class="gb-eyebrow mt-1.5">Initials (3 chars · A to Z, 0 to 9)</p>
             </div>
           </template>
+          <!-- gbppl-perso-form-1: V5 asks «Name or short phrase» and the
+               counter drops its «Name (…)», which was a second label
+               saying the placeholder again; 8 under the field, the
+               helper's rung. V1 to V4 render exactly as before. -->
           <template x-if="it.kind !== 'initials'">
             <div>
-              <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="gba-input">
-              <p class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+              <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" :placeholder="uiVersion === 'v5' ? 'Name or short phrase' : 'Name or phrase...'" class="gba-input">
+              <p x-show="uiVersion !== 'v5'" class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars)</p>
+              <p x-show="uiVersion === 'v5'" class="gb-eyebrow mt-2"><span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars</p>
             </div>
           </template>
         </div>
@@ -7886,8 +7963,11 @@
         <p class="gb-eyebrow mt-1" x-text="productBoxField(currentProduct(), 'sub')"></p>
       </div>
       <div>
-        <input type="text" :value="drawer.data.box || ''" @input="drawer.data.box = $event.target.value" maxlength="24" placeholder="Name or phrase..." class="gba-input" aria-label="Text printed on the box">
-        <p class="gb-eyebrow mt-1.5">Name (<span x-text="(drawer.data.box || '').length"></span> / 24 chars)</p>
+        <!-- gbppl-perso-form-1: this row stands in V5 only, so its words
+             change outright. A lid is printed with a person's or a
+             company's name, and the counter is the parts' own. -->
+        <input type="text" :value="drawer.data.box || ''" @input="drawer.data.box = $event.target.value" maxlength="24" placeholder="Name or company" class="gba-input" aria-label="Text printed on the box">
+        <p class="gb-eyebrow mt-2"><span x-text="(drawer.data.box || '').length"></span> / 24 chars</p>
       </div>
     </div>
 
@@ -9421,7 +9501,7 @@
               <template x-for="(row, i) in csv.preview.rows" :key="'v5csv-' + i">
                 <tr class="border-t border-zinc-100" :class="row.error ? 'bg-red-50' : ''" :data-csverr="row.error ? '1' : false">
                   <td class="p-1"><input type="text" x-model="row.name" aria-label="Ships to" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
-                  <td class="p-1"><input type="text" x-model="row.address" aria-label="Address" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
+                  <td class="p-1"><input type="text" x-model="row.address" @input="v5CsvTouch()" aria-label="Address" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
                   <td class="p-1"><input type="text" x-model="row.zip" @input="v5CsvTouch()" @change="v5CsvNextErr(row)" aria-label="ZIP" :class="row.error ? 'text-red-700 font-medium' : ''" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
                   <td class="p-1"><input type="text" x-model="row.mark" aria-label="Name on the gift" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
                   <td class="p-1"><input type="text" x-model="row.msg" aria-label="Card message" class="ck-cell w-full bg-transparent px-1 py-1 border-0 border-b border-transparent hover:border-zinc-300 focus:outline-none focus:border-blue-600 transition-colors"></td>
@@ -9584,7 +9664,21 @@
       <!-- gbppl-checkout-v5-1: «Потом Confirm» (Ton 04.09). The label for every
            other version is assembled from the same two pieces it always was,
            so the words on the button are unchanged there. -->
-      <button x-show="csv.step === 2" @click="confirmCSVImport()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="uiVersion === 'v5' ? ('Confirm and add ' + csv.preview.total + ' gifts') : ('Import all ' + csv.preview.total + ' rows')"></span></button>
+      <!-- gbppl-checkout-import-3 (23.09): CONFIRM IS SHUT WHILE A ROW IS
+           WRONG, in V5 only. Two honest answers were on the table (audit bug
+           14): shut the button, or bring in the clean rows and say «19
+           added, 1 left out». The second makes the reader's own file
+           quietly smaller than the order they meant: the gift left out has
+           to be typed again by hand somewhere else, which is the lost hour
+           the import exists to save. The table above is editable, opens on
+           the first broken row and glides to the next, so the fix is one
+           cell away and the label «Confirm and add 20 gifts» stays true to
+           the last gift. The gate is the house's disabled, the one Submit
+           on screen 1 wears; the alert strip already says what it waits
+           for. V1 to V4 keep their «imported and highlighted» rule. -->
+      <button x-show="csv.step === 2" @click="confirmCSVImport()"
+              :disabled="uiVersion === 'v5' && csv.preview.errors > 0" :aria-disabled="uiVersion === 'v5' && csv.preview.errors > 0"
+              class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="uiVersion === 'v5' ? ('Confirm and add ' + csv.preview.total + ' gifts') : ('Import all ' + csv.preview.total + ' rows')"></span></button>
     </div>
   </div>
 </div>
@@ -11484,20 +11578,28 @@ function checkoutApp() {
       // NOTHING IS THROWN AWAY EITHER WAY, and the one address a reader has
       // already picked walks into the list rather than being asked for twice.
       if (mode === 'many' && !(s.v5Addrs || []).length && s.v5AddrId) {
-        const b = this.addressBook.find(x => x.id === s.v5AddrId);
-        if (b) {
-          // gbppl-v5-fix-1: the inverse of v3AddressLabel, not the old
-          // five-part guess — this is the same book entry the picker reads,
-          // and it used to walk into the list with Suite 8200 as its city.
-          const d = Object.assign(this.v3BlankDeliver(), this.v5ParseAddress(b.label), { name: b.name, company: b.company || '' });
-          s.v5Addrs = [this.v5BlankAddr({
-            deliver: d, address: this.v3AddressLabel(d),
-            qty: this.v5Total(s), shipping: s.v5Shipping || '', from: 'book'
-          })];
-        }
+        const line = this.v5OneLine(s);
+        if (line) s.v5Addrs = [line];
       }
       if (s.v5Perso === 'each') this.v5SeedRows(s);
       this.v5Prefill(s);
+    },
+    // THE ONE ADDRESS AS A LINE OF THE LIST, holding every gift of the order
+    // and the method chosen for it. One maker for the two hands that turn
+    // «one address» into «multiple» (the card above, and the import since
+    // gbppl-checkout-import-3), so the walk-in cannot differ between them.
+    // gbppl-v5-fix-1: the inverse of v3AddressLabel, not the old five-part
+    // guess — this is the same book entry the picker reads, and it used to
+    // walk into the list with Suite 8200 as its city.
+    v5OneLine(s) {
+      if (!s || !s.v5AddrId) return null;
+      const b = this.addressBook.find(x => x.id === s.v5AddrId);
+      if (!b) return null;
+      const d = Object.assign(this.v3BlankDeliver(), this.v5ParseAddress(b.label), { name: b.name, company: b.company || '' });
+      return this.v5BlankAddr({
+        deliver: d, address: this.v3AddressLabel(d),
+        qty: this.v5Total(s), shipping: s.v5Shipping || '', from: 'book'
+      });
     },
     // gbppl-v5-ground-1 (04.09): what the reuse control in the delivery
     // panel says. Not a remembered click but the FORM read back, so it
@@ -13984,33 +14086,82 @@ function checkoutApp() {
       if (bad === 0) return 'The file looks good.';
       return bad === 1 ? '1 row needs fixing.' : bad + ' rows need fixing.';
     },
+    // ============================================================
+    // gbppl-checkout-import-3 (23.09): THE SCREEN BEFORE CONFIRM SAYS WHAT
+    // CONFIRM WILL DO. A row of the file is a delivery the same way a line of
+    // the order is: v5CsvDeliver reads it into the shape the order stores,
+    // and v5CsvPlan holds it against the lines already standing, by the same
+    // v5SpotKey confirmCSVImport files it by. So «new» and «already in your
+    // order» on this screen are the two numbers the import then produces,
+    // not an estimate of them, and the second one is how a reader who
+    // uploads the same file twice learns it BEFORE pressing the button.
+    // The recipient count is the person at the place (bug 14: it used to
+    // count streets, so Alice and Bob at one office read as one).
+    // ============================================================
+    v5CsvDeliver(row) {
+      const bits = String((row && row.address) || '').split(',').map(x => x.trim());
+      return Object.assign(this.v3BlankDeliver(), {
+        name: (row && row.name) || '', street: bits[0] || '', city: bits[1] || '',
+        state: bits[2] || '', zip: (row && row.zip) || ''
+      });
+    },
+    v5CsvPlan() {
+      const s = this.findShipment(this.csv.productId, this.csv.shipmentId);
+      const have = new Set();
+      if (s && s.v5Mode === 'many') (s.v5Addrs || []).forEach(a => have.add(this.v5SpotKey(a.deliver)));
+      else if (s && s.v5AddrId) {
+        const b = (this.addressBook || []).find(x => x.id === s.v5AddrId);
+        if (b) have.add(this.v5SpotKey(this.v5BookSpot(b)));
+      }
+      const seen = new Set();
+      let fresh = 0, joined = 0;
+      (this.csv.preview.rows || []).forEach(r => {
+        const k = this.v5SpotKey(this.v5CsvDeliver(r));
+        if (seen.has(k)) return;
+        seen.add(k);
+        if (have.has(k)) joined += 1; else fresh += 1;
+      });
+      return { recipients: seen.size, fresh: fresh, joined: joined };
+    },
     v5CsvBody() {
       const rows = this.csv.preview.rows || [];
-      const addr = new Set();
-      let perso = 0;
-      rows.forEach(r => {
-        if (r.address) addr.add((r.address || '') + '|' + (r.zip || ''));
-        if (r.mark || r.msg) perso += 1;
-      });
-      return rows.length + ' gift' + (rows.length === 1 ? '' : 's') + ' · ' +
-             addr.size + ' recipient' + (addr.size === 1 ? '' : 's') + ' · ' +
+      const perso = rows.filter(r => r.mark || r.msg).length;
+      const plan = this.v5CsvPlan();
+      const people = n => n + ' recipient' + (n === 1 ? '' : 's');
+      let who;
+      // Nothing standing to meet: the plain census. Something standing: the
+      // split, and «no new recipients» said in words when the file only
+      // feeds lines that are already there (the same file twice).
+      if (!plan.joined) who = people(plan.recipients);
+      else who = (plan.fresh ? plan.fresh + ' new ' + (plan.fresh === 1 ? 'recipient' : 'recipients') : 'no new recipients') +
+                 ' · ' + plan.joined + ' already in your order';
+      return rows.length + ' gift' + (rows.length === 1 ? '' : 's') + ' · ' + who + ' · ' +
              perso + ' personalization' + (perso === 1 ? '' : 's');
     },
     // Typed in the table, counted again on the spot. Nothing else validates
     // here: the honest minimum, exactly as V2 and V3 have it.
+    // gbppl-checkout-import-3: plus the one thing a line cannot exist
+    // without. A row with no address is not a delivery, and the order does
+    // not let an address-less line hold gifts from any other door either.
     v5CsvTouch() {
       const rows = this.csv.preview.rows || [];
-      rows.forEach(r => { r.error = r.zip ? '' : 'ZIP required'; });
+      rows.forEach(r => {
+        r.error = !String(r.address || '').trim() ? 'Address required' : (r.zip ? '' : 'ZIP required');
+      });
       const bad = rows.filter(r => r.error).length;
       this.csv.preview.errors = bad;
       this.csv.preview.valid = rows.length - bad;
     },
     v5CsvDone() {
-      const n = this.csv.preview.total || 0;
+      const n = this.csv.added || 0;
       const a = this.csv.imported || 0;
+      const j = this.csv.joined || 0;
       const k = this.csv.personalized || 0;
-      return n + ' gift' + (n === 1 ? '' : 's') + ' · ' + a + ' address' + (a === 1 ? '' : 'es') +
-             ' · ' + k + ' personalized';
+      const parts = [n + ' gift' + (n === 1 ? '' : 's')];
+      if (a) parts.push(a + ' new recipient' + (a === 1 ? '' : 's'));
+      if (j) parts.push(j + ' already in your order');
+      parts.push(k + ' personalized');
+      return parts.join(' · ');
     },
     // gbppl-checkout-groups-1 (16.09): the receipt for the checkbox of the
     // screen before. Sentence case, the plural the rest of this panel spells
@@ -14788,7 +14939,7 @@ function checkoutApp() {
       // gbppl-checkout-import-1: and `saveToBook` is declared here for the
       // third time the same rule is applied — off is Ton's default, and
       // replacing the bag on every open is what makes it off AGAIN.
-      this.csv = { open: true, step: 1, productId, shipmentId, imported: 0, personalized: 0, file: null, saveToBook: false, savedToBook: 0, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
+      this.csv = { open: true, step: 1, productId, shipmentId, imported: 0, added: 0, joined: 0, personalized: 0, file: null, saveToBook: false, savedToBook: 0, preview: { total: 0, valid: 0, errors: 0, rows: [] } };
     },
     // ============================================================
     // gbppl-v5-import-steps-1 (07.09) — ATTACHING A FILE AND SENDING IT ARE
@@ -15033,50 +15184,106 @@ function checkoutApp() {
       // counter included. Same rule the counter obeys from the other end:
       // empty things go in silence.
       // ============================================================
+      // ============================================================
+      // gbppl-checkout-import-3 (23.09): AND NOW THE PARAGRAPH ABOVE IS TRUE.
+      // The audit of 23.09 (docs/CHECKOUT-AUDIT-2026-09-23.md, bugs 4, 5 and
+      // 14, Elian's E2 to E5) walked the branch below and found it saying
+      // «appends» while it did five other things: a One address order lost
+      // its address (the mode flipped to Multiple and the picked place was
+      // never carried over), an order in «No personalization» lost every
+      // gift it had placed the moment the file turned the table on (rows
+      // were built for the file only, and the total was read off them), the
+      // same file twice made every line twice, Alice and Bob at one office
+      // became one line in Alice's name, and every clean line arrived with
+      // Ground already chosen. What the branch does now, in order:
+      //
+      //   1. THE ORDER IS TAKEN AS IT STANDS. A One address order becomes
+      //      Multiple through v5OneLine, the maker the mode card uses, so the
+      //      picked place walks in as a line holding every gift it held and
+      //      the method it had. If the file prints something and the order
+      //      was not personalizing, the table is turned on through
+      //      v5ChoosePerso, the switch the reader would have used: the gifts
+      //      already placed become rows on the lines that held them.
+      //   2. THE LINE IS THE PERSON AT THE PLACE. Every row of the file is
+      //      keyed by v5SpotKey, recipient plus street plus ZIP, the one key
+      //      the picker and the book already use (Vlad, 22.09). A key the
+      //      order already holds is not a new line: the gift joins that line.
+      //      A key the file brings twice is one new line with two gifts.
+      //   3. A NEW LINE HAS NO METHOD. The method is the client's money and
+      //      is chosen by hand (the client, 22.09); the strip counts the
+      //      missing ones, and Place Order waits for them.
+      //   4. THE TOTAL IS WHAT WAS THERE PLUS WHAT CAME. In the table every
+      //      gift of the file is a row on its line, carrying its printed name
+      //      and its card, so total and rows are the same number (E3).
+      //
+      // AND THE UNTOUCHED FORM IS NO LONGER AN EXCEPTION. The old branch
+      // dropped the counter of an order with no address and nothing written
+      // and let the file be the order. The counter is a number the cart
+      // arrived with, and the button the reader pressed says «add»; so an
+      // empty order of twelve plus a file of twenty is thirty two, twelve of
+      // them not assigned, and the strip says so out loud. Replacing the
+      // number silently is the one thing this wave exists to stop.
+      //
+      // A ROW WITH AN ERROR NEVER ARRIVES. Confirm is shut while the table
+      // holds one (the house's disabled, at the button); the check here is
+      // the same gate from inside, for any hand that reaches the method.
+      // ============================================================
       if (this.uiVersion === 'v5') {
         const rows = this.csv.preview.rows || [];
         if (!s) { this.csv.step = 3; return; }
-        const made = new Map();
-        const list = [];
-        const keyOf = row => (row.address || '') + '|' + (row.zip || '');
-        rows.forEach(row => {
-          const key = keyOf(row);
-          if (made.has(key)) { made.get(key).qty += 1; return; }
-          const bits = (row.address || '').split(',').map(x => x.trim());
-          const deliver = Object.assign(this.v3BlankDeliver(), {
-            name: row.name || '', street: bits[0] || '', city: bits[1] || '',
-            state: bits[2] || '', zip: row.zip || ''
-          });
-          const a = this.v5BlankAddr({
-            deliver: deliver,
-            address: this.v3AddressLabel(deliver),
-            qty: 1,
-            shipping: row.error ? '' : 'ground',
-            hasError: !!row.error,
-            errorMsg: row.error || ''
-          });
-          made.set(key, a);
-          list.push(a);
-        });
-        const standing = s.v5Addrs || [];
-        const blankForm = standing.length === 0 && !(s.v5Rows || []).some(r => this.rowFilled(r));
-        s.v5Mode = 'many';
-        s.v5Addrs = (blankForm ? [] : standing).concat(list);
+        this.v5CsvTouch();
+        if (this.csv.preview.errors > 0) return;
+        // 1. The order as it stands.
+        if (s.v5Mode !== 'many') {
+          const line = this.v5OneLine(s);
+          s.v5Addrs = line ? [line] : [];
+          // In One address every gift goes to the one place, so every row
+          // that exists is that line's.
+          (s.v5Rows || []).forEach(r => { r.addrId = line ? line.id : null; });
+          s.v5Mode = 'many';
+        }
         const printed = rows.some(r => r.mark || r.msg);
-        if (printed) {
-          const made5 = rows.map(row => {
-            const a = made.get(keyOf(row));
-            return this.v5Row({
-              name: row.mark || '',
-              addrId: a ? a.id : null,
-              greeting: row.msg ? { to: '', message: row.msg, from: '', fromMaster: false, custom: true } : null
-            });
-          });
-          s.v5Perso = 'each';
-          s.v5Rows = (blankForm ? [] : (s.v5Rows || [])).concat(made5);
-          s.v5Qty = s.v5Rows.length;
+        if (printed && s.v5Perso !== 'each') this.v5ChoosePerso(s, 'each');
+        const each = s.v5Perso === 'each';
+        if (each) this.v5SyncRows(s);
+        const before = this.v5Total(s);
+        // 2. The person at the place.
+        const standing = new Set((s.v5Addrs || []).map(a => a.id));
+        const lineBy = new Map();
+        (s.v5Addrs || []).forEach(a => {
+          const k = this.v5SpotKey(a.deliver);
+          if (!lineBy.has(k)) lineBy.set(k, a);
+        });
+        const fresh = [];
+        const joined = new Set();
+        const target = rows.map(row => {
+          const d = this.v5CsvDeliver(row);
+          const k = this.v5SpotKey(d);
+          let a = lineBy.get(k);
+          if (!a) {
+            // 3. No method: shipping stays the blank v5BlankAddr gives it.
+            a = this.v5BlankAddr({ deliver: d, address: this.v3AddressLabel(d), qty: 0 });
+            lineBy.set(k, a);
+            fresh.push(a);
+          } else if (standing.has(a.id)) joined.add(a.id);
+          return a;
+        });
+        s.v5Addrs = (s.v5Addrs || []).concat(fresh);
+        // 4. What was there plus what came.
+        if (each) {
+          const made5 = rows.map((row, i) => this.v5Row({
+            name: row.mark || '',
+            addrId: target[i].id,
+            greeting: row.msg ? { to: '', message: row.msg, from: '', fromMaster: false, custom: true } : null
+          }));
+          s.v5Rows = (s.v5Rows || []).concat(made5);
+          s.v5Qty = before + made5.length;
+          // `qty` kept level with the rows on the lines the file touched, for
+          // the moment the reader goes back to «No personalization».
+          new Set(target).forEach(a => { a.qty = this.v5AddrCount(s, a); });
         } else {
-          s.v5Qty = (blankForm ? 0 : this.v5Total(s)) + rows.length;
+          target.forEach(a => { a.qty = Math.max(0, a.qty || 0) + 1; });
+          s.v5Qty = before + rows.length;
         }
         s.v5Page = 1;
         // gbppl-v5-prefill-1: the file's own names are the file's and are
@@ -15107,7 +15314,7 @@ function checkoutApp() {
         // the book and were not missing a ZIP.
         let filed = 0;
         if (this.csv.saveToBook) {
-          list.forEach(a => {
+          fresh.forEach(a => {
             if (a.hasError) return;
             const d = a.deliver || {};
             const label = a.address || this.v3AddressLabel(d);
@@ -15119,8 +15326,13 @@ function checkoutApp() {
           });
         }
         this.csv.savedToBook = filed;
-        this.csv.imported = list.length;
-        this.csv.personalized = rows.filter(r => r.mark || r.msg).length;
+        // gbppl-checkout-import-3: the receipt counts what this call did —
+        // the gifts it added, the lines it made, the lines it fed — never
+        // the row count of the file read back.
+        this.csv.added = rows.length;
+        this.csv.imported = fresh.length;
+        this.csv.joined = joined.size;
+        this.csv.personalized = each ? rows.filter(r => r.mark || r.msg).length : 0;
         this.csv.step = 3;
         return;
       }
