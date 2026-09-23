@@ -9,6 +9,28 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-addrgate-1 (2026-09-23) — V5 ONLY: EVERY ASTERISK
+     OF THE ADDRESS FORM IS TRUE, AT EVERY DOOR
+     ------------------------------------------------------------
+     Package 2 of the checkout audit (studio\docs\CHECKOUT-AUDIT-
+     2026-09-23.md): E1, an address of a name and a street went all
+     the way to «Your order is placed» through One address, and #9,
+     Set delivery address filed a line holding only a name. The form
+     marked six fields required and checked one of them.
+     All four doors that write a typed address (One address, the
+     picker's new address and its correction of a row, the pencil of
+     a line, Set delivery address) come through v5SaveDeliver, so the
+     gate is there once: Full name, Street, City, State, ZIP, Country
+     must be non-empty, nothing else is checked (ZIP keeps no format,
+     countries differ). A press with a hole marks EVERY empty field
+     with the house's own pair (auth.css .gba-input.invalid +
+     .gba-error), puts the caret in the first one, and saves nothing.
+     Each mark goes on the first keystroke in its own field. The name
+     gate of gbppl-checkout-ref-box-1 is the first row of the same
+     set now, `drawer.nameErr` became `drawer.errs`. V1 to V4 never
+     reach it: the gate is fenced on uiVersion, their marks stay off.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-perso-form-1 (2026-09-23) — V5 ONLY: THE PERSONALIZATION
      FIELDS SAY WHAT GOES IN THEM, ONCE, AND BREATHE
      ------------------------------------------------------------
@@ -8706,10 +8728,10 @@
              ============================================================ -->
         <div class="gba-inputwrap">
           <label class="gb-eyebrow block mb-1">Full name <span class="text-red-500">*</span></label>
-          <input type="text" x-model="drawer.data.name" @input="drawer.nameErr = false" data-v5-name
-                 :class="drawer.nameErr ? 'invalid' : ''" :aria-invalid="drawer.nameErr ? 'true' : 'false'"
+          <input type="text" x-model="drawer.data.name" @input="v5ErrOff('name')" data-v5-req="name"
+                 :class="v5Err('name') ? 'invalid' : ''" :aria-invalid="v5Err('name') ? 'true' : 'false'"
                  placeholder="Anton Parkhomenko" class="gba-input">
-          <span class="gba-error" role="alert" x-show="drawer.nameErr" x-cloak>Recipient name required</span>
+          <span class="gba-error" role="alert" x-show="v5Err('name')" x-cloak>Recipient name required</span>
         </div>
         <div class="gba-inputwrap">
           <label class="gb-eyebrow block mb-1">Company <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
@@ -8724,9 +8746,16 @@
 
     <div class="space-y-6" x-show="v5PkFormOn()">
       <p class="gb-eyebrow">Address</p>
+      <!-- gbppl-checkout-addrgate-1: the five marks below are the name's
+           pair repeated, no more. v5Err reads `drawer.errs`, which only the
+           V5 gate in v5SaveDeliver ever writes, so V1 to V4 carry the spans
+           hidden and their fields keep the one class they always had. -->
       <div class="gba-inputwrap">
         <label class="gb-eyebrow block mb-1">Street <span class="text-red-500">*</span></label>
-        <input type="text" x-model="drawer.data.street" placeholder="123 Main St" class="gba-input">
+        <input type="text" x-model="drawer.data.street" placeholder="123 Main St" class="gba-input"
+               @input="v5ErrOff('street')" data-v5-req="street"
+               :class="v5Err('street') ? 'invalid' : ''" :aria-invalid="v5Err('street') ? 'true' : 'false'">
+        <span class="gba-error" role="alert" x-show="v5Err('street')" x-cloak>Street required</span>
       </div>
       <div class="gba-inputwrap">
         <label class="gb-eyebrow block mb-1">Apt / Suite <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
@@ -8735,23 +8764,35 @@
       <div class="grid grid-cols-3 max-[520px]:grid-cols-1 gap-6">
         <div class="gba-inputwrap">
           <label class="gb-eyebrow block mb-1">City <span class="text-red-500">*</span></label>
-          <input type="text" x-model="drawer.data.city" class="gba-input">
+          <input type="text" x-model="drawer.data.city" class="gba-input"
+                 @input="v5ErrOff('city')" data-v5-req="city"
+                 :class="v5Err('city') ? 'invalid' : ''" :aria-invalid="v5Err('city') ? 'true' : 'false'">
+          <span class="gba-error" role="alert" x-show="v5Err('city')" x-cloak>City required</span>
         </div>
         <div class="gba-inputwrap">
           <label class="gb-eyebrow block mb-1">State <span class="text-red-500">*</span></label>
-          <input type="text" x-model="drawer.data.state" class="gba-input">
+          <input type="text" x-model="drawer.data.state" class="gba-input"
+                 @input="v5ErrOff('state')" data-v5-req="state"
+                 :class="v5Err('state') ? 'invalid' : ''" :aria-invalid="v5Err('state') ? 'true' : 'false'">
+          <span class="gba-error" role="alert" x-show="v5Err('state')" x-cloak>State required</span>
         </div>
         <div class="gba-inputwrap">
           <label class="gb-eyebrow block mb-1">ZIP <span class="text-red-500">*</span></label>
-          <input type="text" x-model="drawer.data.zip" class="gba-input">
+          <input type="text" x-model="drawer.data.zip" class="gba-input"
+                 @input="v5ErrOff('zip')" data-v5-req="zip"
+                 :class="v5Err('zip') ? 'invalid' : ''" :aria-invalid="v5Err('zip') ? 'true' : 'false'">
+          <span class="gba-error" role="alert" x-show="v5Err('zip')" x-cloak>ZIP code required</span>
         </div>
       </div>
       <div class="gba-inputwrap">
         <label class="gb-eyebrow block mb-1">Country <span class="text-red-500">*</span></label>
         <div class="gba-select">
-          <select x-model="drawer.data.country" class="gba-input"><option>United States</option><option>Canada</option><option>Italy</option><option>United Kingdom</option><option>Germany</option><option>France</option></select>
+          <select x-model="drawer.data.country" class="gba-input"
+                  @change="v5ErrOff('country')" data-v5-req="country"
+                  :class="v5Err('country') ? 'invalid' : ''" :aria-invalid="v5Err('country') ? 'true' : 'false'"><option>United States</option><option>Canada</option><option>Italy</option><option>United Kingdom</option><option>Germany</option><option>France</option></select>
           <span data-gb-icon="chevron-down" data-gb-icon-size="20" aria-hidden="true"></span>
         </div>
+        <span class="gba-error" role="alert" x-show="v5Err('country')" x-cloak>Country required</span>
       </div>
     </div>
 
@@ -12079,7 +12120,7 @@ function checkoutApp() {
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: null,
         addrId: addrId || null, v5Target: 'list', v5Assign: false, master: false,
-        nameErr: false, saveToBook: false,
+        errs: {}, saveToBook: false,
         pk: pk,
         data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), (a && a.deliver) || {})
       };
@@ -12138,7 +12179,7 @@ function checkoutApp() {
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: null,
         addrId: null, v5Target: 'one', v5Assign: false, master: false,
-        nameErr: false, saveToBook: false,
+        errs: {}, saveToBook: false,
         pk: pk,
         data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver(), held)
       };
@@ -12246,12 +12287,33 @@ function checkoutApp() {
          of a group's address) come through this one function and a rule
          written at the button would have had to be written three times.
          The mark is taken down by the first keystroke in the field, and the
-         cursor is put where the sentence is pointing. */
-      if (this.uiVersion === 'v5' && !String(d.name || '').trim()) {
-        this.drawer.nameErr = true;
-        const el = document.querySelector('.gbd-panel [data-v5-name]');
-        if (el) { el.focus({ preventScroll: true }); el.scrollIntoView({ block: 'nearest' }); }
-        return;
+         cursor is put where the sentence is pointing.
+         gbppl-checkout-addrgate-1 (23.09): AND SO ARE THE OTHER FIVE. The name
+         was the only asterisk that stopped a Save, so a name and a street
+         went all the way to a placed order (audit E1) and Set delivery
+         address filed a line of a name alone (audit #9). Same place, same
+         reason, now the whole required set: every empty one is marked at
+         once (a reader fixes the form in one pass, not one refusal per
+         field), the caret goes to the first, and nothing is written. Only
+         emptiness is asked; a ZIP keeps no format, countries differ. */
+      if (this.uiVersion === 'v5') {
+        const miss = this.v5Missing(d);
+        if (miss.length) {
+          const errs = {};
+          miss.forEach(f => { errs[f] = true; });
+          this.drawer.errs = errs;
+          const el = document.querySelector('.gbd-panel [data-v5-req="' + miss[0] + '"]');
+          /* The field's wrap is what is scrolled to, not the input: on a phone
+             the input alone lands on the foot's edge with its sentence under
+             the foot (caught on the 360 shot of the pencil, ZIP wiped). And
+             it is scrolled a tick later, once Alpine has drawn the sentence:
+             measured before that, the wrap is one line short. */
+          if (el) {
+            el.focus({ preventScroll: true });
+            setTimeout(() => { (el.closest('.gba-inputwrap') || el).scrollIntoView({ block: 'nearest' }); }, 0);
+          }
+          return;
+        }
       }
       const deliver = {
         name: d.name || '', company: d.company || '', phone: d.phone || '',
@@ -12541,7 +12603,7 @@ function checkoutApp() {
       this.drawer = {
         open: true, type: 'deliver', productId, shipmentId, recipientId: rowId || null,
         addrId: null, v5Target: 'list', v5Assign: true, master: false,
-        nameErr: false, saveToBook: false,
+        errs: {}, saveToBook: false,
         pk: this.v5BlankPk(),
         data: Object.assign(this.blankDrawerData(), this.v3BlankDeliver())
       };
@@ -13235,7 +13297,7 @@ function checkoutApp() {
       pk.typed = true;
       pk.mode = 'form';
       pk.i = -1;
-      this.drawer.nameErr = false;
+      this.v5ErrsOff();
       /* A place already in the book stays in it; a one-off stays a one-off
          unless the reader says otherwise on this very form. */
       this.drawer.saveToBook = r.kind === 'book';
@@ -13259,7 +13321,7 @@ function checkoutApp() {
          nobody's saved row, so both answers the form carries are reset. */
       pk.edit = '';
       this.drawer.saveToBook = false;
-      this.drawer.nameErr = false;
+      this.v5ErrsOff();
       this.v5PkOpenForm();
     },
     /* ============================================================
@@ -13293,7 +13355,7 @@ function checkoutApp() {
       /* gbppl-checkout-picker-1: walking back from a correction abandons it.
          The row it was opened on is untouched until Save says otherwise. */
       pk.edit = '';
-      this.drawer.nameErr = false;
+      this.v5ErrsOff();
       this.v5PkHead();
       setTimeout(() => { this.v5PkFit(); this.v5PkFocus(); }, 0);
     },
@@ -13492,6 +13554,17 @@ function checkoutApp() {
         if (el) el.focus({ preventScroll: true });
       }, 0);
     },
+    /* gbppl-checkout-addrgate-1 (23.09): THE REQUIRED SET OF THE ADDRESS
+       FORM, once, in the order the fields stand, so the first entry of what
+       comes back is the field the caret should go to. It is exactly the six
+       labels that wear the asterisk; nothing is asked of them but a value. */
+    v5Missing(d) {
+      return ['name', 'street', 'city', 'state', 'zip', 'country']
+        .filter(f => !String((d && d[f]) || '').trim());
+    },
+    v5Err(f) { const e = this.drawer && this.drawer.errs; return !!(e && e[f]); },
+    v5ErrOff(f) { const e = this.drawer && this.drawer.errs; if (e && e[f]) e[f] = false; },
+    v5ErrsOff() { if (this.drawer) this.drawer.errs = {}; },
     v5FormDirty() {
       const d = (this.drawer && this.drawer.data) || {};
       return !!(d.name || d.company || d.phone || d.street || d.apt || d.city || d.state || d.zip);
@@ -13508,7 +13581,7 @@ function checkoutApp() {
     v5ClearForm() {
       Object.assign(this.drawer.data, this.v3BlankDeliver());
       // gbppl-checkout-ref-box-1: an emptied form has not been pressed yet.
-      this.drawer.nameErr = false;
+      this.v5ErrsOff();
       setTimeout(function () {
         const el = document.querySelector('.gbd-panel [x-model="drawer.data.name"]');
         if (el) el.focus({ preventScroll: true });
