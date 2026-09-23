@@ -424,6 +424,22 @@
       from: 'checkout.html: the Download template buttons of the import flow',
       stroke: 1.8
     },
+    /* THE EXPAND (gbppl-approvals-share-1, 23.09). The client, on the
+       approvals page: «фишку в уголке, вверху справа: развернуть
+       3D-модель на всю ширину, чтобы она открывалась в оверлее
+       сверху». The record had nothing that says «bigger»: `move` is a
+       gesture, `panel-*` are layout. assets\nucleo-full\
+       48-arrows-expand-diagonal-2.svg, halved by the same arithmetic
+       as `move` and `rotate`. Whole file, nothing dropped: two stems
+       and the two corners they run into. NOT `arrows-expand`, the
+       four-arrow sibling: four heads in a 20px circle read as `move`,
+       the glyph that already stands on the same stage's hint. */
+    'expand': {
+      body: '<path d="M14 14 21.5 21.5 21.25 21.25M10 10 2.5 2.5 2.75 2.75"/>' +
+            '<path d="M11.5 2.5H2.5V11.5M12.5 21.5H21.5V12.5"/>',
+      from: 'assets/nucleo-full/48-arrows-expand-diagonal-2.svg (Nucleo, the house set): «Expand the 3D model» on the approvals stage',
+      stroke: 1
+    },
     'eye': {
       body: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z"/>' +
             '<circle cx="12" cy="12" r="2.8"/>',

@@ -715,6 +715,43 @@
      revision, no messages. Gifts with a conversation are unchanged
      (measured at 1280 before and after, five layouts, number for
      number). No new value: every rule only hides or re-names areas.
+
+     ============================================================
+     gbppl-approvals-share-1 — SHARE THIS GIFT, AND THE EXPAND
+                                                        23.09.2026
+     ------------------------------------------------------------
+     The client, 23.09: «эта страница — для аппрува тем, кто должен
+     аппрувить, а show design gift — это страница для расшара с
+     третьими лицами... они не аппрувят, а просто дают мне вербальный
+     фидбэк, и я потом уже сам всё аппрувлю здесь». And: «вместо
+     "open a showcase"... мы должны сделать типа "share this gift".
+     Именно по этой кнопке у нас должен появляться "copy link"... А
+     ещё... в уголке, вверху справа: развернуть 3D-модель на всю
+     ширину, чтобы она открывалась в таком оверлее сверху».
+
+     THE ROW UNDER THE BLOCK is one door in every layout, Share this
+     gift (glyph link). Pressed, it opens a second quiet door to its
+     LEFT, Copy the showcase link (glyph copy), so the door under the
+     finger does not move; a second press folds it. The copy door
+     copies shareUrl(), the canonical address of design-share.html,
+     and answers Copied through sayCopied, then returns to its own
+     words. «Showcase» is the one name this page already gives that
+     page (the layer's cross says Close the showcase). A and B lose
+     their standing Copy link to the same two steps; C, D and E gain
+     the copy they had hidden. One recipe on A to E.
+
+     THE EXPAND is the round glyph at its small rung (40, glyph 20),
+     ghost secondary, top right of the stage at the block's content
+     edge, over the plate's corner the way the hint lies over its
+     foot. It carries data-gbppa-showcase, so the showcase layer and
+     its cross in the share page's own head come with it unchanged.
+     In C its twin stands in Activity's row at the right, centred on
+     that line out of the flow, so the two corners are one line. The
+     glyph is new in icon.js (expand, Nucleo 48-arrows-expand-
+     diagonal-2): the record had nothing that says «bigger». Flat
+     designs (data-has3d 0) show neither the row nor the expand.
+     No new value: 40/20 are the organism's own rung, 0 and 50% are
+     the block's edges.
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1332,6 +1369,40 @@ body[data-frame="portal"] .gbppa-headbox {
   pointer-events: none;
 }
 
+/* ---- THE EXPAND, TOP RIGHT OF THE STAGE      gbppl-approvals-share-1
+        The client, 23.09: «фишку в уголке, вверху справа: развернуть
+        3D-модель на всю ширину, чтобы она открывалась в таком оверлее
+        сверху». It is the house's round glyph at its smallest rung
+        (40 circle, 20 glyph, the one every icon carrier wears),
+        ghost secondary: at rest there is no ground at all, the 5%
+        wash only answers the pointer — the same quiet coat as the
+        cross that closes the layer it opens. It stands at the
+        block's content edge, top 0 right 0, so its wash stays inside
+        the vertical lines of the block (plaques stay inside lines).
+        The plate under it is not touched; the object turns under
+        every pixel but the circle's. ---- */
+.gbppa-stagewrap > .gbppa-expand {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+}
+/* In C the top of the block is Activity's row, and a circle hung on
+   the stage below it would be a second top line. So C wears the twin
+   in that row, centred on its line and taken out of the flow, which
+   is why the row keeps its height and the stage does not move. */
+body[data-pv="c"] .gbppa-corner { position: relative; }
+body[data-pv="c"] .gbppa-corner .gbppa-expand {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+body[data-pv="c"] #gbppaOne:not([data-talk="0"]) .gbppa-stagewrap > .gbppa-expand { display: none; }
+/* A flat design has nothing to turn and nothing to expand into the
+   layer: both carriers go with the doors under the block. */
+#gbppaPanePreview[data-has3d="0"] .gbppa-expand { display: none; }
+
 /* ---- THE TWO QUIET DOORS. Text, Blue 600, an underline at offset 2
         on hover (Ton-22), never a box. One recipe, worn by an <a> in
         the last word and by a <button> in both door carriers: a
@@ -1377,10 +1448,23 @@ button.gbppa-door:hover { text-decoration: underline; text-underline-offset: 2px
   justify-content: flex-end;
   gap: var(--space-24);
   margin-top: var(--space-16);
+  /* gbppl-approvals-share-1: two doors are 181 + 24 + 115 = 320, and
+     at 360 the column is 313, so the copy door crossed the block's
+     left line by 7 (measured). The row may break now, and it breaks
+     REVERSED: Share keeps the line it stood on and the copy door it
+     opens lands under it, right-aligned, one 8 of air between the
+     lines. Where both fit nothing changes. */
+  flex-wrap: wrap-reverse;
+  row-gap: var(--space-8);
 }
 .gbppa-below .gbppa-door {
   display: inline-flex;
   align-items: center;
+  /* gbppl-approvals-share-1: sayCopied freezes the door's resting
+     width while the shorter «Copied» stands, and the row is pinned
+     right, so the answer hugs the right end of its frame: it stays one
+     gap from Share instead of drifting to the far left of a gap. */
+  justify-content: flex-end;
   gap: var(--space-8);
 }
 .gbppa-below .gb-btn__icon { display: inline-flex; color: var(--zinc-400); }
@@ -1801,9 +1885,14 @@ body[data-pv="c"] .gbppa-corner {
    own Copy link in its foot: two doors to one clipboard, one of them
    a floor away from the thing it copies. A and B keep theirs until
    he says otherwise, so the row under the block is ONE door here. */
-body[data-pv="c"] [data-gbppa-copy],
-body[data-pv="d"] [data-gbppa-copy],
-body[data-pv="e"] [data-gbppa-copy] { display: none; }
+/* gbppl-approvals-share-1 RETIRES THAT RULE. The row is ONE door in
+   every layout now, Share this gift, and the copy door is the second
+   step it opens (the client, 23.09). The reason above is gone with
+   it: the showcase is no longer opened from this row, so the copy is
+   not «a floor away from the thing it copies» but the thing itself.
+   One recipe on A to E, and the [hidden] of the copy door has to win
+   over the door's own inline-flex (ловушка 29). */
+.gbppa-below [hidden] { display: none !important; }
 
 /* THE COUNT IS `.gbh-count` OFF header.css, value for value — the
    pill the portal bell and the cart already wear. It is told exactly
@@ -1821,7 +1910,9 @@ body[data-pv="e"] [data-gbppa-copy] { display: none; }
   align-items: center;
   gap: var(--space-8);
 }
-.gbppa-corner .gb-btn__icon { display: inline-flex; color: var(--zinc-400); }
+/* Scoped to the door (gbppl-approvals-share-1): the expand in the
+   same row is an organism circle and keeps the organism's own ink. */
+.gbppa-corner .gbppa-door .gb-btn__icon { display: inline-flex; color: var(--zinc-400); }
 /* The slot and label pair is borrowed for the shape, not for the
    organism's caps: a quiet door speaks in sentence case (Ton-22). */
 .gbppa-corner .gb-btn__label { font: inherit; letter-spacing: inherit; text-transform: none; }
@@ -2519,6 +2610,13 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
                     <span class="gb-btn__label">Activity</span>
                     <span class="gbh-count" data-gbppa-unread aria-hidden="true" hidden>0</span>
                   </button>
+                  <!-- gbppl-approvals-share-1: THE OTHER CORNER of the same
+                       line. In C the expand stands here, on Activity's own
+                       row at the right edge, so the two corners are one
+                       line of the block and not two heights. -->
+                  <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbppa-expand" type="button" data-gbppa-showcase aria-label="Expand the 3D model" data-gb-tip="Expand" data-gb-tip-place="left">
+                    <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="expand" data-gb-icon-size="20"></span></span>
+                  </button>
                 </div>
 
                 <!-- NOTHING ELSE STANDS BEFORE THE STAGE (Ton, 21.09, the
@@ -2542,6 +2640,18 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
                           <span class="gbppa-hint__bit"><span data-gb-icon="move" data-gb-icon-size="12"></span>Right-drag to move</span>
                         </p>
                       </div>
+
+                      <!-- gbppl-approvals-share-1: THE EXPAND, top right of
+                           the stage, at the block's own edge. It lies over
+                           the plate's corner the way the hint lies over its
+                           foot: the plate is untouched and the object keeps
+                           turning under everything but the 40 circle. It
+                           opens the showcase layer that the door under the
+                           block used to open. C wears its twin in the
+                           corner row above, and this one steps aside. -->
+                      <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gbppa-expand" type="button" data-gbppa-showcase aria-label="Expand the 3D model" data-gb-tip="Expand" data-gb-tip-place="left">
+                        <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="expand" data-gb-icon-size="20"></span></span>
+                      </button>
                     </div>
 
                     <p class="gbppa-note" id="gbppaPreviewNote" hidden></p>
@@ -2659,13 +2769,19 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
             <!-- The slot/label pair inside each door is what lets
                  sayCopied swap the glyph and the word and put both
                  back, the same contract the buttons wear. -->
-            <button class="gbppa-door" type="button" data-gbppa-showcase>
-              <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="eye" data-gb-icon-size="16"></span></span>
-              <span class="gb-btn__label">Open the showcase</span>
+            <!-- gbppl-approvals-share-1: ONE DOOR AT REST, TWO AFTER IT
+                 (the client, 23.09: «по этой кнопке у нас должен
+                 появляться copy link»). Share this gift says what the
+                 row is for; the copy door it opens says WHAT is copied,
+                 and answers Copied in its own place. Copy stands left
+                 of Share so the door you pressed does not move. -->
+            <button class="gbppa-door" type="button" id="gbppaCopyDoor" data-gbppa-copy data-gbppa-rest="Copy the showcase link" data-gbppa-restglyph="copy" hidden>
+              <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="copy" data-gb-icon-size="16"></span></span>
+              <span class="gb-btn__label">Copy the showcase link</span>
             </button>
-            <button class="gbppa-door" type="button" data-gbppa-copy>
+            <button class="gbppa-door" type="button" data-gbppa-share aria-expanded="false" aria-controls="gbppaCopyDoor">
               <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="link" data-gb-icon-size="16"></span></span>
-              <span class="gb-btn__label">Copy link</span>
+              <span class="gb-btn__label">Share this gift</span>
             </button>
           </div>
 
@@ -3090,6 +3206,7 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
     homeSlot();
     homeComposer();
     homePanes();
+    foldShare();   /* gbppl-approvals-share-1 */
     if (gift) { drawThread(); drawFeed(); drawRevision(); syncUnread(); }
   }
   setPv(pv);
@@ -4190,8 +4307,13 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
       }
     }
     say(word, glyph);
+    /* gbppl-approvals-share-1: a door that rests on other words and
+       another glyph says so on itself (data-gbppa-rest / -restglyph),
+       and the answer hands back exactly what was there. */
+    var restWord  = btn.getAttribute('data-gbppa-rest') || 'Copy link';
+    var restGlyph = btn.getAttribute('data-gbppa-restglyph') || 'link';
     btn.gbppaSaid = setTimeout(function () {
-      say('Copy link', 'link');
+      say(restWord, restGlyph);
       btn.style.minWidth = '';
       btn.gbppaSaid = null;
     }, 1500);
@@ -4201,6 +4323,30 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
     var b = e.target.closest ? e.target.closest('[data-gbppa-copy]') : null;
     if (!b) return;
     copyText(shareUrl(), function (ok) { sayCopied(b, ok); });
+  });
+
+  /* SHARE THIS GIFT (gbppl-approvals-share-1). The client, 23.09:
+     «вместо open a showcase... мы должны сделать типа share this gift.
+     Именно по этой кнопке у нас должен появляться copy link». Two
+     steps, and the first one changes nothing but what is on offer:
+     the door opens the copy door beside it, a second press puts it
+     away. The copy door is the one that acts, so it is also the one
+     that answers, in its own place. Changing gift or layout starts
+     the row folded again. */
+  function foldShare() {
+    var s = document.querySelector('[data-gbppa-share]');
+    var c = document.getElementById('gbppaCopyDoor');
+    if (s) s.setAttribute('aria-expanded', 'false');
+    if (c) c.hidden = true;
+  }
+  document.addEventListener('click', function (e) {
+    var s = e.target.closest ? e.target.closest('[data-gbppa-share]') : null;
+    if (!s) return;
+    var c = document.getElementById('gbppaCopyDoor');
+    if (!c) return;
+    var open = s.getAttribute('aria-expanded') !== 'true';
+    s.setAttribute('aria-expanded', open ? 'true' : 'false');
+    c.hidden = !open;
   });
 
   /* ============================================================
@@ -4298,6 +4444,7 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
        switcher in A and B; homePanes is what says where the two panes
        STAND, and in E they stand in the panel rather than in the pane
        host, so the two are said in that order (gbppl-approvals-5). */
+    foldShare();   /* gbppl-approvals-share-1: every gift opens with the row folded */
     if (gift) { selectTab('gbppaTabPreview'); homePanes(); drawOne(); }
     drawList(searchEl ? searchEl.value : '');
   }
