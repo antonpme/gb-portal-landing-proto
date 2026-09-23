@@ -7,6 +7,27 @@
 <link rel="icon" href="data:,">
 
 <!-- ============================================================
+     gbppl-perso-form-1 — THE PERSONALIZE FORM SAYS WHAT GOES IN
+                          AN EMPTY FIELD, AND BREATHES
+     ------------------------------------------------------------
+     The client's own dev (Dima) reworked the personalize form on
+     their share page: a placeholder in every empty field, the
+     product name said once and not again at the field, air between
+     the rows. The client asked for the same sense here (23.09).
+     WHAT CHANGED, AND ONLY THIS: every field of «See it
+     personalized» carries a placeholder in the house's own words
+     (the card vocabulary is the checkout's, word for word, so the
+     two forms of the house still say one thing one way); the rows
+     of a group stand 32 apart and the groups 48, the rhythm the
+     checkout's personalization drawers (.ck-drawer-stack) already
+     keep inside the same <gb-drawer>. No duplicate label was found
+     here: the group head names the part, the field label names the
+     line. No counter was added: these fields carry no limit, and
+     inventing one is a data decision, not a copy one (question in
+     the wave report).
+     ============================================================ -->
+
+<!-- ============================================================
      gbppl-design-share-copylink-1 — THE PAGE HANDS OVER ITS OWN
                                      ADDRESS, AND A CLEAN ONE
      ------------------------------------------------------------
@@ -1748,12 +1769,18 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
 
 /* ============================================================
    THE PERSONALIZE SURFACE lives in <gb-drawer>, so this page
-   writes only the rhythm of the form inside it: 32 between named
-   groups, 24 between the rows of one group. Rungs, not derived
+   writes only the rhythm of the form inside it. Rungs, not derived
    tokens (ловушка 21в).
+   gbppl-perso-form-1 (23.09): 48 between named groups, 32 between
+   the rows of one group (were 32 / 24). The client asked for the
+   air of their own reworked form, and 32 is the row rhythm the
+   checkout's personalization drawers already keep in this same
+   <gb-drawer> (.ck-drawer-stack), so the house's two personalize
+   surfaces now breathe alike; the group takes the next rung up so
+   it still reads as the larger break.
    ============================================================ */
-.gbd-sub + .gbds-pz__group,
-.gbds-pz__group + .gbds-pz__group { margin-top: var(--space-32); }
+.gbd-sub + .gbds-pz__group { margin-top: var(--space-32); }
+.gbds-pz__group + .gbds-pz__group { margin-top: var(--space-48); }
 /* The heading of a group: the checkout card title's dress (16/600,
    sentence case), so caps stays with the field labels alone. */
 .gbds-pz__head {
@@ -1765,7 +1792,7 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
   color: var(--zinc-900);
 }
 .gbds-pz__group gb-field { display: block; }
-.gbds-pz__group gb-field + gb-field { margin-top: var(--space-24); }
+.gbds-pz__group gb-field + gb-field { margin-top: var(--space-32); }
 .gbds-pz__foot { display: flex; gap: var(--space-16); }
 .gbds-pz__foot .gb-btn { flex: 1 1 auto; }
 
@@ -2655,19 +2682,27 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
          checkout card title's own dress: 16/600, sentence case
          (.gba-method-title's grammar). Tabs were weighed and
          declined: four fields do not earn a second navigation. */
+      /* gbppl-perso-form-1 (23.09): EVERY FIELD SAYS WHAT GOES IN IT
+         WHEN IT IS EMPTY. The card's three placeholders are the
+         checkout card panel's own, word for word (Intro / Message /
+         From there), so one card is asked for one way in the house.
+         The brand line names what it takes; the helper under it
+         still says where it lands. */
       '<div class="gbds-pz__group">' +
         '<span class="gbds-pz__head">Gift box</span>' +
         '<gb-field optional input-id="gbdsBox" name="box" label="Brand line"' +
+          ' placeholder="Your company name"' +
           ' value="' + esc(CARD.box) + '"' +
           ' helper="A short line, printed across the wrap."></gb-field>' +
       '</div>' +
       '<div class="gbds-pz__group">' +
         '<span class="gbds-pz__head">Greeting card</span>' +
-        '<gb-field optional input-id="gbdsIntro" name="intro" label="Intro" value="' + esc(CARD.intro) + '"></gb-field>' +
+        '<gb-field optional input-id="gbdsIntro" name="intro" label="Intro" placeholder="Hello, or Dear team," value="' + esc(CARD.intro) + '"></gb-field>' +
         '<gb-field optional input-id="gbdsMessage" name="message" type="textarea" label="Message"' +
+          ' placeholder="Write your message..."' +
           ' value="' + esc(CARD.message) + '"' +
           ' helper="Two lines sit comfortably on the card."></gb-field>' +
-        '<gb-field optional input-id="gbdsSign" name="signature" label="Signature" value="' + esc(CARD.signature) + '"></gb-field>' +
+        '<gb-field optional input-id="gbdsSign" name="signature" label="Signature" placeholder="Your name or company" value="' + esc(CARD.signature) + '"></gb-field>' +
       '</div>';
   }
 
