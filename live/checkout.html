@@ -1249,6 +1249,34 @@
      .ck-tablescroll) have no carrier the other four can reach.
      ============================================================ -->
 <!-- ============================================================
+     gbppl-checkout-import-2 (2026-09-23) — THE IMPORT PANEL GETS ONE
+     SPINE, AND THE ONE-ADDRESS DOOR WRITES A ROW.
+
+     The client, 23.09, on «Import gifts from a file»: «ужасная
+     информационная архитектура, не очень правильный лейаут и плохая
+     визуальная иерархия у шрифтов, цветов и всего прочего»; on the
+     one-address field: «введённый адрес выглядит странно, не совсем
+     консистентно... можем ли мы в Select делать имя bold'ом, чтобы
+     оно выглядело, как и в множественных адресах».
+
+     1. SCREEN 1 OF THE IMPORT is an <ol> on the booking stepper's own
+        dot and rail, stood vertically: dot | title 14/500 Zinc 900 /
+        line 14/400 Zinc 500 / instrument. The 12px lines and the
+        «Step N» eyebrows are gone; the drop target shrinks to the
+        geometry of a row (74 instead of ~150) and its attached state
+        wears the same frame. Head (title, stage row, cross) and foot
+        (Cancel / Submit) untouched. See the comment at the <ol>.
+     2. THE ONE-ADDRESS DOOR of step 1 prints name over place, the
+        anatomy of a row of Multiple addresses, through v5OneSplit,
+        which only reads v5AddrLabel and the book. Empty stays one
+        placeholder line. «Set delivery address» in Bulk actions is a
+        menu item that prints no address, so the door is the only
+        one-address carrier in V5.
+     Logic of the import and of the data: untouched. V1 to V4: the
+     changed markup is inside x-show="uiVersion === 'v5'" and the
+     helper is only called from it.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-v4-groups-1 (2026-09-03) — A FOURTH CANDIDATE,
      ?v=4, AND THE FIRST OF THREE LOGICS GOING TO THE TEAM.
 
@@ -5931,10 +5959,37 @@
                                     aria-haspopup="dialog"
                                     :aria-expanded="v5OneDoorOpen(shipment) ? 'true' : 'false'"
                                     :aria-labelledby="'v5one-lab-' + product.id + '-' + shipment.id + ' v5one-val-' + product.id + '-' + shipment.id"
-                                    class="gba-input flex items-center text-left cursor-pointer">
-                              <span class="min-w-0 truncate" :id="'v5one-val-' + product.id + '-' + shipment.id"
-                                    :class="shipment.v5AddrLabel ? '' : 'text-zinc-400'"
-                                    x-text="shipment.v5AddrLabel || 'Pick an address'"></span>
+                                    class="gba-input flex items-center text-left cursor-pointer"
+                                    :class="shipment.v5AddrLabel ? 'pt-2 pb-[calc(var(--space-8)-1px)]' : ''">
+                              <!-- gbppl-checkout-import-2 (23.09): THE CHOSEN ADDRESS
+                                   IS WRITTEN THE WAY A ROW OF MULTIPLE ADDRESSES WRITES
+                                   IT. The client, on this field: «введённый адрес
+                                   выглядит странно, не совсем консистентно... можем ли
+                                   мы в Select делать имя bold'ом, чтобы оно выглядело,
+                                   как и в множественных адресах». This is a DOOR, not a
+                                   native select, so it can carry the row's anatomy:
+                                   the person 14/500 Zinc 900 on the first line, the
+                                   place 14/400 Zinc 500 under it (company · street, the
+                                   recipe of v5AddrLine), both truncating, chevron-right
+                                   untouched. Classes are the row's own (text-sm
+                                   font-medium text-zinc-900 / text-sm text-zinc-500),
+                                   plus tracking-normal and font-normal because the
+                                   field voice under them is 300 with 0.2px tracking.
+                                   Filled, the field takes --space-8 above the name and
+                                   8 below the place counted to the far side of its 1px
+                                   underline (calc(--space-8 - 1px), the arithmetic
+                                   alert.css uses for the same hairline): two lines of
+                                   20 + 16 = 56, the top rung of the portal field
+                                   ladder, so it never falls under its own min-height.
+                                   EMPTY STAYS ONE LINE in the field's placeholder voice
+                                   (14/300 Zinc 400), exactly as it was. The split reads
+                                   the existing label and book (v5OneSplit), it writes
+                                   nothing. -->
+                              <span class="min-w-0 flex-1" :id="'v5one-val-' + product.id + '-' + shipment.id">
+                                <span x-show="!shipment.v5AddrLabel" class="block truncate text-zinc-400">Pick an address</span>
+                                <span x-show="shipment.v5AddrLabel" class="block text-sm font-medium text-zinc-900 tracking-normal truncate" x-text="v5OneSplit(shipment).name || 'No name yet'"></span>
+                                <span x-show="shipment.v5AddrLabel" class="block text-sm font-normal text-zinc-500 tracking-normal truncate" :title="shipment.v5AddrLabel" x-text="v5OneSplit(shipment).where"></span>
+                              </span>
                             </button>
                             <span data-gb-icon="chevron-right" data-gb-icon-size="20" aria-hidden="true"></span>
                           </div>
@@ -9151,96 +9206,128 @@
            reason, and it is what makes the V1..V4 regression a plain
            node-for-node comparison.
            ============================================================ -->
-      <div x-show="uiVersion === 'v5'" x-cloak class="bg-zinc-50 px-6 py-6 space-y-6">
-        <!-- STEP 1. The button and its line are the row of
-             gbppl-v5-import-polish-1, unchanged: medium outline (the
-             rung of a surface, and the filled primary of this panel
-             belongs to Confirm), the sentence to the RIGHT of it on
-             the quiet caption voice, gap 16, wrapping honestly at 360.
-             The sentence is the meeting's decision 3 and does not move:
-             ONE file answers both questions. -->
-        <div>
-          <p class="gb-eyebrow">Step 1</p>
-          <div class="mt-2 flex flex-wrap items-center gap-4">
-            <button @click="downloadTemplate()" type="button" class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary">
+      <!-- ============================================================
+           gbppl-checkout-import-2 (23.09) — THE THREE STEPS GET ONE SPINE.
+           The client on this screen: «ужасная информационная
+           архитектура, не очень правильный лейаут и плохая визуальная
+           иерархия у шрифтов, цветов и всего прочего». He was right on
+           the count: step 1 was a button and a 12px grey line, step 2 a
+           14/500 phrase and a 12px grey line, step 3 a 150-tall dashed
+           block, so three steps spoke three languages and the drop area
+           out-weighed the title of the panel.
+
+           THE SPINE IS THE HOUSE'S STEPPER, NOT A NEW ONE. The one place
+           the system draws steps as steps is <gb-booking-flow>:
+           .gbb-step-dot, a 22 circle with a 1px Zinc 400 edge and an
+           11/600 Zinc 600 digit, joined by a 1px Zinc 300 rail
+           (booking.css, gbppl-booking-polish-1). Here the same dot and
+           the same rail stand VERTICALLY, which is the vertical
+           orientation of the PrimeVue Stepper the house names things
+           by. Values copied from booking.css, not linked: booking.css
+           carries the whole flow and this page does not load it.
+           Promoting a vertical stepper into the system is Ton's word
+           (0a.2), and the report asks for it. Neutral dots only: none
+           of the three moves has a tracked state, and blue is state
+           (Ton-5). This supersedes the «circled digits were never an
+           option» line of gbppl-v5-import-steps-1 above: that line
+           read the pagination buttons and missed the booking dots,
+           which are not interactive and are the house's step marker.
+
+           ONE ANATOMY FOR ALL THREE: dot | title / one line / instrument.
+             title   14/500 Zinc 900 — the move, named
+             line    14/400 Zinc 500 — the one thing worth saying
+             instr.  under the text at 16 (what is attached to the text
+                     above it, the ladder of step 1 of the page)
+           The pair title/line is the pair every row of Multiple
+           addresses prints (name / place), one working voice in two
+           weights. The 12px lines are gone, so the body of this
+           screen has one voice; the dot digit is the marker of the
+           stepper the way a button label is the button's.
+           The dot centres on the 20 line of the title: -mt-px is
+           (20 - 22) / 2, the arithmetic radio.css uses for its circle.
+           Rail: my-2 (--space-8) off both dots; steps 24 apart
+           (--space-24), paid as pb-6 on the text cell so the rail
+           column runs the full height of the row. Dot to text 16.
+           22 = the booking dot, NO TOKEN on the space scale; it is the
+           22 glyph rung of the icon scale.
+
+           THE DROP TARGET IS AN INSTRUMENT OF STEP 3, NOT ITS HEADLINE.
+           It takes the geometry of the row that replaces it when a file
+           is attached, and the geometry of a row of Multiple addresses
+           (px-4 py-4, glyph 24, gap 16, two lines of 14): 74 tall
+           instead of ~150, the text on the spine's left line instead of
+           centred in a hall. Dashed Zinc 400 at 1px says «drop here»;
+           the attached row goes solid Zinc 200 at the same 1px, so
+           swapping the two states moves nothing below.
+
+           COPY. Each step now has a title, so step 1 says «Get the
+           template» over the «Download template» button (title and
+           control say it once each, not twice in one voice); step 3
+           says «Upload it» and its line names Submit, the last move of
+           Ton's order of 07.09. The attached line becomes «Ready to
+           submit.»: «Nothing is read until you submit it.» was step 3's
+           line said a second time. Logic untouched: the same three
+           handlers, the same states, the same foot.
+           ============================================================ -->
+      <ol x-show="uiVersion === 'v5'" x-cloak class="bg-zinc-50 px-6 py-6">
+        <li class="grid grid-cols-[22px_minmax(0,1fr)] gap-x-4">
+          <span class="flex flex-col items-center" aria-hidden="true">
+            <span class="-mt-px w-[22px] h-[22px] flex-shrink-0 inline-flex items-center justify-center rounded-full border border-zinc-400 text-[11px] font-semibold leading-none text-zinc-600">1</span>
+            <span class="w-px flex-1 my-2 bg-zinc-300"></span>
+          </span>
+          <div class="pb-6 min-w-0">
+            <p class="text-sm font-medium text-zinc-900">Get the template</p>
+            <p class="text-sm text-zinc-500">One file holds both the addresses and the personalization.</p>
+            <button @click="downloadTemplate()" type="button" class="mt-4 gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary">
               <span class="gb-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg></span>
               <span class="gb-btn__label">Download template</span>
             </button>
-            <p class="flex-1 text-xs text-zinc-500">One file holds both the addresses and the personalization.</p>
           </div>
-        </div>
-        <!-- STEP 2. The one move with nothing to press, so it speaks
-             in the same 14/500 the drop target's own line speaks in —
-             the two text-shaped actions of the screen in one voice —
-             and its quiet line says where the filling happens. THE
-             SAME ROW AS STEP 1: the move on the left, one 12px line to
-             its right, gap 16, wrapping at 360. Two of the three steps
-             then have one shape, and the pairing of a 14/500 label
-             with a 12px Zinc 500 line on one baseline is the row the
-             caption of the table on screen 2 already stands in. -->
-        <div>
-          <p class="gb-eyebrow">Step 2</p>
-          <div class="mt-2 flex flex-wrap items-baseline gap-4">
-            <p class="text-sm font-medium">Fill it in</p>
-            <p class="flex-1 text-xs text-zinc-500">One row per gift, in Excel or any spreadsheet.</p>
+        </li>
+        <li class="grid grid-cols-[22px_minmax(0,1fr)] gap-x-4">
+          <span class="flex flex-col items-center" aria-hidden="true">
+            <span class="-mt-px w-[22px] h-[22px] flex-shrink-0 inline-flex items-center justify-center rounded-full border border-zinc-400 text-[11px] font-semibold leading-none text-zinc-600">2</span>
+            <span class="w-px flex-1 my-2 bg-zinc-300"></span>
+          </span>
+          <div class="pb-6 min-w-0">
+            <p class="text-sm font-medium text-zinc-900">Fill it in</p>
+            <p class="text-sm text-zinc-500">One row per gift, in Excel or any spreadsheet.</p>
           </div>
-        </div>
-        <!-- STEP 3, IN TWO STATES, AND THE UPLOAD DOES NOT LEAVE THE
-             SCREEN. Ton, 07.09: «Обычно аплоад просто показывает тебе,
-             что файл прикреплён, что он загружен, и потом ты это
-             отправляешь... это такой распространённый паттерн
-             взаимодействия, который ментально понятен.» So the drop
-             hands the file over and the panel says it is holding it;
-             Submit in the foot is what sends it to be checked.
-
-             EMPTY: the drop target, the loudest thing on the screen,
-             white on the zone's ground, glyph from the record at the
-             size icon.css names for the subject of a block (24).
-
-             HOLDING A FILE: the same anatomy V5 already uses for a
-             thing that is DONE — the tick, the name, and the one
-             action, at the end of the row (the folded step of the
-             accordion: glyph, title, Edit at ml-auto). The tick is
-             ZINC 900, not blue, which is that band's own decision and
-             Ton's words for it: «заполнен = спокойный факт». The
-             border goes solid: dashed says «drop here», and there is
-             nothing to drop any more. Remove empties the slot and the
-             drop target comes back, so a wrong file costs one click.
-
-             It is ONE step in two states rather than a fourth step,
-             because attaching and sending are the same move to the
-             person doing it: choose the file, send the file. -->
-        <div>
-          <p class="gb-eyebrow">Step 3</p>
-          <button x-show="!csv.file" @click="v5AttachFile()" type="button" class="mt-2 w-full flex flex-col items-center gap-2 py-8 bg-white border-2 border-dashed border-zinc-300 rounded-[var(--radius)] hover:border-zinc-900">
-            <span class="flex text-zinc-400" aria-hidden="true"><span data-gb-icon="upload" data-gb-icon-size="24"></span></span>
-            <p class="text-sm font-medium">Drop CSV here or click to select</p>
-            <p class="text-xs text-zinc-500">Clicking attaches a sample list of twenty gifts.</p>
-          </button>
-          <!-- THE NAME IS NEVER TRUNCATED, AND THAT IS WHAT DECIDES
-               THE WRAP. A file name cut to «gilded...» tells the reader
-               nothing about which file they picked, so the copy column
-               carries a floor of 136 — the name's own 129.14, measured
-               at its 14/500 on all three widths, rounded up to the next
-               rung of the eight grid (NO TOKEN: this is a measured
-               minimum, the way booking.css names the 520 its calendar
-               needs, not a spacing value). Below 640 the panel is
-               window-wide and its body offers 200: tick 24 + gap 16 +
-               that floor already spends it, so Remove wraps onto a line
-               of its own and the name stays whole. From 640 up the panel
-               is 672 and everything stands on one line with Remove at
-               the end, which is where the folded step of the accordion
-               keeps its action. -->
-          <div x-show="csv.file" x-cloak class="mt-2 flex flex-wrap items-center gap-4 bg-white border border-zinc-200 rounded-[var(--radius)] px-6 py-4">
-            <span class="flex flex-shrink-0 text-zinc-900" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
-            <span class="min-w-[136px] flex-1">
-              <span class="block text-sm font-medium" x-text="csv.file"></span>
-              <span class="block text-xs text-zinc-500">Nothing is read until you submit it.</span>
-            </span>
-            <button @click="v5RemoveFile()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary flex-shrink-0"><span class="gb-btn__label">Remove</span></button>
+        </li>
+        <li class="grid grid-cols-[22px_minmax(0,1fr)] gap-x-4">
+          <span class="flex flex-col items-center" aria-hidden="true">
+            <span class="-mt-px w-[22px] h-[22px] flex-shrink-0 inline-flex items-center justify-center rounded-full border border-zinc-400 text-[11px] font-semibold leading-none text-zinc-600">3</span>
+          </span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-zinc-900">Upload it</p>
+            <p class="text-sm text-zinc-500">Submit checks every row before anything is added.</p>
+            <!-- STEP 3 KEEPS ITS TWO STATES (gbppl-v5-import-steps-1, Ton
+                 07.09: «аплоад просто показывает тебе, что файл прикреплён...
+                 и потом ты это отправляешь»). Empty: the drop target.
+                 Holding a file: tick Zinc 900 («заполнен = спокойный факт»),
+                 the name, Remove at the end. Same frame, same 1px, same
+                 pad, so the swap moves nothing. The name is never
+                 truncated: min 136 = its own 129.14 at 14/500 rounded up
+                 to the eight grid (NO TOKEN, a measured minimum), and at
+                 360 Remove wraps under it instead. -->
+            <button x-show="!csv.file" @click="v5AttachFile()" type="button" class="mt-4 w-full flex items-center gap-4 text-left px-4 py-4 bg-white border border-dashed border-zinc-400 rounded-[var(--radius)] hover:border-zinc-900">
+              <span class="flex flex-shrink-0 text-zinc-400" aria-hidden="true"><span data-gb-icon="upload" data-gb-icon-size="24"></span></span>
+              <span class="min-w-0 flex-1">
+                <span class="block text-sm font-medium text-zinc-900">Drop CSV here or click to select</span>
+                <span class="block text-sm text-zinc-500">Clicking attaches a sample list of twenty gifts.</span>
+              </span>
+            </button>
+            <div x-show="csv.file" x-cloak class="mt-4 flex flex-wrap items-center gap-4 bg-white border border-zinc-200 rounded-[var(--radius)] px-4 py-4">
+              <span class="flex flex-shrink-0 text-zinc-900" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
+              <span class="min-w-[136px] flex-1">
+                <span class="block text-sm font-medium text-zinc-900" x-text="csv.file"></span>
+                <span class="block text-sm text-zinc-500">Ready to submit.</span>
+              </span>
+              <button @click="v5RemoveFile()" type="button" class="gb-btn gb-btn--small gb-btn--ghost gb-btn--secondary flex-shrink-0"><span class="gb-btn__label">Remove</span></button>
+            </div>
           </div>
-        </div>
-      </div>
+        </li>
+      </ol>
       <!-- V1 TO V4: THE SCREEN THEY ALWAYS HAD, and now their own
            block rather than a shared one. Every V5 branch that used to
            live on these two nodes is gone from them, so what stands
@@ -12637,6 +12724,26 @@ function checkoutApp() {
     v5AddrLine(a) {
       if (!a || !a.address) return 'No address yet';
       return this.v5PkSubLine((a.deliver && a.deliver.company) || '', a.address);
+    },
+    /* gbppl-checkout-import-2 (23.09): THE ONE-ADDRESS DOOR PRINTS THE
+       ROW'S TWO LINES, and this only READS what is already stored. The
+       shipment keeps one string, «Name, label» (v5PutAddr and the save of
+       the one-address form both write it so, name first and only when
+       there is one). The book row it points at knows the label and the
+       company, so the name is whatever stands in front of that label; a
+       label that no longer matches the book falls back to the first comma,
+       which is where every writer puts the name. The place line is the
+       recipe of v5AddrLine above (company · street), so the two modes of
+       step 1 print one place one way. Nothing is written back. */
+    v5OneSplit(s) {
+      const all = (s && s.v5AddrLabel) || '';
+      if (!all) return { name: '', where: '' };
+      const b = (this.addressBook || []).find(x => x.id === s.v5AddrId);
+      let name = '', line = all;
+      if (b && b.label && all === b.label) line = b.label;
+      else if (b && b.label && all.endsWith(', ' + b.label)) { name = all.slice(0, all.length - b.label.length - 2); line = b.label; }
+      else { const i = all.indexOf(', '); if (i > 0) { name = all.slice(0, i); line = all.slice(i + 2); } }
+      return { name: name, where: this.v5PkSubLine((b && b.company) || '', line) };
     },
     v5PkRows(q) {
       const query = String(q || '').trim().toLowerCase();
