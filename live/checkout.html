@@ -9,6 +9,33 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-pkfix-1 (2026-09-23) — V5 ONLY: THE PICKER AND
+     THE PENCIL STOP LOSING LINES AND MAKING DOUBLES
+     ------------------------------------------------------------
+     Package 4 of the checkout audit (studio\docs\CHECKOUT-AUDIT-
+     2026-09-23.md, #6, #7, #8):
+       · #6 A correction of a row in the picker stays a correction
+         of THAT line: it keeps its id, its gifts and its tick. If the
+         new fields equal a saved row, the line is drawn as that row
+         and the tick moves with it (v5PkKeyAt in v5SaveDeliver); a
+         saved row corrected onto another saved row uses the match
+         instead of copying it (v5PkFileForm). Before, the tick stayed
+         on the old key and Save addresses deleted the line.
+       · #7 Save addresses asks before an untick takes gifts away,
+         once for all of them, in the cross's own warning alert in the
+         foot (v5PkApply, v5PkAskLine: names by v5NameList, gifts
+         counted). Empty lines still leave in silence.
+       · #8 and the picker twin of it: a correction (the pencil of
+         step 1, or a row of the picker) that would equal ANOTHER line
+         of the order is refused in v5SaveDeliver, with the required
+         set's own pair (.invalid on name, street and ZIP, one
+         .gba-error under Street): «This recipient and address are
+         already in the order». New addresses keep their old answer:
+         the match is used and ticked.
+     The membership rule (the tick is the order) is untouched. V1 to
+     V4 do not reach any of it.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-counts-1 (2026-09-23) — V5 ONLY: THE COUNTERS AND
      THE MODES STOP LOSING WHAT WAS TYPED
      ------------------------------------------------------------
@@ -2764,6 +2791,10 @@
   @media (min-width: 640px) {
     .ck-drawer-actions--pick > .gb-btn--filled { flex: 1 1 auto; }
   }
+  /* gbppl-checkout-pkfix-1 (23.09): the question of Save addresses takes the
+     whole foot while it stands (the button it replaces is hidden), so the
+     alert is as wide as the row of actions and no wider. */
+  .ck-drawer-actions > .ck-pk__ask { flex: 1 1 100%; }
   /* AND A FOOT WITH NOTHING IN IT GOES AWAY (gbppl-checkout-addnew-1,
      16.09). The owner's own rule, `.gbd-foot:empty { display: none }`,
      read one step further: the foot is not empty, it holds this page's
@@ -8775,8 +8806,8 @@
              ============================================================ -->
         <div class="gba-inputwrap">
           <label class="gb-eyebrow block mb-1">Full name <span class="text-red-500">*</span></label>
-          <input type="text" x-model="drawer.data.name" @input="v5ErrOff('name')" data-v5-req="name"
-                 :class="v5Err('name') ? 'invalid' : ''" :aria-invalid="v5Err('name') ? 'true' : 'false'"
+          <input type="text" x-model="drawer.data.name" @input="v5ErrOff('name'); v5ErrOff('dup')" data-v5-req="name"
+                 :class="(v5Err('name') || v5Err('dup')) ? 'invalid' : ''" :aria-invalid="(v5Err('name') || v5Err('dup')) ? 'true' : 'false'"
                  placeholder="Anton Parkhomenko" class="gba-input">
           <span class="gba-error" role="alert" x-show="v5Err('name')" x-cloak>Recipient name required</span>
         </div>
@@ -8800,9 +8831,18 @@
       <div class="gba-inputwrap">
         <label class="gb-eyebrow block mb-1">Street <span class="text-red-500">*</span></label>
         <input type="text" x-model="drawer.data.street" placeholder="123 Main St" class="gba-input"
-               @input="v5ErrOff('street')" data-v5-req="street"
-               :class="v5Err('street') ? 'invalid' : ''" :aria-invalid="v5Err('street') ? 'true' : 'false'">
+               @input="v5ErrOff('street'); v5ErrOff('dup')" data-v5-req="street"
+               :class="(v5Err('street') || v5Err('dup')) ? 'invalid' : ''" :aria-invalid="(v5Err('street') || v5Err('dup')) ? 'true' : 'false'">
         <span class="gba-error" role="alert" x-show="v5Err('street')" x-cloak>Street required</span>
+        <!-- gbppl-checkout-pkfix-1 (23.09, audit #6 and #8): the double gate
+             speaks in the same pair. The place is the three fields the key is
+             made of (name, street, ZIP), so all three are marked, and the one
+             sentence stands under Street: it is the full-width field of the
+             three, so the sentence reads as one line (under the half-width
+             name it broke in two, measured at 1280). The caret goes to the
+             name, the first marked field, as in the required set. Any
+             keystroke in one of the three takes the marks down. -->
+        <span class="gba-error" role="alert" x-show="v5Err('dup') && !v5Err('street')" x-cloak>This recipient and address are already in the order</span>
       </div>
       <div class="gba-inputwrap">
         <label class="gb-eyebrow block mb-1">Apt / Suite <span class="text-zinc-400 font-normal normal-case tracking-normal">(optional)</span></label>
@@ -8826,8 +8866,8 @@
         <div class="gba-inputwrap">
           <label class="gb-eyebrow block mb-1">ZIP <span class="text-red-500">*</span></label>
           <input type="text" x-model="drawer.data.zip" class="gba-input"
-                 @input="v5ErrOff('zip')" data-v5-req="zip"
-                 :class="v5Err('zip') ? 'invalid' : ''" :aria-invalid="v5Err('zip') ? 'true' : 'false'">
+                 @input="v5ErrOff('zip'); v5ErrOff('dup')" data-v5-req="zip"
+                 :class="(v5Err('zip') || v5Err('dup')) ? 'invalid' : ''" :aria-invalid="(v5Err('zip') || v5Err('dup')) ? 'true' : 'false'">
           <span class="gba-error" role="alert" x-show="v5Err('zip')" x-cloak>ZIP code required</span>
         </div>
       </div>
@@ -8983,7 +9023,26 @@
          chips over the list say the names, which is the honest form of it.
          It is shut while nothing would change, the same honesty the Clear
          beside it keeps. -->
-    <button x-show="uiVersion === 'v5' && v5PkMode() === 'pick' && v5PkTicks() && !v5PkEmptyBook()" x-cloak
+    <!-- gbppl-checkout-pkfix-1 (23.09, audit #7): THE FOOT ASKS WHERE THE
+         HAND IS. An untick that would take gifts off the order is asked in
+         the cross's own alert (the warning tone, the same xsmall Cancel and
+         Remove, v5AskRemoveAddr on the page), standing in the foot in place
+         of the button that was pressed, so the question and the press are
+         one place and the list above does not move. `x-show`, not `x-if`
+         (trap 28: this foot is rewritten whole on every door). -->
+    <div x-show="uiVersion === 'v5' && v5PkMode() === 'pick' && !!(drawer.pk && drawer.pk.ask)" x-cloak
+         x-transition.opacity.duration.280ms
+         class="gb-alert gb-alert--warning ck-pk__ask">
+      <span class="gb-alert__body">
+        <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
+        <span class="gb-alert__text" role="alert" x-text="v5PkAskLine()"></span>
+      </span>
+      <span class="gb-alert__actions">
+        <button @click="v5PkAskOff()" type="button" class="gb-btn gb-btn--xsmall gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+        <button @click="v5PkApply(true)" type="button" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
+      </span>
+    </div>
+    <button x-show="uiVersion === 'v5' && v5PkMode() === 'pick' && v5PkTicks() && !v5PkEmptyBook() && !(drawer.pk && drawer.pk.ask)" x-cloak
             @click="v5PkApply()" :disabled="!v5PkDirty()" :aria-disabled="!v5PkDirty()"
             class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label">Save addresses</span></button>
     <template x-if="uiVersion !== 'v5'">
@@ -12455,6 +12514,23 @@ function checkoutApp() {
         const b = (this.addressBook || []).find(x => 'b:' + x.id === edit);
         if (!b) return 'b:' + file();
         const line = lineAt(this.v5BookSpot(b));   /* read the OLD spot before the row moves */
+        /* gbppl-checkout-pkfix-1 (23.09, audit #6): A CORRECTION THAT LANDS ON
+           ANOTHER SAVED ROW IS THAT ROW. Rewriting this one would leave the
+           book holding the same person at the same door twice, and the canvas
+           drawing two rows of one key with one tick between them. So the
+           match is used rather than copied (the rule of this whole function):
+           the line moves onto the row it now equals, keeps its id, its count
+           and its gifts, and the row it came from stays in the book as it
+           was. A double against another LINE never reaches here: v5SaveDeliver
+           refuses it first (v5LineTwin). */
+        const twin = (this.addressBook || []).find(x => x !== b && this.v5SameSpot(this.v5BookSpot(x), deliver));
+        if (twin) {
+          twin.name = deliver.name || twin.name;
+          twin.company = deliver.company || '';
+          twin.label = label;
+          if (line) this.v5PutLine(line, deliver, label);
+          return 'b:' + twin.id;
+        }
         b.name = deliver.name || 'Unnamed';
         b.company = deliver.company || '';
         b.label = label;
@@ -12462,6 +12538,11 @@ function checkoutApp() {
         return 'b:' + b.id;
       }
       if (edit.indexOf('o:') === 0) {
+        /* gbppl-checkout-pkfix-1: the key handed back here may be one the
+           canvas no longer draws — a line rewritten onto a saved row's place
+           is drawn AS that row ('b:'), because v5PkRows puts the book first.
+           v5SaveDeliver asks the canvas for the row by place (v5PkKeyAt)
+           rather than trusting this key, so the tick follows the line. */
         const line = ((s && s.v5Addrs) || []).find(a => 'o:' + a.id === edit);
         if (line) this.v5PutLine(line, deliver, label);
         if (this.drawer.saveToBook) return 'b:' + file();
@@ -12495,6 +12576,43 @@ function checkoutApp() {
       a.hasError = !!(label && !deliver.zip);
       a.errorMsg = a.hasError ? 'ZIP code required' : '';
       if (!a.address || a.hasError) a.shipping = '';
+    },
+    /* gbppl-checkout-pkfix-1 (23.09): the four small hands of the double
+       gate. v5LineTwin: another line of this shipment standing on the same
+       recipient + address, or null. v5PkEditLine: the line a correction in
+       the picker is rewriting ('o:' is the line itself, 'b:' the line
+       standing on that saved row), or null for a new address or a one-off.
+       v5PkKeyAt: the key of the canvas row that draws a place, which is the
+       row the tick has to sit on. v5DupStop: the refusal, in the required
+       set's own pair — the marks on name, street and ZIP, one sentence under
+       Street (see the markup), the caret in the name, nothing written. */
+    v5LineTwin(s, deliver, selfId) {
+      return ((s && s.v5Addrs) || []).find(a => a.id !== selfId && a.address && this.v5SameSpot(a.deliver, deliver)) || null;
+    },
+    v5PkEditLine(s, pk) {
+      const edit = String((pk && pk.edit) || '');
+      const lines = (s && s.v5Addrs) || [];
+      if (edit.indexOf('o:') === 0) return lines.find(a => 'o:' + a.id === edit) || null;
+      if (edit.indexOf('b:') === 0) {
+        const b = (this.addressBook || []).find(x => 'b:' + x.id === edit);
+        if (!b) return null;
+        const spot = this.v5BookSpot(b);
+        return lines.find(a => a.address && this.v5SameSpot(a.deliver, spot)) || null;
+      }
+      return null;
+    },
+    v5PkKeyAt(deliver) {
+      const k = this.v5SpotKey(deliver);
+      const r = this.v5PkRows('').find(x => x.kind !== 'none' && this.v5SpotKey(x.deliver) === k);
+      return r ? r.key : '';
+    },
+    v5DupStop() {
+      this.drawer.errs = { dup: true };
+      const el = document.querySelector('.gbd-panel [data-v5-req="name"]');
+      if (el) {
+        el.focus({ preventScroll: true });
+        setTimeout(() => { (el.closest('.gba-inputwrap') || el).scrollIntoView({ block: 'nearest' }); }, 0);
+      }
     },
     v5SaveDeliver() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
@@ -12542,6 +12660,25 @@ function checkoutApp() {
         zip: d.zip || '', country: d.country || 'United States'
       };
       const label = this.v3AddressLabel(deliver);
+      /* gbppl-checkout-pkfix-1 (23.09, audit #6 and #8): A CORRECTION MAY NOT
+         MAKE A DOUBLE. The line is recipient + address (v5SpotKey), and the
+         tick of the picker already makes a second line to one place
+         impossible; the two doors that REWRITE a line did not ask. The pencil
+         of step 1 wrote whatever was typed (#8), and the picker's correction
+         of a row rewrote it onto a place another line already held. Both are
+         asked here, after the required set and before anything is written:
+         if the corrected line would equal ANOTHER line of this order, nothing
+         is saved and the form says so, in the same pair the required set
+         speaks in (v5DupStop). A NEW address typed onto a place already in the
+         order is not refused: that door has always used the match and ticked
+         it (v5PkFileForm), which is the tick's own answer to a double. */
+      if (this.uiVersion === 'v5' && this.drawer.v5Target !== 'one') {
+        const pkf = this.drawer.pk;
+        const self = this.drawer.addrId
+          ? (s.v5Addrs || []).find(x => x.id === this.drawer.addrId)
+          : ((this.v5PkTicks() && pkf && pkf.mode === 'form') ? this.v5PkEditLine(s, pkf) : null);
+        if (self && label && this.v5LineTwin(s, deliver, self.id)) { this.v5DupStop(); return; }
+      }
       // The one-address branch keeps its answer in the address book, so the
       // next order finds it there too.
       if (this.drawer.v5Target === 'one') {
@@ -12595,10 +12732,24 @@ function checkoutApp() {
       const pk = this.drawer.pk;
       if (this.v5PkTicks() && pk && pk.mode === 'form') {
         if (!label) { this.v5PkBack(); return; }
-        const key = this.v5PkFileForm(deliver, label, pk);
-        if (!key) { this.v5PkBack(); return; }
+        /* gbppl-checkout-pkfix-1 (23.09, audit #6): A CORRECTION KEEPS THE
+           TICK IT HAD. The tick is the membership, so the one fact read before
+           the row is rewritten is whether it was ticked; the row's OLD key is
+           then taken off the set (it may now name another place, or nothing),
+           and the row the canvas draws for the corrected place gets the tick
+           back. Asked by place (v5PkKeyAt), not by the key the filing
+           returned: a line corrected onto a saved row's place is drawn as
+           that row, and a tick on the old key was the whole of the bug —
+           Save addresses read the line as unticked and took it away. A new
+           address is ticked, as it always was. */
+        const was = String(pk.edit || '');
+        const on = !was || pk.sel.indexOf(was) !== -1;
+        const filed = this.v5PkFileForm(deliver, label, pk);
+        if (!filed) { this.v5PkBack(); return; }
+        const key = this.v5PkKeyAt(deliver) || filed;
+        if (was) { const i = pk.sel.indexOf(was); if (i !== -1) pk.sel.splice(i, 1); }
         pk.fresh = key;
-        if (pk.sel.indexOf(key) === -1) pk.sel.push(key);
+        if (on && pk.sel.indexOf(key) === -1) pk.sel.push(key);
         pk.q = '';
         pk.page = 1;
         pk.typed = false;
@@ -12944,7 +13095,7 @@ function checkoutApp() {
          edit  the key of the row the form floor is correcting, empty when
                the form is making a new address (Valerie, 21.09: a line of
                this order, saved or not, opens on the form when clicked) */
-    v5BlankPk() { return { q: '', mode: 'pick', locked: false, typed: false, page: 1, rows: 6, span: 5, h: 0, sel: [], made: [], edit: '', i: -1, fresh: '', browse: false }; },
+    v5BlankPk() { return { q: '', mode: 'pick', locked: false, typed: false, page: 1, rows: 6, span: 5, h: 0, sel: [], made: [], edit: '', i: -1, fresh: '', browse: false, ask: null }; },
     /* ============================================================
        WHAT MAKES TWO DELIVERIES ONE DELIVERY
                              gbppl-checkout-picker-1 (22.09)
@@ -12997,6 +13148,9 @@ function checkoutApp() {
       const i = pk.sel.indexOf(r.key);
       if (on && i === -1) pk.sel.push(r.key);
       if (!on && i !== -1) pk.sel.splice(i, 1);
+      /* gbppl-checkout-pkfix-1: a question about the ticks is stale the
+         moment a tick moves, so it goes; the next press asks again. */
+      this.v5PkAskOff();
     },
     v5PkEmptyBook() {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
@@ -13518,6 +13672,7 @@ function checkoutApp() {
       pk.typed = true;
       pk.mode = 'form';
       pk.i = -1;
+      pk.ask = null;   /* gbppl-checkout-pkfix-1: leaving the floor drops its question */
       this.v5ErrsOff();
       /* A place already in the book stays in it; a one-off stays a one-off
          unless the reader says otherwise on this very form. */
@@ -13541,6 +13696,7 @@ function checkoutApp() {
       /* gbppl-checkout-picker-1: a NEW address is nobody's correction and
          nobody's saved row, so both answers the form carries are reset. */
       pk.edit = '';
+      pk.ask = null;   /* gbppl-checkout-pkfix-1: leaving the floor drops its question */
       this.drawer.saveToBook = false;
       this.v5ErrsOff();
       this.v5PkOpenForm();
@@ -13712,7 +13868,35 @@ function checkoutApp() {
        The keys are matched against the WHOLE canvas and not the drawn
        page, because a tick survives paging and searching.
        ============================================================ */
-    v5PkApply() {
+    /* gbppl-checkout-pkfix-1 (23.09, audit #7): AN UNTICK THAT TAKES GIFTS
+       WITH IT IS ASKED, ONCE. The cross of a line has asked since 04.09
+       (v5AskRemoveAddr: «Removing this address sends its N gifts back to the
+       unassigned count»); the untick of the same line in this panel went
+       straight to v5RemoveAddr. So the press now looks at what it would take
+       away first. Lines that hold nothing leave in silence, as before; if
+       any line that holds gifts would leave, nothing is written and the
+       foot asks in the cross's own alert, naming them (v5NameList, the
+       counter's «two names and N more») with the gifts counted. Cancel
+       leaves the order and the ticks exactly as they were; Remove is this
+       same press, confirmed. The membership rule is untouched: the tick is
+       still the order, this only asks before the order loses gifts. */
+    v5PkGoing(s, want) {
+      return ((s && s.v5Addrs) || []).filter(a => a.address && !want.has(this.v5SpotKey(a.deliver)));
+    },
+    v5PkAskLine() {
+      const q = this.drawer && this.drawer.pk && this.drawer.pk.ask;
+      if (!q) return '';
+      const gifts = q.gifts === 1 ? 'gift' : q.gifts + ' gifts';
+      if (q.names.length === 1) {
+        return 'Removing the address for ' + q.names[0] + ' sends its ' + gifts + ' back to the unassigned count.';
+      }
+      return 'Removing ' + q.names.length + ' addresses sends their ' + gifts + ' back to the unassigned count: ' + this.v5NameList(q.names) + '.';
+    },
+    v5PkAskOff() {
+      const pk = this.drawer && this.drawer.pk;
+      if (pk && pk.ask) { pk.ask = null; this.$nextTick(() => this.v5PkFit()); }
+    },
+    v5PkApply(confirmed) {
       const s = this.findShipment(this.drawer.productId, this.drawer.shipmentId);
       if (!s) { this.closeDrawer(); return; }
       const want = new Map();
@@ -13720,6 +13904,21 @@ function checkoutApp() {
         const k = this.v5SpotKey(r.deliver);
         if (!want.has(k)) want.set(k, r);
       });
+      if (!confirmed) {
+        /* Named in the order the panel draws them, the way the counter names
+           rows in the order the table draws them. */
+        const drawn = this.v5PkRows('').map(r => r.orderId);
+        const at = a => { const i = drawn.indexOf(a.id); return i === -1 ? drawn.length : i; };
+        const heavy = this.v5PkGoing(s, want).filter(a => this.v5AddrCount(s, a) > 0).sort((x, y) => at(x) - at(y));
+        if (heavy.length) {
+          this.drawer.pk.ask = {
+            names: heavy.map(a => (a.deliver && a.deliver.name) || a.address),
+            gifts: heavy.reduce((n, a) => n + this.v5AddrCount(s, a), 0)
+          };
+          this.$nextTick(() => this.v5PkFit());
+          return;
+        }
+      }
       /* Taken away first, so the counts the new lines are seeded against are
          the ones the order actually ends with (v5SeedNewAddr reads v5Left). */
       ((s.v5Addrs) || []).slice().forEach(a => {
