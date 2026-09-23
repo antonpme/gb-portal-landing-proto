@@ -9,6 +9,37 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-checkout-truth-1 (2026-09-23) — V5 ONLY: WHAT THE PAGE
+     SAYS ABOUT THE ORDER IS TRUE AT EVERY MOMENT
+     ------------------------------------------------------------
+     Package 5 of the checkout audit, the last (studio\docs\CHECKOUT-
+     AUDIT-2026-09-23.md, #10, #11, #12, #13, Elian's E8, and the two
+     finds of gbppl-checkout-pkfix-1):
+       · #10 The tick of a folded step is asked, not remembered
+         (v5State / v5Whole): a step walked and then broken (Total
+         raised, a method taken off, gifts left in «each») is 'short',
+         the same band with its summary and its click, and no tick.
+       · #11 Shipping is charged only where a parcel leaves: a line of
+         nought gifts, or One address without an address, costs
+         nothing and is not counted (v5Ships, estimatedShipping).
+       · #12 + E8 One word per counter: «N addresses» = distinct places
+         of the order by v5SpotKey in both modes (v5OrderSpots);
+         «Shipping (N deliveries)» = the charged parcel runs, one per
+         line that ships, per gift set.
+       · #13 Remove gift is not drawn on the only gift of the order;
+         with two or more it asks in the card's warning strip, kind
+         'product', Cancel / Remove. V1 to V4 keep their confirm().
+       · pkfix x1 Set delivery address typed onto a line of the order
+         hangs the ticked gifts on that line, no second line.
+       · pkfix x2 The line's plate is re-read on every rewrite or
+         filing (v5LineFrom): standing on a book place = «Address book».
+     NOT DONE, ON PURPOSE (Elian's E7, «re-check the method when the
+     address changes»): the method belongs to the line, and the
+     prototype's rates do not depend on the address, so clearing a
+     method on an address correction would lose a choice and buy
+     nothing. Do not reopen without rates that depend on the place.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-pkfix-1 (2026-09-23) — V5 ONLY: THE PICKER AND
      THE PENCIL STOP LOSING LINES AND MAKING DOUBLES
      ------------------------------------------------------------
@@ -5765,7 +5796,9 @@
                  same six declarations it did before the wave. -->
             <div class="hidden xl:flex xl:border-r border-zinc-200 px-10 pt-48 pb-12 flex-col items-center">
               <img :src="product.image" :alt="product.name" class="w-full object-contain">
-              <button @click="removeProduct(pIdx)" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary mt-10">
+              <!-- gbppl-checkout-truth-1: only while the order has another
+                   gift to keep, and it asks first (v5AskRemoveProduct). -->
+              <button x-show="v5CanRemoveProduct()" @click="v5AskRemoveProduct(product)" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary mt-10">
                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg><span class="gb-btn__label">Remove gift</span></button>
             </div>
 
@@ -5853,8 +5886,8 @@
                      its button for xl; this one is `xl:hidden`, so exactly one
                      of the two is ever drawn, one is ever in the a11y tree, and
                      1280 and up come out of the wave byte for byte. -->
-                <div class="w-full xl:hidden">
-                  <button @click="removeProduct(pIdx)" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary">
+                <div x-show="v5CanRemoveProduct()" class="w-full xl:hidden">
+                  <button @click="v5AskRemoveProduct(product)" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary">
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg><span class="gb-btn__label">Remove gift</span></button>
                 </div>
               </div>
@@ -5877,6 +5910,24 @@
                 </span>
                 <!-- gbppl-alert-height-1: XSMALL, the rung a strip 48 tall
                      is furnished with. See alert.css, the height law. -->
+                <span class="gb-alert__actions">
+                  <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
+                  <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
+                </span>
+              </div>
+
+              <!-- gbppl-checkout-truth-1 (audit #13): REMOVE GIFT ASKS IN THE
+                   PAGE'S OWN VOICE. The browser's confirm() was the last
+                   native dialog of V5; the question now stands in the strip
+                   every other cut of this card asks in, in the same slot
+                   under the head, with the same Cancel / Remove pair. -->
+              <div x-show="v5Ask.pending && v5Ask.kind === 'product' && v5Ask.productId === product.id" x-cloak
+                   x-transition.opacity.duration.280ms
+                   class="gb-alert gb-alert--warning mx-6 md:mx-8 mb-6">
+                <span class="gb-alert__body">
+                  <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.2v5.6"/><path d="M12 16.4h.01"/></svg></span>
+                  <span class="gb-alert__text" x-text="v5AskLine()"></span>
+                </span>
                 <span class="gb-alert__actions">
                   <button @click="v5CancelAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--ghost gb-btn--secondary"><span class="gb-btn__label">Cancel</span></button>
                   <button @click="v5ConfirmAsk()" type="button" class="gb-btn gb-btn--xsmall gb-btn--outline gb-btn--secondary"><span class="gb-btn__label">Remove</span></button>
@@ -5911,7 +5962,9 @@
                          <button> inside a <button> would be invalid, so the row
                          is a div that carries the click and the organism
                          carries the visible label. -->
-                    <div x-show="v5State(shipment, 1) === 'done'" @click="v5Edit(shipment, 1)"
+                    <!-- gbppl-checkout-truth-1: drawn for 'done' AND 'short'
+                         (walked, then broken); only the tick asks which. -->
+                    <div x-show="v5Folded(shipment, 1)" @click="v5Edit(shipment, 1)"
                          class="bg-zinc-100 px-6 md:px-8 py-4 min-h-[72px] flex flex-wrap items-center gap-x-4 gap-y-2 cursor-pointer hover:bg-zinc-200 transition-colors">
                       <!-- gbppl-checkout-tones-1 (16.09): the band is a solid
                            Zinc 100 now, one rung over the Zinc 50 half it
@@ -5932,7 +5985,7 @@
                            moves off the shared left edge; only the dynamic
                            zone (tick + summary) appears on completion. -->
                       <h3 class="font-serif text-2xl leading-none ck-band-cap text-zinc-900">1. Shipping</h3>
-                      <span class="w-6 flex-shrink-0 ck-band-glyph text-zinc-900" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
+                      <span x-show="v5State(shipment, 1) === 'done'" class="w-6 flex-shrink-0 ck-band-glyph text-zinc-900" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="24"></span></span>
                       <p class="text-sm text-zinc-600 min-w-0 ck-band-cap" x-text="v5Sum1(shipment)"></p>
                       <!-- gbppl-v5-band-1: ghost PRIMARY. Ton: «синие чернила =
                            действие». The wash on hover is the ghost's own and
@@ -7707,7 +7760,11 @@
             <div class="flex justify-between"><span class="text-zinc-600">Subtotal</span><span class="font-medium">$<span x-text="orderSubtotal().toLocaleString()"></span></span></div>
             <!-- One line, and it is the SUM over the addresses: six of six
                  sources in the reconnaissance print shipping exactly once. -->
-            <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="v5Deliveries()"></span> <span x-text="v5Deliveries() === 1 ? 'address' : 'addresses'"></span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
+            <!-- gbppl-checkout-truth-1: the shipping line counts DELIVERIES
+                 (parcel runs, what is charged), the line above counts
+                 ADDRESSES (distinct places). One word per counter, see
+                 v5OrderSpots. -->
+            <div class="flex justify-between"><span class="text-zinc-600">Shipping (<span x-text="v5Deliveries()"></span> <span x-text="v5Deliveries() === 1 ? 'delivery' : 'deliveries'"></span>)</span><span class="font-medium">$<span x-text="orderShipping().toLocaleString()"></span></span></div>
             <div class="flex justify-between border-t border-zinc-200 pt-2 mt-3"><span class="font-medium">Total</span><span class="font-serif text-xl">$<span x-text="(orderSubtotal() + orderShipping()).toLocaleString()"></span></span></div>
           </div>
           <button class="gb-btn gb-btn--xlarge gb-btn--filled gb-btn--primary gb-btn--block mt-6" type="button" @click="placeOrder()" :disabled="!v5Ready()"><span class="gb-btn__label">Place Order</span></button>
@@ -11760,6 +11817,12 @@ function checkoutApp() {
     v5ConfirmAsk() {
       const a = this.v5Ask;
       if (a.kind === 'addr') { this.v5CancelAsk(); this.v5RemoveAddr(a.productId, a.shipmentId, a.addrId); return; }
+      if (a.kind === 'product') {
+        this.v5CancelAsk();
+        const i = this.products.findIndex(x => x.id === a.productId);
+        if (i !== -1 && this.v5CanRemoveProduct()) this.products.splice(i, 1);
+        return;
+      }
       if (a.kind === 'perso') {
         const s = this.findShipment(a.productId, a.shipmentId);
         this.v5CancelAsk();
@@ -11779,6 +11842,12 @@ function checkoutApp() {
         return a.rows === 1
           ? 'Removing this address sends its gift back to the unassigned count.'
           : 'Removing this address sends its ' + a.rows + ' gifts back to the unassigned count.';
+      }
+      if (a.kind === 'product') {
+        if (!a.filled) return 'Removing this gift takes it out of the order.';
+        return a.rows === 1
+          ? 'Removing this gift removes its row and what is written in it.'
+          : 'Removing this gift removes its ' + a.rows + ' rows and what is written in them.';
       }
       const list = this.v5NameList(a.names);
       if (a.kind === 'perso') {
@@ -12545,7 +12614,7 @@ function checkoutApp() {
            rather than trusting this key, so the tick follows the line. */
         const line = ((s && s.v5Addrs) || []).find(a => 'o:' + a.id === edit);
         if (line) this.v5PutLine(line, deliver, label);
-        if (this.drawer.saveToBook) return 'b:' + file();
+        if (this.drawer.saveToBook) { const id = file(); this.v5LineFrom(line); return 'b:' + id; }
         return line ? 'o:' + line.id : '';
       }
       if (edit.indexOf('m:') === 0) {
@@ -12576,6 +12645,19 @@ function checkoutApp() {
       a.hasError = !!(label && !deliver.zip);
       a.errorMsg = a.hasError ? 'ZIP code required' : '';
       if (!a.address || a.hasError) a.shipping = '';
+      this.v5LineFrom(a);
+    },
+    /* gbppl-checkout-truth-1 (23.09, pkfix-1's second find): THE PLATE
+       FOLLOWS THE LINE. A line corrected onto a saved row, or filed by the
+       box, is drawn as that book row, and it went on saying «Added here»
+       because `from` was written once, at birth. So the source is read
+       again every time the line is rewritten or filed: a line standing on
+       a place the book holds (v5SpotKey) came from the book, a line that
+       no longer does was typed here. */
+    v5LineFrom(a) {
+      if (!a || this.uiVersion !== 'v5') return;
+      const inBook = !!a.address && (this.addressBook || []).some(b => this.v5SameSpot(this.v5BookSpot(b), a.deliver));
+      a.from = inBook ? 'book' : 'hand';
     },
     /* gbppl-checkout-pkfix-1 (23.09): the four small hands of the double
        gate. v5LineTwin: another line of this shipment standing on the same
@@ -12759,6 +12841,26 @@ function checkoutApp() {
         return;
       }
       let a = this.drawer.addrId ? (s.v5Addrs || []).find(x => x.id === this.drawer.addrId) : null;
+      /* gbppl-checkout-truth-1 (23.09, pkfix-1's first find): SET DELIVERY
+         ADDRESS ONTO A PLACE THE ORDER ALREADY SHIPS TO IS THAT LINE. The
+         typed floor of the assign door opened a second line for the same
+         recipient + address, the double the tick makes impossible
+         everywhere else. Now a match by the one key (v5LineTwin, v5SpotKey)
+         takes the ticked gifts, exactly as picking that line from the list
+         does (v5AssignTo); the line is not rewritten, its method and its
+         other gifts stay. The box «Save to my address book» still files. */
+      if (this.uiVersion === 'v5' && !a && this.drawer.v5Assign && label) {
+        const twin = this.v5LineTwin(s, deliver, null);
+        if (twin) {
+          this.v5PutAddr(s, twin.id);
+          if (this.drawer.saveToBook && !(this.addressBook || []).some(b => this.v5SameSpot(this.v5BookSpot(b), deliver))) {
+            this.addressBook.unshift({ id: 'a' + Date.now(), name: deliver.name || 'Unnamed', company: deliver.company || '', label: label });
+            twin.from = 'book';
+          }
+          this.closeDrawer();
+          return;
+        }
+      }
       const born = !a;
       if (!a) { a = this.v5BlankAddr(); if (!s.v5Addrs) s.v5Addrs = []; s.v5Addrs.push(a); }
       // The one validation the prototype has ever done, kept: an address
@@ -12784,6 +12886,7 @@ function checkoutApp() {
         if (!twin) {
           this.addressBook.unshift({ id: 'a' + Date.now(), name: deliver.name || 'Unnamed', company: deliver.company || '', label: label });
         }
+        this.v5LineFrom(a);   /* gbppl-checkout-truth-1: filed, so the plate says so */
       }
       // NOTHING IS COPIED INTO ANY ROW'S NAME BY THIS PANEL. The person who
       // signs for the parcel and the name printed on the box are two facts,
@@ -14371,12 +14474,29 @@ function checkoutApp() {
     // the tick is Zinc 900. The one blue thing on a folded band is now Edit,
     // which is the only thing on it you can do.
     v5LastStep() { return 2; },
+    /* gbppl-checkout-truth-1 (23.09, audit #10): THE TICK IS ASKED, NOT
+       REMEMBERED. v5Done says how far the reader has walked; it does not say
+       the step is still answered. A step passed and then broken (Total
+       raised, a method taken off) used to keep its tick over a band that
+       said «10 gifts still to assign». Now a walked step that no longer
+       holds is 'short': the same folded band, the same click and Edit that
+       open it, the summary that already names what is missing, and no tick.
+       v5Whole is the test, and it is stricter than the gate on purpose: the
+       gate lets «each» through with gifts left (the fix is in step 2, see
+       v5CanLeave), but a step with gifts left is not done, so no tick. */
     v5State(s, n) {
       if (!s) return 'future';
       if ((s.v5Step || 0) === n) return 'open';
-      if (n <= (s.v5Done || 0)) return 'done';
+      if (n <= (s.v5Done || 0)) return this.v5Whole(s, n) ? 'done' : 'short';
       return 'future';
     },
+    v5Whole(s, n) {
+      if (!this.v5CanLeave(s, n)) return false;
+      if (n === 1 && s.v5Mode === 'many') return this.v5Left(s) === 0;
+      return true;
+    },
+    // The folded band is drawn for both: a step the reader has walked.
+    v5Folded(s, n) { const st = this.v5State(s, n); return st === 'done' || st === 'short'; },
     v5NextLabel(s, n) { return n === this.v5LastStep() ? 'Done' : 'Continue'; },
     // ============================================================
     // THE GATE ON STEP 1, AND THE ONE CASE IT LETS THROUGH
@@ -14509,16 +14629,42 @@ function checkoutApp() {
 
     // ===== The order, in words and in money =====
     v5OrderGifts() { return this.products.reduce((n, p) => n + this.v5Total(this.v5Sh(p)), 0); },
-    v5OrderAddresses() {
+    /* ============================================================
+       ONE WORD PER COUNTER               gbppl-checkout-truth-1 (23.09)
+       ------------------------------------------------------------
+       Audit #12 and Elian's E8: «addresses» signed two different
+       counts, and the first of them counted one place twice (One
+       address keyed its place by the printed «…, US» of the book,
+       Multiple by the order's «…, United States»). Now:
+         · ADDRESSES (the line over the summary) = the distinct places
+           of the whole order, recipient + address, by the one key
+           every door already uses (v5SpotKey). The same person at the
+           same door, from two gifts, is one address.
+         · DELIVERIES (the shipping line) = the parcel runs the money
+           is charged for: one per line that holds a gift, per gift
+           set. Two gift sets to one person are one address and two
+           deliveries, because each line carries its own method.
+       So «Shipping (5 deliveries)» under «12 gifts · 3 addresses» is
+       not a contradiction; it is the two facts, each in its own word.
+       Only lines that ship count on either side (v5Ships): a line of
+       nought gifts is neither a place the order goes to nor a parcel.
+       ============================================================ */
+    v5Ships(s, a) { return !!a && !!a.address && this.v5AddrCount(s, a) > 0; },
+    v5OrderSpots() {
       const seen = new Set();
       this.products.forEach(p => {
         const s = this.v5Sh(p);
         if (!s) return;
-        if (s.v5Mode === 'one') { if (s.v5AddrLabel) seen.add(s.v5AddrLabel); return; }
-        (s.v5Addrs || []).forEach(a => { if (a.address) seen.add(a.address); });
+        if (s.v5Mode === 'one') {
+          const b = s.v5AddrId && (this.addressBook || []).find(x => x.id === s.v5AddrId);
+          if (b) seen.add(this.v5SpotKey(this.v5BookSpot(b)));
+          return;
+        }
+        (s.v5Addrs || []).forEach(a => { if (this.v5Ships(s, a)) seen.add(this.v5SpotKey(a.deliver)); });
       });
-      return seen.size;
+      return seen;
     },
+    v5OrderAddresses() { return this.v5OrderSpots().size; },
     v5OrderPersonalized() {
       return this.products.reduce((n, p) => {
         const s = this.v5Sh(p);
@@ -14533,12 +14679,15 @@ function checkoutApp() {
       return g + ' gift' + (g === 1 ? '' : 's') + ' · ' +
              a + ' address' + (a === 1 ? '' : 'es') + ' · ' + k + ' personalized';
     },
-    // A parcel run per address, which is what the money is charged for.
+    // A parcel run per line that ships, which is what the money is charged
+    // for (gbppl-checkout-truth-1: it used to count every line, empty ones
+    // included, and a floor of one where there was none).
     v5Deliveries() {
       return this.products.reduce((n, p) => {
         const s = this.v5Sh(p);
         if (!s) return n;
-        return n + (s.v5Mode === 'one' ? 1 : Math.max(1, (s.v5Addrs || []).length));
+        if (s.v5Mode === 'one') return n + (s.v5AddrId ? 1 : 0);
+        return n + (s.v5Addrs || []).filter(a => this.v5Ships(s, a)).length;
       }, 0);
     },
     // THE GATE, AND IT SAYS WHAT IT IS WAITING FOR. Addresses in, nothing left
@@ -14801,10 +14950,17 @@ function checkoutApp() {
       // summary prints the sum on one line — the answer six of six sources in
       // the reconnaissance give. An address with no method yet costs nothing
       // yet, and shippingCost('') is 0 without a branch.
+      // gbppl-checkout-truth-1 (23.09, audit #11): AND ONLY WHERE A PARCEL
+      // LEAVES. A line holding no gift is not a delivery, so it costs nothing
+      // and is not counted, even with a method on it; the same for One
+      // address before it has an address. The gate refuses empty lines
+      // (v5CanLeave), but the summary is read long before the gate, so it
+      // tells the truth at every moment, not only at the end. v5Ships is the
+      // one test the money and the «Shipping (N deliveries)» line share.
       if (this.uiVersion === 'v5') {
         if (!s) return 0;
-        if (s.v5Mode === 'one') return this.shippingCost(s.v5Shipping);
-        return (s.v5Addrs || []).reduce((sum, a) => sum + this.shippingCost(a.shipping), 0);
+        if (s.v5Mode === 'one') return s.v5AddrId ? this.shippingCost(s.v5Shipping) : 0;
+        return (s.v5Addrs || []).reduce((sum, a) => sum + (this.v5Ships(s, a) ? this.shippingCost(a.shipping) : 0), 0);
       }
       if (this.uiVersion === 'v4') {
         return ((s && s.groupsV4) || []).reduce((sum, g) => sum + this.shippingCost(g.shipping), 0);
@@ -14932,6 +15088,35 @@ function checkoutApp() {
       if (this.products.length <= 1) return;
       if (!confirm('Remove this product and all its shipments?')) return;
       this.products.splice(idx, 1);
+    },
+    /* ============================================================
+       REMOVE GIFT, V5                  gbppl-checkout-truth-1 (23.09)
+       ------------------------------------------------------------
+       Audit #13. On the only gift of the order the button did
+       nothing and said nothing (removeProduct returns early), and on
+       the others it asked through the browser's confirm().
+         · THE ONLY GIFT HAS NO REMOVE. A checkout of nothing is not
+           a state this page has, so the button would be a promise it
+           can never keep; disabled, it would be a grey question mark
+           (the house does not ship disabled without its reason), and
+           the reason would be a sentence on every single-gift order,
+           which is nearly all of them. So it is not drawn. Both
+           carriers (the xl column and the folded head) read this one
+           test, and nothing else on the card moves: the xl button sits
+           under the picture, the folded one on its own line.
+         · WITH TWO OR MORE IT ASKS IN THE PAGE: the warning strip of
+           the card, kind 'product', Cancel / Remove. It names the rows
+           only when something is written in them (v5RowFilled), the
+           counts-wave language; an untouched gift just leaves.
+       V1 to V4 keep removeProduct and its confirm() to the letter. */
+    v5CanRemoveProduct() { return this.products.length > 1; },
+    v5AskRemoveProduct(p) {
+      if (!p || !this.v5CanRemoveProduct()) return;
+      const s = this.v5Sh(p);
+      const rows = (s && s.v5Rows) || [];
+      const filled = rows.filter(r => this.v5RowFilled(r)).length;
+      this.v5Ask = { pending: true, kind: 'product', productId: p.id, shipmentId: s ? s.id : null, addrId: null,
+                     target: 0, rows: rows.length, filled: filled, names: [], one: '' };
     },
 
     // ===== DRAWERS =====
