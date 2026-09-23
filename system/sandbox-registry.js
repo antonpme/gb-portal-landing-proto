@@ -614,7 +614,7 @@
              двух уровней, стол шага 2 на шапке компонента с переносом
              подарка, гейт методов, тумб в шапке ниже 1280 и липкие
              колонки. */
-          updated: '2026-09-22'
+          updated: '2026-09-23'
         }
         /* ЧЕТВЁРТАЯ КОМНАТА СНЯТА С ПОЛКИ (gbppl-v4-retire-1, 03.09).
            Здесь стояла строка `v4` — «Delivery groups», заказ, собранный
@@ -773,7 +773,7 @@
           ready: true,
           tags: ['portal', 'flow', 'copy'],
           created: '2026-09-17',
-          updated: '2026-09-22'
+          updated: '2026-09-23'
         },
         {
           /* gbppl-approvals-4, 22.09. Ton, over the page with the tabs:
@@ -788,7 +788,7 @@
           ready: true,
           tags: ['portal', 'flow'],
           created: '2026-09-22',
-          updated: '2026-09-22'
+          updated: '2026-09-23'
         },
         {
           /* The same day, the ideal he asked to visualise: «объединил
@@ -802,7 +802,7 @@
           ready: true,
           tags: ['portal', 'flow'],
           created: '2026-09-22',
-          updated: '2026-09-22'
+          updated: '2026-09-23'
         },
         {
           /* gbppl-approvals-5, the same day, the client thinking out
@@ -817,7 +817,7 @@
           ready: true,
           tags: ['portal', 'flow'],
           created: '2026-09-22',
-          updated: '2026-09-22'
+          updated: '2026-09-23'
         }
       ]
     },
