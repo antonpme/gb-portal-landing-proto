@@ -11848,34 +11848,31 @@ function checkoutApp() {
        method is counted the same way an unassigned gift is, in the
        same strip, with the same arithmetic sentence. */
     v5MethodsLeft(s) { return (s.v5Addrs || []).filter(a => !a.shipping).length; },
-    v5StripDone(s) { return this.v5Left(s) === 0 && this.v5MethodsLeft(s) === 0; },
+    /* The strip's third fact (the client, 23.09: three addresses, every
+       gift on the first, zeros on the other two, and the step passed —
+       «мы так не можем позволить проходить. Либо убрать адреса, либо
+       хотя бы по одному гифту»). An address holding nothing is counted
+       the same arithmetic way; removing it or feeding it stays the
+       client's own act. This retires the gbppl-v5-julia-1 sentence
+       «All N gifts go to X» — her case (one holder among many) IS the
+       empty-address case, and naming the count tells her more than
+       naming the holder did. */
+    v5EmptyAddrs(s) { return (s.v5Addrs || []).filter(a => this.v5AddrCount(s, a) === 0).length; },
+    v5StripDone(s) { return this.v5Left(s) === 0 && this.v5EmptyAddrs(s) === 0 && this.v5MethodsLeft(s) === 0; },
     v5LeftLine(s) {
       const total = this.v5Total(s);
       const left = this.v5Left(s);
       const gifts = n => n + ' gift' + (n === 1 ? '' : 's');
-      if (!(s.v5Addrs || []).length) return 'No addresses yet. All ' + gifts(total) + ' still need one.';
+      const addrs = (s.v5Addrs || []).length;
+      if (!addrs) return 'No addresses yet. All ' + gifts(total) + ' still need one.';
       if (left > 0) return left + ' of ' + gifts(total) + ' not assigned';
+      const empty = this.v5EmptyAddrs(s);
+      if (empty > 0) return empty + ' of ' + addrs + ' address' + (addrs === 1 ? '' : 'es') + ' ' + (empty === 1 ? 'has' : 'have') + ' no gifts';
       const missing = this.v5MethodsLeft(s);
       if (missing > 0) {
-        const rows = (s.v5Addrs || []).length;
-        return rows === 1
+        return addrs === 1
           ? 'The shipping method is not chosen'
-          : missing + ' of ' + rows + ' shipping methods not chosen';
-      }
-      // THE STRIP SAYS WHERE, NOT ONLY THAT (gbppl-v5-julia-1, 15.09). Julia,
-      // verbatim: «I added more addresses, but all gifts are assigned to the
-      // first one, and that one address appeared by default.» The strip said
-      // «All 12 gifts are assigned», which was true and told her nothing: a
-      // list of four addresses with every gift in the first one reads exactly
-      // like a list of four addresses with three gifts in each. So when the
-      // whole order stands in ONE place and the list has more places to stand
-      // in, the strip names the one. Where the list has a single address there
-      // is nothing to mistake and the sentence stays as it was.
-      const addrs = s.v5Addrs || [];
-      const holders = addrs.filter(a => this.v5AddrCount(s, a) > 0);
-      if (addrs.length > 1 && holders.length === 1) {
-        const who = (holders[0].deliver && holders[0].deliver.name) || holders[0].address || 'one address';
-        return 'All ' + gifts(total) + ' go to ' + who;
+          : missing + ' of ' + addrs + ' shipping methods not chosen';
       }
       return total === 1 ? 'The gift is assigned' : 'All ' + total + ' gifts are assigned';
     },
@@ -13823,6 +13820,11 @@ function checkoutApp() {
          never defaulted for him — the row is born empty and the strip
          counts it until a hand picks it. */
       if (this.v5MethodsLeft(s) > 0) return false;
+      /* 23.09, the client's third find in the same gate: an address
+         holding zero gifts is not a delivery, and a step that lets it
+         through invites the surprise at the courier's end. Feed it or
+         remove it — the gate just refuses to look away. */
+      if (this.v5EmptyAddrs(s) > 0) return false;
       if (s.v5Perso === 'each') return true;
       return this.v5Left(s) === 0;
     },
@@ -13845,9 +13847,11 @@ function checkoutApp() {
       const n = (s.v5Addrs || []).length;
       const left = this.v5Left(s);
       if (left > 0) return n + ' address' + (n === 1 ? '' : 'es') + ' · ' + left + ' gift' + (left === 1 ? '' : 's') + ' still to assign';
-      /* The band tells the same second fact the strip does (22.09):
-         a folded step 1 must not say «every gift assigned» while two
-         of its rows still wait for a method. */
+      /* The band tells the same facts the strip does (22-23.09): a
+         folded step 1 must not say «every gift assigned» while rows
+         wait for a method or stand empty. */
+      const bare = this.v5EmptyAddrs(s);
+      if (bare > 0) return n + ' address' + (n === 1 ? '' : 'es') + ' · ' + bare + ' without gifts';
       const miss = this.v5MethodsLeft(s);
       if (miss > 0) return n + ' address' + (n === 1 ? '' : 'es') + ' · ' + miss + ' shipping method' + (miss === 1 ? '' : 's') + ' to choose';
       return n + ' address' + (n === 1 ? '' : 'es') + ' · every gift assigned';
@@ -13959,6 +13963,10 @@ function checkoutApp() {
         if (left > 0) return left === 1
           ? 'One gift still needs an address.'
           : left + ' gifts still need an address.';
+        const bare = this.v5EmptyAddrs(s);
+        if (bare) return bare === 1
+          ? 'One address has no gifts. Assign one or remove it.'
+          : bare + ' addresses have no gifts. Assign some or remove them.';
         const miss = (s.v5Addrs || []).filter(a => !a.shipping).length;
         if (miss) return miss === 1
           ? 'One address still needs a shipping method.'
