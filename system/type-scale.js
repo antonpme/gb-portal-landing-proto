@@ -135,9 +135,11 @@
 
     /* ---------- body: the reading roles ---------- */
     { g: 'body', id: 'lead-400', name: 'Lead regular', fam: 'sans', prov: 'figma', sample: S_BODY,
-      rungs: [{ w: 0, s: 22, f: 400, lh: 'normal', ls: '2px', tt: 'none' }] },
+      note: 'The design file gives 22; the product had already brought it down to 18 (Ton 24.09). Lead works by sitting a touch above body with breathing tracking, and 22 stopped being a touch',
+      rungs: [{ w: 0, s: 18, f: 400, lh: 'normal', ls: '2px', tt: 'none' }] },
     { g: 'body', id: 'lead-300', name: 'Lead light', fam: 'sans', prov: 'figma', sample: S_BODY,
-      rungs: [{ w: 0, s: 22, f: 300, lh: 'normal', ls: '2px', tt: 'none' }] },
+      note: 'Same 22 to 18 correction as Lead regular (Ton 24.09)',
+      rungs: [{ w: 0, s: 18, f: 300, lh: 'normal', ls: '2px', tt: 'none' }] },
     { g: 'body', id: 'body-base', name: 'Body base', fam: 'sans', prov: 'verified', sample: S_BODY,
       note: 'The design file gives 0.3px of tracking here and the instrument reads none. The instrument wins',
       rungs: [{ w: 0, s: 16, f: 400, lh: '24px', ls: 'normal', tt: 'none' }] },
