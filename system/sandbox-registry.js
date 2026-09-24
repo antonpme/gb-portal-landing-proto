@@ -1486,6 +1486,25 @@
     return out;
   }
 
+  /* ПРОТОТИП ЛИ ЭТО (gbppl-panel-scope-1, Тон 24.09: «панель только
+     тогда, когда захожу непосредственно в прототип — внутри Live или
+     внутри Sandbox»). Прототип = адрес, который этот реестр называет
+     Live-страницей или песочницей, и который лежит в контейнере live/.
+     Второе условие отсекает записи-имена (hub, oro, pages, auth): они
+     здесь ради имени в консоли, а не как прототипы. Путь сравнивается
+     без query, как у samePath: версия и экран — та же страница.
+     Спрашивает консоль (studio-panel.js), чтобы решить, стоять ли. */
+  function isPrototype(root) {
+    root = root || '';
+    return Object.keys(PAGES).some(function (id) {
+      var page = PAGES[id];
+      var hrefs = [page.live].concat((page.variants || []).map(function (v) { return v.href; }));
+      return hrefs.some(function (h) {
+        return !!h && h.indexOf('live/') === 0 && samePath(root + h);
+      });
+    });
+  }
+
   /* Сколько всего прототипов в студии: версии страниц ПЛЮС варианты
      элементов (gbppl-proto-model-1). Вариант хедера — такой же
      прототип, как версия чекаута, и считать его вторым сортом
@@ -1507,6 +1526,7 @@
     elementSearch: elementSearch,
     rooms: rooms,
     count: count,
-    matches: matches
+    matches: matches,
+    isPrototype: isPrototype
   };
 })();

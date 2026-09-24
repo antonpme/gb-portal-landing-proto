@@ -289,6 +289,16 @@
 
   function panelEl() { return document.querySelector('gb-studio-panel'); }
 
+  /* gbppl-panel-scope-1 (Тон 24.09: панель только в прототипе).
+     Режим Comment — вкладка консоли; где консоль встала в запас
+     (data-scope="studio": хаб, система, полка, карта), режима нет:
+     ни клавиши c, ни ?comment=, ни памяти вкладки. Список при этом
+     читается как раньше — карта и бейджи живут на нём. */
+  function standsDown() {
+    var p = panelEl();
+    return !!(p && p.getAttribute('data-scope') === 'studio');
+  }
+
   function ss(key, value) {
     try {
       if (value === undefined) return sessionStorage.getItem(key);
@@ -1613,6 +1623,7 @@
     var typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' ||
                        t.tagName === 'SELECT' || t.isContentEditable);
     if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (standsDown()) return;
     if (e.key === 'c' || e.key === 'C' || e.key === 'с' || e.key === 'С') {
       e.preventDefault();
       setMode(!ON);
@@ -1708,7 +1719,7 @@
 
     wireRefresh();
 
-    var wanted = deepLink ? true : ss(MODE_KEY) === '1';
+    var wanted = standsDown() ? false : (deepLink ? true : ss(MODE_KEY) === '1');
     if (wanted) setMode(true);
     else {
       /* Даже в View список страницы читается, хотя полки не видно

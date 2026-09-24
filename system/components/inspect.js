@@ -3081,6 +3081,13 @@
     var typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' ||
                        t.tagName === 'SELECT' || t.isContentEditable);
     if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+    /* gbppl-panel-scope-1 (Ton 24.09): the modes are tabs of the
+       console, and the console stands only on a prototype. Where it
+       stands down (data-scope="studio": the hub, the system, the
+       shelf, the map) the key stands down with it. A page with no
+       console at all keeps the key, as before. */
+    var sp = document.querySelector('gb-studio-panel');
+    if (sp && sp.getAttribute('data-scope') === 'studio') return;
     if (e.key === 'i' || e.key === 'I' || e.key === 'ш' || e.key === 'Ш') {
       e.preventDefault();
       setMode(MODE === 'inspect' ? 'view' : 'inspect');

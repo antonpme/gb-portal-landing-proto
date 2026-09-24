@@ -29,6 +29,50 @@
    песочниц ЭТОЙ страницы и её собственными переключателями.
    Провенанс, голос и слой описаны в studio-panel.css.
 
+   ПАНЕЛЬ ТОЛЬКО В ПРОТОТИПЕ, РЕЖИМ НЕ ЕДЕТ ЗА ТОБОЙ
+   (gbppl-panel-scope-1, 2026-09-24). Тон, дословно: «Я хочу видеть
+   панель только тогда, когда захожу непосредственно в прототип —
+   внутри Live или внутри Sandbox. Больше она мне нигде не нужна: ни
+   в дизайн-системе, ни на Хабе» и «при переходе из прототипа в любое
+   другое место режим отображения сразу слетал на view». Это
+   отменяет довод gbppl-panel-6 («страница без консоли — страница,
+   которую нельзя проинспектировать») для хаба, полки и системы.
+
+   1. ГДЕ ПАНЕЛЬ. Не списком страниц, а РЕЕСТРОМ (закон 0a.1: «нет
+      записи в реестре = сущности нет ни на полке, ни в консоли»).
+      Прототип = адрес, который реестр называет Live-страницей
+      (PAGES[id].live) или песочницей (href варианта), И который
+      лежит в контейнере live/ (Тон-12: контейнеров два, Live и
+      песочницы, и обе живут в live/). Спрашивает об этом
+      GB_SANDBOXES.isPrototype — знание у владельца, здесь только
+      вопрос. Поэтому хаб (запись hub, live 'index.html'), About Oro и
+      мерочные страницы system/pages (их записи есть, но вне live/),
+      остальная витрина, полка sandboxes.html и карта live/map.html
+      (в реестре её нет) панели не получают, а новая страница
+      прототипа получит её той же строкой реестра, которой и так
+      обязана родиться. Реестра на странице нет — ответ по одной
+      папке live/.
+   2. ЧТО ОСТАЁТСЯ ВНЕ ПРОТОТИПА. Сам элемент <gb-studio-panel>:
+      он остров шкалы (проба inspect.js, ловушка 19), хозяин
+      place() и data-api для карты и комментариев, и чужой код зовёт
+      его addSegments/addSection/addGroup. Шаблон пишется как
+      всегда, чтобы ни одна ручка не упала, но ящик прячется, а
+      проводка (док, отрыв, экран, клавиши, Esc, тултипы, подвал) не
+      ставится вовсе. Элемент несёт data-scope="studio"; inspect.js и
+      comments.js по нему молчат на своих клавишах i и c, и ни
+      сохранённый режим, ни ?mode= / ?comment= его не зажигают:
+      режимы — вкладки панели, панели нет, нет и режимов.
+   3. РЕЖИМ ЖИВЁТ НА СВОЁМ МЕСТЕ. Прибор и комментарии помнят режим
+      в sessionStorage вкладки, а вкладка одна на все страницы — так
+      Inspect и приезжал на хаб. Теперь рядом лежит МЕСТО, где режим
+      поставлен (MODE_PLACE, путь страницы без query). Пришёл на
+      другое место — режим сбрасывается в View до старта прибора; F5
+      того же места и смена ключей того же файла (версия чекаута,
+      вариант хедера, экран) режим сохраняют: это то же место. Кадр
+      девайса (embedded) ничего не сбрасывает и места не пишет: он
+      та же страница, режим ему шлёт наружный пульт. ?mode= в адресе
+      (Copy link) по-прежнему ставит режим явно.
+
    Как подключать:
 
      <link rel="stylesheet" href="../system/components/studio-panel.css">
@@ -782,9 +826,47 @@
      стартует после нас, поэтому ключ переписывается здесь, до его
      старта: inspect.js остаётся нетронутым и просто находит то, что
      ему положили. */
+  /* gbppl-panel-scope-1. Корень студии берётся с адреса этого же
+     скрипта, как ROOT у inspect.js: элемента на странице в этот миг
+     может ещё не быть, а адрес скрипта есть всегда. */
+  var SCRIPT_ROOT = (function () {
+    var s = document.currentScript;
+    var m = s && s.src && /^(.*\/)system\/components\/studio-panel\.js(?:[?#].*)?$/.exec(s.src);
+    if (m) return m[1];
+    var p = document.querySelector('gb-studio-panel');
+    return p ? (p.getAttribute('data-root') || '') : '';
+  })();
+
+  /* Прототип ли эта страница: вопрос реестру (шапка, пункт 1). */
+  function protoHere() {
+    var reg = window.GB_SANDBOXES;
+    if (reg && typeof reg.isPrototype === 'function') return reg.isPrototype(SCRIPT_ROOT);
+    var probe = document.createElement('a');
+    probe.href = SCRIPT_ROOT || './';
+    var base = probe.pathname.replace(/[^/]*$/, '');
+    return location.pathname.indexOf(base + 'live/') === 0;
+  }
+  var PROTO = protoHere();
+
+  /* Место режима (шапка, пункт 3): путь без query, папка = её
+     index.html, как в реестре. */
+  var MODE_PLACE = 'gbppl-mode-place';
+  function modePlace() {
+    return location.pathname.replace(/\/$/, '/index.html');
+  }
+
   (function () {
     try {
+      var framed = (function () {
+        try { if (window.top !== window.self) return true; } catch (e) { return true; }
+        return new URLSearchParams(location.search).get('studio') === 'embedded';
+      })();
       var m = new URLSearchParams(location.search).get('mode');
+      /* Вне прототипа режимов нет, и адрес их не зажигает. */
+      if (!PROTO) m = 'view';
+      /* Другое место без явного ?mode= = View. Кадр не в счёт. */
+      if (!m && !framed && sessionStorage.getItem(MODE_PLACE) !== modePlace()) m = 'view';
+      if (!framed) sessionStorage.setItem(MODE_PLACE, modePlace());
       if (m === 'inspect' || m === 'view') sessionStorage.setItem('gbppl-inspect-mode', m);
       /* gbppl-comments-b: третье значение того же ключа. Comment и
          Inspect взаимоисключающи, поэтому адрес с mode=comment гасит
@@ -4068,6 +4150,21 @@
       var shell = this.querySelector('.gbsp');
       var tab   = this.querySelector('.gbsp-tab');
       var host  = this;
+
+      /* gbppl-panel-scope-1: вне прототипа элемент остаётся хозяином
+         острова и ручек, но ящика нет и проводки нет (шапка, пункт 2).
+         is-collapsed нарочно: чужие проверки «открыта ли консоль»
+         (Esc прибора) обязаны слышать «нет». */
+      if (!PROTO) {
+        this.setAttribute('data-scope', 'studio');
+        if (shell) {
+          shell.classList.add('is-collapsed');
+          shell.hidden = true;
+          shell.style.display = 'none';
+        }
+        return;
+      }
+      this.setAttribute('data-scope', 'prototype');
 
       /* СТОРОНА ДОКА СТАВИТСЯ В ТОМ ЖЕ КАДРЕ, ЧТО И РАЗМЕТКА
          (gbppl-panel-dock-1): между innerHTML и этой строкой браузер
