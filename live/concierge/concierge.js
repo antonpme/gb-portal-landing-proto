@@ -1,7 +1,7 @@
 /* ============================================================
    THE CONCIERGE EXPERIENCE, AS ONE THING
    live/concierge/concierge.js  ·  gbppl-concierge-unify-1
-   gbppl-gethelp-1 (24.09, Russell: «flip around these sections and make the schedule a call more prominent»): one quiet advisor line leads floor one, Book a meeting is the first of five doors (live chat and AI stay in the prototype, not in the release), the message moves to its own Email us level.
+   gbppl-gethelp-1 (24.09, Russell: «flip around these sections and make the schedule a call more prominent»): the advisor is one Lead line first in the body, Book a meeting is the first of five doors (live chat and AI stay in the prototype, not in the release), the message moves to its own Email us level.
    ============================================================
    2026-09-09. Ton is showing Valerie that the help experience is
    ONE experience, the same on the website and inside the portal,
@@ -606,31 +606,21 @@
        For a guest the floor still DOES NOT EXIST: not disabled, not a
        stub, not an empty box with a promise in it. The function
        returns nothing at all and the drawer is built one floor tall. */
-    /* gbppl-gethelp-1 (24.09): THE CARD BECAME A PERSON ROW. First the
+    /* gbppl-gethelp-1 (24.09): THE CARD BECAME A SENTENCE. First the
        advisor's card moved to the top of floor one (Russell: the
-       person and the call were buried under the question box); then
-       it became one line, because the phone lives in Call us and the
-       email in Email us; then (pass 4, the owner) that line took the
-       ANATOMY OF A DOOR: the same grid and disc, his initials in the
-       disc, his name in the door title's voice and «Your gift
-       advisor» in the sub line. It is not a door: no chevron, no
-       hover, not a button, not a link. A guest has no advisor, and
-       the row does not exist for them. */
-    function initials(name) {
-      return String(name).split(/\s+/).filter(Boolean).map(function (w) {
-        return w.charAt(0).toUpperCase();
-      }).join('');
-    }
+       person and the call were buried under the question box); the
+       phone and the email left it for Call us and Email us; a door-
+       shaped row read like the doors, a grey band read like a zone.
+       The owner's decision (pass 6): one line of Lead on the white
+       ground, «Your gift advisor: Brad Smaling», an introduction to
+       the list rather than a part of it. A guest has no advisor, and
+       the line does not exist for them. */
     function floorTwoHTML() {
       if (GUEST) return '';
-      return '<div class="gbhc-person" data-advisor>' +
-          '<span class="gbhc-door__disc" aria-hidden="true">' +
-            '<span class="gbhc-person__initials">' + initials(ADVISOR.name) + '</span></span>' +
-          '<span class="gbhc-door__copy">' +
-            '<span class="gbhc-door__title">' + ADVISOR.name + '</span>' +
-            '<span class="gbhc-door__sub">Your gift advisor</span>' +
-          '</span>' +
-        '</div>';
+      return '<p class="gbhc-advisor-lead" data-advisor>' +
+          '<span class="gbhc-advisor-lead__label">Your gift advisor:</span> ' +
+          '<span class="gbhc-advisor-lead__name">' + ADVISOR.name + '</span>' +
+        '</p>';
     }
 
     /* Floor one, in the order Russell asked for: the person first,
