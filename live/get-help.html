@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" class="gb-demo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get help drawer · GildedBox Design Studio</title>
+<link rel="icon" href="data:,">
+
+<!-- ============================================================
+     gbppl-gethelp-1 — THE TALK TO US DRAWER, ON A PAGE OF ITS OWN
+     ------------------------------------------------------------
+     24.09. Russell, on the live portal's Get Help: «flip around these
+     sections and make the schedule a call more prominent». The owner
+     asked for the element to be delivered on its own prototype page,
+     tied to no existing flow, so it can be handed over and judged
+     alone.
+
+     WHAT THIS PAGE IS: the new portal frame and nothing in it. The
+     bar (.gbh-pbar classes) and the boxless rail (.snav-* on
+     data-nav="ton") are live\portal-dashboard.html's, copied class for
+     class and rule for rule with their comments, because neither is
+     an organism in system\components yet (the dashboard's own note
+     says the rail has earned that promotion; it is not done here
+     either). The content column holds ONE button, and it opens the
+     concierge drawer through GbConcierge.open(), the same public call
+     the dashboard's Talk to us door uses.
+
+     NO COPY OF THE DRAWER. The drawer, its levels, the booking floor
+     and the sleeping chat are live\concierge\concierge.js and .css,
+     mounted in the portal environment, signed in by construction.
+
+     WHAT WAS LEFT OUT OF THE COPIED FRAME, on purpose:
+       the notifications bell (the dashboard's bell counts that page's
+         problems; here it would be a glyph with nothing behind it);
+       the chosen row of the rail (this page is not a place in the
+         rail: support lives in the concierge, Ton 10.09, and the rail
+         has no row for it);
+       the ?pth= and ?nav= axes (the frame is fixed on the dashboard's
+         defaults, portal bar and boxless rail).
+     No new value is written on this page: every rule below is the
+     dashboard's, and the page rule at the end is rungs.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../system/assets/tokens.css">
+<link rel="stylesheet" href="../system/components/shell.css">
+<link rel="stylesheet" href="../system/components/header.css">
+<link rel="stylesheet" href="../system/components/button.css">
+<link rel="stylesheet" href="../system/components/icon.css">
+<link rel="stylesheet" href="../system/components/tooltip.css">
+<link rel="stylesheet" href="../system/components/auth.css">
+<link rel="stylesheet" href="../system/components/studio-panel.css">
+<link rel="stylesheet" href="../system/components/drawer.css">
+<link rel="stylesheet" href="../system/components/docs.css">
+<link rel="stylesheet" href="../system/components/inspect.css">
+<link rel="stylesheet" href="../system/components/comments.css">
+<link rel="stylesheet" href="../system/components/toggle.css">
+<!-- Book a meeting is a level of the concierge drawer, and booking.css
+     names auth.css as its neighbour. -->
+<link rel="stylesheet" href="../system/components/booking.css">
+<link rel="stylesheet" href="concierge/concierge.css">
+
+<style>
+/* ============ THE BAR, as live\portal-dashboard.html wears it ============ */
+.gbh-pbar__actions .gb-btn--icon { position: relative; }
+/* AND THE BURGER IS COMPACT-ONLY, WHICH THE ORGANISM UNDID (Ton, off
+   his own width: «что за гамбургер появился справа»). header.css
+   hides .gbh-pbar__burger with display:none, but button.css loads
+   AFTER it and .gb-btn declares display:inline-flex at the same
+   specificity, so the moment the burger joined the one icon recipe
+   it won the cascade and appeared on the desktop. The page sheet is
+   last, so the hide is restated here and the compact step below
+   turns it back on. Same trap as .gbh-count[hidden] at the top of
+   this file: a display rule beats a display rule by order, not by
+   intention. */
+.gbh-pbar__actions .gb-btn--icon.gbh-pbar__burger { display: none; }
+@media (max-width: 900px) {
+  .gbh-pbar__actions .gb-btn--icon.gbh-pbar__icon,
+  .gbh-pbar__actions [data-gbhc-bell] { display: none; }
+  .gbh-pbar__actions .gb-btn--icon.gbh-pbar__burger { display: inline-flex; }
+}
+/* [hidden] LOSES TO A display RULE, and .gbh-count declares display:grid. */
+.gbh-count[hidden] { display: none; }
+
+/* ============ THE PORTAL RAIL, as live\portal-dashboard.html draws it ============ */
+.layout {
+  display: flex;
+  /* Ton, 21.09: the rail-to-content gutter is 48 as a minimum, «меньше
+     оно не дышит» — one number on every width from 1024 up (below that
+     the rail folds under the content). Inside the content blocks the
+     padding stays 24 all round. Canon in skill/decisions.md. */
+  gap: var(--space-48);
+  align-items: flex-start;
+}
+.sidebar {
+  width: 320px;                 /* LIVE 12.08 / Figma 3550-26803: block min width */
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+.snav-block {
+  background: var(--white);
+  border: 1px solid var(--zinc-200);
+  /* DEVIATION carried over: Figma reads 4px, unified on the 5px brand
+     radius (radius audit, Ton's decision 2026-08-12) */
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.snav-header {
+  background: var(--zinc-50);
+  min-height: 64px;
+  padding: var(--space-16);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+.snav-title {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.7;
+  letter-spacing: 2px;
+  color: var(--zinc-500);
+}
+.snav-info {
+  border-top: 1px solid var(--zinc-200);
+  padding: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.snav-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;                     /* LIVE 12.08 / Figma: row gap, half of --space-8 */
+  min-height: 24px;
+}
+.snav-name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  color: var(--zinc-900);
+}
+.snav-key {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+  color: var(--zinc-500);
+}
+.snav-val {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+  color: var(--zinc-900);
+  padding: 0 var(--space-8);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+a.snav-val, body.gb-demo a.snav-val { color: var(--zinc-900); text-decoration: none; }
+a.snav-val:hover, body.gb-demo a.snav-val:hover { text-decoration: underline; }
+.snav-check { display: block; width: 12px; height: 12px; }
+.snav-menu { display: flex; flex-direction: column; }
+.snav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  height: 46px;                 /* LIVE 12.08 / Figma 3561-3633: 46.431, rounded */
+  padding: var(--space-8) var(--space-16);
+  border-top: 1px solid var(--zinc-200);
+  background: var(--white);
+  text-decoration: none;
+}
+.snav-item:hover {
+  background: var(--zinc-100);
+  border-top-color: var(--zinc-300);
+}
+/* The plaque of the chosen row, and its label with it (Ton-5: blue is
+   the language of state; gbppl-demo-polish-1 fixed the label 27.08). */
+.snav-item.active {
+  background: var(--blue-50);
+  border-top-color: var(--blue-200);
+}
+.snav-item.active .snav-label { color: var(--blue-600); }
+/* AND THE GLYPH OF THE CHOSEN ROW IS THE SAME BLUE AS ITS LABEL
+   (Ton, 10.09, correcting the morning's reading of his screenshot).
+   The rail's glyphs are <img> of static SVGs with their own #71717A
+   strokes, so CSS cannot tint them: the recipe is live\portal.html's
+   own, a masked pseudo painted in the ink we want, with the image
+   held at opacity 0 underneath. The mask URL is copied onto each
+   chosen .snav-icon by the script at the foot of the page, exactly
+   as the portal does it, so no glyph is redrawn and no second copy
+   of the artwork exists. Resting rows are untouched. */
+.snav-item.active .snav-icon { position: relative; }
+.snav-item.active .snav-icon img { opacity: 0; }
+.snav-item.active .snav-icon::after {
+  content: "";
+  position: absolute;
+  inset: 3px;                       /* LIVE portal ren: the 18px the image is capped at, centred in the 24 box */
+  background-color: var(--blue-600);
+  -webkit-mask: var(--snav-icon-url) center / contain no-repeat;
+  mask: var(--snav-icon-url) center / contain no-repeat;
+  pointer-events: none;
+}
+.snav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.snav-icon img { display: block; max-width: 24px; max-height: 24px; }
+.snav-label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--zinc-900);
+  flex: 1;
+  min-width: 0;
+}
+a.snav-item, body.gb-demo a.snav-item { color: var(--zinc-900); }
+
+/* ---- nav=russell and nav=ton share the row geometry of the fork:
+        the item grows to a second line instead of truncating, and the
+        glyph stays on the first line. Numbers verbatim from
+        live\portal.html (live: h 46 = 1 + 8 + 29; here: 10.5 padding
+        puts the 24 glyph top at 11.5 and the label at 13). ---- */
+body[data-nav="russell"] .snav-item,
+body[data-nav="ton"] .snav-item {
+  height: auto;
+  min-height: 46px;
+  align-items: flex-start;
+  padding-top: 10.5px;            /* LIVE portal fork, gbppl-nav-2 */
+  padding-bottom: 10.5px;
+}
+body[data-nav="russell"] .snav-label,
+body[data-nav="ton"] .snav-label { margin-top: 1.5px; }
+
+/* ---- nav=ton: THE BOXLESS RAIL, the ren skin of live\portal.html
+        carried whole. Cards dissolve, sections separate by air, the
+        section title becomes an eyebrow, labels step up to 16/500,
+        glyphs step back to 18 at 0.8, and the chosen row is a 2px
+        inset rule instead of a blue plate. Every value below is that
+        page's, not a new decision. ---- */
+body[data-nav="ton"] .sidebar { gap: 0; width: 280px; }
+body[data-nav="ton"] .snav-block {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+body[data-nav="ton"] .snav-block + .snav-block { margin-top: 40px; }   /* LIVE portal ren: sections separate by air alone */
+body[data-nav="ton"] .snav-header {
+  background: transparent;
+  min-height: 0;
+  padding: 0 var(--space-16);
+  margin-bottom: 10px;
+}
+body[data-nav="ton"] .snav-title {
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--eyebrow-color);
+  line-height: 1.6;
+}
+body[data-nav="ton"] .snav-info { border-top: none; padding: 0 var(--space-16) 12px; }
+body[data-nav="ton"] .snav-name { font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--zinc-900); }
+body[data-nav="ton"] .snav-key,
+body[data-nav="ton"] .snav-val { font-size: 13px; font-weight: 400; letter-spacing: .3px; color: var(--zinc-500); padding: 0; }
+body[data-nav="ton"] .snav-item {
+  background: transparent;
+  border-top-color: transparent;
+  transition: background-color var(--mo-micro) var(--mo-move);
+}
+body[data-nav="ton"] .snav-item:hover {
+  background: var(--zinc-100);
+  border-top-color: transparent;
+  border-radius: var(--radius);
+}
+body[data-nav="ton"] .snav-item.active {
+  background: transparent;
+  border-top-color: transparent;
+  box-shadow: inset 2px 0 0 var(--blue-600);   /* LIVE portal ren: the rule replaces the plate */
+}
+body[data-nav="ton"] .snav-item.active:hover { border-radius: 0; }
+body[data-nav="ton"] .snav-label {
+  text-transform: none;
+  font-size: 16px;
+  line-height: 21px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  color: var(--zinc-800);
+}
+body[data-nav="ton"] .snav-item.active .snav-label { font-weight: 500; color: var(--blue-600); }
+/* The glyph steps back, and it STAYS INK on the chosen row: the same
+   correction this wave made to live\portal.html itself. */
+body[data-nav="ton"] .snav-icon img { max-width: 18px; max-height: 18px; opacity: .8; }
+
+/* THE MASTHEAD AND THE COMPANY ROW, ported with the rail. Values are
+   live\portal.html's own: the wordmark rides the shared 16px left
+   axis at 8/16 pads, its block keeps a tighter 24 to the first
+   section (the 40 rhythm is section to section), and Upload logo is
+   the quiet 13px text link that stands at the right end of the
+   company row. */
+/* The masthead is gone with its logo (the bar has one). What stands
+   at the head of the rail now is the door to the catalogue: a
+   button, because it opens something over the page rather than
+   taking you somewhere, and outline rather than filled because a
+   rail of quiet rows is not the place for the loudest object on the
+   screen. It keeps the section rhythm: 24 to the first group, the
+   same tighter step the wordmark used to take. */
+.snav-explore { padding: 0 var(--space-16); }
+.snav-explore + .snav-block { margin-top: var(--space-24); }
+/* On the boxless rail the rows run the full 280 and their plaques are
+   the rail's own edges, so the door at the head matches them: no inset,
+   the button's border stands where the row plaques stand (Ton, 21.09:
+   «растянуть по всей ширине родительского контейнера, как и меню»). The
+   16 inset above is for the card navs, where the button sits inside a
+   padded block. */
+body[data-nav="ton"] .snav-explore { padding: 0; }
+.company-block .snav-info .snav-row { justify-content: space-between; }
+.upload-logo {
+  font-size: 13px;                  /* LIVE portal ren: the quiet text link */
+  color: var(--zinc-500);
+  text-decoration: none;
+}
+a.upload-logo, body.gb-demo a.upload-logo { color: var(--zinc-500); }
+.upload-logo:hover { text-decoration: underline; }
+
+/* The page ground is the rail's ground: ren stands on Zinc 50 and so
+   does this. shell.css paints body.gb-demo with --live-body (#fcfdfd,
+   the portal's own near-white), which is a 0-1-1 rule and outranks a
+   bare body, so the class is named here too (measured before:
+   252,253,253 against ren's 250,250,250). */
+body.gb-demo { background: var(--zinc-50); }
+
+/* THE CONTENT COLUMN IS THE RULER, NOT THE WINDOW. With a 320 rail
+   beside it the board is 880 at 1280 and 1568 at 2258, and a media
+   query would give both the same three columns. */
+.content {
+  flex: 1;
+  min-width: 0;
+  container-type: inline-size;
+  container-name: board;
+}
+
+/* BELOW 1024 THE RAIL GOES UNDER THE CONTENT, which is what the live
+   portal does, by its own measured rule. A dashboard whose first
+   screen on a phone is a menu of seventeen rows answers no question
+   at all. Carried across verbatim rather than re-decided. */
+@media (max-width: 1023px) {
+  .layout { flex-wrap: wrap; }
+  /* THE BOXLESS RAIL HAS TO BE NAMED HERE TOO, and this is a bug the
+     default caught the moment it changed: body[data-nav="ton"]
+     .sidebar sets 280px at a higher specificity than a bare
+     .sidebar, so under 1024 the rail kept its 280 and the content
+     column was squeezed to ONE PIXEL. Measured, not guessed: at 360
+     the layout was 345 wide, the rail 280 and the board 1. */
+  .sidebar,
+  body[data-nav="ton"] .sidebar { order: 2; width: 100%; }
+}
+
+/* ============ THE PAGE ============
+   The dashboard's ground and its vertical rhythm, rung for rung
+   (.gbppd-page there): 32 above the layout, 64 under it. */
+.gbgh-page {
+  background: var(--zinc-50);
+  min-height: 100vh;
+  padding-block: var(--space-32) var(--space-64);
+}
+</style>
+
+<!-- The gate. A room of the studio checks the 30 day stamp before the
+     paint, and data-home goes one level up to the hub that holds it. -->
+<script src="../system/components/studio.js" data-home="../index.html"></script>
+</head>
+<body class="gb-demo" data-pth="1" data-nav="ton">
+
+  <header class="gbh-pbar">
+    <div class="gb-container gbh-pbar__row">
+      <a class="gbh-lock" href="portal.html" aria-label="GildedBox Portal, home">
+        <img class="gbh-lock__mark" src="../system/icons/gildedbox-logo.svg" alt="GildedBox">
+        <span class="gbh-lock__rule" aria-hidden="true"></span>
+        <span class="gbh-lock__word">Portal</span>
+      </a>
+      <div class="gbh-pbar__actions">
+        <a class="gbh-away" href="index.html">
+          Go to website
+          <svg width="13" height="13" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke-linecap="square" transform="translate(0.5 0.5)" stroke-linejoin="miter" stroke-miterlimit="10"><path d="M7.00002 41L41 7L40.801 7.19902" stroke="currentColor" stroke-width="1.684" fill="none"></path><path d="M25 7H41V23" stroke="currentColor" stroke-width="1.684" fill="none"></path></g></svg>
+        </a>
+        <a class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" href="book-a-meeting.html"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-pbar__icon" type="button" aria-label="Search your portal">
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="search" data-gb-icon-size="22"></span></span>
+        </button>
+        <!-- The cart, and its count is DATA: a new account has an empty
+             one, so the badge goes with the state (see setState). -->
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-pbar__icon" type="button" id="gbghCart" aria-label="Cart, 3 items">
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="cart" data-gb-icon-size="22"></span></span>
+          <span class="gbh-count" aria-hidden="true">3</span>
+        </button>
+        <button class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gbh-pbar__burger" type="button" aria-label="Menu">
+          <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="menu" data-gb-icon-size="22"></span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="gbgh-page">
+    <div class="layout gb-container">
+
+      <aside class="sidebar">
+
+        <div class="snav-explore">
+          <a class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary gb-btn--block" href="catalog/index.html" data-gbppd-catalog>
+            <span class="gb-btn__label">Explore gifts</span>
+          </a>
+        </div>
+
+        <section class="snav-block">
+          <header class="snav-header"><span class="snav-title">Gifting</span></header>
+          <nav class="snav-menu">
+          <a class="snav-item" href="portal-dashboard.html"><span class="snav-icon"><img src="../system/icons/metrics.svg" alt=""></span><span class="snav-label">Dashboard</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/gift.svg" alt=""></span><span class="snav-label">My Gifts</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/archery-target.svg" alt=""></span><span class="snav-label">Gifting Campaigns</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/address-book.svg" alt=""></span><span class="snav-label">Gift Recipients (Addresses)</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/gift-exchange.svg" alt=""></span><span class="snav-label">Redeem Pages</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/laptop-check.svg" alt=""></span><span class="snav-label">Design Approvals</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/time-machine.svg" alt=""></span><span class="snav-label">Orders</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/love-card.svg" alt=""></span><span class="snav-label">Thank You Notes</span></a>
+          </nav>
+        </section>
+
+        <section class="snav-block company-block">
+          <header class="snav-header"><span class="snav-title">My Company</span></header>
+          <div class="snav-info">
+            <div class="snav-row"><span class="snav-name">GildedBox</span><a class="upload-logo" href="#">Upload logo</a></div>
+          </div>
+          <nav class="snav-menu">
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/crowd-2.svg" alt=""></span><span class="snav-label">My Teams</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/office.svg" alt=""></span><span class="snav-label">Company Management</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/brand-assets.svg" alt=""></span><span class="snav-label">Brand Assets</span></a>
+          </nav>
+        </section>
+
+        <section class="snav-block">
+          <header class="snav-header"><span class="snav-title">Account</span></header>
+          <div class="snav-info">
+            <div class="snav-row"><span class="snav-name">Anton Parkhomenko</span></div>
+            <div class="snav-row"><span class="snav-key">Email:</span><span class="snav-val">anton@gildedbox-demo.com<img class="snav-check" src="../system/icons/c-check.svg" alt=""></span></div>
+          </div>
+          <nav class="snav-menu">
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/cogwheel.svg" alt=""></span><span class="snav-label">Account Information</span></a>
+          <!-- PAYMENTS IS PERSONAL (Ton, 10.09): the card belongs to the
+               person who pays with it, not to the company block. -->
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/money-13.svg" alt=""></span><span class="snav-label">Payments</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/alarm.svg" alt=""></span><span class="snav-label">Notifications</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/lock.svg" alt=""></span><span class="snav-label">Password</span></a>
+          <a class="snav-item" href="portal.html"><span class="snav-icon"><img src="../system/icons/leave.svg" alt=""></span><span class="snav-label">Log out</span></a>
+          </nav>
+        </section>
+
+        <!-- SUPPORT IS GONE, GROUP AND FOOTER BOTH (Ton, 10.09: «всё
+             уходит в виджет»). Help lives in the concierge now: the
+             cloche in the bar and the Talk to us door of the Activity
+             block, both of which open the same drawer with live chat,
+             a meeting and the Gift Advisor in it. A rail that also
+             printed an address and a phone number would be a third
+             place to ask for help and the least useful of the three. -->
+
+      </aside>
+
+      <!-- THE CONTENT IS EMPTY BUT FOR ONE DOOR. The page exists to show
+           the drawer, so the only thing on it is the way in, besides
+           the concierge bell the module puts in the bar. -->
+      <main class="content" id="gethelp">
+        <button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button" data-gbgh-open>
+          <span class="gb-btn__label" data-pc-section="label">Talk to us</span>
+        </button>
+      </main>
+    </div>
+  </div>
+
+  <gb-drawer id="gbhcDrawer"></gb-drawer>
+  <gb-studio-panel data-root="../" page="gethelp"></gb-studio-panel>
+
+  <script src="../system/components/shell.js"></script>
+  <script src="../system/sandbox-registry.js"></script>
+  <script src="../system/components/icon.js"></script>
+  <script src="../system/components/studio-panel.js"></script>
+  <script src="../system/components/header.js"></script>
+  <script src="../system/components/auth.js"></script>
+  <script src="../system/type-scale.js"></script>
+  <script src="../system/components/drawer.js"></script>
+  <script src="../system/components/inspect.js"></script>
+  <script src="../system/components/toggle.js"></script>
+  <script src="../system/components/comments.js"></script>
+  <script src="../system/components/booking.js"></script>
+  <!-- tooltip.js before the concierge: the organism listens on the
+       document, and the module writes its carriers late. -->
+  <script src="../system/components/tooltip.js"></script>
+  <script src="concierge/concierge.js"></script>
+  <!-- The rail's Explore gifts and the bar's cart keep the behaviour
+       they have on the dashboard: one owner each, nothing copied. -->
+  <script src="catalog-overlay.js"
+          data-open="[data-gbppd-catalog]"
+          data-src="catalog/index.html?embed=1"></script>
+  <script src="cart-drawer.js"
+          data-cart-button="#gbghCart"
+          data-checkout="checkout.html?v=5"
+          data-catalog="catalog/index.html"
+          data-assets="../system/assets/products/"></script>
+
+<script>
+/* ============================================================
+   THE ONE DOOR OPENS THE CONCIERGE              gbppl-gethelp-1
+   ------------------------------------------------------------
+   The module mounted in the PORTAL environment, signed in by
+   construction (auth 'user', no switch): the advisor's card leads
+   the drawer here. The cloche joins the bar in front of the cart,
+   where the dashboard puts it in front of its notifications bell.
+   ============================================================ */
+(function () {
+  'use strict';
+  if (window.GbConcierge) {
+    window.GbConcierge.mount({
+      bellSlot:   '.gbh-pbar__actions',
+      bellBefore: '#gbghCart',
+      anchor:     'gb-studio-panel',
+      aiDoor:     true,
+      auth:       'user',
+      authSwitch: false,
+      siteHref:   'get-help.html',
+      environments: {
+        here:    'portal',
+        website: 'index.html?concierge=1',
+        portal:  'get-help.html'
+      }
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var door = e.target.closest ? e.target.closest('[data-gbgh-open]') : null;
+    if (!door) return;
+    e.preventDefault();
+    if (window.GbConcierge && window.GbConcierge.open) window.GbConcierge.open();
+  });
+}());
+</script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 /* ============================================================
    THE CONCIERGE EXPERIENCE, AS ONE THING           .gbhc-*
    live/concierge/concierge.css  ·  gbppl-concierge-unify-1
+   gbppl-gethelp-1 (24.09): the advisor card leads floor one and loses its form; the note's rules serve the Email us level; the card's growth rules are gone with the card's button.
    ============================================================
    2026-09-09. Ton is showing Valerie that the help experience is
    ONE experience, the same on the website and inside the portal,
@@ -198,7 +199,7 @@ body.gb-demo a.gbhc-door { color: var(--zinc-900); }
   line-height: 1.5;
   color: var(--zinc-900);
 }
-.gbhc-advisor__rows { display: grid; gap: var(--space-8); margin-bottom: var(--space-16); }
+.gbhc-advisor__rows { display: grid; gap: var(--space-8); }  /* gbppl-gethelp-1: no margin under the rows, the card's own 16 closes it, top gap == bottom gap */
 .gbhc-contact,
 body.gb-demo a.gbhc-contact {
   display: flex;
@@ -213,14 +214,10 @@ body.gb-demo a.gbhc-contact {
 body.gb-demo a.gbhc-contact:hover { color: var(--blue-600); }
 .gbhc-contact .gb-icon { color: var(--zinc-500); }
 .gbhc-contact:hover .gb-icon { color: inherit; }
-/* THE GROWTH. A 0fr -> 1fr grid row: the panel finds its own height,
-   nothing is measured in JS and nothing is written in pixels. */
-.gbhc-grow { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--mo-small) var(--mo-move); }
-.gbhc-grow > * { overflow: hidden; }
-.gbhc-advisor.is-writing .gbhc-grow { grid-template-rows: 1fr; }
-.gbhc-advisor.is-writing .gbhc-open { display: none; }
-.gbhc-note { padding-top: var(--space-16); }
-.gbhc-note__send { margin-top: var(--space-16); }
+/* THE GROWTH OUT OF THE CARD IS GONE (gbppl-gethelp-1, 24.09). The
+   note is the whole body of the Email us level now, so it has no card
+   to grow out of and no gutter to keep from one: .gbhc-grow,
+   .is-writing, .gbhc-open and the note's padding-top left together. */
 
 /* ---- THE TWO LABEL-LESS FIELDS, AND THEIR TWO ANTIDOTES -----
    The message to the advisor and the chat composer are both the
@@ -997,23 +994,14 @@ html[data-gbhc-accent="gold"] { --gbhc-accent: var(--gold-beta); }
   color: var(--gbhc-online);
 }
 
-/* ---- The advisor's note, shorter at rest ------------------
-   Ton: the free text box starts too tall. rows=2 instead of 3 is
-   the whole change; the field grows with what is typed exactly as
-   it did, because the growth was never in the row count. */
-/* THE FLOOR OF THE LIVE FIELD IS NOT THIS CARD'S FLOOR. auth.css
-   gives a plain .gba-textarea a min-height of 80 (96 from 2000), and
-   that number is a LIVE measurement of the message box on the sign-in
-   form, where the box is the subject of the screen. Here it is a note
-   at the foot of an advisor's card inside a drawer, and Ton asked it
-   to start smaller. Releasing the floor lets `rows` say the height,
-   which is what rows is for; the growth is untouched, because the
-   growth was never in the floor — it is field-sizing: content in
-   auth.css with a JS fallback, and both raise the height from
-   wherever it starts. */
-.gbhc-note .gba-textarea { min-height: 0; }
+/* ---- The Email us note (gbppl-gethelp-1, 24.09) ------------
+   The override that released the field's floor (min-height: 0 with
+   rows=2) was written for a note at the foot of a card; the note is
+   the level itself now and the canon of 22.09 already starts the
+   field as one line that grows (auth.css, the owner). So the local
+   floor is gone and the owner's default stands. Send sits in the
+   bottom right of the form, one --space-16 under the field. */
 .gbhc-note__foot { display: flex; justify-content: flex-end; margin-top: var(--space-16); }
-.gbhc-note__send { margin-top: 0; }
 
 /* ============================================================
    THE LEVELS OF THE DRAWER            gbppl-concierge-levels-1

@@ -1,6 +1,7 @@
 /* ============================================================
    THE CONCIERGE EXPERIENCE, AS ONE THING
    live/concierge/concierge.js  ·  gbppl-concierge-unify-1
+   gbppl-gethelp-1 (24.09, Russell: «flip around these sections and make the schedule a call more prominent»): the advisor card leads floor one, three doors follow (Book a meeting, Call us, Email us), the message moves to its own Email us level; live chat and AI doors sleep until the feature ships.
    ============================================================
    2026-09-09. Ton is showing Valerie that the help experience is
    ONE experience, the same on the website and inside the portal,
@@ -524,7 +525,21 @@
        absent — not disabled — everywhere else. That is now a word on
        the environment, not a word in this file. */
     var AI_DOOR_HERE = ENVIRONMENT.aiDoor;
-    var DOORS = [
+    /* gbppl-gethelp-1 (24.09). Russell, on the live portal: «flip
+       around these sections and make the schedule a call more
+       prominent». Three doors and this order, the owner's word:
+       Book a meeting FIRST, which is all of its prominence — the only
+       tinted disc this file owns is the online green, and green here
+       means «a person is there right now», which a calendar is not.
+       So the meeting leads by place, not by paint.
+
+       THE LIVE CHAT AND AI DOORS ARE ASLEEP, NOT DELETED: doors
+       removed 24.09 until the feature ships (meeting 23.09); the
+       machinery stays for their return. The two records stand in
+       SLEEPING_DOORS below, the relay, the window and the pill are
+       untouched, and the delegate in wireHome still answers their
+       ids. Waking them is moving the two records back into DOORS. */
+    var SLEEPING_DOORS = [
       {
         /* THE ONE TINTED DISC, read off the reference. In the START
            popup only the live door is coloured (.gsp-door-icon--live):
@@ -536,21 +551,31 @@
         sub: 'Get help right now'
       },
       {
-        id: 'meeting', icon: 'calendar',
-        title: 'Book a meeting',
-        sub: 'Pick a time that suits you'
-      },
-      {
         id: 'ai', icon: 'service-bell',
         title: 'AI Gift Concierge',
         sub: 'Instant answers from our AI assistant',
         hidden: !AI_DOOR_HERE
+      }
+    ];
+    var DOORS = [
+      {
+        id: 'meeting', icon: 'calendar',
+        title: 'Book a meeting',
+        sub: 'Pick a time that suits you'
       },
       {
         id: 'call', icon: 'telephone',
         title: 'Call us',
         sub: 'Prefer to talk? ' + DESK.shown,
         href: 'tel:' + DESK.tel
+      },
+      {
+        /* The written errand. Its level is the message form that used
+           to grow out of the advisor's card; the sub is the address
+           the message goes to, and nothing more. */
+        id: 'email', icon: 'mail',
+        title: 'Email us',
+        sub: ADVISOR.email
       }
     ].filter(function (d) { return !d.hidden; });
 
@@ -584,11 +609,20 @@
        For a guest the floor still DOES NOT EXIST: not disabled, not a
        stub, not an empty box with a promise in it. The function
        returns nothing at all and the drawer is built one floor tall. */
+    /* gbppl-gethelp-1 (24.09): THE FLOOR MOVED UP AND LOST ITS FORM.
+       Russell read the live portal's order as upside down — the
+       question box on top, the person and the call buried under it —
+       so the advisor's card now OPENS floor one and the doors follow.
+       The card is who, and how to reach him, and nothing else: «Send
+       a message» and the note that grew out of the card left for the
+       Email us level, because a form inside a card at the top of a
+       menu is the very box that was in the way. The rows keep their
+       own gap and the card's padding closes it evenly (the old
+       margin-bottom made room for a button that is gone). */
     function floorTwoHTML() {
       if (GUEST) return '';
       return '<div class="gbhc-floor2">' +
-          /* The eyebrow is the live drawer's own line, word for word. */
-          '<p class="gb-eyebrow">Want to connect now?</p>' +
+          '<p class="gb-eyebrow">Your Gift Advisor</p>' +
           '<div class="gbhc-advisor" data-advisor>' +
             '<p class="gbhc-advisor__name">' + ADVISOR.name + '</p>' +
             '<div class="gbhc-advisor__rows">' +
@@ -597,38 +631,56 @@
               '<a class="gbhc-contact" href="tel:' + ADVISOR.tel + '">' +
                 glyph('telephone', 16) + ADVISOR.phone + '</a>' +
             '</div>' +
-            /* SCHEDULE A CALL is dead: the booking door upstairs is the
-               same errand (concept, floor two). */
-            '<button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary gb-btn--block gbhc-open" type="button" data-write>' +
-              '<span class="gb-btn__label" data-pc-section="label">Send a message</span></button>' +
-            '<div class="gbhc-grow"><div><div class="gbhc-note">' +
-              '<div class="gba-inputwrap">' +
-                '<textarea class="gba-input gba-textarea" id="gbhcNote" rows="2" ' +
-                  'aria-label="Your message to ' + ADVISOR.name + '" ' +
-                  'placeholder="Need help? Type your question here..."></textarea>' +
-              '</div>' +
-            /* Ton: the Send was the biggest thing in the card. It was
-               already `medium`, which is the rung the house gives a
-               confirm inside a drawer form (checkout carries fifteen of
-               them at that size); what made it shout was --block. The
-               checkout's own drawer confirms are NOT block — the four
-               that are, are the page's single closing action — so the
-               modifier goes and the button becomes the size of its
-               word, standing at the end of the row it belongs to. */
-              '<div class="gbhc-note__foot">' +
-                '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary gbhc-note__send" type="button" data-send>' +
-                  '<span class="gb-btn__label" data-pc-section="label">Send</span></button>' +
-              '</div>' +
-            '</div></div></div>' +
           '</div>' +
         '</div>';
     }
 
+    /* Floor one, in the order Russell asked for: the person first,
+       then the three ways of reaching the house. For a guest the first
+       function returns nothing and the doors stand alone. */
     function homeHTML() {
       return '<div class="gbhc-body">' +
-        '<div class="gbhc-doors">' + DOORS.map(doorHTML).join('') + '</div>' +
         floorTwoHTML() +
+        '<div class="gbhc-doors">' + DOORS.map(doorHTML).join('') + '</div>' +
       '</div>';
+    }
+
+    /* ---- THE EMAIL US LEVEL ----------------------------------
+       gbppl-gethelp-1. The message form that used to grow out of the
+       advisor's card, standing on a level of its own and reached the
+       way Book a meeting is reached: goLevel forward, the head says
+       «Email us», the organism's back arrow goes home. The field is
+       the house field (.gba-input.gba-textarea in .gba-inputwrap) on
+       the owner's defaults, one line that grows; Send is the drawer
+       form's confirm rung, medium and NOT block (Ton's own ruling on
+       the card's Send, carried: the size of its word, at the end of
+       its row). Nothing leaves the browser: Send closes the drawer,
+       through the [data-send] branch of the one delegate.
+       A guest writes to the house, not to Brad, and the field's name
+       says so. No line under the head retells it. */
+    function emailHTML() {
+      var to = GUEST ? 'GildedBox' : ADVISOR.name;
+      return '<div class="gbhc-body">' +
+        '<div class="gbhc-note">' +
+          '<div class="gba-inputwrap">' +
+            '<textarea class="gba-input gba-textarea" id="gbhcNote" ' +
+              'aria-label="Your message to ' + to + '" ' +
+              'placeholder="Need help? Type your question here..."></textarea>' +
+          '</div>' +
+          '<div class="gbhc-note__foot">' +
+            '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button" data-send>' +
+              '<span class="gb-btn__label" data-pc-section="label">Send</span></button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function openEmail() {
+      setFoot(null);
+      goLevel('forward', 'Email us', openHome, emailHTML(), function (lvl) {
+        var f = lvl.querySelector('.gba-textarea');
+        if (f && window.GbFields && typeof window.GbFields.grow === 'function') window.GbFields.grow(f);
+      });
     }
 
     function panel() { return document.querySelector('.gbd-panel'); }
@@ -746,17 +798,11 @@
         if (door) {
           var id = door.getAttribute('data-door');
           if (id === 'meeting') { e.preventDefault(); openMeeting(door); return; }
+          if (id === 'email') { e.preventDefault(); openEmail(); return; }
+          /* asleep since 24.09 (gbppl-gethelp-1): no door carries these
+             ids today, and the branch waits for SLEEPING_DOORS to wake */
           if (id === 'live' || id === 'ai') { e.preventDefault(); relay(id, door); return; }
           return;   /* Call us is an <a href="tel:"> and stays one */
-        }
-        var write = e.target.closest ? e.target.closest('[data-write]') : null;
-        if (write) {
-          var card = p.querySelector('[data-advisor]');
-          if (!card) return;          /* off the portal there is no floor two to write on */
-          card.classList.add('is-writing');
-          var note = p.querySelector('#gbhcNote');
-          if (note) setTimeout(function () { note.focus(); }, 80);
-          return;
         }
         var send = e.target.closest ? e.target.closest('[data-send]') : null;
         if (send) {
@@ -1702,7 +1748,7 @@
             { label: 'Website', value: 'website',
               note: 'The public site. The drawer has one floor: the personal Gift Advisor is not offered outside the portal.' },
             { label: 'Portal',  value: 'portal',
-              note: 'Signed in. The same drawer, and under the options the named Gift Advisor, which exists only here.' }
+              note: 'Signed in. The same drawer, and above the options the named Gift Advisor, which exists only here.' }
           ],
           onChange: function (v) {
             var to = v === 'portal' ? envs.portal : envs.website;

@@ -282,7 +282,7 @@
           ready: true,
           tags: ['header', 'flow'],
           created: '2026-09-09',
-          updated: '2026-09-09'
+          updated: '2026-09-24'
         }
       ]
     },
@@ -873,7 +873,7 @@
           ready: true,
           tags: ['header', 'flow'],
           created: '2026-09-09',
-          updated: '2026-09-09'
+          updated: '2026-09-24'
         },
         {
           /* gbppl-concierge-unify-1. Ton, 09.09, before showing Valerie:
@@ -887,7 +887,35 @@
           ready: true,
           tags: ['flow', 'portal'],
           created: '2026-09-09',
-          updated: '2026-09-09'
+          updated: '2026-09-24'
+        }
+      ]
+    },
+
+    gethelp: {
+      /* gbppl-gethelp-1, 24.09. Russell, on the live portal's Get Help
+         drawer: «flip around these sections and make the schedule a
+         call more prominent». The owner asked for the element on a
+         page of its own, tied to no flow: the new portal frame, an
+         empty content column and one button that opens the drawer.
+         The drawer is the concierge module itself, not a copy.
+
+         WHAT `live` POINTS AT: the live Get Help drawer lives on the
+         portal, so the Live door goes to the portal, exactly as the
+         dashboard's and the approvals' do. */
+      label: 'Get help drawer',
+      live: 'live/portal.html',
+      variants: [
+        {
+          id: 'v1',
+          label: '',
+          desc: 'The Talk to us drawer on its own page, in the new portal frame. Your Gift Advisor leads: his name, his email and his phone first. Three doors follow, Book a meeting first, then Call us, then Email us, which opens a second level with the message field and a Send. Live chat and the AI concierge are off until the feature ships.',
+          status: 'in-progress',
+          href: 'live/get-help.html',
+          ready: true,
+          tags: ['portal', 'flow'],
+          created: '2026-09-24',
+          updated: '2026-09-24'
         }
       ]
     },
