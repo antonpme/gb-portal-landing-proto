@@ -613,13 +613,16 @@
        shaped row read like the doors, a grey band read like a zone.
        The owner's decision (pass 6): one line of Lead on the white
        ground, «Your gift advisor: Brad Smaling», an introduction to
-       the list rather than a part of it. A guest has no advisor, and
+       the list rather than a part of it. Pass 7, trying the second
+       of the two legal voices (Ton: «что-то не нравится мне следом»):
+       the same line as ONE WHOLE EYEBROW — all caps, the system role,
+       the name told apart by ink alone. A guest has no advisor, and
        the line does not exist for them. */
     function floorTwoHTML() {
       if (GUEST) return '';
-      return '<p class="gbhc-advisor-lead" data-advisor>' +
-          '<span class="gbhc-advisor-lead__label">Your gift advisor:</span> ' +
-          '<span class="gbhc-advisor-lead__name">' + ADVISOR.name + '</span>' +
+      return '<p class="gb-eyebrow gbhc-advisor-eyebrow" data-advisor>' +
+          'Your gift advisor: ' +
+          '<span class="gbhc-advisor-eyebrow__name">' + ADVISOR.name + '</span>' +
         '</p>';
     }
 
