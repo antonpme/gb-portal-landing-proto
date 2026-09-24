@@ -2451,6 +2451,10 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     message: 'Thank you for a remarkable year in the air.',
     signature: 'The Acme Aviation team'
   };
+  /* The design's arrival state, frozen: Reset in the personalize
+     drawer writes these back into the fields (Ton 24.09: a form's
+     second button is Reset, never Cancel — closing is the cross). */
+  var CARD0 = { box: CARD.box, intro: CARD.intro, message: CARD.message, signature: CARD.signature };
 
   /* NO TOKEN, every one of them, reason above. */
   var NAVY      = '#152a46';   /* the wrap */
@@ -2712,9 +2716,13 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
          confirm of a drawer form is the medium one (components.md,
          btn-ladder-1). */
       '<div class="gbds-pz__foot">' +
-        '<button type="button" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" data-gbds="pz-cancel">' +
-          '<span class="gb-btn__label">Cancel</span></button>' +
-        '<button type="button" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--secondary" data-gbds="pz-show">' +
+        /* Reset, not Cancel (Ton 24.09): the cross already closes,
+           so the second button of a form gives the fields back their
+           arrival state. And the confirm is the PRIMARY blue: the
+           black secondary read as a stranger among the drawers. */
+        '<button type="button" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" data-gbds="pz-reset">' +
+          '<span class="gb-btn__label">Reset</span></button>' +
+        '<button type="button" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" data-gbds="pz-show">' +
           '<span class="gb-btn__label">Show it on the model</span></button>' +
       '</div>';
   }
@@ -2900,7 +2908,15 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
       return;
     }
     if (what === 'retry') { setState('scene'); viewer.src = MODEL; return; }
-    if (what === 'pz-cancel') { drawer.close(); return; }
+    if (what === 'pz-reset') {
+      /* Fields only: the model keeps what it wears until Show. */
+      var back = { gbdsBox: CARD0.box, gbdsIntro: CARD0.intro, gbdsMessage: CARD0.message, gbdsSign: CARD0.signature };
+      Object.keys(back).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) { el.value = back[id]; el.dispatchEvent(new Event('input', { bubbles: true })); }
+      });
+      return;
+    }
     if (what === 'pz-show') {
       CARD.box       = readField('gbdsBox', CARD.box);
       CARD.intro     = readField('gbdsIntro', CARD.intro);
