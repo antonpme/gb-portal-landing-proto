@@ -2,6 +2,8 @@
    THE CONCIERGE EXPERIENCE, AS ONE THING
    live/concierge/concierge.js  ·  gbppl-concierge-unify-1
    gbppl-gethelp-1 (24.09, Russell: «flip around these sections and make the schedule a call more prominent»): the advisor is one Lead line first in the body, Book a meeting is the first of five doors (live chat and AI stay in the prototype, not in the release), the message moves to its own Email us level.
+   gbppl-gethelp-1 (24.09, later): liveDoor joins aiDoor as an environment word, and doorsSwitch gives a page one console row, Doors (With chat and AI | Release, ?doors=all|release), redrawn live.
+   gbppl-gethelp-1 (24.09, Ton): the accent axis is removed on every carrier (a design decision, not demo data); the plate's edge is fixed Blue 600, ?accent= is ignored.
    ============================================================
    2026-09-09. Ton is showing Valerie that the help experience is
    ONE experience, the same on the website and inside the portal,
@@ -41,7 +43,6 @@
                   at the foot of this block.
      aiDoor       the AI door belongs where gifts are being chosen.
      siteHref     the address the booking flow returns to.
-     panelRow     register the accent switch on the one console.
 
    THE PUBLIC SURFACE
      GbConcierge.mount(env)   once per page
@@ -231,8 +232,18 @@
     bellBefore:   '[aria-label="Search gifts"]',
     anchor:       'gb-studio-panel',
     aiDoor:       true,
+    /* THE LIVE CHAT DOOR, on the same pattern as aiDoor
+       (gbppl-gethelp-1): true everywhere it always was; a page that
+       does not offer a person says false. */
+    liveDoor:     true,
+    /* THE DOORS SWITCH (gbppl-gethelp-1, 24.09). The release ships
+       without live chat and the AI concierge, the prototype keeps
+       them; a page that has to show both sets says doorsSwitch: true
+       and the module draws ONE console row for it, reads ?doors=
+       (all | release) and rebuilds the options floor live. Absent =
+       no row, and the doors follow liveDoor and aiDoor as before. */
+    doorsSwitch:  false,
     siteHref:     '',
-    panelRow:     true,
     /* WHO IS LOOKING (gbppl-concierge-auth-1). 'user' | 'guest'.
        The portal states 'user' and means it; the website hands over
        authSwitch and lets the address and the console decide. */
@@ -306,26 +317,12 @@
       medium:    ms('--mo-medium')       /* 500 — the window's rise */
     };
 
-    /* ---- THE ACCENT OF THE SESSION PLATE -----------------------
-       Two variants, because Ton has not chosen. The address carries
-       it (?accent=blue|gold) so a screenshot can be asked for by
-       link, and the one console carries the same switch as a Demo
-       row, which is the house rule for a page level toggle (Ton
-       26.08, «один пульт»). Nothing else on the page reads the
-       property: the accent is the plate's edge and only that. */
-    var ACCENTS = ['blue', 'gold'];
-    function readAccent() {
-      var q = (new URLSearchParams(location.search)).get('accent');
-      return ACCENTS.indexOf(q) > -1 ? q : 'blue';
-    }
-    function setAccent(v, writeUrl) {
-      document.documentElement.setAttribute('data-gbhc-accent', v);
-      if (!writeUrl) return;
-      var u = new URL(location.href);
-      u.searchParams.set('accent', v);
-      history.replaceState(null, '', u.toString());
-    }
-    setAccent(readAccent(), false);
+    /* THE ACCENT AXIS IS DEAD (gbppl-gethelp-1, Ton 24.09): «акцент —
+       дизайн-решение, меняется на уровне системы дизайна, при чём здесь
+       демо». A colour is a design decision, not demo data, so the
+       blue/gold switch, its ?accent= key and its console row are gone;
+       the plate's edge is Blue 600 in concierge.css, fixed. An old
+       link that still carries ?accent= is simply not read. */
 
     /* ---- WHO IS LOOKING ---------------------------------------
        gbppl-concierge-auth-1. The address wins over the environment
@@ -525,6 +522,16 @@
        absent — not disabled — everywhere else. That is now a word on
        the environment, not a word in this file. */
     var AI_DOOR_HERE = ENVIRONMENT.aiDoor;
+    var LIVE_DOOR_HERE = ENVIRONMENT.liveDoor !== false;
+    /* The release set (gbppl-gethelp-1): the address carries it, and
+       only where the environment said it may. */
+    var DOOR_SETS = ['all', 'release'];
+    function readDoorSet() {
+      if (!ENVIRONMENT.doorsSwitch) return 'all';
+      var q = (new URLSearchParams(location.search)).get('doors');
+      return DOOR_SETS.indexOf(q) > -1 ? q : 'all';
+    }
+    var DOOR_SET = readDoorSet();
     /* gbppl-gethelp-1 (24.09). Russell, on the live portal: «flip
        around these sections and make the schedule a call more
        prominent». Book a meeting FIRST, which is all of its prominence:
@@ -535,7 +542,9 @@
        Then live chat and the AI concierge, then the two plain ways in.
        The doors stay in the prototype; the release ships without them
        for now (Ton 24.09). */
-    var DOORS = [
+    function doorsNow() {
+    var release = DOOR_SET === 'release';
+    return [
       {
         id: 'meeting', icon: 'calendar',
         title: 'Book a meeting',
@@ -552,13 +561,14 @@
            wears it. The badge is the dot and two quiet words. */
         id: 'live', icon: 'chat',
         title: 'Live chat', badge: 'Online now',
-        sub: 'Get help right now'
+        sub: 'Get help right now',
+        hidden: !LIVE_DOOR_HERE || release
       },
       {
         id: 'ai', icon: 'service-bell',
         title: 'AI Gift Concierge',
         sub: 'Instant answers from our AI assistant',
-        hidden: !AI_DOOR_HERE
+        hidden: !AI_DOOR_HERE || release
       },
       {
         id: 'call', icon: 'telephone',
@@ -575,6 +585,7 @@
         sub: ADVISOR.email
       }
     ].filter(function (d) { return !d.hidden; });
+    }
 
     function doorHTML(d) {
       var tag = d.href ? 'a' : 'button';
@@ -634,7 +645,7 @@
     function homeHTML() {
       return '<div class="gbhc-body"><div class="gbhc-home">' +
         floorTwoHTML() +
-        '<div class="gbhc-doors">' + DOORS.map(doorHTML).join('') + '</div>' +
+        '<div class="gbhc-doors">' + doorsNow().map(doorHTML).join('') + '</div>' +
       '</div></div>';
     }
 
@@ -1662,24 +1673,38 @@
       send_(chip.textContent);
     });
 
-    /* ---- THE ONE CONSOLE --------------------------------------
-       The accent of the plate belongs to the plate, so the module
-       declares its own row rather than asking each page to do it. A
-       page that does not want the row says panelRow: false. */
-    if (ENVIRONMENT.panelRow) {
-      var spanel = document.querySelector('gb-studio-panel');
-      if (spanel && typeof spanel.addGroup === 'function') {
-        spanel.addGroup({
+    /* ---- THE DOORS, AS A ROW (gbppl-gethelp-1) ----------------
+       Only where the environment asked for it. The switch is LIVE,
+       not a reload: the address is written with replaceState, and if
+       the drawer is standing on its options floor that floor is
+       redrawn in place (the delegate is on the panel, so the new rows
+       answer at once). Any deeper level is left alone; the next trip
+       home builds the chosen set. */
+    if (ENVIRONMENT.doorsSwitch) {
+      var sp4 = document.querySelector('gb-studio-panel');
+      if (sp4 && typeof sp4.addGroup === 'function') {
+        sp4.addGroup({
           type: 'choice',
-          title: 'Accent of the session plate',
-          value: readAccent(),
+          title: 'Doors',
+          value: DOOR_SET,
           options: [
-            { label: 'Blue', value: 'blue',
-              note: 'Blue 600, the house colour of state and action. Nothing new is spent.' },
-            { label: 'Gold', value: 'gold',
-              note: 'The gold of the Beta chip in the bar, #bea042. It is a token, and it is under the standing veto on gold in the interface.' }
+            { label: 'With chat and AI', value: 'all',
+              note: 'The prototype set: Book a meeting, Live chat, AI Gift Concierge, Call us, Email us.' },
+            { label: 'Release', value: 'release',
+              note: 'What ships now: Book a meeting, Call us, Email us. Live chat and the AI concierge wait for their feature.' }
           ],
-          onChange: function (v) { setAccent(v, true); }
+          onChange: function (v) {
+            if (DOOR_SETS.indexOf(v) < 0 || v === DOOR_SET) return;
+            DOOR_SET = v;
+            try {
+              var u = new URL(location.href);
+              u.searchParams.set('doors', v);
+              history.replaceState(null, '', u.pathname + u.search + u.hash);
+            } catch (e) {}
+            var box = levels();
+            var lvl = box ? box.querySelector('.gbhc-level:not(.gbhc-offstage)') : null;
+            if (lvl && lvl.querySelector('.gbhc-doors')) lvl.innerHTML = homeHTML();
+          }
         });
       }
     }
@@ -1696,8 +1721,7 @@
        the drawer's floors, the length of the booking road, the
        first breath of the chat and the bar itself. Half of that is
        built at mount. The address is the state, exactly as it is
-       for the environment row, and the accent rides along for the
-       same reason. */
+       for the environment row. */
     if (ENVIRONMENT.authSwitch) {
       var sp3 = document.querySelector('gb-studio-panel');
       if (sp3 && typeof sp3.addGroup === 'function') {
@@ -1715,7 +1739,6 @@
             if (v === AUTH) return;
             var u = new URL(location.href);
             u.searchParams.set('auth', v);
-            u.searchParams.set('accent', readAccent());
             location.href = u.toString();
           }
         });
@@ -1744,16 +1767,12 @@
           onChange: function (v) {
             var to = v === 'portal' ? envs.portal : envs.website;
             if (!to || v === envs.here) return;
-            /* The accent travels: it is what Ton is choosing between,
-               and a switch of environment that resets it would make
-               the two look different for the wrong reason.
-               AND SO DOES THE PERSON (gbppl-concierge-auth-1): the
+            /* THE PERSON TRAVELS (gbppl-concierge-auth-1): the
                row changes the SURFACE, so the one thing that must
                not change under it is who is standing on it. Coming
                off the portal that is always «signed in», which is
                how the website's second cell gets shown at all. */
             var u = new URL(to, location.href);
-            u.searchParams.set('accent', readAccent());
             u.searchParams.set('auth', AUTH);
             location.href = u.toString();
           }
