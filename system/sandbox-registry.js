@@ -130,6 +130,19 @@
      label     имя страницы человеку (sentence case), словами Тона:
                «Category page», «Checkout page», «Book a meeting form»
      live      адрес живой версии ОТ КОРНЯ СТУДИИ (без query)
+     area      'site' | 'portal': ЧЕЙ это ресурс, Website или Portal
+               (gbppl-cards-1, 24.09, диктовка Тона модели карточки:
+               «чей ресурс и какая страница: Portal или Website + имя
+               страницы»). Разметка по двум деревьям карты
+               (live/map.html: Website = главная, каталог, букинг;
+               Portal = вход, портал, чекаут) и для страниц вне
+               деревьев по их live-адресу и тегам. Поле страницы, не
+               варианта: `updated` вариантов не двигалось. У студийных
+               записей (pages, oro, hub) его нет: они не ресурс
+               клиента. Вариант, который ПЕРЕЕЗЖАЕТ на другую
+               страницу реестра (консьерж V2 стоит на портале),
+               получает area той страницы, чей live совпал с его
+               адресом (areaOf ниже), а не своей записи.
      variants  [] массив снимков решений, может быть пустым
    }
    variant = {
@@ -262,6 +275,7 @@
     home: {
       label: 'Home page',
       live: 'live/index.html',
+      area: 'site',
       /* Пусто с 01.09 (gbppl-proto-model-1): «Sign in form» стояла
          здесь версией страницы, а на самом деле это ВАРИАНТ ХЕДЕРА —
          сквозного элемента, который живёт на любой странице с баром.
@@ -295,6 +309,7 @@
          во всех трёх местах в этой же волне. */
       label: 'Category page',
       live: 'live/catalog/index.html',
+      area: 'site',
       variants: [
         {
           /* Ton 26.08, after Julia and Russell on the live category page:
@@ -329,6 +344,7 @@
     checkout: {
       label: 'Checkout page',
       live: 'live/checkout.html',
+      area: 'portal',
       variants: [
         {
           /* Ton 25.08: «а где Checkout версии 1 в Sandbox?» — both
@@ -369,7 +385,7 @@
              desc grows one sentence, because the way a person answers
              the first question of the page is exactly the kind of
              difference from Live this line is for. */
-          desc: 'Gifts are not personalized by default. One counter sets how many gifts there are, and personalization is a choice of two: none, or a row per gift. Both questions, and the choice between one address and many, are answered by the same control: a radio select.',
+          desc: 'One counter for the whole order: gifts are a pool, and personalization is none or a row per gift. Both questions, and the choice between one address and many, are answered by the same control: a radio select.',
           status: 'in-progress',
           href: 'live/checkout.html?v=2',
           ready: true,
@@ -421,7 +437,11 @@
              файла, блок ИМЕНА, gbppl-panel-version-1 04.09): полка и
              консоль печатают «V5 · Addresses first», а второго места,
              где номер мог бы разойтись с адресом ?v=5, не заводится. */
-          label: 'Addresses first',
+          /* gbppl-cards-1 (24.09): «Addresses first» said nothing to
+             Ton's eye on the shelf; the name now carries the follow-up
+             clause, and the first sentence of desc is the differentiator
+             said plainly. His word: short, simple. */
+          label: 'Addresses first, gifts follow',
           /* gbppl-v5-image-1 (04.09): the two steps fold now, the way V3's
              three do. Same variant, same day, so `updated` already says
              04.09 and only the sentence moves. */
@@ -600,7 +620,7 @@
              встала на плитку Zinc 100 с чернилами Zinc 600 — та же
              форма, что у .gbc-chip и .gbcCard-badge. `updated` остаётся
              08.09 (тот же день). */
-          desc: 'The order is a number of gifts and a list of addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. A new address arrives holding one gift, which is the shape of almost every order; the split is there for the ones whose numbers are uneven. The step will not close while a gift still has nowhere to go, unless the gifts are being personalized one by one, in which case the table below is where they are placed. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer, cut into runs under a subheading per address. Each cell of that table shows what is in it, cut to the width of its column, so a filled table can be checked by eye; clicking a value opens the same drawer that filled it, and an empty cell still says Add. Ticking rows arms the Bulk actions menu over the table, which is the one place everything done to a run of gifts lives: set the delivery address or the card message on all of them, clear the delivery address off them again so they fall back under Not assigned yet, or clear their personalization. With nothing ticked those four lines are shut and the heading over them says how many are selected; the counts beside the addresses of step 1 follow whatever the table says, because they are a mirror of it. One checkbox over the table takes the printed name from the recipient of the address each gift ships to, and writes it on every part the gift prints: the initials where a part is engraved with initials, the name itself where a part takes a name or a phrase, trimmed to what the field accepts. The card message is never written for you. It is off until you ask for it, it never touches a gift that has nowhere to go yet, and any cell you type in yourself stays yours. There is no third step, and from ten gifts on the page recommends a way in rather than leaving the choice unmarked: Import from file takes the filled button, Add address keeps its outline, and one line under them says why. The import itself is three numbered steps on one screen: download the template, fill it in, upload it back. It is one file for both answers, where every gift ships and what is printed on it; the upload shows the attached file rather than jumping ahead, and Submit is what sends it to be checked. Long names in the imported table are cut to their column and open whole when the cell is focused. The file is offered in the first step only, where the order is still being assembled: over the table of gifts there is one menu, Bulk actions, holding both what is applied to every gift at once and what is applied to the gifts you ticked. Picking a saved address is built for a real address book rather than three lines, and no list of addresses is ever drawn on the page itself: in One address the field is a door, printing what was chosen and opening the same panel again to change it. That panel shows one of two things at a time. By default it shows the address book as one framed list, with the search as its head, so it reads as the filter of the rows under it, the pagination as its foot, and a height measured against the drawer it is standing in, so a taller panel holds more rows and the gap under the list is the same gutter as everywhere else. A place already standing in this order sorts to the top of that list and wears a quiet badge saying so. The search narrows on the first character across name, company, street, town and ZIP, arrow keys walk the rows and Enter takes one. Clicking a row is choosing: in Add address the place joins the order as a line of its own, in One address it becomes the address of the whole order, and behind the table it sends the ticked gifts there. Where more than one address is wanted at once the rows carry checkboxes and Add selected takes them all in one press. The manual form is the second floor of the same panel, reached by Type a new address and left by the back arrow of its head; saving there files the address in the book and comes back to it, at the top of the list, ticked and lit, so a second address typed by hand is the same two moves again. In the foot of that panel Clear empties the form; closing is the cross. The page wears the PORTAL bar, because the checkout is a room of the portal and not of the website; the site bar is a choice in the console, one row of two, and it is what the four older versions still arrive with.',
+          desc: 'Step 1 builds the address list, step 2 places gifts on it; the table mirrors the addresses. The two steps fold into summary bands the way the third version folds its three: an answered step is a line with a tick and an Edit, and only the step you are on stands open. Every address holds its own count of gifts and its own shipping method, and the method appears only once the address is there; one line over the list always says how many gifts are still unassigned, and Split evenly offers the layout in one click. A new address arrives holding one gift, which is the shape of almost every order; the split is there for the ones whose numbers are uneven. The step will not close while a gift still has nowhere to go, unless the gifts are being personalized one by one, in which case the table below is where they are placed. Personalization is either absent, with one greeting card for every box, or per gift, and then the table of gifts stands right under that answer, cut into runs under a subheading per address. Each cell of that table shows what is in it, cut to the width of its column, so a filled table can be checked by eye; clicking a value opens the same drawer that filled it, and an empty cell still says Add. Ticking rows arms the Bulk actions menu over the table, which is the one place everything done to a run of gifts lives: set the delivery address or the card message on all of them, clear the delivery address off them again so they fall back under Not assigned yet, or clear their personalization. With nothing ticked those four lines are shut and the heading over them says how many are selected; the counts beside the addresses of step 1 follow whatever the table says, because they are a mirror of it. One checkbox over the table takes the printed name from the recipient of the address each gift ships to, and writes it on every part the gift prints: the initials where a part is engraved with initials, the name itself where a part takes a name or a phrase, trimmed to what the field accepts. The card message is never written for you. It is off until you ask for it, it never touches a gift that has nowhere to go yet, and any cell you type in yourself stays yours. There is no third step, and from ten gifts on the page recommends a way in rather than leaving the choice unmarked: Import from file takes the filled button, Add address keeps its outline, and one line under them says why. The import itself is three numbered steps on one screen: download the template, fill it in, upload it back. It is one file for both answers, where every gift ships and what is printed on it; the upload shows the attached file rather than jumping ahead, and Submit is what sends it to be checked. Long names in the imported table are cut to their column and open whole when the cell is focused. The file is offered in the first step only, where the order is still being assembled: over the table of gifts there is one menu, Bulk actions, holding both what is applied to every gift at once and what is applied to the gifts you ticked. Picking a saved address is built for a real address book rather than three lines, and no list of addresses is ever drawn on the page itself: in One address the field is a door, printing what was chosen and opening the same panel again to change it. That panel shows one of two things at a time. By default it shows the address book as one framed list, with the search as its head, so it reads as the filter of the rows under it, the pagination as its foot, and a height measured against the drawer it is standing in, so a taller panel holds more rows and the gap under the list is the same gutter as everywhere else. A place already standing in this order sorts to the top of that list and wears a quiet badge saying so. The search narrows on the first character across name, company, street, town and ZIP, arrow keys walk the rows and Enter takes one. Clicking a row is choosing: in Add address the place joins the order as a line of its own, in One address it becomes the address of the whole order, and behind the table it sends the ticked gifts there. Where more than one address is wanted at once the rows carry checkboxes and Add selected takes them all in one press. The manual form is the second floor of the same panel, reached by Type a new address and left by the back arrow of its head; saving there files the address in the book and comes back to it, at the top of the list, ticked and lit, so a second address typed by hand is the same two moves again. In the foot of that panel Clear empties the form; closing is the cross. The page wears the PORTAL bar, because the checkout is a room of the portal and not of the website; the site bar is a choice in the console, one row of two, and it is what the four older versions still arrive with.',
           status: 'in-progress',
           href: 'live/checkout.html?v=5',
           ready: true,
@@ -656,6 +676,7 @@
     share: {
       label: 'Share design page',
       live: 'live/design-share.html',
+      area: 'portal',
       /* gbppl-design-share-actions-1 (Тон 17.09, ночь): «кнопки должны
          включаться опционально через настройки прототипа, а не быть
          частью дефолтного прототипа, на который попадаешь через
@@ -673,8 +694,8 @@
       variants: [
         {
           id: 'v1',                    /* был 'page' — номер по правилу 3 (22.09), ключ внутренний */
-          label: '',                   /* «The page itself» — не имя, а история; она ушла первой строкой в desc */
-          desc: 'The page itself, as it stands: the 3D showcase a designer sends to the client, with the loader, the quiet utilities and the approval actions living behind the panel’s Approval actions axis (?actions=on). Not a sandbox: this card is the door to the live page, put back after it fell off the shelf with its last variant.',
+          label: 'The live page',      /* имя с вычитки Тона 24.09 (gbppl-cards-1) */
+          desc: 'The live showcase as it stands; approval actions behind the console axis (?actions=on). The 3D showcase a designer sends to the client, with the loader and the quiet utilities. Not a sandbox: this card is the door to the live page, put back after it fell off the shelf with its last variant.',
           status: 'approved',
           href: 'live/design-share.html',
           ready: true,
@@ -688,6 +709,7 @@
     portal: {
       label: 'Portal page',
       live: 'live/portal.html',
+      area: 'portal',
       /* Пусто с 01.09 (gbppl-proto-model-1). Обе строки, что стояли
          здесь, — «The portal’s own header» (?pth=1) и «Start gifting
          hero» (?hero=start) — подменяют по одной ЧАСТИ страницы, а не
@@ -723,11 +745,12 @@
          the screen a stopped campaign hides in today. */
       label: 'Portal dashboard',
       live: 'live/portal.html',
+      area: 'portal',
       variants: [
         {
           id: 'v1',                    /* был 'sketch' — номер по правилу 3 (22.09), ключ внутренний */
-          label: '',                   /* «The dashboard, second pass» — история, не имя; селект говорит «V1» */
-          desc: 'The screen the portal opens on after signing in: what is happening, and does anything need me. Second pass, rebuilt to the layout Ton dictated on 10.09: four numbers across the top, the shortcuts he liked right under them and above the fold, then the board in three equal columns, gifts on their way beside the campaigns beside one activity feed with the problems pinned at its top. Every event in the feed is a door to the thing it is about. The account it shows is the shape of a real one: one fulfillment campaign on hold because a payment failed (Julia\'s case), one quiet email campaign, and two single gifts in the air. The bell carries the same two problems out of the room. Each column is a named block with tabs of states inside it (My Gifts, Campaigns, Activity), a gift row and a campaign row are one card with two skins, and an order is one gift sent to many people, the way the checkout sends it. A campaign with several gifts shows the leading one with a plus chip. Statuses are the new system badge off the Figma the client gave us. Two axes in the console let you assemble the setup: the bar (portal bar or the live site header, ?pth=) and the rail (live, Russell, boxless, ?nav=), both on the keys the portal prototype already uses. A new account gets one heading, one line and three real first moves (explore gifts, book a meeting, talk to us): a campaign is a gift plus a distribution, so it is not offered to someone who has no gift yet. Fixed assembly: an account assistant, choosing your own widgets, filter tabs and notification settings are one quiet line in the foot and are not drawn.',
+          label: 'Numbers, shortcuts, three columns',   /* имя с вычитки Тона 24.09 (gbppl-cards-1) */
+          desc: 'Four numbers on top, the shortcuts under them, the board in three columns. The screen the portal opens on after signing in: what is happening, and does anything need me. Second pass, rebuilt to the layout Ton dictated on 10.09: four numbers across the top, the shortcuts he liked right under them and above the fold, then the board in three equal columns, gifts on their way beside the campaigns beside one activity feed with the problems pinned at its top. Every event in the feed is a door to the thing it is about. The account it shows is the shape of a real one: one fulfillment campaign on hold because a payment failed (Julia\'s case), one quiet email campaign, and two single gifts in the air. The bell carries the same two problems out of the room. Each column is a named block with tabs of states inside it (My Gifts, Campaigns, Activity), a gift row and a campaign row are one card with two skins, and an order is one gift sent to many people, the way the checkout sends it. A campaign with several gifts shows the leading one with a plus chip. Statuses are the new system badge off the Figma the client gave us. Two axes in the console let you assemble the setup: the bar (portal bar or the live site header, ?pth=) and the rail (live, Russell, boxless, ?nav=), both on the keys the portal prototype already uses. A new account gets one heading, one line and three real first moves (explore gifts, book a meeting, talk to us): a campaign is a gift plus a distribution, so it is not offered to someone who has no gift yet. Fixed assembly: an account assistant, choosing your own widgets, filter tabs and notification settings are one quiet line in the foot and are not drawn.',
           status: 'in-progress',
           href: 'live/portal-dashboard.html',
           ready: true,
@@ -759,11 +782,12 @@
          where the Live door goes, exactly as the dashboard's does. */
       label: 'Gift design approvals',
       live: 'live/portal.html',
+      area: 'portal',
       variants: [
         {
           id: 'v1',                    /* был 'concept' — номер по правилу 3 (22.09, скрин этого самого селекта), ключ внутренний */
-          label: '',                   /* «The approval, rebuilt» — история, не имя; селект говорит «V1» */
-          desc: 'The approval, rebuilt: the two screens a person uses to sign off a gift design, rebuilt on our own furniture and then rebuilt again to Ton’s Monday list (gbppl-approvals-2, 21.09). The rail is the boxless one the dashboard wears, standing 48 from the board; the back-link gave way to portal breadcrumbs; the header is crumbs, a serif title and a status badge, nothing else. The tabs are the gb-tabs component in caps, and behind them: a preview two thirds wide carrying the share page’s own 3D scene with the designer’s last word and two medium actions beside it, Messages as a two-sided chat with the design team, History as the gb-timeline with its four meanings. Open the showcase lays the share page over this one in the catalogue’s overlay, Copy link hands over the canonical address. The list keeps its blue-named rows and gains a sortable head and a counting foot. A Frame axis holds three framings of the same page, clean, hybrid and portal, so the choice of structure is made by looking, not by arguing.',
+          label: 'Portal frame with tabs',   /* имена всей линейки — вычитка Тона 24.09 (gbppl-cards-1) */
+          desc: 'Preview, Messages and History as tabs on the portal frame. The two screens a person uses to sign off a gift design, rebuilt on our own furniture and then rebuilt again to Ton’s Monday list (gbppl-approvals-2, 21.09). The rail is the boxless one the dashboard wears, standing 48 from the board; the back-link gave way to portal breadcrumbs; the header is crumbs, a serif title and a status badge, nothing else. The tabs are the gb-tabs component in caps, and behind them: a preview two thirds wide carrying the share page’s own 3D scene with the designer’s last word and two medium actions beside it, Messages as a two-sided chat with the design team, History as the gb-timeline with its four meanings. Open the showcase lays the share page over this one in the catalogue’s overlay, Copy link hands over the canonical address. The list keeps its blue-named rows and gains a sortable head and a counting foot. A Frame axis holds three framings of the same page, clean, hybrid and portal, so the choice of structure is made by looking, not by arguing.',
           status: 'in-progress',
           /* ?pv=a появился в href в тот день, когда рядом встали V2 и
              V3: без параметра V1 совпадал бы с любым pv и селект
@@ -781,8 +805,8 @@
              и основные действия... Messages должно быть действием,
              фактически открывающим drawer». */
           id: 'v2',
-          label: '',
-          desc: 'Only the preview and the decision stay on the page: no tabs. The conversation and the history live in one Activity drawer with two tabs, opened from the corner of the preview with an unread count on it; Request changes opens a drawer of its own with the field and the send in its foot; the team’s latest revision speaks as an annotation card under the scene.',
+          label: 'Activity drawer',
+          desc: 'Only the preview and the decision on the page; talk and history live in a corner drawer. The conversation and the history live in one Activity drawer with two tabs, opened from the corner of the preview with an unread count on it; Request changes opens a drawer of its own with the field and the send in its foot; the team’s latest revision speaks as an annotation card under the scene.',
           status: 'in-progress',
           href: 'live/gift-approvals.html?pv=c',
           ready: true,
@@ -795,8 +819,8 @@
              History вместе с чатом в один единый фид, где видны
              абсолютно все события». */
           id: 'v3',
-          label: '',
-          desc: 'One feed instead of tabs and drawers: every message, every revision and every decision stand in a single stream under the preview, in the timeline’s own order. A revision is a widget in the feed, and its Open this version puts that revision’s label and annotation on the preview above.',
+          label: 'One feed',
+          desc: 'Messages, revisions and decisions stand in one stream under the preview. One feed instead of tabs and drawers: every message, every revision and every decision stand in a single stream under the preview, in the timeline’s own order. A revision is a widget in the feed, and its Open this version puts that revision’s label and annotation on the preview above.',
           status: 'in-progress',
           href: 'live/gift-approvals.html?pv=d',
           ready: true,
@@ -810,8 +834,8 @@
              панель, которая выглядит как наш чат, только вверху будут
              табы... а справа останется вся эта 3D-панель». */
           id: 'v4',
-          label: '',
-          desc: 'The conversation and the preview side by side: a fixed 360 panel on the chat’s own paper to the left — tabs for Messages and History, the thread with its revision cards, the composer at its foot — and the 3D scene to the right, directly under the decision buttons. Below 1024 the two stack, preview first.',
+          label: 'Chat beside the scene',
+          desc: 'A fixed chat panel on the left, the 3D scene under the decisions on the right. The conversation and the preview side by side: a 360 panel on the chat’s own paper to the left — tabs for Messages and History, the thread with its revision cards, the composer at its foot — and the 3D scene to the right, directly under the decision buttons. Below 1024 the two stack, preview first.',
           status: 'in-progress',
           href: 'live/gift-approvals.html?pv=e',
           ready: true,
@@ -825,6 +849,7 @@
     booking: {
       label: 'Book a meeting form',
       live: 'live/book-a-meeting.html',
+      area: 'site',
       variants: [
         {
           /* ready:false — решение записано раньше кода: страница
@@ -833,7 +858,7 @@
              того, чтобы вести в ссылку, которая молча откроет
              сегодняшнюю страницу. */
           id: 'v1',                    /* был 'proposition' — номер по правилу 3 (22.09); страница ?v= ещё не читает (ready:false), поэтому и ключ в href меняется без сломанных ссылок */
-          label: '',                   /* «Led by the proposition» — история, не имя; селект говорит «V1» */
+          label: 'Proposition first',  /* имя с вычитки Тона 24.09 (gbppl-cards-1) */
           desc: 'Led by the proposition: what the call is for, said before the calendar asks for a day.',
           status: 'in-progress',
           href: 'live/book-a-meeting.html?v=1',
@@ -860,11 +885,12 @@
          честная точка отсчёта, а не выдуманная страница. */
       label: 'Help and concierge',
       live: 'live/index.html',
+      area: 'site',
       variants: [
         {
           id: 'v1',                    /* был 'concierge' — номер по правилу 3 (22.09), ключ внутренний */
           label: 'From the bar',       /* короткое описание вместо образа «One way in, from the bar» */
-          desc: 'One way in, from the bar. Help stops being three different things. A concierge bell in the right cluster of the bar opens one drawer: the ways to talk to us upstairs, your Gift Advisor at the foot with a message that grows out of his card. Book a meeting opens on the second floor of the same drawer, with the times standing under the calendar. Chat leaves the drawer for a window at the bottom right, the same window for the AI concierge and for a person, and minimised it is a pill with the name and the state on it. Nothing floats at rest: the pill exists only while a conversation does, and its cross ends the session.',
+          desc: 'One way in, from the bar. Help stops being three different things. A concierge bell in the right cluster of the bar opens one drawer: one line names your Gift Advisor, the ways to talk to us stand under it (24.09: the advisor line moved to the head and Email us became a door of its own). Book a meeting opens on the second floor of the same drawer, with the times standing under the calendar. Chat leaves the drawer for a window at the bottom right, the same window for the AI concierge and for a person, and minimised it is a pill with the name and the state on it. Nothing floats at rest: the pill exists only while a conversation does, and its cross ends the session.',
           status: 'in-progress',
           /* The room's own address is a stub redirect since
              gbppl-concierge-unify-1b (law 0a.5, the link was shared);
@@ -881,7 +907,7 @@
              and inside the portal. The variant is the portal wearing it. */
           id: 'v2',                    /* был 'concierge-portal' — номер по правилу 3 (22.09), ключ внутренний */
           label: 'Inside the portal',  /* короткое описание вместо образа */
-          desc: 'The same concierge, inside the portal. The portal signed in, with the concierge it shares with the website: the bell in its own bar, and the blue Start button in the middle of the band hero opening that drawer instead of the centre popup. Everything under it comes from one module, so the two environments cannot drift. One thing differs, and it differs on purpose: the personal Gift Advisor stands under the options here and nowhere else, because a named human belongs to somebody who is signed in.',
+          desc: 'The same concierge, inside the portal. The portal signed in, with the concierge it shares with the website: the bell in its own bar, and the blue Start button in the middle of the band hero opening that drawer instead of the centre popup. Everything under it comes from one module, so the two environments cannot drift. One thing differs, and it differs on purpose: the personal Gift Advisor is named here and nowhere else (one line at the head of the drawer, 24.09), because a named human belongs to somebody who is signed in.',
           status: 'in-progress',
           href: 'live/portal.html?layout=band&hero=start&concierge=1',
           ready: true,
@@ -905,11 +931,12 @@
          dashboard's and the approvals' do. */
       label: 'Get help drawer',
       live: 'live/portal.html',
+      area: 'portal',
       variants: [
         {
           id: 'v1',
-          label: '',
-          desc: 'The Talk to us drawer on its own page, in the new portal frame. One quiet line names your gift advisor, then five doors: Book a meeting first, then Live chat, the AI Gift Concierge, Call us and Email us, which opens a second level with the message field and a Send. Live chat and the AI concierge live in the prototype and are not in the release yet.',
+          label: 'Advisor and five doors',   /* имя с вычитки Тона 24.09 (gbppl-cards-1) */
+          desc: 'One line names your advisor, five doors below; Email us is a second level. The Talk to us drawer on its own page, in the new portal frame: Book a meeting first, then Live chat, the AI Gift Concierge, Call us and Email us with the message field and a Send. Live chat and the AI concierge live in the prototype and are not in the release yet.',
           status: 'in-progress',
           href: 'live/get-help.html',
           ready: true,
@@ -930,10 +957,11 @@
          Элиана (studio\docs\TABS-MENU-LUXURY-RECON.md). */
       label: 'Tabs and menu variants',
       live: 'live/index.html',
+      area: 'site',
       variants: [
         {
           id: 'v1',                    /* был 'lab' — номер по правилу 3 (22.09), ключ внутренний */
-          label: '',                   /* «Seven candidates on one composition» — история, не имя; селект говорит «V1» */
+          label: 'Seven candidates',   /* имя с вычитки Тона 24.09 (gbppl-cards-1) */
           desc: 'Seven candidates on one composition: the bar and the strip of logos in one frame, with three ways for a logo tab to say which brand is chosen and four ways for the top navigation to answer the pointer, all of them out of the live luxury recon. The strip keeps the live geometry cell for cell and opens on the live rule under the cell; the console switches the two axes, carries the pairs in one click and takes the movement away on request.',
           status: 'in-progress',
           href: 'live/tabs-menu-lab.html',
@@ -955,6 +983,7 @@
          полку второе имя (gbppl-sandbox-names-1). */
       label: 'Sign in, measured',
       live: 'system/pages/auth.html',
+      area: 'portal',
       variants: []
     },
 
@@ -1314,6 +1343,28 @@
      полное название»). Обоснование и границы правила — в шапке файла,
      блок ИМЕНА. Одна функция на всю студию: полка, консоль и карта
      читают срез, а не поле, и расходиться им негде. */
+  /* Номер версии отдельно от имени (gbppl-cards-1): карточка полки
+     печатает слово Sandbox в своей айбрау-строке, и заголовок под ней
+     начинается с «V5», а не повторяет «Sandbox V5». Правило то же, что
+     у verName, и живёт рядом с ним. */
+  function verNum(v) {
+    var n = /^v(\d+)$/.exec(String(v.id || ''));
+    return n ? 'V' + n[1] : '';
+  }
+
+  /* Чей ресурс у варианта (поле area, шапка файла): страница реестра,
+     чей live совпал с путём адреса варианта, иначе своя запись. Первое
+     совпадение по порядку реестра: live/index.html первой объявляет
+     главная, live/portal.html портал. */
+  function areaOf(pageId, href) {
+    var path = String(href || '').split('?')[0];
+    var ids = Object.keys(PAGES);
+    for (var i = 0; i < ids.length; i++) {
+      if (PAGES[ids[i]].live === path && PAGES[ids[i]].area) return PAGES[ids[i]].area;
+    }
+    return (PAGES[pageId] && PAGES[pageId].area) || '';
+  }
+
   function verName(v) {
     var n = /^v(\d+)$/.exec(String(v.id || ''));
     /* Вариант без собственного имени зовётся «Sandbox V1»: слово
@@ -1337,6 +1388,10 @@
       return {
         id: v.id,
         label: verName(v),
+        /* gbppl-cards-1: номер и имя порознь и чей ресурс, для карточки полки. */
+        ver: verNum(v),
+        name: v.label || '',
+        area: areaOf(pageId, v.href),
         desc: v.desc,
         status: v.status,
         ready: v.ready !== false,
@@ -1356,6 +1411,7 @@
     return {
       id: pageId,
       label: page.label,
+      area: page.area || '',
       live: {
         label: 'Live',
         href: root + page.live,
@@ -1445,6 +1501,7 @@
       /* Кому карточка принадлежит по словам полки: сквозной говорит
          это вслух, локальный называет свою страницу. */
       owner: el.scope === 'site' ? 'Site element' : (page ? page.label : ''),
+      area: (page && page.area) || '',
       home: home,
       key: el.key,
       keys: elementKeys(el),

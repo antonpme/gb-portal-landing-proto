@@ -6,6 +6,19 @@
 <title>Sandboxes · GildedBox Design Studio</title>
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-cards-1 — THE CARD SAYS EVERYTHING ITSELF
+     ------------------------------------------------------------
+     Ton, 24.09, the owner's package: a real screenshot of the first
+     screen on every prototype card (assets/proto-thumbs, 640x400 JPEG
+     off a 1280x800 frame), then type, resource and page in one eyebrow
+     line (SANDBOX · PORTAL · CHECKOUT PAGE) with the comment count on
+     its right, the version and its short name as a one-line title, the
+     description clamped to three lines, and one quiet line of status
+     and dates. Tags left the card and live in the filter only. The
+     studio column widened to --container-max-lg (studio.css). The
+     full account is at pcard() below and in studio.css, block МОДЕЛЬ
+     КАРТОЧКИ ПРОТОТИПА.
+     ------------------------------------------------------------
      gbppl-sandbox-md-1 — PROJECTS ON THE LEFT, PROTOTYPES ON THE RIGHT
      ------------------------------------------------------------
      Ton, 31.08, 17:53, on the shelf he had rebuilt six hours earlier:
@@ -298,6 +311,11 @@
 
 </div>
 
+<!-- gbppl-cards-1: header.js for window.GB_KEEP only. The card counts
+     comments by the same version key comments.js writes them under, and
+     the list of content keys has one owner. The file defines elements and
+     globals and nothing else here: this page carries no gb-site-header. -->
+<script src="system/components/header.js"></script>
 <script src="system/sandbox-registry.js"></script>
 <script>
 /* ---- The shelf, painted from the registry (gbppl-sandboxes-4).
@@ -425,6 +443,11 @@
         label: v.label, desc: v.desc, status: v.status, ready: v.ready,
         href: v.href, tags: v.tags || [],
         created: v.created || '', updated: v.updated || '',
+        /* gbppl-cards-1: заголовок карточки = номер и имя без слова
+           Sandbox (оно стоит в айбрау), чей ресурс, и имя файла тумба. */
+        title: [v.ver, v.name].filter(Boolean).join(' · ') || v.label,
+        area: v.area || page.area || '',
+        thumb: page.id + '-' + v.id,
         /* Порядок В РЕЕСТРЕ, а не по алфавиту: варианты одной
            страницы стоят там в том порядке, в каком их поставил
            автор (сегодняшний поток раньше предложенного), и при
@@ -446,6 +469,11 @@
         label: v.label, desc: v.note, status: v.status, ready: v.ready,
         href: v.href, tags: v.tags || [],
         created: v.created || '', updated: v.updated || '',
+        /* Вариант элемента: имя элемента и имя варианта одной строкой
+           («Header · Sign in form»), номера у элементов нет. */
+        title: el.label + ' · ' + v.label,
+        area: el.area || '',
+        thumb: el.id + '-' + v.id,
         page: home.label, pageId: el.home,
         /* Две вещи, которых нет у версии страницы: имя элемента и
            слово о том, чей он. Печатаются одной тихой строкой. */
@@ -657,17 +685,90 @@
      дольше, чем человек на неё смотрит. */
   function stamp() { return ' style="--gbs-step: ' + Math.min(step++, 14) + '"'; }
 
-  /* Уникальные теги всех прототипов проекта, в порядке первого
-     появления: карточка отвечает на вопрос «чего эта страница
-     касается» один раз за всю страницу, а не по разу за прототип. */
-  function tagBadges(tags) {
-    if (!tags.length) return '';
-    return '<span class="gbs-badges gbs-badges--tags">' + tags.map(function (t) {
-      return '<span class="gbs-chip gbs-chip--tag">' + esc(t) + '</span>';
-    }).join('') + '</span>';
+  function plural(n) { return n + (n === 1 ? ' prototype' : ' prototypes'); }
+
+  /* ---- СЧЁТ КОММЕНТАРИЕВ НА КАРТОЧКЕ (gbppl-cards-1) ----
+     Адрес записи тот же, каким comments.js адресует тред (спека §5):
+     page = путь от корня студии (папка → index.html, как place()
+     консоли), version = ключи CONTENT из GB_KEEP (header.js, владелец
+     списка) в их порядке, ровно как versionKey() в comments.js. Карточка
+     считает ТО, что человек увидит, открыв её адрес: у approvals ключ
+     ?pv= в KEEP не входит, поэтому четыре их версии делят один список,
+     и полка честно показывает этот общий список на каждой.
+
+     Число = ОТКРЫТЫЕ треды (голос карты: «N open»), в title полный
+     счёт. «Новые» = та же механика, что бейдж консоли (comments.js,
+     unread): отметка «видел» в localStorage gbppl-comments-seen:<page>
+     [?version]; записи после неё, треды и ответы. Пока отметки нет,
+     новыми считаются открытые, как у консоли. comments.js наружу этого
+     счёта не отдаёт (публикует только on / setMode / reload), поэтому
+     здесь стоит его минимальный двойник чтения, не записи: отметку
+     ставит только comments.js. Один запрос на страницу-проект, без
+     кода гейта и без сервиса карточка молчит, консоль чистая. */
+  var SEEN_KEY = 'gbppl-comments-seen:';
+  var THREADS = {};   /* page → массив тредов или null, пока ответа нет */
+
+  function commentKey(href) {
+    /* Адреса реестра уже от корня студии (полка стоит в корне), поэтому
+       путь берётся строкой, а не через location: на зеркале с префиксом
+       пути pathname нёс бы чужую приставку. */
+    var parts = String(href).split('?');
+    var page = parts[0];
+    if (page === '' || /\/$/.test(page)) page += 'index.html';
+    var keep = (window.GB_KEEP && window.GB_KEEP.content) || [];
+    var have = new URLSearchParams(parts[1] || ''), out = [];
+    keep.forEach(function (k) { if (have.has(k)) out.push(k + '=' + have.get(k)); });
+    return page + '|' + out.join('&');
   }
 
-  function plural(n) { return n + (n === 1 ? ' prototype' : ' prototypes'); }
+  function apiBase() {
+    var p = document.querySelector('gb-studio-panel');
+    return (p && p.getAttribute('data-api')) || '';
+  }
+
+  function stampComments() {
+    Array.prototype.forEach.call(mount.querySelectorAll('.gbs-pcard__comments[data-ck]'), function (el) {
+      var ck = el.getAttribute('data-ck');
+      var page = ck.split('|')[0], version = ck.slice(page.length + 1);
+      var list = THREADS[page];
+      if (!list) return;
+      var mine = list.filter(function (c) { return (c.version || '') === version; });
+      var open = mine.filter(function (c) { return c.status === 'open'; }).length;
+      var since = 0;
+      try { since = Date.parse(localStorage.getItem(SEEN_KEY + page + (version ? '?' + version : ''))) || 0; } catch (e) {}
+      var fresh = 0;
+      if (!since) fresh = open;
+      else mine.forEach(function (c) {
+        if (Date.parse(c.created) > since) fresh++;
+        (c.replies || []).forEach(function (r) { if (Date.parse(r.created) > since) fresh++; });
+      });
+      var glyph = window.GbIcons ? window.GbIcons.html('chat', 16) : '';
+      el.innerHTML = glyph + '<span>' + open + '</span>' +
+        (fresh ? '<span class="gbh-count">' + fresh + '</span>' : '');
+      el.title = open + ' open · ' + mine.length + ' in all' + (fresh ? ' · ' + fresh + ' new' : '');
+      el.setAttribute('aria-label', el.title);
+      el.hidden = false;
+    });
+  }
+
+  function askComments(pages) {
+    var key = (window.GB_STUDIO && typeof window.GB_STUDIO.code === 'function' && window.GB_STUDIO.code()) || '';
+    if (!key) return;
+    pages.forEach(function (page) {
+      if (page in THREADS) return;
+      THREADS[page] = null;
+      fetch(apiBase() + '/api/comments?page=' + encodeURIComponent(page), {
+        headers: { 'X-GB-Code': key },
+        cache: 'no-store'
+      }).then(function (res) {
+        return res.ok ? res.json() : null;
+      }).then(function (data) {
+        if (!data || !data.comments) return;
+        THREADS[page] = data.comments;
+        stampComments();
+      }).catch(function () { /* сервис молчит: карточка без счёта */ });
+    });
+  }
 
   /* ---- КАРТОЧКА = ПРОТОТИП (gbppl-sandbox-md-1, Тон 31.08) ----
      «Нажимаешь на проект, справа его прототипы карточками». Имя
@@ -681,38 +782,69 @@
      Это .gbs-door--box, то есть та же малая дверь, которой вариант и
      был до утра: волна ничего не рисовала заново, она вернула
      карточке содержимое, которое один день прожило строкой. */
-  function pcard(it) {
-    /* Чья это деталь (gbppl-proto-model-1): имя элемента одной тихой
-       строкой под именем варианта. У версии страницы этой строки нет:
-       она и есть страница.
+  /* ---- КАРТОЧКА ГОВОРИТ ВСЁ САМА (gbppl-cards-1, Тон 24.09) ----
+     Диктовка модели карточки, пять пунктов, порядок чтения сверху вниз:
+       тумб        настоящий первый экран прототипа (assets/proto-thumbs,
+                   1280×800 → 640×400, снято прибором); у комнаты,
+                   которой ещё нет, земля без картинки;
+       айбрау      тип · ресурс · страница: «SANDBOX · PORTAL · CHECKOUT
+                   PAGE». Одна строка, многоточие, полная строка в title;
+                   справа в той же строке и тем же голосом счёт
+                   комментариев глифом и числом (стоит, только когда
+                   сервис ответил): в мета-строке он резал бы даты;
+       заголовок   версия и её короткое имя («V5 · Addresses first»),
+                   одна строка, многоточие, полное имя в title;
+       описание    три строки и многоточие;
+       мета        одна тихая строка «In progress · created 4 Sep ·
+                   updated yesterday».
+     Теги с карточки сняты: они живут в фильтре.
 
-       ОБЛАСТЬ ДЕЙСТВИЯ ГОВОРИТСЯ ТОЛЬКО У СКВОЗНОГО. Локальный
-       элемент стоит в пане своей страницы, и её имя уже написано
-       заголовком над карточками; печатать «· Portal page» на восьми
-       карточках под заголовком «Portal page» — ровно то, на что Тон
-       сказал 31.08 «Прототипы дублируются: Checkout, Checkout,
-       Category, Category — бред». А «Site element» сказать
-       обязательно: иначе форма входа читалась бы прототипом страницы
-       категорий, хотя она едет на любой странице с баром. */
-    var owner = it.element
-      ? '<span class="gbs-pcard__owner">' + esc(it.element) +
-        (it.owner === 'Site element' ? ' · ' + esc(it.owner) : '') + '</span>'
-      : '';
+     ТИП ВСЕГДА SANDBOX, И ЭТО ЧЕСТНО. Полка перечисляет варианты
+     реестра, а Live-страница вариантом не бывает (у неё своя дверь,
+     карта). Слово вычисляется одной строкой, чтобы Live-карточка, если
+     она придёт на полку, сказала своё слово без переделки.
+
+     Вариант СКВОЗНОГО элемента вместо страницы говорит «Site element»:
+     форма входа едет на любой странице с баром и не должна читаться
+     прототипом страницы категорий (gbppl-proto-model-1). */
+  var AREA = { site: 'Website', portal: 'Portal' };
+  function sentence(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function pcard(it) {
+    var kind = [
+      it.live ? 'Live' : 'Sandbox',
+      AREA[it.area] || '',
+      it.element && it.owner === 'Site element' ? it.owner : it.page
+    ].filter(Boolean).join(' · ');
+    var meta = [
+      sentence(statusWord(it.status)),
+      'created ' + (shortDay(it.created) || 'not recorded'),
+      'updated ' + (relative(it.updated) || 'not recorded')
+    ].join(' · ');
+    var metaTitle = 'created ' + absolute(it.created) + ' · updated ' + absolute(it.updated);
+    /* Тумб: оформление .gbs-door-shot дверей хаба (рамка Zinc 200,
+       радиус, 16:10, cover от верха), ничего своего. Картинка, которой
+       нет на диске, снимает себя и оставляет землю Zinc 100. */
+    var shot = '<span class="gbs-door-shot gbs-pcard__shot">' +
+      (it.ready
+        ? '<img src="assets/proto-thumbs/' + esc(it.thumb) + '.jpg" alt="" width="640" height="400" ' +
+          'loading="lazy" decoding="async" onerror="this.remove()">'
+        : '') +
+      '</span>';
     var body =
+      shot +
+      '<span class="gbs-pcard__top">' +
+        '<span class="gbs-eyebrow gbs-pcard__kind" title="' + esc(kind) + '">' + esc(kind) + '</span>' +
+        '<span class="gbs-eyebrow gbs-pcard__comments" data-ck="' + esc(commentKey(it.href)) + '" hidden></span>' +
+      '</span>' +
       '<span class="gbs-pcard__head">' +
-        '<h4 class="gbs-door-title">' + esc(it.label) + '</h4>' +
+        '<h4 class="gbs-door-title" title="' + esc(it.title) + '">' + esc(it.title) + '</h4>' +
         (it.ready ? ARROW : '<span class="gbs-pcard__note">not open yet</span>') +
       '</span>' +
-      owner +
       '<p class="gbs-door-desc">' + esc(it.desc) + '</p>' +
       '<span class="gbs-pcard__meta">' +
-        '<span class="gbs-chip">' + esc(statusWord(it.status)) + '</span>' +
-        '<span class="gbs-pcard__created" title="created ' + esc(absolute(it.created)) + '">created ' +
-        esc(shortDay(it.created) || 'not recorded') + '</span>' +
-        '<span class="gbs-pcard__updated" title="updated ' + esc(absolute(it.updated)) + '">updated ' +
-        esc(relative(it.updated) || 'not recorded') + '</span>' +
-      '</span>' +
-      tagBadges(it.tags);
+        '<span class="gbs-pcard__line" title="' + esc(metaTitle) + '">' + esc(meta) + '</span>' +
+      '</span>';
     if (!it.ready) {
       return '<div class="gbs-door gbs-door--box gbs-door--proto gbs-door--coming"' + stamp() + '>' +
              body + '</div>';
@@ -846,6 +978,19 @@
       ? '<div class="gbs-grid">' + proj.items.map(pcard).join('') + '</div>'
       : '<div class="gbs-list gbs-list--ingroup">' + proj.items.map(row).join('') + '</div>';
     host.innerHTML = head + body;
+    /* Счёт комментариев дописывается к уже стоящим карточкам: ответ
+       сервиса приходит позже, и ради него каскад прихода не
+       переигрывается. Кэш по странице, повторный показ проекта ничего
+       не спрашивает. */
+    if (state.view === 'cards') {
+      stampComments();
+      var pages = [];
+      proj.items.forEach(function (it) {
+        var p = commentKey(it.href).split('|')[0];
+        if (pages.indexOf(p) < 0) pages.push(p);
+      });
+      askComments(pages);
+    }
   }
 
   function render() {
