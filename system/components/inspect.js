@@ -190,6 +190,28 @@
    draw the same label, and setMode was taught to ignore a value that
    is not its own. Recognition, ownership and the plate stay here,
    with one definition each.
+
+   ------------------------------------------------------------
+   gbppl-inspect-fix-1 (24.09), two bugs from the checkout
+   ------------------------------------------------------------
+   Ton: «не могу посмотреть properties, потому что не открывается
+   правый drawer». gbppl-inspect-3 had given EVERY plain click to the
+   page and kept only Alt+click as the question, while the console
+   note still promised «click for properties». A click on an alert, a
+   heading, a card, anything that answers no click, fell through to
+   nothing. The contract now: a plain click on an element that does
+   something (a link, a button, a field, a label, a role, an Alpine
+   @click) still belongs to the page, as Ton asked on 21.09; a plain
+   click on anything inert opens its properties; Alt+click always asks.
+
+   Ton on Comment mode: «это просто нелепо» — the pointer measured
+   the NOTE / SUGGEST toggle inside the comment drawer. comments.js
+   had been writing threads into «the first gb-drawer on the page»,
+   which on a live page is the page's own drawer, and since
+   gbppl-inspect-3 a page drawer is a resident. The thread now opens
+   in this instrument's own marked host (published as drawerHost), so
+   the studio's surfaces are chrome to both modes by one rule, and the
+   comment pin layer joined isChrome for the page with no console.
    ============================================================ */
 (function () {
   'use strict';
@@ -2892,7 +2914,33 @@
        report). Chrome is now only the instrument's own host drawer; a
        page's drawer is a resident like any other. The scrim stays
        chrome: pointing at the dimmed void is pointing at nothing. */
-    return !!el.closest('gb-studio-panel, .gbsp, .gbsp-stage, .gbd-panel[data-gbd-tag="gbi"], .gbd-scrim, .gbi-layer');
+    /* gbppl-inspect-fix-1: the tagged host is also where Comment mode
+       writes its threads now, and .gbc-layer (the comment pins) is the
+       studio's even where a page has no console to hold it. */
+    return !!el.closest('gb-studio-panel, .gbsp, .gbsp-stage, .gbd-panel[data-gbd-tag="gbi"], .gbd-scrim, .gbi-layer, .gbc-layer');
+  }
+
+  /* gbppl-inspect-fix-1. Does a plain click on this element mean
+     something to the PAGE? Then the page keeps it (gbppl-inspect-3).
+     Anything else answers no click, so the click is the question.
+     The walk stops at the body: a listener on a wrapper the markup
+     does not declare cannot be seen from here, so such an element
+     reads as inert and is pressed in View mode. */
+  var ACTIVE = 'a[href], button, input, select, textarea, label, summary, option, ' +
+               '[contenteditable=""], [contenteditable="true"], [onclick], ' +
+               '[role="button"], [role="link"], [role="tab"], [role="checkbox"], [role="radio"], ' +
+               '[role="switch"], [role="menuitem"], [role="option"], [role="combobox"]';
+  function answersClick(el) {
+    for (var n = el; n && n.nodeType === 1 && n !== document.body; n = n.parentElement) {
+      if (n.matches && n.matches(ACTIVE)) return true;
+      /* Alpine writes its listeners as attributes; `.outside` is a
+         listener on the rest of the page, not on this element. */
+      var at = n.attributes;
+      for (var i = 0; i < at.length; i++) {
+        if (/^(@click|x-on:click)(\.|$)/.test(at[i].name) && !/\.outside/.test(at[i].name)) return true;
+      }
+    }
+    return false;
   }
 
   /* ---------- what the pointer means ----------
@@ -3004,8 +3052,11 @@
      mousedown is stopped only under Alt, so an asking click does not
      start a text selection; everything else reaches the page,
      including submits, because a living prototype owns its forms. */
+  /* gbppl-inspect-fix-1: «a PLAIN click belongs to the page» now reads
+     «a plain click on something the page answers». See answersClick. */
   document.addEventListener('click', function (e) {
-    if (MODE !== 'inspect' || !e.altKey || isChrome(e.target)) return;
+    if (MODE !== 'inspect' || isChrome(e.target)) return;
+    if (!e.altKey && answersClick(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
     if (!openShowcase(e.target)) openFor(resolveTarget(e.target, true));
@@ -3067,7 +3118,7 @@
           { label: 'View', value: 'view',
             note: 'The page behaves as it does for a visitor.' },
           { label: 'Inspect', value: 'inspect',
-            note: 'Hover for the box, click for properties. Keys: i switches, Alt drills in and measures the gaps, Esc leaves.' }
+            note: 'Hover for the box, click for properties. Controls still press, Alt+click reads them. Keys: i switches, Alt drills in and measures the gaps, Esc leaves.' }
         ],
         /* gbppl-comments-b: the toggle now has a third position, and
            it is not ours. A click on View or Inspect is a click AWAY
@@ -3136,6 +3187,9 @@
     setMode: setMode, mode: function () { return MODE; },
     register: function (name, spec) { KINDS[name] = spec; },
     target: resolveTarget, isChrome: isChrome,
+    /* gbppl-inspect-fix-1: the one studio drawer, so Comment mode
+       writes into the same marked host and never into the page's. */
+    drawerHost: drawerHost,
     outline: outline, outlineOff: clearOverlay,
     lede: function (el) { return ledeBlock(identify(el)); },
     onModeSwitch: onModeSwitch

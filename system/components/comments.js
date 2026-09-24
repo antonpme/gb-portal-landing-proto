@@ -1020,10 +1020,23 @@
      измерение (GbInspect.lede), потому что вопрос «где это лежит»
      у замечания и у замера один.
      ============================================================ */
+  /* gbppl-inspect-fix-1 (24.09). «Тот же» значит тот же ХОСТ прибора,
+     помеченный data-gbi-host, а не «первый gb-drawer на странице»: на
+     живых страницах (чекаут, аппрувалы) первым стоит дровер самой
+     страницы, и тред писался в него — затирал мебель страницы, а
+     прибор, для которого дровер страницы с gbppl-inspect-3 житель,
+     мерил тогл NOTE / SUGGEST внутри треда. Тон: «это просто нелепо».
+     Хост берётся у прибора (GbInspect.drawerHost), запасной путь
+     собирает тот же помеченный хост теми же двумя атрибутами. */
   function drawerHost() {
-    var d = document.querySelector('gb-drawer');
+    if (window.GbInspect && typeof window.GbInspect.drawerHost === 'function') {
+      return window.GbInspect.drawerHost();
+    }
+    var d = document.querySelector('gb-drawer[data-gbi-host]');
     if (!d) {
       d = document.createElement('gb-drawer');
+      d.setAttribute('data-gbi-host', '');
+      d.setAttribute('data-gbd-tag', 'gbi');
       document.body.appendChild(d);
     }
     return (d && typeof d.open === 'function') ? d : null;
@@ -1455,7 +1468,7 @@
         openId = null;
         return load().then(function () {
           busy = false;
-          var d = document.querySelector('gb-drawer');
+          var d = drawerHost();   /* gbppl-inspect-fix-1: свой, не страницы */
           if (d && typeof d.close === 'function') d.close();
         });
       })
@@ -1612,7 +1625,9 @@
     }
   });
 
-  document.addEventListener('gbd:close', function () {
+  document.addEventListener('gbd:close', function (e) {
+    /* gbppl-inspect-fix-1: закрылся дровер СТРАНИЦЫ — тред не наш. */
+    if (e.target && e.target.hasAttribute && !e.target.hasAttribute('data-gbi-host')) return;
     if (!pending && !openId) return;
     pending = null;
     openId = null;
