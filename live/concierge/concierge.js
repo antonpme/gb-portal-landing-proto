@@ -547,7 +547,10 @@
            the other three keep the neutral disc, and gbppl-demo-polish-1
            took the paint off them on purpose. So one tint here too,
            and it is the same green the badge and the dot now carry. */
-        id: 'live', icon: 'chat', tint: 'live',
+        /* Pass 4 (the owner): the disc is neutral like the others;
+           the tint mechanism stays in the CSS, this door no longer
+           wears it. The badge is the dot and two quiet words. */
+        id: 'live', icon: 'chat',
         title: 'Live chat', badge: 'Online now',
         sub: 'Get help right now'
       },
@@ -603,22 +606,31 @@
        For a guest the floor still DOES NOT EXIST: not disabled, not a
        stub, not an empty box with a promise in it. The function
        returns nothing at all and the drawer is built one floor tall. */
-    /* gbppl-gethelp-1 (24.09): THE CARD BECAME ONE LINE. First the
+    /* gbppl-gethelp-1 (24.09): THE CARD BECAME A PERSON ROW. First the
        advisor's card moved to the top of floor one (Russell: the
        person and the call were buried under the question box); then
-       the owner, off the screenshot: the name looked the same as Book
-       a meeting, and that is wrong. The phone already lives in Call
-       us and the email in Email us, so the card was saying them twice.
-       What stays is who he is, in ONE line QUIETER than the door
-       titles: the label 14 Zinc 500 regular, the name the same 14 at
-       600 Zinc 950. No frame, no ground, no eyebrow. A guest has no
-       advisor, and the line does not exist for them. */
+       it became one line, because the phone lives in Call us and the
+       email in Email us; then (pass 4, the owner) that line took the
+       ANATOMY OF A DOOR: the same grid and disc, his initials in the
+       disc, his name in the door title's voice and «Your gift
+       advisor» in the sub line. It is not a door: no chevron, no
+       hover, not a button, not a link. A guest has no advisor, and
+       the row does not exist for them. */
+    function initials(name) {
+      return String(name).split(/\s+/).filter(Boolean).map(function (w) {
+        return w.charAt(0).toUpperCase();
+      }).join('');
+    }
     function floorTwoHTML() {
       if (GUEST) return '';
-      return '<p class="gbhc-advisor-line" data-advisor>' +
-          '<span class="gbhc-advisor-line__label">Your gift advisor:</span> ' +
-          '<span class="gbhc-advisor-line__name">' + ADVISOR.name + '</span>' +
-        '</p>';
+      return '<div class="gbhc-person" data-advisor>' +
+          '<span class="gbhc-door__disc" aria-hidden="true">' +
+            '<span class="gbhc-person__initials">' + initials(ADVISOR.name) + '</span></span>' +
+          '<span class="gbhc-door__copy">' +
+            '<span class="gbhc-door__title">' + ADVISOR.name + '</span>' +
+            '<span class="gbhc-door__sub">Your gift advisor</span>' +
+          '</span>' +
+        '</div>';
     }
 
     /* Floor one, in the order Russell asked for: the person first,
