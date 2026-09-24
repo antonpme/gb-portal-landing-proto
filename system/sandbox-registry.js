@@ -909,7 +909,7 @@
         {
           id: 'v1',
           label: '',
-          desc: 'The Talk to us drawer on its own page, in the new portal frame. Your Gift Advisor leads: his name, his email and his phone first. Three doors follow, Book a meeting first, then Call us, then Email us, which opens a second level with the message field and a Send. Live chat and the AI concierge are off until the feature ships.',
+          desc: 'The Talk to us drawer on its own page, in the new portal frame. One quiet line names your gift advisor, then five doors: Book a meeting first, then Live chat, the AI Gift Concierge, Call us and Email us, which opens a second level with the message field and a Send. Live chat and the AI concierge live in the prototype and are not in the release yet.',
           status: 'in-progress',
           href: 'live/get-help.html',
           ready: true,

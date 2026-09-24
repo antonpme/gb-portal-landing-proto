@@ -1,7 +1,7 @@
 /* ============================================================
    THE CONCIERGE EXPERIENCE, AS ONE THING
    live/concierge/concierge.js  ·  gbppl-concierge-unify-1
-   gbppl-gethelp-1 (24.09, Russell: «flip around these sections and make the schedule a call more prominent»): the advisor card leads floor one, three doors follow (Book a meeting, Call us, Email us), the message moves to its own Email us level; live chat and AI doors sleep until the feature ships.
+   gbppl-gethelp-1 (24.09, Russell: «flip around these sections and make the schedule a call more prominent»): one quiet advisor line leads floor one, Book a meeting is the first of five doors (live chat and AI stay in the prototype, not in the release), the message moves to its own Email us level.
    ============================================================
    2026-09-09. Ton is showing Valerie that the help experience is
    ONE experience, the same on the website and inside the portal,
@@ -527,19 +527,20 @@
     var AI_DOOR_HERE = ENVIRONMENT.aiDoor;
     /* gbppl-gethelp-1 (24.09). Russell, on the live portal: «flip
        around these sections and make the schedule a call more
-       prominent». Three doors and this order, the owner's word:
-       Book a meeting FIRST, which is all of its prominence — the only
-       tinted disc this file owns is the online green, and green here
-       means «a person is there right now», which a calendar is not.
-       So the meeting leads by place, not by paint.
+       prominent». Book a meeting FIRST, which is all of its prominence:
+       the only tinted disc this file owns is the online green, and
+       green here means «a person is there right now», which a calendar
+       is not. So the meeting leads by place, not by paint.
 
-       THE LIVE CHAT AND AI DOORS ARE ASLEEP, NOT DELETED: doors
-       removed 24.09 until the feature ships (meeting 23.09); the
-       machinery stays for their return. The two records stand in
-       SLEEPING_DOORS below, the relay, the window and the pill are
-       untouched, and the delegate in wireHome still answers their
-       ids. Waking them is moving the two records back into DOORS. */
-    var SLEEPING_DOORS = [
+       Then live chat and the AI concierge, then the two plain ways in.
+       The doors stay in the prototype; the release ships without them
+       for now (Ton 24.09). */
+    var DOORS = [
+      {
+        id: 'meeting', icon: 'calendar',
+        title: 'Book a meeting',
+        sub: 'Pick a time that suits you'
+      },
       {
         /* THE ONE TINTED DISC, read off the reference. In the START
            popup only the live door is coloured (.gsp-door-icon--live):
@@ -555,13 +556,6 @@
         title: 'AI Gift Concierge',
         sub: 'Instant answers from our AI assistant',
         hidden: !AI_DOOR_HERE
-      }
-    ];
-    var DOORS = [
-      {
-        id: 'meeting', icon: 'calendar',
-        title: 'Book a meeting',
-        sub: 'Pick a time that suits you'
       },
       {
         id: 'call', icon: 'telephone',
@@ -609,40 +603,34 @@
        For a guest the floor still DOES NOT EXIST: not disabled, not a
        stub, not an empty box with a promise in it. The function
        returns nothing at all and the drawer is built one floor tall. */
-    /* gbppl-gethelp-1 (24.09): THE FLOOR MOVED UP AND LOST ITS FORM.
-       Russell read the live portal's order as upside down — the
-       question box on top, the person and the call buried under it —
-       so the advisor's card now OPENS floor one and the doors follow.
-       The card is who, and how to reach him, and nothing else: «Send
-       a message» and the note that grew out of the card left for the
-       Email us level, because a form inside a card at the top of a
-       menu is the very box that was in the way. The rows keep their
-       own gap and the card's padding closes it evenly (the old
-       margin-bottom made room for a button that is gone). */
+    /* gbppl-gethelp-1 (24.09): THE CARD BECAME ONE LINE. First the
+       advisor's card moved to the top of floor one (Russell: the
+       person and the call were buried under the question box); then
+       the owner, off the screenshot: the name looked the same as Book
+       a meeting, and that is wrong. The phone already lives in Call
+       us and the email in Email us, so the card was saying them twice.
+       What stays is who he is, in ONE line QUIETER than the door
+       titles: the label 14 Zinc 500 regular, the name the same 14 at
+       600 Zinc 950. No frame, no ground, no eyebrow. A guest has no
+       advisor, and the line does not exist for them. */
     function floorTwoHTML() {
       if (GUEST) return '';
-      return '<div class="gbhc-floor2">' +
-          '<p class="gb-eyebrow">Your Gift Advisor</p>' +
-          '<div class="gbhc-advisor" data-advisor>' +
-            '<p class="gbhc-advisor__name">' + ADVISOR.name + '</p>' +
-            '<div class="gbhc-advisor__rows">' +
-              '<a class="gbhc-contact" href="mailto:' + ADVISOR.email + '">' +
-                glyph('mail', 16) + ADVISOR.email + '</a>' +
-              '<a class="gbhc-contact" href="tel:' + ADVISOR.tel + '">' +
-                glyph('telephone', 16) + ADVISOR.phone + '</a>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+      return '<p class="gbhc-advisor-line" data-advisor>' +
+          '<span class="gbhc-advisor-line__label">Your gift advisor:</span> ' +
+          '<span class="gbhc-advisor-line__name">' + ADVISOR.name + '</span>' +
+        '</p>';
     }
 
     /* Floor one, in the order Russell asked for: the person first,
-       then the three ways of reaching the house. For a guest the first
-       function returns nothing and the doors stand alone. */
+       then the doors. The line and the list are one group on their
+       own 16 (.gbhc-home), not two blocks on the body's 32: the line
+       is a caption of the list, not a section of its own. For a
+       guest the first function returns nothing. */
     function homeHTML() {
-      return '<div class="gbhc-body">' +
+      return '<div class="gbhc-body"><div class="gbhc-home">' +
         floorTwoHTML() +
         '<div class="gbhc-doors">' + DOORS.map(doorHTML).join('') + '</div>' +
-      '</div>';
+      '</div></div>';
     }
 
     /* ---- THE EMAIL US LEVEL ----------------------------------
@@ -799,8 +787,6 @@
           var id = door.getAttribute('data-door');
           if (id === 'meeting') { e.preventDefault(); openMeeting(door); return; }
           if (id === 'email') { e.preventDefault(); openEmail(); return; }
-          /* asleep since 24.09 (gbppl-gethelp-1): no door carries these
-             ids today, and the branch waits for SLEEPING_DOORS to wake */
           if (id === 'live' || id === 'ai') { e.preventDefault(); relay(id, door); return; }
           return;   /* Call us is an <a href="tel:"> and stays one */
         }
