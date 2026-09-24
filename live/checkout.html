@@ -9,6 +9,23 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-share-pz-tabs-1 (2026-09-24) — V5 ONLY: ONE PERSONALIZE
+     PANEL WITH TWO TABS, THE SAME FORM AS DESIGN-SHARE
+     ------------------------------------------------------------
+     Owner: «на чекауте должна быть одинаковая персонализация с этим,
+     experience один и тот же — выровняй их». Reference = the live
+     client checkout: GIFT ITEMS / GREETING CARD tabs, PERSONALIZE ITEM
+     N rows with «Your text» and «N / M chars», Card heading (50) /
+     Card message (500) / Your signature (100), the Personalization
+     Tags note. V5's part, box and card doors, and the three master
+     doors of Bulk actions, now all open ck-drawer-perso on the tab of
+     the door (v5PersoDoor); Save (v5SavePerso) calls the untouched
+     saveItem / saveGreeting / saveMasterGreeting for the opened part
+     and for any part actually typed into. Parts keep their own limits
+     (24, 3 for initials). ckCardMax V5 400 -> 500. V1 to V4 and the
+     two legacy templates are byte for byte as they were.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-checkout-addrbook-1 (2026-09-24) — V5 ONLY: THE ADDRESS
      BOOK BECOMES THE SECOND LEVEL OF THE SHIPPING DRAWER
      ------------------------------------------------------------
@@ -2197,6 +2214,8 @@
      the strips they were signed off with, and every selector in the file
      begins with .gb-alert, so linking it costs the other four nothing. -->
 <link rel="stylesheet" href="../system/components/alert.css">
+<!-- gbppl-share-pz-tabs-1: V5's personalize panel wears the house tab strip. -->
+<link rel="stylesheet" href="../system/components/tabs.css">
 <!-- gbppl-checkout-step2-1 (22.09, evening): the status badge, measured off
      Figma «Gifting Portal» node 3761-6514. The address picker had been
      drawing its own plate by hand since 08.09 with the component's own
@@ -2412,6 +2431,19 @@
      between two parts. */
   @media (max-width: 767px) { .ck-drawer-stack--parts > * + *:not(template + *) { margin-top: var(--space-48); } }
   .ck-drawer-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-16); }
+  /* gbppl-share-pz-tabs-1: V5's personalize panel (ck-drawer-perso).
+     The card pane has no x-for <template> in front of it, so it takes
+     the stack's 32 under the tab strip by hand; the counter stands 8
+     under its control (the helper's rung, gbppl-perso-form-1), in the
+     eyebrow, with tabular figures so it does not shimmer as one types.
+     The tags note is the house alert carrying a paragraph; its tags
+     wear the house monospace (docs.css names the stack, no token). */
+  .ck-perso-card { margin-top: var(--space-32); }
+  .ck-perso-count { margin-top: var(--space-8); font-variant-numeric: tabular-nums; }
+  .ck-perso-tags .gb-alert__body { align-items: flex-start; }
+  .ck-perso-tags .gb-alert__text p + p { margin-top: var(--space-8); }
+  .ck-perso-tags__title { font-weight: 600; }
+  .ck-perso-tags code { font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace; font-size: inherit; color: inherit; }   /* NO TOKEN: the stack docs.css writes */
 
   /* ============================================================
      THE SEARCH FIELD OF THE ADDRESS PICKER
@@ -8263,6 +8295,145 @@
   <div class="ck-drawer-actions">
     <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
     <button @click="saveItem()" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
+  </div>
+</template>
+
+<!-- ============================================================
+     V5 PERSONALIZE PANEL: GIFT ITEMS / GREETING CARD
+                                  gbppl-share-pz-tabs-1 (24.09)
+     ------------------------------------------------------------
+     One form with design-share's «See it personalized», which is the
+     owner's call («experience один и тот же»), and both follow the
+     LIVE client checkout: two tabs in CAPS (the house <.gb-tabs--fill>,
+     the component's type for a drawer), a part row that reads
+     PERSONALIZE ITEM N / the part's name / where it lands / «Your
+     text» with a «N / M chars» counter, and a card tab of Card heading
+     (50), Card message (ckCardMax, 500) and Your signature (100) over
+     the Personalization Tags note (the house alert, info tone).
+     THE LIMITS OF THE PARTS ARE THE CHECKOUT'S OWN and the counters
+     say them: 24 for a printed line and for the box, 3 for initials.
+     All limits are hard (maxlength), the checkout canon.
+     The part row keeps its tile, name and sub from ck-drawer-item: the
+     checkout has a picture of the part and design-share does not. The
+     field goes UNDER the name (column two), not into a third column:
+     at 520 the middle column of three was 140 wide and broke
+     «PERSONALIZE ITEM 1» over two lines (looked at, first pass).
+     «To» is not asked any more: the live form has no such line and
+     the tags do its errand. The row's own «to» rides through the bag
+     untouched, so nothing already written is lost.
+     Panes are x-show, never x-if (trap 28: the body is stamped by
+     innerHTML and the tab is live data).
+     ============================================================ -->
+<template id="ck-drawer-perso">
+  <div class="gba-scale-portal">
+    <div class="gb-tabs gb-tabs--fill" role="tablist" aria-label="What to personalize">
+      <button type="button" class="gb-tab" role="tab" @click="drawer.tab = 'items'"
+              :aria-selected="drawer.tab === 'items' ? 'true' : 'false'" :tabindex="drawer.tab === 'items' ? 0 : -1"><span class="gb-tab__label">Gift items</span></button>
+      <button type="button" class="gb-tab" role="tab" @click="drawer.tab = 'card'"
+              :aria-selected="drawer.tab === 'card' ? 'true' : 'false'" :tabindex="drawer.tab === 'card' ? 0 : -1"><span class="gb-tab__label">Greeting card</span></button>
+    </div>
+
+    <!-- GIFT ITEMS. The stack's `> * + *` gives the first part its 32
+         under the strip: the x-for <template> is the stack's first child. -->
+    <section role="tabpanel" aria-label="Gift items" x-show="drawer.tab === 'items'" @input="drawer.touched.items = true"
+             class="ck-drawer-stack ck-drawer-stack--parts">
+      <template x-for="(it, idx) in productItems(currentProduct())" :key="'perso-item-'+idx">
+        <div class="grid grid-cols-[72px_1fr] gap-x-6 gap-y-4 items-center">
+          <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="it.badge"></div>
+          <div>
+            <p class="gb-eyebrow">Personalize item <span x-text="idx + 1"></span></p>
+            <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="it.label"></h5>
+            <p class="gb-eyebrow mt-1" x-text="it.sub"></p>
+          </div>
+          <div class="col-start-2">
+            <template x-if="it.kind === 'initials'">
+              <div>
+                <div class="flex flex-wrap gap-2.5">
+                  <template x-for="i in 3" :key="'pslot-'+idx+'-'+i">
+                    <input
+                      type="text"
+                      maxlength="1"
+                      :placeholder="'ABC'[i-1]"
+                      :aria-label="it.label + ', initial ' + i"
+                      :value="itemSlotValue('item' + (idx+1), i-1)"
+                      @input="updateItemSlot('item' + (idx+1), i-1, $event.target.value, $event)"
+                      @keydown="itemSlotKeydown('item' + (idx+1), i-1, $event)"
+                      class="w-14 h-16 bg-transparent border-0 border-b border-zinc-500 hover:border-zinc-700 text-center text-3xl font-serif uppercase text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-blue-600 focus:border-b-2 transition">
+                  </template>
+                </div>
+                <p class="gb-eyebrow ck-perso-count"><span x-text="(drawer.data['item' + (idx+1)] || '').replace(/\s/g, '').length"></span> / 3 chars</p>
+              </div>
+            </template>
+            <template x-if="it.kind !== 'initials'">
+              <div>
+                <input type="text" :value="drawer.data['item' + (idx+1)] || ''" @input="drawer.data['item' + (idx+1)] = $event.target.value" maxlength="24" placeholder="Your text" :aria-label="it.label + ', your text'" class="gba-input">
+                <p class="gb-eyebrow ck-perso-count"><span x-text="(drawer.data['item' + (idx+1)] || '').length"></span> / 24 chars</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+      <!-- The box, last, for ck-drawer-item's own reason (a hidden row in
+           the middle of `* + *` hands a 32 to the row after it). -->
+      <div class="grid grid-cols-[72px_1fr] gap-x-6 gap-y-4 items-center"
+           x-show="productHasBox(currentProduct())" x-cloak>
+        <div class="w-[72px] h-[72px] bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 font-serif text-sm" x-text="productBoxField(currentProduct(), 'badge')"></div>
+        <div>
+          <p class="gb-eyebrow">Personalize item <span x-text="productItems(currentProduct()).length + 1"></span></p>
+          <h5 class="font-serif text-lg mt-0.5 leading-tight" x-text="productBoxField(currentProduct(), 'label')"></h5>
+          <p class="gb-eyebrow mt-1" x-text="productBoxField(currentProduct(), 'sub')"></p>
+        </div>
+        <div class="col-start-2">
+          <input type="text" :value="drawer.data.box || ''" @input="drawer.data.box = $event.target.value" maxlength="24" placeholder="Your text" aria-label="Text printed on the box" class="gba-input">
+          <p class="gb-eyebrow ck-perso-count"><span x-text="(drawer.data.box || '').length"></span> / 24 chars</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GREETING CARD. The row's intro / message / from, under the live
+         form's names. -->
+    <section role="tabpanel" aria-label="Greeting card" x-show="drawer.tab === 'card'" x-cloak @input="drawer.touched.card = true"
+             class="ck-drawer-stack ck-perso-card">
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1" for="ck-perso-heading">Card heading</label>
+        <input id="ck-perso-heading" type="text" x-model="drawer.data.intro" maxlength="50" placeholder="Hello, or Dear team," class="gba-input">
+        <p class="gb-eyebrow ck-perso-count"><span x-text="(drawer.data.intro || '').length"></span> / 50 chars</p>
+      </div>
+      <div>
+        <label class="gb-eyebrow block mb-1" for="ck-perso-message">Card message</label>
+        <textarea id="ck-perso-message" x-model="drawer.data.message" rows="3" :maxlength="ckCardMax()" placeholder="Write your message..." class="gba-input gba-textarea"></textarea>
+        <p class="gb-eyebrow ck-perso-count"><span x-text="(drawer.data.message || '').length"></span> / <span x-text="ckCardMax()"></span> chars</p>
+      </div>
+      <div class="gba-inputwrap">
+        <label class="gb-eyebrow block mb-1" for="ck-perso-sign">Your signature</label>
+        <input id="ck-perso-sign" type="text" x-model="drawer.data.from" maxlength="100" placeholder="Your name or company" class="gba-input">
+        <p class="gb-eyebrow ck-perso-count"><span x-text="(drawer.data.from || '').length"></span> / 100 chars</p>
+      </div>
+      <div class="gb-alert gb-alert--info ck-perso-tags" role="note">
+        <span class="gb-alert__body">
+          <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>
+          <span class="gb-alert__text">
+            <p class="ck-perso-tags__title">Personalization Tags for Your Message</p>
+            <p>Use <code>{{FirstName}}</code> or <code>{{LastName}}</code> in your message and each recipient sees their own name.</p>
+            <p>"Hello <code>{{FirstName}}</code>," will display as "Hello Ashley," when sent.</p>
+          </span>
+        </span>
+      </div>
+    </section>
+  </div>
+</template>
+<!-- One foot for both tabs: Save writes what the door opened and what was
+     typed (v5SavePerso). The row and its gap are the greeting foot's, at
+     the house gap of 16. -->
+<template id="ck-drawer-foot-perso">
+  <div class="ck-drawer-actions">
+    <button @click="closeDrawer()" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" type="button"><span class="gb-btn__label">Cancel</span></button>
+    <div class="flex items-center gap-4">
+      <button x-show="drawer.master" @click="v5SavePerso(true)" type="button"
+              class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary"
+              style="--gbb-accent: var(--red-600); --gbb-accent-hover: var(--red-600); --gbb-accent-active: var(--red-600)"><span class="gb-btn__label">Overwrite all</span></button>
+      <button @click="v5SavePerso(false)" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button"><span class="gb-btn__label" x-text="drawer.master ? 'Apply to all' : 'Save'"></span></button>
+    </div>
   </div>
 </template>
 
@@ -15801,6 +15972,9 @@ function checkoutApp() {
       const who = this.drawer.master ? ' · apply to all' : '';
       if (this.drawer.type === 'greeting')  return 'Greeting card' + who;
       if (this.drawer.type === 'item')      return 'Gift personalization' + who;
+      /* gbppl-share-pz-tabs-1: V5's one personalize panel, whichever door
+         opened it, keeps the part panel's title. */
+      if (this.drawer.type === 'perso')     return 'Gift personalization' + who;
       if (this.drawer.type === 'recipient') return 'Personalization';
       if (this.drawer.type === 'address')   return this.drawer.addressBookMode ? 'Add new address' : 'Shipping address';
       /* gbppl-checkout-v3-1: V3's own panel, and its own word. «Delivery» is
@@ -15972,6 +16146,7 @@ function checkoutApp() {
         // an empty Intro rather than an undefined one.
         data: { ...this.blankDrawerData(), intro: '', ...(r.greeting || {}) }
       };
+      if (this.uiVersion === 'v5') this.v5PersoDoor('card', r);
       this.showDrawer();
     },
     openItemDrawer(productId, shipmentId, recipientId) {
@@ -15980,7 +16155,55 @@ function checkoutApp() {
         open: true, type: 'item', productId, shipmentId, recipientId, master: false,
         data: { ...this.blankDrawerData(), item1: r.item1 || '', item2: r.item2 || '', item3: r.item3 || '', box: r.box || '' }
       };
+      if (this.uiVersion === 'v5') this.v5PersoDoor('items', r);
       this.showDrawer();
+    },
+
+    /* ============================================================
+       V5: ONE PERSONALIZE PANEL, TWO TABS      gbppl-share-pz-tabs-1
+       ------------------------------------------------------------
+       Owner (24.09): «на чекауте должна быть одинаковая персонализация
+       с этим [design-share], experience один и тот же». The live
+       client checkout splits the form into GIFT ITEMS / GREETING CARD
+       tabs, and so do we now, in V5 only.
+       NO NEW DOOR. Every door V5 had still opens: the part and box
+       cells and «Apply gift personalization» land on GIFT ITEMS, the
+       card cell, «Apply greeting card» and «Set card message» land on
+       GREETING CARD — the same panel, on the tab of the door.
+       NO NEW WRITER. The legacy openers build the drawer exactly as
+       before; this only widens the bag with the other tab's values
+       (the row's own, or blanks for a master) and changes the type.
+       Save calls the SAME saveItem / saveGreeting / saveMasterGreeting
+       as before, for the part of the form the door opened and for any
+       other part the reader actually typed into — so a card door never
+       rewrites the parts (and never turns a master card «custom» by
+       being saved), and a master parts door never blanks the cards.
+       V1 to V4 never enter this branch.
+       ============================================================ */
+    v5PersoDoor(tab, r) {
+      const d = this.drawer;
+      const card = { to: '', intro: '', message: '', from: '' };
+      const items = { item1: '', item2: '', item3: '' };
+      if (!d.master && r) {
+        Object.assign(card, r.greeting || {});
+        Object.assign(items, { item1: r.item1 || '', item2: r.item2 || '', item3: r.item3 || '', box: r.box || '' });
+      }
+      this.drawer = {
+        ...d,
+        type: 'perso',
+        origin: tab,
+        tab,
+        touched: { items: false, card: false },
+        data: { ...this.blankDrawerData(), ...card, ...items, ...d.data }
+      };
+    },
+    v5SavePerso(overwrite) {
+      const d = this.drawer;
+      const items = d.origin === 'items' || d.touched.items;
+      const card = d.origin === 'card' || d.touched.card || !!overwrite;
+      if (items) this.saveItem();
+      if (card) { if (overwrite) this.saveMasterGreeting(true); else this.saveGreeting(); }
+      if (!items && !card) this.closeDrawer();
     },
     useAddressBookEntry(id) {
       const addr = this.addressBook.find(a => a.id === id);
@@ -16043,6 +16266,9 @@ function checkoutApp() {
           ? { ...this.blankDrawerData(), to: '', intro: '', message: '', from: '' }
           : { ...this.blankDrawerData(), item1: '', item2: '', item3: '' }
       };
+      if (this.uiVersion === 'v5' && (type === 'greeting' || type === 'item')) {
+        this.v5PersoDoor(type === 'greeting' ? 'card' : 'items', null);
+      }
       this.showDrawer();
     },
     openRecipientDrawer(productId, shipmentId, recipientId) {
@@ -16098,7 +16324,10 @@ function checkoutApp() {
     // field and by the field's own maxlength, in the panel of step 2 and in the
     // drawer the table opens, so it lives once. V1 to V4 keep 280 — the drawer
     // is shared with V2's bulk panel, and a V5 wave does not move V2's limits.
-    ckCardMax() { return this.uiVersion === 'v5' ? 400 : 280; },
+    // gbppl-share-pz-tabs-1 (24.09): V5 takes the live checkout's 500, the
+    // owner's call to make both personalize forms one form (design-share
+    // carries the same number). V1 to V4 keep 280.
+    ckCardMax() { return this.uiVersion === 'v5' ? 500 : 280; },
 
     // The greeting drawer types into the flat to/message/from of drawer.data;
     // pick exactly those three so the shared bag's other keys never ride along.

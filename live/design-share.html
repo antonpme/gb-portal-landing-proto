@@ -7,6 +7,24 @@
 <link rel="icon" href="data:,">
 
 <!-- ============================================================
+     gbppl-share-pz-tabs-1 — SEE IT PERSONALIZED SPEAKS THE LIVE
+                             CHECKOUT'S FORM: TWO TABS, THEIR WORDS
+     ------------------------------------------------------------
+     Owner's call (24.09), reference = the LIVE client checkout, sent
+     as screenshots: the drawer takes their sub («Name and message you
+     want to see as an example on this gift.»), their two tabs (GIFT
+     ITEMS / GREETING CARD, the house <.gb-tabs--fill>), their item row
+     (PERSONALIZE ITEM 1, the name, a quiet line, «Your text» with a
+     «0 / N chars» counter) and their card fields and limits (Card
+     heading 50, Card message 500, Your signature 100) with the
+     Personalization Tags note in the house alert. The box line keeps
+     300. Counters are the checkout's eyebrow counter and the limits
+     are hard (maxlength), the checkout canon. <gb-field> learned
+     `maxlength` at its owner (auth.js) for it. Foot, Reset, Show and
+     dress() are untouched; Reset gives both tabs back.
+     ============================================================ -->
+
+<!-- ============================================================
      gbppl-perso-form-1 — THE PERSONALIZE FORM SAYS WHAT GOES IN
                           AN EMPTY FIELD, AND BREATHES
      ------------------------------------------------------------
@@ -506,6 +524,10 @@
 <link rel="stylesheet" href="../system/components/auth.css">
 <link rel="stylesheet" href="../system/components/comments.css">
 <link rel="stylesheet" href="../system/components/toggle.css">
+<!-- gbppl-share-pz-tabs-1: the personalize drawer's two tabs are the
+     house tab strip, and its tags note is the house alert. -->
+<link rel="stylesheet" href="../system/components/tabs.css">
+<link rel="stylesheet" href="../system/components/alert.css">
 <!-- THE CONCIERGE BEHIND CONTACT US (Ton 15.09: «берём нашу форму —
      тот же контент, что по клику на консьерж-иконку из хедера для
      неавторизованных»). The guest switchboard is a module the site
@@ -1779,20 +1801,57 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
    surfaces now breathe alike; the group takes the next rung up so
    it still reads as the larger break.
    ============================================================ */
-.gbd-sub + .gbds-pz__group { margin-top: var(--space-32); }
-.gbds-pz__group + .gbds-pz__group { margin-top: var(--space-48); }
-/* The heading of a group: the checkout card title's dress (16/600,
-   sentence case), so caps stays with the field labels alone. */
-.gbds-pz__head {
+/* gbppl-share-pz-tabs-1 (24.09): the two groups became two TABS,
+   the live checkout's own split (GIFT ITEMS / GREETING CARD). The
+   strip is <.gb-tabs--fill>, the component's rule for a drawer
+   (tabs.css, type 2 «filling»); the panels are the component's
+   [role=tabpanel][hidden]. Rhythm unchanged: 32 between the rows of
+   a pane, which is what the two groups kept inside themselves; the
+   strip takes the sub's own 16 above it and hands the pane 32. */
+.gbds-pz__group { margin-top: var(--space-32); }
+.gbds-pz__row { display: block; }
+.gbds-pz__row + .gbds-pz__row,
+.gbds-pz__group > .gb-alert { margin-top: var(--space-32); }
+.gbds-pz__group gb-field { display: block; }
+/* THE COUNTER is the checkout's, not a copy of its markup: one caps
+   eyebrow «N / M chars», 8 under the control (the helper's rung,
+   gbppl-perso-form-1 of checkout.html). Tabular figures so the line
+   does not shimmer while the reader types. */
+.gbds-pz__count {
   display: block;
-  margin-bottom: var(--space-16);
-  font-size: 16px;
-  font-weight: 600;
+  margin: var(--space-8) 0 0;
   line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+/* THE ITEM ROW, the checkout part drawer's anatomy (ck-drawer-item):
+   eyebrow «Item N», the part's name in the serif, the quiet line of
+   where it lands in the eyebrow voice, then the field. */
+.gbds-pz__item > .gb-eyebrow { display: block; margin: 0; line-height: 1.5; }
+.gbds-pz__name {
+  margin: var(--space-8) 0 0;
+  font-family: var(--font-serif);
+  font-size: 18px;                 /* checkout ck-drawer-item: font-serif text-lg */
+  font-weight: 400;
+  line-height: 1.25;               /* the same: leading-tight */
   color: var(--zinc-900);
 }
-.gbds-pz__group gb-field { display: block; }
-.gbds-pz__group gb-field + gb-field { margin-top: var(--space-32); }
+.gbds-pz__item > .gbds-pz__where { margin-top: var(--space-8); }
+.gbds-pz__item > .gba-field { margin-top: var(--space-16); }
+/* The tags note: the house alert, info tone, carrying a paragraph
+   instead of one line (the alert allows the wrap, alert.css). The
+   title is the note's first line at the alert's own 14, one weight
+   up, so the box keeps one voice. */
+.gbds-pz__tags .gb-alert__body { align-items: flex-start; }
+.gbds-pz__tags .gb-alert__text p { margin: 0; }
+.gbds-pz__tags .gb-alert__text p + p { margin-top: var(--space-8); }
+.gbds-pz__tags-title { font-weight: 600; }
+/* The tag itself: the house's one monospace (docs.css / inspect.css
+   name the stack and no token exists for it), no plate. */
+.gbds-pz__tags code {
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;   /* NO TOKEN: the stack docs.css writes */
+  font-size: inherit;
+  color: inherit;
+}
 .gbds-pz__foot { display: flex; gap: var(--space-16); }
 .gbds-pz__foot .gb-btn { flex: 1 1 auto; }
 
@@ -2692,22 +2751,116 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
          From there), so one card is asked for one way in the house.
          The brand line names what it takes; the helper under it
          still says where it lands. */
-      '<div class="gbds-pz__group">' +
-        '<span class="gbds-pz__head">Gift box</span>' +
-        '<gb-field optional input-id="gbdsBox" name="box" label="Brand line"' +
-          ' placeholder="Your company name"' +
-          ' value="' + esc(CARD.box) + '"' +
-          ' helper="A short line, printed across the wrap."></gb-field>' +
+      /* gbppl-share-pz-tabs-1 (24.09, owner's call, reference = the
+         LIVE client checkout): TWO TABS, their words. «Tabs were
+         weighed and declined» above is overruled by that call: the
+         split is the live checkout's, so the reader meets one
+         personalize form in both places. The tab strip is the house
+         <.gb-tabs--fill>; switching only toggles [hidden], so nothing
+         typed in one tab is lost in the other.
+         GIFT ITEMS carries what the scene really paints and nothing
+         else: dress() prints ONE line on the box (wrapTexture reads
+         CARD.box) and the card; the bottle is not dressed, so it is
+         not offered. The reference prints an item code under the
+         name; this demo gift has no code in any source we hold, so
+         the quiet line says where the words land (the checkout part
+         drawer's own sub line) instead of inventing a SKU.
+         LIMITS: the reference's (box 300, heading 50, message 500,
+         signature 100), and HARD by the checkout canon: every counted
+         field there carries maxlength equal to its counter. */
+      '<div class="gb-tabs gb-tabs--fill" role="tablist" aria-label="What to personalize">' +
+        '<button type="button" class="gb-tab" role="tab" id="gbdsTabItems" aria-controls="gbdsPaneItems" aria-selected="true" data-gbds-tab="gbdsPaneItems">' +
+          '<span class="gb-tab__label">Gift items</span></button>' +
+        '<button type="button" class="gb-tab" role="tab" id="gbdsTabCard" aria-controls="gbdsPaneCard" aria-selected="false" tabindex="-1" data-gbds-tab="gbdsPaneCard">' +
+          '<span class="gb-tab__label">Greeting card</span></button>' +
       '</div>' +
-      '<div class="gbds-pz__group">' +
-        '<span class="gbds-pz__head">Greeting card</span>' +
-        '<gb-field optional input-id="gbdsIntro" name="intro" label="Intro" placeholder="Hello, or Dear team," value="' + esc(CARD.intro) + '"></gb-field>' +
-        '<gb-field optional input-id="gbdsMessage" name="message" type="textarea" label="Message"' +
-          ' placeholder="Write your message..."' +
-          ' value="' + esc(CARD.message) + '"' +
-          ' helper="Two lines sit comfortably on the card."></gb-field>' +
-        '<gb-field optional input-id="gbdsSign" name="signature" label="Signature" placeholder="Your name or company" value="' + esc(CARD.signature) + '"></gb-field>' +
+      '<div class="gbds-pz__group" role="tabpanel" id="gbdsPaneItems" aria-labelledby="gbdsTabItems">' +
+        '<div class="gbds-pz__row gbds-pz__item">' +
+          '<span class="gb-eyebrow">Personalize item 1</span>' +
+          '<p class="gbds-pz__name">Custom Gift Box</p>' +
+          '<span class="gb-eyebrow gbds-pz__where">Printed across the wrap</span>' +
+          '<div class="gba-field">' +
+            '<div class="relative gba-inputwrap">' +
+              '<input type="text" id="gbdsBox" name="box" autocomplete="off" maxlength="300"' +
+                ' aria-label="Custom Gift Box, your text" aria-describedby="gbdsBox-count"' +
+                ' placeholder="Your text" value="' + esc(CARD.box) + '" class="valid browser-default gba-input">' +
+            '</div>' +
+          '</div>' +
+          count('gbdsBox', CARD.box, 300) +
+        '</div>' +
+      '</div>' +
+      '<div class="gbds-pz__group" role="tabpanel" id="gbdsPaneCard" aria-labelledby="gbdsTabCard" hidden>' +
+        '<div class="gbds-pz__row">' +
+          '<gb-field optional input-id="gbdsIntro" name="intro" label="Card heading" maxlength="50" placeholder="Hello, or Dear team," value="' + esc(CARD.intro) + '"></gb-field>' +
+          count('gbdsIntro', CARD.intro, 50) +
+        '</div>' +
+        '<div class="gbds-pz__row">' +
+          '<gb-field optional input-id="gbdsMessage" name="message" type="textarea" label="Card message" maxlength="500"' +
+            ' placeholder="Write your message..." value="' + esc(CARD.message) + '"></gb-field>' +
+          count('gbdsMessage', CARD.message, 500) +
+        '</div>' +
+        '<div class="gbds-pz__row">' +
+          '<gb-field optional input-id="gbdsSign" name="signature" label="Your signature" maxlength="100" placeholder="Your name or company" value="' + esc(CARD.signature) + '"></gb-field>' +
+          count('gbdsSign', CARD.signature, 100) +
+        '</div>' +
+        /* The reference's tags note, word for word, in the house alert
+           (info tone, the one neutral note the system draws). */
+        '<div class="gb-alert gb-alert--info gbds-pz__tags" role="note">' +
+          '<span class="gb-alert__body">' +
+            '<span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>' +
+            '<span class="gb-alert__text">' +
+              '<p class="gbds-pz__tags-title">Personalization Tags for Your Message</p>' +
+              '<p>Use <code>{{FirstName}}</code> or <code>{{LastName}}</code> in your message and each recipient sees their own name.</p>' +
+              '<p>&quot;Hello <code>{{FirstName}}</code>,&quot; will display as &quot;Hello Ashley,&quot; when sent.</p>' +
+            '</span>' +
+          '</span>' +
+        '</div>' +
       '</div>';
+  }
+
+  /* The checkout's counter, one line of the caps voice. */
+  function count(id, value, max) {
+    return '<span class="gb-eyebrow gbds-pz__count" id="' + id + '-count">' +
+      '<span data-gbds-count="' + id + '">' + String(value || '').length + '</span> / ' + max + ' chars</span>';
+  }
+
+  /* Live counters and live tabs, wired once on the document: the
+     drawer's panel lives on <body>, not inside its host tag
+     (drawer.js), and its body is redrawn on every open, so the
+     listeners key on our own data attributes instead. */
+  var pzWired = false;
+  function wirePz() {
+    if (pzWired) return;
+    pzWired = true;
+    document.addEventListener('input', function (e) {
+      var t = e.target;
+      if (!t || !t.id) return;
+      var out = document.querySelector('[data-gbds-count="' + t.id + '"]');
+      if (out) out.textContent = String(t.value || '').length;
+    });
+    document.addEventListener('click', function (e) {
+      var tab = e.target && e.target.closest ? e.target.closest('[data-gbds-tab]') : null;
+      if (!tab) return;
+      pzTab(tab.getAttribute('data-gbds-tab'));
+    });
+    document.addEventListener('keydown', function (e) {
+      var tab = e.target && e.target.closest ? e.target.closest('[data-gbds-tab]') : null;
+      if (!tab || (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft')) return;
+      var all = Array.prototype.slice.call(document.querySelectorAll('[data-gbds-tab]'));
+      var next = all[(all.indexOf(tab) + (e.key === 'ArrowRight' ? 1 : all.length - 1)) % all.length];
+      pzTab(next.getAttribute('data-gbds-tab'));
+      next.focus();
+      e.preventDefault();
+    });
+  }
+  function pzTab(paneId) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-gbds-tab]'), function (b) {
+      var on = b.getAttribute('data-gbds-tab') === paneId;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.setAttribute('tabindex', on ? '0' : '-1');
+      var pane = document.getElementById(b.getAttribute('data-gbds-tab'));
+      if (pane) pane.hidden = !on;
+    });
   }
 
   function pzFoot() {
@@ -2731,9 +2884,11 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
 
   function openPersonalize() {
     if (!drawer || typeof drawer.open !== 'function') return;
+    wirePz();
     drawer.open({
       title: 'See it personalized',
-      sub: 'Type the names or messages you would put on this gift. Nothing is saved, it only changes what you see here.',
+      /* gbppl-share-pz-tabs-1: the live checkout's own sentence. */
+      sub: 'Name and message you want to see as an example on this gift.',
       html: pzBody(),
       foot: pzFoot()
     });
@@ -2909,7 +3064,9 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
     }
     if (what === 'retry') { setState('scene'); viewer.src = MODEL; return; }
     if (what === 'pz-reset') {
-      /* Fields only: the model keeps what it wears until Show. */
+      /* Fields only: the model keeps what it wears until Show. Both
+         tabs are in the DOM (the hidden one is only [hidden]), so one
+         pass gives both back; the input event moves the counters. */
       var back = { gbdsBox: CARD0.box, gbdsIntro: CARD0.intro, gbdsMessage: CARD0.message, gbdsSign: CARD0.signature };
       Object.keys(back).forEach(function (id) {
         var el = document.getElementById(id);

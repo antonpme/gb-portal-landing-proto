@@ -246,9 +246,17 @@
     var helper = opts.helper
       ? '<p class="gba-helper" id="' + helperId + '">' + esc(opts.helper) + '</p>'
       : '';
+    /* ПЯТОЕ РАСШИРЕНИЕ: maxlength      gbppl-share-pz-tabs-1 (24.09).
+       Потолок длины у поля, которое считает символы (персонализация:
+       «0 / 50 chars» у чекаута держит maxlength на самом контроле).
+       Просто прокидывается на input/textarea; без атрибута поле
+       рендерится байт в байт как раньше. Счётчик — забота
+       потребителя (у чекаута он живёт в разметке страницы). */
+    var maxlen = /^\d+$/.test(String(opts.maxlength || '')) ? ' maxlength="' + opts.maxlength + '"' : '';
     var common =
       ' name="' + esc(opts.name) + '" id="' + esc(opts.id) + '"' +
       ' autocomplete="' + esc(opts.autocomplete || opts.name) + '"' +
+      maxlen +
       describe +
       ' placeholder="' + esc(placeholder) + '"';
     /* gbppl-oro-select-stepper-1: ЧЕТВЁРТОЕ РАСШИРЕНИЕ, type=select.
@@ -321,6 +329,7 @@
         wrapMod: this.getAttribute('wrap-mod') || '',
         labelStyle: this.getAttribute('label-style') || '',
         options: this.getAttribute('options') || '',
+        maxlength: this.getAttribute('maxlength') || '',
         eye: this.hasAttribute('eye'),
         optional: this.hasAttribute('optional'),
       });
