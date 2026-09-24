@@ -34,6 +34,15 @@
           the page's «Delivery addresses» is Ton's own open decision.
      The one-address door and Set delivery address (gift table) keep
      their panel: every new rule reads v5PkBookDoor() or 'book' mode.
+     Same wave, Ton's second pass:
+       6. The floors RIDE (v5PkRide): the concierge's level canon on
+          this page's own .ck-levels / .ck-level, deeper from the right,
+          back from the left, --mo-small/--mo-arrive in and
+          --mo-small-out/--mo-exit out, head turned on the moving frame.
+       7. The book's count moved into the drawer head, the organism's
+          new optional indicator (drawer.js setNote, gbppl-drawer-note-1).
+       8. The default address book holds fourteen places, so the book
+          floor has a second page in the default scenario.
      ============================================================ -->
 <!-- ============================================================
      gbppl-checkout-template-1 (2026-09-23) — V5 ONLY: THE TEMPLATE
@@ -2608,6 +2617,41 @@
   @media (max-width: 639px) {
     .ck-pk__searchrow { gap: var(--space-8); }
   }
+  /* ============================================================
+     THE FLOORS OF THE ADDRESS DRAWER RIDE
+                          gbppl-checkout-addrbook-1, levels (24.09)
+     ------------------------------------------------------------
+     Ton: the book floor «подменяется на месте, непонятно, что это
+     второй уровень». The canon is the concierge's (live/concierge,
+     «THE LEVELS OF THE DRAWER»), written again here in the page's own
+     names and not borrowed: the panel lives on the right, so DEEPER
+     comes in from the right and pushes the old floor out to the left,
+     BACK mirrors both. Arriving is --mo-small on --mo-arrive, leaving
+     --mo-small-out on --mo-exit, so the old floor is gone before the
+     new one lands. Two floors share one cell of a grid, so nothing
+     stacks and the panel does not reflow. No reduced-motion branch
+     (Ton-7). NO TOKEN: the 24px of travel is --space-24 spent as a
+     distance, the concierge's own number. */
+  .ck-levels { display: grid; }
+  .ck-level {
+    grid-area: 1 / 1;
+    min-width: 0;
+    transition: transform var(--mo-small) var(--mo-arrive),
+                opacity var(--mo-small) var(--mo-arrive);
+  }
+  .ck-level--from-right { transform: translateX(var(--space-24)); opacity: 0; }
+  .ck-level--from-left  { transform: translateX(calc(-1 * var(--space-24))); opacity: 0; }
+  .ck-level--to-left,
+  .ck-level--to-right {
+    pointer-events: none;
+    opacity: 0;
+    transition: transform var(--mo-small-out) var(--mo-exit),
+                opacity var(--mo-small-out) var(--mo-exit);
+  }
+  .ck-level--nomo     { transition: none; }
+  .ck-level--to-left  { transform: translateX(calc(-1 * var(--space-24))); }
+  .ck-level--to-right { transform: translateX(var(--space-24)); }
+  .ck-level--ghost    { pointer-events: none; }
   /* THE RECEIPT GIVES WAY FIRST. On the name's line beside the person,
      and when the line is short it is the one that shrinks: a ratio, not
      a number on the scale, because it is a priority and not a size.
@@ -8499,7 +8543,12 @@
        above it is the search field's own (v5PkKey: a query first, then
        the drawer). Anywhere else in the panel Esc closes, exactly as the
        organism promises. -->
-  <div class="ck-drawer-stack" x-data="{ bookOpen: false }"
+  <!-- gbppl-checkout-addrbook-1, levels (24.09): THE FLOORS RIDE. One cell
+       of a grid (.ck-levels) holds the live floor and, for the length of a
+       ride, a frozen copy of the floor it is leaving (v5PkRide). The live
+       stack is the one Alpine owns and it is never rebuilt. -->
+  <div class="ck-levels">
+  <div class="ck-drawer-stack ck-level" x-data="{ bookOpen: false }"
        :class="uiVersion === 'v5' ? ('gba-scale-portal' + (v5PkMode() === 'form' ? ' ck-drawer-stack--form' : '')) : ''"
        @keydown.escape="v5PkEsc($event)">
 
@@ -8555,7 +8604,7 @@
            book ('book'). One island, so the fit, the walker and the pager
            are the ones this door has always had. -->
       <template x-if="uiVersion === 'v5' && drawer.pk && (drawer.pk.mode === 'pick' || drawer.pk.mode === 'book')">
-        <div class="ck-pk" data-pk-island
+        <div class="ck-pk" data-pk-island x-effect="v5PkHeadNote()"
              :style="drawer.pk.h ? ('height: ' + drawer.pk.h + 'px') : ''"
              x-init="$nextTick(() => v5PkFit())"
              @resize.window="v5PkFit()">
@@ -8915,7 +8964,11 @@
           <!-- gbppl-checkout-addrbook-1 (24.09): and the book floor is a
                browse floor, so the same pager stands under it (v5PkBrowsing
                answers true there) — the round pills and the count, unchanged. -->
-          <div class="ck-pk__foot" data-pk-foot data-pk-chrome x-show="v5PkBrowsing() && !v5PkEmptyBook()">
+          <!-- gbppl-drawer-note-1 (24.09): ON THE BOOK FLOOR THE COUNT MOVED TO
+               THE HEAD (Ton: the line in the foot of the card was an orphan),
+               so the pager stands alone there, and a book of one page has no
+               foot at all. -->
+          <div class="ck-pk__foot" data-pk-foot data-pk-chrome x-show="v5PkBrowsing() && !v5PkEmptyBook() && !(v5PkInBook() && v5PkView().pages < 2)">
             <div class="flex items-center gap-1" x-show="v5PkView().pages > 1">
               <button @click="v5PkGo(v5PkView().page - 1)" type="button" aria-label="Previous page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="v5PkView().page === 1"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></span></button>
               <template x-for="pg in v5PkPageNumbers()" :key="'v5pkpg-' + pg">
@@ -8923,7 +8976,7 @@
               </template>
               <button @click="v5PkGo(v5PkView().page + 1)" type="button" aria-label="Next page" class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" :disabled="v5PkView().page === v5PkView().pages"><span class="gb-btn__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span></button>
             </div>
-            <span class="ck-pk__count text-sm text-zinc-500 ml-auto" x-text="v5PkCount()"></span>
+            <span class="ck-pk__count text-sm text-zinc-500 ml-auto" x-show="!v5PkInBook()" x-text="v5PkCount()"></span>
           </div>
 
         </div>
@@ -9121,6 +9174,7 @@
         <span class="gb-checkbox__note">(otherwise it is used for this order only)</span>
       </span>
     </label>
+  </div>
   </div>
 </template>
 <!-- ============================================================
@@ -10214,6 +10268,26 @@ function checkoutApp() {
         { id: 'a1', name: 'Anton Parkhomenko', company: '',                label: '233 S Wacker Dr, Suite 8200, Chicago, IL 60606, US' },
         { id: 'a2', name: 'Diane Novak',       company: 'Acme NYC Office', label: '500 5th Ave, New York, NY 10110, US' },
         { id: 'a3', name: 'Peter Halloran',    company: 'Acme LA Studio',  label: '1234 Sunset Blvd, Los Angeles, CA 90028, US' },
+        /* gbppl-checkout-addrbook-1 (24.09): Ton — «пагинацию никто не видит»,
+           the ordinary account kept three places and the book floor never had
+           a second page. Eleven more, in the voice of the first three (a
+           person, the office they are known by where there is one), so the
+           default carries a book of fourteen. The first three keep their ids
+           and their order: scenarioPortalLoaded reads [0] and [1]. None of
+           the new ones is a place the loaded cart already ships to, so no
+           line of it changes its plate (Emma Schultz and Marcus Lee stay
+           typed here, by design). */
+        { id: 'a4',  name: 'Rachel Okafor',   company: 'Acme Chicago HQ',   label: '150 N Riverside Plz, Floor 21, Chicago, IL 60606, US' },
+        { id: 'a5',  name: 'Tom Brennan',     company: '',                  label: '48 Maple Ct, Evanston, IL 60201, US' },
+        { id: 'a6',  name: 'Sofia Marchetti', company: 'Acme Austin Studio', label: '600 Congress Ave, Suite 1400, Austin, TX 78701, US' },
+        { id: 'a7',  name: 'James Whitaker',  company: '',                  label: '27 Cedar Ln, Portland, OR 97205, US' },
+        { id: 'a8',  name: 'Nina Kowalski',   company: 'Northwind Denver',  label: '1700 Lincoln St, Suite 900, Denver, CO 80203, US' },
+        { id: 'a9',  name: 'Omar Haddad',     company: '',                  label: '315 Harbor Dr, San Diego, CA 92101, US' },
+        { id: 'a10', name: 'Grace Liu',       company: 'Acme Boston Office', label: '100 Federal St, Floor 8, Boston, MA 02110, US' },
+        { id: 'a11', name: 'Daniel Reyes',    company: '',                  label: '912 Palm Ave, Miami, FL 33139, US' },
+        { id: 'a12', name: 'Hannah Becker',   company: 'Globex Atlanta',    label: '1180 Peachtree St NE, Atlanta, GA 30309, US' },
+        { id: 'a13', name: 'Victor Almeida',  company: '',                  label: '66 Birch Rd, Minneapolis, MN 55401, US' },
+        { id: 'a14', name: 'Laura Fischer',   company: 'Acme NYC Office',   label: '500 5th Ave, Floor 14, New York, NY 10110, US' }
       ];
     },
 
@@ -13913,7 +13987,82 @@ function checkoutApp() {
        on the head. A query typed on the first level comes along: a
        reader who searched and then asked to browse meant «browse what
        I was looking for». */
+    /* ============================================================
+       THE RIDE BETWEEN FLOORS     gbppl-checkout-addrbook-1, levels (24.09)
+       ------------------------------------------------------------
+       The concierge's choreography (live/concierge/concierge.js,
+       goLevelWith), on this page's own nodes. The difference is the one
+       thing this page cannot do the concierge's way: its floors are ONE
+       Alpine subtree whose parts are shown and hidden by state, so there
+       is no second live node to slide in. So the leaving floor is
+       photographed first — a copy of the stack with every Alpine
+       attribute, template, id and data hook taken off (nothing can
+       re-initialise it, no selector of this page can find it, icon.js
+       has nothing to mount), inert and aria-hidden — and set in the same
+       cell of the grid. Then the state changes under it, and the live
+       stack, already showing the new floor, is put at its start with NO
+       CLOCK (the concierge's lesson: a start state applied with the clock
+       running animates INTO the start), one frame paints it, and on the
+       next the ride begins: the live floor arrives, the copy leaves the
+       other way and is removed after --mo-small. The head (title, chevron
+       or cross) turns on that same frame and not before: v5PkHead is held
+       while the start is being painted.
+         dir 'deeper'  book from the list, form from either
+         dir 'back'    the mirror of each
+       ============================================================ */
+    v5PkRide(dir, change) {
+      const live = document.querySelector('.gbd-panel .ck-levels > .ck-level:not(.ck-level--ghost)');
+      if (!live || this.uiVersion !== 'v5') { change(); return; }
+      const box = live.parentNode;
+      box.querySelectorAll('.ck-level--ghost').forEach(g => g.remove());
+      clearTimeout(this._v5PkRideT);
+      live.classList.remove('ck-level--from-left', 'ck-level--from-right', 'ck-level--nomo');
+      const ghost = this.v5PkGhost(live);
+      box.insertBefore(ghost, live);
+      this._v5PkHeadHold = true;
+      change();
+      live.classList.add('ck-level--nomo', dir === 'back' ? 'ck-level--from-left' : 'ck-level--from-right');
+      const ms = parseFloat(getComputedStyle(live).getPropertyValue('--mo-small')) || 280;
+      requestAnimationFrame(() => {
+        live.classList.remove('ck-level--nomo');
+        requestAnimationFrame(() => {
+          this._v5PkHeadHold = false;
+          this.v5PkHead();
+          live.classList.remove('ck-level--from-left', 'ck-level--from-right');
+          ghost.classList.add(dir === 'back' ? 'ck-level--to-right' : 'ck-level--to-left');
+          this._v5PkRideT = setTimeout(() => { if (ghost.parentNode) ghost.parentNode.removeChild(ghost); }, ms);
+        });
+      });
+    },
+    v5PkGhost(live) {
+      const ghost = live.cloneNode(true);
+      /* The values a copy does not carry by itself: a tick and a typed word
+         live on the element's properties, not in its attributes. */
+      const src = live.querySelectorAll('input, select, textarea');
+      const dst = ghost.querySelectorAll('input, select, textarea');
+      src.forEach((el, i) => {
+        const c = dst[i]; if (!c) return;
+        if (el.type === 'checkbox' || el.type === 'radio') { if (el.checked) c.setAttribute('checked', ''); else c.removeAttribute('checked'); }
+        else if (el.tagName === 'SELECT') { const o = c.options[el.selectedIndex]; if (o) o.setAttribute('selected', ''); }
+        else c.setAttribute('value', el.value);
+      });
+      ghost.querySelectorAll('template').forEach(t => t.remove());
+      [ghost].concat([].slice.call(ghost.querySelectorAll('*'))).forEach(el => {
+        [].slice.call(el.attributes).forEach(a => {
+          const n = a.name;
+          if (n.indexOf('x-') === 0 || n[0] === ':' || n[0] === '@' || n.indexOf('data-') === 0 || n === 'id' || n === 'name' || n === 'for') el.removeAttribute(n);
+        });
+      });
+      ghost.classList.add('ck-level--ghost');
+      ghost.setAttribute('inert', '');
+      ghost.setAttribute('aria-hidden', 'true');
+      return ghost;
+    },
     v5PkOpenBook() {
+      const pk = this.drawer.pk; if (!pk || pk.mode === 'book') return;
+      this.v5PkRide('deeper', () => this.v5PkOpenBookNow());
+    },
+    v5PkOpenBookNow() {
       const pk = this.drawer.pk; if (!pk) return;
       pk.mode = 'book';
       pk.page = 1;
@@ -14131,6 +14280,11 @@ function checkoutApp() {
        typed address. `Clear` is the button for that, and it stays. */
     v5PkOpenForm() {
       const pk = this.drawer.pk; if (!pk) return;
+      if (pk.mode === 'form') return this.v5PkOpenFormNow();
+      this.v5PkRide('deeper', () => this.v5PkOpenFormNow());   /* gbppl-checkout-addrbook-1, levels */
+    },
+    v5PkOpenFormNow() {
+      const pk = this.drawer.pk; if (!pk) return;
       if (!pk.typed) { Object.assign(this.drawer.data, this.v3BlankDeliver()); pk.typed = true; }
       /* gbppl-checkout-addrbook-1: the form remembers which choosing floor
          it was opened from, and the chevron takes it back there. */
@@ -14167,6 +14321,11 @@ function checkoutApp() {
        copy beside it.
        ============================================================ */
     v5PkEditRow(r) {
+      const pk = this.drawer.pk; if (!pk || !r) return;
+      if (pk.mode === 'form') return this.v5PkEditRowNow(r);
+      this.v5PkRide('deeper', () => this.v5PkEditRowNow(r));   /* gbppl-checkout-addrbook-1, levels */
+    },
+    v5PkEditRowNow(r) {
       const pk = this.drawer.pk; if (!pk || !r) return;
       Object.assign(this.drawer.data, this.v3BlankDeliver(), r.deliver || {});
       pk.edit = r.key;
@@ -14242,6 +14401,10 @@ function checkoutApp() {
        The query is the book floor's to keep while it is open and not the
        list's to inherit, so it is emptied on the way down. */
     v5PkBack() {
+      const pk = this.drawer.pk; if (!pk || pk.mode === 'pick') return;
+      this.v5PkRide('back', () => this.v5PkBackNow());
+    },
+    v5PkBackNow() {
       const pk = this.drawer.pk; if (!pk) return;
       const from = pk.mode;
       this.v5PkNoteOff();
@@ -14263,6 +14426,9 @@ function checkoutApp() {
     v5PkHead() {
       const d = document.getElementById('ck-drawer');
       if (!d || typeof d.setBack !== 'function') return;
+      /* gbppl-checkout-addrbook-1, levels: while a ride's start is being
+         painted the head waits; v5PkRide turns it as the body moves. */
+      if (this._v5PkHeadHold) return;
       const pk = this.drawer.pk;
       /* gbppl-checkout-addrbook-1: the book floor is a second level too, and
          says so the one way the canon allows — the chevron in the cross's
@@ -14287,6 +14453,26 @@ function checkoutApp() {
          ============================================================ */
       d.setBack(back ? () => this.v5PkBack() : null);
       d.setTitle(this.drawerTitle());
+      this.v5PkHeadNote();
+    },
+    /* ============================================================
+       THE BOOK'S COUNT LIVES IN THE HEAD     gbppl-drawer-note-1 (24.09)
+       ------------------------------------------------------------
+       First carrier of the organism's indicator (drawer.js setNote).
+       Only the book floor says a count; every other floor clears it.
+       Read by x-effect on the island, so it follows the book as it is
+       edited, deleted from and searched, and held with the rest of the
+       head while a ride's start is painted.
+       WITH A QUERY IT SAYS «12 OF 52 ADDRESSES», not «12»: the head sits
+       over the whole floor, and a bare 12 there reads as the size of the
+       book — the one number the search has not changed. It is the same
+       sentence the old foot count said (v5PkCount), moved, not rewritten. */
+    v5PkHeadNote() {
+      if (this._v5PkHeadHold) return;
+      const d = document.getElementById('ck-drawer');
+      if (!d || typeof d.setNote !== 'function') return;
+      const on = this.uiVersion === 'v5' && this.drawer && this.drawer.open && this.drawer.type === 'deliver' && this.v5PkInBook();
+      d.setNote(on ? this.v5PkCount() : null);
     },
     v5PkEsc(e) {
       const pk = this.drawer && this.drawer.pk;

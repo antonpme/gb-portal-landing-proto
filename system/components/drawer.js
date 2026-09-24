@@ -19,6 +19,8 @@
      d.setBack(fn, 'Addresses');  // optional: the arrow names where it returns
      d.setBack(null);
      d.setTitle('Gift personalization');
+     d.setNote('52 addresses');  // optional quiet indicator right of the title
+     d.setNote(null);            //   (gbppl-drawer-note-1; open({note}) too)
      d.close();
 
    Events: gbd:open and gbd:close, both bubbling, so a host can
@@ -177,10 +179,17 @@
     host._closeLeft = iconButton(GLYPH_CLOSE, 'Close');
     host._closeRight = iconButton(GLYPH_CLOSE, 'Close');
     host._title = el('h2', 'gbd-title');
+    /* gbppl-drawer-note-1 (24.09): the optional indicator on the right of
+       the title (drawer.css .gbd-note). Built once like the slots and
+       hidden until a caller hands it a text, so no head that never asks
+       for it changes by a pixel. */
+    host._note = el('p', 'gbd-note');
+    host._note.hidden = true;
 
     head.appendChild(host._back);
     head.appendChild(host._closeLeft);
     head.appendChild(host._title);
+    head.appendChild(host._note);
     head.appendChild(host._closeRight);
 
     /* The body stays ONE container: consumers reach into
@@ -305,6 +314,13 @@
     host._closeRight.hidden = true;
   }
 
+  /* gbppl-drawer-note-1: consumer text, so textContent and never markup. */
+  function setNoteOn(host, text) {
+    var t = (text == null) ? '' : String(text);
+    host._note.textContent = t;
+    host._note.hidden = !t;
+  }
+
   function openDrawer(opts) {
     var host = this;
     build(host);
@@ -314,6 +330,7 @@
     host._returnTo = document.activeElement;
 
     host._title.textContent = opts.title || '';
+    setNoteOn(host, opts.note);   /* gbppl-drawer-note-1: absent = hidden */
     host._onBack = typeof opts.back === 'function' ? opts.back : null;
     host._backLabel = (host._onBack && typeof opts.backLabel === 'string' && opts.backLabel) ? opts.backLabel : null;
     dressBack(host);
@@ -431,6 +448,12 @@
       build(this);
       this._title.textContent = text || '';
       this._panel.setAttribute('aria-label', text || 'Details');
+    }
+    /* gbppl-drawer-note-1 (24.09): the one indicator of the level — a
+       count or a state, never an action. null or '' takes it away. */
+    setNote(text) {
+      build(this);
+      setNoteOn(this, text);
     }
   }
   if (!customElements.get('gb-drawer')) {

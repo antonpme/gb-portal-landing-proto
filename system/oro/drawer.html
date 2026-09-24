@@ -355,6 +355,23 @@ GbOro.page({
                   + '          </div>\n'
                   + '          <p class="gbdoc-foot">The real drawer, on the real organism. The first level is a list, a row opens that address as the second level, and the only thing that changes in the head is the glyph on the left. The foot of the second level finishes the job and hands the reader back to the list. Escape and the dimmed page close the whole thing from either floor.</p>\n'
                   + '        </div>' },
+        /* gbppl-drawer-note-1 (24.09): the indicator, beside the rule it
+           belongs to — a level says its count once, in one place. */
+        { p: 'A level may carry ONE indicator, and it has one place: a quiet line on the right of the title, on the title\'s first line, in the drawer\'s aside voice (14, Zinc 500, regular, no plate). It says a count or a state of the level the reader is standing on, and it is optional: a head that is not handed one is exactly the head it always was.' },
+        { html: '<div class="gbdoc-frame">\n'
+                  + '          <div class="gbdoc-stage">\n'
+                  + '            <div class="gbdoc-slot gbdoc-slot--wide">\n'
+                  + '              <div class="gbd-panel gbdoc-panel" id="headNote"></div>\n'
+                  + '              <span class="gbdoc-slot__cap"><b>With an indicator</b><span>setNote(\'14 addresses\')</span></span>\n'
+                  + '            </div>\n'
+                  + '          </div>\n'
+                  + '          <p class="gbdoc-foot">The second level of the checkout\'s address drawer, its first carrier. While a search narrows the book the line says what the search left of it, 12 of 52 addresses, because a bare 12 over the whole floor reads as the size of the book.</p>\n'
+                  + '        </div>' },
+        { table: {
+            head: ['The indicator', 'Do', 'Don\'t'],
+            rows: '<tr><td>What goes in it</td><td>One count or one state of this level: 14 addresses, 12 of 52 addresses, Saved</td><td>An action, a link or anything that answers a click. The head has one control and it is the way out</td></tr>\n'
+                  + '<tr><td>Where the same fact lives</td><td>Here, once. The count moves up into the head and leaves the foot of the list</td><td>Say it twice, in the head and again under the list. One fact, one place</td></tr>\n'
+                  + '<tr><td>How it speaks</td><td>The aside voice of the drawer, the same as the subtitle, so the head keeps its two voices</td><td>A badge, a plate, a colour or a weight of its own</td></tr>' } },
         { note: 'Provenance. The canon is the owner\'s word of 22 September: a two level drawer is a rule for every drawer in the house, and the transition is one glyph. It is carried out in two places and this card documents both: <code>drawer.js</code>, where <code>dressHead</code> shows the chevron OR the cross on the left and nothing at all on the right, and the address picker of the checkout V5, the first surface in the house to stand on two levels, which lost the word beside its chevron on the same day.' }
       ] },
 
@@ -419,6 +436,8 @@ GbOro.page({
                   + '<tr><td><code>backLabel</code></td><td>Option</td><td>string</td><td>none</td><td>Puts a word beside the chevron and makes the slot the small ghost pair instead of the bare circle. It is still in the API and nothing in the house passes it: the canon of 22 September says the chevron carries no visible label, and a second level that is otherwise identical to the first cannot be read any other way. Ignored without <code>back</code></td></tr>\n'
                   + '<tr><td><code>setBack(fn, label?)</code></td><td>Method</td><td>function or null, string</td><td>required</td><td>Opens or closes the second level while the panel is already on screen, which is how a flow that grows a floor mid way says so. Null takes the chevron away and gives the slot back to the cross. The optional second argument is the same label <code>backLabel</code> sets, and the same answer applies to it</td></tr>\n'
                   + '<tr><td><code>setTitle(text)</code></td><td>Method</td><td>string</td><td>required</td><td>Rewrites the head without touching the body, for a flow that renames its step</td></tr>\n'
+                  + '<tr><td><code>note</code></td><td>Option</td><td>string</td><td>none</td><td>The indicator on the right of the title: one count or state of this level, in the aside voice. Without it nothing is drawn</td></tr>\n'
+                  + '<tr><td><code>setNote(text)</code></td><td>Method</td><td>string or null</td><td>none</td><td>Writes or clears the indicator while the panel is open, so a count can follow what the level holds. Null or an empty string takes it away. See <a href="#levels">Levels</a></td></tr>\n'
                   + '<tr><td><code>close()</code></td><td>Method</td><td>no arguments</td><td>required</td><td>Sends the panel out and gives the page back. A host rarely needs it: Escape, the backdrop and the cross all call it</td></tr>\n'
                   + '<tr><td><code>gbd:open</code></td><td>Event</td><td>bubbles</td><td>none</td><td>Fired when the panel starts arriving, so a host can follow the drawer without owning it</td></tr>\n'
                   + '<tr><td><code>gbd:close</code></td><td>Event</td><td>bubbles</td><td>none</td><td>Fired when it starts leaving. The site header waits out the 350 on this one before it changes the bar</td></tr>\n'
@@ -588,11 +607,15 @@ GbOro.page({
      so it is still the organism's markup and not a shortened copy of it,
      and it passes `true` rather than `!back`, so a second level shows one
      glyph and no cross on the right. */
-  function headHTML(title, back) {
+  /* gbppl-drawer-note-1: the optional third argument is the indicator,
+     drawn where drawer.js puts it (after the title, before the right
+     slot) and left out entirely when it is not given. */
+  function headHTML(title, back, note) {
     return '<div class="gbd-head">' +
       slotHTML('back', !back) +
       slotHTML('close', back) +
       '<h2 class="gbd-title">' + title + '</h2>' +
+      (note ? '<p class="gbd-note">' + note + '</p>' : '') +
       slotHTML('close', true) +
       '</div>';
   }
@@ -768,6 +791,8 @@ GbOro.page({
     if (plain) plain.innerHTML = headHTML('Filters', false);
     var back = document.getElementById('headBack');
     if (back) back.innerHTML = headHTML('Sign in or create an account', true);
+    var noted = document.getElementById('headNote');
+    if (noted) noted.innerHTML = headHTML('Address book', true, '14 addresses');
 
     [['anatomyPanel', 'anatomyCap'], ['headPlain', 'headPlainCap'], ['headBack', 'headBackCap']]
       .forEach(function (pair) {
