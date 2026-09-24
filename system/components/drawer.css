@@ -114,6 +114,15 @@ gb-drawer { display: contents; }
   transform: translateX(100%);
   transition: transform var(--mo-drawer-in) var(--mo-enter);
 }
+/* gbppl-drawer-bugs-1 (24.09), trap 29: the display above is an author
+   rule and the UA's [hidden] is a bare attribute selector, so a CLOSED
+   panel stayed display:flex, parked off screen at translateX(100%), and
+   Tab walked through its invisible Close (audit: 6 stops in 80 Tab on
+   get-help, dashboard, approvals). Hidden has to win in the owner.
+   The entrance is untouched: open() drops `hidden` first, forces a
+   reflow at translateX(100%), then adds .is-open; close() sets `hidden`
+   only after the 350ms exit has played (drawer.js). */
+.gbd-panel[hidden] { display: none; }
 
 /* Open. The scrim and the panel are given their own clocks on
    purpose: the light goes down in 280 and the door takes 800. */
@@ -209,7 +218,8 @@ gb-drawer { display: contents; }
 
    VERTICAL RHYTHM. The head has no height of its own: it is the
    44px control plus equal air, and the air is derived from the two
-   measured numbers rather than typed. A title that wraps grows the
+   measured numbers rather than typed (the hairline is counted inside
+   the 80 since gbppl-drawer-bugs-1: it comes out of the bottom air). A title that wraps grows the
    head and keeps its FIRST LINE centred on the control, which is
    what the padding-block on .gbd-title buys (half the difference
    between the circle and one line box).
@@ -218,14 +228,21 @@ gb-drawer { display: contents; }
   /* LIVE catalogue 28.08. No token: the system has no drawer head
      scale, and this is the one number the reference states. */
   --gbd-head-h: 80px;
+  --gbd-head-hair: 1px;
 
   display: flex;
   align-items: flex-start;
   gap: var(--space-16);
+  /* gbppl-drawer-bugs-1 (24.09): 80 WITH the hairline. The padding used
+     to be (80 - 44) / 2 = 18 on both sides and the 1px border came on
+     top, so every head measured 81 against a documented 80. The
+     hairline is now paid out of the bottom air: 18 + 44 + 17 + 1 = 80,
+     and the circle's centre stays on y 40, the centre of the 80 box. */
   padding:
     calc((var(--gbd-head-h) - var(--gb-btn-icon-size)) / 2)
-    var(--space-24);
-  border-bottom: 1px solid var(--zinc-200);
+    var(--space-24)
+    calc((var(--gbd-head-h) - var(--gb-btn-icon-size)) / 2 - var(--gbd-head-hair));
+  border-bottom: var(--gbd-head-hair) solid var(--zinc-200);
 }
 .gbd-title {
   flex: 1 1 auto;
@@ -325,7 +342,8 @@ gb-drawer { display: contents; }
   .gbd-head {
     padding:
       calc((var(--gbd-head-h) - var(--gb-btn-icon-size)) / 2)
-      var(--space-16);
+      var(--space-16)
+      calc((var(--gbd-head-h) - var(--gb-btn-icon-size)) / 2 - var(--gbd-head-hair));
   }
   .gbd-body { padding: var(--space-16); }
   /* The title steps down one rung; the ratio does not step, so

@@ -34,8 +34,12 @@
      · ONE SLOT ON THE LEFT. The cross by default; the back arrow
        INSTEAD of it as soon as the caller hands over a `back`.
        Never two glyphs side by side.
-     · When the arrow is on the left, the cross moves to the right
-       edge. That is the only head with two controls in it.
+     · The chevron comes IN PLACE OF the cross, never beside it and
+       never with a second cross on the right: the owner's canon of
+       22.09 (dressHead below) retired the 28.08 rule that sent the
+       cross to the right edge. Every head carries ONE control; Esc
+       and the scrim still close from any level. (The right cross is
+       still built, for a consumer's CSS, and never shown.)
      · No eyebrow and no subtitle in the head. `sub` is still part
        of the API and still says the same sentence; it just opens
        the BODY now, where the thing it describes is.

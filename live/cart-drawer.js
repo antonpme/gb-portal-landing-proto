@@ -122,9 +122,17 @@
   function onClick(e) {
     var btn = e.target.closest ? e.target.closest(BTN) : null;
     if (!btn) return;
-    var drawer = document.querySelector('gb-drawer');
+    /* gbppl-drawer-bugs-1 (24.09): THE CART OPENS ITS OWN DRAWER. It used
+       to borrow document.querySelector('gb-drawer'), the first drawer of
+       the page, which on get-help is the concierge's and on the dashboard
+       is the bell's: the cart rode a surface another module had wired.
+       Now it finds its own by id and makes it once when it is missing.
+       Same organism, same head, same motion: nothing a person sees moves. */
+    var drawer = document.getElementById('gbppcDrawer');
     if (!drawer && window.customElements && customElements.get('gb-drawer')) {
       drawer = document.createElement('gb-drawer');
+      drawer.id = 'gbppcDrawer';
+      drawer.setAttribute('data-gbd-tag', 'gbppc');
       document.body.appendChild(drawer);
     }
     if (!drawer || !drawer.open) return;   /* no organism, no promise: the page keeps whatever it did before */

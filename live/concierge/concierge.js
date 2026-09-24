@@ -687,7 +687,17 @@
       });
     }
 
-    function panel() { return document.querySelector('.gbd-panel'); }
+    /* gbppl-drawer-bugs-1 (24.09): THE CONCIERGE ASKS ITS OWN DRAWER FOR
+       ITS PANEL. This used to be document.querySelector('.gbd-panel'),
+       the FIRST panel of the document, and on a page that declares a
+       drawer of its own before the concierge mounts (design-share's
+       personalize surface, the dashboard's bell and Customize) that is
+       somebody else's panel: the delegate went onto it, levels() found
+       no .gbhc-levels, and Book a meeting and Email us did nothing while
+       the head still said «Talk to us». The host builds its panel once
+       and keeps the reference (drawer.js build(), host._panel), so the
+       concierge reads it off the host it opened and never off the page. */
+    function panel() { return (drawer && drawer._panel) || null; }
 
     /* ============================================================
        THE LEVELS OF THE DRAWER          gbppl-concierge-levels-1

@@ -467,3 +467,32 @@ html:not(.gbppl-nav-native) .category-nav .sticky-book-meeting svg { display: no
 @media (min-width: 2000px) {
   html:not(.gbppl-nav-native) .category-nav .sticky-book-meeting { min-height: var(--gb-btn-medium-h-2xl); font-size: var(--gb-btn-medium-label-2xl); }
 }
+
+/* ============================================================
+   gbppl-drawer-bugs-1 (24.09) — THE DOOR'S CROSS STANDS INSIDE THE LINE
+   ------------------------------------------------------------
+   Found by gbppl-drawer-audit-1 in the catalogue overlay (dashboard,
+   approvals, portal): the build centres its embed close on
+   (100% - content-width) / 4, i.e. half the gutter, which it wrote for
+   its own embed gutter of 68 (12 + 44 + 12). The container swap above
+   (gbppl-container-3) outranks that 68 with the system's 24, so at 1216
+   of frame the 44 circle was centred on x 12: it started at x -10, was
+   cut by the edge of the panel, and its glyph ended 1px short of GOURMET.
+
+   The fix keeps the one measure of the page and moves only the door:
+   the circle stands ON the content line (its left edge = the inner row's
+   left edge, the same line the grid of gifts starts on), and the row of
+   links makes room for it, 44 plus 16 of air. Laws: plaques stay inside
+   the lines, and the gutter of the page does not change for a button.
+   Literals, because on this page the names are taken: 44 is the build's
+   .icon-button (measured), 16 is our --space-16, which this document
+   hands back to the build as 64 (the seam above).
+   ?nav=mark keeps the build's own 68 gutter and its own centred cross. */
+html.is-embed:root:not(.gbppl-nav-native) .category-nav__embed-close {
+  left: calc((100% - var(--content-width)) / 2);
+  transform: translateY(-50%);
+}
+html.is-embed:root:not(.gbppl-nav-native) .category-nav__inner {
+  box-sizing: border-box;
+  padding-left: calc(44px + 16px);   /* the circle + our --space-16 of air */
+}
