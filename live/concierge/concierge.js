@@ -704,10 +704,14 @@
        THE SPATIAL LOGIC IS THE DRAWER'S OWN. The panel lives on the
        right and travels from the right, so going DEEPER brings the
        new level in from the right and pushes the old one out to the
-       left; coming BACK reverses both. Arriving is --mo-small on
-       --mo-arrive, leaving is --mo-small-out on --mo-exit: the old
+       left; coming BACK reverses both. Arriving is --mo-medium on
+       --mo-arrive, leaving is --mo-medium-out on --mo-exit: the old
        level is gone before the new one has finished, which is the
-       same overlap the relay uses.
+       same overlap the relay uses. (gbppl-checkout-addrbook-1, 24.09:
+       was --mo-small / --mo-small-out; Ton, «Tiffany style, всё
+       выплывает плавно». A level is the whole body, the popup's path
+       in MOTION.md, not a step's. live/checkout.html .ck-level carries
+       the same canon on the same clocks.)
 
        The title and the arrow change WITH the ride and not before it:
        setTitle and setBack are called at the same moment the level
@@ -750,7 +754,7 @@
           next.classList.remove('gbhc-level--from-left', 'gbhc-level--from-right');
           if (old) {
             old.classList.add(dir === 'back' ? 'gbhc-level--to-right' : 'gbhc-level--to-left');
-            window.setTimeout(function () { if (old.parentNode) old.parentNode.removeChild(old); }, MO.small);
+            window.setTimeout(function () { if (old.parentNode) old.parentNode.removeChild(old); }, MO.medium);
           }
         });
       });

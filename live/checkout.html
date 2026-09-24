@@ -2626,18 +2626,25 @@
      «THE LEVELS OF THE DRAWER»), written again here in the page's own
      names and not borrowed: the panel lives on the right, so DEEPER
      comes in from the right and pushes the old floor out to the left,
-     BACK mirrors both. Arriving is --mo-small on --mo-arrive, leaving
-     --mo-small-out on --mo-exit, so the old floor is gone before the
+     BACK mirrors both. Arriving is --mo-medium on --mo-arrive, leaving
+     --mo-medium-out on --mo-exit, so the old floor is gone before the
      new one lands. Two floors share one cell of a grid, so nothing
      stacks and the panel does not reflow. No reduced-motion branch
      (Ton-7). NO TOKEN: the 24px of travel is --space-24 spent as a
      distance, the concierge's own number. */
   .ck-levels { display: grid; }
+  /* THE CLOCKS (same wave, Ton's third pass: «слишком быстро... Tiffany
+     style, всё выезжает и выплывает плавно, luxury»). MOTION.md sets
+     durations «по масштабу пути», and a level replaces the whole body
+     of the drawer, which is the popup's path and not a step's: in on
+     --mo-medium 500 / --mo-arrive, out on --mo-medium-out 350 /
+     --mo-exit, the pair of «Рождение из кнопки». Changed in the
+     concierge (.gbhc-level) in the same breath: one canon, one clock. */
   .ck-level {
     grid-area: 1 / 1;
     min-width: 0;
-    transition: transform var(--mo-small) var(--mo-arrive),
-                opacity var(--mo-small) var(--mo-arrive);
+    transition: transform var(--mo-medium) var(--mo-arrive),
+                opacity var(--mo-medium) var(--mo-arrive);
   }
   .ck-level--from-right { transform: translateX(var(--space-24)); opacity: 0; }
   .ck-level--from-left  { transform: translateX(calc(-1 * var(--space-24))); opacity: 0; }
@@ -2645,8 +2652,8 @@
   .ck-level--to-right {
     pointer-events: none;
     opacity: 0;
-    transition: transform var(--mo-small-out) var(--mo-exit),
-                opacity var(--mo-small-out) var(--mo-exit);
+    transition: transform var(--mo-medium-out) var(--mo-exit),
+                opacity var(--mo-medium-out) var(--mo-exit);
   }
   .ck-level--nomo     { transition: none; }
   .ck-level--to-left  { transform: translateX(calc(-1 * var(--space-24))); }
@@ -13031,6 +13038,31 @@ function checkoutApp() {
       // The one-address branch keeps its answer in the address book, so the
       // next order finds it there too.
       if (this.drawer.v5Target === 'one') {
+        /* gbppl-checkout-addrbook-1 (24.09): A FORM OPENED FROM THE BOOK FLOOR
+           WRITES THE BOOK, in this door exactly as in the door that ticks —
+           a new entry, or a saved row corrected in place — and walks back to
+           the book with the receipt. Only the list floor's form is «the
+           address of this order», and that branch below is untouched. */
+        const pkb = this.drawer.pk;
+        if (pkb && pkb.mode === 'form' && pkb.back === 'book') {
+          if (!label) { this.v5PkBack(); return; }
+          this.drawer.saveToBook = true;
+          pkb.wrote = false;
+          const filed = this.v5PkFileForm(deliver, label, pkb);
+          const key = this.v5PkKeyAt(deliver) || filed;
+          /* the step's own line of text follows a correction of its row */
+          const bid = String(filed || '').indexOf('b:') === 0 ? filed.slice(2) : '';
+          if (bid && s.v5AddrId === bid) s.v5AddrLabel = (deliver.name ? deliver.name + ', ' : '') + label;
+          pkb.fresh = key;
+          const wrote = pkb.wrote;
+          pkb.wrote = false;
+          pkb.q = ''; pkb.page = 1; pkb.typed = false;
+          Object.assign(this.drawer.data, this.v3BlankDeliver());
+          this.drawer.saveToBook = false;
+          this.v5PkBack();
+          if (wrote) this.v5PkNoteSay(key);
+          return;
+        }
         if (!label) { this.closeDrawer(); return; }
         /* gbppl-v5-addrpicker-1 (07.09): AND IT DOES NOT FILE IT TWICE.
            Picking a saved address in the panel fills the form, so Save used
@@ -13537,10 +13569,18 @@ function checkoutApp() {
        focus and the walker are one set of rules on both floors. */
     v5PkChoosing() { const m = this.v5PkMode(); return m === 'pick' || m === 'book'; },
     v5PkInBook() { return this.v5PkMode() === 'book'; },
-    /* The door that has the book floor is the door that ticks (Add address,
-       Multiple addresses, step 1). The one-address door and the gift table's
-       Set delivery address keep the panel they had, word for word. */
-    v5PkBookDoor() { return this.v5PkTicks(); },
+    /* The doors that have the book floor: the one that ticks (Add address,
+       Multiple addresses, step 1) and — Ton's third pass, «дровер ведёт себя
+       абсолютно так же, всё точно так же, за исключением того, что ты не
+       можешь добавить несколько» — the One address door of step 1. Its one
+       difference is the pick: a row click takes that place for the whole
+       order (v5PkTakeOne), and it has no ticks. The gift table's Set
+       delivery address keeps the panel it had, word for word. */
+    v5PkBookDoor() {
+      const d = this.drawer;
+      return this.v5PkTicks() ||
+             (this.uiVersion === 'v5' && !!d && d.type === 'deliver' && d.v5Target === 'one' && !d.v5Assign);
+    },
     // The condition the manual form is drawn under. For V1 to V4 it is a
     // constant true, which is what keeps their panel node for node.
     v5PkFormOn() { return this.uiVersion !== 'v5' || !this.drawer.pk || this.drawer.pk.mode === 'form'; },
@@ -13863,11 +13903,15 @@ function checkoutApp() {
          and keeps standing if the tick comes off again. */
       const pk = (this.drawer && this.drawer.pk) || {};
       const joined = new Set([].concat(pk.joined || [], this.v5PkTicks() ? (pk.sel || []) : []));
-      const mine = r => r.kind !== 'none' && (!!r.orderId || r.kind === 'made' || joined.has(r.key));
+      /* The One address door: its order ships to ONE place, the saved row
+         the step points at (s.v5AddrId), and that row is its «In this order». */
+      const sh = (this.drawer && this.drawer.v5Target === 'one') ? this.findShipment(this.drawer.productId, this.drawer.shipmentId) : null;
+      const oneId = (sh && sh.v5AddrId) || '';
+      const mine = r => r.kind !== 'none' && (!!r.orderId || r.kind === 'made' || joined.has(r.key) || (!!oneId && r.bookId === oneId));
       const order = all.filter(mine);
       /* A book row that joined without a line yet carries the same plate as
          one that has a line: it came out of the book. */
-      if (this.v5PkTicks()) order.forEach(r => { if (!r.badge && r.kind === 'book') r.badge = this.v5PkFromLabel('book'); });
+      if (this.v5PkBookDoor()) order.forEach(r => { if (!r.badge && r.kind === 'book') r.badge = this.v5PkFromLabel('book'); });
       const match = String(q || '').trim()
         ? all.filter(r => r.kind !== 'none' && !mine(r))
         : [];
@@ -14022,7 +14066,7 @@ function checkoutApp() {
       this._v5PkHeadHold = true;
       change();
       live.classList.add('ck-level--nomo', dir === 'back' ? 'ck-level--from-left' : 'ck-level--from-right');
-      const ms = parseFloat(getComputedStyle(live).getPropertyValue('--mo-small')) || 280;
+      const ms = parseFloat(getComputedStyle(live).getPropertyValue('--mo-medium')) || 500;
       requestAnimationFrame(() => {
         live.classList.remove('ck-level--nomo');
         requestAnimationFrame(() => {
@@ -14392,6 +14436,10 @@ function checkoutApp() {
       if (this.uiVersion !== 'v5') return false;
       if (!this.drawer || !this.drawer.pk) return false;
       if (!this.v5PkChoosing()) return false;
+      /* gbppl-checkout-addrbook-1: a delete being asked stands in the foot,
+         so the foot stands too, in every door (the One address door has no
+         committing hand of its own). */
+      if (this.drawer.pk.del) return false;
       if (this.v5PkEmptyBook()) return true;
       return !(this.drawer.v5Group || this.v5PkTicks());
     },
