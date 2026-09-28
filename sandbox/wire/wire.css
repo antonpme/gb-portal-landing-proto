@@ -1,0 +1,96 @@
+/* ============================================================
+   wire.css (gbppl-wire-approvals-versions-1, 28.09.2026)
+   Shared furniture for WIREFRAMES in site/sandbox/wire (ORO-SKILL 7a2.3,
+   DESIGN-LAWS F.3): grey blocks on system steps, no brand colour, no
+   organisms, no images. Values come from system/assets/tokens.css:
+   Zinc 100/200 blocks, Zinc 700 text, --space-*, --radius.
+   Dashed outline = a DOOR (text or icon door, leads elsewhere).
+   NO TOKEN values: type sizes 11/14/16/20 (DS-1 steps written as
+   numbers, a wire does not wear the type roles), thumb 48/64
+   (brief), control height 40 (DESIGN-LAWS C6, Fitts).
+   ============================================================ */
+* { box-sizing: border-box; margin: 0; }
+body.wire {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--zinc-700);
+  background: #fff;
+  padding: var(--space-32) var(--space-16) var(--space-64);
+}
+@media (min-width: 1280px) { body.wire { padding: var(--space-48) var(--space-64) var(--space-64); } }
+
+.w-head { margin-bottom: var(--space-32); max-width: 72ch; }
+.w-head h1 { font-size: 20px; font-weight: 600; margin-bottom: var(--space-8); }
+.w-head p { font-size: 14px; }
+
+/* the row of states */
+.w-states { display: grid; grid-template-columns: 1fr; gap: var(--space-48); }
+@media (min-width: 1280px) { .w-states--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-24); } }
+.w-states + .w-states { margin-top: var(--space-48); }
+
+.w-state { min-width: 0; container-type: inline-size; }
+.w-cap { font-size: 14px; font-weight: 600; margin-bottom: var(--space-8); }
+
+/* one screen: panel stack + preview. Side by side only when the frame is wide */
+.w-screen {
+  border: 1px solid var(--zinc-200);
+  border-radius: var(--radius);
+  padding: var(--space-16);
+  display: grid;
+  gap: var(--space-24);
+  grid-template-areas: "preview" "panel";
+}
+@container (min-width: 720px) {
+  .w-screen { grid-template-columns: 400px 1fr; grid-template-areas: "panel preview"; align-items: start; }
+}
+.w-panel { grid-area: panel; display: grid; gap: var(--space-16); min-width: 0; }
+.w-preview { grid-area: preview; display: grid; gap: var(--space-8); min-width: 0; }
+
+.w-brow { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--zinc-500); }
+.w-status { display: grid; gap: 4px; } /* NO TOKEN 4: eyebrow to its line, half of --space-8 */
+.w-status p { font-size: 16px; font-weight: 600; }
+
+/* grey blocks */
+.w-card { container-type: inline-size; background: var(--zinc-100); border-radius: var(--radius); padding: var(--space-16); display: grid; gap: var(--space-16); }
+.w-vhead { display: flex; align-items: center; gap: var(--space-16); flex-wrap: wrap; }
+.w-thumb { flex: none; width: 64px; height: 64px; background: var(--zinc-200); border-radius: var(--radius); }
+.w-thumb--48 { width: 48px; height: 48px; }
+.w-vmeta { display: grid; justify-items: start; gap: 4px; min-width: 0; } /* NO TOKEN 4: title to its badge */
+.w-vtitle { font-size: 16px; font-weight: 600; }
+.w-badge { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; background: #fff; border: 1px solid var(--zinc-200); border-radius: var(--radius-pill); padding: 2px var(--space-8); white-space: nowrap; } /* NO TOKEN 2: pill inset */
+
+.w-block { display: grid; gap: var(--space-8); }
+.w-bubble { justify-self: end; max-width: 85%; background: var(--zinc-200); border-radius: var(--radius); padding: var(--space-8) var(--space-16); font-size: 14px; }
+.w-note { background: #fff; border: 1px solid var(--zinc-200); border-radius: var(--radius); padding: var(--space-8) var(--space-16); font-size: 14px; }
+.w-line { font-size: 14px; }
+
+.w-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+.w-btn { height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius); font-size: 14px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; border: 1px solid var(--zinc-700); white-space: nowrap; padding: 0 var(--space-8); }
+/* a pair cell under ~150: the label drops to the button label step (token 11), see report */
+@container (max-width: 300px) { .w-btn { font-size: var(--btn-label-font-size); } }
+.w-btn--fill { background: var(--zinc-700); color: #fff; }
+
+/* older versions as rows */
+.w-rows { display: grid; gap: var(--space-8); }
+.w-row { display: flex; align-items: center; gap: var(--space-8) var(--space-16); flex-wrap: wrap; padding: var(--space-8) 0; border-top: 1px solid var(--zinc-200); }
+.w-row .w-vtitle { font-size: 14px; }
+.w-row .w-door { margin-left: auto; }
+
+/* doors: dashed */
+.w-door { font-size: 14px; font-weight: 500; border-bottom: 1px dashed var(--zinc-500); white-space: nowrap; }
+.w-doorbox { border: 1px dashed var(--zinc-500); border-radius: var(--radius); padding: var(--space-8) var(--space-16); display: flex; align-items: center; gap: var(--space-8) var(--space-16); flex-wrap: wrap; font-size: 14px; }
+.w-doorbox b { font-weight: 600; margin-right: auto; }
+
+/* preview */
+.w-shot { aspect-ratio: 4 / 3; background: var(--zinc-200); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; text-align: center; padding: var(--space-16); font-size: 14px; }
+
+.w-laws { margin-top: var(--space-48); padding-top: var(--space-16); border-top: 1px solid var(--zinc-200); font-size: 14px; }
+.w-laws b { font-weight: 600; }
+
+/* selected version (the one selector is the panel): Zinc 700 frame */
+.w-card { border: 1px solid transparent; }
+.w-card.is-selected { border-color: var(--zinc-700); }
+.w-row.is-selected { border: 1px solid var(--zinc-700); border-radius: var(--radius); padding: var(--space-8); }
+.w-showing { font-size: 14px; font-weight: 600; }
+.w-capnote { font-weight: 400; }

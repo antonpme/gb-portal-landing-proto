@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Gift Campaigns · GildedBox Portal</title>
+<!-- ============================================================
+     gbppl-dd151-live-pages-2 (2026-09-28) · THE CAMPAIGN DETAILS PAGE,
+     VALUE FOR VALUE FROM THE LIVE ONE
+     ------------------------------------------------------------
+     Ton on the first wave: «Компании: там таблицы, кликаешь на компанию и
+     получаешь детали». On the second pass of this wave, dressed in the
+     house field: «криво, вообще не как на лайве». So this page is the live
+     /customer/campaigns/2319 MEASURED BY INSTRUMENT in Ton's Chrome, 2266,
+     28.09 19:20 (harvest/portal-live-2026-09-28/README.md, «Страница
+     деталей кампании... замер прибором»), carried value for value. Rule:
+     evolution of the live page, not the look of the system.
+
+       container    1824 centred at 2266 (live row 1848 with -mx-3): rail
+                    356 inside its px 12, content 1444; Zinc 100 ground;
+                    the rail hides under xl (1280), as live.
+       title card   white, 1px Zinc 200, radius 4, pad 24, mb 24; H1 Noto
+                    Serif 32/300 (18/26/32) + Draft; HOW IT WORKS / GET HELP
+                    outline 40h 14/400 caps ls -.35 pad 6/20 radius 5.
+       info strip   14/500 cyan 900 with the Upload door (gb-alert--info,
+                    which carries exactly those values).
+       content card white, 1px Zinc 200, radius 5, shadow-md, inset 24;
+                    tabs 48h 16/500 caps ls .2 pad 12/8, Blue 600 active
+                    (gb-tabs: the live /customer/orders tabs, same numbers).
+       section      Noto Serif 22/300/27.5 Zinc 900.
+       fields       two equal columns (685 at 2266), gap 24, row mb 32 (24
+                    under md); label 16/600/24 sentence case + required
+                    star + a tip glyph; input 56h Zinc 50, 1px Zinc 300,
+                    radius 4, px 16, 16/300 (13/14/16) Zinc 800; select the
+                    same box at radius 5 with a 14 chevron Zinc 500; dates
+                    the same box with a 16 calendar.
+       gift block   white, 1px (212,212,212), radius 5, pad 24/32, title
+                    16/500 (12/14/16), + ADD outline 40.
+       foot         Notes For Our Team 16/600 + the live textarea (Zinc 50,
+                    Zinc 300, radius 4, pad 12/16, 16/300, lh 160%); right
+                    half CAMPAIGN TOTAL + $0.00 24/400 Blue 600, the
+                    estimate line; buttons 48h 16/400 caps ls -.4 pad 8/20
+                    radius 5 (Zinc 800 twice, Blue 600 with #FAFAFA); ToS
+                    12/300/18 Zinc 600.
+
+     FIELDS IN A BOX = THE LIVE LOOK OF THE PORTAL, MEASURED 28.09. The
+     system has no such field (its field is the underline .gba-*); this is
+     a candidate for the system, and it is not dressed in .gba-* here.
+
+     THE CHROME (site bar, rail, footer) is live/portal.html's static
+     markup and its own CSS for .layout / .sidebar / .snav-* / .footer /
+     .crumbs / .title-card / .btn-gethelp, copied by the wave generator
+     without a value changed, then set to the campaign's measured
+     container below. Candidate: one portal chrome file.
+
+     WHAT IS OURS (DD-151, flow 3 of docs/DD-151-DEFAULT-CARD-MESSAGE-
+     CONCEPT.md): the gift already added (Coffee Lover Gift Set, render
+     110, name, $95.00) and under its block «Gift Personalization» (the
+     live name from the campaign drawer): Greeting Card Yes/No, the three
+     card lines in the SAME live field look (Card heading 50 / Card message
+     500 / Your signature 100, «N / M chars» 12 Zinc 500 under each), and
+     over them the one system element of the page, gb-alert--info, in the
+     campaign's words:
+       applied  «Default message applied. Update it for this campaign or
+                remove it.»                                 door Remove
+       edited   «Edited for this campaign.»                 door Restore default
+       removed  «Default message removed for this campaign.»
+                                                            door Restore default
+     plus «Change the default» to live/portal.html?card=default (hidden
+     at ?role=viewer). ?card=edited | removed lands in that state; ?step=
+     1..4 opens a step (history entries, so Back walks the steps).
+
+     HONEST NOTE: THE CAMPAIGN'S CARD FIELDS ARE BY ANALOGY WITH THE
+     CHECKOUT. On live they appear only after a gift is added; Submit of a
+     gift into draft 2319 on 28.09 16:41 coincided with the portal
+     hanging, so that state was NOT read. By the same analogy: the added
+     gift row and the Yes/No radios (the live drawer shows only values;
+     the radio is the system's, drawn from the portal's own Figma).
+     ============================================================ -->
+<script src="../../system/components/studio.js" data-home="../../index.html"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../system/assets/tokens.css">
+<link rel="stylesheet" href="../../system/components/shell.css">
+<link rel="stylesheet" href="../../system/components/header.css">
+<link rel="stylesheet" href="../../system/components/button.css">
+<link rel="stylesheet" href="../../system/components/badge.css">
+<link rel="stylesheet" href="../../system/components/alert.css">
+<link rel="stylesheet" href="../../system/components/tabs.css">
+<link rel="stylesheet" href="../../system/components/radio.css">
+<link rel="stylesheet" href="../../system/components/checkbox.css">
+<style>
+  /* ================= PORTAL CHROME =================
+     Copied from live/portal.html's <style> by the wave generator (28.09),
+     sections BASE (reset, html, body, a, button), LAYOUT, SIDEBAR, FOOTER,
+     CONTENT, PAGE META; values untouched, comments dropped. */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--live-body); }
+  body {
+    background: var(--zinc-100);
+    color: var(--zinc-900);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-root);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  .layout {
+    display: flex;
+    padding-top: 32px;
+    padding-bottom: 32px;
+    gap: 32px;
+    align-items: flex-start;
+  }
+  .sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .snav-block {
+    background: var(--white);
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .snav-header {
+    background: var(--zinc-50);
+    min-height: 64px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .snav-title {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.7;
+    letter-spacing: 2px;
+    color: var(--zinc-500);
+  }
+  .upload-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 31px;
+    padding: 0 10px;
+    background: var(--zinc-100);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    color: var(--zinc-600);
+  }
+  .upload-logo:hover { background: var(--zinc-200); color: var(--zinc-900); }
+  .upload-logo img { display: block; width: 15px; height: 15px; }
+  .snav-info {
+    border-top: 1px solid var(--zinc-200);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .snav-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 24px;
+  }
+  .snav-name {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+    color: var(--zinc-900);
+  }
+  .snav-key {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    color: var(--zinc-500);
+  }
+  .snav-val {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    color: var(--zinc-900);
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  a.snav-val:hover { text-decoration: underline; }
+  .snav-check { display: block; width: 12px; height: 12px; }
+  .snav-menu { display: flex; flex-direction: column; }
+  .snav-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 46px;
+    padding: 8px 16px;
+    border-top: 1px solid var(--zinc-200);
+    background: var(--white);
+  }
+  .snav-item:hover {
+    background: var(--zinc-100);
+    border-top-color: var(--zinc-300);
+  }
+  .snav-item.active {
+    background: var(--blue-50);
+    border-top-color: var(--blue-200);
+  }
+  .snav-item.active .snav-label { color: var(--blue-600); }
+  .snav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .snav-icon img { display: block; max-width: 24px; max-height: 24px; }
+  .snav-label {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: var(--zinc-900);
+    flex: 1;
+    min-width: 0;
+  }
+  .footer {
+    background: var(--black);
+    color: var(--white);
+  }
+  .footer__crumbs {
+    background: var(--crumb-strip-bg);
+    border-top: 1px solid var(--footer-hairline);
+    border-bottom: 1px solid var(--footer-hairline);
+  }
+  .footer__crumbs-inner {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--crumb-strip-ink);
+  }
+  .footer__crumbs-inner .crumb-sep { color: var(--crumb-strip-sep); }
+  .footer__crumbs-inner .crumb-current { color: var(--white); }
+  .footer__main {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.6fr) repeat(5, 1fr);
+    gap: 48px;
+    padding-block: 51px 40px;
+  }
+  .footer__main img { width: 160px; margin-bottom: 16px; filter: invert(1); }
+  .footer__main p {
+    display: block;
+    margin: 0 0 8px;
+    color: var(--white);
+    font-size: 11px;
+    line-height: 24px;
+    letter-spacing: 0.2px;
+  }
+  .footer__main a {
+    display: block;
+    margin: 0;
+    padding: 5px 0;
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.42;
+    letter-spacing: 0.2px;
+  }
+  .footer__address { font-style: italic; }
+  .footer__main h3 {
+    margin: 0;
+    padding: 16px 32px 16px 0;
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: 0.2px;
+    color: var(--white);
+  }
+  .footer__main a:hover { color: var(--footer-link-hover); }
+  .footer__legal {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-block: 10px;
+    border-top: 1px solid var(--footer-hairline);
+    color: var(--white);
+    font-size: 11px;
+    line-height: 24px;
+  }
+  .footer__legal a {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 300;
+    text-decoration: none;
+    border-bottom: 1.3px solid var(--white);
+  }
+  .content {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+  .page-meta { display: none; margin-bottom: 24px; }
+  .page-meta.shown { display: block; animation: cardIn 300ms ease both; }
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    color: var(--zinc-400);
+    margin-bottom: 24px;
+  }
+  .crumbs .crumb-sep { display: block; color: var(--zinc-400); }
+  .crumbs .crumb-last { color: var(--zinc-900); }
+  .title-card {
+    background: var(--white);
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px; 
+  }
+  .title-icon { width: 40px; height: 40px; color: var(--zinc-900); flex-shrink: 0; }
+  .title-icon svg { display: block; width: 100%; height: 100%; }
+  .page-title {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 300;
+    color: var(--zinc-600);
+    letter-spacing: -0.4px;
+  }
+  .btn-gethelp {
+    margin-left: auto;
+    height: 40px;
+    padding: 6px 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--zinc-900);
+    border: 1px solid var(--zinc-900);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: -0.35px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: background 150ms ease;
+  }
+  .btn-gethelp:hover { background: var(--zinc-100); }
+  .btn-gethelp svg { display: block; width: 20px; height: 20px; }
+  /* ================= END PORTAL CHROME ================= */
+
+  [hidden] { display: none !important; }   /* trap 29 */
+
+  /* ---- the measured container (live flex -mx-3, lg:w-[380px] px-3 hidden
+     xl:block): 1824 at 2266, rail 356 + 24 + content 1444 ---- */
+  .layout.cp-layout { box-sizing: content-box; width: auto; max-width: 1824px; gap: 24px; }   /* NO TOKEN 1824: live, INSIDE the gutters (content-box) */
+  .cp-layout .sidebar { width: 356px; }                 /* NO TOKEN 356: live 380 - px 12 x 2 */
+  @media (max-width: 1279px) { .cp-layout .sidebar { display: none; } }
+  .content { display: flex; flex-direction: column; }
+  .page-meta { display: block; margin-bottom: 0; }
+
+  /* ---- title card (live: radius 4, pad 24, mb 24; H1 18/26/32) ---- */
+  .page-meta .title-card { border-radius: 4px; margin-bottom: 24px; min-height: 98px; }   /* NO TOKEN 4: live rounded; 98: the live card height at 2266 */
+  .title-card .gb-badge { align-self: center; }
+  .page-title { font-size: 18px; line-height: 1.25; }
+  @media (min-width: 768px)  { .page-title { font-size: 26px; } }
+  @media (min-width: 1280px) { .page-title { font-size: 32px; line-height: 40px; } }
+  .cp-head-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }   /* live mx 4 each side */
+  .cp-head-actions .btn-gethelp { margin-left: 0; }
+  .title-icon img { display: block; width: 100%; height: 100%; }
+
+  .cp-link { color: inherit; font: inherit; text-decoration: underline; background: none; border: 0; padding: 0; cursor: pointer; }
+  .gb-alert { margin-bottom: 24px; }
+
+  /* ---- content card ---- */
+  .cp-panel {
+    background: var(--white);
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);        /* live shadow-md */
+    padding: 24px;
+  }
+  .cp-pane { margin-top: 24px; }
+  .cp-pane__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .cp-title { margin: 0; font-family: var(--font-serif); font-size: 22px; font-weight: 300; line-height: 27.5px; color: var(--zinc-900); }
+  .cp-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; align-items: start; }
+  @media (max-width: 1023px) { .cp-cols { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ---- THE LIVE FIELD (PrimeVue on the live portal, measured) ---- */
+  .lv-row { margin-bottom: 24px; }
+  @media (min-width: 768px) { .lv-row { margin-bottom: 32px; } }
+  .lv-label { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 16px; font-weight: 600; line-height: 24px; color: var(--zinc-950); }   /* live (19,19,19) ~ Zinc 950; gap and mb NO TOKEN, read off the frame */
+  .lv-star { color: var(--red-500, #ef4444); font-weight: 400; }
+  .lv-tip { display: inline-flex; width: 16px; height: 16px; color: var(--zinc-500); }
+  .lv-tip svg { width: 16px; height: 16px; display: block; }
+  .lv-box { position: relative; }
+  .lv-input, .lv-select, .lv-area {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--zinc-50);
+    border: 1px solid var(--zinc-300);
+    border-radius: 4px;                    /* NO TOKEN 4: live rounded */
+    font: inherit;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--zinc-800);
+    outline: none;
+  }
+  .lv-input, .lv-select { height: 56px; padding: 0 16px; }
+  .lv-select { border-radius: var(--radius); padding-right: 44px; -webkit-appearance: none; appearance: none; }
+  .lv-input--icon { padding-right: 44px; }
+  .lv-area { padding: 12px 16px; line-height: 1.6; min-height: 120px; resize: vertical; }
+  .lv-input::placeholder, .lv-area::placeholder { color: var(--zinc-400); }
+  .lv-input:focus, .lv-select:focus, .lv-area:focus { border-color: var(--blue-600); }
+  @media (min-width: 1280px) { .lv-input, .lv-select, .lv-area { font-size: 14px; } }
+  @media (min-width: 2000px) { .lv-input, .lv-select, .lv-area { font-size: 16px; } }
+  .lv-glyph { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; color: var(--zinc-500); pointer-events: none; }
+  .lv-glyph svg { display: block; }
+  .lv-glyph--chev svg { width: 14px; height: 14px; }
+  .lv-glyph--cal svg { width: 16px; height: 16px; }
+  .lv-hint { margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: var(--zinc-500); }
+  .lv-hint a { text-decoration: underline; }
+  .lv-count { display: block; margin-top: 8px; font-size: 12px; line-height: 1.5; color: var(--zinc-500); font-variant-numeric: tabular-nums; }
+
+  /* ---- the gift block ---- */
+  .cp-box { background: var(--white); border: 1px solid #d4d4d4; border-radius: var(--radius); padding: 16px; }   /* NO TOKEN #d4d4d4: live (212,212,212) */
+  @media (min-width: 768px)  { .cp-box { padding: 24px; } }
+  @media (min-width: 2000px) { .cp-box { padding: 24px 32px; } }
+  .cp-box__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .cp-box__title { margin: 0; font-size: 12px; font-weight: 500; line-height: 1.5; color: var(--zinc-900); display: flex; align-items: center; gap: 6px; }
+  @media (min-width: 1280px) { .cp-box__title { font-size: 14px; } }
+  @media (min-width: 2000px) { .cp-box__title { font-size: 16px; } }
+  .cp-gift { display: flex; gap: 16px; align-items: center; margin-top: 24px; }
+  .cp-gift__photo { flex: none; width: 110px; aspect-ratio: 4 / 3; background: var(--zinc-50); border-radius: var(--radius); overflow: hidden; }   /* NO TOKEN 110: the brief's render width */
+  .cp-gift__photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .cp-gift__name { margin: 0; font-size: 16px; font-weight: 500; line-height: 1.5; color: var(--zinc-700); }
+  .cp-gift__price { margin: 4px 0 0; font-size: 14px; line-height: 1.5; color: var(--zinc-900); }
+
+  /* ---- Gift Personalization, under the gift it personalizes (A5) ---- */
+  .cp-section { margin-top: 32px; }
+  .cp-section > .cp-title { margin-bottom: 24px; }
+  .gb-radio-group.cp-yesno { flex-direction: row; gap: 24px; }   /* layout only */
+  .cp-card { margin-top: 24px; }
+  .cp-card > .gb-alert { margin-bottom: 24px; }
+
+  /* the strip: the checkout's .ck-card-default, rule for rule */
+  .cp-say, .cp-door { display: inline-grid; text-align: left; }
+  .cp-say > *, .cp-door > * { grid-area: 1 / 1; }
+  .cp-say > * { align-self: center; }
+  .cp-door { justify-items: end; }
+  .cp-say > [aria-hidden="true"], .cp-door > [aria-hidden="true"] { visibility: hidden; }
+  .cp-strip .gb-alert__actions { gap: 16px; flex-wrap: wrap; justify-content: flex-end; }
+  .cp-door-link { color: var(--blue-600); text-decoration: none; font: inherit; font-size: 14px; font-weight: 500; line-height: 1.4; background: none; border: 0; padding: 0; cursor: pointer; white-space: nowrap; }
+  .cp-door-link:hover { text-decoration: underline; text-underline-offset: 2px; }   /* NO TOKEN 2: Ton-22 offset */
+  .cp-door-link:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; border-radius: 2px; }
+  a.cp-door-link { color: var(--blue-600); }
+  [data-role="viewer"] [data-cp-change] { display: none; }
+
+  /* ---- the foot (live: two halves, the right one text-right) ---- */
+  .cp-foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; margin-top: 24px; }
+  .cp-total { text-align: right; }
+  .cp-total__line { margin: 0; font-size: 16px; font-weight: 400; text-transform: uppercase; color: var(--zinc-700); }
+  .cp-total__sum { font-size: 24px; font-weight: 400; color: var(--blue-600); text-transform: none; }
+  .cp-total__note { margin: 4px 0 0; font-size: 12px; font-weight: 300; line-height: 18px; color: var(--zinc-600); }
+  .cp-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+  .lv-btn {
+    height: 48px;
+    padding: 8px 20px;
+    border: 0;
+    border-radius: var(--radius);
+    font: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .lv-btn--dark { background: var(--zinc-800); color: var(--white); }
+  .lv-btn--dark:hover { background: var(--zinc-900); }
+  .lv-btn--blue { background: var(--blue-600); color: var(--zinc-50); }
+  .lv-btn--blue:hover { background: var(--blue-700); }
+  .cp-terms { margin: 16px 0 0; font-size: 12px; font-weight: 300; line-height: 18px; color: var(--zinc-600); }
+  .cp-terms a { text-decoration: underline; }
+  .cp-empty { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .cp-empty .gb-alert { width: 100%; margin: 0; }
+
+  @media (max-width: 1023px) {
+    .cp-foot { grid-template-columns: minmax(0, 1fr); }
+    .cp-total { text-align: left; }
+    .cp-actions { justify-content: flex-start; }
+  }
+  @media (max-width: 900px) {
+    .footer__main { grid-template-columns: 1fr 1fr; padding-block: 40px; }
+    .footer__legal { flex-wrap: wrap; gap: 12px; padding-block: 16px; }
+  }
+  @media (max-width: 767px) {
+    .title-card { flex-wrap: wrap; row-gap: 16px; }
+    .page-title { min-width: 0; flex: 1 1 0; }
+    .cp-head-actions { margin-left: 0; width: 100%; }
+    .cp-panel { padding: 16px; }
+    .cp-actions .lv-btn { flex: 1 1 100%; }
+  }
+</style>
+</head>
+<body data-nav="live">
+
+  <header class="gb-header gb-header--sticky">
+  <div class="gb-container gbh-bar">
+  <a aria-label="GildedBox home" class="gbh-brand" href="../../live/index.html"><img alt="GildedBox" src="../../system/icons/gildedbox-logo.svg"/></a>
+  <nav aria-label="Primary navigation" class="gbh-nav">
+  <button class="gbh-link" type="button">Gifts</button>
+  <button class="gbh-link" type="button">Customize <span class="gbh-beta">Beta</span></button>
+  <button class="gbh-link" type="button">Portal</button>
+  <button class="gbh-link" type="button">Explore</button>
+  </nav>
+  <div class="gbh-actions">
+
+  <a class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" href="#"><span class="gb-btn__label" data-pc-section="label">Book a Meeting</span></a>
+  <a class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" href="#"><span class="gb-btn__label" data-pc-section="label">My Portal</span></a>
+
+  <button aria-label="Cart, 3 items" class="gbh-icon-button" data-gbppl-cart="" title="Your cart" type="button">
+  <svg aria-hidden="true" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="22"><circle cx="9" cy="20" r="1.4"></circle><circle cx="17.5" cy="20" r="1.4"></circle><path d="M3 4h2.4l2.2 11.5a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.3L21 8H6.2"></path></svg>
+  <span aria-hidden="true" class="gbh-count">3</span>
+  </button>
+  <button aria-label="Search gifts" class="gbh-icon-button" type="button">
+  <svg aria-hidden="true" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="22"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+  </button>
+  </div>
+  </div>
+  </header>
+
+  <div class="layout gb-container cp-layout">
+    <aside class="sidebar">
+
+    <section class="snav-block">
+    <header class="snav-header">
+
+    <span class="snav-title">Account</span>
+
+    <button class="upload-logo nav-live-only" type="button"><img alt="" src="../../system/icons/upload.svg"/>Upload logo</button>
+    </header>
+
+    <div class="snav-info" id="accountUserInfo">
+
+    <div class="snav-row"><span class="snav-name">Anton</span></div>
+
+    <div class="snav-row nav-live-only"><span class="snav-key">Company:</span><span class="snav-val">GildedBox</span></div>
+    <div class="snav-row"><span class="snav-key">Email:</span><span class="snav-val">anton@gildedbox-demo.com<img alt="" class="snav-check" src="../../system/icons/c-check.svg"/></span></div>
+    </div>
+
+    <nav class="snav-menu" id="accountMenu">
+
+    <a class="snav-item" href="../../live/portal-dashboard.html"><span class="snav-icon"><img alt="" src="../../system/icons/metrics.svg"/></span><span class="snav-label">Dashboard</span></a>
+    <a class="snav-item" href="../../live/portal.html?gifts=3"><span class="snav-icon"><img alt="" src="../../system/icons/gift.svg"/></span><span class="snav-label">My Gifts</span></a>
+    <a aria-current="page" class="snav-item active" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/archery-target.svg"/></span><span class="snav-label">Gift Campaigns</span></a>
+
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/gift-exchange.svg"/></span><span class="snav-label">Gift Redeem Pages</span></a>
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/laptop-check.svg"/></span><span class="snav-label">Gift Design Approvals</span></a>
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/time-machine.svg"/></span><span class="snav-label">Orders</span></a>
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/love-card.svg"/></span><span class="snav-label">Thank You Notes</span></a>
+
+    <a class="snav-item nav-live-only" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/brand-assets.svg"/></span><span class="snav-label">Brand Assets</span></a>
+
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/crowd-2.svg"/></span><span class="snav-label">My Teams</span></a>
+    </nav>
+    </section>
+
+    <section class="snav-block">
+    <header class="snav-header">
+
+    <span class="snav-title">Admin</span>
+    </header>
+
+    <nav class="snav-menu" id="adminMenu">
+    <a class="snav-item" href="#" id="navMyCompany"><span class="snav-icon"><img alt="" src="../../system/icons/office.svg"/></span><span class="snav-label">My Company</span></a>
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/money-13.svg"/></span><span class="snav-label">Payments</span></a>
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/address-book.svg"/></span><span class="snav-label">Address Book</span></a>
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/alarm.svg"/></span><span class="snav-label">Notifications</span></a>
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/cogwheel.svg"/></span><span class="snav-label">Account Information</span></a>
+    <a class="snav-item" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/lock.svg"/></span><span class="snav-label">Password</span></a>
+
+    <a class="snav-item" data-gbppl-signout="" href="#"><span class="snav-icon"><img alt="" src="../../system/icons/leave.svg"/></span><span class="snav-label">Log out</span></a>
+    </nav>
+    </section>
+    <section class="snav-block">
+    <header class="snav-header">
+    <span class="snav-title">Support</span>
+    </header>
+    <div class="snav-info">
+    <div class="snav-row"><span class="snav-key">Email:</span><a class="snav-val" href="mailto:connect@gildedbox.com">connect@gildedbox.com</a></div>
+    <div class="snav-row"><span class="snav-key">Telephone:</span><a class="snav-val" href="tel:+18478010345,8118">(847) 801-0345 ext. 8118</a></div>
+    </div>
+    </section>
+    </aside>
+
+    <main class="content" id="content">
+
+      <div class="page-meta">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <span>Home</span><svg class="crumb-sep" width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3.5 4 3.5-4 3.5"/></svg><span>Customer</span><svg class="crumb-sep" width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3.5 4 3.5-4 3.5"/></svg><a href="#" class="crumb-mid">Gift Campaigns</a><svg class="crumb-sep" width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3.5 4 3.5-4 3.5"/></svg><span class="crumb-last">Details</span>
+        </nav>
+        <div class="title-card">
+          <span class="title-icon" aria-hidden="true"><img src="../../system/icons/archery-target.svg" alt=""></span>
+          <h1 class="page-title">Holiday thank-you 2026</h1>
+          <span class="gb-badge gb-badge--neutral">Draft</span>
+          <div class="cp-head-actions">
+            <button class="btn-gethelp" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M8 9h8M8 12h8M8 15h5"/></svg>
+              How it works
+            </button>
+            <button class="btn-gethelp" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><line x1="12" y1="7.5" x2="12" y2="7.51"/></svg>
+              Get help
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="gb-alert gb-alert--info" role="note">
+        <span class="gb-alert__body">
+          <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>
+          <span class="gb-alert__text"><a class="cp-link" href="#">Upload</a> your company logo to make your campaign stand out</span>
+        </span>
+      </div>
+
+      <section class="cp-panel" aria-label="Campaign">
+        <div class="gb-tabs" role="tablist" aria-label="Campaign steps">
+          <button type="button" class="gb-tab" role="tab" id="cpTab1" aria-controls="cpStep1" data-cp-step="1" aria-selected="true" tabindex="0"><span class="gb-tab__label">1. Campaign info</span></button>
+          <button type="button" class="gb-tab" role="tab" id="cpTab2" aria-controls="cpStep2" data-cp-step="2" aria-selected="false" tabindex="-1"><span class="gb-tab__label">2. Billing &amp; shipping</span></button>
+          <button type="button" class="gb-tab" role="tab" id="cpTab3" aria-controls="cpStep3" data-cp-step="3" aria-selected="false" tabindex="-1"><span class="gb-tab__label">3. Recipients</span></button>
+          <button type="button" class="gb-tab" role="tab" id="cpTab4" aria-controls="cpStep4" data-cp-step="4" aria-selected="false" tabindex="-1"><span class="gb-tab__label">4. Gift claim page</span></button>
+        </div>
+
+        <!-- STEP 1 · CAMPAIGN INFO -->
+        <div class="cp-pane" id="cpStep1" role="tabpanel" aria-labelledby="cpTab1">
+          <div class="cp-pane__head"><h2 class="cp-title">Email/SMS Campaign</h2></div>
+          <div class="cp-cols">
+            <div>
+              <div class="lv-row">
+                <label class="lv-label" for="cpName">Campaign Name <span class="lv-star" aria-hidden="true">*</span></label>
+                <input class="lv-input" id="cpName" type="text" value="Holiday thank-you 2026" required>
+              </div>
+              <div class="lv-row">
+                <label class="lv-label" for="cpLink">Link Type <span class="lv-tip" title="How the recipients get their links"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M24 45C35.598 45 45 35.598 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 35.598 12.402 45 24 45Z"/><path d="M24 35V22.5C24 21.1193 22.8807 20 21.5 20H19"/><circle cx="24" cy="14" r="1.5" fill="currentColor"/></svg></span> <span class="lv-star" aria-hidden="true">*</span></label>
+                <div class="lv-box">
+                  <select class="lv-select" id="cpLink"><option selected>Gildedbox Sends Email/SMS</option><option>I Will Send the Links Myself</option></select>
+                  <span class="lv-glyph lv-glyph--chev" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="square" aria-hidden="true"><path d="M6 17L24 35L42 17"/></svg></span>
+                </div>
+              </div>
+              <div class="lv-row">
+                <label class="lv-label" for="cpStart">Campaign Start Date <span class="lv-tip" title="When the campaign starts"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M24 45C35.598 45 45 35.598 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 35.598 12.402 45 24 45Z"/><path d="M24 35V22.5C24 21.1193 22.8807 20 21.5 20H19"/><circle cx="24" cy="14" r="1.5" fill="currentColor"/></svg></span></label>
+                <div class="lv-box">
+                  <input class="lv-input lv-input--icon" id="cpStart" type="text" placeholder="Choose date">
+                  <span class="lv-glyph lv-glyph--cal" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M45 18H3" stroke-linecap="butt"/><path d="M40 7H8C5.23858 7 3 9.23858 3 12V36C3 38.7614 5.23858 41 8 41H40C42.7614 41 45 38.7614 45 36V12C45 9.23858 42.7614 7 40 7Z"/><path d="M13 2V12"/><path d="M35 2V12"/></svg></span>
+                </div>
+                <p class="lv-hint">By using this field, you automatically agree to the <a href="#">terms and conditions</a> of this campaign</p>
+              </div>
+              <div class="lv-row">
+                <label class="lv-label" for="cpEnd">Campaign End Date <span class="lv-tip" title="When the campaign ends"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M24 45C35.598 45 45 35.598 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 35.598 12.402 45 24 45Z"/><path d="M24 35V22.5C24 21.1193 22.8807 20 21.5 20H19"/><circle cx="24" cy="14" r="1.5" fill="currentColor"/></svg></span> <span class="lv-star" aria-hidden="true">*</span></label>
+                <div class="lv-box">
+                  <input class="lv-input lv-input--icon" id="cpEnd" type="text" value="Jan 15, 2027" required>
+                  <span class="lv-glyph lv-glyph--cal" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M45 18H3" stroke-linecap="butt"/><path d="M40 7H8C5.23858 7 3 9.23858 3 12V36C3 38.7614 5.23858 41 8 41H40C42.7614 41 45 38.7614 45 36V12C45 9.23858 42.7614 7 40 7Z"/><path d="M13 2V12"/><path d="M35 2V12"/></svg></span>
+                </div>
+                <p class="lv-hint">Campaign will automatically end early if all gifts are claimed before this date</p>
+              </div>
+            </div>
+
+            <div>
+              <div class="cp-box">
+                <div class="cp-box__head">
+                  <h3 class="cp-box__title">Select Gifts For This Campaign <span class="lv-tip" title="The gifts your recipients choose from"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M24 45C35.598 45 45 35.598 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 35.598 12.402 45 24 45Z"/><path d="M24 35V22.5C24 21.1193 22.8807 20 21.5 20H19"/><circle cx="24" cy="14" r="1.5" fill="currentColor"/></svg></span></h3>
+                  <button type="button" class="btn-gethelp">+ Add</button>
+                </div>
+                <div class="cp-gift">
+                  <div class="cp-gift__photo"><img src="../../live/portal-assets/gift-coffee-lover.png" alt="Coffee Lover Gift Set"></div>
+                  <div>
+                    <p class="cp-gift__name">Coffee Lover Gift Set</p>
+                    <p class="cp-gift__price">$95.00</p>
+                  </div>
+                </div>
+              </div>
+
+              <section class="cp-section" aria-labelledby="cpPzTitle">
+                <h2 class="cp-title" id="cpPzTitle">Gift Personalization</h2>
+                <div class="lv-row">
+                  <span class="lv-label" id="cpCardQ">Greeting Card</span>
+                  <div class="gb-radio-group cp-yesno" role="radiogroup" aria-labelledby="cpCardQ">
+                    <label class="gb-radio"><input class="gb-radio__input" type="radio" name="cpCardOn" value="yes" checked><span class="gb-radio__label">Yes</span></label>
+                    <label class="gb-radio"><input class="gb-radio__input" type="radio" name="cpCardOn" value="no"><span class="gb-radio__label">No</span></label>
+                  </div>
+                  <div class="cp-card" id="cpCard">
+                    <div class="gb-alert gb-alert--info cp-strip" role="status">
+                      <span class="gb-alert__body">
+                        <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>
+                        <span class="gb-alert__text cp-say">
+                          <span data-cp-say="applied" aria-hidden="false">Default message applied. Update it for this campaign or remove it.</span>
+                          <span data-cp-say="edited" aria-hidden="true">Edited for this campaign.</span>
+                          <span data-cp-say="removed" aria-hidden="true">Default message removed for this campaign.</span>
+                        </span>
+                      </span>
+                      <span class="gb-alert__actions">
+                        <button type="button" class="cp-door-link cp-door" data-cp-door><span data-cp-doorword="Remove" aria-hidden="false">Remove</span><span data-cp-doorword="Restore default" aria-hidden="true">Restore default</span></button>
+                        <a class="cp-door-link" data-cp-change href="../../live/portal.html?card=default">Change the default</a>
+                      </span>
+                    </div>
+                    <div class="lv-row">
+                      <label class="lv-label" for="cpIntro">Card heading</label>
+                      <input class="lv-input" id="cpIntro" type="text" maxlength="50" placeholder="Hello, or Dear team,">
+                      <span class="lv-count"><span data-cp-count="cpIntro">0</span> / 50 chars</span>
+                    </div>
+                    <div class="lv-row">
+                      <label class="lv-label" for="cpMessage">Card message</label>
+                      <textarea class="lv-area" id="cpMessage" maxlength="500" rows="4" placeholder="Write your message..."></textarea>
+                      <span class="lv-count"><span data-cp-count="cpMessage">0</span> / 500 chars</span>
+                    </div>
+                    <div class="lv-row">
+                      <label class="lv-label" for="cpSign">Your signature</label>
+                      <input class="lv-input" id="cpSign" type="text" maxlength="100" placeholder="Your name or company">
+                      <span class="lv-count"><span data-cp-count="cpSign">0</span> / 100 chars</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="lv-row">
+                  <span class="lv-label" id="cpVideoQ">Greeting Video</span>
+                  <div class="gb-radio-group cp-yesno" role="radiogroup" aria-labelledby="cpVideoQ">
+                    <label class="gb-radio"><input class="gb-radio__input" type="radio" name="cpVideoOn" value="yes"><span class="gb-radio__label">Yes</span></label>
+                    <label class="gb-radio"><input class="gb-radio__input" type="radio" name="cpVideoOn" value="no" checked><span class="gb-radio__label">No</span></label>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 · BILLING & SHIPPING (live field names, nothing behind them) -->
+        <div class="cp-pane" id="cpStep2" role="tabpanel" aria-labelledby="cpTab2" hidden>
+          <div class="cp-pane__head"><h2 class="cp-title">Billing &amp; Shipping</h2></div>
+          <div class="cp-cols">
+            <div>
+              <div class="lv-row"><label class="lv-label" for="cpBill">Billing Address <span class="lv-star" aria-hidden="true">*</span></label><div class="lv-box"><select class="lv-select" id="cpBill"><option>---- Please Select ----</option></select><span class="lv-glyph lv-glyph--chev" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="square" aria-hidden="true"><path d="M6 17L24 35L42 17"/></svg></span></div></div>
+              <div class="lv-row"><label class="lv-label" for="cpReturn">Return Address <span class="lv-star" aria-hidden="true">*</span></label><div class="lv-box"><select class="lv-select" id="cpReturn"><option>---- Please Select ----</option></select><span class="lv-glyph lv-glyph--chev" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="square" aria-hidden="true"><path d="M6 17L24 35L42 17"/></svg></span></div></div>
+              <div class="gb-alert gb-alert--info" role="note">
+                <span class="gb-alert__body">
+                  <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>
+                  <span class="gb-alert__text">A $40 fee will apply for any returned packages within the US and will be sent to the return address provided above. International returns may incur additional fees, duties, or VAT.</span>
+                </span>
+              </div>
+              <div class="lv-row"><label class="gb-checkbox"><input class="gb-checkbox__input" type="checkbox" checked><span class="gb-checkbox__label">Allow International</span></label></div>
+              <div class="lv-row"><label class="lv-label" for="cpShip">Preferred Shipping for US</label><div class="lv-box"><select class="lv-select" id="cpShip"><option>&lt;Not Assigned&gt;</option></select><span class="lv-glyph lv-glyph--chev" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="square" aria-hidden="true"><path d="M6 17L24 35L42 17"/></svg></span></div></div>
+            </div>
+            <div>
+              <div class="lv-row"><label class="lv-label" for="cpPayType">Payment Type <span class="lv-star" aria-hidden="true">*</span></label><div class="lv-box"><select class="lv-select" id="cpPayType"><option>---- Please Select ----</option></select><span class="lv-glyph lv-glyph--chev" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="square" aria-hidden="true"><path d="M6 17L24 35L42 17"/></svg></span></div></div>
+              <div class="lv-row"><label class="lv-label" for="cpPay">Payment</label><div class="lv-box"><select class="lv-select" id="cpPay"><option>---- Please Select ----</option></select><span class="lv-glyph lv-glyph--chev" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="square" aria-hidden="true"><path d="M6 17L24 35L42 17"/></svg></span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 · RECIPIENTS -->
+        <div class="cp-pane" id="cpStep3" role="tabpanel" aria-labelledby="cpTab3" hidden>
+          <div class="cp-pane__head">
+            <h2 class="cp-title">Recipients</h2>
+            <div class="cp-head-actions">
+              <button type="button" class="btn-gethelp">Add recipient</button>
+              <button type="button" class="btn-gethelp">Add multiple recipients</button>
+            </div>
+          </div>
+          <div class="cp-empty">
+            <div class="gb-alert gb-alert--info" role="note">
+              <span class="gb-alert__body">
+                <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>
+                <span class="gb-alert__text">You don't have any recipients yet.</span>
+              </span>
+            </div>
+            <button type="button" class="btn-gethelp">How it works</button>
+          </div>
+        </div>
+
+        <!-- STEP 4 · GIFT CLAIM PAGE -->
+        <div class="cp-pane" id="cpStep4" role="tabpanel" aria-labelledby="cpTab4" hidden>
+          <div class="cp-pane__head">
+            <h2 class="cp-title">Gift Claim Page Process</h2>
+            <button type="button" class="btn-gethelp">Gift claim page content</button>
+          </div>
+          <div class="cp-cols">
+            <div>
+              <div class="lv-row"><label class="lv-label" for="cpClaimMsg">Gift Claim Message <span class="lv-tip"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M24 45C35.598 45 45 35.598 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 35.598 12.402 45 24 45Z"/><path d="M24 35V22.5C24 21.1193 22.8807 20 21.5 20H19"/><circle cx="24" cy="14" r="1.5" fill="currentColor"/></svg></span> <span class="lv-star" aria-hidden="true">*</span></label><textarea class="lv-area" id="cpClaimMsg" rows="4" placeholder="The message your recipient will see while claiming their gift."></textarea></div>
+              <div class="lv-row"><label class="lv-label" for="cpClaimSubj">Claim Gift Email Subject <span class="lv-tip"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M24 45C35.598 45 45 35.598 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 35.598 12.402 45 24 45Z"/><path d="M24 35V22.5C24 21.1193 22.8807 20 21.5 20H19"/><circle cx="24" cy="14" r="1.5" fill="currentColor"/></svg></span></label><input class="lv-input" id="cpClaimSubj" type="text" placeholder="GB sent you a Gift!"></div>
+            </div>
+            <div>
+              <div class="cp-box"><div class="cp-box__head"><h3 class="cp-box__title">Claim Gift Email Banner Image (Optional) <span class="lv-tip"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M24 45C35.598 45 45 35.598 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 35.598 12.402 45 24 45Z"/><path d="M24 35V22.5C24 21.1193 22.8807 20 21.5 20H19"/><circle cx="24" cy="14" r="1.5" fill="currentColor"/></svg></span></h3><button type="button" class="btn-gethelp">+ Add</button></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="cp-foot">
+        <div>
+          <label class="lv-label" for="cpNotes">Notes For Our Team</label>
+          <textarea class="lv-area" id="cpNotes" rows="4" placeholder="Additional notes, comments, or instructions (visible only to you and our team)"></textarea>
+        </div>
+        <div class="cp-total">
+          <p class="cp-total__line">Campaign total: <span class="cp-total__sum">$0.00</span></p>
+          <p class="cp-total__note">This is an estimate, the actual total will be calculated on checkout.</p>
+          <div class="cp-actions">
+            <button type="button" class="lv-btn lv-btn--dark" data-cp-save>Save changes</button>
+            <button type="button" class="lv-btn lv-btn--dark">Save and preview</button>
+            <button type="button" class="lv-btn lv-btn--blue">Start campaign</button>
+          </div>
+          <p class="cp-terms">By clicking "Start Campaign" you are accepting our <a href="#">Terms of Service</a></p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+  <div class="footer__crumbs">
+  <div class="gb-container footer__crumbs-inner"><span>Home</span><span aria-hidden="true" class="crumb-sep">›</span><span>Customer</span><span aria-hidden="true" class="crumb-sep">›</span><span>Gift Campaigns</span><span aria-hidden="true" class="crumb-sep">›</span><span class="crumb-current">Details</span></div>
+  </div>
+  <div class="gb-container footer__main">
+  <div>
+  <img alt="GildedBox" src="../../system/icons/gildedbox-logo.svg"/>
+  <p class="footer__address">1360 Abbott Ct. Buffalo Grove, IL 60089</p>
+  <p>847.801.0345</p>
+  <p>connect@gildedbox.com</p>
+  </div>
+  <div><h3>Gifts</h3><a href="#">Explore All Gifts</a></div>
+  <div><h3>Curations</h3><a href="#">Gourmet</a><a href="#">Home</a><a href="#">Office</a><a href="#">Technology</a><a href="#">Travel &amp; Leisure</a><a href="#">Wine &amp; Spirits</a></div>
+  <div><h3>Services</h3><a href="#">Our Work</a><a href="#">Platform</a><a href="#">Design</a><a href="#">Integrations</a><a href="#">Our Story</a></div>
+  <div><h3>Support</h3><a href="#">Client Advisor</a><a href="#">Client Service</a><a href="#">Shipping Information</a><a href="#">Terms and Conditions</a><a href="#">Warranty</a><a href="#">FAQ</a></div>
+  <div><h3>Follow</h3><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">Linkedin</a><a href="#">Youtube</a></div>
+  </div>
+  <div class="gb-container footer__legal">
+  <span>© 2026 The GildedBox Company.</span>
+  <span>IPMedia Holdings, Inc.</span>
+  <span>Privacy Policy</span>
+  <span>All rights reserved</span>
+  <span>Sitemap</span>
+  <a href="#">Back to Top ↑</a>
+  </div>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+  var params = new URLSearchParams(location.search);
+  var role = params.get('role') === 'viewer' ? 'viewer' : 'admin';
+  document.body.setAttribute('data-role', role);
+
+  /* ---- the four steps: tabs with honest addresses (?step=N, Back works) ---- */
+  function showStep(n, push) {
+    n = String(n);
+    if (!/^[1-4]$/.test(n)) n = '1';
+    document.querySelectorAll('[data-cp-step]').forEach(function (b) {
+      var on = b.getAttribute('data-cp-step') === n;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.setAttribute('tabindex', on ? '0' : '-1');
+      document.getElementById('cpStep' + b.getAttribute('data-cp-step')).hidden = !on;
+    });
+    if (push) {
+      var u = new URL(location.href);
+      if (n === '1') u.searchParams.delete('step'); else u.searchParams.set('step', n);
+      history.pushState({ step: n }, '', u.pathname + u.search + u.hash);
+    }
+  }
+  window.addEventListener('popstate', function () { showStep(new URLSearchParams(location.search).get('step') || '1', false); });
+  showStep(params.get('step') || '1', false);
+
+  /* ---- the default card of the gift, applied to this campaign ---- */
+  var DEF = { intro: 'Hello,', message: 'A small thank you from all of us at Acme for a remarkable year. Enjoy every cup.', from: 'The Acme team' };
+  var IDS = ['cpIntro', 'cpMessage', 'cpSign'];
+  var KEYS = ['intro', 'message', 'from'];
+  function field(id) { return document.getElementById(id); }
+  function values() { return IDS.map(function (id) { var f = field(id); return f ? f.value : ''; }); }
+  function state() {
+    var v = values();
+    if (KEYS.every(function (k, i) { return v[i] === DEF[k]; })) return 'applied';
+    if (v.every(function (x) { return !x.trim(); })) return 'removed';
+    return 'edited';
+  }
+  function count(id) {
+    var out = document.querySelector('[data-cp-count="' + id + '"]');
+    var f = field(id);
+    if (out && f) out.textContent = String(f.value || '').length;
+  }
+  function paint() {
+    var st = state();
+    document.querySelectorAll('[data-cp-say]').forEach(function (n) { n.setAttribute('aria-hidden', n.getAttribute('data-cp-say') === st ? 'false' : 'true'); });
+    var door = st === 'applied' ? 'Remove' : 'Restore default';
+    document.querySelectorAll('[data-cp-doorword]').forEach(function (n) { n.setAttribute('aria-hidden', n.getAttribute('data-cp-doorword') === door ? 'false' : 'true'); });
+  }
+  function fill(bag) {
+    IDS.forEach(function (id, i) {
+      var f = field(id); if (!f) return;
+      f.value = bag[KEYS[i]] || '';
+      f.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    paint();
+  }
+
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (!t || !t.id || IDS.indexOf(t.id) < 0) return;
+    count(t.id);
+    paint();
+  });
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t && t.name === 'cpCardOn') document.getElementById('cpCard').hidden = t.value !== 'yes';
+  });
+
+  var saidTimer = null;
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target : null;
+    if (!t) return;
+    var tab = t.closest('[data-cp-step]');
+    if (tab) { showStep(tab.getAttribute('data-cp-step'), true); return; }
+    if (t.closest('[data-cp-door]')) { fill(state() === 'applied' ? {} : DEF); return; }
+    var save = t.closest('[data-cp-save]');
+    if (save) {
+      /* the answer stands in the button for a moment (design-share's
+         sayCopied): the resting width is held so the row does not move */
+      var label = save;
+      if (saidTimer) clearTimeout(saidTimer); else save.style.minWidth = save.getBoundingClientRect().width + 'px';
+      label.textContent = 'Saved';
+      saidTimer = setTimeout(function () { label.textContent = 'Save changes'; save.style.minWidth = ''; saidTimer = null; }, 1500);
+      return;
+    }
+    if (t.closest('a[href="#"]')) e.preventDefault();
+  });
+
+  /* the card lines arrive filled with the gift's default (the fields are
+     custom elements, so this runs once they have rendered) */
+  function start() {
+    if (!field('cpIntro')) { requestAnimationFrame(start); return; }
+    var land = params.get('card');
+    if (land === 'removed') fill({});
+    else if (land === 'edited') fill({ intro: DEF.intro, message: 'Thank you for a remarkable year. Enjoy the coffee, and see you in January.', from: DEF.from });
+    else fill(DEF);
+  }
+  start();
+})();
+</script>
+</body>
+</html>

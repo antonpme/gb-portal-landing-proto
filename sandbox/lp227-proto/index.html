@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" class="gb-demo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>Start 227 prototype · GildedBox Design Studio</title>
+<!-- ============================================================
+     gbppl-lp227-glue-1 (28.09). ONE PATH, GLUED FROM WHAT EXISTS.
+     Ton, 25.09: «мы переиспользуем то, что уже есть: 227, анимацию,
+     страницу 3D-кастомайзера и переделанную страницу каталога, и
+     просто склеиваем новый флоу». Nothing invented; each screen
+     names its source:
+
+       landing   the live landing 227, one to one (harvest 25.09,
+                 gbppl-lp227-proto-1). No live/next switch any more.
+       reading   the existing brand reading animation of the
+                 ai-consierge prototype (src/customizer/
+                 CustomizerPrototype.tsx BrandLoading + brandFrames,
+                 live-customizer.css .live-brand-*), carried to
+                 vanilla one to one: the same five titles, the same
+                 cards, the same progress widths 6/10/22/34/44, the
+                 same 1150ms per frame and 1300ms after the last.
+                 Full screen over the landing.
+       gift      the live product page 810 (grid measured 28.09) with
+                 the scene of the live customizer (Rotate 360, the
+                 gestures): the gift in the brand, and Ton's fork:
+                 «Personalize it myself» / «Have our designers make
+                 it even better».
+       more      six more: the catalog grid, <gb-listing-card> as is.
+       designs   the history, <gb-drawer> level 1, as the catalog's
+                 favourites drawer: nothing chosen is lost.
+       order     the order stub of gbppl-lp227-proto-1, with the two
+                 tab personalize drawer of design-share.
+       meeting   <gb-drawer> with <gb-booking-flow> of
+                 live/book-a-meeting.html, the organism as is.
+     Email appears only in the meeting drawer and after the order.
+
+     gbppl-lp227-landing-variants-1 (28.09): TWO LANDINGS after the
+     reading, Ton: «мы не знаем, какой выберет Рассел, поэтому
+     предлагаем оба». ?land=choice (default) = the live product page
+     906 one to one with the picture in the brand; ?land=diy = the
+     start step of the 3D customizer off Ton's screens. Both carry
+     Ton's two additions: Your designs as a system button with a
+     count badge, and six more gifts. The old doors «Personalize it
+     myself» / «Have our designers make it even better» and the
+     «why this one» line are gone.
+
+     ADDRESS: ?land=choice|diy, ?s=landing|reading|gift|more|order, ?g=<design>,
+     ?mine=<ids> (the designs kept), ?r=craft (the short reading of
+     a second pick), ?dr=designs|personalize|meeting (open drawer),
+     ?dr=more (diy only: the six more gifts, one level up).
+     Old keys of proto-1 still read: s=hero|two|saved go to gift,
+     gift=<id> is g, sheet=1 is more, lp is ignored.
+     ============================================================ -->
+<script src="../../system/components/studio.js" data-home="../../index.html"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../system/assets/tokens.css">
+<link rel="stylesheet" href="../../system/components/shell.css">
+<link rel="stylesheet" href="../../system/components/button.css">
+<link rel="stylesheet" href="../../system/components/icon.css">
+<link rel="stylesheet" href="../../system/components/header.css">
+<link rel="stylesheet" href="../../system/components/auth.css">
+<link rel="stylesheet" href="../../system/components/inputnumber.css">
+<link rel="stylesheet" href="../../system/components/alert.css">
+<link rel="stylesheet" href="../../system/components/drawer.css">
+<link rel="stylesheet" href="../../system/components/tabs.css">
+<link rel="stylesheet" href="../../system/components/catalog.css">
+<link rel="stylesheet" href="../../system/components/booking.css">
+<link rel="stylesheet" href="../../system/components/badge.css">
+<link rel="stylesheet" href="lp227-proto.css">
+</head>
+<body class="gb-demo" data-screen="landing">
+
+<!-- The site header: absent on the live landing (it has only its
+     wordmark), worn by every screen after it. -->
+<gb-site-header class="lpp-header" home-href="index.html"
+  logo-src="../../system/assets/gildedbox-logo.svg"
+  catalog-href="../../live/catalog/index.html" portal-href="../../live/portal.html"
+  meeting-href="../../live/book-a-meeting.html"></gb-site-header>
+
+<!-- ===================== 1a. LANDING 227, LIVE ===================== -->
+<section class="lpl" id="s-landing-live" data-screen-id="landing" aria-label="Landing">
+  <div class="lpl-grid">
+    <div class="lpl-stage">
+      <video class="lpl-video lpl-video--h" autoplay muted loop playsinline preload="auto"
+        poster="img/lp-demo-h-poster.jpg"><source src="img/lp-demo-h.mp4" type="video/mp4"></video>
+      <video class="lpl-video lpl-video--v" autoplay muted loop playsinline preload="auto"
+        poster="img/lp-demo-v-poster.png"><source src="img/lp-demo-v.mp4" type="video/mp4"></video>
+      <a class="lpl-logo" href="index.html" aria-label="GildedBox">
+        <img src="../../system/assets/gildedbox-logo.svg" width="168" height="56" alt="GildedBox">
+      </a>
+      <p class="lpl-pill"><span class="lpl-pill__dot" aria-hidden="true"></span><span>A gift, designed for <b>FourSeasons.com</b></span></p>
+    </div>
+
+    <div class="lpl-panel">
+      <div class="lpl-sheet__grip" aria-hidden="true"><span></span></div>
+      <div class="lpl-panel__body">
+      <div class="lpl-panel__main">
+        <h1 class="lpl-h1"><span>See Your Brand as a Gift,<br class="lpl-br"> Instantly.</span></h1>
+        <ol class="lpl-steps">
+          <li><span class="lpl-steps__n">1.</span><span>Enter your website URL</span></li>
+          <li><span class="lpl-steps__n">2.</span><span>Choose a gift to design</span></li>
+          <li><span class="lpl-steps__n">3.</span><span>Personalize to any recipient</span></li>
+        </ol>
+        <form class="lpl-form" data-go="reading" novalidate>
+          <input class="lpl-input" type="text" inputmode="url" autocomplete="url" placeholder="www.yourcompany.com" aria-label="Your website">
+          <button class="lpl-cta" type="submit"><span>Design my gift</span><span class="lpl-cta__icon"><span data-gb-icon="arrow-right" data-gb-icon-size="20"></span></span></button>
+        </form>
+        <p class="lpl-note">Designs are free and take about a minute.</p>
+      </div>
+      <div class="lpl-trust">
+        <p class="lpl-trust__cap">Trusted by teams at</p>
+        <div class="lpl-trust__row">
+          <span class="lpl-mark lpl-mark--ms">Microsoft</span>
+          <span class="lpl-mark lpl-mark--tesla">Tesla</span>
+          <span class="lpl-mark lpl-mark--tiffany">Tiffany &amp; Co.</span>
+          <span class="lpl-mark lpl-mark--tr">Thomson Reuters</span>
+          <span class="lpl-mark lpl-mark--handle">Handle</span>
+          <span class="lpl-mark lpl-mark--compass">Compass</span>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== 2. THE BRAND READING ===================== -->
+<!-- SRC: CustomizerPrototype.tsx BrandLoading. lp227-proto.js fills
+     the title, the card and the progress on the source's timers. -->
+<div class="lbr" id="s-reading" hidden>
+  <div class="lbr-loading" aria-live="polite">
+    <h1 id="lbr-title">Analyzing your website…</h1>
+    <div class="lbr-card is-website" id="lbr-card"><strong>SLACK.COM</strong></div>
+    <div class="lbr-progress" aria-hidden="true"><span id="lbr-bar"></span></div>
+  </div>
+</div>
+
+<!-- ===================== 3a. LANDING «CHOICE» (?land=choice) =====================
+     gbppl-lp227-landing-variants-1 (28.09). Ton: «вариант с выбором:
+     всё точно как на сайте, тексты ровно те, что есть и что делал
+     Рассел, без новых формулировок». The live product page 906
+     (harvest/public-product-906, 390 / 768 / 1440) one to one: title,
+     price, the two radio cards, START DESIGNING. Only the picture is
+     the visitor's brand (the Slack render of Fully Charged, with its
+     live title and price, because 906 has no render in a brand).
+     Ours, by Ton's word: the Your designs door and the six more link. -->
+<section class="lpp-screen lpc lpv" id="s-gift" data-screen-id="gift" data-land="choice" aria-labelledby="lpc-title" hidden>
+  <div class="gb-container">
+    <div class="lpc-grid">
+      <div class="lpv-gallery">
+        <img id="lpc-img" src="img/slack-fully-charged.webp" alt="Fully Charged Gift Set in the Slack design">
+      </div>
+      <div class="lpv-panel">
+        <div class="lpv-designs">
+          <button class="gb-btn gb-btn--outline gb-btn--secondary gb-btn--small" type="button" data-open="designs">
+            <span class="gb-btn__icon" data-gb-icon="layers" data-gb-icon-size="16"></span>
+            <span class="gb-btn__label">Your designs</span>
+            <span class="gb-badge gb-badge--neutral lpv-count" data-count>1</span>
+          </button>
+        </div>
+        <h1 class="lpp-h1" id="lpc-title">Fully Charged Gift Set</h1>
+        <div class="lpv-price" id="lpc-price">$195</div>
+        <div class="lpv-options">
+          <div class="lpv-group" role="radiogroup" aria-label="How to design">
+            <label class="lpv-card">
+              <span class="lpv-radio"><input type="radio" name="lpv-variant" value="custom" id="lpv-custom"><span class="lpv-radio__box"><span class="lpv-radio__dot"></span></span></span>
+              <span class="lpv-card__copy"><span class="lpv-card__title">Designed for you</span><span class="lpv-card__desc">Work with our experts to design your gift.</span></span>
+            </label>
+            <label class="lpv-card">
+              <span class="lpv-radio"><input type="radio" name="lpv-variant" value="standard" id="lpv-standard" checked><span class="lpv-radio__box"><span class="lpv-radio__dot"></span></span></span>
+              <span class="lpv-card__copy"><span class="lpv-card__title">Design it yourself</span><span class="lpv-card__desc">Start with your website URL.</span></span>
+            </label>
+          </div>
+          <button class="gb-btn gb-btn--filled gb-btn--primary gb-btn--xlarge gb-btn--block" type="button" data-start aria-label="Continue">
+            <span class="gb-btn__label">Start designing</span>
+          </button>
+          <p class="lpc-more"><a href="?s=more" data-go="more">See 6 more gifts for software teams</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3b. LANDING «DIY» (?land=diy) =====================
+     Ton: «показываем стартовую страницу 3D-кастомайзера после
+     кастомизации, один в один, с двумя доработками: Your Designs
+     нормальной кнопкой и шесть дополнительных подарков». The step
+     Your Design, off Ton's two screens (the customizer is behind the
+     gate, no instrument reading): the close cross, the scene with its
+     three hint lines, the panel with the three step dots, Edit My
+     Brand DNA, Choose Your Design, Lid / Tray, the info line, NEXT
+     and HELP WITH MY DESIGN. Texts word for word; the info line's
+     em dash is a comma (house copy rule).
+
+     gbppl-lp227-diy-more-overlay-1 (28.09). Ton: «Наша задача
+     разгрузить правую панель, а не перегрузить её ещё больше. Эти
+     дополнительные гифты не должны так в лоб бросаться и не должны
+     быть здесь маленькими убогими квадратиками. Мы открываем ещё
+     один уровень оверлея, так же как открываем каталог на портале,
+     только без категорий, без фильтров и всего 6 гифтов 3×2».
+     The row .lpd-more is gone. Under the info line sits the quiet
+     link of the choice landing (.lpc-more, as is). It opens the
+     catalog overlay of the portal (live/catalog-overlay.js, the
+     Tiffany door: 95% panel from the right, the measured curve),
+     and the overlay frames this same page at ?s=more in its layer
+     mode: the screen «six more» (gbcL-row + <gb-listing-card>, 3 x 2,
+     2 in a row on a phone) with no header, no filters, no search.
+     <gb-drawer> was not taken: its 520 holds three cards of about
+     150, the very small squares Ton turned down. -->
+<section class="lpd" id="s-diy" data-screen-id="gift" data-land="diy" aria-labelledby="lpd-title" hidden>
+  <div class="lpd-scene" aria-label="3D gift visualization">
+    <a class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary lpd-close" href="?s=landing" data-go="landing" aria-label="Close"><span class="gb-btn__icon" data-gb-icon="close" data-gb-icon-size="20"></span></a>
+    <div class="lpd-scene__img"><img id="lpd-img" src="img/slack-fully-charged.webp" alt="Fully Charged Gift Set in the Slack design"></div>
+    <div class="lpc-hint lpd-hint">
+      <span class="lpc-hint__rotate lpd-hint__rotate"><span data-gb-icon="rotate" data-gb-icon-size="24"></span>Rotate 360°</span>
+      <p class="lpd-hint__note">This is a 3D visualization of your gift design</p>
+      <p class="gb-eyebrow lpc-hint__rows">
+        <span class="lpc-hint__bit"><span data-gb-icon="rotate" data-gb-icon-size="12"></span>Drag to turn</span>
+        <span class="lpc-hint__bit"><span data-gb-icon="mouse" data-gb-icon-size="12"></span>Scroll to zoom</span>
+        <span class="lpc-hint__bit"><span data-gb-icon="move" data-gb-icon-size="12"></span>Shift-drag to move</span>
+      </p>
+    </div>
+  </div>
+  <div class="lpd-panel">
+    <div class="lpd-panel__top">
+      <ol class="lpd-dots" aria-label="Step 1 of 3"><li class="is-on"></li><li></li><li></li></ol>
+      <div class="lpd-nav">
+        <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary lpd-nav__back" type="button" data-go="landing" aria-label="Back"><span class="gb-btn__icon" data-gb-icon="arrow-right" data-gb-icon-size="20"></span></button>
+        <h1 class="lpd-title" id="lpd-title">Your Design</h1>
+        <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary" type="button" data-open="personalize" aria-label="Next"><span class="gb-btn__icon" data-gb-icon="arrow-right" data-gb-icon-size="20"></span></button>
+      </div>
+      <div class="lpd-dna">
+        <button class="gb-btn gb-btn--outline gb-btn--secondary gb-btn--small" type="button">
+          <span class="gb-btn__label">Edit my brand DNA</span>
+          <span class="gb-btn__icon" data-gb-icon="sliders" data-gb-icon-size="16"></span>
+        </button>
+      </div>
+      <div class="lpd-head">
+        <h2 class="lpd-h2">Choose Your Design</h2>
+        <button class="gb-btn gb-btn--outline gb-btn--secondary gb-btn--small" type="button" data-open="designs">
+          <span class="gb-btn__icon" data-gb-icon="layers" data-gb-icon-size="16"></span>
+          <span class="gb-btn__label">Your designs</span>
+          <span class="gb-badge gb-badge--neutral lpv-count" data-count>1</span>
+        </button>
+      </div>
+      <div class="lpd-designs" role="radiogroup" aria-label="Choose your design">
+        <button class="lpd-tile is-on" type="button" role="radio" aria-checked="true" data-tile><img src="img/slack-design-1.webp" alt="Design 1, Slack"></button>
+        <button class="lpd-tile lpd-tile--stub" type="button" role="radio" aria-checked="false" data-tile><span class="gb-eyebrow">Design 2</span><span class="lpd-tile__note">Placeholder</span></button>
+        <button class="lpd-tile lpd-tile--stub" type="button" role="radio" aria-checked="false" data-tile><span class="gb-eyebrow">Design 3</span><span class="lpd-tile__note">Placeholder</span></button>
+        <div class="lpd-swatches">
+          <div class="lpd-swatch"><span>Lid</span><i style="background:#611F69"></i></div>
+          <div class="lpd-swatch"><span>Tray</span><i style="background:#36C5F0"></i></div>
+        </div>
+      </div>
+      <p class="lpd-info">Next, you'll fine-tune your logo, on the box and on each product.</p>
+      <!-- gbppl-lp227-diy-more-overlay-1: the row of six is gone; one
+           quiet line, the choice landing's own .lpc-more, opens them
+           one level up, in the catalog overlay. -->
+      <p class="lpc-more"><a href="?land=diy&amp;s=gift&amp;dr=more" data-more-open>See 6 more gifts for your brand</a></p>
+    </div>
+    <div class="lpd-actions">
+      <button class="gb-btn gb-btn--filled gb-btn--primary gb-btn--large gb-btn--block lpd-next" type="button" data-open="personalize">
+        <span class="gb-btn__label">Next</span>
+        <span class="gb-btn__icon" data-gb-icon="arrow-right" data-gb-icon-size="20"></span>
+      </button>
+      <button class="gb-btn gb-btn--outline gb-btn--secondary gb-btn--large gb-btn--block" type="button" data-open="meeting">
+        <span class="gb-btn__label">Help with my design</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 4. SIX MORE ===================== -->
+<!-- The catalog grid: gbcL-row and <gb-listing-card> from catalog.js,
+     stamped by lp227-proto.js from its list of gifts. -->
+<section class="lpp-screen lpm" id="s-more" data-screen-id="more" aria-labelledby="lpm-title" hidden>
+  <div class="gb-container">
+    <div class="lpm-head">
+      <a class="order-back" href="?s=gift" data-go="gift">
+        <span data-gb-icon="chevron-left" data-gb-icon-size="20"></span>
+        <span>Back to your design</span>
+      </a>
+      <h1 class="lpp-h1" id="lpm-title">6 more gifts software teams choose</h1>
+    </div>
+    <div class="lpm-grid"><div class="gbcL-row" id="lpm-row"></div></div>
+  </div>
+</section>
+
+<!-- ===================== 6. ORDER STUB ===================== -->
+<!-- DD-153: the road back is on the screen (above the title), the
+     chosen design is a card with «Change», and personalization has
+     one door, the same two tab drawer as share and checkout. -->
+<section class="lpp-screen" id="s-order" data-screen-id="order" aria-labelledby="order-title" hidden>
+  <div class="gb-container">
+    <div class="lpp-col lpp-col--form">
+      <a class="order-back" href="index.html" data-back>
+        <span data-gb-icon="chevron-left" data-gb-icon-size="20"></span>
+        <span id="order-back-label">Back to your designs</span>
+      </a>
+      <h1 class="lpp-h1" id="order-title">Let's build your order</h1>
+      <div class="order-gift">
+        <img id="order-img" src="img/slack-fully-charged.webp" alt="">
+        <div class="order-gift__copy">
+          <span class="gb-eyebrow">Your design</span>
+          <p class="order-gift__name" id="order-name">Fully Charged Gift Set</p>
+          <p class="order-gift__sub" id="order-sub">Designed for Slack · $195 each</p>
+        </div>
+        <a class="order-change" href="index.html" data-back>Change</a>
+      </div>
+      <button class="gb-btn gb-btn--outline gb-btn--secondary gb-btn--large gb-btn--block order-pz" type="button" data-open="personalize">
+        <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="wand" data-gb-icon-size="20"></span></span>
+        <span class="gb-btn__label">Personalize</span>
+      </button>
+      <form class="order-form" novalidate data-order>
+        <div class="order-qty">
+          <span class="gba-label" id="order-qty-l">Quantity</span>
+          <div class="gb-inputnumber" aria-labelledby="order-qty-l">
+            <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="-1" aria-label="Decrease quantity"><span class="gb-btn__icon"></span></button>
+            <input class="gb-inputnumber__value" type="number" min="1" max="999" value="25" aria-labelledby="order-qty-l">
+            <button class="gb-btn gb-btn--icon gb-btn--small gb-btn--ghost gb-btn--secondary gb-btn--plain" type="button" data-step="1" aria-label="Increase quantity"><span class="gb-btn__icon"></span></button>
+          </div>
+        </div>
+        <div class="gba-form lpp-fieldrow"><gb-field input-id="order-date" name="delivery-date" type="date" label="Delivery date" value="2026-11-16"></gb-field></div>
+        <div class="order-alert" role="status" aria-live="polite"></div>
+        <button class="gb-btn gb-btn--filled gb-btn--primary gb-btn--large gb-btn--block" type="submit">
+          <span class="gb-btn__label">Continue</span>
+          <span class="gb-btn__icon" data-gb-icon="arrow-right" data-gb-icon-size="20"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- The live chat circle (HubSpot on the live, not measurable: it
+     loads behind consent). A system icon button in its corner. -->
+<button class="gb-btn gb-btn--icon gb-btn--filled gb-btn--secondary lpp-chat" type="button" aria-label="Chat"><span class="gb-btn__icon" data-gb-icon="chat" data-gb-icon-size="22"></span></button>
+
+<!-- The prototype's own quiet line, outside the product: which
+     landing the brand reading leads to. -->
+<p class="lpp-land" id="lpp-land">Landing after brand pull: <a href="?land=choice" data-land-link="choice">Choice</a> · <a href="?land=diy" data-land-link="diy">DIY</a></p>
+
+<!-- One drawer for the page: designs, personalize and the meeting. -->
+<gb-drawer id="lpp-drawer"></gb-drawer>
+
+<!-- ===================== THE LIVE COOKIE BAR ===================== -->
+<!-- The live bar one to one (it covers the form on a phone, which is
+     the finding of the recon). -->
+<div class="lpl-cookie" role="dialog" aria-label="Cookie Settings" data-cookie="live" hidden>
+  <div class="gb-container lpl-cookie__in">
+    <p class="lpl-cookie__title">Cookie Settings</p>
+    <div class="lpl-cookie__row">
+      <div class="lpl-cookie__text">
+        <p>To provide you with a better experience, we use cookies to personalize content, deliver relevant ads, and analyze site usage to improve our services. We also use session replay software to understand how our site is used and to enhance customer support. By continuing to browse or clicking "Accept All," you agree to our use of cookies and session replay.</p>
+        <p>Learn more in our <a href="https://www.gildedbox.com/page/privacy-44" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://www.gildedbox.com/page/copyright-93" target="_blank" rel="noopener">Terms of Service</a></p>
+      </div>
+      <div class="lpl-cookie__btns">
+        <button class="lpl-cbtn lpl-cbtn--fill" type="button" data-cookie-close>Accept All</button>
+        <button class="lpl-cbtn" type="button" data-cookie-close>Customize</button>
+        <button class="lpl-cbtn" type="button" data-cookie-close>Reject All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../system/components/shell.js"></script>
+<script src="../../system/components/icon.js"></script>
+<script src="../../system/components/header.js"></script>
+<script src="../../system/components/auth.js"></script>
+<script src="../../system/components/inputnumber.js"></script>
+<script src="../../system/components/drawer.js"></script>
+<script src="../../system/components/catalog.js"></script>
+<script src="../../system/components/booking.js"></script>
+<!-- The portal's catalog overlay (the shared snippet), framing the
+     six more of this page. Before lp227-proto.js: the flow opens it
+     from the address (?dr=more) on the first render. -->
+<script src="../../live/catalog-overlay.js" data-open="[data-more-open]" data-src="index.html?land=diy&amp;s=more&amp;studio=embedded"></script>
+<script src="lp227-proto.js"></script>
+</body>
+</html>

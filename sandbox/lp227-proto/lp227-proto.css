@@ -1,0 +1,583 @@
+/* ============================================================
+   gbppl-lp227-glue-1 (28.09): layout of the Start 227 prototype,
+   glued from what already exists. Ton, 25.09: «мы переиспользуем
+   то, что уже есть: 227, анимацию, страницу 3D-кастомайзера и
+   переделанную страницу каталога, и просто склеиваем новый флоу».
+   (gbppl-lp227-proto-1, 25.09: our own landing «next» and our own
+   reading screen are gone, with their CSS.)
+
+   Families, one prefix each:
+     .lpl-*   LANDING 227 LIVE, one to one (harvest 25.09). LIVE
+              values are marked LIVE: a copy of a page we do not own
+              is a source, rounding it would be a lie about the live.
+     .lbr-*   THE BRAND READING, carried one to one from the
+              ai-consierge prototype (src/customizer/live-customizer
+              .css, classes live-brand-*). Its literals are that
+              prototype's, marked SRC, for the same reason.
+     .lpc-*   THE CUSTOMIZER PAGE: the live product page 810 grid
+              (measured 28.09 at 1440 / 768 / 390) with the scene of
+              the live customizer (Rotate 360 and the gestures).
+     .lpm-*   SIX MORE: the catalog grid, <gb-listing-card> as is.
+     .lpp-*   shared type, order stub, drawer contents.
+
+   gbppl-lp227-diy-more-overlay-1 (28.09): the diy row of six left the
+   panel; the six live one level up (see 4. SIX MORE, layer mode).
+
+   Components are not restyled here: buttons, fields, drawer,
+   tabs, badge, booking flow and the listing card carry their
+   owners' CSS; this file places them.
+   ============================================================ */
+
+/* ---- The page ---- */
+body.gb-demo { margin: 0; background: var(--white); color: var(--zinc-900); font-family: var(--font-sans); }
+:where(.lpl, .lpp-screen, .lpl-cookie, .gbd-panel) p { margin: 0; }
+:where(.lpl, .lpp-screen) h1, :where(.lpp-screen) h2 { margin: 0; }
+:where(.lpp-screen) figure { margin: 0; }
+
+/* The live preflight (border 0 solid on every element) that the
+   field owner counts on; auth.css carries it only inside its own
+   zones. Zero specificity, so every rule of the owner still wins
+   and only the browser's inset border goes. */
+:where(gb-field .gba-input, .gb-inputnumber input) { border-width: 0; border-style: solid; }
+
+/* Fields stand in the owner's row, .gba-form (margin 0 -8 gives the
+   8px gutter of .gba-field back), so label and underline sit on the
+   same line as the title and the button. The field's own bottom 16
+   is dropped here: the form's gap is the one rhythm (24). */
+.lpp-fieldrow .gba-field { margin-bottom: 0; }
+
+/* Trap 29: an author display beats the UA [hidden]; the owner of
+   each block says so itself. */
+.lpl[hidden], .lpp-screen[hidden],
+.lpl-cookie[hidden] { display: none; }
+
+/* The live landing has no site header, only its wordmark. */
+body[data-screen="landing"] .lpp-header, body[data-screen="reading"] .lpp-header { display: none; }
+
+/* ================================================================
+   1a. LANDING 227 LIVE
+   ================================================================ */
+.lpl { position: relative; background: var(--white); }
+.lpl-grid { display: flex; flex-direction: column; min-height: 100dvh; }            /* LIVE min-h-dvh */
+
+/* The stage: the demo video. Horizontal video from 768, vertical
+   below (the live picks by device; we pick by width). */
+.lpl-stage { position: relative; overflow: hidden; flex-shrink: 0; aspect-ratio: 16 / 9; }
+.lpl-video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.lpl-video--h { object-fit: contain; }
+.lpl-video--v { display: none; object-fit: cover; object-position: top; }
+
+.lpl-logo { position: absolute; z-index: 10; top: 14px; left: var(--space-16); display: flex; color: var(--zinc-900); } /* LIVE top-[14px] */
+.lpl-logo img { display: block; height: 28px; width: auto; }  /* LIVE [&_svg]:h-7 */
+
+.lpl-pill {
+  position: absolute; z-index: 10; left: var(--space-16); bottom: 14px;   /* LIVE bottom-[14px] */
+  display: flex; align-items: center; gap: 9px;                          /* LIVE gap 9 */
+  padding: 7px 14px;                                                     /* LIVE */
+  font-size: 12.5px; line-height: 18.75px; letter-spacing: 0.2px;        /* LIVE */
+  color: var(--zinc-600);
+  background: rgba(255, 255, 255, 0.92);                                 /* LIVE white/92 */
+  border: 1px solid var(--zinc-200); border-radius: var(--radius-pill);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);        /* LIVE */
+}
+.lpl-pill b { font-weight: 700; }
+.lpl-pill__dot { width: 7px; height: 7px; flex-shrink: 0; border-radius: var(--radius-pill); background: rgb(22, 128, 61); } /* LIVE green dot */
+
+/* The form panel. */
+.lpl-panel { position: relative; z-index: 1; display: flex; flex-direction: column; flex: 1; background: var(--white); padding: 22px var(--space-24) var(--space-8); } /* LIVE pt-[22px] */
+.lpl-panel__body { display: flex; flex-direction: column; flex: 1; }
+.lpl-panel__main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 26px; } /* LIVE pb-[26px] */
+.lpl-sheet__grip { display: none; }
+.lpl-br { display: none; }
+
+.lpl-h1 {
+  margin: 0 0 var(--space-16);
+  font-family: var(--font-serif); font-weight: 400;
+  font-size: 18px; line-height: 1.42; letter-spacing: 0.3px;           /* LIVE text-[18px] leading-[1.42] */
+  color: var(--zinc-900);
+}
+.lpl-steps { margin: var(--space-16) 0 22px; padding: 0; list-style: none; } /* LIVE mb-[22px] */
+.lpl-steps li {
+  display: flex; align-items: flex-start; gap: 12px;                   /* LIVE gap-3 */
+  font-size: 14.5px; font-weight: 500; line-height: 1.5; letter-spacing: 0.2px; /* LIVE 14.5 / 21.75 */
+  color: var(--zinc-700);
+}
+.lpl-steps li + li { margin-top: 11px; }                               /* LIVE */
+.lpl-steps__n { flex: none; width: 17px; text-align: right; font-family: var(--font-serif); font-size: 15px; line-height: 1.5; color: var(--zinc-400); } /* LIVE */
+
+.lpl-form { display: flex; flex-direction: column; gap: 14px; margin: 0; } /* LIVE space-y-[14px] */
+.lpl-input {
+  box-sizing: border-box; width: 100%; height: 62px; margin: 0;         /* LIVE !h-[62px] */
+  padding: var(--space-16) 22px;                                       /* LIVE !px-[22px] */
+  font-family: var(--font-sans); font-size: 18px; font-weight: 300; line-height: 1; letter-spacing: 0.2px; /* LIVE */
+  color: var(--zinc-800); background: var(--zinc-50);
+  border: 1px solid var(--zinc-400); border-radius: 12px;              /* LIVE !rounded-[12px] */
+  outline: none;
+  transition: border-color var(--mo-micro) var(--mo-move);
+}
+.lpl-input::placeholder { color: var(--zinc-400); }
+.lpl-input:hover { border-color: var(--zinc-400); }
+.lpl-input:focus { border-color: var(--blue-600); }                    /* LIVE focus ring is the browser's; ours is the field focus of the house */
+.lpl-cta {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; height: 68px; padding: var(--space-8);                  /* LIVE !h-[68px] */
+  font-family: var(--font-sans); font-size: 19px; font-weight: 600; letter-spacing: -0.475px; /* LIVE !text-[19px] */
+  text-transform: uppercase; color: var(--zinc-50);
+  background: var(--blue-600); border: 0; border-radius: var(--radius-pill);
+  cursor: pointer; transition: background-color var(--mo-micro) var(--mo-move);
+}
+.lpl-cta:hover { background: var(--blue-700); }
+.lpl-cta > span:first-child { letter-spacing: 0.2px; color: var(--white); }
+.lpl-cta__icon { display: inline-flex; margin-left: var(--space-16); color: var(--white); }
+.lpl-note { margin-top: 15px; text-align: center; font-size: 14px; line-height: 1.5; letter-spacing: 0.2px; color: var(--zinc-400); } /* LIVE mt-[15px] */
+
+.lpl-trust { text-align: center; padding-bottom: 22px; }              /* LIVE pb-[22px] */
+.lpl-trust__cap { margin: 0 0 14px; font-size: 11px; line-height: 1.5; letter-spacing: 2.2px; text-transform: uppercase; color: var(--zinc-400); } /* LIVE */
+.lpl-trust__row { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 10px 26px; color: var(--zinc-500); } /* LIVE gap-y-[10px] gap-x-[26px] */
+.lpl-mark { opacity: 0.75; white-space: nowrap; line-height: 1.5; }   /* LIVE opacity-75 */
+.lpl-mark--ms      { font-size: 15px;   font-weight: 600; letter-spacing: -0.2px; }
+.lpl-mark--tesla   { font-size: 13.5px; font-weight: 500; letter-spacing: 3.5px; text-transform: uppercase; }
+.lpl-mark--tiffany { font-family: var(--font-serif); font-size: 14.5px; letter-spacing: 0.4px; }
+.lpl-mark--tr      { font-size: 14px;   font-weight: 500; letter-spacing: -0.1px; }
+.lpl-mark--handle  { font-size: 13.5px; font-weight: 400; letter-spacing: 2.2px; text-transform: uppercase; }
+.lpl-mark--compass { font-family: var(--font-serif); font-size: 14.5px; letter-spacing: 1.6px; text-transform: uppercase; }
+
+/* ---- lg 1024: the video left, the 520 panel right ---- */
+@media (min-width: 1024px) {
+  .lpl-grid { display: grid; grid-template-columns: minmax(0, 1fr) 520px; height: 100dvh; min-height: 640px; } /* LIVE 520 panel, min-h 640 */
+  .lpl-stage { aspect-ratio: auto; height: 100%; }
+  .lpl-logo { top: var(--space-24); left: 28px; }                     /* LIVE lg:left-7 */
+  .lpl-logo img { height: 36px; }                                      /* LIVE lg:h-9 */
+  .lpl-pill { left: 28px; bottom: var(--space-24); padding: 9px 18px; font-size: 13.5px; line-height: 20.25px; } /* LIVE */
+  .lpl-panel { padding: 40px 52px 30px; box-shadow: -18px 0 50px rgba(20, 25, 35, 0.1); } /* LIVE lg:px-[52px] lg:pt-10, shadow */
+  .lpl-panel__main { padding-bottom: 0; }
+  .lpl-h1 { font-size: var(--space-24); }                              /* LIVE 24 = rung 24 */
+  .lpl-steps { margin: var(--space-24) 0 var(--space-32); }
+  .lpl-steps li + li { margin-top: 15px; }                             /* LIVE */
+  .lpl-trust { padding-bottom: 0; }
+}
+
+/* ---- below 768: the phone. The video fills the screen, the form
+   is a bottom sheet the thumb can pull up (LIVE isMobile layout) ---- */
+@media (max-width: 767px) {
+  .lpl { min-height: 100dvh; background: var(--zinc-100); }
+  .lpl-grid { min-height: 0; }
+  .lpl-stage { position: fixed; inset: 0; z-index: 0; aspect-ratio: auto; background: var(--zinc-100); }
+  .lpl-video--h, .lpl-logo, .lpl-pill { display: none; }
+  .lpl-video--v { display: block; }
+  .lpl-panel {
+    position: fixed; left: 0; right: 0; top: 94px; height: 750px; z-index: 10;   /* LIVE top 94, h 750 */
+    padding: 0; background: var(--zinc-100);
+    border-radius: var(--space-16) var(--space-16) 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);                                /* LIVE */
+    transform: translateY(var(--lpl-sheet-y, 340px));                           /* LIVE resting offset 340 */
+    transition: transform var(--mo-medium) var(--mo-arrive);                    /* LIVE .5s cubic-bezier(0,0,.2,1) = the two rungs */
+    touch-action: none;
+  }
+  .lpl-panel.is-dragging { transition: none; }
+  .lpl-sheet__grip { display: flex; justify-content: center; align-items: center; padding: var(--space-16) 0; cursor: grab; }
+  .lpl-sheet__grip span { width: 96px; height: 4px; border-radius: var(--radius-pill); background: rgb(212, 212, 212); } /* LIVE bg-gray-300 */
+  .lpl-panel__body { overflow-y: auto; }
+  .lpl-panel__main { display: block; flex: none; padding: 0; }
+  .lpl-h1 {
+    margin: 0; padding: 0 var(--space-32) var(--space-16);            /* LIVE section px-4 pb-4 + container px-4 */
+    text-align: center; font-size: 23px; line-height: 1.5; letter-spacing: 1px; color: var(--zinc-800); /* LIVE span text-[23px] tracking-[1px] */
+  }
+  .lpl-br { display: inline; }
+  .lpl-steps { margin: 0; padding: 0 var(--space-16) var(--space-8); }
+  .lpl-steps li { line-height: 1.5; }
+  .lpl-form { gap: 0; }
+  .lpl-input { height: 52px; padding: 12px 20px; font-size: 16px; }   /* LIVE min-h-[52px] py-3 px-5 */
+  .lpl-form .lpl-input { box-sizing: border-box; width: calc(100% - var(--space-32)); margin: var(--space-16); }
+  .lpl-cta { width: calc(100% - var(--space-32)); margin: 0 var(--space-16); height: auto; min-height: 56px; padding: var(--space-16) var(--space-32); } /* LIVE min-h-[56px] */
+  .lpl-note { margin: 0; padding: 12px var(--space-32) 0; }            /* LIVE pt-3 */
+  .lpl-trust { padding: var(--space-24) var(--space-16); }
+}
+
+/* ---- the live cookie bar ---- */
+.lpl-cookie {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
+  background: var(--zinc-50);
+  border-top: 2px solid #131313;                                       /* LIVE border-t-[#131313] */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* LIVE shadow-lg */
+  color: var(--catalog-ink);
+}
+.lpl-cookie__in { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+.lpl-cookie__title { margin: 0 0 var(--space-16); font-family: var(--font-serif); font-size: 18px; line-height: 1.5; letter-spacing: 0.2px; } /* LIVE */
+.lpl-cookie__row { display: flex; flex-direction: column; }
+.lpl-cookie__text { font-size: 14px; line-height: 1.5; letter-spacing: 0.2px; }
+.lpl-cookie__text p + p { margin-top: var(--space-16); }
+body.gb-demo .lpl-cookie__text a { color: var(--blue-700); text-decoration: underline; }  /* LIVE a.clear-link; beats body.gb-demo a */
+.lpl-cookie__btns { display: flex; gap: var(--space-16); padding-top: var(--space-32); }
+.lpl-cbtn {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center;
+  min-height: 36px; padding: var(--space-8) var(--space-16);
+  font-family: var(--font-sans); font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; /* LIVE label text-[10px] */
+  color: var(--zinc-900); background: transparent; border: 1px solid var(--zinc-900); border-radius: var(--radius);
+  cursor: pointer;
+}
+.lpl-cbtn--fill { color: var(--white); background: var(--zinc-800); border-color: var(--zinc-800); }
+@media (min-width: 640px) { .lpl-cbtn { font-size: 11px; } }           /* LIVE sm:text-[11px] */
+@media (min-width: 1024px) {
+  .lpl-cookie__row { flex-direction: row; gap: var(--space-32); }
+  .lpl-cookie__text { flex: 1; }
+  .lpl-cookie__btns { flex-direction: column; width: 268px; padding-top: 0; } /* LIVE w-[300px] minus px-4 on both sides */
+}
+@media (min-width: 1280px) {
+  .lpl-cookie__title { font-size: 22px; }
+  .lpl-cookie__text { font-size: var(--space-16); }
+  .lpl-cbtn { min-height: 42px; padding: var(--space-8) 20px; }        /* LIVE xl:min-h-[42px] xl:px-5 */
+}
+@media (min-width: 1536px) { .lpl-cbtn { min-height: var(--space-48); font-size: 12px; } }
+
+/* ================================================================
+   SHARED TYPE OF OUR SCREENS (roles of system/type-scale.js)
+   ================================================================ */
+/* H1 page title: serif 300, 28/35, 36/45 from 1280, 40/50 from 2000. */
+.lpp-h1 { font-family: var(--font-serif); font-weight: 300; font-size: 28px; line-height: 35px; letter-spacing: -0.4px; color: var(--zinc-900); }
+@media (min-width: 1280px) { .lpp-h1 { font-size: 36px; line-height: 45px; } }
+@media (min-width: 2000px) { .lpp-h1 { font-size: 40px; line-height: 50px; } }
+/* Body base 16/24, in ink: Russell reads grey as «not important». */
+.lpp-lede { margin-top: var(--space-16); font-size: var(--space-16); line-height: var(--space-24); color: var(--zinc-700); }
+/* Price: 14/300/21 ls 2, 18/27 from 1280. */
+.lpp-price { margin-top: var(--space-8); font-size: 14px; font-weight: 300; line-height: 21px; letter-spacing: 2px; color: var(--zinc-900); }
+@media (min-width: 1280px) { .lpp-price { font-size: 18px; line-height: 27px; } }
+.lpp-screen .gb-eyebrow { display: block; margin-bottom: var(--space-8); }
+/* ================================================================
+   THE SCREENS OF THE FLOW
+   ================================================================ */
+.lpp-screen { min-height: calc(100dvh - var(--header-h)); box-sizing: border-box; padding: var(--space-32) 0 var(--space-64); }
+@media (min-width: 1024px) { .lpp-screen { padding-top: var(--space-48); } }
+.lpp-col { margin: 0 auto; }
+.lpp-col--read, .lpp-col--form { max-width: calc(var(--space-64) * 9); } /* 576: one reading column */
+
+/* The render: a gift on its own ground, never cropped. */
+.lpp-render { position: relative; overflow: hidden; background: var(--white); aspect-ratio: 1; }
+.lpp-render img { display: block; width: 100%; height: 100%; object-fit: contain; }   /* the whole gift, never a crop of it */
+
+.lpp-actions { display: flex; flex-direction: column; gap: var(--space-16); margin-top: var(--space-32); }
+.lpp-actions--inline { flex-direction: row; justify-content: center; }
+.lpp-quiet { margin-top: var(--space-24); font-size: 14px; line-height: 21px; color: var(--zinc-600); }
+body.gb-demo .lpp-quiet a { color: var(--zinc-900); text-decoration: underline; text-underline-offset: 3px; } /* NO TOKEN: offset of the underline, the house has no underline rung */
+/* ---- 4. order ---- */
+.order-back { display: inline-flex; align-items: center; gap: var(--space-8); margin-bottom: var(--space-16); font-size: 14px; line-height: 21px; color: var(--zinc-700); }
+body.gb-demo .order-back { color: var(--zinc-700); }
+body.gb-demo .order-back:hover { color: var(--zinc-900); }
+.order-gift { display: flex; align-items: center; gap: var(--space-16); margin: var(--space-24) 0 var(--space-16); }
+.order-gift__copy { flex: 1; min-width: 0; }
+.order-gift__copy .gb-eyebrow { display: block; margin-bottom: 0; }
+body.gb-demo .order-change { align-self: center; font-size: 14px; line-height: 21px; color: var(--zinc-900); text-decoration: underline; text-underline-offset: 3px; }
+.order-pz { margin-bottom: var(--space-32); }
+.order-form { padding-top: var(--space-32); border-top: 1px solid var(--zinc-200); }
+.order-gift img { width: calc(var(--space-48) * 2); height: calc(var(--space-48) * 2); object-fit: contain; background: var(--white); border: 1px solid var(--zinc-200); border-radius: var(--radius); flex: none; }
+.order-gift__name { font-size: 18px; font-weight: 500; line-height: 27px; }           /* Card title */
+.order-gift__sub { font-size: 14px; line-height: 21px; color: var(--zinc-600); }
+.order-form { display: flex; flex-direction: column; gap: var(--form-row-gap); }
+.order-form gb-field { display: block; }
+.order-qty .gb-inputnumber { margin-top: var(--space-8); width: fit-content; }   /* hugs its three cells, as in the showcase */
+.order-alert:empty { display: none; }
+/* ---- 5. the drawer of similar gifts (content only; the drawer is the owner's) ---- */
+.sim-list { list-style: none; margin: 0; padding: 0; }
+.sim-card { display: grid; grid-template-columns: calc(var(--space-64) * 2) minmax(0, 1fr); column-gap: var(--space-16); align-items: center; padding: var(--space-16) 0; border-bottom: 1px solid var(--zinc-200); }
+.sim-card:first-child { padding-top: 0; }
+.sim-card__img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--zinc-50); border-radius: var(--radius); display: block; }
+.sim-card__name { margin: 0; font-size: var(--space-16); font-weight: 500; line-height: var(--space-24); color: var(--zinc-900); }
+.sim-card__price { margin: 0; font-size: 14px; font-weight: 300; line-height: 21px; letter-spacing: 2px; color: var(--zinc-900); } /* Price */
+.sim-card .gb-btn { margin-top: var(--space-8); }
+.sim-lede { margin: 0 0 var(--space-24); font-size: var(--space-16); line-height: var(--space-24); color: var(--zinc-700); }
+/* ---- the personalize drawer (content only): the anatomy of
+   design-share's gbds-pz, which is the checkout's; same rhythm ---- */
+.pz-group { margin-top: var(--space-32); }
+.pz-group[hidden] { display: none; }
+.pz-row + .pz-row, .pz-group > .gb-alert { margin-top: var(--space-32); }
+.pz-group gb-field { display: block; }
+.pz-group .gba-field { padding: 0; margin-bottom: 0; }   /* one column, the drawer's rule (share: gbds-pz__group) */
+.pz-group .gba-input { padding-inline: 0; }
+.pz-item > .gb-eyebrow { display: block; margin: 0; line-height: 1.5; }
+.pz-name { margin: var(--space-8) 0 0; font-family: var(--font-serif); font-size: 18px; font-weight: 400; line-height: 1.25; color: var(--zinc-900); }
+.pz-item > .pz-where { display: block; margin-top: var(--space-8); }
+.pz-item > gb-field { margin-top: var(--space-16); }
+.pz-count { display: block; margin: var(--space-8) 0 0; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.pz-foot { display: flex; gap: var(--space-16); }
+.pz-foot .gb-btn { flex: 1 1 auto; }
+
+/* ================================================================
+   2. THE BRAND READING (SRC: live-customizer.css .live-brand-*)
+   The source draws it inside the customizer's right panel (#f7f7f7
+   ground). Here it is a full screen overlay over the landing (the
+   brief); the ground is the source panel's own #f7f7f7, the block
+   inside is the source block unchanged.
+   ================================================================ */
+.lbr { position: fixed; inset: 0; z-index: 900; display: flex; background: #f7f7f7; color: #1f1f20; font-family: var(--font-sans); letter-spacing: 0.01em; } /* SRC --live-panel, --live-ink */
+.lbr[hidden] { display: none; }
+.lbr-loading {
+  display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center;
+  width: min(100% - 96px, 480px); margin: auto; padding: 54px 0 18px;              /* SRC */
+}
+.lbr-loading h1 {
+  margin: 0 0 44px; color: #59595e; font-size: 22px; font-weight: 400;              /* SRC */
+  letter-spacing: 0.08em; text-align: center; font-family: var(--font-sans);
+}
+.lbr-card {
+  position: relative; display: grid; place-items: center;
+  width: min(100%, 456px); aspect-ratio: 1 / 1; overflow: hidden;                  /* SRC */
+  border-radius: var(--radius); background: #f2f2f2;                               /* SRC --live-radius 5 = --radius */
+  box-shadow: 0 8px 14px rgb(0 0 0 / 12%);                                         /* SRC */
+}
+.lbr-card > strong { z-index: 2; color: #97979d; font-size: 23px; font-weight: 600; letter-spacing: 0.08em; } /* SRC */
+.lbr-card.is-purple, .lbr-card.is-blue { grid-template-columns: repeat(4, 1fr); background: transparent; }
+.lbr-card.is-purple > i, .lbr-card.is-blue > i { width: 100%; height: 100%; }
+.lbr-card.is-purple > i:nth-child(1) { background: #341038; }
+.lbr-card.is-purple > i:nth-child(2) { background: #682173; }
+.lbr-card.is-purple > i:nth-child(3) { background: #a333ad; }
+.lbr-card.is-purple > i:nth-child(4) { background: #68216e; }
+.lbr-card.is-purple > strong, .lbr-card.is-blue > strong { position: absolute; bottom: 62px; color: rgb(255 255 255 / 82%); font-size: 12px; }
+.lbr-card.is-blue { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.lbr-card.is-blue > i:nth-child(1) { background: #1d9fc4; }
+.lbr-card.is-blue > i:nth-child(2) { background: #36c5f0; }                         /* SRC --live-cyan */
+.lbr-card.is-blue > i:nth-child(3) { background: #72d0e8; }
+.lbr-card.is-blue > i:nth-child(4) { width: 72%; height: 72%; align-self: start; justify-self: start; background: #b9e7f3; }
+.lbr-card.is-blue > strong { right: 76px; top: 108px; bottom: auto; color: #235160; }
+.lbr-card.is-vibe { background: linear-gradient(135deg, #32103a, #6c2272); }
+.lbr-vibe { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; padding: 48px; }
+.lbr-vibe span { padding: 13px 19px; border: 1px solid rgb(255 255 255 / 35%); color: var(--white); font-size: 12px; letter-spacing: 0.14em; }
+.lbr-card.is-craft {
+  background-color: #100913;
+  background-image: linear-gradient(rgb(97 31 105 / 18%) 1px, transparent 1px), linear-gradient(90deg, rgb(97 31 105 / 18%) 1px, transparent 1px);
+  background-size: 38px 38px;
+}
+.lbr-craft { position: relative; width: 170px; height: 130px; border: 1px solid #663369; }
+.lbr-craft::before, .lbr-craft::after { content: ""; position: absolute; background: #100913; }
+.lbr-craft::before { inset: -2px 31% 55% -2px; border-right: 1px solid #663369; border-bottom: 1px solid #663369; }
+.lbr-craft::after { inset: 49% -2px -2px 62%; border-left: 1px solid #663369; border-top: 1px solid #663369; }
+.lbr-progress { width: min(100%, 456px); height: 15px; margin-top: 31px; overflow: hidden; border-radius: var(--radius); background: #e6e6e8; } /* SRC */
+.lbr-progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: #2f68e9; transition: width 600ms ease; } /* SRC --live-blue, 600ms ease */
+@media (max-width: 900px) {                                                            /* SRC breakpoint */
+  .lbr-loading { width: min(100% - 48px, 450px); padding: 22px 0; }
+  .lbr-loading h1 { margin-bottom: 18px; font-size: 18px; }
+  .lbr-card { width: min(42dvh, 300px); }
+  .lbr-progress { width: min(42dvh, 300px); margin-top: 16px; }
+}
+body[data-screen="reading"] { overflow: hidden; }
+
+/* ================================================================
+   3. THE CUSTOMIZER PAGE. Grid = the live product page 810:
+   body #fcfdfd (--live-body), panel column from y 112 (32 under the
+   80 header), at 1440 image column 683 at x 24 and panel 581 at
+   x 835 (gap 128); below 1024 one column: scene, then panel.
+   ================================================================ */
+.lpp-screen.lpc { background: var(--live-body); padding-top: var(--space-32); }
+.lpc-grid { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--space-32); }
+@media (min-width: 1024px) {
+  .lpc-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 520px); column-gap: var(--space-64); align-items: start; } /* LIVE lg:w-[520px] */
+}
+@media (min-width: 1280px) {
+  .lpc-grid { grid-template-columns: minmax(0, 683fr) minmax(0, 581fr); column-gap: calc(var(--space-64) * 2); } /* LIVE 683 / 581 / 128 at 1440 */
+}
+
+/* (gbppl-lp227-landing-variants-1: the old scene, the doors and the
+   «why» line are gone; the hints stay for the diy scene.) */
+.lpc-hint { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-8); text-align: center; pointer-events: none; }
+.lpc-hint__rotate { display: inline-flex; align-items: center; gap: var(--space-8); font-size: 14px; line-height: 21px; letter-spacing: 0.12em; color: var(--zinc-500); } /* LIVE Rotate 360 line */
+.lpc-hint__rows { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-8) var(--space-24); margin: 0; font-weight: 400; font-size: 11px; line-height: 1.5; } /* design-share .gbds-hint: 11 caps, 400 */
+.lpc-hint__bit { display: inline-flex; align-items: center; gap: var(--space-8); }
+@media (hover: none), (pointer: coarse) { .lpc-hint__rows { display: none; } }   /* design-share rule: no mouse words on glass */
+
+.lpc-more { margin-top: var(--space-24); text-align: center; }
+body.gb-demo .lpc-more a { font-size: var(--space-16); line-height: var(--space-24); color: var(--zinc-900); text-decoration: underline; text-underline-offset: 3px; } /* NO TOKEN: underline offset, as the draft's quiet links */
+
+/* ================================================================
+   3a. LANDING «CHOICE» (gbppl-lp227-landing-variants-1, 28.09).
+   The live product page 906, measured with the harvest at 390 / 768
+   / 1440 (harvest/public-product-906, and -diy for the second card
+   chosen). Every LIVE literal is the page's own (Ton-13: a copy of a
+   page we do not own is a source); the grid is .lpc-grid, which is
+   the same PDP template (810 and 906 share it: 683 / 581 / 128 at
+   1440). The radio cards are the live's black radio, not the house
+   blue .gb-radio--select: Ton, «всё точно как на сайте».
+   Breakpoints are the live's: lg 1024, xl 1280, 2xl 2000.
+   ================================================================ */
+.lpp-screen.lpv { padding: 0; }
+.lpv-gallery { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; }   /* LIVE info-mobile-gallery 358 x 364 at 390 */
+.lpv-gallery img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
+.lpv-gallery.is-frame img { border-radius: var(--radius); }
+.lpv-panel { display: flex; flex-direction: column; margin-top: var(--space-24); padding: var(--space-32) 0; }   /* LIVE mt 24, py 32 */
+@media (min-width: 1024px) {
+  .lpv .lpc-grid { align-items: stretch; }
+  .lpv-gallery { aspect-ratio: auto; min-height: calc(100dvh - var(--header-h)); }                      /* LIVE hero slot min-h calc(100dvh - 80) */
+  .lpv-gallery img { width: 100%; height: auto; aspect-ratio: 1; max-height: calc(100dvh - var(--header-h)); }   /* LIVE 683 square, centred */
+  .lpv-panel { margin-top: var(--space-32); padding: var(--space-64) 0; min-height: calc(100dvh - var(--header-h)); box-sizing: border-box; }  /* LIVE mt 32, py 64 */
+}
+@media (min-width: 2000px) { .lpv-panel { padding: calc(var(--space-64) * 2) 0; } }
+
+.lpv-designs { margin-bottom: var(--space-16); }                        /* Ton's addition: the designs door above the title */
+.lpv-designs .gb-btn, .lpd-head .gb-btn { gap: var(--space-8); }
+.lpv-count { margin-left: var(--space-8); }                             /* the badge after the label, one step of air */
+
+.lpv-price { margin-top: var(--space-16); font-size: 14px; font-weight: 300; line-height: 21px; letter-spacing: 2px; color: var(--zinc-900); }   /* LIVE */
+@media (min-width: 1024px) { .lpv-price { margin-left: 12px; font-size: 16px; line-height: 24px; } }   /* LIVE lg:ml-3, NO TOKEN 12 */
+@media (min-width: 1280px) { .lpv-price { font-size: 18px; line-height: 27px; } }
+@media (min-width: 2000px) { .lpv-price { margin-left: var(--space-16); font-size: 20px; line-height: 30px; } }
+
+.lpv-options { flex: 1; display: flex; flex-direction: column; justify-content: center; margin-top: var(--space-16); padding: var(--space-16) 0 var(--space-64); }  /* LIVE pt-4 pb-16 */
+.lpv-options > * + * { margin-top: var(--space-32); }                   /* LIVE space-y-8 */
+.lpv-options > .lpc-more { margin-top: var(--space-24); }
+@media (min-width: 1024px) { .lpv-options { padding: var(--space-32) 0 calc(var(--space-64) * 2); } }   /* LIVE lg:pt-8 lg:pb-32 */
+@media (min-width: 1280px) { .lpv-options { padding-bottom: calc(var(--space-64) * 3); } }                  /* LIVE xl:pb-48 */
+@media (min-width: 2000px) { .lpv-options { padding-bottom: calc(var(--space-64) * 4); } }                  /* LIVE 2xl:pb-64 */
+
+.lpv-group { display: flex; flex-direction: column; gap: var(--space-16); }
+@media (min-width: 1280px) { .lpv-group { gap: var(--space-24); } }
+@media (min-width: 2000px) { .lpv-group { gap: var(--space-32); } }
+
+.lpv-card { display: flex; gap: 12px; padding: 12px; border: 1px solid var(--zinc-200); border-radius: var(--radius); cursor: pointer; }  /* LIVE px-3 py-3 gap-3, NO TOKEN 12 */
+.lpv-card:has(input:checked) { border-color: var(--zinc-600); box-shadow: 0 0 6px 3px rgb(0 0 0 / 15%); }   /* LIVE border-surface-600 + shadow */
+@media (min-width: 1280px) { .lpv-card { gap: var(--space-24); padding: var(--space-24) var(--space-32); } }
+@media (min-width: 2000px) { .lpv-card { gap: var(--space-32); padding: var(--space-32) 40px; } }         /* LIVE 2xl:px-10, NO TOKEN 40 */
+
+.lpv-radio { position: relative; flex: none; width: 20px; height: 20px; margin-top: 2px; }             /* LIVE w-5 h-5 mt-[2px] */
+.lpv-radio input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.lpv-radio__box { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; box-sizing: border-box; border: 1px solid var(--zinc-300); border-radius: var(--radius-pill); background: var(--white); transition: border-color var(--mo-micro) var(--mo-move); }
+.lpv-radio__dot { width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--zinc-900); transform: scale(0.1); visibility: hidden; transition: transform var(--mo-micro) var(--mo-move); }
+.lpv-card:hover .lpv-radio__box, .lpv-radio input:checked + .lpv-radio__box { border-color: var(--zinc-900); }
+.lpv-radio input:checked + .lpv-radio__box .lpv-radio__dot { transform: none; visibility: visible; }
+.lpv-radio input:focus-visible + .lpv-radio__box { outline: 2px solid var(--zinc-500); outline-offset: 2px; }
+
+.lpv-card__copy { display: flex; flex-direction: column; min-width: 0; }
+.lpv-card__title { font-size: 14px; font-weight: 700; line-height: 21px; letter-spacing: 1.5px; color: var(--zinc-900); }   /* LIVE */
+.lpv-card__desc { padding-top: var(--space-8); font-size: 10px; font-weight: 400; line-height: 15px; letter-spacing: 1.5px; color: var(--zinc-900); }   /* LIVE text-[10px], sic */
+@media (min-width: 1280px) {
+  .lpv-card__title { font-size: 16px; line-height: 24px; }
+  .lpv-card__desc { padding-top: var(--space-16); font-size: 16px; line-height: 24px; }
+}
+@media (min-width: 2000px) {
+  .lpv-card__title { font-size: 18px; line-height: 27px; }
+  .lpv-card__desc { padding-top: var(--space-24); font-size: 18px; line-height: 27px; }
+}
+
+/* ================================================================
+   3b. LANDING «DIY»: the customizer's step Your Design, off Ton's
+   screens (1790597799957, 1790597800265). They are about 2280 css
+   wide (the live header reads 80 at dsf 1.11 on his 906 screen of
+   the same set), so the drawn sizes are the 2K rungs and step down
+   by the house ladders. Marked SCREEN where a proportion is read
+   off the picture; there is no instrument reading behind the gate.
+   ================================================================ */
+.lpd[hidden] { display: none; }
+.lpd { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100dvh; background: var(--white); }
+@media (min-width: 1024px) { .lpd { grid-template-columns: minmax(0, 63fr) minmax(0, 37fr); } }   /* SCREEN 1257 / 743 of 2000 */
+body[data-land="diy"][data-screen="gift"] .lpp-header { display: none; }                      /* the customizer is full screen, the cross closes it */
+
+.lpd-scene { position: relative; min-height: 520px; background: var(--white); }
+@media (min-width: 1024px) { .lpd-scene { min-height: 100dvh; } }
+.lpd-close { position: absolute; top: var(--space-16); left: var(--space-16); z-index: 2; }
+@media (min-width: 1024px) { .lpd-close { top: var(--space-24); left: var(--space-24); } }
+.lpd-scene__img { position: absolute; inset: var(--space-64) var(--space-16) calc(var(--space-64) * 2); }
+@media (min-width: 1024px) { .lpd-scene__img { inset: var(--space-64) var(--space-64) calc(var(--space-64) * 2 + var(--space-32)); } }
+.lpd-scene__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; user-select: none; filter: drop-shadow(0 16px 15px rgb(0 0 0 / 5%)); }
+.lpd-scene__img.is-frame img { filter: none; border-radius: var(--radius); }
+.lpd-hint { bottom: var(--space-24); }
+.lpd-hint__rotate { letter-spacing: 1px; color: var(--zinc-700); }
+.lpd-hint__note { margin: 0; font-size: 14px; line-height: 21px; letter-spacing: 1px; color: var(--zinc-500); }
+
+.lpd-panel { display: flex; flex-direction: column; padding: var(--space-32) var(--space-16) var(--space-32); background: var(--zinc-100); }   /* SCREEN #f7f7f7, the nearest rung is Zinc 100 */
+@media (min-width: 1024px) {
+  .lpd-panel { position: sticky; top: 0; height: 100dvh; box-sizing: border-box; padding: var(--space-32) var(--space-48) var(--space-32); }
+  .lpd-panel__top { flex: 1; min-height: 0; overflow-y: auto; margin: 0 calc(var(--space-8) * -1); padding: 0 var(--space-8); }
+}
+@media (min-width: 2000px) { .lpd-panel { padding: var(--space-48) var(--space-64); } }
+
+.lpd-dots { display: flex; justify-content: center; margin: 0; padding: 0; list-style: none; }
+.lpd-dots li { position: relative; width: 12px; height: 12px; box-sizing: border-box; border: 1px solid var(--zinc-400); border-radius: var(--radius-pill); }   /* SCREEN, NO TOKEN 12 */
+.lpd-dots li + li { margin-left: var(--space-64); }
+.lpd-dots li + li::before { content: ""; position: absolute; top: 50%; right: 100%; width: var(--space-64); height: 1px; background: var(--zinc-300); }
+.lpd-dots li.is-on { border-color: var(--zinc-900); }
+
+.lpd-nav { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; margin-top: var(--space-8); }
+.lpd-nav__back svg { transform: scaleX(-1); }                 /* the one arrow of the register, turned back */
+.lpd-title { margin: 0; text-align: center; font-family: var(--font-sans); font-size: 16px; font-weight: 500; line-height: 24px; color: var(--zinc-700); }
+.lpd-dna { display: flex; justify-content: center; margin-top: var(--space-16); }
+
+.lpd-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-16); margin-top: var(--space-32); }
+.lpd-head .lpd-h2 { white-space: nowrap; }
+.lpd-h2 { margin: 0; font-family: var(--font-sans); font-size: 18px; font-weight: 400; line-height: 27px; letter-spacing: 1px; color: var(--zinc-900); }
+
+.lpd-designs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-8); margin-top: var(--space-16); }
+.lpd-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-8); aspect-ratio: 1; padding: 0; overflow: hidden; border: 0; border-radius: var(--radius); background: var(--white); cursor: pointer; font: inherit; }
+.lpd-tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.lpd-tile.is-on { box-shadow: inset 0 0 0 2px var(--zinc-900); }       /* SCREEN: the chosen design wears a black frame */
+.lpd-tile.is-on img { outline: 2px solid var(--zinc-900); outline-offset: -2px; }
+.lpd-tile--stub { background: var(--zinc-50); }
+.lpd-tile__note { font-size: 12px; line-height: 18px; color: var(--zinc-500); }
+.lpd-swatches { display: flex; flex-direction: column; gap: 2px; }       /* NO TOKEN 2: the hairline between the two rows */
+.lpd-swatch { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--space-8); background: var(--white); font-size: 12px; line-height: 18px; color: var(--zinc-700); }
+.lpd-swatch i { width: var(--space-32); height: var(--space-32); border-radius: 2px; }   /* NO TOKEN 2, SCREEN */
+.lpd-info { margin-top: var(--space-24); padding: var(--space-8) var(--space-16); border: 1px solid var(--zinc-200); background: var(--zinc-50); font-size: 12px; line-height: 18px; color: var(--zinc-700); }   /* SCREEN */
+
+/* gbppl-lp227-diy-more-overlay-1 (28.09): the row of six compact
+   cards (.lpd-more / .lpd-gifts) is gone with its CSS. Ton: «разгрузить
+   правую панель». Its place is the quiet link .lpc-more, as is (its
+   own margin-top 24 under the info line); the six open one level up,
+   in the catalog overlay, see «4. SIX MORE» below. */
+
+.lpd-next { position: relative; }
+.lpd-next .gb-icon { position: absolute; right: var(--space-24); }   /* SCREEN: the arrow sits at the far edge, the label stays centred */
+.lpd-actions { display: flex; flex-direction: column; gap: var(--space-16); padding-top: var(--space-24); }
+
+/* ---- The live chat circle and the prototype's quiet switch ---- */
+.lpp-chat { position: fixed; right: var(--space-16); bottom: var(--space-16); z-index: 40; border-radius: var(--radius-pill); }
+@media (min-width: 1024px) { .lpp-chat { right: var(--space-24); bottom: var(--space-24); } }
+body[data-screen="landing"] .lpp-chat, body[data-screen="reading"] .lpp-chat { display: none; }
+.lpp-land { margin: 0; padding: var(--space-24) var(--space-16); text-align: center; font-size: 12px; line-height: 18px; color: var(--zinc-500); background: var(--white); }
+.lpp-land a { color: inherit; }
+.lpp-land a[aria-current] { color: var(--zinc-900); text-decoration: none; font-weight: 600; }
+body[data-screen="reading"] .lpp-land { display: none; }
+
+/* ================================================================
+   4. SIX MORE: the catalog grid (catalog.css gbcL-row / gbcL-cell,
+   <gb-listing-card> stamped as is). The ground is the catalog's
+   Zinc 100 under Zinc 50 cards.
+   ================================================================ */
+.lpp-screen.lpm { background: var(--zinc-100); }
+.lpm-head { margin-bottom: var(--space-32); }
+.lpm-grid { font-family: var(--font-sans); color: var(--catalog-ink); }
+.lpm-grid .gbcL-row { margin: 0 calc(var(--space-8) * -1); }
+.lpm-grid .gbcL-cell { width: 50%; padding: 0 var(--space-8) var(--space-16); }  /* phone: 2 in a row (brief); the catalog has 1 below 640 */
+@media (min-width: 1024px) { .lpm-grid .gbcL-cell { width: 33.333333%; } }        /* = catalog lg */
+.lpm-grid a.gbcCard { color: inherit; text-decoration: none; }
+.lpm-choose { margin-top: var(--space-16); }
+@media (max-width: 767px) {
+  /* DEVIATION: two columns of 171 do not hold the catalog's 436
+     frame and 32 pad; the frame shortens and the pad drops a rung. */
+  .lpm-grid .gbcCard-frame { height: 320px; }
+  .lpm-grid .gbcCard-pad { padding: var(--space-16); }
+  .lpm-grid .gbcCard-title { font-size: var(--space-16); }
+  .lpm-grid .gbcCard-price { font-size: 14px; }
+  /* DEVIATION (gbppl-lp227-diy-more-overlay-1): CHOOSE THIS ONE ran
+     past its own border in a column of 163 (the overlay at 360, 125 of
+     text in 111) and of 171 (the full screen, 130 in 120). The card's
+     side pad and the small button's side pad each drop one rung, 16 to
+     --space-8, on a phone only. */
+  .lpm-grid .gbcCard-pad { padding-inline: var(--space-8); }
+  .lpm-grid .lpm-choose { --gbb-pad-x: var(--space-8); }
+}
+
+/* The gift on the scene, marked in the grid as it was in the row
+   (SCREEN black frame, unchanged from the row it came from). */
+.lpm-grid .gbcL-cell.is-current a.gbcCard { box-shadow: inset 0 0 0 2px var(--zinc-900); }
+
+/* LAYER MODE (gbppl-lp227-diy-more-overlay-1). The same screen framed
+   by live/catalog-overlay.js at ?s=more&studio=embedded: the overlay
+   strips the site header itself; the page drops its own furniture
+   (the chat circle, the prototype's landing switch) and the screen
+   takes the whole frame, no header height to leave. Ground Zinc 100
+   to the bottom, the catalog's. No new values. */
+body[data-layer="more"] { background: var(--zinc-100); }
+body[data-layer="more"] .lpp-header,
+body[data-layer="more"] .lpp-chat,
+body[data-layer="more"] .lpp-land { display: none; }
+body[data-layer="more"] .lpp-screen.lpm { min-height: 100dvh; }
+
+/* ---- the designs drawer: rows of the draft's similar list ---- */
+.sim-card.is-current .sim-card__img { box-shadow: inset 0 0 0 2px var(--blue-600); }   /* Ton-5: blue is state */
+.sim-card__now { display: block; margin-top: var(--space-8); }

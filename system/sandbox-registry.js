@@ -842,6 +842,24 @@
           tags: ['portal', 'flow'],
           created: '2026-09-22',
           updated: '2026-09-23'
+        },
+        {
+          /* gbppl-approvals-v5-versions-1 + gbppl-approvals-v5-rebuild-1,
+             28-29.09. Ton: the backend has no chat events, so the
+             page keeps versions and the notes on them instead of a
+             chat; a snapshot instead of the 3D scene, the 3D page
+             opens in a new tab. Five passes in one evening: one
+             accordion, one open card, no status lines, gift details
+             in a drawer, the 3D door inside the snapshot. */
+          id: 'v5',
+          label: 'Versions, not chat',
+          desc: 'No chat and no history tab: the design versions are one accordion, the open card is the one in the preview, and each version carries the client’s request and the team’s note. Approve and Request changes on the latest version, Approve on an older one. Gift details open in a drawer; the preview is a render snapshot with an Open 3D preview door.',
+          status: 'in-progress',
+          href: 'live/gift-approvals.html?pv=f&gift=stags-leap-night-and-day',
+          ready: true,
+          tags: ['portal', 'flow'],
+          created: '2026-09-28',
+          updated: '2026-09-29'
         }
       ]
     },

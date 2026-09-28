@@ -5,6 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Gifts · GildedBox Portal</title>
 <link rel="icon" href="data:,">
+<!-- ============================================================
+     gbppl-dd151-default-card-1 (2026-09-28) · MY GIFTS KNOWS A GIFT'S
+     DEFAULT GREETING CARD
+     ------------------------------------------------------------
+     DD-151, flow 1 of docs/DD-151-DEFAULT-CARD-MESSAGE-CONCEPT.md
+     (Ren, 28.09). Each gift card: a quiet «Default message» badge when
+     the gift has one (all roles), and a three-dot menu with «Default
+     card message» (admins only; ?role=viewer or Role in the console
+     hides it). The item opens <gb-drawer id="ptCardDrawer"> on the
+     checkout personalize drawer's GREETING CARD in default mode:
+     title «Default card message», its sub line, Card heading 50 / Card
+     message 500 / Your signature 100 with counters, foot Clear default
+     / Save. ?card=default lands on three gifts with the drawer open.
+     ------------------------------------------------------------
+     gbppl-dd151-live-pages-2 (2026-09-28) · MY GIFTS IS THE LIVE PAGE
+     Ton on the first wave: «My Gifts: карточки, а ты прислал пустой My
+     Gifts». Every piece now evolves the page read from his Chrome today
+     (harvest/portal-live-2026-09-28): the three live gifts in live order
+     with their renders (portal-assets/), the hover lens, the live dark
+     menu plate with the live rows Archive / Grant Access to Users and
+     ours last, the body without the price line, SEND THIS GIFT at the
+     live 48 (--medium at 2K), the crumbs Home › Customer › My Gifts and
+     the title card in nav=live too. The default sits on Coffee Lover.
+     ?gifts=3 lands on the three gifts without the drawer.
+     ============================================================ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -157,6 +182,12 @@
      documentation atoms, and every selector in it is prefixed. The switch
      appears in the Mode section of the console on its own. -->
 <link rel="stylesheet" href="../system/components/drawer.css">
+<!-- gbppl-dd151-default-card-1: the default card drawer is the checkout's
+     personalize drawer (tabs, fields, counters, the Tags note) and the
+     card wears the quiet badge, so the three owners come along. -->
+<link rel="stylesheet" href="../system/components/tabs.css">
+<link rel="stylesheet" href="../system/components/alert.css">
+<link rel="stylesheet" href="../system/components/badge.css">
 <link rel="stylesheet" href="../system/components/docs.css">
 <link rel="stylesheet" href="../system/components/inspect.css">
 <!-- gbppl-comments-dress-1: the thread's note | suggest switch wears the system Toggle button. -->
@@ -3057,7 +3088,14 @@
      48px Zinc 800 SEND THIS GIFT in the portal button theme (Inter
      400 16 UPPERCASE ls -0.4px, NOT Oro 600). Live's grid is
      flex-wrap with 12px column pads; our css-grid with a 24px gap
-     renders the same 24px gutters. */
+     renders the same 24px gutters.
+     gbppl-dd151-live-pages-2 (28.09, re-read from the live page in
+     Ton's Chrome, harvest/portal-live-2026-09-28): the photo zone holds
+     the gift's own render (img object-contain on the Zinc 50 ground),
+     the lens shows on hover as live, the menu button is the live dark
+     plate, and the price line under the name is GONE: the live body is
+     name, an empty row (col pt-6, 24) and pt 24 to the button, 32 all
+     round, 190 tall at 2266. */
   .gift-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -3079,12 +3117,46 @@
   }
   .gift-photo {
     position: relative;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 4 / 3;              /* live pt-75% */
+    background: var(--zinc-50);       /* live bg-surface-50, the card's own ground */
+  }
+  .gift-photo__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;              /* live img object-contain */
+    display: block;
+  }
+  /* THE LENS (live: icon-magnifier-plus 36 in a 64 square, rgba(0,0,0,.5),
+     radius 4, opacity 0 -> 1 on hover of the photo). Inert here: the live
+     one opens the picture larger, the studio has no viewer to open.
+     NO TOKEN: the 64 square and the 36 glyph are live numbers (64 is
+     --space-64 by coincidence of value, not of role); the veil and the
+     radius 4 are live values beside the 5px brand radius. */
+  .gift-lens {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 64px;
+    height: 64px;
+    margin: -32px 0 0 -32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--zinc-400); /* placeholder glyph ink (currentColor) */
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, .5);
+    color: var(--white);
+    opacity: 0;
+    transition: opacity 200ms ease;
+    cursor: pointer;
   }
+  .gift-lens svg { width: 36px; height: 36px; display: block; }
+  .gift-photo:hover .gift-lens,
+  .gift-lens:focus-visible { opacity: 1; }
+  .gift-lens:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }
   /* Price badge per live: Zinc 200 fill, Zinc 900 text, Inter 400
      14px (xl), lh 150%, ls 0.5px, pad 3px 6px, radius 5, at 16/16 */
   .price-chip {
@@ -3117,14 +3189,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  /* Price line under the name, per live: Inter 400 14, ls 0.2, Zinc 900 */
-  .gift-price {
-    font-size: 14px;
-    letter-spacing: 0.2px;
-    color: var(--zinc-900);
-    text-align: center;
-    margin-bottom: 24px; /* live pt-6 above the button, kept as a floor */
-  }
   /* THE CARD'S SEND BUTTON IS THE ORGANISM (gbppl-button-2).
      .btn-send was a hand-cut 48px Zinc 800 full-width button with
      the outer type at 16/400. It is .gb-btn --large --filled
@@ -3135,6 +3199,144 @@
      text into the live L label. margin-top:auto stays: it is how
      the card pushes the button to its floor, and that is layout. */
   .gift-send { margin-top: auto; }
+  /* gbppl-dd151-live-pages-2: the live distance name -> button is the
+     empty row (pt-6, 24) plus the button row's pt 24 = --space-48, and
+     the rung is --medium: 48 at 2K is the live 48 at 2266 (the --large
+     rung climbed to 64 there). The fill stays the system black, Zinc
+     900 against live Zinc 800 (gbppl-button-2, Ton-5 furniture). */
+  .gift-name + .gift-send { margin-top: var(--space-48); }
+
+  /* ============================================================
+     THE GIFT'S DEFAULT CARD          gbppl-dd151-default-card-1 (28.09)
+     ------------------------------------------------------------
+     DD-151 (Julia, 18.09), concept docs/DD-151-DEFAULT-CARD-MESSAGE-
+     CONCEPT.md, flow 1. A gift card in My Gifts carries:
+       · a quiet badge «Default message» (gb-badge neutral --quiet, the
+         skin for light plates) when the gift has a saved default card,
+         seen by every role;
+       · a menu (three dots, Nucleo 48-dots-vertical) whose item
+         «Default card message» opens the checkout's personalize drawer
+         on GREETING CARD in default mode. Since gbppl-dd151-live-pages-2
+         the menu is the LIVE one (Archive, Grant Access to Users) with
+         ours added last; a viewer loses our item only.
+     Both stand in the photo zone, so the body of the card (name, price,
+     Send This Gift) does not move by a pixel between a card with a
+     default and one without. The badge takes the price chip's inset
+     (16) at the other corner, the menu the same 16 at the top right.
+     THE MENU HAS NO OWNER IN THE SYSTEM (no overflow menu organism;
+     the checkout's Bulk actions is hand-built too). Its plate is the
+     checkout menu's recipe on tokens: white, Zinc 200 hairline,
+     --radius, --shadow-panel, 8 inside, rows 8 / 16 at 14 Zinc 900,
+     Zinc 50 under the cursor. Candidate for system: a menu organism.
+     ============================================================ */
+  /* AND THE GRID FOLDS TO ONE COLUMN UNDER 768 (DECLARED, Ton-17). The
+     grid had no step at all: at 360 three cards of 93px cut Send This Gift
+     and the names to «C..», and this wave's menu had nowhere to open. The
+     live portal stacks its cards on a phone; one column is that answer,
+     and nothing changes from 768 up. */
+  @media (max-width: 767px) { .gift-grid { grid-template-columns: 1fr; } }
+  /* gbppl-dd151-live-pages-2: the title card now stands in nav=live too,
+     and at 360 «My Gifts» broke into two lines beside GET HELP. The title
+     keeps one line and the button takes the next row at the right edge
+     (DECLARED, the live phone card was not read). */
+  @media (max-width: 767px) {
+    .title-card { flex-wrap: wrap; row-gap: var(--space-16); }
+    .page-title { white-space: nowrap; }
+    /* and the sticky Start Gifting bar cut EXPLORE GIFTS off the screen
+       at 360 and covered the cards. On a phone the bar stands in the
+       flow under the cards, where the live page keeps it on every
+       width, the sentence over the pair, the pair stacked full width
+       (DECLARED, same wave; the JS inline left/width/bottom yield). */
+    body .cta-bar.bar-sticky { position: static; left: auto !important; width: auto !important; bottom: auto !important; margin-top: var(--space-24); flex-direction: column; align-items: stretch; gap: var(--space-16); padding: var(--space-24); border-radius: var(--radius); animation: none; }
+    body .cta-bar.bar-sticky .bar-actions { margin-left: 0; flex-direction: column; }
+    body .content.has-fixed-bar { padding-bottom: 0; }   /* body: this block stands above the base bar rules in the file */
+  }
+  .gift-default-badge { position: absolute; left: var(--space-16); bottom: var(--space-16); }
+  .gift-default-badge[hidden] { display: none; }             /* trap 29 */
+  /* gbppl-dd151-live-pages-2: THE MENU AS LIVE. The button is the live
+     dark plate, not our ghost circle: 32 x 32 at 16/16, rgba(24,24,27,.4)
+     (NO TOKEN, the live value: Zinc 900 at 40%), radius 5, a white Nucleo
+     dots-vertical 13. The list carries the live two rows word for word
+     (Archive, Grant Access to Users) and ours last (Default card
+     message); only ours is hidden from a viewer, so the menu itself
+     stays for every role, as live. The plate is the live list: white,
+     the card shadow (tailwind shadow-md, --shadow-card), radius 5, rows
+     14 Zinc 700 (li my-[2px]), Zinc 50 under the cursor. It opens under
+     the button, right edges on one line, and never past the card's
+     right line (plaques-stay-inside-lines). */
+  .gift-more { position: absolute; top: var(--space-16); right: var(--space-16); z-index: 2; }
+  .gift-more__btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: rgba(24, 24, 27, .4);  /* NO TOKEN: live value */
+    color: var(--white);
+    cursor: pointer;
+  }
+  .gift-more__btn svg { width: 13px; height: 13px; display: block; }   /* NO TOKEN: the live glyph box, 13 */
+  /* The live glyph is the Nucleo icon FONT, drawn solid; the outline SVG at 13 gives sub-pixel dots (compared by crop against the live frame). A fatter stroke on the same three dots brings them to the live ~2px. NO TOKEN. */
+  .gift-more__btn svg path { stroke-width: 5; }
+  .gift-more__btn:focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; }
+  [data-role="viewer"] .gift-more__own { display: none; }
+  .gift-more__menu {
+    position: absolute;
+    top: calc(100% + var(--space-8));
+    right: 0;
+    z-index: 5;                        /* NO TOKEN: above the neighbouring cards only */
+    width: max-content;
+    margin: 0;
+    padding: var(--space-8) 0;
+    list-style: none;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+  }
+  .gift-more__menu[hidden] { display: none; }
+  .gift-more__menu li { margin: 2px 0; }   /* NO TOKEN 2: live li my-[2px] */
+  .gift-more__item {
+    display: block;
+    width: 100%;
+    padding: var(--space-8) var(--space-16);
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--zinc-700);
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .gift-more__item:hover, .gift-more__item:focus-visible { background: var(--zinc-50); outline: none; }
+
+  /* THE DRAWER BODY is design-share's vanilla personalize form (the
+     same <gb-field>s from auth.js, the same rhythm): 32 under the tab
+     strip, 32 between rows, the counter 8 under its control in the
+     caps voice with tabular figures. Written again here because that
+     rhythm lives in design-share.html's own <style>, not in a system
+     file (candidate: one personalize-card organism for the pages). */
+  .pt-card { margin-top: var(--space-32); }
+  .pt-card__row + .pt-card__row,
+  .pt-card > .gb-alert { margin-top: var(--space-32); }
+  .pt-card gb-field { display: block; }
+  .pt-card__count { display: block; margin: var(--space-8) 0 0; line-height: 1.5; font-variant-numeric: tabular-nums; }
+  .pt-card .gba-input { box-sizing: border-box; border-style: solid; border-width: 0; border-bottom-width: 1px; }   /* trap 3, design-share's antidote; the field keeps its own inset, as in the checkout drawer */
+  .pt-card .gba-field { padding: 0; }
+  .pt-card .gba-label { display: block; margin-bottom: 4px; }   /* NO TOKEN 4: the checkout drawer's label gap (Tailwind mb-1), measured there */
+  .pt-card__tags .gb-alert__body { align-items: flex-start; }
+  .pt-card__tags .gb-alert__text p { margin: 0; }
+  .pt-card__tags .gb-alert__text p + p { margin-top: var(--space-8); }
+  .pt-card__tags-title { font-weight: 600; }
+  .pt-card__tags code { font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace; font-size: inherit; color: inherit; }   /* NO TOKEN: the stack docs.css writes */
+  /* The foot is the checkout drawer's row (.ck-drawer-actions): the
+     second button of a form is its reset, never Cancel (Ton 24.09),
+     the confirm is the primary blue, medium, 16 apart. */
+  .pt-card-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-16); }
 
   /* ============ COLLAPSED BAR ============ */
   .cta-bar {
@@ -3779,7 +3981,7 @@
         <nav class="crumbs" aria-label="Breadcrumb">
           <!-- Separator = SVG chevron 10x14 per the live breadcrumb
                (SYSTEM.md portal chrome, live 2026-08-12) -->
-          <span>Home</span><svg class="crumb-sep" width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3.5 4 3.5-4 3.5"/></svg><span class="crumb-last" data-label-russell="My Designed Gifts">My Gifts</span>
+          <span>Home</span><svg class="crumb-sep" width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3.5 4 3.5-4 3.5"/></svg><!-- gbppl-dd151-live-pages-2: the live middle crumb, nav=live only (the 12.08 drop stays in the forks) --><span class="crumb-mid nav-live-only">Customer</span><span class="crumb-mid nav-live-only" aria-hidden="true"><svg class="crumb-sep" width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3.5 4 3.5-4 3.5"/></svg></span><span class="crumb-last" data-label-russell="My Designed Gifts">My Gifts</span>
         </nav>
         <div class="title-card">
           <span class="title-icon" aria-hidden="true">
@@ -4101,6 +4303,8 @@
        The Design Studio door is not repeated: the panel's own doors
        are the way home.
        ============================================================ -->
+  <!-- gbppl-dd151-default-card-1: the default card drawer. -->
+  <gb-drawer id="ptCardDrawer"></gb-drawer>
   <gb-studio-panel data-root="../" page="portal"></gb-studio-panel>
 
 <!-- Registry BEFORE the panel: the panel reads it while it renders. -->
@@ -4189,42 +4393,229 @@
     positionBar();
   }
 
+  /* gbppl-dd151-live-pages-2 (28.09): THE THREE GIFTS OF THE LIVE PAGE,
+     in the live order, with the live renders (harvest/portal-live-
+     2026-09-28, S3/CDN, copied to portal-assets/). The nine invented
+     names with a placeholder glyph are gone: Ton, «My Gifts: карточки,
+     а ты прислал пустой My Gifts». Add a gift cycles the same three.
+     Coffee Lover carries the saved default card (the checkout's words). */
   var gifts = [
-    { name: 'Coffee Lover Gift Set',   price: '$95'  },
-    { name: 'Fully Charged Gift Set',  price: '$195' },
-    { name: 'Onyx Candle Set',         price: '$375' },
-    { name: 'Desk Retreat Gift Set',   price: '$95'  },
-    { name: 'Slow Morning Gift Set',   price: '$195' },
-    { name: 'Executive Welcome Set',   price: '$375' },
-    { name: 'Cozy Evening Gift Set',   price: '$95'  },
-    { name: 'Toast &amp; Trail Gift Set',  price: '$195' },
-    { name: 'Midnight Library Set',    price: '$375' }
+    { name: 'Fully Charged Gift Set', price: '$195', img: 'portal-assets/gift-fully-charged.webp' },
+    { name: 'Coffee Lover Gift Set',  price: '$95',  img: 'portal-assets/gift-coffee-lover.png',
+      cardDefault: { intro: 'Hello,', message: 'A small thank you from all of us at Acme for a remarkable year. Enjoy every cup.', from: 'The Acme team' } },
+    { name: 'Bose Frequent Flyer',    price: '$375', img: 'portal-assets/gift-bose-frequent-flyer.png' }
   ];
 
   var count = 0;
   var heroTimer = null;
 
-  var giftBoxSVG =
-    '<svg width="88" height="88" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">' +
-    '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/>' +
-    '<line x1="12" y1="22" x2="12" y2="7"/>' +
-    '<path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>' +
-    '<path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>';
+  /* ============================================================
+     ROLE AND THE DEFAULT CARD DRAWER    gbppl-dd151-default-card-1
+     ------------------------------------------------------------
+     ?role=viewer (absent = admin): the gift menu, whose one item is
+     «Default card message», is hidden; the badge stays for everyone.
+     ?card=default: the dashboard arrives with three gifts and the
+     drawer open on the first one, the door the campaign scene's
+     «Change the default» leads to (sandbox/dd151-campaign/).
+     The drawer is <gb-drawer> with the checkout personalize drawer's
+     anatomy: GIFT ITEMS / GREETING CARD in the house fill tabs (items
+     disabled: a default card has no parts), Card heading 50 / Card
+     message 500 / Your signature 100 as <gb-field> with «N / M chars»,
+     the Personalization Tags note, and the foot Clear default / Save.
+     Clear default empties the three lines (the form's reset, the Reset
+     family); Save keeps what is typed, and three empty lines = no
+     default, so the badge goes.
+     ============================================================ */
+  var pageParams = new URLSearchParams(location.search);
+  var role = pageParams.get('role') === 'viewer' ? 'viewer' : 'admin';
+  var roleGroup = null;
+  function setRole(value) {
+    role = value === 'viewer' ? 'viewer' : 'admin';
+    document.body.setAttribute('data-role', role);
+    closeGiftMenus();
+    try {
+      var u = new URL(location.href);
+      if (role === 'viewer') u.searchParams.set('role', 'viewer'); else u.searchParams.delete('role');
+      history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+    } catch (e) {}
+    if (roleGroup && roleGroup.setActive) roleGroup.setActive(role);
+  }
+  document.body.setAttribute('data-role', role);
+
+  function closeGiftMenus(except) {
+    var menus = document.querySelectorAll('.gift-more__menu');
+    for (var i = 0; i < menus.length; i++) {
+      if (menus[i] === except) continue;
+      menus[i].hidden = true;
+      var b = menus[i].parentNode.querySelector('[data-gift-more]');
+      if (b) b.setAttribute('aria-expanded', 'false');
+    }
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target : null;
+    if (!t) return;
+    var more = t.closest('[data-gift-more]');
+    if (more) {
+      var menu = more.parentNode.querySelector('.gift-more__menu');
+      var open = menu.hidden;
+      closeGiftMenus(menu);
+      menu.hidden = !open;
+      more.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) { var first = menu.querySelector('[role="menuitem"]'); if (first) first.focus(); }
+      return;
+    }
+    var item = t.closest('[data-gift-card-default]');
+    if (item) {
+      closeGiftMenus();
+      openCardDefault(item.closest('.gift-card')._gift);
+      return;
+    }
+    /* the live items stand in the list word for word and do nothing
+       here (gbppl-dd151-live-pages-2); a click only folds the list */
+    if (t.closest('[data-gift-live]')) { closeGiftMenus(); return; }
+    if (!t.closest('.gift-more')) closeGiftMenus();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var open = document.querySelector('.gift-more__menu:not([hidden])');
+    closeGiftMenus();
+    if (open) { var b = open.parentNode.querySelector('[data-gift-more]'); if (b) b.focus(); }
+  });
+
+  function escAttr(v) {
+    return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+  function cardCount(id, value, max) {
+    return '<span class="gb-eyebrow pt-card__count" id="' + id + '-count"><span data-pt-count="' + id + '">' +
+      String(value || '').length + '</span> / ' + max + ' chars</span>';
+  }
+  var editing = null;
+  function openCardDefault(gift) {
+    var drawer = document.getElementById('ptCardDrawer');
+    if (!gift || !drawer || typeof drawer.open !== 'function' || role === 'viewer') return;
+    editing = gift;
+    var d = gift.cardDefault || { intro: '', message: '', from: '' };
+    drawer.open({
+      title: 'Default card message',
+      sub: 'Applies to every order and campaign of this gift unless changed there',
+      html:
+        '<div class="gba-scale-portal">' +
+          '<div class="gb-tabs gb-tabs--fill" role="tablist" aria-label="What to personalize">' +
+            '<button type="button" class="gb-tab" role="tab" aria-selected="false" aria-disabled="true" tabindex="-1"><span class="gb-tab__label">Gift items</span></button>' +
+            '<button type="button" class="gb-tab" role="tab" aria-selected="true" tabindex="0"><span class="gb-tab__label">Greeting card</span></button>' +
+          '</div>' +
+          '<section class="pt-card" role="tabpanel" aria-label="Greeting card">' +
+            '<div class="pt-card__row">' +
+              '<gb-field optional input-id="ptCardIntro" name="intro" label="Card heading" maxlength="50" placeholder="Hello, or Dear team," value="' + escAttr(d.intro) + '"></gb-field>' +
+              cardCount('ptCardIntro', d.intro, 50) +
+            '</div>' +
+            '<div class="pt-card__row">' +
+              '<gb-field optional input-id="ptCardMessage" name="message" type="textarea" label="Card message" maxlength="500" placeholder="Write your message..." value="' + escAttr(d.message) + '"></gb-field>' +
+              cardCount('ptCardMessage', d.message, 500) +
+            '</div>' +
+            '<div class="pt-card__row">' +
+              '<gb-field optional input-id="ptCardSign" name="signature" label="Your signature" maxlength="100" placeholder="Your name or company" value="' + escAttr(d.from) + '"></gb-field>' +
+              cardCount('ptCardSign', d.from, 100) +
+            '</div>' +
+            '<div class="gb-alert gb-alert--info pt-card__tags" role="note">' +
+              '<span class="gb-alert__body">' +
+                '<span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>' +
+                '<span class="gb-alert__text">' +
+                  '<p class="pt-card__tags-title">Personalization Tags for Your Message</p>' +
+                  '<p>Use <code>{{FirstName}}</code> or <code>{{LastName}}</code> in your message and each recipient sees their own name.</p>' +
+                  '<p>&quot;Hello <code>{{FirstName}}</code>,&quot; will display as &quot;Hello Ashley,&quot; when sent.</p>' +
+                '</span>' +
+              '</span>' +
+            '</div>' +
+          '</section>' +
+        '</div>',
+      foot:
+        '<div class="pt-card-foot">' +
+          '<button type="button" class="gb-btn gb-btn--medium gb-btn--ghost gb-btn--secondary" data-pt-card="clear"><span class="gb-btn__label">Clear default</span></button>' +
+          '<button type="button" class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" data-pt-card="save"><span class="gb-btn__label">Save</span></button>' +
+        '</div>'
+    });
+  }
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (!t || !t.id) return;
+    var out = document.querySelector('[data-pt-count="' + t.id + '"]');
+    if (out) out.textContent = String(t.value || '').length;
+  });
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('[data-pt-card]') : null;
+    if (!b || !editing) return;
+    var ids = ['ptCardIntro', 'ptCardMessage', 'ptCardSign'];
+    if (b.getAttribute('data-pt-card') === 'clear') {
+      ids.forEach(function (id) {
+        var f = document.getElementById(id); if (!f) return;
+        f.value = '';
+        f.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      return;
+    }
+    var v = ids.map(function (id) { var f = document.getElementById(id); return f ? f.value : ''; });
+    editing.cardDefault = (v[0] + v[1] + v[2]).trim() ? { intro: v[0], message: v[1], from: v[2] } : null;
+    var cards = document.querySelectorAll('.gift-card');
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i]._gift !== editing) continue;
+      var badge = cards[i].querySelector('.gift-default-badge');
+      if (badge) badge.hidden = !editing.cardDefault;
+    }
+    var drawer = document.getElementById('ptCardDrawer');
+    if (drawer && typeof drawer.close === 'function') drawer.close();
+    editing = null;
+  });
+
+  /* gbppl-dd151-live-pages-2: Nucleo 48-magnifier-plus (assets/nucleo-
+     full, the house set), the live icon-magnifier-plus of the hover
+     lens; inline and currentColor like the dots below. */
+  var lensSVG =
+    '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><g stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="10" transform="translate(0.5 0.5)">' +
+    '<path d="M18 13V23"/><path d="M23 18H13"/>' +
+    '<path d="M18 31C25.1797 31 31 25.1797 31 18C31 10.8203 25.1797 5 18 5C10.8203 5 5 10.8203 5 18C5 25.1797 10.8203 31 18 31Z"/>' +
+    '<path d="M27.192 27.1919L30.732 30.7319" stroke-linecap="butt"/>' +
+    '<path d="M34.2674 30.7322C33.2911 29.7559 31.7082 29.7559 30.7319 30.7322C29.7556 31.7085 29.7556 33.2915 30.7319 34.2678L38.7321 42.268C39.7084 43.2443 41.2913 43.2443 42.2676 42.268C43.2439 41.2917 43.2439 39.7088 42.2676 38.7324L34.2674 30.7322Z"/>' +
+    '</g></svg>';
+
+  /* gbppl-dd151-default-card-1: Nucleo 48-dots-vertical, the house motif
+     set (Ton 09.09), inline and currentColor; icon.js has no dots yet. */
+  var dotsSVG =
+    '<svg viewBox="0 0 48 48" fill="currentColor" aria-hidden="true"><g transform="translate(0.5 0.5)">' +
+    '<path d="M22.5 24C22.5 24.8284 23.1716 25.5 24 25.5C24.8284 25.5 25.5 24.8284 25.5 24C25.5 23.1716 24.8284 22.5 24 22.5C23.1716 22.5 22.5 23.1716 22.5 24Z" stroke="currentColor" stroke-width="1"/>' +
+    '<path d="M22.5 39.5C22.5 40.3284 23.1716 41 24 41C24.8284 41 25.5 40.3284 25.5 39.5C25.5 38.6716 24.8284 38 24 38C23.1716 38 22.5 38.6716 22.5 39.5Z" stroke="currentColor" stroke-width="1"/>' +
+    '<path d="M22.5 8.5C22.5 9.32843 23.1716 10 24 10C24.8284 10 25.5 9.32843 25.5 8.5C25.5 7.67157 24.8284 7 24 7C23.1716 7 22.5 7.67157 22.5 8.5Z" stroke="currentColor" stroke-width="1"/>' +
+    '</g></svg>';
 
   function makeCard(gift) {
     var card = document.createElement('article');
     card.className = 'gift-card';
+    card._gift = gift;
     card.innerHTML =
       '<div class="gift-photo">' +
+        '<img class="gift-photo__img" src="' + gift.img + '" alt="' + gift.name + '" loading="lazy">' +
+        '<button class="gift-lens" type="button" aria-label="Zoom ' + gift.name + '">' + lensSVG + '</button>' +
         '<span class="price-chip">' + gift.price + '</span>' +
-        giftBoxSVG +
+        '<span class="gb-badge gb-badge--neutral gb-badge--quiet gift-default-badge"' + (gift.cardDefault ? '' : ' hidden') + '>Default message</span>' +
+        '<div class="gift-more">' +
+          '<button class="gift-more__btn" type="button"' +
+            ' aria-haspopup="menu" aria-expanded="false" aria-label="More for ' + gift.name + '" data-gift-more>' +
+            dotsSVG + '</button>' +
+          /* the live list first, word for word (Archive, Grant Access to
+             Users, inert here), ours last (gbppl-dd151-live-pages-2) */
+          '<ul class="gift-more__menu" role="menu" hidden>' +
+            '<li role="none"><button class="gift-more__item" type="button" role="menuitem" data-gift-live>Archive</button></li>' +
+            '<li role="none"><button class="gift-more__item" type="button" role="menuitem" data-gift-live>Grant Access to Users</button></li>' +
+            '<li role="none" class="gift-more__own"><button class="gift-more__item" type="button" role="menuitem" data-gift-card-default>Default card message</button></li>' +
+          '</ul>' +
+        '</div>' +
       '</div>' +
+      /* The live body: name, the empty row (col pt-6), SEND THIS GIFT.
+         No price line: the live card carries its price on the chip only
+         (the 12.08 line under the name is gone, harvest 28.09). */
       '<div class="gift-card-body">' +
         '<div class="gift-name">' + gift.name + '</div>' +
-        // Price line under the name, per the live card (SYSTEM.md
-        // portal chrome, live 2026-08-12)
-        '<div class="gift-price">' + gift.price + '</div>' +
-        '<button class="gb-btn gb-btn--large gb-btn--filled gb-btn--secondary gb-btn--block gift-send" type="button"><span class="gb-btn__label">Send This Gift</span></button>' +
+        '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--secondary gb-btn--block gift-send" type="button"><span class="gb-btn__label">Send This Gift</span></button>' +
       '</div>';
     return card;
   }
@@ -4249,8 +4640,11 @@
   /* Page metablock (live portal, Ton's screen 2026-08-12): only in the
      has-gifts state AND only in nav=ton (fork correction 2026-08-12). */
   function updatePageMeta() {
+    /* gbppl-dd151-live-pages-2: the live My Gifts stands under its
+       crumbs and title card (harvest 28.09), so nav=live shows it too;
+       only russell, the 12.08 fork snapshot, stays without. */
     document.getElementById('pageMeta').classList.toggle('shown',
-      count >= 1 && document.body.getAttribute('data-nav') === 'ton');
+      count >= 1 && document.body.getAttribute('data-nav') !== 'russell');
   }
 
   function render() {
@@ -4525,6 +4919,19 @@
     });
 
     cartNote = panel.addGroup({ type: 'note' });
+
+    /* gbppl-dd151-default-card-1: WHO IS LOOKING is demo data (the Demo
+       canon, 24.09): an admin sees the menu of a gift, a viewer does not. */
+    roleGroup = panel.addGroup({
+      type: 'choice',
+      title: 'Role',
+      value: role,
+      options: [
+        { label: 'Admin',  value: 'admin' },
+        { label: 'Viewer', value: 'viewer' }
+      ],
+      onChange: function (value) { setRole(value); }
+    });
   }
 
   /* ---- Catalog overlay (Ton's brainstorm 2026-08-12) ----
@@ -5266,6 +5673,24 @@
     ? (params.get('lock') === 'stack' ? 'stack' : 'divider')
     : 'off');
   render();
+
+  /* gbppl-dd151-default-card-1: ?card=default lands on three gifts with
+     the first one's default card open (the drawer upgrades later in the
+     page, so the open waits for the element). */
+  /* gbppl-dd151-live-pages-2: the default now lives on Coffee Lover, the
+     second of the three live gifts. ?gifts=3 (addition, law 0a.5) lands
+     on the live page as it stands, the three gifts and no drawer, so the
+     show link never opens on an empty My Gifts. */
+  var landGifts = Math.min(parseInt(pageParams.get('gifts'), 10) || 0, 9);
+  while (count < landGifts) addGift();
+  if (pageParams.get('card') === 'default') {
+    while (count < 3) addGift();
+    if (window.customElements && role !== 'viewer') {
+      customElements.whenDefined('gb-drawer').then(function () {
+        window.setTimeout(function () { openCardDefault(gifts[1]); }, 0);
+      });
+    }
+  }
 
   /* ?catalog=open — THE PORTAL'S OWN GIFT CATALOGUE, REACHABLE FROM
      OUTSIDE (gbppl-portal-dashboard-8, 10.09). The overlay has been

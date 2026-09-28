@@ -9,6 +9,23 @@
      console on every load. Nothing is drawn either way. -->
 <link rel="icon" href="data:," />
 <!-- ============================================================
+     gbppl-dd151-default-card-1 (2026-09-28) · V5 ONLY: THE GIFT'S
+     DEFAULT GREETING CARD ARRIVES FILLED, AND ONE STRIP SAYS SO
+     ------------------------------------------------------------
+     DD-151 (Julia, 18.09), built to the concept in words
+     docs/DD-151-DEFAULT-CARD-MESSAGE-CONCEPT.md (Ren, 28.09; the strip
+     OVER the fields). A gift may carry a default card saved in My
+     Gifts (product.cardDefault). In V5 it fills the one-card panel of
+     step 2 and the GREETING CARD tab of apply-to-all («Apply greeting
+     card», «Set card message»); over the three lines stands one
+     gb-alert--info (.ck-card-default, the Personalization Tags' own
+     component) with three texts read live off the fields: applied /
+     edited for this order / cleared for this order, and one Ton-22
+     door (.ck-link): Clear, or Restore default. No default, no strip:
+     the Yeti duo of the loaded cart has none. Rows opened one by one,
+     limits, counters and V1 to V4 are untouched.
+     ============================================================ -->
+<!-- ============================================================
      gbppl-share-pz-tabs-1 (2026-09-24) — V5 ONLY: ONE PERSONALIZE
      PANEL WITH TWO TABS, THE SAME FORM AS DESIGN-SHARE
      ------------------------------------------------------------
@@ -2443,6 +2460,32 @@
   .ck-perso-tags .gb-alert__body { align-items: flex-start; }
   .ck-perso-tags .gb-alert__text p + p { margin-top: var(--space-8); }
   .ck-perso-tags__title { font-weight: 600; }
+  /* gbppl-dd151-default-card-1: the default card's strip. The house alert
+     whole; the page writes only two facts about its absence. [hidden]
+     loses to .gb-alert's display:flex at equal weight (trap 29), and a
+     hidden first child of .ck-drawer-stack still hands the next line the
+     stack's 32 through `* + *`, so that 32 is taken back. No new value. */
+  .ck-card-default[hidden] { display: none; }
+  .ck-card-default[hidden] + * { margin-top: 0; }
+  /* THE STRIP HOLDS ITS HEIGHT (the alert's own height law, alert-height-1:
+     «контент внизу дёргается и танцует, недопустимо»). The state flips on
+     the first keystroke in the field UNDER the strip, and three sentences
+     of different length would move that field under the reader's cursor.
+     So all three sentences, and both door words, stand in one grid cell;
+     the one that is not said is visibility:hidden (out of the a11y tree
+     too), and the box is always as tall and as wide as the longest. */
+  .ck-card-default__say,
+  .ck-card-default__door { display: inline-grid; text-align: left; }
+  .ck-card-default__say > *,
+  .ck-card-default__door > * { grid-area: 1 / 1; }
+  /* The door keeps the actions' end of the row: the word that is said
+     stands against the right edge, the unsaid one only holds the width. */
+  .ck-card-default__door { justify-items: end; }
+  /* A shorter sentence stands on the middle of the held box, beside the
+     glyph the body already centres, not at its top with air under it. */
+  .ck-card-default__say > * { align-self: center; }
+  .ck-card-default__say > [aria-hidden="true"],
+  .ck-card-default__door > [aria-hidden="true"] { visibility: hidden; }
   .ck-perso-tags code { font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace; font-size: inherit; color: inherit; }   /* NO TOKEN: the stack docs.css writes */
 
   /* ============================================================
@@ -6814,6 +6857,23 @@
                              stays white: it is the switch, not the room it
                              opens. The two fields inside go white against it. -->
                         <div x-show="shipment.v5Card.on" x-cloak x-transition.opacity.duration.280ms class="ck-ground border-t border-zinc-200 px-4 py-5 space-y-6">
+                          <!-- gbppl-dd151-default-card-1: the same strip as the
+                               GREETING CARD tab, over the same three lines.
+                               [hidden] is what space-y skips, so a gift with
+                               no default opens on Intro exactly as before. -->
+                          <div class="gb-alert gb-alert--info ck-card-default" role="status" :hidden="!v5CardDef(product)">
+                            <span class="gb-alert__body">
+                              <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>
+                              <span class="gb-alert__text ck-card-default__say">
+                                <template x-for="st in v5CardStates" :key="'ckp-say-' + st"><span :aria-hidden="v5CardState(shipment.v5Card, v5CardDef(product)) === st ? 'false' : 'true'" x-text="v5CardLine(st)"></span></template>
+                              </span>
+                            </span>
+                            <span class="gb-alert__actions">
+                              <button type="button" class="ck-link ck-card-default__door" @click="v5CardDoor(shipment.v5Card, v5CardDef(product))">
+                                <template x-for="lb in v5CardDoors" :key="'ckp-door-' + lb"><span :aria-hidden="v5CardDoorLabel(v5CardState(shipment.v5Card, v5CardDef(product))) === lb ? 'false' : 'true'" x-text="lb"></span></template>
+                              </button>
+                            </span>
+                          </div>
                           <!-- THE CARD HAS THREE LINES, AND THE FIRST ONE IS THE
                                GREETING (gbppl-v5-julia-1, 15.09). Julia asked for
                                an opening line above the message: a card that
@@ -8394,6 +8454,23 @@
          form's names. -->
     <section role="tabpanel" aria-label="Greeting card" x-show="drawer.tab === 'card'" x-cloak @input="drawer.touched.card = true"
              class="ck-drawer-stack ck-perso-card">
+      <!-- gbppl-dd151-default-card-1: the default card's strip, OVER the
+           three lines (Ren's call). :hidden, not x-if (trap 28: this body
+           is stamped by innerHTML and the state is live data); the stack's
+           32 under a hidden strip is taken back at .ck-card-default. -->
+      <div class="gb-alert gb-alert--info ck-card-default" role="status" :hidden="!drawer.cardDef">
+        <span class="gb-alert__body">
+          <span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>
+          <span class="gb-alert__text ck-card-default__say">
+            <template x-for="st in v5CardStates" :key="'ckd-say-' + st"><span :aria-hidden="v5CardState(drawer.data, drawer.cardDef) === st ? 'false' : 'true'" x-text="v5CardLine(st)"></span></template>
+          </span>
+        </span>
+        <span class="gb-alert__actions">
+          <button type="button" class="ck-link ck-card-default__door" @click="v5CardDoor(drawer.data, drawer.cardDef); drawer.touched.card = true">
+            <template x-for="lb in v5CardDoors" :key="'ckd-door-' + lb"><span :aria-hidden="v5CardDoorLabel(v5CardState(drawer.data, drawer.cardDef)) === lb ? 'false' : 'true'" x-text="lb"></span></template>
+          </button>
+        </span>
+      </div>
       <div class="gba-inputwrap">
         <label class="gb-eyebrow block mb-1" for="ck-perso-heading">Card heading</label>
         <input id="ck-perso-heading" type="text" x-model="drawer.data.intro" maxlength="50" placeholder="Hello, or Dear team," class="gba-input">
@@ -10659,6 +10736,17 @@ function checkoutApp() {
       else if (name === 'portalEmpty')  this.products = [this.scenarioPortalEmpty()];
       else if (name === 'portalLoaded') this.products = this.scenarioPortalLoaded(); // two products
       else if (name === 'bigBook')      this.products = [this.scenarioBigBook()];
+
+      /* gbppl-dd151-default-card-1: a gift with a saved default card arrives
+         with the one-card panel of V5's step 2 switched on and its three
+         lines filled. Only V5 reads v5Card, so the older versions are
+         handed a field they never look at. */
+      this.products.forEach(p => {
+        if (!p.cardDefault) return;
+        (p.shipments || []).forEach(s => {
+          s.v5Card = Object.assign({}, s.v5Card, { on: true }, this.v5CardCopy(p.cardDefault));
+        });
+      });
     },
 
     // ===== GIFT CATALOGUE =====
@@ -10698,6 +10786,24 @@ function checkoutApp() {
       }
     },
 
+    /* ============================================================
+       THE GIFT'S OWN CARD, SAVED ONCE      gbppl-dd151-default-card-1
+       ------------------------------------------------------------
+       DD-151 (Julia, 18.09; concept docs\DD-151-DEFAULT-CARD-MESSAGE-
+       CONCEPT.md, approved by Ren 28.09). A gift may carry a DEFAULT
+       greeting card: the three lines of the card (Card heading 50 /
+       Card message 500 / Your signature 100), saved at the gift in My
+       Gifts. Every order of that gift arrives with them filled in, and
+       changing or clearing them here changes THIS order and never the
+       saved default. Read by V5 alone (v5CardDef); V1 to V4 never look.
+       One gift of the loaded cart has none (the Yeti duo), so both
+       answers stand on one screen.
+       ============================================================ */
+    cardDefaults: {
+      coffee:    { intro: 'Hello,', message: 'A small thank you from all of us at Acme for a remarkable year. Enjoy every cup.', from: 'The Acme team' },
+      executive: { intro: 'Dear team,', message: 'Thank you for every mile you covered this year. Safe travels on the next one.', from: 'Acme leadership' }
+    },
+
     // Scenario A: from 3D Customizer.
     // The customizer doesn't ask for recipient's full name — only personalization
     // (initials, tag name, greeting) is optionally collected. Full name + address + shipping
@@ -10709,6 +10815,7 @@ function checkoutApp() {
         price: 95,
         image: 'checkout-assets/prototype-gift.png',
         items: this.catalogue.coffee,
+        cardDefault: this.cardDefaults.coffee,   // gbppl-dd151-default-card-1
         // gbppl-checkout-ref-box-1: the keepsake box of this set is printed, so
         // the personalization table gives it a Box column.
         box: this.catalogue.boxes.printed,
@@ -10782,6 +10889,7 @@ function checkoutApp() {
         price: 95,
         image: 'checkout-assets/prototype-gift.png',
         items: this.catalogue.coffee,
+        cardDefault: this.cardDefaults.coffee,   // gbppl-dd151-default-card-1
         // gbppl-checkout-ref-box-1: the keepsake box of this set is printed, so
         // the personalization table gives it a Box column.
         box: this.catalogue.boxes.printed,
@@ -10858,6 +10966,7 @@ function checkoutApp() {
         image: 'checkout-assets/prototype-gift.png',
         items: this.catalogue.executive,
         box: this.catalogue.boxes.printed,
+        cardDefault: this.cardDefaults.executive,   // gbppl-dd151-default-card-1
         shipments: [{
           id: 11,
           addressMode: 'different',
@@ -11032,6 +11141,7 @@ function checkoutApp() {
           image: 'checkout-assets/prototype-gift.png',
           items: this.catalogue.executive,
           box: this.catalogue.boxes.printed,
+          cardDefault: this.cardDefaults.executive,   // gbppl-dd151-default-card-1; the Yeti duo beside it has none
           shipments: [{
             id: 11,
             addressMode: 'different',
@@ -16205,6 +16315,52 @@ function checkoutApp() {
       if (card) { if (overwrite) this.saveMasterGreeting(true); else this.saveGreeting(); }
       if (!items && !card) this.closeDrawer();
     },
+
+    /* ============================================================
+       THE DEFAULT CARD, AND THE ONE STRIP THAT SAYS SO
+                                     gbppl-dd151-default-card-1 (28.09)
+       ------------------------------------------------------------
+       Concept DD-151 (Ren, 28.09, «пять состояний = одна полоса с
+       тремя текстами плюс два ничего»). Over the three card lines of
+       every card door of V5 that the default fills (the one-card panel
+       of step 2, and the GREETING CARD tab when it is opened by «Apply
+       greeting card» or «Set card message», the table's apply-to-all)
+       stands ONE house alert, info tone, the Personalization Tags'
+       own component. It says where the words came from and offers one
+       door of clickable text (Ton-22, .ck-link):
+         applied  the three lines equal the default    door Clear
+         edited   any line differs, not all empty      door Restore default
+         cleared  all three empty                      door Restore default
+       No default = no strip, and the lines arrive empty.
+       THE STATE IS READ OFF THE FIELDS, never stored, so it changes on
+       the spot as the reader types and cannot disagree with what the
+       card will print. Clear empties all three at once (Julia). The
+       saved default is never written from here: it lives in My Gifts.
+       Rows opened one by one keep their own card as before.
+       ============================================================ */
+    v5CardStates: ['applied', 'edited', 'cleared'],
+    v5CardDoors: ['Clear', 'Restore default'],
+    v5CardDef(p) { return (this.uiVersion === 'v5' && p && p.cardDefault) || null; },
+    v5CardCopy(def) { return { intro: (def && def.intro) || '', message: (def && def.message) || '', from: (def && def.from) || '' }; },
+    v5CardState(bag, def) {
+      if (!def || !bag) return null;
+      const k = ['intro', 'message', 'from'];
+      if (k.every(f => (bag[f] || '') === (def[f] || ''))) return 'applied';
+      if (k.every(f => !String(bag[f] || '').trim())) return 'cleared';
+      return 'edited';
+    },
+    v5CardLine(st) {
+      if (st === 'applied') return 'Default message applied. Edit it here or clear it for this order.';
+      if (st === 'edited')  return 'Edited for this order.';
+      if (st === 'cleared') return 'Default message cleared for this order.';
+      return '';
+    },
+    v5CardDoorLabel(st) { return st === 'applied' ? 'Clear' : 'Restore default'; },
+    v5CardDoor(bag, def) {
+      if (!bag || !def) return;
+      const next = this.v5CardState(bag, def) === 'applied' ? this.v5CardCopy(null) : this.v5CardCopy(def);
+      Object.assign(bag, next);
+    },
     useAddressBookEntry(id) {
       const addr = this.addressBook.find(a => a.id === id);
       if (!addr) return;
@@ -16268,6 +16424,14 @@ function checkoutApp() {
       };
       if (this.uiVersion === 'v5' && (type === 'greeting' || type === 'item')) {
         this.v5PersoDoor(type === 'greeting' ? 'card' : 'items', null);
+        /* gbppl-dd151-default-card-1: the card door of apply-to-all arrives
+           with the gift's default in its three lines; cardDef is what the
+           strip over them reads. The parts door leaves the card alone. */
+        const def = type === 'greeting' ? this.v5CardDef(this.currentProduct()) : null;
+        if (def) {
+          Object.assign(this.drawer.data, this.v5CardCopy(def));
+          this.drawer.cardDef = def;
+        }
       }
       this.showDrawer();
     },
