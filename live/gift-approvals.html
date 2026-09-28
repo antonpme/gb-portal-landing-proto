@@ -2564,14 +2564,14 @@ body[data-pv="f"] .gbppa-details { display: inline-flex; margin-left: auto; }
    its month. */
 .gbppa-ver__name { margin: 0; font-size: 16px; line-height: 1.6; font-weight: 600; color: var(--zinc-900); }
 .gbppa-ver__day { white-space: nowrap; }
-.gbppa-ver__label { margin: var(--space-16) 0 var(--space-8); }
+.gbppa-ver__label { margin: var(--space-24) 0 var(--space-8); }   /* B2 (Ton 29.09 03:50): 8 to its own text, 24 from the block above */
 .gbppa-ver__text { margin: 0; font-size: 16px; line-height: 1.6; color: var(--zinc-700); }
 .gbppa-ver__done { margin: var(--space-16) 0 0; font-size: 16px; line-height: 1.6; color: var(--zinc-700); }
 /* THE CLIENT'S OWN WORDS ARE A MESSAGE: the V4 chat's own turn,
    msgHTML on your side (the eyebrow «You asked · 15 Sep», the ink
    bubble, pinned right), inside .gbppa-chat with its paper off, E's
    way, and E's three quarters. */
-.gbppa-ver__msgs { margin-top: var(--space-16); }
+.gbppa-ver__msgs { margin-top: var(--space-24); }   /* B2: 24 between two blocks of a card; eyebrow to bubble stays the chat's 8 */
 body[data-pv="f"] .gbppa-ver .gbppa-chat {
   padding: 0;
   background: transparent;
@@ -2678,12 +2678,27 @@ body[data-pv="f"] .gbppa-ver .gbppa-msg__stack { max-width: 75%; }   /* NO TOKEN
 .gbppa-ver__foot { margin-top: var(--space-16); cursor: auto; }
 .gbppa-ver__foot > .gb-alert { margin-top: var(--space-16); }
 
-/* ON A PHONE THE PANEL GIVES THE CARD ONE RUNG BACK: 16 of pad instead
-   of E's 24, so a name and its date keep one line on a 360 screen. A
-   rung, not a new value; E is not reached (the selector is F's). */
-@media (max-width: 479px) {
-  body[data-pv="f"] .gbppa-vers { padding: var(--space-16); }
+/* ---- THE STACK STANDS ON THE CANVAS (Ton, 29.09, 03:53; Ren: on the
+        canvas). E's grey panel (Zinc 100 ground, Zinc 200 hairline,
+        --radius, 24 inside, laid absolutely over its grid cell with a
+        scroller of its own) is not F's any more: the cards and the
+        spine stand on the page's own ground, in the flow, and the page
+        scrolls. The spine is the component's own geometry, as its
+        showcase draws it: the dots on the column's left line, the
+        cards one dot and one gap (8 + 16) to the right of it. The ring
+        round a dot is the page's ground. The row is as tall as the
+        taller of the two, and neither is stretched (align start). ---- */
+body[data-pv="f"] #gbppaOne { align-items: start; }
+body[data-pv="f"] .gbppa-vers {
+  position: static;
+  inset: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
+body[data-pv="f"] .gbppa-vlist { overflow: visible; }
+body[data-pv="f"] .gbppa-vstack { --gb-tl-ring: var(--zinc-50); }   /* the page ground, measured: body Zinc 50 */
 
 /* ---- OPEN 3D PREVIEW, AND ITS MENU. The door is .gbppa-door (Ton-22:
         Blue 600, bare at rest, underlined on hover), on the row V4's
@@ -5099,7 +5114,6 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
      are the list Ton gave: Approved, Changes requested, Superseded.
      ============================================================ */
   var VSTATUS = {
-    current:    { word: 'Ready for review',  tone: 'info' },     /* gbppl-approvals-v5-rebuild-1: the latest card's own word when it folds */
     approved:   { word: 'Approved',          tone: 'success' },
     changes:    { word: 'Changes requested', tone: 'warning' },
     superseded: { word: 'Superseded',        tone: 'neutral' }
@@ -5300,11 +5314,10 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
      Open, in the wire's order: what you asked of the version before
      it; what the team made or changed; what you asked of this one;
      then the pair, or the line that says it is approved.
-     Its badge is the state line's word in one: «Ready for review»
-     while the move is yours (info, the head's own tone for Waiting for
-     approval); Changes requested and Approved as the others. It stands
-     open or shut, so nothing in the head changes when it folds
-     (Ton-19). */
+     A card carries a badge only for a closed state (Changes requested,
+     Approved, Superseded); the open question is the head's badge, as
+     in V4 (Ton, 29.09, 03:50: «Ready for review» beside «Waiting for
+     approval» argued). Its head is the same open or shut (Ton-19). */
   function curItemHTML(e, v) {
     var prev = vEntry(v, e.n - 1);
     var on = String(v.shown) === String(e.n);
