@@ -5172,12 +5172,16 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
      Request changes open under it, in the card. */
   function decideHTML(e, v) {
     var mode = v.mode && String(v.mode.n) === String(e.n) ? v.mode.kind : '';
+    /* WHILE THE FORM IS OPEN THE PAIR IS DISABLED (Ton, 29.09, 02:45):
+       Send, Cancel and the field are the only live things; the pair
+       wears button.css's own disabled step (the attribute). */
+    var off = mode === 'ask' ? ' disabled' : '';
     return '<div class="gbppa-ver__decide">' +
       '<div class="gbppa-ver__acts">' +
-        '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button" data-gbppa-v-approve="' + e.n + '">' +
+        '<button class="gb-btn gb-btn--medium gb-btn--filled gb-btn--primary" type="button" data-gbppa-v-approve="' + e.n + '"' + off + '>' +
           '<span class="gb-btn__label">Approve</span></button>' +
         '<button class="gb-btn gb-btn--medium gb-btn--outline gb-btn--secondary" type="button" data-gbppa-v-ask="' + e.n + '" aria-expanded="' +
-          (mode === 'ask' ? 'true' : 'false') + '" aria-controls="gbppaVForm">' +
+          (mode === 'ask' ? 'true' : 'false') + '" aria-controls="gbppaVForm"' + off + '>' +
           '<span class="gb-btn__label">Request changes</span></button>' +
       '</div>' +
       (mode === 'confirm'
@@ -5502,6 +5506,12 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
       vRedraw('[data-gbppa-v-fold="' + s + '"]');
       revealInPanel('.gbppa-ver--fold.is-open');
     }
+  });
+  /* Esc in the field is Cancel. */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !e.target || e.target.id !== 'gbppaVAsk') return;
+    var c = document.querySelector('[data-gbppa-v-cancel]');
+    if (c) { e.preventDefault(); c.click(); }
   });
   document.addEventListener('input', function (e) {
     if (e.target && e.target.id === 'gbppaVAsk') {
