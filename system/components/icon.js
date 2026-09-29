@@ -413,6 +413,21 @@
       from: 'assets/nucleo-full/48-credit-card.svg (Nucleo, the house set): the Payment methods door of the portal dashboard',
       stroke: 1
     },
+    /* THE CUBE (gbppl-approvals-v5-doors-1, 29.09). The client, on the
+       approvals page, of the door that opens the 3D page: «что за
+       стрелочка круговая? не в тему», it reads as refresh. The door is
+       a noun now, «3D preview», and its glyph is the object itself.
+       assets
+ucleo-full8-cube.svg, halved by the arithmetic of
+       `bell` and `rotate`. Whole file: the top rim, the front edge, the
+       hexagonal shell. NOT `rotate-cube`, the sibling with two orbit
+       arcs: two arcs at 16px are the refresh motif all over again. */
+    'cube': {
+      body: '<path d="M21.5 6.5 12 10.5 2.5 6.5"/><path d="M12 22V10.5"/>' +
+            '<path d="M21.5 17.7895V6.2105L12 2 2.5 6.2105V17.7895L12 22Z"/>',
+      from: 'assets/nucleo-full/48-cube.svg (Nucleo, the house set): the 3D preview door on the approvals snapshot',
+      stroke: 1
+    },
     /* gbppl-v5-import-polish-1, 07.09. The tray with the arrow, and
        the arrow is the whole difference between the two entries: down
        is «give me the blank file», up is «here is my filled one». Both
@@ -445,6 +460,19 @@
             '<circle cx="12" cy="12" r="2.8"/>',
       from: 'auth.js: show the password',
       stroke: 1.5
+    },
+    /* THE WAY OUT (gbppl-approvals-v5-doors-1, 29.09). Ton: every act
+       in a menu carries a glyph, and «Open» on the 3D preview door
+       opens a new tab, which is exactly what this motif says: a page
+       with an arrow leaving its corner. assets
+ucleo-full       48-external-link.svg, halved. Whole file, three paths: the open
+       frame, the diagonal, the arrow head. NOT `square-arrow-up-right`,
+       the closed box: the frame here is broken where the arrow leaves. */
+    'external-link': {
+      body: '<path d="M3 17.5V4c0-1.3807 1.1193-2.5 2.5-2.5H18c1.3807 0 2.5 1.1193 2.5 2.5v16c0 1.3807-1.1193 2.5-2.5 2.5H8"/>' +
+            '<path d="M3 22 15 10l-.3388.3388"/><path d="M7.9289 10H15v7.0711"/>',
+      from: 'assets/nucleo-full/48-external-link.svg (Nucleo, the house set): «Open» in the menu of the 3D preview door on the approvals snapshot',
+      stroke: 1
     },
     'filters': {
       body: '<path d="M3.5 6.5h17M7 12h10M10.5 17.5h3"/>',
