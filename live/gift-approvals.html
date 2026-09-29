@@ -2769,20 +2769,30 @@ body[data-pv="f"] .gbppa-ver .gbppa-msg__stack { max-width: 75%; }   /* NO TOKEN
 
 /* GIFT DETAILS IN THE DRAWER: the live Campaign Overview's label over
    value, one column, rows 24 apart. */
-.gbppa-pass { display: grid; gap: var(--space-24); margin: 0; }
-.gbppa-pass__row { min-width: 0; }
-.gbppa-pass dt { margin: 0 0 var(--space-8); }
-.gbppa-pass dd { margin: 0; font-size: 16px; line-height: 1.6; color: var(--zinc-900); overflow-wrap: anywhere; }
-.gbppa-pass__list { list-style: none; margin: 0; padding: 0; }
-.gbppa-pass__sws { display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-16); }
-.gbppa-pass__sw { display: inline-flex; align-items: center; gap: var(--space-8); }
-.gbppa-pass__chip {
-  width: 24px;                  /* NO TOKEN 24: the brief's swatch, the customizer's family */
-  height: 24px;
-  flex: 0 0 auto;
-  border: 1px solid var(--zinc-200);
-  border-radius: var(--radius);
-}
+/* GIFT DETAILS (gbppl-approvals-v5-details-2, 29.09) */
+.gbppa-gd { display: grid; gap: var(--space-32); }
+.gbppa-gd__head { display: flex; align-items: center; gap: var(--space-16); }
+.gbppa-gd__thumb { flex: 0 0 auto; box-sizing: border-box; width: 96px; height: 72px; object-fit: contain; background: var(--white); border: 1px solid var(--zinc-200); border-radius: var(--radius); }   /* white + hairline: renders come on white or on their own ground, the frame reads the same for both */   /* NO TOKEN 96 x 72: the snapshot's 4:3 at two rungs of 48 wide */
+.gbppa-gd__id { min-width: 0; }
+.gbppa-gd__name { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--zinc-900); }
+.gbppa-gd__ver { margin: 0; font-size: 14px; line-height: 1.5; color: var(--zinc-600); }
+.gbppa-gd__h { margin: 0 0 var(--space-8); }
+.gbppa-gd__list { list-style: none; margin: 0; padding: 0; }
+.gbppa-gd__list li { padding: var(--space-8) 0; border-top: 1px solid var(--zinc-200); font-size: 16px; line-height: 1.5; color: var(--zinc-900); }
+.gbppa-gd__list li:last-child { border-bottom: 1px solid var(--zinc-200); }
+.gbppa-gd__sws { display: flex; flex-wrap: wrap; gap: var(--space-16) var(--space-24); }
+.gbppa-gd__sw { display: inline-grid; justify-items: start; gap: var(--space-8); }
+.gbppa-gd__chip { width: 32px; height: 32px; border-radius: var(--radius); box-shadow: inset 0 0 0 1px var(--zinc-200); }   /* the hairline keeps a white swatch visible on white */
+.gbppa-gd__hex { font-size: 14px; line-height: 1.5; color: var(--zinc-600); font-variant-numeric: tabular-nums; }
+.gbppa-gd__kv { margin: 0; }
+.gbppa-gd__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-16); padding: var(--space-8) 0; border-top: 1px solid var(--zinc-200); font-size: 16px; line-height: 1.5; }
+.gbppa-gd__row:last-child { border-bottom: 1px solid var(--zinc-200); }
+.gbppa-gd__row dt { margin: 0; color: var(--zinc-600); }
+.gbppa-gd__row dd { margin: 0; color: var(--zinc-900); text-align: right; overflow-wrap: anywhere; }
+.gbppa-gd__idv { display: inline-flex; align-items: center; gap: var(--space-8); font-variant-numeric: tabular-nums; }
+.gbppa-gd__copy { appearance: none; -webkit-appearance: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; margin: 0; padding: 0; border: 0; background: none; color: var(--zinc-500); cursor: pointer; border-radius: var(--radius); }
+.gbppa-gd__copy:hover { color: var(--zinc-900); }
+.gbppa-gd__copy:focus-visible { outline: 2px solid var(--gb-btn-focus-ring); outline-offset: 2px; }
 .gbppa-ver__foot { margin-top: var(--space-16); cursor: auto; }
 .gbppa-ver__foot > .gb-alert { margin-top: var(--space-16); }
 
@@ -5385,23 +5395,62 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
      are a list, the colours the customizer's swatches with their hex.
      A row whose value the gift does not hold is not drawn. */
   var ACCOUNT_COMPANY = 'Acme Aviation';   /* the rail's own company line */
+  /* GIFT DETAILS, SECOND DRAWING (gbppl-approvals-v5-details-2, Ton,
+     29.09: «свалка текста»). Six equal eyebrow + value pairs had no
+     hierarchy, the Gift row repeated the page title and Company was the
+     viewer's own. Now the drawer opens on the gift itself (the shown
+     version's render, its name, «Version N · day»), then what is in it
+     (rows on a hairline), the brand colours shown as colour, and the
+     record as one key-value table in the checkout summary's rhythm
+     (label Zinc 600 left, value Zinc 900 right, Zinc 200 hairline).
+     Eyebrows only on the three section heads. Approval ID carries a
+     quiet copy glyph: it is the one value people read out to support. */
   function detailsHTML() {
     var ps = gift.passport || {};
+    var st = v5(gift);
+    var n = st.shown;
+    var rev = revByN(n);
     var first = (gift.revisions || [])[0];
+    var head =
+      '<div class="gbppa-gd__head">' +
+        '<img class="gbppa-gd__thumb" src="' + esc(shotFor(n)) + '" alt="">' +
+        '<div class="gbppa-gd__id"><p class="gbppa-gd__name">' + esc(gift.name) + '</p>' +
+        '<p class="gbppa-gd__ver">Version ' + esc(n) + (rev ? ' &middot; ' + esc(vDay(rev.when)) : '') + '</p></div>' +
+      '</div>';
+    var items = ps.parts && ps.parts.length
+      ? '<section class="gbppa-gd__sec"><h3 class="gb-eyebrow gbppa-gd__h">In this gift</h3><ul class="gbppa-gd__list">' +
+          ps.parts.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></section>'
+      : '';
+    var colours = ps.colours && ps.colours.length
+      ? '<section class="gbppa-gd__sec"><h3 class="gb-eyebrow gbppa-gd__h">Brand colours</h3><div class="gbppa-gd__sws">' +
+          ps.colours.map(function (c) {
+            return '<span class="gbppa-gd__sw"><span class="gbppa-gd__chip" style="background:' + esc(c) + '" aria-hidden="true"></span><span class="gbppa-gd__hex">' + esc(c) + '</span></span>';
+          }).join('') + '</div></section>'
+      : '';
     var rows = [
-      ['Gift', esc(gift.name)],
-      ['Company', esc(ACCOUNT_COMPANY)],
-      ps.parts && ps.parts.length ? ['Items', '<ul class="gbppa-pass__list">' + ps.parts.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'] : null,
-      ps.colours && ps.colours.length ? ['Brand colours', '<span class="gbppa-pass__sws">' + ps.colours.map(function (c) {
-        return '<span class="gbppa-pass__sw"><span class="gbppa-pass__chip" style="background:' + esc(c) + '" aria-hidden="true"></span>' + esc(c) + '</span>';
-      }).join('') + '</span>'] : null,
-      first ? ['Created', esc(String(first.when).replace(/,.*$/, '')) + ' &middot; GildedBox design team'] : null,
-      ps.approvalId ? ['Approval ID', esc(ps.approvalId)] : null
+      first ? ['Created', esc(String(first.when).replace(/,.*$/, ''))] : null,
+      first ? ['By', 'GildedBox design team'] : null,
+      ps.approvalId ? ['Approval ID', '<span class="gbppa-gd__idv">' + esc(ps.approvalId) +
+        '<button type="button" class="gbppa-gd__copy" data-gbppa-copyid="' + esc(ps.approvalId) + '" aria-label="Copy approval ID">' +
+        (window.GbIcons ? window.GbIcons.html('copy', 16) : '') + '</button></span>'] : null,
+      ['Company', esc(ACCOUNT_COMPANY)]
     ].filter(Boolean);
-    return '<dl class="gbppa-pass">' + rows.map(function (r) {
-      return '<div class="gbppa-pass__row"><dt class="gb-eyebrow">' + r[0] + '</dt><dd>' + r[1] + '</dd></div>';
-    }).join('') + '</dl>';
+    var record = '<section class="gbppa-gd__sec"><h3 class="gb-eyebrow gbppa-gd__h">Details</h3><dl class="gbppa-gd__kv">' +
+      rows.map(function (r) { return '<div class="gbppa-gd__row"><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>'; }).join('') +
+      '</dl></section>';
+    return '<div class="gbppa-gd">' + head + items + colours + record + '</div>';
   }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-gbppa-copyid]') : null;
+    if (!b) return;
+    copyText(b.getAttribute('data-gbppa-copyid'), function (ok) {
+      if (!window.GbIcons) return;
+      b.innerHTML = window.GbIcons.html(ok ? 'check' : 'copy', 16);
+      b.setAttribute('aria-label', ok ? 'Copied' : 'Could not copy');
+      clearTimeout(b.gbppaSaid);
+      b.gbppaSaid = setTimeout(function () { b.innerHTML = window.GbIcons.html('copy', 16); b.setAttribute('aria-label', 'Copy approval ID'); }, 1500);
+    });
+  });
   document.addEventListener('click', function (e) {
     if (!e.target.closest || !e.target.closest('[data-gbppa-details]')) return;
     if (!drawerEl || typeof drawerEl.open !== 'function' || !gift) return;
