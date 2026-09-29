@@ -2437,7 +2437,7 @@ body[data-pv="f"] .gbppa-open3d {
 }
 body[data-pv="f"] #gbppaPanePreview[data-has3d="0"] .gbppa-open3d { display: none; }
 body[data-pv="f"] #gbppaOne .gbppa-below { display: none !important; }
-/* gbppl-approvals-v5-doors-2 (Ton, 29.09, 13:09): no menu. «3D Preview»
+/* gbppl-approvals-v5-doors-2 (Ton, 29.09, 13:09): no menu. «3D preview»
    TURNS INTO its two acts in its own place: the word steps out, and Open ·
    Copy link to share arrive on the same line, the one nearest the corner
    first. One cell holds both states (grid 1 / 1), pinned to the corner's
@@ -2499,6 +2499,44 @@ body[data-pv="f"] .gbppa-open3d[data-open] .gbppa-menu .gbppa-door:last-child  {
 body[data-pv="f"] .gbppa-open3d[data-open] .gbppa-menu .gbppa-door:first-child { --d: calc(var(--mo-small-out) + 60ms); } /* NO TOKEN: the stagger beat */
 @media (max-width: 479px) {
   body[data-pv="f"] .gbppa-open3d .gbppa-menu { gap: var(--space-16); }
+}
+/* THE ANSWER (Ton, 29.09, 13:55: «Copied» in the row «странно выглядит»:
+   a result dressed as a link, blue and underlined, parked at the left of
+   the hole the long label left). The copy is the row's last act, so the
+   row leaves and ONE quiet line takes the door's place: a check and «Link
+   copied» in body ink, not in link blue, because it is a status and not a
+   door (Ton-22 blue = something you press). Then the door comes back. */
+.gbppa-open3d__said { display: none; }
+body[data-pv="f"] .gbppa-open3d__said {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: 14px;
+  line-height: 16px;            /* NO TOKEN: the glyph's 16, as the door's */
+  color: var(--zinc-700);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(var(--space-8));
+  pointer-events: none;
+  transition: opacity var(--mo-small-out) var(--mo-exit),
+              transform var(--mo-small-out) var(--mo-exit),
+              visibility 0s linear var(--mo-small-out);
+}
+body[data-pv="f"] .gbppa-open3d__said .gb-btn__icon { display: inline-flex; }
+body[data-pv="f"] .gbppa-open3d[data-said] .gbppa-open3d__said {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity var(--mo-small) var(--mo-arrive) var(--mo-small-out),
+              transform var(--mo-small) var(--mo-arrive) var(--mo-small-out),
+              visibility 0s linear 0s;
+}
+body[data-pv="f"] .gbppa-open3d[data-said] .gbppa-menu { visibility: hidden; pointer-events: none; transition: visibility 0s linear var(--mo-small-out); }
+body[data-pv="f"] .gbppa-open3d[data-said] .gbppa-menu .gbppa-door {
+  opacity: 0;
+  transform: translateX(calc(-1 * var(--space-8)));
+  transition: opacity var(--mo-small-out) var(--mo-exit),
+              transform var(--mo-small-out) var(--mo-exit);
 }
 
 /* ---- THE SNAPSHOT. The stage's own plate and height (E's 700 / 480,
@@ -3296,13 +3334,14 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
                       <button class="gbppa-door" type="button" id="gbppaOpen3d" data-gbppa-open3d aria-expanded="false" aria-controls="gbppaOpen3dMenu">
                         <!-- gbppl-approvals-v5-doors-1 (Ton, 29.09, 04:05 and 04:08): the door
                              is a NOUN, «3D preview», because the verbs live in its menu; its
-                             glyph is the cube, the object itself (and «Preview» keeps its capital: a feature's name, like Brand DNA, Ton 29.09), not a turning arrow that read
+                             glyph is the cube, the object itself (sentence case, Ton-22: Ton tried «3D preview» on 29.09 and took it back the same hour), not a turning arrow that read
                              as refresh. Every act in the menu carries its own glyph: Open leaves
                              the page (external-link), Copy link to share is the link; sayCopied
                              swaps the link for the check and hands it back. -->
                         <span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="cube" data-gb-icon-size="16"></span></span>
-                        <span class="gb-btn__label">3D Preview</span>
+                        <span class="gb-btn__label">3D preview</span>
                       </button>
+                      <span class="gbppa-open3d__said" id="gbppaOpen3dSaid" role="status" aria-live="polite"><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="check" data-gb-icon-size="16"></span></span><span class="gbppa-open3d__word">Link copied</span></span>
                       <div class="gbppa-menu" id="gbppaOpen3dMenu">
                         <a class="gbppa-door" id="gbppaOpen3dGo" href="design-share.html" target="_blank" rel="noopener" data-gbppa-menu-item><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="external-link" data-gb-icon-size="16"></span></span><span class="gb-btn__label">Open</span></a>
                         <button class="gbppa-door" type="button" data-gbppa-copy data-gbppa-menu-item data-gbppa-rest="Copy link to share"><span class="gb-btn__icon" aria-hidden="true"><span data-gb-icon="link" data-gb-icon-size="16"></span></span><span class="gb-btn__label">Copy link to share</span></button>
@@ -5069,7 +5108,7 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
   document.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('[data-gbppa-copy]') : null;
     if (!b) return;
-    copyText(shareUrl(), function (ok) { sayCopied(b, ok); });
+    copyText(shareUrl(), function (ok) { if (b.closest('#gbppaOpen3dMenu')) said3d(ok); else sayCopied(b, ok); });
   });
 
   /* SHARE THIS GIFT (gbppl-approvals-share-1). The client, 23.09:
@@ -5627,6 +5666,22 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
      before sayCopied hands the resting words back, so the row leaves on
      «Copied» and the door comes back whole. */
   var fold3dTimer = null;
+  /* the row's copy answers ONCE, in the door's place, then the door comes
+     back; the focus, which the copy fallback may have dropped on the body
+     or which sat on the row that just left, goes back to the door. */
+  function said3d(ok) {
+    var btn = document.getElementById('gbppaOpen3d');
+    var said = document.getElementById('gbppaOpen3dSaid');
+    if (!btn || !said) return;
+    var wrap = btn.parentNode;
+    var word = said.querySelector('.gbppa-open3d__word');
+    var slot = said.querySelector('.gb-btn__icon');
+    if (word) word.textContent = ok ? 'Link copied' : 'Could not copy';
+    if (slot && window.GbIcons) slot.innerHTML = window.GbIcons.html(ok ? 'check' : 'link', 16);
+    if (fold3dTimer) clearTimeout(fold3dTimer);
+    wrap.setAttribute('data-said', '');
+    fold3dTimer = setTimeout(function () { fold3dTimer = null; menu3d(false, true); }, 1500); /* NO TOKEN: the house's Copied hold, sayCopied's 1500 */
+  }
   function menu3d(open, returnFocus) {
     var btn = document.getElementById('gbppaOpen3d');
     var menu = document.getElementById('gbppaOpen3dMenu');
@@ -5635,6 +5690,7 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
     if (fold3dTimer) { clearTimeout(fold3dTimer); fold3dTimer = null; }
     var inside = menu.contains(document.activeElement);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    wrap.removeAttribute('data-said');
     if (open) wrap.setAttribute('data-open', ''); else wrap.removeAttribute('data-open');
     if (open) { var first = menu.querySelector('[data-gbppa-menu-item]'); if (first) first.focus({ preventScroll: true }); }
     else if (inside || returnFocus) btn.focus({ preventScroll: true });
@@ -5644,13 +5700,7 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
     var btn = e.target.closest('[data-gbppa-open3d]');
     if (btn) { menu3d(btn.getAttribute('aria-expanded') !== 'true'); return; }
     if (e.target.closest('#gbppaOpen3dGo')) { setTimeout(function () { menu3d(false); }, 0); return; }
-    if (e.target.closest('#gbppaOpen3dMenu [data-gbppa-copy]')) {
-      if (fold3dTimer) clearTimeout(fold3dTimer);
-      /* the copy fallback may take the focus away to its own field and drop
-         it on the body; a fold from there hands it to the door as well */
-      fold3dTimer = setTimeout(function () { fold3dTimer = null; menu3d(false, document.activeElement === document.body); }, 1400); /* NO TOKEN: sayCopied's 1500 less the row's leave */
-      return;
-    }
+    if (e.target.closest('#gbppaOpen3dMenu [data-gbppa-copy]')) return; /* answered by said3d */
     if (!e.target.closest('#gbppaOpen3dMenu')) menu3d(false);
   });
   document.addEventListener('keydown', function (e) {
@@ -5724,7 +5774,7 @@ body[data-pv="e"] #gbppaOne[data-talk="0"] .gbppa-convo { display: none; }
         { label: 'C · Simple',          value: 'c', note: 'No tabs at all: crumbs, the title, the two acts and the white block. Activity stands in the top left corner of that block with the count of what has arrived, and it opens the whole conversation in a drawer, behind Messages and History.' },
         { label: 'D · One feed',        value: 'd', note: 'No tabs and no drawer for the conversation: under the preview stands one feed in time order, with both sides of the chat, the revisions and the decisions on one spine, and the answer field at its foot.' },
         { label: 'E · Side by side',    value: 'e', note: 'The content zone splits: a 360 wide conversation panel on the left, with Messages and History at its ceiling and the answer line at its foot, and the whole 3D block on the right. Their feet stand on one line, the log scrolls inside the panel, and below 1024 the panel moves under the object.' },
-        { label: 'F · Versions',        value: 'f', note: 'No chat and no history. On the left the versions as one accordion: exactly one card is open, and its snapshot is on the right. The latest opens by default with what you asked, what the team changed and Approve and Request changes; an older one opens with your request and one act, Approve Version N. Gift details in the head opens the design\'s data in a drawer; 3D Preview stands in the corner of the snapshot and unfolds into Open and Copy link to share.' }
+        { label: 'F · Versions',        value: 'f', note: 'No chat and no history. On the left the versions as one accordion: exactly one card is open, and its snapshot is on the right. The latest opens by default with what you asked, what the team changed and Approve and Request changes; an older one opens with your request and one act, Approve Version N. Gift details in the head opens the design\'s data in a drawer; 3D preview stands in the corner of the snapshot and unfolds into Open and Copy link to share.' }
       ],
       onChange: setPv
     });

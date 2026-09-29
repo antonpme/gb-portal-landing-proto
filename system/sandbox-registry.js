@@ -853,7 +853,7 @@
              in a drawer, the 3D door inside the snapshot. */
           id: 'v5',
           label: 'Versions, not chat',
-          desc: 'No chat and no history tab: the design versions are one accordion, the open card is the one in the preview, and each version carries the client’s request and the team’s note. Approve and Request changes on the latest version, Approve on an older one. Gift details open in a drawer; the preview is a render snapshot with a 3D Preview door that unfolds in place into Open and Copy link to share.',
+          desc: 'No chat and no history tab: the design versions are one accordion, the open card is the one in the preview, and each version carries the client’s request and the team’s note. Approve and Request changes on the latest version, Approve on an older one. Gift details open in a drawer; the preview is a render snapshot with a 3D preview door that unfolds in place into Open and Copy link to share.',
           status: 'in-progress',
           href: 'live/gift-approvals.html?pv=f&gift=stags-leap-night-and-day',
           ready: true,
