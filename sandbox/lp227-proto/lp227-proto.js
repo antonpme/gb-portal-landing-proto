@@ -406,7 +406,7 @@
      item rows and the card fields, the tags note in the house alert.
      Static content; switching tabs only toggles [hidden]. */
   function esc(v) { return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
-  function count(id, max) { return '<span class="gb-eyebrow pz-count"><span data-pz-count="' + id + '">0</span> / ' + max + ' chars</span>'; }
+  function count(id, max) { return '<span class="gba-count"><span data-pz-count="' + id + '">0</span> / ' + max + ' chars</span>'; }
   function pzItem(n, name, where, id) {
     return '<div class="pz-row pz-item"><span class="gb-eyebrow">Personalize item ' + n + '</span>' +
       '<p class="pz-name">' + esc(name) + '</p><span class="gb-eyebrow pz-where">' + esc(where) + '</span>' +
