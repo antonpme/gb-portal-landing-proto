@@ -3321,12 +3321,20 @@
      rhythm lives in design-share.html's own <style>, not in a system
      file (candidate: one personalize-card organism for the pages). */
   .pt-card { margin-top: var(--space-32); }
+  /* gbppl-dd151-drawer-2: the body is a column so the tags note can rest
+     at its foot; 32 is the least it keeps from the last field */
+  .gbd-body:has(> .pt-default) { display: flex; flex-direction: column; }
+  .pt-default { flex: 1 0 auto; display: flex; flex-direction: column; }
+  .pt-default__lead { margin: 0; }
+  .pt-default .pt-card { flex: 1 0 auto; display: flex; flex-direction: column; }
+  .pt-default .pt-card > .gb-alert { margin-top: auto; }
+  .pt-default .pt-card > .pt-card__row:nth-last-child(2) { margin-bottom: var(--space-32); }   /* the last field, the note follows it */
   .pt-card__row + .pt-card__row,
   .pt-card > .gb-alert { margin-top: var(--space-32); }
   .pt-card gb-field { display: block; }
-  .pt-card__count { display: block; margin: var(--space-8) 0 0; line-height: 1.5; font-variant-numeric: tabular-nums; }
   .pt-card .gba-input { box-sizing: border-box; border-style: solid; border-width: 0; border-bottom-width: 1px; }   /* trap 3, design-share's antidote; the field keeps its own inset, as in the checkout drawer */
   .pt-card .gba-field { padding: 0; }
+  .pt-card .input-field { margin-bottom: 0; }   /* the legacy wrapper's 16 stood under the line, so the counter sat 16 and not the canon's 8 */
   .pt-card .gba-label { display: block; margin-bottom: 4px; }   /* NO TOKEN 4: the checkout drawer's label gap (Tailwind mb-1), measured there */
   .pt-card__tags .gb-alert__body { align-items: flex-start; }
   .pt-card__tags .gb-alert__text p { margin: 0; }
@@ -4486,7 +4494,7 @@
     return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
   }
   function cardCount(id, value, max) {
-    return '<span class="gb-eyebrow pt-card__count" id="' + id + '-count"><span data-pt-count="' + id + '">' +
+    return '<span class="gba-count" id="' + id + '-count"><span data-pt-count="' + id + '">' +
       String(value || '').length + '</span> / ' + max + ' chars</span>';
   }
   var editing = null;
@@ -4497,14 +4505,16 @@
     var d = gift.cardDefault || { intro: '', message: '', from: '' };
     drawer.open({
       title: 'Default card message',
-      sub: 'Applies to every order and campaign of this gift unless changed there',
+      /* gbppl-dd151-drawer-2 (Ton, 29.09): only the greeting card is
+         personalized here, so the tab strip (one live tab, one dead) goes;
+         the one sentence that carries a new fact (where the default
+         applies) speaks in the drawer's body voice, 16 on Zinc 700, not
+         in the small grey sub; the tags note leaves the form and stands at
+         the foot of the body, as reference, not as a fourth field. */
       html:
-        '<div class="gba-scale-portal">' +
-          '<div class="gb-tabs gb-tabs--fill" role="tablist" aria-label="What to personalize">' +
-            '<button type="button" class="gb-tab" role="tab" aria-selected="false" aria-disabled="true" tabindex="-1"><span class="gb-tab__label">Gift items</span></button>' +
-            '<button type="button" class="gb-tab" role="tab" aria-selected="true" tabindex="0"><span class="gb-tab__label">Greeting card</span></button>' +
-          '</div>' +
-          '<section class="pt-card" role="tabpanel" aria-label="Greeting card">' +
+        '<div class="gba-scale-portal pt-default">' +
+          '<p class="pt-default__lead">Applies to every order and campaign of this gift unless changed there.</p>' +
+          '<section class="pt-card" aria-label="Greeting card">' +
             '<div class="pt-card__row">' +
               '<gb-field optional input-id="ptCardIntro" name="intro" label="Card heading" maxlength="50" placeholder="Hello, or Dear team," value="' + escAttr(d.intro) + '"></gb-field>' +
               cardCount('ptCardIntro', d.intro, 50) +
