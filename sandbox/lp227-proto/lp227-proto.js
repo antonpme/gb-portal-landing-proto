@@ -406,12 +406,11 @@
      item rows and the card fields, the tags note in the house alert.
      Static content; switching tabs only toggles [hidden]. */
   function esc(v) { return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
-  function count(id, max) { return '<span class="gba-count"><span data-pz-count="' + id + '">0</span> / ' + max + ' chars</span>'; }
   function pzItem(n, name, where, id) {
     return '<div class="pz-row pz-item"><span class="gb-eyebrow">Personalize item ' + n + '</span>' +
       '<p class="pz-name">' + esc(name) + '</p><span class="gb-eyebrow pz-where">' + esc(where) + '</span>' +
-      '<gb-field optional input-id="' + id + '" name="' + id + '" label="Your text" maxlength="300" placeholder="Your text"></gb-field>' +
-      count(id, 300) + '</div>';
+      '<gb-field optional counter input-id="' + id + '" name="' + id + '" label="Your text" maxlength="300" placeholder="Your text"></gb-field>' +
+      '</div>';
   }
   function openPersonalize() {
     var d = design();
@@ -426,9 +425,9 @@
         pzItem(2, d.name, 'Engraved on the item', 'pzItem') +
       '</div>' +
       '<div class="pz-group" role="tabpanel" id="pzPaneCard" aria-labelledby="pzTabCard" hidden>' +
-        '<div class="pz-row"><gb-field optional input-id="pzIntro" name="intro" label="Card heading" maxlength="50" placeholder="Hello, or Dear team,"></gb-field>' + count('pzIntro', 50) + '</div>' +
-        '<div class="pz-row"><gb-field optional input-id="pzMessage" name="message" type="textarea" label="Card message" maxlength="500" placeholder="Write your message..."></gb-field>' + count('pzMessage', 500) + '</div>' +
-        '<div class="pz-row"><gb-field optional input-id="pzSign" name="signature" label="Your signature" maxlength="100" placeholder="Your name or company"></gb-field>' + count('pzSign', 100) + '</div>' +
+        '<div class="pz-row"><gb-field optional counter input-id="pzIntro" name="intro" label="Card heading" maxlength="50" placeholder="Hello, or Dear team,"></gb-field></div>' +
+        '<div class="pz-row"><gb-field optional counter input-id="pzMessage" name="message" type="textarea" label="Card message" maxlength="500" placeholder="Write your message..."></gb-field></div>' +
+        '<div class="pz-row"><gb-field optional counter input-id="pzSign" name="signature" label="Your signature" maxlength="100" placeholder="Your name or company"></gb-field></div>' +
         '<div class="gb-alert gb-alert--info" role="note"><span class="gb-alert__body">' +
           '<span class="gb-alert__icon" aria-hidden="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 10.8v5.6"/><path d="M12 7.6h.01"/></svg></span>' +
           '<span class="gb-alert__text">Use {{FirstName}} in your message and each recipient sees their own name.</span></span></div>' +
@@ -447,11 +446,6 @@
       if (pane) pane.hidden = !on;
     });
   }
-  document.addEventListener('input', function (e) {
-    var t = e.target; if (!t || !t.id) return;
-    var out = document.querySelector('[data-pz-count="' + t.id + '"]');
-    if (out) out.textContent = String(t.value || '').length;
-  });
 
   /* ---------------- the live cookie bar ---------------- */
   var COOKIE_KEY = 'lpp227-cookie';
@@ -533,8 +527,7 @@
     var pz = e.target.closest('[data-pz]');
     if (pz) {
       if (pz.getAttribute('data-pz') === 'reset') {
-        document.querySelectorAll('.gbd-panel .pz-group input, .gbd-panel .pz-group textarea').forEach(function (f) { f.value = ''; });
-        document.querySelectorAll('[data-pz-count]').forEach(function (c) { c.textContent = '0'; });
+        document.querySelectorAll('.gbd-panel .pz-group input, .gbd-panel .pz-group textarea').forEach(function (f) { f.value = ''; f.dispatchEvent(new Event('input', { bubbles: true })); });
       } else {
         quiet = true; drawer.close(); quiet = false;
         if (state.s !== 'order') go({ s: 'order' });

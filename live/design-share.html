@@ -2779,23 +2779,20 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
                 ' aria-label="Custom Gift Box, your text" aria-describedby="gbdsBox-count"' +
                 ' placeholder="Your text" value="' + esc(CARD.box) + '" class="valid browser-default gba-input">' +
             '</div>' +
+            '<p class="gba-count" id="gbdsBox-count"><span data-gba-count>' + String(CARD.box || '').length + '</span> / 300 chars</p>' +
           '</div>' +
-          count('gbdsBox', CARD.box, 300) +
         '</div>' +
       '</div>' +
       '<div class="gbds-pz__group" role="tabpanel" id="gbdsPaneCard" aria-labelledby="gbdsTabCard" hidden>' +
         '<div class="gbds-pz__row">' +
-          '<gb-field optional input-id="gbdsIntro" name="intro" label="Card heading" maxlength="50" placeholder="Hello, or Dear team," value="' + esc(CARD.intro) + '"></gb-field>' +
-          count('gbdsIntro', CARD.intro, 50) +
+          '<gb-field optional counter input-id="gbdsIntro" name="intro" label="Card heading" maxlength="50" placeholder="Hello, or Dear team," value="' + esc(CARD.intro) + '"></gb-field>' +
         '</div>' +
         '<div class="gbds-pz__row">' +
-          '<gb-field optional input-id="gbdsMessage" name="message" type="textarea" label="Card message" maxlength="500"' +
+          '<gb-field optional counter input-id="gbdsMessage" name="message" type="textarea" label="Card message" maxlength="500"' +
             ' placeholder="Write your message..." value="' + esc(CARD.message) + '"></gb-field>' +
-          count('gbdsMessage', CARD.message, 500) +
         '</div>' +
         '<div class="gbds-pz__row">' +
-          '<gb-field optional input-id="gbdsSign" name="signature" label="Your signature" maxlength="100" placeholder="Your name or company" value="' + esc(CARD.signature) + '"></gb-field>' +
-          count('gbdsSign', CARD.signature, 100) +
+          '<gb-field optional counter input-id="gbdsSign" name="signature" label="Your signature" maxlength="100" placeholder="Your name or company" value="' + esc(CARD.signature) + '"></gb-field>' +
         '</div>' +
         /* The reference's tags note, word for word, in the house alert
            (info tone, the one neutral note the system draws). */
@@ -2812,11 +2809,7 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
       '</div>';
   }
 
-  /* The field's counter, .gba-count at the field owner (29.09). */
-  function count(id, value, max) {
-    return '<span class="gba-count" id="' + id + '-count">' +
-      '<span data-gbds-count="' + id + '">' + String(value || '').length + '</span> / ' + max + ' chars</span>';
-  }
+  /* The field's counter is the field's own now (gb-field counter, 29.09). */
 
   /* Live counters and live tabs, wired once on the document: the
      drawer's panel lives on <body>, not inside its host tag
@@ -2826,12 +2819,6 @@ body[data-gbds-state="error"] .gbds-hint { display: none; }
   function wirePz() {
     if (pzWired) return;
     pzWired = true;
-    document.addEventListener('input', function (e) {
-      var t = e.target;
-      if (!t || !t.id) return;
-      var out = document.querySelector('[data-gbds-count="' + t.id + '"]');
-      if (out) out.textContent = String(t.value || '').length;
-    });
     document.addEventListener('click', function (e) {
       var tab = e.target && e.target.closest ? e.target.closest('[data-gbds-tab]') : null;
       if (!tab) return;

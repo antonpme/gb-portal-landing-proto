@@ -246,6 +246,22 @@
     var helper = opts.helper
       ? '<p class="gba-helper" id="' + helperId + '">' + esc(opts.helper) + '</p>'
       : '';
+    /* ШЕСТОЕ РАСШИРЕНИЕ: counter          gbppl-field-count-2, 29.09
+       Тон: «счётчик и helper живут в одном месте, двух жителей в одну
+       квартиру не поселяем». Под полем ОДНА строка, и житель у неё
+       один, по приоритету: ошибка (setError, вытесняет всё, auth.css)
+       > счётчик (у поля есть лимит и атрибут counter) > helper. Поле,
+       которому нужны и лимит и пояснение, несёт пояснение в
+       плейсхолдере (канон поля 10.09), строка остаётся счётчику.
+       Счётчик считает сам: слушает свой контрол, так что носитель,
+       который меняет значение кодом, шлёт input, как все и делают.
+       Вид: .gba-count, 12 Zinc 500 справа, 8 под линией (DESIGN-LAWS D1). */
+    var maxN = /^\d+$/.test(String(opts.maxlength || '')) ? Number(opts.maxlength) : 0;
+    if (opts.counter && maxN) {
+      describe = ' aria-describedby="' + esc(opts.id) + '-count"';
+      helper = '<p class="gba-count" id="' + esc(opts.id) + '-count"><span data-gba-count>' +
+        String(opts.value || '').length + '</span> / ' + maxN + ' chars</p>';
+    }
     /* ПЯТОЕ РАСШИРЕНИЕ: maxlength      gbppl-share-pz-tabs-1 (24.09).
        Потолок длины у поля, которое считает символы (персонализация:
        «0 / 50 chars» у чекаута держит maxlength на самом контроле).
@@ -330,9 +346,16 @@
         labelStyle: this.getAttribute('label-style') || '',
         options: this.getAttribute('options') || '',
         maxlength: this.getAttribute('maxlength') || '',
+        counter: this.hasAttribute('counter'),
         eye: this.hasAttribute('eye'),
         optional: this.hasAttribute('optional'),
       });
+      var countOut = this.querySelector('[data-gba-count]');
+      if (countOut) {
+        var ctl = this.input;
+        this.refreshCount = function () { countOut.textContent = String(ctl.value || '').length; };
+        ctl.addEventListener('input', this.refreshCount);
+      }
       var eyeBtn = this.querySelector('[data-eye]');
       if (eyeBtn) {
         var input = this.querySelector('input');
@@ -367,6 +390,17 @@
   if (!customElements.get('gb-field')) {
     customElements.define('gb-field', GbField);
   }
+  /* Счётчик у поля, собранного разметкой, а не тегом (строка айтема
+     на странице шаринга): контрол называет свою строку в
+     aria-describedby, и один делегат на документе считает за него. */
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    var ref = t && t.getAttribute ? t.getAttribute('aria-describedby') : '';
+    if (!ref) return;
+    var line = document.getElementById(ref.split(' ')[0]);
+    var out = line && line.classList.contains('gba-count') ? line.querySelector('[data-gba-count]') : null;
+    if (out) out.textContent = String(t.value || '').length;
+  });
 
   /* ============================================================
      АВТОРОСТ МНОГОСТРОЧНИКА          gbppl-field-autogrow-1, 01.09
