@@ -4,7 +4,7 @@
    Local generation is ASSUMED: original Clay tiles rotate, no paid/live requests. */
 (function(){
 'use strict';
-var root=document.getElementById('cz-root'), db, pendingGift=null, pendingSwap=null, choice='', quiet=false, drawer, helpDrawer, helpRoute='', ready;
+var root=document.getElementById('cz-root'), db, pendingGift=null, pendingSwap=null, swapConfirm=false, choice='', quiet=false, drawer, helpDrawer, helpRoute='', ready;
 var KEY='gb-start227-sandbox-designs', A='start-227-assets/img/cz-', P='../sandbox/lp227-proto/img/';
 var firstGift={id:'candle-906',name:'Elemental No.3 Candle Flight',price:'$125',scene:A+'scene-design.jpg'};
 var gifts=[
@@ -48,9 +48,12 @@ function expertsHTML(){return '<div class="cz-scroll sb-experts"><div class="sb-
 // Favorites Xh from live/catalog/assets/index-CosrF-zM.js, exact card/header anatomy.
 // Ren19:06: radio only selects; no extra card ring, no extra card lines.
 function drawerHTML(){return '<div class="sb-favorites-summary"><span>'+db.designs.length+' design'+(db.designs.length===1?'':'s')+'</span></div><div class="sb-favorites-list" role="radiogroup" aria-label="Design for checkout">'+db.designs.map(function(d){return '<article class="sb-favorite-card"><div class="sb-favorite-tags"><span>Design '+d.number+'</span><label class="gb-radio"><input class="gb-radio__input" type="radio" name="sb-current-design" data-sb-radio="'+d.id+'" aria-label="Select '+esc(d.gift.name)+' design '+d.number+'" '+(d.id===db.current?'checked':'')+'></label></div><button type="button" class="sb-favorite-image" data-sb-design="'+d.id+'"><img src="'+d.artwork+'" alt="'+esc(d.gift.name)+' design '+d.number+'"></button><button class="sb-favorite-title" type="button" data-sb-design="'+d.id+'">'+esc(d.gift.name)+'</button><span class="sb-favorite-price">'+esc(d.gift.price)+'</span></article>';}).join('')+'</div>';}
-function beginSwap(){if(pendingSwap)return;if(window.GbTip)GbTip.hide();capture();pendingSwap=JSON.parse(JSON.stringify(current()));pendingGift=null;GBFlow.go({cz:'reading',dr:''});}
+// Sandbox iteration8: the swap door first explains its effect, without mutating a design.
+function showSwapConfirmation(){if(pendingSwap||swapConfirm)return;if(window.GbTip)GbTip.hide();swapConfirm=true;var colors=root.querySelector('.sb-colors');colors.insertAdjacentHTML('beforeend','<div class="sb-swap-confirm"><p>Swapping the colors creates a new design. Your current design stays in My Designs.</p><div class="sb-swap-confirm-buttons"><button type="button" class="gb-btn gb-btn--outline gb-btn--secondary gb-btn--small" data-sb-action="swap-continue"><span class="gb-btn__label">Continue</span></button><button type="button" class="gb-btn gb-btn--ghost gb-btn--secondary gb-btn--small" data-sb-action="swap-cancel"><span class="gb-btn__label">Cancel</span></button></div></div>');var row=colors.lastElementChild;requestAnimationFrame(function(){requestAnimationFrame(function(){if(row.isConnected&&swapConfirm)row.classList.add('is-in');});});}
+function cancelSwapConfirmation(){swapConfirm=false;var row=root.querySelector('.sb-swap-confirm');if(row)row.remove();}
+function beginSwap(){if(pendingSwap||!swapConfirm)return;swapConfirm=false;if(window.GbTip)GbTip.hide();capture();pendingSwap=JSON.parse(JSON.stringify(current()));pendingGift=null;GBFlow.go({cz:'reading',dr:''});}
 function finishSwap(){if(!pendingSwap)return;var source=pendingSwap,d=JSON.parse(JSON.stringify(source));d.id='design-'+(++db.counter);d.number=db.counter;d.sourceDesignId=source.id;d.fields.lid=source.fields.tray;d.fields.tray=source.fields.lid;d.fields.lidChanged=d.fields.trayChanged=true;db.designs.push(d);db.current=d.id;pendingSwap=null;save();applyCurrent();}
-function cleanup(){pendingGift=null;pendingSwap=null;if(window.GbTip)GbTip.hide();if(window.GBSandboxScene)GBSandboxScene.unmount();closeLayers();if(window.GBEntry)GBEntry.closeSignin();}
+function cleanup(){swapConfirm=false;pendingGift=null;pendingSwap=null;if(window.GbTip)GbTip.hide();if(window.GBSandboxScene)GBSandboxScene.unmount();closeLayers();if(window.GBEntry)GBEntry.closeSignin();}
 function closeLayers(){helpRoute='';if(helpDrawer&&helpDrawer._open){quiet=true;helpDrawer.close();quiet=false;}if(drawer&&drawer._open){quiet=true;drawer.close();quiet=false;}if(window.GbCatalogOverlay)GbCatalogOverlay.close();}
 // Concierge door anatomy reused by name; configurable local three-door host, not the full hub.
 function helpHTML(){return '<div class="gbhc-doors">'+[['chat','chat','Live chat','Talk to our team.'],['meeting','calendar','Book a meeting','Choose a time that works for you.'],['experts','wand','Have our designers design it','Work with our experts on this gift.']].map(function(a){return '<button type="button" class="gbhc-door" data-sb-help="'+a[0]+'"><span class="gbhc-door__disc"><span data-gb-icon="'+a[1]+'" data-gb-icon-size="22"></span></span><span class="gbhc-door__copy"><span class="gbhc-door__title">'+a[2]+'</span><span class="gbhc-door__sub">'+a[3]+'</span></span><span class="gbhc-door__go" data-gb-icon="chevron-right" data-gb-icon-size="20"></span></button>';}).join('')+'</div>';}
@@ -67,6 +70,7 @@ function layer(state){helpLayer(state);
 }
 function enhance(root,state){
  if(!active()||state.s!=='cz'){closeLayers();return;}
+ swapConfirm=false; // A route redraw never carries an unconfirmed swap into another level.
  if(window.GbTip)GbTip.hide(); // Detached color carriers must not leave an active or pending tooltip.
  ensure();applyCurrent();root.classList.add('sb-customizer');document.body.dataset.sbPlacement='scene';
  var body=root.querySelector('.cz-panel-body'),step=state.cz,d=current();if(step!=='reading')pendingSwap=null;
@@ -93,7 +97,7 @@ function enhance(root,state){
  // v6: actual scoped model, including unbranded sandbox reading (Ton17:39).
  if(step!=='url'){
   var sceneHost=root.querySelector('.cz-scene');GBSandboxScene.mount(sceneHost,d,step==='reading');
-  sceneHost.insertAdjacentHTML('beforeend','<div class="sb-visualization-plate"><p class="sb-visualization-copy">This is a 3D visualization of your gift design</p><p class="gbds-hint"><span class="gbds-hint__bit"><span data-gb-icon="rotate" data-gb-icon-size="12"></span>Drag to turn</span><span class="gbds-hint__bit"><span data-gb-icon="mouse" data-gb-icon-size="12"></span>Scroll to zoom</span><span class="gbds-hint__bit"><span data-gb-icon="move" data-gb-icon-size="12"></span>Shift-drag to move</span></p></div>');
+  if(step!=='reading')sceneHost.insertAdjacentHTML('beforeend','<div class="sb-visualization-plate"><p class="gbds-hint"><span class="gbds-hint__bit"><span data-gb-icon="rotate" data-gb-icon-size="12"></span>Drag to turn</span><span class="gbds-hint__bit"><span data-gb-icon="mouse" data-gb-icon-size="12"></span>Scroll to zoom</span><span class="gbds-hint__bit"><span data-gb-icon="move" data-gb-icon-size="12"></span>Shift-drag to move</span></p></div>');
   if(step!=='reading')sceneHost.insertAdjacentHTML('beforeend','<div class="sb-scene-doors"><button type="button" class="gb-btn gb-btn--ghost gb-btn--secondary gb-btn--small" data-sb-action="designs"><span class="gb-btn__label">My Designs</span><span class="sb-count">'+db.designs.length+'</span></button><button type="button" class="gb-btn gb-btn--ghost gb-btn--secondary gb-btn--small" data-sb-action="more"><span class="gb-btn__label">More gifts</span></button></div>');
  }
  if(state.dr==='dna'){root.querySelector('.cz-dna-footer>p').textContent='Your current designs will stay in My Designs.';root.querySelector('[data-action="back-dna"]').remove();root.querySelector('.cz-dna-content>h2').remove();root.querySelector('.cz-dna-spacer').remove();root.querySelector('.cz-dna').insertAdjacentHTML('afterbegin','<header class="sb-dna-head"><button type="button" class="gb-btn gb-btn--icon gb-btn--ghost gb-btn--secondary gb-btn--medium" data-sb-action="back-dna" aria-label="Back to gift design"><span data-gb-icon="arrow-right" data-gb-icon-size="20" style="transform:rotate(180deg)"></span></button><h2>YOUR BRAND DNA</h2></header>');}
@@ -125,7 +129,9 @@ root.addEventListener('click',function(e){
  if(a==='more')GBFlow.go({dr:'more'});
  if(a==='help')GBFlow.go({dr:'help'});
  if(a==='back-dna')GBFlow.go({dr:''});
- if(a==='swap')beginSwap();
+ if(a==='swap')showSwapConfirmation();
+ if(a==='swap-continue')beginSwap();
+ if(a==='swap-cancel')cancelSwapConfirmation();
  if(a==='regenerate'){GBCZ.dismissModal();capture();addSet(current().gift,3,current().brandUrl);GBFlow.go({cz:'design',dr:''});}
 },true);
 document.addEventListener('change',function(e){if(active()&&e.target.dataset.sbRadio)select(e.target.dataset.sbRadio);});
