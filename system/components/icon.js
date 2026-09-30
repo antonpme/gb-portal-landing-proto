@@ -246,6 +246,14 @@
   var GRID = 24;
 
   var SET = {
+    /* Sandbox iteration 7, Ton/Ren30Sep: opposite horizontal arrows for color swap.
+       Source assets/nucleo-full/48-arrows-opposite-direction-x-2.svg.
+       Original 48-grid coordinates halved onto the house 24 grid. */
+    'swap': {
+      body: '<path d="M21.5 16.5H3l.5 0M7.5 12L3 16.5 7.5 21M2.5 7.5H21l-.5 0M16.5 3L21 7.5 16.5 12"/>',
+      from: 'assets/nucleo-full/48-arrows-opposite-direction-x-2.svg (Nucleo): Sandbox color swap',
+      stroke: 1.5
+    },
     'arrow-right': {
       body: '<path d="M4 12h15M13 6l6 6-6 6"/>',
       from: 'auth.js, booking.js: the forward glyph of every submit',
