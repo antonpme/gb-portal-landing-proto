@@ -346,7 +346,10 @@ gb-studio-panel {
      (причина в комменте у хозяина), здесь остался расход. */
   top: var(--gbsp-top);
   transform: none;
-  z-index: 60;
+  /* panel-about-1, DECLARED Ton 30.09 14:26: prototype drawers and
+     overlays (email sheet z1101, customizer z1000) stay below studio controls.
+     The description uses the native modal top layer above all of them. */
+  z-index: 1102;
   display: flex;
   /* ОБЕ ФИГУРЫ РОСТОМ В СВОЁ СОДЕРЖИМОЕ (gbppl-panel-30-1). Было
      stretch: язычок был полосой во всю высоту ящика и тянулся за ним.
@@ -881,7 +884,7 @@ gb-studio-panel[data-dock="float"] .gbsp.is-collapsed .gbsp-panel > :not(.gbsp-h
 .gbsp-snap {
   position: fixed;
   top: var(--gbsp-top);
-  z-index: 61;
+  z-index: 1103;
   width: min(calc(var(--space-64) * 5), calc(100vw - var(--gbsp-tabw) - 1px));
   height: min(80vh, calc(100vh - var(--gbsp-top) - var(--space-16)));
   pointer-events: none;
@@ -967,6 +970,72 @@ gb-studio-panel[data-dock="float"] .gbsp.is-snapping .gbsp-panel { border-color:
    лечь. Ряд иконок-дверей (.gbsp-nav__hub / .gbsp-nav__three) снят
    вместе с navCell: разделы студии зовутся словами в подвале. */
 .gbsp-who { flex: 1 1 auto; min-width: 0; }
+/* panel-about-1, Ton 30.09: the panel keeps one short line of copy
+   and its existing details door becomes Full description. */
+.gbsp-short { margin: var(--space-16) 0 0; color: var(--zinc-300); font-size: 14px; line-height: 1.5; }
+.gbsp-who > .gbsp-link { width: 100%; text-align: left; font-size: 14px; }
+gb-studio-panel[data-about-open] > .gbsp { visibility: hidden; pointer-events: none; }
+/* Native dialog supplies modal focus and inert background. 5vh/5vw
+   and the full-screen phone rule are the dimensions Ton declared. */
+.gbsp-about {
+  box-sizing: border-box;
+  position: fixed;
+  inset: 5vh 5vw;
+  margin: 0;
+  width: 90vw;
+  height: 90vh;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  background: var(--zinc-800);
+  color: var(--zinc-200);
+  border: 1px solid var(--zinc-700);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+  font: 16px/1.5 var(--font-sans);
+  overflow: hidden;
+}
+.gbsp-about::backdrop { background: color-mix(in srgb, var(--zinc-950) 80%, transparent); }
+.gbsp-about__content { box-sizing: border-box; height: 100%; overflow-y: auto; padding: var(--space-48); }
+.gbsp-about__close {
+  position: absolute; top: var(--space-16); right: var(--space-16);
+  display: grid; place-items: center; width: var(--space-48); height: var(--space-48);
+  padding: 0; border: 0; border-radius: var(--radius); background: var(--zinc-900);
+  color: var(--zinc-200); cursor: pointer;
+}
+.gbsp-about__close:hover { background: var(--zinc-700); color: var(--white); }
+.gbsp-about__close:focus-visible, .gbsp-flow__card:focus-visible {
+  outline: 2px solid var(--blue-400); outline-offset: 2px;
+}
+.gbsp-about h2, .gbsp-about h3 { margin: 0; font-size: 24px; font-weight: 600; line-height: 1.35; color: var(--white); }
+.gbsp-about h2 { padding-right: var(--space-48); }
+.gbsp-about p { margin: 0; }
+.gbsp-about__version { color: var(--zinc-300); }
+.gbsp-about__intro { max-width: calc(var(--space-64) * 12); }
+.gbsp-about__desc { display: grid; gap: var(--space-16); margin-top: var(--space-24); }
+.gbsp-about__flow { margin-top: var(--space-48); }
+/* Ton via Ren 30.09 14:54: full-width equal cards. The 200px
+   minimum is composed from three 64px steps and one 8px step. */
+.gbsp-flow { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--space-64) * 3 + var(--space-8))), 1fr)); grid-auto-rows: 1fr; gap: var(--space-24); margin: var(--space-24) 0 0; padding: 0; list-style: none; }
+.gbsp-flow > li { min-width: 0; }
+.gbsp-flow__card, body.gb-demo a.gbsp-flow__card {
+  display: flex; flex-direction: column; gap: var(--space-8); box-sizing: border-box; height: 100%;
+  padding: var(--space-16); border: 1px solid var(--zinc-700); border-radius: var(--radius);
+  background: var(--zinc-900); color: var(--zinc-200); text-decoration: none;
+}
+.gbsp-flow__card:hover, body.gb-demo a.gbsp-flow__card:hover { background: var(--zinc-700); }
+.gbsp-flow__card.is-current, body.gb-demo a.gbsp-flow__card.is-current { border-color: var(--blue-400); }
+.gbsp-flow__card.is-current .gbsp-flow__title { color: var(--blue-400); }
+.gbsp-flow__preview { display: block; flex: 0 0 auto; width: 100%; aspect-ratio: 16/10; overflow: hidden; border-radius: var(--radius); background: var(--zinc-800); }
+.gbsp-flow__preview img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.gbsp-flow__placeholder { display: flex; align-items: center; justify-content: center; box-sizing: border-box; height: 100%; padding: var(--space-16); text-align: center; color: var(--zinc-300); }
+.gbsp-flow__title { color: var(--white); font-weight: 600; }
+/* Ton via Ren 30.09 15:02: notes may occupy two lines. */
+.gbsp-flow__note { color: var(--zinc-300); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; overflow: hidden; }
+@media (max-width: 639px) {
+  .gbsp-about { inset: 0; width: 100vw; height: 100dvh; border: 0; border-radius: 0; }
+  .gbsp-about__content { padding: var(--space-24); }
+}
 /* Тихие кнопки пульта стоят своей парой в хвосте строки, и зазор
    между ними — тот же инсет, что внутри жёлоба: они соседи по одной
    коробке, а не две отдельные вещи. */

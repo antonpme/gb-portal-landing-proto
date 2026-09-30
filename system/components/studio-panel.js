@@ -987,6 +987,7 @@
     }
     var d = name === 'chevron-left' ? 'M8.5 3 4.5 7l4 4'
           : name === 'chevron-down' ? 'M3 5.5 7 9.5l4-4'
+          : name === 'close' ? 'M3 3l8 8M11 3l-8 8'
           : 'M5.5 3 9.5 7l-4 4';
     return '<span class="gb-icon gb-icon--' + (size || 16) + '" aria-hidden="true">' +
            '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" ' +
@@ -1819,6 +1820,8 @@
     var name    = PLACES[rel] || '';
     var opts    = versionOptions(pageId, root);
     var on      = opts ? chosen(opts) : null;
+    var slice = window.GB_SANDBOXES && window.GB_SANDBOXES.forPage(pageId, root);
+    if (!name && slice) name = slice.label;
     var bits    = [];
     var word    = variant ? 'Sandbox' : (SECTION_WORD[here] || '');
     if (word) bits.push(word);
@@ -1838,20 +1841,17 @@
        возле названия). Её нет там, где версии нет вовсе: глиф без
        содержимого обещал бы уровень, которого не существует. */
     var door = opts
-      ? '<button class="gbsp-info" type="button" data-slot="version-details"' +
-          ' data-gb-tip="Version details"' +
-          ' aria-label="Version details" title="Version details">' +
-          glyph('info', 16) +
-        '</button>'
+      ? '<button class="gbsp-link" type="button" data-slot="version-details"' +
+          ' aria-haspopup="dialog">Full description</button>'
       : '';
     return (
       '<span class="gbsp-name">' + esc(name) + '</span>' +
-      (sub || door
+      (sub
         ? '<span class="gbsp-name__line">' +
             (sub ? '<span class="gbsp-name__sub">' + esc(sub) + '</span>' : '') +
-            door +
           '</span>'
-        : '')
+        : '') +
+      (on && on.short ? '<p class="gbsp-short">' + esc(on.short) + '</p>' : '') + door
     );
   }
 
@@ -1950,7 +1950,9 @@
       /* У Live в реестре описания нет: он не вариант, он точка
          отсчёта. Строка сказана здесь один раз и одинаково на всех
          страницах. */
-      desc: 'The page as the Live Prototype carries it today.'
+      desc: slice.live.desc || 'The page as the Live Prototype carries it today.',
+      short: slice.live.short || 'The page as the Live Prototype carries it today.',
+      flow: slice.live.flow || []
     }];
     slice.variants.forEach(function (v) {
       out.push({
@@ -1958,6 +1960,8 @@
         href: v.ready ? v.href : '',
         current: v.current,
         desc: v.desc || '',
+        short: v.short || '',
+        flow: v.flow || [],
         off: !v.ready,
         status: statusWord(v.status),
         /* Версия страницы провенанса в коммитах не носит (реестр
@@ -2254,6 +2258,134 @@
     return menu;
   }
 
+  /* panel-about-1, DECLARED: Ton 30.09.2026 14:17 and 14:25.
+     Replaces the old details door, inside the studio token island.
+     Native dialog owns the modal focus boundary and the top layer. */
+  function aboutCurrent(flow) {
+    var have = new URL(location.href);
+    if (window.GBFlow) {
+      ['s', 'cz', 'dr'].forEach(function (key) {
+        if (!have.searchParams.has(key) && window.GBFlow.state[key]) {
+          have.searchParams.set(key, window.GBFlow.state[key]);
+        }
+      });
+    }
+    var winner = -1, score = -1;
+    flow.forEach(function (row, i) {
+      var want = new URL(row.href, location.href), count = 0, ok = true;
+      if (want.pathname.replace(/\/$/, '/index.html') !== have.pathname.replace(/\/$/, '/index.html')) return;
+      want.searchParams.forEach(function (value, key) {
+        if (['about', 'studio', 'device', 'mode', 'comment'].indexOf(key) >= 0) return;
+        count++;
+        if (have.searchParams.get(key) !== value) ok = false;
+      });
+      if (ok && count > score) { winner = i; score = count; }
+    });
+    return winner;
+  }
+
+  function aboutHtml(host, root) {
+    var slice = window.GB_SANDBOXES.forPage(host.getAttribute('page'), root);
+    var on = chosen(versionOptions(host.getAttribute('page'), root) || []);
+    if (!slice || !on) return '';
+    var flow = on.flow || [], current = aboutCurrent(flow);
+    var paragraphs = (on.desc || '').split(/\n\s*\n|(?<=[.!?])\s+(?=[A-Z])/).filter(Boolean);
+    return '<div class="gbsp-about__intro"><h2 id="gbsp-about-title">' + esc(slice.label) + '</h2>' +
+      '<p class="gbsp-about__version">' + esc(on.label) + '</p>' +
+      '<div class="gbsp-about__desc">' + paragraphs.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div></div>' +
+      (flow.length ? '<section class="gbsp-about__flow"><h3>User flow</h3><ol class="gbsp-flow">' + flow.map(function (row, i) {
+        return '<li><a class="gbsp-flow__card' + (i === current ? ' is-current' : '') + '" href="' + esc(row.href) + '"' +
+          (i === current ? ' aria-current="step"' : '') + '>' +
+          '<span class="gbsp-flow__preview">' +
+          (row.shot ? '<img src="' + esc(row.shot) + '" alt="" width="480" height="300">' : '<span class="gbsp-flow__placeholder">' + esc(row.title) + '</span>') + '</span>' +
+          '<span class="gbsp-flow__title"><span class="gbsp-flow__number">' + (i + 1) + '.</span> <span class="gbsp-flow__name">' + esc(row.title) + '</span></span><span class="gbsp-flow__note" title="' + esc(row.note || '') + '">' + esc(row.note || '') + '</span></a></li>';
+      }).join('') + '</ol></section>' : '');
+  }
+
+  function openAbout(host, root, door) {
+    if (host.__about && host.__about.open) return;
+    var dialog = host.__about;
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.className = 'gbsp-about';
+      dialog.setAttribute('aria-labelledby', 'gbsp-about-title');
+      dialog.innerHTML = '<button class="gbsp-about__close" type="button" aria-label="Close full description">' + glyph('close', 16) + '</button><div class="gbsp-about__content"></div>';
+      host.appendChild(dialog);
+      host.__about = dialog;
+      dialog.querySelector('button').addEventListener('click', function () { closeAbout(host); });
+      dialog.addEventListener('click', function (e) {
+        if (e.target.closest('.gbsp-flow__card')) closeAbout(host);
+        if (e.target !== dialog) return;
+        var r = dialog.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeAbout(host);
+      });
+      dialog.addEventListener('cancel', function (e) { e.preventDefault(); closeAbout(host); });
+      dialog.addEventListener('keydown', function (e) {
+        e.stopPropagation();
+        if (e.key === 'Escape') { e.preventDefault(); closeAbout(host); }
+      });
+      dialog.addEventListener('close', function () {
+        /* An older queued close must not consume a newly opened modal. */
+        if (!dialog.open) restoreAbout(host);
+      });
+    }
+    dialog.querySelector('.gbsp-about__content').innerHTML = aboutHtml(host, root);
+    host.__aboutScroll = { body: document.body.style.cssText, html: document.documentElement.style.overflow, x: scrollX, y: scrollY };
+    document.body.style.position = 'fixed';
+    document.body.style.top = -host.__aboutScroll.y + 'px';
+    document.body.style.width = '100%';
+    document.documentElement.style.overflow = 'hidden';
+    if (host.__setOpen) host.__setOpen(false);
+    host.setAttribute('data-about-open', '');
+    var url = new URL(location.href); url.searchParams.set('about', '1');
+    history.replaceState(history.state, '', url.href);
+    dialog.showModal();
+    dialog.querySelector('button').focus({ preventScroll: true });
+  }
+
+  function restoreAbout(host) {
+    var saved = host.__aboutScroll;
+    if (!saved) return;
+    host.__aboutScroll = null;
+    document.body.style.cssText = saved.body;
+    document.documentElement.style.overflow = saved.html;
+    window.scrollTo({ left: saved.x, top: saved.y, behavior: 'instant' });
+    host.removeAttribute('data-about-open');
+    if (host.__setOpen) host.__setOpen(true);
+    var url = new URL(location.href); url.searchParams.delete('about');
+    history.replaceState(history.state, '', url.href);
+    var back = host.querySelector('[data-slot="version-details"]');
+    if (back) back.focus({ preventScroll: true });
+  }
+
+  function closeAbout(host) {
+    if (host.__about && host.__about.open) host.__about.close();
+    /* The native close event is queued. Restore now so a loading
+       prototype iframe cannot delay the panel's return. */
+    restoreAbout(host);
+  }
+
+  function wireAbout(host, root) {
+    function refresh() {
+      var who = host.querySelector('.gbsp-who');
+      if (who) {
+        who.innerHTML = whoHtml(root, host.getAttribute('page'));
+        var door = who.querySelector('[data-slot="version-details"]');
+        if (door) door.addEventListener('click', function () { openAbout(host, root, door); });
+      }
+      if (host.__about && host.__about.open) {
+        host.__about.querySelector('.gbsp-about__content').innerHTML = aboutHtml(host, root);
+      }
+    }
+    document.addEventListener('gbflow:change', refresh);
+    window.addEventListener('popstate', function () {
+      refresh();
+      if (new URLSearchParams(location.search).get('about') === '1') openAbout(host, root);
+      else if (host.__about && host.__about.open) closeAbout(host);
+    });
+    if (!embedded() && new URLSearchParams(location.search).get('about') === '1') openAbout(host, root);
+  }
+
   function wireProto(host, root) {
     var sec = host.querySelector('.gbsp-sec--proto');
     var pageId = host.getAttribute('page');
@@ -2263,17 +2395,10 @@
        сменилась только ручка, которая его открывает. */
     /* gbppl-panel-30-1: строка имени переехала в шапку целиком, дверь
        в детали версии поехала вместе с ней. */
-    var door = host.querySelector('.gbsp-head .gbsp-info[data-slot="version-details"]');
+    var door = host.querySelector('.gbsp-head [data-slot="version-details"]');
     if (door) {
       door.addEventListener('click', function () {
-        openLayer(host, {
-          /* Дверь и то, что за ней, зовутся ОДНИМ словом. Прежнее
-             «Version of this page» отвечало на вопрос «какая версия», а
-             на него теперь отвечает сама строка выбора; за дверью
-             лежит другое — что каждая версия меняет против Live. */
-          title: 'Version details',
-          build: function () { return versionOptions(pageId, root) || []; }
-        }, door);
+        openAbout(host, root, door);
       });
     }
 
@@ -4239,9 +4364,11 @@
          приезжает свёрнутым и в воздух. */
 
       var saved = null;
+      host.__setOpen = setOpen;
       try { saved = sessionStorage.getItem(OKEY); } catch (e) {}
       if (saved === '1') setOpen(true);
       else setOpen(false);
+      wireAbout(this, root);
       watchTab(shell);
       /* Окно могло измениться, пока страницы не было на экране: место
          из памяти проверяется живой мерой, а не принимается на веру. */
@@ -4436,11 +4563,9 @@
     var queued = false, obs = null;
     var check = function () {
       queued = false;
-      if (shell.classList.contains('is-collapsed')) {
-        shell.classList.toggle('is-shy', coveredBy(shell));
-      } else {
-        shell.classList.remove('is-shy');
-      }
+      /* Ton 30.09 14:26: prototype overlays leave the studio controls
+         accessible. Only the description modal hides this furniture. */
+      shell.classList.remove('is-shy');
       /* Проба сама себя увидела бы: она пишет style и class на узлы
          внутри body, а наблюдатель смотрит на body целиком — без
          этой строки один кадр рождал бы следующий бесконечно.

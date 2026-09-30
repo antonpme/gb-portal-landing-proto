@@ -272,6 +272,35 @@
   'use strict';
 
   var PAGES = {
+    /* panel-about-1: Ton, 30.09.2026 14:17, description outside the
+       panel with a linked user flow. Short and flow are optional. */
+    start227: {
+      label: 'Start 227 and the customizer',
+      live: 'live/start-227.html',
+      area: 'site',
+      short: 'The live path from the landing Start 227 to the last customizer item, rebuilt one to one.',
+      desc: 'This prototype follows the live path from Start 227 through the email sheet, catalog and product page. The sign-in gate leads into the customizer, where a website starts the brand reading and opens Your Design. Brand DNA, the box and the card follow in the same order as the live experience. NEXT on the card leads to checkout.',
+      status: 'in-progress',
+      created: '2026-09-30',
+      updated: '2026-09-30',
+      flow: [
+        { id: 'landing', title: 'Landing 227', note: 'The starting page.', href: 'start-227.html?s=landing', shot: 'start-227-assets/img/flow-landing.jpg' },
+        { id: 'email', title: 'Email sheet', note: 'Enter your email to continue.', href: '?s=email', shot: 'start-227-assets/img/flow-email.jpg' },
+        { id: 'catalog', title: 'Catalog', note: 'Choose a gift.', href: '?s=catalog', shot: 'start-227-assets/img/flow-catalog.jpg' },
+        { id: 'product', title: 'Product page', note: 'See the gift and start customizing.', href: '?s=product', shot: 'start-227-assets/img/flow-product.jpg' },
+        { id: 'gate', title: 'Sign-in gate', note: 'Sign in before customizing.', href: '?s=product&gate=1' },
+        { id: 'website', title: 'Customizer, website', note: 'Start with your website.', href: '?s=cz&cz=url', shot: 'start-227-assets/img/flow-website.jpg' },
+        { id: 'reading', title: 'Brand reading', note: 'Your brand is being read.', href: '?s=cz&cz=reading', shot: 'start-227-assets/img/flow-reading.jpg' },
+        { id: 'design', title: 'Your Design', note: 'See the first design.', href: '?s=cz&cz=design', shot: 'start-227-assets/img/flow-design.jpg' },
+        { id: 'dna', title: 'Brand DNA', note: 'Review the brand behind the design.', href: '?s=cz&cz=design&dr=dna', shot: 'start-227-assets/img/flow-dna.jpg' },
+        { id: 'box', title: 'Box', note: 'Customize the box.', href: '?s=cz&cz=box', shot: 'start-227-assets/img/flow-box.jpg' },
+        { id: 'card', title: 'Card', note: 'Customize the card.', href: '?s=cz&cz=card', shot: 'start-227-assets/img/flow-card.jpg' },
+        { id: 'checkout', title: 'Checkout', note: 'Continue with delivery and payment.', href: 'checkout.html' }
+      ],
+      /* Ton via Ren 30.09 14:54: the replica belongs to the Live
+         tree, like the live checkout and portal. Its route is unchanged. */
+      variants: []
+    },
     home: {
       label: 'Home page',
       live: 'live/index.html',
@@ -1401,6 +1430,18 @@
     var page = PAGES[pageId];
     if (!page) return null;
     root = root || '';
+    var base = new URL(root + page.live, location.href);
+    function flowRows(rows) {
+      return (rows || []).map(function (row) {
+        return Object.assign({}, row, {
+          href: new URL(row.href, base).href,
+          shot: row.shot ? new URL(row.shot, base).href : ''
+        });
+      });
+    }
+    function shortText(short, desc) {
+      return short || ((desc || '').match(/^.*?[.!?](?:\s|$)/) || [desc || ''])[0].trim();
+    }
 
     var variants = page.variants.map(function (v) {
       return {
@@ -1411,6 +1452,8 @@
         name: v.label || '',
         area: areaOf(pageId, v.href),
         desc: v.desc,
+        short: shortText(v.short, v.desc),
+        flow: flowRows(v.flow || page.flow),
         status: v.status,
         ready: v.ready !== false,
         /* Копия массива, а не сам массив: срез отдают наружу, и
@@ -1429,9 +1472,15 @@
     return {
       id: pageId,
       label: page.label,
+      short: shortText(page.short, page.desc),
+      desc: page.desc || '',
+      flow: flowRows(page.flow),
       area: page.area || '',
       live: {
         label: 'Live',
+        short: shortText(page.short, page.desc),
+        desc: page.desc || '',
+        flow: flowRows(page.flow),
         href: root + page.live,
         current: samePath(root + page.live) && !anyCurrent
       },
