@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Wire · Customizer V1, DNA door · GildedBox Design Studio</title>
+<!-- ============================================================
+     gbppl-wire-customizer-v1-layouts-5 (30.09.2026). v5 after Ton's
+     review of v4: no logo on step 1 (the live flow: 1 design + colours,
+     2 Box = logo, mode, box name, 3 Card = logo, mode, card text);
+     step 1 gets a Colors section of two equal tiles (Lid, Tray: 40
+     swatch, name, hex, the whole tile opens the colour picker); the
+     preview foot is plain centred text, no tab box; EDIT MY BRAND DNA
+     keeps its exact name (Russell) and is drawn in two places:
+     A in the centred top group (ghost secondary), B in the panel under
+     Colors (secondary, the live filled Zinc 200 look).
+     History below is v4's:
+     gbppl-wire-customizer-v1-layouts-4 (30.09.2026). WIREFRAME, not a
+     page (ORO-SKILL 7a2.3, DESIGN-LAWS F.3). v4: re-planned after Ton
+     rejected the built v3 ("new pieces glued onto the old screen").
+     v1-v3 stay as they were.
+     LEFT = the object only, one centre axis: X top left (chrome, the
+     only corner); one ghost secondary group centred at the top (My
+     Designs (3) · More gifts); the 3D model centred (model-viewer, as on
+     Share Design); one tab centred at the foot: the 3D line (12/400
+     Zinc 600) over the Share gesture row. No "Designed for" anywhere.
+     RIGHT = the panel: stepper with labels centred under the dots;
+     title with arrows (active black, disabled grey); content; on Your
+     Design a "Your brand" section (logo, Lid, Tray, ghost "Edit logo &
+     colors" to Brand DNA) 32 under the tiles; free space; one small
+     next-line centred 12 above NEXT (no box, 14/400 Zinc 600, step name 500); NEXT the one primary; under it the
+     service strip (Ton 30.09, Russell's rule: help is a real action, not
+     small print): 24 air, hairline, 20 glyph, 14/400 Zinc 700 line and a
+     ghost secondary "Get help" (the studio's get-help drawer).
+     Frames are real pixel size scaled by --k; blocks have the live
+     customizer's fixed heights (cz.css xl), so fit tags are measured.
+     Labels counter-scale to stay legible and may run wider than live;
+     the real-size strips at the end check the tight spots.
+     Grey = block, dashed = door, text + icon with no box = ghost
+     secondary, dark fill = the one primary.
+     ============================================================ -->
+<script src="../../system/components/studio.js" data-home="../../index.html"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../system/assets/tokens.css">
+<link rel="stylesheet" href="wire.css">
+<style>
+/* page furniture */
+.cl-lead { font-size: 16px; font-weight: 600; margin-bottom: var(--space-8); }
+.cl-changes { max-width: 88ch; margin: 0 0 var(--space-48); padding-left: var(--space-24); font-size: 14px; display: grid; gap: 4px; } /* NO TOKEN 4: line to line, as .w-status */
+.cl-layout .w-cap { font-size: 16px; }
+.cl-frames { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-24) var(--space-16); margin-top: var(--space-16); }
+.cl-fig--d { grid-column: 1 / -1; }
+@media (min-width: 1280px) {
+  .cl-frames { grid-template-columns: minmax(0, 1440fr) minmax(0, 416fr) minmax(0, 416fr); }
+  .cl-frames--dd { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cl-frames--dm { grid-template-columns: minmax(0, 1440fr) minmax(0, 416fr); max-width: 1000px; }
+  .cl-fig--d { grid-column: auto; }
+}
+.cl-fig { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); align-content: start; }
+.cl-figcap { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); }
+.cl-fit { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; border: 1px solid var(--zinc-300); border-radius: var(--radius-pill); padding: 2px var(--space-8); } /* NO TOKEN 2: pill inset, as .w-badge */
+.cl-fit.is-over { background: var(--zinc-700); border-color: var(--zinc-700); color: #fff; }
+.cl-h2 { margin-top: var(--space-48); }
+.cl-strips { display: grid; gap: var(--space-24); margin-top: var(--space-16); }
+
+/* the viewport: real-size screen inside, scaled by --k */
+.cl-vp { position: relative; width: 100%; overflow: hidden; background: #fff; border-radius: var(--radius); box-shadow: 0 0 0 1px var(--zinc-300); }
+.cl-screen {
+  --lab: min(26px, calc(11px / var(--k, .5)));
+  position: absolute; top: 0; left: 0;
+  transform: scale(var(--k, .5)); transform-origin: 0 0;
+  display: flex; font-size: var(--lab); line-height: 1.2; color: var(--zinc-700);
+}
+.cl-vp--m .cl-screen { --lab: min(21px, calc(11.5px / var(--k, .5))); flex-direction: column; }
+
+/* LEFT: the object on one centre axis */
+.cl-scene { position: relative; flex: 1; min-width: 0; background: #fff; display: flex; align-items: center; justify-content: center; }
+.cl-model { width: 56%; height: 56%; background: var(--zinc-200); border-radius: 5px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; }
+.cl-x { position: absolute; top: 36px; left: 36px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--zinc-500); border-radius: 5px; font-size: 1.3em; }
+.cl-top { position: absolute; top: 36px; left: 0; right: 0; width: fit-content; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+.cl-toprow { display: flex; gap: 8px; }
+.cl-top .cl-ghost { text-transform: uppercase; letter-spacing: .04em; font-size: .9em; }
+.cl-ghost { position: relative; height: 48px; padding: 0 12px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; white-space: nowrap; border-radius: 5px; }
+.cl-ghost > u { text-decoration: none; font-weight: 400; }
+.cl-ghost.is-hover { background: var(--zinc-100); }
+.cl-hovernote { position: absolute; top: 100%; left: 0; right: 0; text-align: center; margin-top: 6px; font-size: .7em; font-weight: 400; color: var(--zinc-500); }
+.cl-count { font-style: normal; font-size: .85em; font-weight: 600; min-width: 1.7em; padding: 1px 8px; border-radius: 999px; background: var(--zinc-200); text-align: center; }
+.cl-tab { position: absolute; left: 0; right: 0; bottom: 24px; width: fit-content; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; white-space: nowrap; pointer-events: none; } /* plain centred text, no box (Ton 30.09) */
+.cl-tab p { font-size: .62em; color: var(--zinc-600); }
+.cl-gest { display: flex; gap: 32px; font-size: .5em; letter-spacing: .12em; text-transform: uppercase; color: var(--zinc-500); }
+
+/* RIGHT: the panel */
+.cl-panel { flex: 0 0 620px; width: 620px; background: var(--zinc-100); display: flex; flex-direction: column; min-height: 0; }
+.cl-scroll { flex: 1; min-height: 0; overflow: hidden; padding: 48px 48px 0; }
+.cl-content { display: flex; flex-direction: column; }
+.cl-stepper { position: relative; flex: none; height: 44px; display: grid; grid-template-columns: repeat(3, 1fr); width: 330px; margin: 0 auto 24px; }
+.cl-stepper::before { content: ""; position: absolute; top: 7px; left: 16.66%; right: 16.66%; height: 2px; background: var(--zinc-300); }
+.cl-step { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; color: var(--zinc-500); font-size: .85em; white-space: nowrap; }
+.cl-step i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--zinc-500); background: var(--zinc-100); flex: none; }
+.cl-step.is-on { color: var(--zinc-900); font-weight: 600; }
+.cl-step.is-on i, .cl-step.is-done i { background: var(--zinc-900); border-color: var(--zinc-900); }
+.cl-title { flex: none; display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; gap: 12px; height: 40px; margin-bottom: 32px; }
+.cl-arrow { height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.3em; font-weight: 600; color: var(--zinc-900); }
+.cl-arrow.is-off { color: var(--zinc-300); font-weight: 400; }
+.cl-t { text-align: center; font-size: 1.05em; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cl-sec { flex: none; display: flex; flex-direction: column; gap: 16px; }
+.cl-sec + .cl-sec { margin-top: 32px; }
+.cl-h { height: 26px; display: flex; align-items: center; font-size: 1.05em; white-space: nowrap; }
+.cl-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.cl-tile { aspect-ratio: 1; background: var(--zinc-200); border-radius: 5px; border: 3px solid transparent; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4px; min-width: 0; }
+.cl-tile--logo { aspect-ratio: 165 / 160; background: #fff; }
+.cl-tile.is-on { border-color: var(--zinc-900); }
+.cl-colors { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cl-ctile { height: 64px; padding: 0 12px; display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--zinc-300); border-radius: 5px; white-space: nowrap; min-width: 0; } /* the whole tile opens the colour picker */
+.cl-ctile i { width: 40px; height: 40px; flex: none; border-radius: 5px; border: 1px solid var(--zinc-300); background: var(--zinc-900); }
+.cl-ctile + .cl-ctile i { background: var(--zinc-300); }
+.cl-ctile span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cl-ctile em { font-style: normal; font-size: .85em; color: var(--zinc-500); }
+.cl-dna { align-self: center; height: 44px; margin-top: 32px; padding: 0 24px; display: inline-flex; align-items: center; gap: 12px; background: var(--zinc-200); border-radius: 5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: .8em; white-space: nowrap; }
+.cl-note { font-size: .6em; color: var(--zinc-500); text-align: center; margin-top: 8px; }
+.cl-seg { width: 300px; height: 36px; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--zinc-300); border-radius: 5px; overflow: hidden; }
+.cl-seg span { display: flex; align-items: center; justify-content: center; background: #fff; }
+.cl-seg span:first-child { background: var(--zinc-300); font-weight: 600; }
+.cl-fields { display: flex; flex-direction: column; gap: 16px; }
+.cl-field { display: flex; flex-direction: column; gap: 8px; }
+.cl-field b { height: 14px; display: flex; align-items: center; font-size: .7em; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--zinc-500); }
+.cl-field span { height: 48px; background: #fff; border: 1px solid var(--zinc-200); border-radius: 5px; }
+.cl-field--tall span { height: 96px; }
+
+/* the foot: next-line, the one primary, the service strip */
+.cl-foot { padding: 16px 48px 48px; display: flex; flex-direction: column; }
+.cl-nextline { height: 20px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: .8em; font-weight: 400; color: var(--zinc-600); white-space: nowrap; } /* 14/400 Zinc 600, no box: the button's own explanation (Ton 30.09) */
+.cl-nextline b { font-weight: 500; color: var(--zinc-700); }
+.cl-sum { height: 22px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 600; white-space: nowrap; }
+.cl-sum span:first-child { overflow: hidden; text-overflow: ellipsis; font-weight: 400; }
+.cl-primary { height: 56px; display: flex; align-items: center; justify-content: center; gap: 12px; border-radius: 5px; background: var(--zinc-900); color: #fff; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.cl-service { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--zinc-300); height: 57px; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+.cl-service > u { width: 20px; height: 20px; flex: none; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 18px; }
+.cl-service > .cl-svc-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: .62em; font-weight: 400; color: var(--zinc-700); }
+.cl-service .cl-ghost { font-size: .8em; }
+.cl-service .cl-ghost { height: 40px; margin-right: -12px; }
+
+/* phone: scene 50%, sheet 50% with 30 radius and pinned foot */
+.cl-vp--m .cl-scene { flex: 0 0 422px; }
+.cl-vp--m .cl-model { width: 62%; height: 46%; margin-bottom: 8px; padding: 12px; }
+.cl-vp--m .cl-x { top: 16px; left: 16px; width: 40px; height: 40px; }
+.cl-vp--m .cl-top { top: 16px; }
+.cl-vp--m .cl-toprow { gap: 0; }
+.cl-vp--m .cl-top .cl-ghost { height: 40px; padding: 0 8px; gap: 6px; font-size: .72em; }
+.cl-vp--m .cl-top .cl-toprow + .cl-toprow u { display: none; } /* phone: the second row goes text only, the DNA door keeps its glyph */
+.cl-vp--m .cl-tab { bottom: 16px; }
+.cl-vp--m .cl-gest { display: none; } /* touch: no mouse words, as on Share */
+.cl-vp--m .cl-panel { flex: 0 0 422px; width: 100%; border-radius: 30px 30px 0 0; box-shadow: 0 -3px 8px rgba(0,0,0,.07); position: relative; }
+.cl-vp--m .cl-panel::before { content: ""; position: absolute; top: 12px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--zinc-300); z-index: 1; }
+.cl-vp--m .cl-scroll { padding: 28px 16px 0; }
+.cl-vp--m .cl-foot { padding: 12px 16px 8px; box-shadow: 0 -1px 0 var(--zinc-200); }
+.cl-vp--m .cl-primary { height: 48px; }
+.cl-vp--m .cl-sum { height: 20px; margin-bottom: 8px; }
+.cl-vp--m .cl-service { margin-top: 8px; padding-top: 0; height: 37px; border-top: 1px solid var(--zinc-200); }
+.cl-vp--m .cl-service .cl-ghost { height: 36px; margin-right: -8px; padding: 0 8px; }
+.cl-vp--m .cl-service > .cl-svc-t { font-size: .85em; }
+.cl-vp--m .cl-stepper { width: 300px; height: 40px; margin-bottom: 12px; }
+.cl-vp--m .cl-title { grid-template-columns: 32px minmax(0, 1fr) 32px; gap: 8px; margin-bottom: 16px; }
+.cl-vp--m .cl-h { height: 22px; }
+.cl-vp--m .cl-sec { gap: 12px; }
+.cl-vp--m .cl-sec + .cl-sec { margin-top: 16px; }
+.cl-vp--m .cl-tiles { gap: 8px; }
+.cl-vp--m .cl-colors { gap: 8px; }
+.cl-vp--m .cl-ctile { height: 48px; padding: 0 8px; gap: 8px; }
+.cl-vp--m .cl-ctile i { width: 28px; height: 28px; }
+.cl-vp--m .cl-dna { height: 40px; margin-top: 16px; padding: 0 16px; }
+
+/* real-size strips: system metrics, no counter-scaled labels */
+.cl-strip { position: absolute; top: 0; left: 0; background: #fff; transform: scale(var(--k, 1)); transform-origin: 0 0; font-family: var(--font-sans); color: var(--zinc-700); }
+.cl-strip::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1px dashed var(--zinc-300); }
+.cl-rx { position: absolute; top: 16px; left: 16px; width: 40px; height: 40px; border: 1px dashed var(--zinc-500); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.cl-rtop { position: absolute; top: 16px; left: 0; right: 0; width: fit-content; margin: 0 auto; display: flex; }
+.cl-rtop--2 { top: 60px; }
+.cl-strip--xl .cl-rx { top: 36px; left: 36px; width: 48px; height: 48px; }
+.cl-strip--xl .cl-rtop { top: 36px; }
+.cl-strip--xl .cl-rtop span { height: 48px; font-size: 16px; gap: 16px; }
+.cl-strip--xl .cl-rtop u { font-size: 16px; width: 16px; }
+.cl-rtop span { height: 40px; padding: 0 16px; display: inline-flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.cl-rtop u { text-decoration: none; font-size: 12px; width: 12px; }
+.cl-rtop i { font-style: normal; font-size: 12px; font-weight: 600; min-width: 20px; padding: 1px 6px; border-radius: 999px; background: var(--zinc-200); text-align: center; }
+.cl-rtab { position: absolute; left: 0; right: 0; bottom: 16px; width: fit-content; max-width: calc(100% - 32px); margin: 0 auto; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: #fff; box-shadow: 0 0 0 1px var(--zinc-200); border-radius: 5px; white-space: nowrap; }
+.cl-rtab p { font-size: 12px; font-weight: 400; color: var(--zinc-600); }
+.cl-rtab div { display: flex; gap: 32px; font-size: 11px; line-height: 1.5; letter-spacing: .12em; text-transform: uppercase; color: var(--zinc-500); }
+</style>
+</head>
+<body class="wire">
+<header class="w-head">
+  <h1>Customizer V1 · where EDIT MY BRAND DNA sits</h1>
+  <p>Wireframe, v5. Two options for the DNA door, desktop 1440 x 900 and phone 390 x 844 on Your Design; Box and Card once, shared. Grey = block, dashed = door, text + icon with no box = ghost secondary, dark = the one primary. Fit tags are measured on the frame.</p>
+</header>
+<p class="cl-lead">Recommendation: A. The three actions change the whole gift, not the step, so they stand together over the gift; the panel stays pure step controls.</p>
+<ul class="cl-changes">
+  <li>Step 1 has no logo: Choose Your Design, then Colors (Lid and Tray as two equal tiles, 40 swatch, name, hex; the whole tile opens the colour picker), 32 px apart.</li>
+  <li>The preview foot is plain centred text, no box: the 3D line over the gestures (the phone keeps only the 3D line).</li>
+  <li>EDIT MY BRAND DNA keeps its exact name and glyph. A: in the centred top group. B: in the panel under Colors.</li>
+  <li id="phonefix">Phone, A: the three doors do not fit one row beside the X.</li>
+</ul>
+
+<section class="cl-layout">
+  <h2 class="w-cap">A · EDIT MY BRAND DNA in the top group, over the gift</h2>
+  <div class="cl-frames cl-frames--dm" data-row="1"></div>
+  <h2 class="w-cap cl-h2">B · EDIT MY BRAND DNA in the panel, under Colors</h2>
+  <div class="cl-frames cl-frames--dm" data-row="2"></div>
+  <h2 class="w-cap cl-h2">Box and Card · desktop 1440, the same in A and B</h2>
+  <div class="cl-frames cl-frames--dd" data-row="3"></div>
+  <h2 class="w-cap cl-h2">Real-size checks · the top group against the X</h2>
+  <div class="cl-strips" data-row="4"></div>
+</section>
+
+<script>
+/* the frames are stamped from one template: one shell, three items */
+(function () {
+  var TITLES = { design: 'Your Design', box: 'GildedBox 2-Piece Box Design', card: 'Greeting Card Design' };
+  var IDX = { design: 0, box: 1, card: 2 };
+  var NEXTLINE = { design: 'Next: <b>Box,</b> place your logo and name the box.', box: 'Next: <b>Card,</b> your logo and the card text.' };
+  function stepper(item) {
+    var i = IDX[item];
+    return '<div class="cl-stepper">' + ['Design', 'Box', 'Card'].map(function (l, n) {
+      return '<span class="cl-step' + (n === i ? ' is-on' : n < i ? ' is-done' : '') + '"><i></i>' + l + '</span>';
+    }).join('') + '</div>';
+  }
+  function title(item) {
+    var i = IDX[item];
+    return '<div class="cl-title"><span class="cl-arrow' + (i === 0 ? ' is-off' : '') + '">←</span><span class="cl-t">' + TITLES[item] + '</span><span class="cl-arrow' + (i === 2 ? ' is-off' : '') + '">→</span></div>';
+  }
+  function scene(phone, hover, opt) {
+    var dna = '<span class="cl-ghost"><u>⧖</u>Edit my brand DNA</span>';
+    var two = '<span class="cl-ghost' + (hover ? ' is-hover' : '') + '"><u>▤</u>My Designs <i class="cl-count">3</i>' + (hover ? '<span class="cl-hovernote">hover: quiet wash</span>' : '') + '</span><span class="cl-ghost"><u>▦</u>More gifts</span>';
+    var top = opt === 'A' ? (phone ? '<div class="cl-toprow">' + dna + '</div><div class="cl-toprow">' + two + '</div>' : '<div class="cl-toprow">' + dna + two + '</div>') : '<div class="cl-toprow">' + two + '</div>';
+    return '<div class="cl-scene"><span class="cl-x">×</span>' +
+      '<div class="cl-top">' + top + '</div>' +
+      '<div class="cl-model">3D model' + (phone ? '' : ' (model-viewer, from Share Design)') + '</div>' +
+      '<div class="cl-tab"><p>This is a 3D visualization of your gift design</p><div class="cl-gest"><span>↻ Drag to turn</span><span>▯ Scroll to zoom</span><span>✥ Shift-drag to move</span></div></div></div>';
+  }
+  function logoSecs() {
+    return '<div class="cl-sec"><p class="cl-h">Select a logo</p><div class="cl-tiles"><span class="cl-tile cl-tile--logo is-on">Logo 1</span><span class="cl-tile cl-tile--logo">Logo 2</span><span class="cl-tile cl-tile--logo">No logo</span></div></div>' +
+      '<div class="cl-sec"><p class="cl-h">Logo mode</p><div class="cl-seg"><span>Original</span><span>Monochrome</span></div></div>';
+  }
+  function content(item, phone, opt) {
+    if (item === 'design') {
+      var tiles = '<div class="cl-sec"><p class="cl-h">Choose Your Design</p><div class="cl-tiles"><span class="cl-tile is-on">' + (phone ? '1' : 'Design 1') + '</span><span class="cl-tile">' + (phone ? '2' : 'Design 2') + '</span><span class="cl-tile">' + (phone ? '3' : 'Design 3') + '</span></div></div>';
+      return tiles + '<div class="cl-sec"><p class="cl-h">Colors</p><div class="cl-colors"><span class="cl-ctile"><i></i><span><b>Lid</b><em>#000000</em></span></span><span class="cl-ctile"><i></i><span><b>Tray</b><em>#FFD100</em></span></span></div></div>' +
+        (opt === 'B' ? '<span class="cl-dna">Edit my brand DNA <u>⧖</u></span>' : '');
+    }
+    if (item === 'box') {
+      return logoSecs() + '<div class="cl-sec"><p class="cl-h">Personalization</p><div class="cl-fields"><p class="cl-field"><b>Custom gift box</b><span></span></p></div></div>';
+    }
+    return logoSecs() + '<div class="cl-sec"><p class="cl-h">Greeting card text</p><div class="cl-fields"><p class="cl-field"><b>Intro</b><span></span></p><p class="cl-field cl-field--tall"><b>Message</b><span></span></p><p class="cl-field"><b>Signature</b><span></span></p></div></div>';
+  }
+  function foot(item, phone) {
+    var last = item === 'card';
+    return '<div class="cl-foot">' +
+      (last ? '<p class="cl-sum"><span>Gift name · Design 2</span><span>Price</span></p>' : (phone ? '' : '<p class="cl-nextline"><span>' + NEXTLINE[item] + '</span></p>')) +
+      '<span class="cl-primary">' + (last ? 'Add to cart' : 'Next <span>→</span>') + '</span>' +
+      '<div class="cl-service"><u>◌</u><span class="cl-svc-t">' + (phone ? 'Need help?' : 'Questions, or want our designers to do it?') + '</span><span class="cl-ghost">Get help</span></div></div>';
+  }
+  function frame(item, phone, cap, hover, w, h, opt) {
+    w = w || (phone ? 390 : 1440); h = h || (phone ? 844 : 900);
+    return '<figure class="cl-fig' + (phone ? '' : ' cl-fig--d') + '"><figcaption class="cl-figcap"><span class="w-brow">' + cap + '</span><span class="cl-fit" data-fit></span></figcaption>' +
+      '<div class="cl-vp' + (phone ? ' cl-vp--m' : '') + '" data-w="' + w + '" data-h="' + h + '" style="aspect-ratio:' + w + ' / ' + h + '"><div class="cl-screen" style="width:' + w + 'px;height:' + h + 'px">' + scene(phone, hover, opt) +
+      '<div class="cl-panel"><div class="cl-scroll"><div class="cl-content">' + stepper(item) + title(item) +
+      content(item, phone, opt) + '</div></div>' + foot(item, phone) + '</div></div></div></figure>';
+  }
+  function strip(w, h, label, inner) {
+    return '<figure class="cl-fig"><figcaption class="cl-figcap"><span class="w-brow">' + label + '</span><span class="cl-fit" data-gap></span></figcaption>' +
+      '<div class="cl-vp cl-vp--strip" data-w="' + w + '" style="aspect-ratio:' + w + ' / ' + h + '; max-width:' + w + 'px"><div class="cl-strip' + (w > 390 ? ' cl-strip--xl' : '') + '" style="width:' + w + 'px;height:' + h + 'px">' + inner + '</div></div></figure>';
+  }
+  var q = function (r) { return document.querySelector('[data-row="' + r + '"]'); };
+  q(1).innerHTML = frame('design', false, 'A · Desktop 1440 · Your Design', true, 0, 0, 'A') + frame('design', true, 'A · Phone · Your Design', false, 0, 0, 'A');
+  q(2).innerHTML = frame('design', false, 'B · Desktop 1440 · Your Design', false, 0, 0, 'B') + frame('design', true, 'B · Phone · Your Design', false, 0, 0, 'B');
+  q(3).innerHTML = frame('box', false, 'Desktop 1440 · Box', false, 0, 0, 'B') + frame('card', false, 'Desktop 1440 · Card, last item', false, 0, 0, 'B');
+  var dnaR = '<span><u>⧖</u>Edit my brand DNA</span>', twoR = '<span>My Designs <i>3</i></span><span>More gifts</span>';
+  q(4).innerHTML =
+    strip(390, 72, 'One row, as on desktop · real size, scene 390', '<span class="cl-rx" data-a>×</span><div class="cl-rtop" data-one>' + dnaR + twoR + '</div>') +
+    strip(390, 116, 'The fix · two centred rows: DNA beside the X, the pair under it', '<span class="cl-rx" data-a2>×</span><div class="cl-rtop" data-r1>' + dnaR + '</div><div class="cl-rtop cl-rtop--2" data-r2>' + twoR + '</div>') +
+    strip(390, 72, 'B on the phone · the pair alone on the X row', '<span class="cl-rx" data-bx>×</span><div class="cl-rtop" data-bp>' + twoR + '</div>') +
+    strip(820, 120, 'A at 1440 · real size, scene 820, ghost small at xl (16 type, 16 pad)', '<span class="cl-rx" data-dx>×</span><div class="cl-rtop" data-dg>' + dnaR + twoR + '</div>') +
+    strip(660, 120, 'A at 1280 · real size, scene 660', '<span class="cl-rx" data-ex>×</span><div class="cl-rtop" data-eg>' + dnaR + twoR + '</div>');
+
+  /* fit tags: layout px (transforms do not change offsetHeight) */
+  function measure() {
+    document.querySelectorAll('.cl-fig').forEach(function (fig) {
+      var tag = fig.querySelector('[data-fit]'), sc = fig.querySelector('.cl-scroll');
+      if (!tag || !sc) return;
+      var ct = fig.querySelector('.cl-content'), vp = fig.querySelector('.cl-vp');
+      var pad = parseFloat(getComputedStyle(sc).paddingTop);
+      var d = Math.round(sc.clientHeight - pad - ct.offsetHeight);
+      var phone = vp.classList.contains('cl-vp--m'), H = vp.getAttribute('data-h');
+      tag.textContent = d >= 0 ? (phone ? 'Sheet fits · ' : 'Fits ' + H + ' · ') + d + ' px spare' : (phone ? -d + ' px below the fold' : 'Overflows ' + H + ' by ' + -d + ' px');
+      tag.classList.toggle('is-over', d < 0);
+    });
+    var out = {};
+    var one = document.querySelector('[data-one]'), r1 = document.querySelector('[data-r1]'), r2 = document.querySelector('[data-r2]'), x = document.querySelector('[data-a2]');
+    if (one && r1 && r2 && x) {
+      var xr = x.offsetLeft + x.offsetWidth;
+      out.one = one.offsetWidth; out.oneGap = Math.round(one.offsetLeft - xr);
+      out.r1 = r1.offsetWidth; out.r1Gap = Math.round(r1.offsetLeft - xr);
+      out.r2 = r2.offsetWidth; out.r2Air = Math.round(r2.offsetLeft); out.r2Top = r2.offsetTop - (x.offsetTop + x.offsetHeight);
+      var t1 = one.closest('.cl-fig').querySelector('[data-gap]');
+      t1.textContent = out.oneGap >= 16 ? 'Fits · ' + out.oneGap + ' px from the X' : (one.offsetWidth > 358 ? 'Does not fit · the row is ' + out.one + ' px, wider than the 390 screen' : 'Collides with the X · ' + out.oneGap + ' px');
+      t1.classList.toggle('is-over', out.oneGap < 16);
+      var t2 = r1.closest('.cl-fig').querySelector('[data-gap]');
+      t2.textContent = 'Row 1 clears the X by ' + out.r1Gap + ' px · row 2 is ' + out.r2 + ' px, ' + out.r2Air + ' px air each side, under the X row';
+      t2.classList.toggle('is-over', out.r1Gap < 16 || out.r2Air < 16);
+      var pf = document.getElementById('phonefix');
+      if (pf) pf.textContent = 'Phone, A: the three doors in one row are ' + out.one + ' px, wider than the 390 screen, so the top group goes to two centred rows: EDIT MY BRAND DNA on the X row (clears it by ' + out.r1Gap + ' px), My Designs · More gifts under it (' + out.r2 + ' px); the name stays, the X stays.';
+    }
+    [['bx', 'bp'], ['dx', 'dg'], ['ex', 'eg']].forEach(function (k) {
+      var xx = document.querySelector('[data-' + k[0] + ']'), gg = document.querySelector('[data-' + k[1] + ']');
+      if (!xx || !gg) return;
+      var sw = +xx.closest('.cl-vp').getAttribute('data-w');
+      var g = Math.round(gg.offsetLeft - (xx.offsetLeft + xx.offsetWidth)), w = gg.offsetWidth;
+      out[k[1]] = { w: w, gap: g, sw: sw };
+      var t = gg.closest('.cl-fig').querySelector('[data-gap]');
+      t.textContent = w > sw - 32 ? 'Does not fit · ' + w + ' px in ' + sw : (g >= 16 ? 'Clear · ' + g + ' px from the X' : (g >= 0 ? 'Tight · ' + g + ' px from the X' : 'Collides with the X · ' + -g + ' px overlap'));
+      t.classList.toggle('is-over', g < 16 || w > sw - 32);
+    });
+    var pf2 = document.getElementById('phonefix');
+    if (pf2 && out.dg && out.eg && out.bp) pf2.textContent += ' Desktop, A: one row clears the X by ' + out.dg.gap + ' px at 1440 but ' + (out.eg.gap < 0 ? 'collides by ' + -out.eg.gap + ' px' : 'clears by ' + out.eg.gap + ' px') + ' at 1280, so below 1440 it takes the same two rows. B on the phone: the pair alone on the X row ' + (out.bp.gap < 0 ? 'collides by ' + -out.bp.gap + ' px' : 'clears by ' + out.bp.gap + ' px') + ', so it also drops under the X row.';
+    window.__checks = out;
+  }
+  var frames = document.querySelectorAll('.cl-vp');
+  function fit(el) { el.style.setProperty('--k', (el.clientWidth / (+el.getAttribute('data-w'))).toFixed(4)); }
+  if ('ResizeObserver' in window) {
+    var ro = new ResizeObserver(function (es) { es.forEach(function (e) { fit(e.target); }); });
+    frames.forEach(function (el) { ro.observe(el); });
+  } else { frames.forEach(fit); }
+  measure();
+  if (document.fonts) { document.fonts.ready.then(measure); document.fonts.addEventListener('loadingdone', measure); }
+  window.addEventListener('load', measure); setTimeout(measure, 1200); /* Inter changes every width: measure again once it lands */
+})();
+</script>
+</body>
+</html>

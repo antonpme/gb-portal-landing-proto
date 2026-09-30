@@ -7,7 +7,9 @@
   var A = 'start-227-assets/img/cz-';
   var model = { url: innerWidth < 1024 ? '' : 'https://www.clay.com', manual: innerWidth < 1024, manualReady: false, design: 1, boxLogo: 1, cardLogo: 1, boxMode: 'Original', cardMode: 'Monochrome', lid: '#000000', tray: '#FFD100', industry: 'SaaS & Software', name: '', intro: '', message: '', signature: '' };
   var glyphs = { 'arrow-left': 0xea08, 'arrow-right': 0xea09, 'e-remove': 0xea41, pencil: 0xeac6, 'chevron-up': 0xeb4c, 'trash-2': 0xeb67, 'chevron-down': 0xebb8, 'dna-2': 0xed0d, 'data-upload': 0xeb2a };
-  var sandboxLoading;
+  var sandboxLoading,readingLoading,readingRun,sandboxAwaiting=false,readingAwaiting=false;
+  function loadReading(){if(readingLoading)return readingLoading;readingLoading=new Promise(function(resolve,reject){var l=document.createElement('link');l.rel='stylesheet';l.href='start-227-assets/reading.css';document.head.appendChild(l);var j=document.createElement('script');j.src='start-227-assets/reading.js';j.onload=resolve;j.onerror=reject;document.body.appendChild(j);});return readingLoading;}
+
   function sandbox(state){return state.v==='2'||state.v==='3';}
   function loadSandbox(){
     if(sandboxLoading)return sandboxLoading;
@@ -37,18 +39,7 @@
   function url() {
     return '<div class="cz-url"><div class="cz-url-inner"><div class="cz-url-heading"><h1>Design this gift for your brand</h1><p>Enter your website URL to extract your brand DNA</p></div><input type="text" class="cz-url-input" aria-label="Website URL" placeholder="example.com" data-field="url" value="'+esc(model.url)+'"><button type="button" class="cz-no-website" data-action="manual" aria-expanded="'+model.manual+'">No Website?'+icon(model.manual?'chevron-up':'chevron-down')+'</button><div class="cz-manual" '+(model.manual?'':'hidden')+'>'+brandAssets(true)+'</div>'+btn('START','start','cz-primary cz-start','arrow-right',!model.url&&!model.manualReady?'disabled':'')+'</div></div>';
   }
-  /* Frame markup is the vanilla lp227-proto port; captured Clay name/palette replaces Slack. */
-  var frames=[['Analyzing your website…','website'],['Extracting your brand colors…','purple'],['Analyzing the palette…','blue'],['Capturing your brand vibe…','vibe'],['Crafting your design…','craft']];
-  function reading(){return '<div class="cz-reading"><h1 id="cz-reading-title"></h1><div class="cz-reading-card" id="cz-reading-card"></div><div class="cz-reading-progress"><span id="cz-reading-bar"></span></div></div>';}
-  function readingTick(t) {
-    // Captured Extracting at 68.7% (~40s), Crafting at80% (~47s).
-    // ASSUMED earlier boundaries: Analyzing0-20, Palette20-30, Vibe30-40.
-    var idx=t<20?0:t<30?2:t<40?3:t<47?1:4, f=frames[idx], card=root.querySelector('#cz-reading-card');
-    if(!card)return;
-    root.querySelector('#cz-reading-title').textContent=f[0]; card.className='cz-reading-card is-'+f[1];
-    card.innerHTML=f[1]==='website'?'<strong>'+(sandbox(GBFlow.state)?esc(GBSandbox.websitePlate()):'CLAY.COM')+'</strong>':f[1]==='purple'||f[1]==='blue'?'<i></i><i></i><i></i><i></i><strong>'+ (f[1]==='purple'?'#FAC904':'#F96065')+'</strong>':f[1]==='vibe'?'<div class="cz-reading-vibe"><span>FRIENDLY</span><span>APPROACHABLE</span><span>WARM</span></div>':'<div class="cz-reading-craft"><i></i><i></i><i></i><i></i></div>';
-    root.querySelector('#cz-reading-bar').style.width=Math.min(100,t*100/59)+'%';
-  }
+  function reading(){return '<div class="gb-reading" id="cz-reading"></div>';}
   function dna(){return '<div class="cz-dna"><div class="cz-scroll cz-dna-scroll"><div class="cz-dna-spacer"></div><section class="cz-dna-content"><h2>YOUR BRAND DNA</h2>'+brandAssets()+'</section></div><footer class="cz-footer cz-dna-footer"><p>Updating your brand DNA will delete all your current designs.<br>The update may take 30-50 seconds</p><div>'+btn('SAVE &amp; GET NEW DESIGNS','save-dna','cz-primary','arrow-right')+btn('BACK TO GIFT DESIGN','back-dna','cz-secondary cz-back','arrow-left')+'</div></footer></div>';}
   function modal(){
     if(!confirm)return '';
@@ -59,10 +50,11 @@
     root.querySelectorAll('.cz-scroll').forEach(function(n){n.classList.remove('is-overflowing');n.classList.toggle('is-overflowing',n.scrollHeight>n.clientHeight+1);});
   }
   function render(state) {
-    clearInterval(timer); clearTimeout(entryTimer);
+    clearInterval(timer); clearTimeout(entryTimer);if(readingRun){readingRun.cancel();readingRun=null;}
     if(!sandbox(state)){root.classList.remove('sb-customizer');if(window.GBSandbox)GBSandbox.cleanup();}
     if(state.s!=='cz'){if(window.GBSandbox)GBSandbox.cleanup();inRoom=false; previous=''; preparing=false; return;}
-    if(sandbox(state)&&(!window.GBSandbox||!GBSandbox.loaded)){loadSandbox().then(function(){render(GBFlow.state);}).catch(function(e){console.error('Sandbox loading failed',e);});return;}
+    if(sandbox(state)&&(!window.GBSandbox||!GBSandbox.loaded)){if(!sandboxAwaiting){sandboxAwaiting=true;loadSandbox().then(function(){sandboxAwaiting=false;render(GBFlow.state);}).catch(function(e){sandboxAwaiting=false;console.error('Sandbox loading failed',e);});}return;}
+    if(state.cz==='reading'&&!window.GBReading){if(!readingAwaiting){readingAwaiting=true;loadReading().then(function(){readingAwaiting=false;render(GBFlow.state);}).catch(function(e){readingAwaiting=false;console.error('Reading loading failed',e);});}return;}
     if(sandbox(state))GBSandbox.prepare();
     var enter=!inRoom, step=state.cz, scene=step==='reading'?'url':['choice','experts','experts-done'].indexOf(step)>=0?'design':step;
     root.innerHTML='<div class="cz-overlay '+(enter?'is-entering':'')+' '+(state.dr==='dna'?'has-dna':'')+'" data-step="'+step+'"><button type="button" class="cz-close" aria-label="Close Designer" data-action="close-dialog">'+icon('e-remove')+'</button><div class="cz-scene"><picture><source media="(max-width:1023px)" srcset="'+A+'scene-'+scene+'-mobile.jpg"><img src="'+A+'scene-'+scene+'.jpg" alt="3D visualization of your gift design"></picture></div><aside class="cz-panel"><div class="cz-grabber"><span></span></div><div class="cz-panel-body">'+(step==='url'?'<div class="cz-scroll">'+url()+'</div>':step==='reading'?reading():'<div class="cz-scroll">'+header(step)+(step==='design'?design():items(step))+'</div><footer class="cz-footer">'+btn('NEXT','next','cz-primary','arrow-right')+btn('HELP WITH MY DESIGN','help','cz-secondary')+'</footer>')+(state.dr==='dna'?dna():'')+'</div></aside>'+(preparing?'<div class="cz-preparing is-skeleton"><div class="cz-scene-skeleton"><span></span></div><div class="cz-panel-skeleton"><div><i></i><i></i><i></i><i></i><i></i></div></div></div>':'')+modal()+'</div>';
@@ -76,8 +68,12 @@
         entryTimer=setTimeout(function(){content.style.opacity='';content.classList.add('is-revealing');entryTimer=setTimeout(function(){preparing=false;overlay.remove();},750);},100);
       },new URLSearchParams(location.search).get('fast')==='1'?250:3500);
     }
-    if(step==='reading'){var elapsed=0,fast=new URLSearchParams(location.search).get('fast')==='1',short=sandbox(state)&&GBSandbox.shortReading();readingTick(short?47:0);timer=setInterval(function(){elapsed++;readingTick(short?Math.min(59,47+elapsed*4):elapsed);if(elapsed>=(short?3:59)){clearInterval(timer);var next=sandbox(state)?GBSandbox.afterReading():'design';preparing=!short&&next==='design';GBFlow.go({cz:next,dr:''});}},fast?100:short?500:1000);}
     if(sandbox(state))GBSandbox.enhance(root,state);
+    if(step==='reading'){var fast=new URLSearchParams(location.search).get('fast')==='1',short=sandbox(state)&&GBSandbox.shortReading(),brandUrl=sandbox(state)?(short?GBSandbox.current().brandUrl:(GBEntry.website()||GBSandbox.current().brandUrl)):model.url,manual=!sandbox(state)&&!String(brandUrl||'').trim()&&model.manual;
+      // ASSUMED local mock readiness: existing assets and generated tiles are ready; no network task.
+      var d=String(brandUrl||'').replace(/^[a-z]+:\/\//i,'').replace(/^www\./i,'').split(/[/?#]/)[0].split('.')[0];
+      readingRun=GBReading.mount(root.querySelector('#cz-reading'),{url:brandUrl,manual:manual,fast:fast,short:short,readyDelay:enter?1400:0,analysisReady:true,generationReady:true,colors:GBReading.mock.colors,logo:A+'logo-1.png',icon:A+'logo-2.png',vibe:GBReading.mock.vibe,industry:GBReading.mock.industry,company:GBReading.mock.company,onDone:function(){var next=sandbox(state)?GBSandbox.afterReading():'design';preparing=!short&&next==='design';GBFlow.go({cz:next,dr:''});}});
+    }
     inRoom=true;previous=step;
     requestAnimationFrame(measureScroll);document.fonts.ready.then(measureScroll);
     if(confirm){root.querySelector('.cz-modal button').focus();}
