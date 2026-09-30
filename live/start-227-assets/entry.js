@@ -145,7 +145,11 @@
       if (!v) { err.hidden = false; return; }
       err.hidden = true;
       GBEntry.website(v);
-      GBFlow.go({ s: 'email' });
+      /* Sandbox V1 / V2 (?v=2|3, Ton 30.09 15:39): no email sheet, no catalog,
+         no product page; the URL goes straight to the brand reading of the
+         customizer. Live (?v=1) keeps the email sheet. */
+      if (GBFlow.state.v === '2' || GBFlow.state.v === '3') GBFlow.go({ s: 'cz', cz: 'reading' });
+      else GBFlow.go({ s: 'email' });
     });
     var v = root.querySelector('.lel-video');
     if (v) { var p = v.play && v.play(); if (p && p.catch) p.catch(function () {}); }
@@ -308,7 +312,7 @@
       '<section class="lee-sec">' +
         '<header class="lee-header">' +
           '<h1 class="lee-h1">Sign in or create an account</h1>' +
-          '<p class="lee-p">Use Google, or enter your email and we\u2019ll send a 6-digit verification code</p>' +
+          '<p class="lee-p">' + (signinDesc ? GBEntry.esc(signinDesc) : 'Use Google, or enter your email and we’ll send a 6-digit verification code') + '</p>' +
         '</header>' +
         '<div class="lee-block leg-group">' +
           '<button class="leg-google" type="button">' + G_ICON + '<span class="leg-google__label">Sign in with Google</span></button>' +
@@ -454,8 +458,12 @@
   }
 
   /* the gate of the product page: GBEntry.openSignin({ onDone, onClose }) */
+  /* o.desc (sandboxes, 30.09): one line that replaces the live description,
+     saying why sign-in comes before checkout. Live and the gate keep theirs. */
+  var signinDesc = '';
   GBEntry.openSignin = function (o) {
     if (document.getElementById('leg-sheet')) return;
+    signinDesc = (o && o.desc) || '';
     openSheet(document.body, { gate: true, onDone: o.onDone, onClose: o.onClose });
   };
   GBEntry.closeSignin = function () {

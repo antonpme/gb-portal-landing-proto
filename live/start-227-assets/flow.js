@@ -9,11 +9,14 @@
    'gbflow:change'       on document, detail = state; each room renders
                          itself when state.s is one of its screens.
 
+   ?v= survives every step: go() and set() merge into the state.
    Rooms: entry.js owns landing / email / catalog / product,
           cz.js owns cz (and calls GBCZItems.box / .card for two steps). */
 (function () {
   var ENTRY = ['landing', 'email', 'catalog', 'product'];
-  var CZ_STEPS = ['url', 'reading', 'design', 'box', 'card'];
+  /* choice / experts / experts-done: Sandbox V2 (the two equal doors and the
+     live expert form, 30.09); unknown to Live, which never routes there. */
+  var CZ_STEPS = ['url', 'reading', 'design', 'box', 'card', 'choice', 'experts', 'experts-done'];
   var DEF = { s: 'landing', cz: 'design', dr: '', v: '1' };
 
   function read() {

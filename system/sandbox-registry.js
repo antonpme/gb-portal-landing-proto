@@ -299,7 +299,47 @@
       ],
       /* Ton via Ren 30.09 14:54: the replica belongs to the Live
          tree, like the live checkout and portal. Its route is unchanged. */
-      variants: []
+      /* gbppl-lp227-sandboxes-1, Ton via Ren 30.09: one URL-led path,
+         two versions with deferred sign-in, My Designs and six more gifts. */
+      variants: [
+        {
+          id: 'v1', label: '', href: 'live/start-227.html?v=2', ready: true,
+          short: 'Enter your website, see your brand design and customize the gift yourself.',
+          desc: 'Your website starts the brand reading and opens the customizer directly. Customize the design, box and card, or ask our experts for help. My Designs keeps the designs generated in this session; six more gifts open in the existing catalog overlay. Sign in when you are ready to continue to checkout.',
+          status: 'in-progress', tags: ['flow'], created: '2026-09-30', updated: '2026-09-30',
+          flow: [
+            { id: 'landing', title: 'Your website', note: 'Start on the original landing.', href: 'start-227.html?v=2&s=landing', shot: 'start-227-assets/img/flow-landing.jpg' },
+            { id: 'reading', title: 'Brand reading', note: 'Read the website you entered.', href: '?v=2&s=cz&cz=reading', shot: 'start-227-assets/img/sb-flow-reading.jpg' },
+            { id: 'design', title: 'Your Design', note: 'Customize your first design.', href: '?v=2&s=cz&cz=design', shot: 'start-227-assets/img/sb-flow-design.jpg' },
+            { id: 'designs', title: 'My Designs', note: 'Pick a design from this session.', href: '?v=2&s=cz&cz=design&dr=designs', shot: 'start-227-assets/img/sb-flow-designs.jpg' },
+            { id: 'more', title: 'Six more gifts', note: 'Design another gift in your brand.', href: '?v=2&s=cz&cz=design&dr=more', shot: 'start-227-assets/img/sb-flow-more.jpg' },
+            { id: 'dna', title: 'Brand DNA', note: 'Generate another set and keep the earlier designs.', href: '?v=2&s=cz&cz=design&dr=dna', shot: 'start-227-assets/img/sb-flow-dna.jpg' },
+            { id: 'box', title: 'Box', note: 'Personalize the box.', href: '?v=2&s=cz&cz=box', shot: 'start-227-assets/img/sb-flow-box.jpg' },
+            { id: 'card', title: 'Card', note: 'Write the greeting card.', href: '?v=2&s=cz&cz=card', shot: 'start-227-assets/img/sb-flow-card.jpg' },
+            { id: 'experts', title: 'Expert help', note: 'Ask our designers for help.', href: '?v=2&s=cz&cz=experts', shot: 'start-227-assets/img/sb-flow-experts.jpg' },
+            { id: 'signin', title: 'Sign in', note: 'Save this design to your account before checkout.', href: '?v=2&s=cz&cz=card&dr=signin', shot: 'start-227-assets/img/sb-flow-signin.jpg' },
+            { id: 'checkout', title: 'Checkout', note: 'Continue with the current design.', href: 'checkout.html' }
+          ]
+        },
+        {
+          id: 'v2', label: '', href: 'live/start-227.html?v=3', ready: true,
+          short: 'Enter your website, then choose to customize the gift or work with our experts.',
+          desc: 'The same website-led path opens a design in your brand. Two equal choices follow: customize it yourself, or work with our experts to design your gift. The self path includes My Designs, more gifts, Brand DNA and personalization. Sign in only when continuing to checkout.',
+          status: 'in-progress', tags: ['flow'], created: '2026-09-30', updated: '2026-09-30',
+          flow: [
+            { id: 'landing', title: 'Your website', note: 'Start on the original landing.', href: 'start-227.html?v=3&s=landing', shot: 'start-227-assets/img/flow-landing.jpg' },
+            { id: 'reading', title: 'Brand reading', note: 'Read the website you entered.', href: '?v=3&s=cz&cz=reading', shot: 'start-227-assets/img/sb-flow-reading.jpg' },
+            { id: 'choice', title: 'Choose your design path', note: 'Design it yourself or work with our experts.', href: '?v=3&s=cz&cz=choice', shot: 'start-227-assets/img/sb-flow-choice.jpg' },
+            { id: 'experts', title: 'Designed for you', note: 'Tell our designers what you need.', href: '?v=3&s=cz&cz=experts', shot: 'start-227-assets/img/sb-flow-experts.jpg' },
+            { id: 'expert-done', title: 'Expert request', note: 'See the local request confirmation.', href: '?v=3&s=cz&cz=experts-done', shot: 'start-227-assets/img/sb-flow-experts-done.jpg' },
+            { id: 'design', title: 'Design it yourself', note: 'Customize your design and choose from My Designs.', href: '?v=3&s=cz&cz=design', shot: 'start-227-assets/img/sb-flow-design.jpg' },
+            { id: 'box', title: 'Box', note: 'Personalize the box.', href: '?v=3&s=cz&cz=box', shot: 'start-227-assets/img/sb-flow-box.jpg' },
+            { id: 'card', title: 'Card', note: 'Write the greeting card.', href: '?v=3&s=cz&cz=card', shot: 'start-227-assets/img/sb-flow-card.jpg' },
+            { id: 'signin', title: 'Sign in', note: 'Save this design to your account before checkout.', href: '?v=3&s=cz&cz=card&dr=signin', shot: 'start-227-assets/img/sb-flow-signin.jpg' },
+            { id: 'checkout', title: 'Checkout', note: 'Continue with the current design.', href: 'checkout.html' }
+          ]
+        }
+      ]
     },
     home: {
       label: 'Home page',

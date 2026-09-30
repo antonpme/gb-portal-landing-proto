@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Wire · Customizer V1, where the doors sit · GildedBox Design Studio</title>
+<!-- ============================================================
+     gbppl-wire-customizer-v1-layouts-1 (30.09.2026). WIREFRAME, not a
+     page (ORO-SKILL 7a2.3, DESIGN-LAWS F.3). Ton's customizer V1 gets
+     five new elements: My Designs (door with count, opens the drawer of
+     every generated design), More gifts (door, pop-up of 6 catalog
+     cards), help as one quiet text door, stepper labels Design · Box ·
+     Card, and on the last item (Card) a one-line summary above the
+     primary renamed Add to cart. The question is WHERE they sit.
+     Three layouts, A B C. Each: desktop 1440 x 900 and phone 390 x 844
+     on the Your Design item, plus the phone on the Card item.
+     The live structure is kept (live/start-227.html, cz.css):
+     desktop = scene flex 1 + panel 620 (48 padding, xl step);
+     phone = scene on top, panel = bottom sheet of 50%, footer pinned.
+     Frames are drawn at their real pixel size and scaled to fit by one
+     ResizeObserver (--k); labels inside counter-scale to read at 12px
+     (capped), so the geometry stays honest and the words stay legible.
+     Grey = block, dashed = door, dark fill = the one primary.
+     NO TOKEN values inside frames: they are the live product's own
+     pixel geometry (48, 56, 620, 30 sheet radius), not system steps.
+     ============================================================ -->
+<script src="../../system/components/studio.js" data-home="../../index.html"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../system/assets/tokens.css">
+<link rel="stylesheet" href="wire.css">
+<style>
+/* page furniture */
+.cl-pick { max-width: 72ch; margin-bottom: var(--space-8); font-size: 16px; }
+.cl-pick b { font-weight: 600; }
+.cl-new { max-width: 72ch; margin-bottom: var(--space-48); font-size: 14px; color: var(--zinc-500); }
+.cl-layout + .cl-layout { margin-top: var(--space-64); }
+.cl-layout .w-cap { font-size: 16px; }
+.cl-frames { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-24) var(--space-16); margin-top: var(--space-16); }
+.cl-fig--d { grid-column: 1 / -1; }
+/* equal heights: columns in the ratio of the frame widths at 900 high (390 / 844 * 900 = 416) */
+@media (min-width: 1280px) {
+  .cl-frames { grid-template-columns: minmax(0, 1440fr) minmax(0, 416fr) minmax(0, 416fr); }
+  .cl-fig--d { grid-column: auto; }
+}
+.cl-fig { min-width: 0; display: grid; gap: var(--space-8); align-content: start; }
+.cl-notes { display: grid; gap: 4px; margin-top: var(--space-16); max-width: 96ch; font-size: 14px; } /* NO TOKEN 4: line to line, as .w-status */
+.cl-notes b { font-weight: 600; }
+
+/* the viewport: real-size screen inside, scaled by --k */
+.cl-vp { position: relative; width: 100%; aspect-ratio: 1440 / 900; overflow: hidden; background: #fff; border-radius: var(--radius); box-shadow: 0 0 0 1px var(--zinc-300); }
+.cl-vp--m { aspect-ratio: 390 / 844; }
+.cl-screen {
+  --lab: min(30px, calc(12px / var(--k, .5)));
+  position: absolute; top: 0; left: 0; width: 1440px; height: 900px;
+  transform: scale(var(--k, .5)); transform-origin: 0 0;
+  display: flex; font-size: var(--lab); line-height: 1.25; color: var(--zinc-700);
+}
+.cl-vp--m .cl-screen { --lab: min(21px, calc(12px / var(--k, .5))); width: 390px; height: 844px; flex-direction: column; }
+
+/* scene */
+.cl-scene { position: relative; flex: 1; min-width: 0; background: #fff; display: flex; align-items: center; justify-content: center; }
+.cl-gift { width: 62%; height: 62%; background: var(--zinc-200); border-radius: 5px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; }
+.cl-x { position: absolute; top: 36px; left: 36px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--zinc-500); border-radius: 5px; font-size: 1.3em; }
+.cl-sdoors { position: absolute; top: 36px; right: 36px; display: flex; gap: 16px; }
+
+/* panel */
+.cl-panel { flex: 0 0 620px; width: 620px; background: var(--zinc-100); display: flex; flex-direction: column; min-height: 0; }
+.cl-scroll { flex: 1; min-height: 0; overflow: hidden; padding: 48px 48px 0; display: flex; flex-direction: column; gap: 28px; }
+.cl-foot { padding: 24px 48px 48px; display: flex; flex-direction: column; align-items: stretch; gap: 20px; }
+
+/* stepper: three dots on a line, labels under */
+.cl-stepper { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); width: 330px; margin: 0 auto; }
+.cl-stepper::before { content: ""; position: absolute; top: 7px; left: 16.66%; right: 16.66%; height: 2px; background: var(--zinc-300); }
+.cl-step { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--zinc-500); }
+.cl-step i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--zinc-500); background: var(--zinc-100); }
+.cl-step.is-on { color: var(--zinc-700); font-weight: 600; }
+.cl-step.is-on i, .cl-step.is-done i { background: var(--zinc-700); border-color: var(--zinc-700); }
+
+.cl-title { position: relative; display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; gap: 12px; height: 48px; }
+.cl-arrow { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 1.2em; color: var(--zinc-500); }
+.cl-t { text-align: center; font-size: 1.15em; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cl-title--icon { grid-template-columns: 48px minmax(0, 1fr) 56px 48px; }
+.cl-title--icon .cl-t { padding-left: 68px; } /* keeps the title optically centred against the icon on the right */
+
+/* doors */
+.cl-qbtn { height: 48px; padding: 0 20px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 1px dashed var(--zinc-500); border-radius: 5px; background: #fff; font-weight: 600; white-space: nowrap; }
+.cl-count { font-style: normal; font-size: .85em; font-weight: 600; min-width: 1.7em; padding: 1px 8px; border-radius: 999px; background: var(--zinc-700); color: #fff; text-align: center; }
+.cl-ibtn { position: relative; width: 56px; height: 48px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--zinc-500); border-radius: 5px; background: #fff; font-size: 1.2em; }
+.cl-ibtn .cl-count { position: absolute; top: -12px; right: -12px; font-size: .7em; }
+.cl-qrow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cl-sbtn { align-self: center; height: 44px; padding: 0 24px; display: flex; align-items: center; border: 1px dashed var(--zinc-500); border-radius: 5px; background: var(--zinc-200); font-weight: 600; white-space: nowrap; }
+.cl-tdoor { align-self: center; font-weight: 500; border-bottom: 1px dashed var(--zinc-500); white-space: nowrap; }
+
+/* content */
+.cl-h { font-size: 1.1em; }
+.cl-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.cl-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cl-tile { aspect-ratio: 1; background: var(--zinc-200); border-radius: 5px; border: 3px solid transparent; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4px; min-width: 0; }
+.cl-tile.is-on { border-color: var(--zinc-700); }
+.cl-tile--sw { background: #fff; flex-direction: column; gap: 8px; }
+.cl-info { background: #fff; border: 1px solid var(--zinc-200); border-radius: 5px; padding: 12px 16px; }
+
+/* primary + summary */
+.cl-primary { height: 56px; display: flex; align-items: center; justify-content: center; gap: 12px; border-radius: 5px; background: var(--zinc-700); color: #fff; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.cl-sum { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; white-space: nowrap; }
+.cl-sum span:first-child { overflow: hidden; text-overflow: ellipsis; font-weight: 400; }
+
+/* phone: scene 50%, sheet 50% with 30 radius and pinned footer */
+.cl-vp--m .cl-scene { flex: 0 0 422px; }
+.cl-vp--m .cl-gift { width: 72%; height: 58%; }
+.cl-vp--m .cl-x { top: 16px; left: 16px; width: 40px; height: 40px; }
+.cl-vp--m .cl-sdoors { top: 16px; right: 16px; gap: 8px; }
+.cl-vp--m .cl-qbtn { height: 40px; padding: 0 12px; gap: 6px; }
+.cl-vp--m .cl-sdoors .cl-qbtn { font-size: .9em; padding: 0 10px; }
+.cl-vp--m .cl-panel { flex: 0 0 422px; width: 100%; border-radius: 30px 30px 0 0; box-shadow: 0 -3px 8px rgba(0,0,0,.07); position: relative; }
+.cl-vp--m .cl-panel::before { content: ""; position: absolute; top: 12px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--zinc-300); }
+.cl-vp--m .cl-pin { padding: 32px 16px 0; }
+.cl-vp--m .cl-scroll { padding: 32px 16px 0; gap: 16px; }
+.cl-vp--m .cl-pin + .cl-scroll { padding-top: 16px; }
+.cl-vp--m .cl-foot { padding: 12px 16px 16px; gap: 12px; box-shadow: 0 -1px 0 var(--zinc-200); }
+.cl-vp--m .cl-primary { height: 48px; }
+.cl-vp--m .cl-stepper { width: 300px; }
+.cl-vp--m .cl-title { grid-template-columns: 32px minmax(0, 1fr) 32px; gap: 8px; height: 40px; }
+.cl-vp--m .cl-title--icon { grid-template-columns: 32px minmax(0, 1fr) 44px 32px; }
+.cl-vp--m .cl-title--icon .cl-t { padding-left: 52px; }
+.cl-vp--m .cl-arrow { width: 32px; height: 40px; }
+.cl-vp--m .cl-t { font-size: 1.05em; }
+.cl-vp--m .cl-ibtn { width: 44px; height: 40px; }
+.cl-vp--m .cl-ibtn .cl-count { top: -10px; right: -10px; }
+.cl-vp--m .cl-sbtn { height: 40px; padding: 0 16px; }
+.cl-vp--m .cl-grid { gap: 8px; }
+.cl-vp--m .cl-qrow { gap: 8px; }
+.cl-vp--m .cl-qrow .cl-qbtn { height: 44px; }
+</style>
+</head>
+<body class="wire">
+<header class="w-head">
+  <h1>Customizer V1 · where the new doors sit</h1>
+  <p>Wireframe. Three layouts of the live customizer: desktop 1440 x 900 and phone 390 x 844 on the Your Design item, plus the phone on the last item (Card). Grey = block, dashed = door, dark = the one primary.</p>
+</header>
+<p class="cl-pick"><b>My pick: A.</b> My Designs and More gifts change the gift itself, so they sit on the gift; they stay in one place on all three items, cost no row of the ~300 px phone sheet, and the panel keeps its live order with one primary.</p>
+<p class="cl-new">The same in all three: stepper labels Design · Box · Card, help as one text door under the primary, and on Card a summary line above Add to cart.</p>
+
+<!-- ===================== A ===================== -->
+<section class="cl-layout">
+  <h2 class="w-cap">A · Doors on the scene</h2>
+  <div class="cl-frames">
+    <figure class="cl-fig cl-fig--d">
+      <figcaption class="w-brow">Desktop 1440 · Your Design</figcaption>
+      <div class="cl-vp"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-sdoors"><span class="cl-qbtn">My Designs <i class="cl-count">3</i></span><span class="cl-qbtn">More gifts</span></div>
+          <div class="cl-gift">Scene · the gift in 3D</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-on"><i></i>Design</span><span class="cl-step"><i></i>Box</span><span class="cl-step"><i></i>Card</span></div>
+            <div class="cl-title"><span class="cl-arrow">←</span><span class="cl-t">Your Design</span><span class="cl-arrow">→</span></div>
+            <span class="cl-sbtn">Edit my brand DNA</span>
+            <p class="cl-h">Choose Your Design</p>
+            <div class="cl-grid"><span class="cl-tile is-on">1</span><span class="cl-tile">2</span><span class="cl-tile">3</span><span class="cl-tile cl-tile--sw"><span>Lid</span><span>Tray</span></span></div>
+            <p class="cl-info">Info line: next, the logo</p>
+          </div>
+          <div class="cl-foot"><span class="cl-primary">Next <span>→</span></span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+    <figure class="cl-fig">
+      <figcaption class="w-brow">Phone · Your Design</figcaption>
+      <div class="cl-vp cl-vp--m"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-sdoors"><span class="cl-qbtn">My Designs <i class="cl-count">3</i></span><span class="cl-qbtn">More gifts</span></div>
+          <div class="cl-gift">Scene</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-on"><i></i>Design</span><span class="cl-step"><i></i>Box</span><span class="cl-step"><i></i>Card</span></div>
+            <div class="cl-title"><span class="cl-arrow">←</span><span class="cl-t">Your Design</span><span class="cl-arrow">→</span></div>
+            <span class="cl-sbtn">Edit my brand DNA</span>
+            <p class="cl-h">Choose Your Design</p>
+            <div class="cl-grid"><span class="cl-tile is-on">1</span><span class="cl-tile">2</span><span class="cl-tile">3</span><span class="cl-tile cl-tile--sw"><span>Lid</span><span>Tray</span></span></div>
+          </div>
+          <div class="cl-foot"><span class="cl-primary">Next <span>→</span></span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+    <figure class="cl-fig">
+      <figcaption class="w-brow">Phone · Card, last item</figcaption>
+      <div class="cl-vp cl-vp--m"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-sdoors"><span class="cl-qbtn">My Designs <i class="cl-count">3</i></span><span class="cl-qbtn">More gifts</span></div>
+          <div class="cl-gift">Scene</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-done"><i></i>Design</span><span class="cl-step is-done"><i></i>Box</span><span class="cl-step is-on"><i></i>Card</span></div>
+            <div class="cl-title"><span class="cl-arrow">←</span><span class="cl-t">Greeting Card Design</span><span class="cl-arrow">→</span></div>
+            <p class="cl-h">Select a logo</p>
+            <div class="cl-grid cl-grid--3"><span class="cl-tile is-on">Logo 1</span><span class="cl-tile">Logo 2</span><span class="cl-tile">None</span></div>
+          </div>
+          <div class="cl-foot"><p class="cl-sum"><span>Gift name · Design 2</span><span>Price</span></p><span class="cl-primary">Add to cart</span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+  </div>
+  <div class="cl-notes">
+    <p><b>For</b> · gift-level actions next to the gift, same spot on every item, zero rows in the phone sheet.</p>
+    <p><b>Against</b> · the doors float over the 3D scene, so they must stay clear of drag-to-turn; they are a step away from the design grid.</p>
+    <p><b>Build</b> · medium: one scene overlay at both breakpoints, pointer events kept apart from the 3D canvas.</p>
+  </div>
+</section>
+
+<!-- ===================== B ===================== -->
+<section class="cl-layout">
+  <h2 class="w-cap">B · Doors in the panel head <span class="w-capnote">(the icon with the count is My Designs)</span></h2>
+  <div class="cl-frames">
+    <figure class="cl-fig cl-fig--d">
+      <figcaption class="w-brow">Desktop 1440 · Your Design</figcaption>
+      <div class="cl-vp"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-gift">Scene · the gift in 3D</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-on"><i></i>Design</span><span class="cl-step"><i></i>Box</span><span class="cl-step"><i></i>Card</span></div>
+            <div class="cl-title cl-title--icon"><span class="cl-arrow">←</span><span class="cl-t">Your Design</span><span class="cl-ibtn">▤<i class="cl-count">3</i></span><span class="cl-arrow">→</span></div>
+            <span class="cl-sbtn">Edit my brand DNA</span>
+            <p class="cl-h">Choose Your Design</p>
+            <div class="cl-grid"><span class="cl-tile is-on">1</span><span class="cl-tile">2</span><span class="cl-tile">3</span><span class="cl-tile cl-tile--sw"><span>Lid</span><span>Tray</span></span></div>
+            <span class="cl-tdoor">See 6 more gifts for your brand</span>
+            <p class="cl-info">Info line: next, the logo</p>
+          </div>
+          <div class="cl-foot"><span class="cl-primary">Next <span>→</span></span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+    <figure class="cl-fig">
+      <figcaption class="w-brow">Phone · Your Design</figcaption>
+      <div class="cl-vp cl-vp--m"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-gift">Scene</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-on"><i></i>Design</span><span class="cl-step"><i></i>Box</span><span class="cl-step"><i></i>Card</span></div>
+            <div class="cl-title cl-title--icon"><span class="cl-arrow">←</span><span class="cl-t">Your Design</span><span class="cl-ibtn">▤<i class="cl-count">3</i></span><span class="cl-arrow">→</span></div>
+            <span class="cl-sbtn">Edit my brand DNA</span>
+            <p class="cl-h">Choose Your Design</p>
+            <div class="cl-grid"><span class="cl-tile is-on">1</span><span class="cl-tile">2</span><span class="cl-tile">3</span><span class="cl-tile cl-tile--sw"><span>Lid</span><span>Tray</span></span></div>
+            <span class="cl-tdoor">See 6 more gifts for your brand</span>
+          </div>
+          <div class="cl-foot"><span class="cl-primary">Next <span>→</span></span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+    <figure class="cl-fig">
+      <figcaption class="w-brow">Phone · Card, last item</figcaption>
+      <div class="cl-vp cl-vp--m"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-gift">Scene</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-done"><i></i>Design</span><span class="cl-step is-done"><i></i>Box</span><span class="cl-step is-on"><i></i>Card</span></div>
+            <div class="cl-title cl-title--icon"><span class="cl-arrow">←</span><span class="cl-t">Greeting Card Design</span><span class="cl-ibtn">▤<i class="cl-count">3</i></span><span class="cl-arrow">→</span></div>
+            <p class="cl-h">Select a logo</p>
+            <div class="cl-grid cl-grid--3"><span class="cl-tile is-on">Logo 1</span><span class="cl-tile">Logo 2</span><span class="cl-tile">None</span></div>
+          </div>
+          <div class="cl-foot"><p class="cl-sum"><span>Gift name · Design 2</span><span>Price</span></p><span class="cl-primary">Add to cart</span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+  </div>
+  <div class="cl-notes">
+    <p><b>For</b> · My Designs sits beside the designs it lists, no new row; this is where the lp227 prototype already has both doors.</p>
+    <p><b>Against</b> · an icon-only door next to the next arrow, and long titles get cut on the phone; More gifts lives only on Your Design and falls below the phone fold.</p>
+    <p><b>Build</b> · small: an icon button in the title row, a text door under the grid.</p>
+  </div>
+</section>
+
+<!-- ===================== C ===================== -->
+<section class="cl-layout">
+  <h2 class="w-cap">C · One tools row</h2>
+  <div class="cl-frames">
+    <figure class="cl-fig cl-fig--d">
+      <figcaption class="w-brow">Desktop 1440 · Your Design</figcaption>
+      <div class="cl-vp"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-gift">Scene · the gift in 3D</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-on"><i></i>Design</span><span class="cl-step"><i></i>Box</span><span class="cl-step"><i></i>Card</span></div>
+            <div class="cl-qrow"><span class="cl-qbtn">My Designs <i class="cl-count">3</i></span><span class="cl-qbtn">More gifts</span></div>
+            <div class="cl-title"><span class="cl-arrow">←</span><span class="cl-t">Your Design</span><span class="cl-arrow">→</span></div>
+            <span class="cl-sbtn">Edit my brand DNA</span>
+            <p class="cl-h">Choose Your Design</p>
+            <div class="cl-grid"><span class="cl-tile is-on">1</span><span class="cl-tile">2</span><span class="cl-tile">3</span><span class="cl-tile cl-tile--sw"><span>Lid</span><span>Tray</span></span></div>
+            <p class="cl-info">Info line: next, the logo</p>
+          </div>
+          <div class="cl-foot"><span class="cl-primary">Next <span>→</span></span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+    <figure class="cl-fig">
+      <figcaption class="w-brow">Phone · Your Design</figcaption>
+      <div class="cl-vp cl-vp--m"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-gift">Scene</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-pin"><div class="cl-qrow"><span class="cl-qbtn">My Designs <i class="cl-count">3</i></span><span class="cl-qbtn">More gifts</span></div></div>
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-on"><i></i>Design</span><span class="cl-step"><i></i>Box</span><span class="cl-step"><i></i>Card</span></div>
+            <div class="cl-title"><span class="cl-arrow">←</span><span class="cl-t">Your Design</span><span class="cl-arrow">→</span></div>
+            <span class="cl-sbtn">Edit my brand DNA</span>
+            <p class="cl-h">Choose Your Design</p>
+            <div class="cl-grid"><span class="cl-tile is-on">1</span><span class="cl-tile">2</span><span class="cl-tile">3</span><span class="cl-tile cl-tile--sw"><span>Lid</span><span>Tray</span></span></div>
+          </div>
+          <div class="cl-foot"><span class="cl-primary">Next <span>→</span></span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+    <figure class="cl-fig">
+      <figcaption class="w-brow">Phone · Card, last item</figcaption>
+      <div class="cl-vp cl-vp--m"><div class="cl-screen">
+        <div class="cl-scene">
+          <span class="cl-x">×</span>
+          <div class="cl-gift">Scene</div>
+        </div>
+        <div class="cl-panel">
+          <div class="cl-pin"><div class="cl-qrow"><span class="cl-qbtn">My Designs <i class="cl-count">3</i></span><span class="cl-qbtn">More gifts</span></div></div>
+          <div class="cl-scroll">
+            <div class="cl-stepper"><span class="cl-step is-done"><i></i>Design</span><span class="cl-step is-done"><i></i>Box</span><span class="cl-step is-on"><i></i>Card</span></div>
+            <div class="cl-title"><span class="cl-arrow">←</span><span class="cl-t">Greeting Card Design</span><span class="cl-arrow">→</span></div>
+            <p class="cl-h">Select a logo</p>
+            <div class="cl-grid cl-grid--3"><span class="cl-tile is-on">Logo 1</span><span class="cl-tile">Logo 2</span><span class="cl-tile">None</span></div>
+          </div>
+          <div class="cl-foot"><p class="cl-sum"><span>Gift name · Design 2</span><span>Price</span></p><span class="cl-primary">Add to cart</span><span class="cl-tdoor">Prefer our experts to design it?</span></div>
+        </div>
+      </div></div>
+    </figure>
+  </div>
+  <div class="cl-notes">
+    <p><b>For</b> · both doors always in sight, in words, one place on every item.</p>
+    <p><b>Against</b> · the pinned row takes about 75 px of the ~300 px phone sheet and pushes the design grid under the fold; a second row of buttons in the panel competes with the primary.</p>
+    <p><b>Build</b> · small: one row component, pinned on the phone.</p>
+  </div>
+</section>
+
+<script>
+/* scale each real-size screen to its frame: --k = frame width / screen width */
+(function () {
+  var frames = document.querySelectorAll('.cl-vp');
+  function fit(el) { var base = el.classList.contains('cl-vp--m') ? 390 : 1440; el.style.setProperty('--k', (el.clientWidth / base).toFixed(4)); }
+  if ('ResizeObserver' in window) {
+    var ro = new ResizeObserver(function (es) { es.forEach(function (e) { fit(e.target); }); });
+    frames.forEach(function (el) { ro.observe(el); });
+  } else { frames.forEach(fit); }
+})();
+</script>
+</body>
+</html>
