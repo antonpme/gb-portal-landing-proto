@@ -1,0 +1,294 @@
+/* Share loader CSS reused verbatim; scoped to sandbox stage. */
+.sb-scene-stage .gbds-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 50;                                    /* under the console 60 and the drawer 80 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: var(--space-32);                       /* LIVE dd149: 2rem */
+  background: var(--gbds-l-ground);
+  transition: opacity 1.2s ease-out .5s;          /* LIVE dd149 .loading-container */
+}
+/* THE CENTRE GLOW, breathing (LIVE dd149 .loading-container:after) */
+.sb-scene-stage .gbds-loader::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--gbds-l-halo);
+  animation: gbds-centerGlow 3s ease-in-out infinite;   /* LIVE dd149 */
+  pointer-events: none;
+}
+/* THE OVERLAY THAT RISES INTO THE LIGHT (LIVE dd149 .white-overlay) */
+.sb-scene-stage .gbds-loader__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--gbds-l-light);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2s ease-in-out;             /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader.is-leaving .gbds-loader__veil { opacity: 1; }
+.sb-scene-stage .gbds-loader.is-gone .gbds-loader__veil { opacity: 0; transition: opacity 1.2s ease-out .5s; }  /* LIVE dd149 */
+.sb-scene-stage .gbds-loader.is-gone { opacity: 0; pointer-events: none; }
+/* One frame with every animation off: the rewind, see the script. */
+.sb-scene-stage .gbds-loader.is-rewound,
+.gbds-loader.is-rewound * { animation: none !important; }
+
+.sb-scene-stage .gbds-loader__wrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity .4s ease-out;               /* LIVE dd149 .content-wrapper */
+}
+.sb-scene-stage .gbds-loader.is-gone .gbds-loader__wrap { opacity: 0; }
+
+/* ---- GOLD, Russell and Dima's, and what the page opens on ---- */
+.sb-scene-stage .gbds-loader {
+  --gbds-l-ground: radial-gradient(ellipse at center, #1a1a1a 0, #0d0d0d 100%);      /* LIVE dd149 */
+  --gbds-l-light:  var(--gbds-ground);                                                /* deviation, written above: their #fff is our stage's warm light */
+  --gbds-l-halo:   radial-gradient(ellipse 50% 50% at 50% 50%, rgba(201,169,97,.02) 0, transparent 70%);  /* LIVE dd149 */
+  --gbds-l-mark:   url(#sbGold);                                                    /* LIVE dd149 goldGradient */
+  --gbds-l-ink:    rgba(201,169,97,.8);                                               /* LIVE dd149 */
+  --gbds-l-quiet:  rgba(201,169,97,.7);                                               /* LIVE dd149 */
+  --gbds-l-track:  rgba(201,169,97,.2);                                               /* LIVE dd149 */
+  --gbds-l-bar:    linear-gradient(90deg, #c9a961, #f0d78c 50%, #c9a961);             /* LIVE dd149 */
+  --gbds-l-glow:   radial-gradient(circle, rgba(166,136,92,.6) 0, transparent 70%);   /* LIVE dd149 */
+  --gbds-l-spark:  rgba(201,169,97,.6);                                               /* LIVE dd149 */
+  --gbds-l-diag:   linear-gradient(45deg, transparent, transparent 40%, rgba(201,169,97,.012), rgba(201,169,97,.031), rgba(201,169,97,.012), transparent 60%, transparent);  /* LIVE dd149 */
+}
+/* ---- INK, ours: the same film, recoloured ---- */
+.sb-scene-stage .gbds-loader[data-gbds-loader="ink"] {
+  --gbds-l-ground: var(--zinc-950);   /* ловушка 13: a wide gradient of small range is bands. Ours is flat by choice */
+  --gbds-l-halo:   none;
+  --gbds-l-mark:   var(--zinc-100);
+  --gbds-l-ink:    var(--zinc-100);
+  --gbds-l-quiet:  var(--zinc-400);
+  --gbds-l-track:  var(--zinc-800);
+  --gbds-l-bar:    var(--zinc-100);
+  --gbds-l-glow:   radial-gradient(circle, rgba(244,244,245,.5) 0, transparent 70%);
+  --gbds-l-spark:  rgba(244,244,245,.5);
+  --gbds-l-diag:   none;
+}
+/* ---- THE TURN: everything painted goes dark on light ----
+   (LIVE dd149: the .transitioning block, whole.) */
+.sb-scene-stage .gbds-loader.is-leaving {
+  --gbds-l-mark:   #1a1a1a;                                                        /* LIVE dd149 */
+  --gbds-l-ink:    rgba(26,26,26,.8);                                              /* LIVE dd149 */
+  --gbds-l-quiet:  rgba(26,26,26,.6);                                              /* LIVE dd149 */
+  --gbds-l-track:  rgba(26,26,26,.15);                                             /* LIVE dd149 */
+  --gbds-l-bar:    linear-gradient(90deg, #333, #555 50%, #333);                   /* LIVE dd149 */
+  --gbds-l-glow:   radial-gradient(circle, rgba(50,50,50,.4) 0, transparent 70%);  /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader[data-gbds-loader="ink"].is-leaving {
+  --gbds-l-mark:  var(--zinc-900);
+  --gbds-l-ink:   var(--zinc-900);
+  --gbds-l-quiet: var(--zinc-600);
+  --gbds-l-track: var(--zinc-200);
+  --gbds-l-bar:   linear-gradient(90deg, var(--zinc-700), var(--zinc-500) 50%, var(--zinc-700));
+}
+
+/* ---- the mark, five letters, one at a time ----
+   NO GLOW UNDER THE MARK (Ton 16.09: «у лого убрал бы ещё тень, она
+   некрасиво смотрится»). The live film wore `drop-shadow(0 0 15px
+   rgba(139,115,85,.25))` above 768 and nothing below it, so the
+   phone has always shown the mark Ton is asking for. The filter was
+   pure shadow, so it goes whole, and with it the transition that
+   only ever animated it, the 768 exception that only ever cancelled
+   it and the --gbds-l-shadow slot its three skins declared. Nothing
+   else of Russell and Dima's film is touched. */
+.sb-scene-stage .gbds-loader__logo {
+  width: 200px;                     /* LIVE dd149: w-[200px] h-[70px] */
+  height: 70px;
+}
+@media (min-width: 1024px) {        /* LIVE dd149: lg:w-[320px] lg:h-[110px] */
+  .sb-scene-stage .gbds-loader__logo { width: 320px; height: 110px; }
+}
+.sb-scene-stage .gbds-loader__letter {
+  fill: var(--gbds-l-mark);
+  opacity: 0;
+  animation: gbds-fadeInLetter .4s ease-out forwards;  /* LIVE dd149 */
+  transition: fill 1s ease-out;                        /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader__letter:nth-child(1) { animation-delay: 0s; }     /* LIVE dd149 */
+.sb-scene-stage .gbds-loader__letter:nth-child(2) { animation-delay: .1s; }
+.sb-scene-stage .gbds-loader__letter:nth-child(3) { animation-delay: .2s; }
+.sb-scene-stage .gbds-loader__letter:nth-child(4) { animation-delay: .3s; }
+.sb-scene-stage .gbds-loader__letter:nth-child(5) { animation-delay: .4s; }
+
+/* ---- the line ----
+   THE DEVIATION LIVES ON THIS RULE: var(--font-serif) instead of
+   the Cormorant Garamond they declare and never load. Everything
+   else on it is theirs: 12px, 16px from the xl step, .15em of
+   tracking, uppercase, .4rem between words. */
+.sb-scene-stage .gbds-loader__head { display: flex; flex-direction: column; align-items: center; gap: var(--space-24); }  /* LIVE dd149: 1.5rem */
+.sb-scene-stage .gbds-loader__text {
+  display: flex;
+  gap: 6.4px;                       /* LIVE dd149: .4rem */
+  margin: 0;
+  font-family: var(--font-serif);   /* DEVIATION, Ton 11.09: theirs never loads and plays Georgia */
+  font-size: 12px;                  /* LIVE dd149: text-[12px] */
+  letter-spacing: .15em;            /* LIVE dd149 */
+  text-transform: uppercase;        /* LIVE dd149 */
+  color: var(--gbds-l-ink);
+  transition: color .2s ease-out;   /* LIVE dd149 */
+}
+@media (min-width: 1280px) { .gbds-loader__text { font-size: 16px; } }  /* LIVE dd149: xl:text-[16px] */
+.sb-scene-stage .gbds-loader__word {
+  opacity: 0;
+  animation: gbds-fadeInWord .5s ease-out forwards;   /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader__word:nth-child(1) { animation-delay: .6s; }   /* LIVE dd149 */
+.sb-scene-stage .gbds-loader__word:nth-child(2) { animation-delay: .7s; }
+.sb-scene-stage .gbds-loader__word:nth-child(3) { animation-delay: .8s; }
+.sb-scene-stage .gbds-loader__word:nth-child(4) { animation-delay: .9s; }
+.sb-scene-stage .gbds-loader__dots {
+  display: flex;
+  opacity: 0;
+  animation: gbds-fadeInWord .5s ease-out 1s forwards;  /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader__dot { animation: gbds-pulseDot 1.4s ease-in-out infinite; }  /* LIVE dd149 */
+.sb-scene-stage .gbds-loader__dot:nth-child(1) { animation-delay: 0s; }
+.sb-scene-stage .gbds-loader__dot:nth-child(2) { animation-delay: .2s; }
+.sb-scene-stage .gbds-loader__dot:nth-child(3) { animation-delay: .4s; }
+
+/* ---- the meter ---- */
+.sb-scene-stage .gbds-loader__meter {
+  position: relative;
+  width: 100%;
+  max-width: 320px;                 /* LIVE dd149 */
+  margin-top: var(--space-48);      /* LIVE dd149: 3rem */
+  opacity: 0;
+  animation: gbds-fadeIn .8s ease-out 1.2s forwards;   /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader__track {
+  position: relative;
+  height: 2px;                      /* LIVE dd149 */
+  border-radius: 2px;               /* LIVE dd149; a 2px bar, so the pill radius and 2 are the same shape */
+  background: var(--gbds-l-track);
+  overflow: visible;                /* LIVE dd149: the glow leans out */
+  transition: background 1s ease-out;  /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader__bar {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: 2px;               /* LIVE dd149 */
+  background: var(--gbds-l-bar);
+  transition: width .3s ease-out, background 1s ease-out;   /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader__glow {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 12px;                      /* LIVE dd149 */
+  height: 12px;                     /* LIVE dd149 */
+  border-radius: var(--radius-circle);
+  background: var(--gbds-l-glow);
+  transform: translate(-50%, -50%);
+  transition: left .3s ease-out, background 1s ease-out;    /* LIVE dd149 */
+  pointer-events: none;
+}
+.sb-scene-stage .gbds-loader__orn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-16);             /* LIVE dd149: 1rem */
+  margin-top: var(--space-16);      /* LIVE dd149: 1rem */
+}
+/* The .gbds-loader__ornament rule and the --gbds-l-orn slot its four
+   skins declared left with the two arcs (Russell 16.09). The row
+   keeps its gap: it is the live film's own 1rem and the day anything
+   else stands beside the count it is already the right number. */
+.sb-scene-stage .gbds-loader__pct {
+  min-width: 48px;                  /* LIVE dd149: 3rem */
+  font-family: var(--font-serif);   /* same deviation as the line */
+  font-size: 12px;                  /* LIVE dd149: .85rem of their 14px root, measured 11.9 */
+  letter-spacing: .1em;             /* LIVE dd149 */
+  text-align: center;
+  color: var(--gbds-l-quiet);
+  transition: color 1s ease-out;    /* LIVE dd149 */
+}
+
+/* ---- the sparks and the sheen ---- */
+.sb-scene-stage .gbds-loader__particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translateY(-60px);     /* LIVE dd149 */
+  pointer-events: none;
+  transition: opacity .8s ease-out; /* LIVE dd149 */
+}
+.sb-scene-stage .gbds-loader.is-leaving .gbds-loader__particles,
+.gbds-loader.is-leaving .gbds-loader__diag { opacity: 0; }
+.sb-scene-stage .gbds-loader__particle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--size);
+  height: var(--size);
+  border-radius: var(--radius-circle);
+  background: var(--gbds-l-spark);
+  opacity: 0;
+  animation: gbds-particleExplode var(--duration) ease-out infinite;  /* LIVE dd149 */
+  animation-delay: var(--delay);
+}
+.sb-scene-stage .gbds-loader__diag {
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: var(--gbds-l-diag);
+  animation: gbds-diagonalShift 6s ease-in-out infinite;   /* LIVE dd149 */
+  transition: opacity .8s ease-out;
+  pointer-events: none;
+}
+/* LIVE dd149: below 768 the sheen, the sparks and the centre glow
+   are all switched off, and so is the mark's drop shadow. */
+@media (max-width: 768px) {
+  .sb-scene-stage .gbds-loader__diag,
+  .gbds-loader__particle,
+  .gbds-loader::after { display: none; }
+}
+
+/* Every keyframe below is transcribed from LoadingAnimation.raw.css */
+@keyframes gbds-fadeInLetter { 0% { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes gbds-fadeInWord   { to { opacity: 1; } }
+@keyframes gbds-fadeIn       { to { opacity: 1; } }
+@keyframes gbds-pulseDot     { 0%, 60%, to { opacity: .3; } 30% { opacity: 1; } }
+@keyframes gbds-centerGlow   { 0%, to { opacity: .4; } 50% { opacity: .8; } }
+@keyframes gbds-diagonalShift { 0%, to { transform: translate(2%) translateY(-2%); } 50% { transform: translate(-2%) translateY(2%); } }
+@keyframes gbds-particleExplode {
+  0%  { opacity: 0;  transform: rotate(var(--angle)) translate(var(--start-offset)) scale(1); }
+  10% { opacity: .5; }
+  70% { opacity: .3; }
+  to  { opacity: 0;  transform: rotate(var(--angle)) translate(var(--distance)) scale(.3); }
+}
+
+/* ============================================================
+   THE ERROR, ON THE STAGE
+   ------------------------------------------------------------
+   Ton: the error belongs ON the scene, not in an empty window.
+   The stage keeps its warm light, says what happened in the
+   leading voice, offers the way back and keeps the quiet road
+   open beside it.
+   ============================================================ */
+/* v6 stage: Share loader scoped to the scene, public fit camera kept separate from UI. */
+.sb-scene-stage{position:absolute;inset:72px 0 80px;--gbds-ground:#fff;overflow:hidden}
+.sb-scene-stage model-viewer{display:block;width:100%;height:100%;background:#fff;--poster-color:transparent;touch-action:none}
+.sb-scene-stage .gbds-loader{position:absolute;z-index:5;padding:32px}
+.sb-scene-stage .gbds-loader__logo{max-width:70%}
+.sb-scene-stage .sb-scene-error{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;background:#fff;z-index:6;font-size:16px;color:#52525b}
+.sb-scene-stage [hidden]{display:none!important}
+.sb-scene-photo{width:100%;height:100%;object-fit:contain}
+.sb-real-scene>picture{display:none}
+@media(max-width:1023px){.sb-scene-stage{inset:56px 0 52px}}
+
